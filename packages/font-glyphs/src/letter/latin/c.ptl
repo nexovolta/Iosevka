@@ -18,11 +18,13 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook RetroflexHook TopHook
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerifWidth ArcStartSerifDepth
 	glyph-block-import Letter-Blackboard : BBS BBD
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
 	define SLAB-INWARD     2
 	define FLAT-CONNECTION 3
+	define SLAB-FLAT-HOOK  4
 
 	glyph-block-export CShapeT
 	define [CShapeT sink offset df st sb top bot ada adb hook sw ob ox oy] : sink
@@ -34,6 +36,7 @@ glyph-block Letter-Latin-C : begin
 				flat (df.width - offset) (top - offset)
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
 			__ : list
 				g4   (df.rightSB - offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -45,6 +48,7 @@ glyph-block Letter-Latin-C : begin
 				arcvh
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (df.width - offset) (bot + offset)
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
@@ -58,6 +62,7 @@ glyph-block Letter-Latin-C : begin
 				flat (0 + offset) (top - offset)
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
 			__ : list
 				g4   (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -69,6 +74,7 @@ glyph-block Letter-Latin-C : begin
 				arcvh
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (0 + offset) (bot + offset)
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.leftSB + offset) (bot + [fallback hook Hook])
@@ -102,6 +108,7 @@ glyph-block Letter-Latin-C : begin
 			match styTop
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
 				__ : list [g4 df.rightSB (top - Hook) [widths.lhs sw]] [HookStart top (sw -- sw)]
 			flatside.ld df.leftSB bot top SmallArchDepthA SmallArchDepthB
 			CurlyTail.n fine bot df.rightSB 0 bot (yLoopTop -- loopTop)
@@ -128,6 +135,7 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-export CConfig
 	define CConfig : object
 		serifless                  { SLAB-NONE      SLAB-NONE      }
+		flatHook                   { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
 		bottomSerifed              { SLAB-NONE      SLAB-CLASSICAL }
 		bottomInwardSerifed        { SLAB-NONE      SLAB-INWARD    }
 		unilateralSerifed          { SLAB-CLASSICAL SLAB-NONE      }
@@ -135,6 +143,10 @@ glyph-block Letter-Latin-C : begin
 		unilateralInwardSerifed    { SLAB-INWARD    SLAB-NONE      }
 		bilateralInwardSerifed     { SLAB-INWARD    SLAB-INWARD    }
 		hybridSerifed1             { SLAB-INWARD    SLAB-CLASSICAL }
+		unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
+		unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
+		bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
 
 	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
 		create-glyph "C.\(suffix)" : glyph-proc
@@ -336,12 +348,12 @@ glyph-block Letter-Latin-C : begin
 				HSerif.mb (Middle + [HSwToV HalfStroke]) Descender MidJutCenter
 				no-shape
 
-		if [not styBot] : create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
+		if (styBot == SLAB-NONE || styBot == SLAB-FLAT-HOOK) : create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
 			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] CAP
 
-		if [not styBot] : create-glyph "cyrl/koppa.\(suffix)" : glyph-proc
+		if (styBot == SLAB-NONE || styBot == SLAB-FLAT-HOOK) : create-glyph "cyrl/koppa.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			local lf : CLetterForm [DivFrame 1] styTop styBot XH 0
 				ada -- SmallArchDepthA
@@ -367,7 +379,7 @@ glyph-block Letter-Latin-C : begin
 			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
 			include : union [lf.descBase] [lf.topSerif]
 				VBar.r RightSB Descender [ArcStartSerifDepth Hook] [ArcStartSerifWidth Stroke]
-			if styBot : begin
+			if (styBot == SLAB-CLASSICAL || styBot == SLAB-INWARD) : begin
 				local ink : HSwToV : ArcStartSerifWidth Stroke
 				local coInk : HSwToV : Stroke - [ArcStartSerifWidth Stroke]
 				include : union

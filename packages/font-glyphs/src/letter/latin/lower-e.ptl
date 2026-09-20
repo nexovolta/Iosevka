@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Lower-E : begin
 	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markStress markFine
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 	glyph-block-import Letter-Latin-C : CConfig
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define [SmallEHook top stroke hook doSwash] : Math.min hook : if doSwash VERY-FAR
 		mix stroke ([mix 0 top DesignParameters.eBarPos] - stroke / 2) 0.554
@@ -21,12 +22,14 @@ glyph-block Letter-Latin-Lower-E : begin
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
 	define SLAB-INWARD     2
+	define SLAB-FLAT-HOOK  4
 
 	define [SmallESerifedTerminalShape df top stroke hook tailSlab isClockwise] : begin
 		local doSwash : !isClockwise && para.isItalic && (para.slopeAngle > 0)
 		return : match tailSlab
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB 0 stroke hook
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isClockwise)
 				g4 (df.rightSB - [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -41,6 +44,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		return : match tailSlab
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke hook
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isCounterClockwise)
 				g4 (df.leftSB + [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -221,23 +225,36 @@ glyph-block Letter-Latin-Lower-E : begin
 
 	glyph-block-export SmallEConfig
 	define SmallEConfig : object
-		flatCrossbar { SmallEShape        RevSmallEShape        }
-		rounded      { SmallERoundedShape RevSmallERoundedShape }
+		flatCrossbar         { SmallEShape        RevSmallEShape        SLAB-NONE      }
+		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
+		flatCrossbarFlatHook { SmallEShape        RevSmallEShape        SLAB-FLAT-HOOK }
+		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
 
-	foreach { suffix { Body RevBody } } [Object.entries SmallEConfig] : do
+	glyph-block-export SchwaConfig
+	define SchwaConfig : object
+		flatCrossbar         { SmallEShape        RevSmallEShape        SLAB-NONE      }
+		flatCrossbarSerifed  { SmallEShape        RevSmallEShape        SLAB-CLASSICAL }
+		flatCrossbarFlatHook { SmallEShape        RevSmallEShape        SLAB-FLAT-HOOK }
+		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
+		roundedSerifed       { SmallERoundedShape RevSmallERoundedShape SLAB-CLASSICAL }
+		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
+
+	foreach { suffix { Body RevBody tailSlab } } [Object.entries SmallEConfig] : do
 		create-glyph "e.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : Body [DivFrame 1] XH
-				hook -- AHook
-				ada  -- SmallArchDepthA
-				adb  -- SmallArchDepthB
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styBot -- tailSlab
 
 		create-glyph "eOgonek.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			local lastKnot : include : Body [DivFrame 1] XH
-				hook -- AHook
-				ada  -- SmallArchDepthA
-				adb  -- SmallArchDepthB
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styBot -- tailSlab
 			include : refer-glyph 'ogonekTR/spacer'
 
 			# Connected Ogonek shape
@@ -272,9 +289,10 @@ glyph-block Letter-Latin-Lower-E : begin
 		create-glyph "eNotch.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			local lastKnot : include : Body [DivFrame 1] XH
-				hook -- AHook
-				ada  -- SmallArchDepthA
-				adb  -- SmallArchDepthB
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styBot -- tailSlab
 			local sw : AdviceStroke 4
 			local ry : Math.min (lastKnot.y - sw) [mix 0 XH 0.08]
 			local rx : Math.min ry
@@ -300,22 +318,15 @@ glyph-block Letter-Latin-Lower-E : begin
 		create-glyph "reve.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : RevBody [DivFrame 1] XH
-				hook -- AHook
-				ada  -- SmallArchDepthA
-				adb  -- SmallArchDepthB
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styBot -- tailSlab
 
 		create-glyph "eBar.\(suffix)" : glyph-proc
 			include [refer-glyph "e.\(suffix)"] AS_BASE ALSO_METRICS
 			local yBar : mix Stroke ([mix 0 XH DesignParameters.eBarPos] - HalfStroke) 0.5
 			include : HBar.m [mix SB 0 0.7] [mix RightSB Width 0.7] yBar [Math.min (yBar - Stroke) : AdviceStroke 5]
-
-		DefineSelectorGlyph "Schwa" suffix [DivFrame 1] 'capital'
-		DefineSelectorGlyph "schwa" suffix [DivFrame 1] 'e'
-
-		define rhoticDf : DivFrame para.advanceScaleM 1
-
-		DefineSelectorGlyph "schwaRhoticHook"    suffix rhoticDf 'e'
-		DefineSelectorGlyph "schwaRetroflexHook" suffix rhoticDf 'e'
 
 		define abkCheDf : DivFrame para.advanceScaleM 3
 
@@ -325,64 +336,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		DefineSelectorGlyph "cyrl/abk/cheDescender" suffix abkCheDf 'p'
 
 		foreach { suffixSerif { styTop styBot } } [Object.entries CConfig] : do
-			if (!styBot) : begin
-				create-glyph "Schwa.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : Body [DivFrame 1] CAP
-						hook   -- Hook
-						ada    -- ArchDepthA
-						adb    -- ArchDepthB
-						turned -- true
-						styTop -- styTop
-						styBot -- styBot
-				create-glyph "schwa.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : Body [DivFrame 1] XH
-						hook   -- AHook
-						ada    -- SmallArchDepthA
-						adb    -- SmallArchDepthB
-						turned -- true
-						styTop -- styTop
-						styBot -- styBot
-
-				create-glyph "schwaRhoticHook.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					local subDf : DivFrame (0.75 * para.advanceScaleM) 2
-					local stroke : subDf.adviceStroke2 2 3 XH
-					include : Body subDf XH
-						stroke -- stroke
-						hook   -- AHook
-						ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
-						adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
-						turned -- true
-						styTop -- styTop
-						styBot -- styBot
-					include : RhoticHookShape (subDf.rightSB - [HSwToV : 1.25 * markFine]) rhoticDf.width [mix 0 XH DesignParameters.eBarPos] [mix 0 XH 0.2]
-
-				create-glyph "schwaRetroflexHook.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					local subDf : DivFrame (0.75 * para.advanceScaleM) 2
-					local stroke : subDf.adviceStroke2 2 3 XH
-					include : Body subDf XH
-						stroke -- stroke
-						hook   -- AHook
-						ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
-						adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
-						turned -- true
-						styTop -- styTop
-						styBot -- styBot
-					include : RetroflexHook.r
-						x       -- [mix RightSB rhoticDf.width 0.5]
-						y       -- 0
-						yAttach -- ([mix 0 XH DesignParameters.eBarPos] - HalfStroke)
-						xLink   -- (subDf.rightSB - [HSwToV : 0.5 * stroke])
-						refSw   -- [AdviceStroke 4]
-
-			if (!styTop) : begin
+			if (!styTop || styTop == SLAB-FLAT-HOOK) : begin
 				create-glyph "cyrl/abk/Che.\(suffix).\(suffixSerif)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -420,12 +374,6 @@ glyph-block Letter-Latin-Lower-E : begin
 						styTop -- styTop
 						styBot -- styBot
 
-		select-variant "Schwa.\(suffix)" (follow -- 'cyrl/E/topSerif')
-		select-variant "schwa.\(suffix)" (follow -- 'cyrl/e/topSerif')
-
-		select-variant "schwaRhoticHook.\(suffix)"    (follow -- 'cyrl/e/topSerif')
-		select-variant "schwaRetroflexHook.\(suffix)" (follow -- 'cyrl/e/topSerif')
-
 		select-variant "cyrl/abk/Che.\(suffix)" (follow -- 'C/bottomSerif')
 		select-variant "cyrl/abk/che.\(suffix)" (follow -- 'c/bottomSerif')
 
@@ -442,11 +390,73 @@ glyph-block Letter-Latin-Lower-E : begin
 	select-variant     'reve'  0x258 (follow -- 'e')
 	CreateTurnedLetter 'turne' 0x1DD 'e' HalfAdvance (XH / 2)
 
-	CreateSelectorVariants 'Schwa' 0x18F [Object.keys SmallEConfig] (follow -- 'eCap')
-	CreateSelectorVariants 'schwa' 0x259 [Object.keys SmallEConfig] (follow -- 'e')
+	define rhoticDf : DivFrame para.advanceScaleM 1
 
-	CreateSelectorVariants 'schwaRhoticHook'    0x25A  [Object.keys SmallEConfig] (follow -- 'e')
-	CreateSelectorVariants 'schwaRetroflexHook' 0x1D95 [Object.keys SmallEConfig] (follow -- 'e')
+	foreach { suffix { Body RevBody terminalSlab } } [Object.entries SchwaConfig] : do
+
+		DefineSelectorGlyph "Schwa" suffix [DivFrame 1] 'capital'
+		DefineSelectorGlyph "schwa" suffix [DivFrame 1] 'e'
+		DefineSelectorGlyph "schwaRhoticHook"    suffix rhoticDf 'e'
+		DefineSelectorGlyph "schwaRetroflexHook" suffix rhoticDf 'e'
+
+		create-glyph "Schwa.\(suffix)" : glyph-proc
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			include : Body [DivFrame 1] CAP
+				hook   -- Hook
+				ada    -- ArchDepthA
+				adb    -- ArchDepthB
+				turned -- true
+				styTop -- terminalSlab
+
+		create-glyph "schwa.\(suffix)" : glyph-proc
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			include : Body [DivFrame 1] XH
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				turned -- true
+				styTop -- terminalSlab
+
+		create-glyph "schwaRhoticHook.\(suffix)" : glyph-proc
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			local subDf : DivFrame (0.75 * para.advanceScaleM) 2
+			local stroke : subDf.adviceStroke2 2 3 XH
+			include : Body subDf XH
+				stroke -- stroke
+				hook   -- AHook
+				ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
+				adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
+				turned -- true
+				styTop -- terminalSlab
+			include : RhoticHookShape (subDf.rightSB - [HSwToV : 1.25 * markFine]) rhoticDf.width [mix 0 XH DesignParameters.eBarPos] [mix 0 XH 0.2]
+
+		create-glyph "schwaRetroflexHook.\(suffix)" : glyph-proc
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			local subDf : DivFrame (0.75 * para.advanceScaleM) 2
+			local stroke : subDf.adviceStroke2 2 3 XH
+			include : Body subDf XH
+				stroke -- stroke
+				hook   -- AHook
+				ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
+				adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
+				turned -- true
+				styTop -- terminalSlab
+			include : RetroflexHook.r
+				x       -- [mix RightSB rhoticDf.width 0.5]
+				y       -- 0
+				yAttach -- ([mix 0 XH DesignParameters.eBarPos] - HalfStroke)
+				xLink   -- (subDf.rightSB - [HSwToV : 0.5 * stroke])
+				refSw   -- [AdviceStroke 4]
+
+	CreateSelectorVariants 'Schwa' 0x18F [Object.keys SchwaConfig] (follow -- 'schwa')
+	CreateSelectorVariants 'schwa' 0x259 [Object.keys SchwaConfig]
+
+	CreateSelectorVariants 'schwaRhoticHook'    0x25A  [Object.keys SchwaConfig] (follow -- 'schwa')
+	CreateSelectorVariants 'schwaRetroflexHook' 0x1D95 [Object.keys SchwaConfig] (follow -- 'schwa')
 
 	alias 'cyrl/ye' 0x435 'e'
 

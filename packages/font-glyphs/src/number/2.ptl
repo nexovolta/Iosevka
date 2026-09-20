@@ -10,8 +10,9 @@ glyph-block Digits-Two : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
-	define [TwoStraightNeckArcT sink offset sw top] : begin
+	define [TwoStraightNeckArcT sink offset sw top flatHook] : begin
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
 		define xLB : SB + offset
 		define xR : RightSB - OX / 2
@@ -19,32 +20,38 @@ glyph-block Digits-Two : begin
 		define pStraightBarStart 0.75
 		return : sink
 			widths.rhs sw
-			g4 SB (top - Hook)
-			HookStart top (sw -- sw)
+			if flatHook
+				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				list
+					g4 SB (top - Hook)
+					HookStart top (sw -- sw)
 			g4.down.mid xR (top - archDepth)
 			flat [mix xLB xR pStraightBarStart] [mix sw yPhRight pStraightBarStart]
 			curl xLB sw [widths.lhs sw]
 
-	define [TwoArcShapeT sink offsetU offsetD sw top] : begin
+	define [TwoArcShapeT sink offsetU offsetD sw top flatHook] : begin
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
 		return : sink
 			widths.rhs sw
-			g4 (SB - offsetU) (top - Hook)
-			HookStart top (sw -- sw)
+			if flatHook
+				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				list
+					g4 (SB - offsetU) (top - Hook)
+					HookStart top (sw -- sw)
 			g4.down.mid (RightSB - offsetU - OX / 2) (top - archDepth)
 			alsoThru.g2.withOffset 0.5 ([StrokeWidthBlend 0.425 0.4 sw] * [linreg 500 1 700 0.95 Width]) 0 (0.25 * (offsetU - offsetD)) [widths.center sw]
 			flat (SB + offsetD) 1 [widths.heading sw 0 Downward]
 			[if (sink == spiro-outline) corner curl] (SB + offsetD) 0 [heading Downward]
 			if (sink == spiro-outline) { [corner (SB - offsetU) 0] } {}
 
-	define [TwoShape top slab] : glyph-proc
-		include : TwoArcShapeT dispiro 0 0 Stroke top
+	define [TwoShape top slab flatHook] : glyph-proc
+		include : TwoArcShapeT dispiro 0 0 Stroke top flatHook
 		include : HBar.b  (SB + HalfStroke) RightSB 0
 		if slab : begin
 			include : VSerif.ur RightSB 0 VJut
 
-	define [TwoStraightNeckShape top slab] : glyph-proc
-		include : TwoStraightNeckArcT dispiro 0 Stroke top
+	define [TwoStraightNeckShape top slab flatHook] : glyph-proc
+		include : TwoStraightNeckArcT dispiro 0 Stroke top flatHook
 		include : HBar.b SB RightSB 0
 		if slab : begin
 			include : VSerif.ur RightSB 0 VJut
@@ -80,6 +87,38 @@ glyph-block Digits-Two : begin
 	create-glyph 'two.onum.curlyNeckSerifed' : glyph-proc
 		include : OnumMarks.e
 		include : TwoShape OnumHeight true
+
+	create-glyph 'two.lnum.straightNeckFlatHookSerifless' : glyph-proc
+		include : MarkSet.capital
+		include : TwoStraightNeckShape CAP false true
+
+	create-glyph 'two.onum.straightNeckFlatHookSerifless' : glyph-proc
+		include : OnumMarks.e
+		include : TwoStraightNeckShape OnumHeight false true
+
+	create-glyph 'two.lnum.straightNeckFlatHookSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : TwoStraightNeckShape CAP true true
+
+	create-glyph 'two.onum.straightNeckFlatHookSerifed' : glyph-proc
+		include : OnumMarks.e
+		include : TwoStraightNeckShape OnumHeight true true
+
+	create-glyph 'two.lnum.curlyNeckFlatHookSerifless' : glyph-proc
+		include : MarkSet.capital
+		include : TwoShape CAP false true
+
+	create-glyph 'two.onum.curlyNeckFlatHookSerifless' : glyph-proc
+		include : OnumMarks.e
+		include : TwoShape OnumHeight false true
+
+	create-glyph 'two.lnum.curlyNeckFlatHookSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : TwoShape CAP true true
+
+	create-glyph 'two.onum.curlyNeckFlatHookSerifed' : glyph-proc
+		include : OnumMarks.e
+		include : TwoShape OnumHeight true true
 
 	select-variant 'two.lnum' [CodeLnum '2'] (follow -- 'two')
 	select-variant 'two.onum' [CodeOnum '2'] (follow -- 'two')

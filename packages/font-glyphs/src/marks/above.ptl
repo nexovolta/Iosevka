@@ -1310,11 +1310,27 @@ glyph-block Mark-Above : begin
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 
+	create-glyph 'commaAbove.diamond' : glyph-proc
+		set-width 0
+		include : StdAnchors.narrow
+
+		local radius : commaAboveRadius * SquareDotScalar
+		local q : radius * Math.SQRT2
+		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
+		include : dispiro
+			widths.rhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
+			flat (markMiddle + q) (aboveMarkTop - radius) [heading Downward]
+			curl (markMiddle + q) (aboveMarkTop - 2 * radius) [heading Downward]
+			quadControls 0 0.6
+			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
+		include : ApparentTranslate 0 (DotRadius * 0.3)
+
 	select-variant 'commaAbove' 0x313 (follow -- 'diacriticDot')
 	select-variant 'commaAbove/asPunctuation' (shapeFrom -- 'commaAbove') (follow -- 'punctuationDot')
 
 	derive-composites 'commaAboveZero.round'  null 'commaAbove.round'  [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius)]
 	derive-composites 'commaAboveZero.square' null 'commaAbove.square' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * SquareDotScalar)]
+	derive-composites 'commaAboveZero.diamond' null 'commaAbove.diamond' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * SquareDotScalar)]
 	select-variant 'commaAboveZero' (follow -- 'punctuationDot')
 
 	derive-glyphs 'commaGrekUpperTonos' null 'commaAbove' : function [src gr] : glyph-proc
@@ -1357,6 +1373,21 @@ glyph-block Mark-Above : begin
 			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
 			flat (markMiddle - radius) aboveMarkTop [heading Downward]
 			curl (markMiddle - radius) (aboveMarkTop - 2 * radius) [heading Downward]
+			quadControls 0 0.6
+			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
+		include : ApparentTranslate 0 (DotRadius * 0.3)
+
+	create-glyph 'revCommaAbove.diamond' : glyph-proc
+		set-width 0
+		include : StdAnchors.narrow
+
+		local radius : commaAboveRadius * SquareDotScalar
+		local q : radius * Math.SQRT2
+		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
+		include : dispiro
+			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
+			flat (markMiddle - q) (aboveMarkTop - radius) [heading Downward]
+			curl (markMiddle - q) (aboveMarkTop - 2 * radius) [heading Downward]
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)

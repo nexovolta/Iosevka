@@ -11,7 +11,7 @@ glyph-block Letter-Arc-Hook : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 
-	glyph-block-export Toothed Toothless Rounded Flat
+	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook
 
 	glyph-block-export ArcStartSerifWidth
 	define [ArcStartSerifWidth sw] : clamp (sw * 0.875) sw VJutStroke
@@ -281,3 +281,5 @@ glyph-block Letter-Arc-Hook : begin
 			return : if slab
 				tagged 'arcEndSerifR' : VBar.r (box.r - serifShrink) (box.b + hook) box.b barSw
 				glyph-proc
+
+	define [MakeFlatHook] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r] (sw -- sw)

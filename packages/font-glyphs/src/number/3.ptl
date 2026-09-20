@@ -10,16 +10,20 @@ glyph-block Digits-Three : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
-	define [ThreeShapeT sink offset sw top] : glyph-proc
+	define [ThreeShapeT sink offset sw top flatHook] : glyph-proc
 		local barcenter : mix 0 top HBarPos
 		local xMid : mix SB RightSB 0.4
 		local fine : sw * CThin
 
 		include : sink
 			widths.rhs sw
-			g4 (SB + offset - O) (top - Hook)
-			HookStart (top - offset) (sw -- sw)
+			if flatHook
+				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				list
+					g4 (SB + offset - O) (top - Hook)
+					HookStart (top - offset) (sw -- sw)
 			g4 (RightSB - offset) [YSmoothMidR (top - offset - O) (barcenter - sw / 2) ArchDepthA ArchDepthB]
 			flat (xMid + TINY) (barcenter - (fine - sw / 2)) [widths.rhs.heading fine Leftward]
 			curl xMid (barcenter - (fine - sw / 2)) [heading Leftward]
@@ -28,14 +32,21 @@ glyph-block Digits-Three : begin
 			flat xMid (barcenter + (fine - sw / 2)) [heading Rightward]
 			curl (xMid + TINY) (barcenter + (fine - sw / 2)) [heading Rightward]
 			g4 (RightSB - offset - O * 2) [YSmoothMidR (barcenter + sw / 2) (offset + O) ArchDepthA ArchDepthB] [widths.rhs sw]
-			HookEnd offset (sw -- sw)
-			g4 (SB + offset + O) Hook
+			if flatHook
+				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
+				list
+					HookEnd offset (sw -- sw)
+					g4 (SB + offset + O) Hook
 
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
+	define [ThreeShapeFlatHook top] : ThreeShapeT dispiro 0 Stroke top true
 
 	create-glyph 'three.lnum.twoArcs' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShape CAP
+	create-glyph 'three.lnum.twoArcsFlatHook' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeShapeFlatHook CAP
 	create-glyph 'three.lnum.flatTopSerifless' : glyph-proc
 		include : MarkSet.capital
 		define ezh : Ezh [DivFrame 1] CAP 0 (pxMidLeft -- 0.25) (pxTopRight -- 0.975) (fSerifed -- false)
@@ -47,6 +58,10 @@ glyph-block Digits-Three : begin
 	create-glyph 'three.onum.twoArcs' : glyph-proc
 		include : OnumMarks.p
 		include : ThreeShape CAP
+		include : ShiftDown
+	create-glyph 'three.onum.twoArcsFlatHook' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeShapeFlatHook CAP
 		include : ShiftDown
 	create-glyph 'three.onum.flatTopSerifless' : glyph-proc
 		include : OnumMarks.p

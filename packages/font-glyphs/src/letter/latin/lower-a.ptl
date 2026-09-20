@@ -12,11 +12,13 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight ArcStartSerif
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define HOOK-SLAB-NONE      0
 	define HOOK-SLAB-CLASSICAL 1 # TODO
 	define HOOK-SLAB-INWARD    2
 	define HOOK-HALF           3
+	define HOOK-FLAT           4
 
 	glyph-block-export DoubleStorey
 	define DoubleStorey : namespace
@@ -49,6 +51,7 @@ glyph-block Letter-Latin-Lower-A : begin
 					[Just HOOK-HALF] : list
 						g4.right.start hookLeftX (XH - O)
 						archv
+					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
 					__ : if fine
 						list
 							g4.up.start hookLeftX (XH - AHook) [heading Upward]
@@ -166,6 +169,13 @@ glyph-block Letter-Latin-Lower-A : begin
 		doubleStoreyHookInwardSerifedFlatBottomSerifed   { DoubleStorey.FlatBottomSerifed  (RightSB + SideJut) HOOK-SLAB-INWARD }
 		doubleStoreyHookInwardSerifedToothlessCorner     { DoubleStorey.ToothlessCorner     nothing            HOOK-SLAB-INWARD }
 		doubleStoreyHookInwardSerifedToothlessRounded    { DoubleStorey.ToothlessRounded    nothing            HOOK-SLAB-INWARD }
+		doubleStoreyHookFlatSerifless                    { DoubleStorey.Serifless           RightSB            HOOK-FLAT        }
+		doubleStoreyHookFlatSerifed                      { DoubleStorey.Serifed            (RightSB + SideJut) HOOK-FLAT        }
+		doubleStoreyHookFlatTailed                       { DoubleStorey.Tailed             (RightSB + SideJut) HOOK-FLAT        }
+		doubleStoreyHookFlatFlatBottomSerifless          { DoubleStorey.FlatBottomSerifless RightSB            HOOK-FLAT        }
+		doubleStoreyHookFlatFlatBottomSerifed            { DoubleStorey.FlatBottomSerifed  (RightSB + SideJut) HOOK-FLAT        }
+		doubleStoreyHookFlatToothlessCorner              { DoubleStorey.ToothlessCorner     nothing            HOOK-FLAT        }
+		doubleStoreyHookFlatToothlessRounded             { DoubleStorey.ToothlessRounded    nothing            HOOK-FLAT        }
 
 	foreach { suffix { body xTrailing hookStyle } } [Object.entries DoubleStoreyConfig] : do
 		do 

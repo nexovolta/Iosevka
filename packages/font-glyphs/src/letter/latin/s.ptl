@@ -16,10 +16,12 @@ glyph-block Letter-Latin-S : begin
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook CyrDescender CurlyTail
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define SLAB-NONE      0
 	define SLAB-CLASSICAL 1
 	define SLAB-INWARD    2
+	define SLAB-FLAT-HOOK 4
 	define CURLY-TAIL     10
 	define PHONETIC-RIGHT 11
 
@@ -50,6 +52,7 @@ glyph-block Letter-Latin-S : begin
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				__ : list
 					g4 ((df.rightSB + 0) - SOTop) (top - Hook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -61,6 +64,7 @@ glyph-block Letter-Latin-S : begin
 			match sb
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB bot stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4 ((df.leftSB - 0) + SOBot) (bot + Hook)
@@ -72,6 +76,7 @@ glyph-block Letter-Latin-S : begin
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				__ : list
 					g4   ((df.leftSB - 0) + SOTop) (top - Hook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -81,6 +86,7 @@ glyph-block Letter-Latin-S : begin
 			match sb
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB bot stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				__ : list
 					HookEnd 0 (sw -- stroke)
 					g4   ((df.rightSB + 0) - SOBot) (bot + Hook)
@@ -92,6 +98,7 @@ glyph-block Letter-Latin-S : begin
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke SHook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				__ : list
 					g4   ((df.rightSB + OX) - SOTop) (top - SHook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -115,6 +122,7 @@ glyph-block Letter-Latin-S : begin
 					curl                    df.leftSB  bot
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB bot stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke SHook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.leftSB - OX) + SOBot) (bot + SHook)
@@ -126,6 +134,7 @@ glyph-block Letter-Latin-S : begin
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke SHook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				__ : list
 					g4   ((df.leftSB - OX) + SOTop) (top - SHook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -135,6 +144,7 @@ glyph-block Letter-Latin-S : begin
 			match sb
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB bot stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke SHook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.rightSB + OX) - SOBot) (bot + SHook)
@@ -181,6 +191,7 @@ glyph-block Letter-Latin-S : begin
 
 	define SConfig : object
 		serifless               { SLAB-NONE      SLAB-NONE      }
+		flatHook                { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
 		unilateralSerifed       { SLAB-CLASSICAL SLAB-NONE      }
 		bilateralSerifed        { SLAB-CLASSICAL SLAB-CLASSICAL }
 		unilateralInwardSerifed { SLAB-INWARD    SLAB-NONE      }
@@ -188,6 +199,9 @@ glyph-block Letter-Latin-S : begin
 
 		bottomSerifed           { SLAB-NONE      SLAB-CLASSICAL }
 		hybridSerifed1          { SLAB-INWARD    SLAB-CLASSICAL }
+		unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
+		unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
+		bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
 
 	define DfCapital : DivFrame 1
 	define DfLower   : DivFrame 1
@@ -276,7 +290,7 @@ glyph-block Letter-Latin-S : begin
 			local stroke : include : SmallSStrokeImpl df XH 0 doTS doBS sw EssLower
 			return stroke.lhsKnots.(stroke.lhsKnots.length - 1)
 
-		if [not doBS] : create-glyph "SSwash.\(suffix)" : glyph-proc
+		if (!doBS || doBS == SLAB-FLAT-HOOK) : create-glyph "SSwash.\(suffix)" : glyph-proc
 			local df : include DfCapital
 			include : df.markSet.capDesc
 
@@ -289,7 +303,7 @@ glyph-block Letter-Latin-S : begin
 				flat (df.rightSB - 1) Descender [widths.lhs sw]
 				curl  df.rightSB      Descender
 
-		if [not doBS] : create-glyph "sSwash.\(suffix)" : glyph-proc
+		if (!doBS || doBS == SLAB-FLAT-HOOK) : create-glyph "sSwash.\(suffix)" : glyph-proc
 			local df : include DfLower
 			include : df.markSet.p
 
@@ -302,7 +316,7 @@ glyph-block Letter-Latin-S : begin
 				flat (df.rightSB - 1) Descender [widths.lhs sw]
 				curl  df.rightSB      Descender
 
-		if [not doBS] : create-glyph "sCurlyTail.\(suffix)" : glyph-proc
+		if (!doBS || doBS == SLAB-FLAT-HOOK) : create-glyph "sCurlyTail.\(suffix)" : glyph-proc
 			local df : include DfLower
 			include : df.markSet.e
 			local sw : df.adviceStroke2 2 3 (XH - 0)

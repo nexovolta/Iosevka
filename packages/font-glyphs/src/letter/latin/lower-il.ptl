@@ -37,6 +37,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		export : define [FlatTailed df] : FlatTailedImpl df false
 		export : define [SerifedFlatTailed df] : FlatTailedImpl df true
 		export : define [PhoneticLeft df] : df.leftSB + [HSwToV HalfStroke]
+		export : define [Casual df] : df.middle + 0
 
 	define ILMarks : namespace
 		export : define [Serifless df top bot xMiddle _stroke] : glyph-proc
@@ -139,6 +140,34 @@ glyph-block Letter-Latin-Lower-I : begin
 				flat xMiddle top [heading Downward]
 				DiagTail.R xMiddle bot depth stroke
 
+		# Half-height casual curly: Tailed's round curve, then a 45-degree cut
+		# across the terminal instead of DiagTail's diagonal hook.
+		export : define [CasualCurly df top bot xMiddle _stroke] : glyph-proc
+			local stroke : fallback _stroke Stroke
+			local fine : [AdviceStroke 3] * (stroke / Stroke)
+			local left : xMiddle - [HSwToV : 0.5 * stroke]
+			local right : mix df.leftSB df.rightSB (1.1 - [TailedDotlessIShift df])
+			local rightTerm : Math.max right (left + [HSwToV stroke] + [Math.max HookX : HSwToV : 1.1 * fine])
+			local avail : Math.max stroke (top - bot)
+			local yCurl : Math.min (SmallArchDepthB * 0.8) (0.55 * avail)
+			local hookDepth : Math.min [Math.max (stroke * 0.9) (Hook * [StrokeWidthBlend 0.85 1] * df.adws)] (0.45 * avail)
+
+			set-base-anchor 'trailing'        [mix left rightTerm 0.5] bot
+			set-base-anchor 'palatalHookMask' [mix left rightTerm 0.5] (bot + O + HalfStroke)
+
+			local xCut : mix left rightTerm 0.72
+			local yCut : bot + 0.5 * hookDepth
+			include : intersection
+				dispiro
+					widths.lhs stroke
+					flat left top [heading Downward]
+					curl left (bot + yCurl)
+					HookEnd bot (sw -- stroke) (swTerminal -- fine) (isTail -- true)
+					g4 rightTerm (bot + hookDepth) [widths.lhs fine]
+				union
+					MaskLeft (left + [HSwToV stroke] + TINY)
+					MaskLeftLine (xCut - Width) (yCut + Width) (xCut + Width) (yCut - Width)
+
 		export : define [PhoneticLeft df top bot xMiddle _stroke] : glyph-proc
 			local stroke : fallback _stroke Stroke
 			local tailLength : LongJut * 1.05 * df.adws
@@ -149,6 +178,36 @@ glyph-block Letter-Latin-Lower-I : begin
 				arcvh
 				flat (xMiddle + Hook - 0.5 * stroke) (bot + 0.5 * stroke)
 				curl [Math.max df.rightSB : xMiddle + [Math.max tailLength HookX]] (bot + 0.5 * stroke) [heading Rightward]
+
+		define [CasualTailBody kind] : match kind
+			[Just 'tailed']    CasualCurly
+			[Just 'flat']      FlatTailed
+			[Just 'semi']      SemiTailed
+			[Just 'diagonal']  DiagTailed
+
+		# One tail occupying [bot, yJoin]; FlipAround yJoin sends it into [yJoin, top].
+		define [CasualFlippedHalf df yJoin bot xMiddle kind stroke] : new-glyph : glyph-proc
+			include : [CasualTailBody kind] df yJoin bot xMiddle stroke
+			include : FlipAround xMiddle yJoin
+			include : clear-anchors
+
+		# Join two i/l tails back-to-back. Each tail is drawn in half the body so
+		# the straight i-stem is replaced by the two terminals meeting at mid-height.
+		export : define [Casual df top bot xMiddle topKind botKind _stroke] : glyph-proc
+			local stroke : fallback _stroke Stroke
+			local yJoin : mix bot top 0.5
+			include : [CasualTailBody botKind] df yJoin bot xMiddle stroke
+			include : CasualFlippedHalf df yJoin bot xMiddle topKind stroke
+
+		export : define [CasualTop df top xMiddle kind _stroke] : glyph-proc
+			local stroke : fallback _stroke Stroke
+			local yJoin : mix 0 top 0.5
+			include : CasualFlippedHalf df yJoin 0 xMiddle kind stroke
+
+		export : define [CasualTailed    df top bot xMiddle _stroke] : Casual df top bot xMiddle 'tailed'    'tailed'    _stroke
+		export : define [CasualFlat      df top bot xMiddle _stroke] : Casual df top bot xMiddle 'flat'      'flat'      _stroke
+		export : define [CasualSemi      df top bot xMiddle _stroke] : Casual df top bot xMiddle 'semi'      'semi'      _stroke
+		export : define [CasualDiagonal  df top bot xMiddle _stroke] : Casual df top bot xMiddle 'diagonal'  'diagonal'  _stroke
 
 	define ILJut : namespace
 		export : define [None         df top bot xMiddle _stroke] : HSwToV : 0.5 * [fallback _stroke Stroke]
@@ -194,6 +253,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		'serifedFlatTailed'     { ILBody.FlatTailed    ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].SerifedFlatTailed  para.advanceScaleI   Stroke }
 		'semiTailed'            { ILBody.SemiTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         para.advanceScaleI   Stroke }
 		'serifedSemiTailed'     { ILBody.SemiTailed    ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].SerifedFlatTailed  para.advanceScaleI   Stroke }
+		'casualTailed'            { ILBody.CasualTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualFlatTailed'        { ILBody.CasualFlat      ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualSemiTailed'        { ILBody.CasualSemi      ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualDiagTailed'        { ILBody.CasualDiagonal  ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
 		# Decompressed
 		'hookyDec'              { ILBody.Serifless     ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].Hooky              para.advanceScaleI   0      }
 		'seriflessDec'          { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             para.advanceScaleI   0      }
@@ -201,6 +264,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		'diagonalTailedDec'     { ILBody.DiagTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             para.advanceScaleI   Stroke }
 		'flatTailedDec'         { ILBody.FlatTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         para.advanceScaleI   Stroke }
 		'semiTailedDec'         { ILBody.SemiTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         para.advanceScaleI   Stroke }
+		'casualTailedDec'         { ILBody.CasualTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualFlatTailedDec'     { ILBody.CasualFlat      ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualSemiTailedDec'     { ILBody.CasualSemi      ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
+		'casualDiagTailedDec'     { ILBody.CasualDiagonal  ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Casual               para.advanceScaleI   Stroke }
 		'hookyBottomDec'        { ILBody.HookyBottom   ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].HookyBottom        para.advanceScaleI   Stroke }
 		# R Tail
 		'seriflessRTail'        { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].HookyBottom        para.advanceScaleI   0      }
@@ -218,6 +285,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		'tau/flatTailed'        { ILBody.FlatTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         1                    Stroke }
 		'tau/semiTailed'        { ILBody.SemiTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         1                    Stroke }
 		'tau/shortTailed'       { ILBody.ShortTailed   ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             1                    Stroke }
+
+	glyph-block-export Casual CasualTop
+	define [Casual df top bot xMiddle topKind botKind _stroke] : ILBody.Casual df top bot xMiddle topKind botKind _stroke
+	define [CasualTop df top xMiddle kind _stroke] : ILBody.CasualTop df top xMiddle kind _stroke
 
 	# `i`-like letters
 	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-I]] : begin

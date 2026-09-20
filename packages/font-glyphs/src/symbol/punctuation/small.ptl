@@ -82,6 +82,16 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
 
+		export : define [diamond cx cy] : with-transform [Translate cx cy] : glyph-proc
+			local q : r * Math.SQRT2
+			include : union
+				DiamondAt 0 r r
+				dispiro
+					flat q 0 [widths.rhs sw]
+					curl q (-r * 0.25) [widths.rhs sw]
+					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
+					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+
 	define [RevCommaShape kdr o] : namespace
 		define r : PeriodRadius * kdr
 		define ro : r - o
@@ -123,6 +133,16 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
 
+		export : define [diamond cx cy] : with-transform [Translate cx cy] : glyph-proc
+			local q : r * Math.SQRT2
+			include : union
+				DiamondAt 0 r r
+				dispiro
+					flat (-q) 0 [widths.lhs sw]
+					curl (-q) (-r * 0.25)
+					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
+					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
+
 	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 		create-glyph "comma.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
@@ -145,12 +165,15 @@ glyph-block Symbol-Punctuation-Small : begin
 
 	turned "turnComma.round"  null "comma.round"  [DivFrame para.advanceScaleI].middle PeriodRadius
 	turned "turnComma.square" null "comma.square" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
+	turned "turnComma.diamond" null "comma.diamond" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
 	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationDot')
 
 	derive-composites 'raisedPeriod.round'  null 'period.round'  [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedPeriod.square' null 'period.square' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
+	derive-composites 'raisedPeriod.diamond' null 'period.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedComma.round'   null 'comma.round'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedComma.square'  null 'comma.square'  [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
+	derive-composites 'raisedComma.diamond' null 'comma.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	select-variant 'raisedPeriod' 0x2E33 (follow -- 'punctuationDot')
 	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationDot')
 

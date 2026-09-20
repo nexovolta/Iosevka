@@ -18,6 +18,19 @@ glyph-block Letter-Latin-Upper-M : begin
 	define FORM-TURN-W    2
 	define FORM-SAN       3
 	define FORM-SAN-SMALL 4
+	define FORM-ALMOST-FLAT 5
+	define FORM-YSTEM     6
+
+	define BODY-STANDARD 0
+	define BODY-VERTICAL 1
+	define BODY-SAN      2
+	define BODY-SAN-SMALL 3
+
+	define MID-HANGING 0
+	define MID-FLAT    1
+	define MID-ALMOST  2
+	define MID-YSTEM       3
+	define MID-YSTEM-ALMOST 4
 
 	define SLAB-NONE            0
 	define SLAB-AUTO            1
@@ -41,6 +54,7 @@ glyph-block Letter-Latin-Upper-M : begin
 			[Just FORM-SAN]       : df.adviceStroke 2.50
 			[Just FORM-TURN-W]    : df.adviceStroke 2.50
 			[Just FORM-HANGING]   : df.adviceStroke 2.50
+			[Just FORM-YSTEM]     : df.adviceStroke 2.50
 			__                    : df.adviceStroke 2.75
 		local swSideTop : match form
 			[Just FORM-SAN-SMALL] : df.adviceStroke 3.00
@@ -52,13 +66,17 @@ glyph-block Letter-Latin-Upper-M : begin
 			[Just FORM-SAN-SMALL] : mix 0 top 0.55
 			[Just FORM-SAN]       : mix 0 top 0.55
 			[Just FORM-TURN-W]    : mix 0 top 0.45
+			[Just FORM-YSTEM]     : mix 0 top 0.45
 			[Just FORM-HANGING]   : mix 0 top : 0.30 / (kMidHang * kMidHang)
+			[Just FORM-ALMOST-FLAT] : Math.max Stroke : if fHasBottomInnerSerif swSideBot Stroke
 			__                    : if fHasBottomInnerSerif swSideBot 0
 		local kMidShift : match form
 			[Just FORM-FLAT] 0.75
+			[Just FORM-ALMOST-FLAT] 0.75
 			__               0.50
 		local kMidBotStrokeShrink : mix df.adws 1 : match form
 			[Just FORM-FLAT] 1.50
+			[Just FORM-ALMOST-FLAT] 1.50
 			__               1.00
 		local swMiddleShrink : kMidBotStrokeShrink * swMiddle
 
@@ -81,11 +99,11 @@ glyph-block Letter-Latin-Upper-M : begin
 		local sfT : SerifFrame top 0 xLeftTop xRightTop
 			swRef  -- swSideBot
 			hSplit -- 3
-			fForceSymmetric -- (form !== FORM-FLAT)
+			fForceSymmetric -- (form !== FORM-FLAT && form !== FORM-ALMOST-FLAT)
 		local sfB : SerifFrame top 0 df.leftSB df.rightSB
 			swRef  -- swSideBot
 			hSplit -- 3
-			fForceSymmetric -- (form !== FORM-FLAT)
+			fForceSymmetric -- (form !== FORM-FLAT && form !== FORM-ALMOST-FLAT)
 		include : match slabType
 			[Just SLAB-NONE] : no-shape
 			[Just SLAB-FULL] : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full sfB.rb.full
@@ -98,7 +116,7 @@ glyph-block Letter-Latin-Upper-M : begin
 
 		return : object [swSideBot]
 
-	define [CyrSoftEmShape] : with-params [top df form slabType slanted vSlab] : glyph-proc
+	define [CyrSoftEmShape] : with-params [top df form slabType slanted vSlab [middleYExt nothing]] : glyph-proc
 		local subDf : df.slice 4 3
 		local sidesSlope : if slanted 0.04 0
 		local xRightTop : subDf.rightSB - top * sidesSlope
@@ -109,9 +127,10 @@ glyph-block Letter-Latin-Upper-M : begin
 			[Just FORM-SAN]       : AdviceStroke 2.5  subDf.adws
 			[Just FORM-TURN-W]    : AdviceStroke 2.5  subDf.adws
 			[Just FORM-HANGING]   : AdviceStroke 2.5  subDf.adws
+			[Just FORM-YSTEM]     : AdviceStroke 2.5  subDf.adws
 			__                    : AdviceStroke 2.75 subDf.adws
 
-		include : MShape top subDf form slabType slanted (kMidHang -- df.adws)
+		include : MShape top subDf form slabType slanted (kMidHang -- df.adws) (middleYExt -- middleYExt)
 
 		include : HBar.t xRightTop xTopBarRightEnd top swSideBot
 		if vSlab : begin
@@ -123,45 +142,79 @@ glyph-block Letter-Latin-Upper-M : begin
 			object # sides
 				""            false
 				slantedSides  true
+			object # body
+				""              BODY-STANDARD
+				verticalMiddle  BODY-VERTICAL
 			object # middle
-				hanging       FORM-HANGING
-				flatBottom    FORM-FLAT
+				hanging           MID-HANGING
+				flatBottom        MID-FLAT
+				almostFlatBottom  MID-ALMOST
+				yShaped           MID-YSTEM
+				yShapedAlmostFlat MID-YSTEM-ALMOST
 			object # serifs
 				serifless     SLAB-NONE
 				motionSerifed SLAB-MOTION
 				smallCyrl     SLAB-SMALL-CYRILLIC
 				serifed       SLAB-FULL
 		object # Greek San variants
-			grekCapitalSan { false FORM-SAN       SLAB-AUTO }
-			grekSmallSan   { false FORM-SAN-SMALL SLAB-NONE }
+			grekCapitalSan { false BODY-SAN       MID-HANGING SLAB-AUTO }
+			grekSmallSan   { false BODY-SAN-SMALL MID-HANGING SLAB-NONE }
 
 	define CyrSoftEmGheConfig : object
 		serifless       false
 		topRightSerifed true
 
-	foreach { suffix { slanted form slab } } [Object.entries MConfig] : do
+	define [MFormOf bodyKind midKind] : match bodyKind
+		[Just BODY-SAN]       FORM-SAN
+		[Just BODY-SAN-SMALL] FORM-SAN-SMALL
+		[Just BODY-VERTICAL]  FORM-TURN-W
+		__ : match midKind
+			[Just MID-HANGING]      FORM-HANGING
+			[Just MID-YSTEM]        FORM-YSTEM
+			[Just MID-YSTEM-ALMOST] FORM-YSTEM
+			[Just MID-ALMOST]       FORM-ALMOST-FLAT
+			[Just MID-FLAT]         FORM-FLAT
+			__                      FORM-HANGING
+
+	# Y-middle keeps a mid-height crotch and drops a stem, like W vertical-sides'
+	# inverted-Y (vertex stays, stem added). Vertical-middle uses the same stem
+	# lengths for almost-flat / flat.
+	define [MMiddleYExtOf bodyKind midKind] : match midKind
+		[Just MID-YSTEM]        TINY
+		[Just MID-YSTEM-ALMOST] Stroke
+		__ : if (bodyKind === BODY-VERTICAL)
+			then : match midKind
+				[Just MID-ALMOST] Stroke
+				[Just MID-FLAT]   TINY
+				__                nothing
+			else nothing
+
+	foreach { suffix { slanted bodyKind midKind slab } } [Object.entries MConfig] : do
+		define form : MFormOf bodyKind midKind
+		define middleYExt : MMiddleYExtOf bodyKind midKind
+
 		create-glyph "M.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
-			include : MShape CAP df form slab slanted
+			include : MShape CAP df form slab slanted (middleYExt -- middleYExt)
 
 		create-glyph "Meng.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capDesc
-			local ret_M : include : MShape CAP df form slab slanted
+			local ret_M : include : MShape CAP df form slab slanted (middleYExt -- middleYExt)
 			eject-contour 'serifRB'
 			include : EngHook df.rightSB 0 Descender (sw -- ret_M.swSideBot)
 
 		create-glyph "smcpM.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.e
-			include : MShape XH df form slab slanted
+			include : MShape XH df form slab slanted (middleYExt -- middleYExt)
 
 		create-glyph "smcpMWithDescender.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.p
 			include : LeaningAnchor.Below.VBar.l df.leftSB
-			include : MShape XH df form slab slanted
+			include : MShape XH df form slab slanted (middleYExt -- middleYExt)
 
 		# This is actually wider than `para.advanceScaleMM` by itself.
 		define cyrSoftEmDf : DivFrame [mix 1 para.advanceScaleM 2] 4
@@ -176,12 +229,12 @@ glyph-block Letter-Latin-Upper-M : begin
 			create-glyph "cyrl/EmSoft.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : CyrSoftEmShape CAP cyrSoftEmDf form slab slanted cyrSoftEmVSlab
+				include : CyrSoftEmShape CAP cyrSoftEmDf form slab slanted cyrSoftEmVSlab (middleYExt -- middleYExt)
 
 			create-glyph "cyrl/emSoft.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : CyrSoftEmShape XH cyrSoftemDf form slab slanted cyrSoftEmVSlab
+				include : CyrSoftEmShape XH cyrSoftemDf form slab slanted cyrSoftEmVSlab (middleYExt -- middleYExt)
 
 		select-variant "cyrl/EmSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 		select-variant "cyrl/emSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')

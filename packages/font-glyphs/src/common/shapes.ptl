@@ -51,6 +51,16 @@ glyph-block CommonShapes : begin
 	glyph-block-export SquareAt
 	define [SquareAt x y r] : Rect (y + r) (y - r) (x - r) (x + r)
 
+	# Same as SquareAt rotated 45°: vertices sit at distance r√2 on the axes.
+	glyph-block-export DiamondAt
+	define [DiamondAt x y r] : begin
+		local q : r * Math.SQRT2
+		return : spiro-outline
+			corner x       (y + q)
+			corner (x + q) y
+			corner x       (y - q)
+			corner (x - q) y
+
 	glyph-block-export MaskAbove
 	define [MaskAbove y] : Rect (+VERY-FAR) y (-VERY-FAR) (+VERY-FAR)
 	glyph-block-export MaskBelow
@@ -864,8 +874,9 @@ glyph-block CommonShapes : begin
 	# Dot variant constructor
 	glyph-block-export DotVariants
 	define DotVariants : object
-		round  { DotAt    1               O }
-		square { SquareAt SquareDotScalar 0 }
+		round   { DotAt     1               O }
+		square  { SquareAt  SquareDotScalar 0 }
+		diamond { DiamondAt SquareDotScalar 0 }
 
 	glyph-block-export WithDotVariants
 	define [WithDotVariants name unicode F] : begin

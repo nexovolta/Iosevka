@@ -13,6 +13,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcStartSerifStroke
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay TopHook PalatalHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define BODY-TOOTHED            0
 	define BODY-TOOTHLESS-CORNER   1
@@ -25,6 +26,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	define SLAB-NONE               0
 	define SLAB-CLASSICAL          1
 	define SLAB-INWARD             2
+	define SLAB-FLAT-HOOK          4
 
 	define GBarPos : DesignParameters.upperGBarPos - QuarterStroke / CAP
 
@@ -54,6 +56,7 @@ glyph-block Letter-Latin-Upper-G : begin
 		local knots : match slabType
 			[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs RightSB top Stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke hook
+			[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top 0].hookStartR
 			__ : list
 				widths.lhs
 				g4   RightSB (top - hook)
@@ -112,6 +115,7 @@ glyph-block Letter-Latin-Upper-G : begin
 			toothlessRounded { BODY-TOOTHLESS-ROUNDED ArchDepthA     }
 		object # slab
 			serifless        SLAB-NONE
+			flatHook         SLAB-FLAT-HOOK
 			serifed          SLAB-CLASSICAL
 			inwardSerifed    SLAB-INWARD
 		object # crossbar
