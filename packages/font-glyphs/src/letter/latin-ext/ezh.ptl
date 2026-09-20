@@ -12,12 +12,14 @@ glyph-block Letter-Latin-Ezh : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : CurlyTail SerifedArcEnd PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define TERMINAL-NONE 0
 	define TERMINAL-HOOK 1
 	define TERMINAL-DESC 2
 	define TERMINAL-CURL 3
 	define TERMINAL-TAIL 4
+	define TERMINAL-FLAT 5
 
 	glyph-block-export Ezh
 	define flex-params [Ezh] : namespace
@@ -26,6 +28,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : bottom
 		local-parameter : fCursive      -- false
 		local-parameter : fSerifed      -- false
+		local-parameter : fFlatHook     -- false
 		local-parameter : pxTopRight    -- 0.925
 		local-parameter : pxMidLeft     -- 0.200
 		local-parameter : pyMidLeft     -- 0.550
@@ -95,6 +98,7 @@ glyph-block Letter-Latin-Ezh : begin
 
 		export : define [Shape] : glyph-proc
 			define [object xTopLeft xTopRight xMidLeft yMidLeft xArcMid yArcMid] : Dim
+			local term : if (fFlatHook && terminal === TERMINAL-HOOK) TERMINAL-FLAT terminal
 
 			include : union
 				if fCursive [CursiveTop] [ConventionalTop]
@@ -103,7 +107,7 @@ glyph-block Letter-Latin-Ezh : begin
 					flat xMidLeft yMidLeft [heading Rightward]
 					curl [Arch.adjust-x.top df.middle (sw -- stroke)] yMidLeft
 					archv
-					match terminal
+					match term
 						[Just TERMINAL-NONE] : list
 							g4.down.mid xArcMid yArcMid [heading Downward]
 						[Just TERMINAL-DESC] : list
@@ -120,6 +124,9 @@ glyph-block Letter-Latin-Ezh : begin
 							g4 (df.leftSB  + OX) (bottom + adb2) [widths.lhs stroke]
 							HookEnd bottom (sw -- stroke)
 							g4 (df.rightSB - OX) (bottom + hook)
+						[Just TERMINAL-FLAT] : list
+							g4 xArcMid yArcMid
+							~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
 						__ : list
 							g4 xArcMid yArcMid
 							HookEnd bottom (sw -- stroke)

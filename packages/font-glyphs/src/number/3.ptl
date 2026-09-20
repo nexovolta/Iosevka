@@ -41,37 +41,55 @@ glyph-block Digits-Three : begin
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
 	define [ThreeShapeFlatHook top] : ThreeShapeT dispiro 0 Stroke top true
 
-	create-glyph 'three.lnum.twoArcs' : glyph-proc
+	define [ThreeFlatTopShape top serif flatHook] : glyph-proc
+		define ezh : Ezh [DivFrame 1] top 0
+			pxMidLeft  -- 0.25
+			pxTopRight -- 0.975
+			fSerifed   -- serif
+			fFlatHook  -- flatHook
+		include : ezh.Shape
+
+	create-glyph 'three.lnum.rounded' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShape CAP
-	create-glyph 'three.lnum.twoArcsFlatHook' : glyph-proc
+	create-glyph 'three.lnum.flatHooked' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShapeFlatHook CAP
-	create-glyph 'three.lnum.flatTopSerifless' : glyph-proc
+	create-glyph 'three.lnum.flatTop' : glyph-proc
 		include : MarkSet.capital
-		define ezh : Ezh [DivFrame 1] CAP 0 (pxMidLeft -- 0.25) (pxTopRight -- 0.975) (fSerifed -- false)
-		include : ezh.Shape
+		include : ThreeFlatTopShape CAP false false
 	create-glyph 'three.lnum.flatTopSerifed' : glyph-proc
 		include : MarkSet.capital
-		define ezh : Ezh [DivFrame 1] CAP 0 (pxMidLeft -- 0.25) (pxTopRight -- 0.975) (fSerifed -- true)
-		include : ezh.Shape
-	create-glyph 'three.onum.twoArcs' : glyph-proc
+		include : ThreeFlatTopShape CAP true false
+	create-glyph 'three.lnum.flatTopFlatHook' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeFlatTopShape CAP false true
+	create-glyph 'three.lnum.flatTopSerifedFlatHook' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeFlatTopShape CAP true true
+	create-glyph 'three.onum.rounded' : glyph-proc
 		include : OnumMarks.p
 		include : ThreeShape CAP
 		include : ShiftDown
-	create-glyph 'three.onum.twoArcsFlatHook' : glyph-proc
+	create-glyph 'three.onum.flatHooked' : glyph-proc
 		include : OnumMarks.p
 		include : ThreeShapeFlatHook CAP
 		include : ShiftDown
-	create-glyph 'three.onum.flatTopSerifless' : glyph-proc
+	create-glyph 'three.onum.flatTop' : glyph-proc
 		include : OnumMarks.p
-		define ezh : Ezh [DivFrame 1] CAP 0 (pxMidLeft -- 0.25) (pxTopRight -- 0.975) (fSerifed -- false)
-		include : ezh.Shape
+		include : ThreeFlatTopShape CAP false false
 		include : ShiftDown
 	create-glyph 'three.onum.flatTopSerifed' : glyph-proc
 		include : OnumMarks.p
-		define ezh : Ezh [DivFrame 1] CAP 0 (pxMidLeft -- 0.25) (pxTopRight -- 0.975) (fSerifed -- true)
-		include : ezh.Shape
+		include : ThreeFlatTopShape CAP true false
+		include : ShiftDown
+	create-glyph 'three.onum.flatTopFlatHook' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeFlatTopShape CAP false true
+		include : ShiftDown
+	create-glyph 'three.onum.flatTopSerifedFlatHook' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeFlatTopShape CAP true true
 		include : ShiftDown
 
 	select-variant 'three.lnum' [CodeLnum '3'] (follow -- 'three')

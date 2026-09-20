@@ -96,29 +96,20 @@ glyph-block Letter-Latin-Upper-J : begin
 				y2       -- (bottom + 0.5 * fine)
 				yLoopTop -- (bottom + 1.0 * fine + LongVJut)
 
-	define [JDescendingFlatHookSeriflessBase df dfHook top] : glyph-proc
-		set-width df.width
-		include : df.markSet.[if (top > XH) 'capDesc' 'p']
-		include : FlatHookDotlessJShape df dfHook top
-			crossLeft -- (df.middle - (dfHook.middle - [mix 0 dfHook.leftSB : mix 1 dfHook.adws 2]))
-			barCenter -- (df.middle + 0.25 * JBalance * df.adws * [mix 1 df.adws 2])
-			serif -- false
-
-	define [JDescendingFlatHookSerifedBase df dfHook top] : glyph-proc
-		set-width df.width
-		include : df.markSet.[if (top > XH) 'capDesc' 'p']
-		include : FlatHookDotlessJShape df df top
-			crossLeft -- [mix 0 SB : mix 1 df.adws 2]
-			barCenter -- (df.middle + JBalance * df.adws)
-			serif -- true
-
 	define [JShortTopbar df x top] : HSerif.lt x top Jut
+	define [JMediumTopbar df x top] : HSerif.lt x top MidJutSide
 	define [JLongTopbar df x top] : HSerif.lt x top LongJut
-	define [JAsymmetricSerif df x top] : union [HSerif.lt x top LongJut] [HSerif.rt x top Jut]
-	define [JLongAsymmetricSerif df x top] : union [HSerif.lt x top LongJut] [HSerif.rt x top LongJut]
+	define [JFullTopbar df x top] : HBar.t df.leftSB (x + [HSwToV HalfStroke]) top
 	define [JSymmetricSerif df x top] : HSerif.mt (x - [IBalance df]) top MidJutCenter
+	define [JSymmetricMediumSerif df x top] : HSerif.mt x top MidJutSide
+	define [JAsymmetricSerif df x top] : glyph-proc
+		include : HSerif.lt x top LongJut
+		include : HSerif.rt x top Jut
+	define [JAsymmetricLongSerif df x top] : glyph-proc
+		include : HSerif.lt x top LongJut
+		include : HSerif.mt (x - [IBalance df]) top MidJutCenter
 
-	define [JDescendingFlatHookSerifedBothSidesBase df dfHook top] : glyph-proc
+	define [JDescendingFlatHookBase df dfHook top] : glyph-proc
 		set-width df.width
 		include : df.markSet.[if (top > XH) 'capDesc' 'p']
 		local xBar : df.middle + JBalance * df.adws
@@ -126,56 +117,24 @@ glyph-block Letter-Latin-Upper-J : begin
 			crossLeft -- [mix 0 SB : mix 1 df.adws 2]
 			barCenter -- xBar
 			serif     -- false
-		include : JAsymmetricSerif df xBar top
-
-	define [JDescendingFlatHookSerifedSymmetricBase df dfHook top] : glyph-proc
-		set-width df.width
-		include : df.markSet.[if (top > XH) 'capDesc' 'p']
-		local xBar : df.middle + JBalance * df.adws
-		include : FlatHookDotlessJShape df df top
-			crossLeft -- [mix 0 SB : mix 1 df.adws 2]
-			barCenter -- xBar
-			serif     -- false
-		include : JSymmetricSerif df xBar top
-
-	define [JDescendingFlatHookShortTopbarBase df dfHook top] : glyph-proc
-		set-width df.width
-		include : df.markSet.[if (top > XH) 'capDesc' 'p']
-		local xBar : df.middle + JBalance * df.adws
-		include : FlatHookDotlessJShape df df top
-			crossLeft -- [mix 0 SB : mix 1 df.adws 2]
-			barCenter -- xBar
-			serif     -- false
-		include : JShortTopbar df xBar top
-
-	define [JDescendingFlatHookLongAsymmetricBase df dfHook top] : glyph-proc
-		set-width df.width
-		include : df.markSet.[if (top > XH) 'capDesc' 'p']
-		local xBar : df.middle + JBalance * df.adws
-		include : FlatHookDotlessJShape df df top
-			crossLeft -- [mix 0 SB : mix 1 df.adws 2]
-			barCenter -- xBar
-			serif     -- false
-		include : JLongAsymmetricSerif df xBar top
+		set-base-anchor 'jTopSerifAttach' xBar top
 
 	define JConfig : SuffixCfg.weave
 		object # height and hook
 			bentHook                    { JBentHookBase                    [DivFrame 1]                  [DivFrame 1]                  }
 			flatHook                    { JFlatHookBase                    [DivFrame para.advanceScaleF] [DivFrame para.advanceScaleF] }
 			descendingBentHook          { JDescendingBentHookBase          [DivFrame 1]                  [DivFrame 1]                  }
-			descendingFlatHookSerifless          { JDescendingFlatHookSeriflessBase          [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-			descendingFlatHookLongTopbar         { JDescendingFlatHookSerifedBase            [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-			descendingFlatHookAsymmetricSerif    { JDescendingFlatHookSerifedBothSidesBase   [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-			descendingFlatHookSymmetricSerif     { JDescendingFlatHookSerifedSymmetricBase   [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-			descendingFlatHookShortTopbar        { JDescendingFlatHookShortTopbarBase        [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-			descendingFlatHookLongAsymmetricSerif { JDescendingFlatHookLongAsymmetricBase    [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
-		function [body] : if (body == 'descendingFlatHookSerifless' || body == 'descendingFlatHookLongTopbar' || body == 'descendingFlatHookAsymmetricSerif' || body == 'descendingFlatHookSymmetricSerif' || body == 'descendingFlatHookShortTopbar' || body == 'descendingFlatHookLongAsymmetricSerif') {."" null} : object
-			serifless            null
-			shortTopbar          JShortTopbar
-			longTopbar           JLongTopbar
-			symmetricSerif       JSymmetricSerif
-			asymmetricSerif      JAsymmetricSerif
-			longAsymmetricSerif  JLongAsymmetricSerif
+			descendingFlatHook          { JDescendingFlatHookBase          [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
+		object # top bar
+			fullTopbar             JFullTopbar
+			longTopbar             JLongTopbar
+			mediumTopbar           JMediumTopbar
+			shortTopbar            JShortTopbar
+			serifless              null
+			symmetricSerif         JSymmetricSerif
+			asymmetricSerif        JAsymmetricSerif
+			symmetricMediumSerif   JSymmetricMediumSerif
+			asymmetricLongSerif    JAsymmetricLongSerif
 
 	foreach { suffix { {base df dfHook} serif } } [Object.entries JConfig] : do
 		create-glyph "J.\(suffix)" : glyph-proc
