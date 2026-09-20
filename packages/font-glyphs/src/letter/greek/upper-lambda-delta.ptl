@@ -13,6 +13,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Latin-Upper-A : AShape ASerifs
 	glyph-block-import Letter-Latin-V : VShapeOutline VShape VHookRightShape
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopOutline
 
 	define SLAB-NONE       0
 	define SLAB-TOP        1
@@ -22,8 +23,9 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 
 	define LambdaConfig : SuffixCfg.weave
 		object
-			straight     true
-			curly        false
+			straight     { true  false }
+			curly        { false false }
+			squareBottom { true  true  }
 		object
 			serifless    SLAB-NONE
 			topSerifed   SLAB-TOP
@@ -31,15 +33,17 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 			triSerifed   [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
 
 	glyph-block-export LambdaShape
-	define [LambdaShape] : with-params [df fBarStraight slabKind top sw] : union
-		new-glyph : composite-proc
-			VShape df fBarStraight top sw
-			FlipAround df.middle (top / 2)
+	define [LambdaShape] : with-params [df fBarStraight slabKind top sw fSquareBottom] : union
+		new-glyph : glyph-proc
+			if fSquareBottom : include : VSquareTopShape df top sw
+			: else : include : VShape df fBarStraight top sw
+			include : FlipAround df.middle (top / 2)
 		ASerifs df top sw slabKind
 
-	define [LambdaMask] : with-params [df fBarStraight top sw] : new-glyph : composite-proc
-		VShapeOutline df fBarStraight top sw
-		FlipAround df.middle (top / 2)
+	define [LambdaMask] : with-params [df fBarStraight top sw fSquareBottom] : new-glyph : glyph-proc
+		if fSquareBottom : include : VSquareTopOutline df top sw
+		: else : include : VShapeOutline df fBarStraight top sw
+		include : FlipAround df.middle (top / 2)
 
 	define flex-params [LambdaHookLeftShape] : begin
 		local-parameter : df
@@ -62,33 +66,36 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				FlipAround df.middle (top / 2)
 			ASerifs df top sw [maskOffBits slabKind SLAB-LEFT]
 
-	foreach { suffix { fStraightBar slabKind } } [Object.entries LambdaConfig] : do
+	foreach { suffix { { fStraightBar fSquareBottom } slabKind } } [Object.entries LambdaConfig] : do
 		create-glyph "grek/Lambda.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LambdaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fStraightBar
-				slabKind     -- slabKind
-				top          -- CAP
-				sw           -- Stroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fStraightBar
+				slabKind      -- slabKind
+				top           -- CAP
+				sw            -- Stroke
+				fSquareBottom -- fSquareBottom
 
 		create-glyph "grek/smcpLambda.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LambdaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fStraightBar
-				slabKind     -- slabKind
-				top          -- XH
-				sw           -- Stroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fStraightBar
+				slabKind      -- slabKind
+				top           -- XH
+				sw            -- Stroke
+				fSquareBottom -- fSquareBottom
 
 		create-glyph "cyrl/el.BGR.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LambdaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fStraightBar
-				slabKind     -- [bitOr slabKind SLAB-SMALL-CYRL]
-				top          -- XH
-				sw           -- Stroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fStraightBar
+				slabKind      -- [bitOr slabKind SLAB-SMALL-CYRL]
+				top           -- XH
+				sw            -- Stroke
+				fSquareBottom -- fSquareBottom
 
 		create-glyph "cyrl/Yn.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
@@ -139,59 +146,65 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 
 	# Delta
 	glyph-block-export DeltaShape
-	define [DeltaShape] : with-params [df top bottom sw fBarStraight] : begin
+	define [DeltaShape] : with-params [df top bottom sw fBarStraight fSquareBottom] : begin
 		local shapeHeight : Math.abs : top - bottom
 		return : with-transform [ApparentTranslate 0 bottom] : union
 			LambdaShape
-				df           -- df
-				fBarStraight -- fBarStraight
-				slabKind     -- 0
-				top          -- shapeHeight
-				sw           -- sw
+				df            -- df
+				fBarStraight  -- fBarStraight
+				slabKind      -- 0
+				top           -- shapeHeight
+				sw            -- sw
+				fSquareBottom -- fSquareBottom
 			intersection
 				HBar.b 0 df.width 0 sw
-				LambdaMask df fBarStraight shapeHeight sw
+				LambdaMask df fBarStraight shapeHeight sw fSquareBottom
 
 	define DeltaConfig : object
-		straight true
-		curly    false
+		straight { true  false }
+		curly    { false false }
+		square   { true  true  }
 
-	foreach { suffix fBarStraight } [pairs-of DeltaConfig] : do
+	foreach { suffix { fBarStraight fSquareBottom } } [Object.entries DeltaConfig] : do
 		create-glyph "grek/Delta.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fBarStraight
-				top          -- CAP
-				bottom       -- 0
-				sw           -- Stroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fBarStraight
+				fSquareBottom -- fSquareBottom
+				top           -- CAP
+				bottom        -- 0
+				sw            -- Stroke
 
 		create-glyph "increment.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fBarStraight
-				top          -- CAP
-				bottom       -- 0
-				sw           -- OperatorStroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fBarStraight
+				fSquareBottom -- fSquareBottom
+				top           -- CAP
+				bottom        -- 0
+				sw            -- OperatorStroke
 
 		create-glyph "increment.aplForm.\(suffix)" : glyph-proc
 			include : MarkSet.oper
 			include : DeltaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fBarStraight
-				top          -- OperTop
-				bottom       -- OperBot
-				sw           -- OperatorStroke
+				df            -- [DivFrame 1]
+				fBarStraight  -- fBarStraight
+				fSquareBottom -- fSquareBottom
+				top           -- OperTop
+				bottom        -- OperBot
+				sw            -- OperatorStroke
 
 		create-glyph "increment.aplThin.\(suffix)" : glyph-proc
 			include : MarkSet.oper
 			include : DeltaShape
-				df           -- [DivFrame 1]
-				fBarStraight -- fBarStraight
-				top          -- OperTop
-				bottom       -- OperBot
-				sw           -- [AdviceStroke 3.75]
+				df            -- [DivFrame 1]
+				fBarStraight  -- fBarStraight
+				fSquareBottom -- fSquareBottom
+				top           -- OperTop
+				bottom        -- OperBot
+				sw            -- [AdviceStroke 3.75]
 
 	define [CodeNonApl u] : if (para.variantSelector.__enableAplForm === 'enable') null u
 	define [CodeApl    u] : if (para.variantSelector.__enableAplForm === 'enable') u null

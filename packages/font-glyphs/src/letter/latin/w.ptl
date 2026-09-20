@@ -9,6 +9,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
+	glyph-block-import Letter-Latin-V : VSquareTopYJoin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame VerticalHook
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
@@ -247,6 +248,46 @@ glyph-block Letter-Latin-W : begin
 
 		include : WSerifs df top bodyType slabType dim
 
+	define [WSquareTopShape df top bodyType slabType midHClass] : glyph-proc
+		local dim : WDim df top bodyType slabType midHClass
+		local yJoin : VSquareTopYJoin top
+
+		include : tagged 'strokeDown1' : dispiro
+			widths.lhs dim.strokeOuter
+			corner df.leftSB top   [heading Downward]
+			corner df.leftSB yJoin [heading Downward]
+			corner (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
+		include : tagged 'strokeUp2' : dispiro
+			widths.rhs dim.strokeOuter
+			corner df.rightSB top   [heading Downward]
+			corner df.rightSB yJoin [heading Downward]
+			corner (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
+
+		local kTopShift : match bodyType
+			[Just FORM-DOUBLE-V]          0
+			[Just FORM-ASYMMETRIC]        0
+			__                            1
+		local shiftT : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
+		local shiftB : HSwToV : 0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr
+		include : tagged 'strokeUp1' : difference
+			dispiro
+				flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
+				curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+			match bodyType
+				[Just FORM-ASYMMETRIC] : spiro-outline
+					corner dim.xLeft2 dim.wMidHeight
+					corner dim.xBot2  0
+					corner df.width  0
+					corner df.width  dim.wMidHeight
+				_ : no-shape
+		include : tagged 'strokeDown2' : dispiro
+			flat (dim.xLeft2 + shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
+			curl (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+
+		if (dim.wMidHeightExt > dim.wMidHeight) : include : tagged 'strokeExtension' : VBar.m df.middle dim.wMidHeight dim.wMidHeightExt (dim.fineInnerCrTop + [VSwToH : shiftT * 2])
+
+		include : WSerifs df top bodyType slabType dim
+
 	define [WHookRightShape df top bodyType slabType midHClass] : glyph-proc
 		include : WShapeImpl df top bodyType slabType midHClass
 
@@ -407,6 +448,11 @@ glyph-block Letter-Latin-W : begin
 			curlyAlmostFlatTop                 { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
 			curlyFlatTop                       { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
 			curlyAsymmetric                    { WShapeImpl   WHookRightShape   FORM-CURLY-ASYMMETRIC MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
+			squareTop                          { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
+			squareTopAlmostFlatTop             { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
+			squareTopFlatTop                   { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
+			squareTopAsymmetric                { WSquareTopShape WHookRightShape FORM-ASYMMETRIC       MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
+			squareTopDoubleV                   { WSquareTopShape WHookRightShape FORM-DOUBLE-V         MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
 			cursive                            { WCursiveImpl WHookRightCursive FORM-CURSIVE          MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
 			cyrlOmega                          { WShapeImpl   WHookRightShape   FORM-CYRL-OMEGA       MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
 
@@ -419,7 +465,10 @@ glyph-block Letter-Latin-W : begin
 				serifed     : match body
 					[Just 'straightAsymmetric']           SERIFS-ALL-ASYMMETRIC
 					[Just 'curlyAsymmetric']              SERIFS-ALL-ASYMMETRIC
+					[Just 'squareTopAsymmetric']          SERIFS-ALL-ASYMMETRIC
 					[Just 'straightDoubleV']              SERIFS-ALL-OUTER
+					[Just 'squareTopDoubleV']             SERIFS-ALL-OUTER
+					[Just 'squareTopFlatTop']             SERIFS-ALL-OUTER
 					[Just 'straightFlatTop']              SERIFS-ALL-OUTER
 					[Just 'straightVerticalSidesFlatTop'] SERIFS-ALL-OUTER
 					[Just 'roundedVerticalSidesFlatTop']  SERIFS-ALL-OUTER

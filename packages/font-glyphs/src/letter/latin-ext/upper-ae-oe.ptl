@@ -16,6 +16,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		define BODY-CURLY      0
 		define BODY-STRAIGHT   1
 		define BODY-ROUND-TOP  2
+		define BODY-SQUARE-BOTTOM 3
 
 		define SLAB-NONE       0
 		define SLAB-TOP        1
@@ -72,6 +73,28 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 					corner eLeft top
 					corner eLeft 0
 
+		define [AEAHalfSquareBottom df top eLeft sw] : glyph-proc
+			define fine : sw * CThin * 1.15
+			local yJoin : mix 0 top 0.5
+
+			include : dispiro
+				widths.rhs sw
+				flat df.leftSB 0     [heading Upward]
+				curl df.leftSB yJoin [heading Upward]
+				g4   (eLeft - [HSwToV : 0.5 * sw]) top [widths.rhs fine]
+
+			include : spiro-outline
+				corner (eLeft - [HSwToV : 0.5 * sw]) top
+				corner eLeft top
+				corner eLeft (top - sw)
+			include : intersection
+				HBar.t 0 eLeft (XH / 2) sw
+				spiro-outline
+					corner df.leftSB 0
+					corner df.leftSB yJoin
+					corner eLeft top
+					corner eLeft 0
+
 		define [AEAHalfRoundTop df top eLeft sw] : glyph-proc
 			local ada : ArchDepthAClamped top 0
 				df.archDepthAOf ArchDepth sw
@@ -89,9 +112,10 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 			define sw : AEOEStroke df top
 			define eLeft : df.middle - [HSwToV : 0.25 * sw]
 			include : match bodyShape
-				[Just BODY-CURLY]     : AEAHalfCurly    df top eLeft sw
-				[Just BODY-STRAIGHT]  : AEAHalfStraight df top eLeft sw
-				[Just BODY-ROUND-TOP] : AEAHalfRoundTop df top eLeft sw
+				[Just BODY-CURLY]          : AEAHalfCurly         df top eLeft sw
+				[Just BODY-STRAIGHT]       : AEAHalfStraight      df top eLeft sw
+				[Just BODY-SQUARE-BOTTOM]  : AEAHalfSquareBottom  df top eLeft sw
+				[Just BODY-ROUND-TOP]      : AEAHalfRoundTop      df top eLeft sw
 			include : match slabKind
 				([Just SLAB-BASE] || [Just SLAB-TRI]) : HSerif.mb (df.leftSB + [HSwToV : 0.5 * sw]) 0 (Jut - [HSwToV : 0.5 * (Stroke - sw)]) sw
 				__                                    : no-shape
@@ -103,8 +127,9 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		define AConfig : SuffixCfg.combine
 			SuffixCfg.weave # standard (angular) variants
 				object # body
-					straight    BODY-STRAIGHT
-					curly       BODY-CURLY
+					straight     BODY-STRAIGHT
+					curly        BODY-CURLY
+					squareBottom BODY-SQUARE-BOTTOM
 				object # slabs
 					serifless   SLAB-NONE
 					topSerifed  SLAB-TOP

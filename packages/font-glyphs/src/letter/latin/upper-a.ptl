@@ -17,10 +17,12 @@ glyph-block Letter-Latin-Upper-A : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Letter-Latin-V : VShapeOutline VShape VCornerHalfWidth
 	glyph-block-import Letter-Latin-V : VStraightSbShrink VStraightSbOffset
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopOutline
 
 	define BODY-CURLY      0
 	define BODY-STRAIGHT   1
 	define BODY-ROUND-TOP  2
+	define BODY-SQUARE-BOTTOM 3
 
 	define SLAB-NONE       0
 	define SLAB-TOP        1
@@ -38,14 +40,16 @@ glyph-block Letter-Latin-Upper-A : begin
 
 		export : define [Mask df bodyShape top sw] : new-glyph : glyph-proc
 			include : match bodyShape
-				([Just BODY-CURLY] || [Just BODY-STRAIGHT]) : VShapeOutline df bodyShape top sw
-				[Just BODY-ROUND-TOP] : UShapeOutline top 0 df.leftSB df.rightSB sw df.archDepthA df.archDepthB
+				[Just BODY-ROUND-TOP]      : UShapeOutline top 0 df.leftSB df.rightSB sw df.archDepthA df.archDepthB
+				[Just BODY-SQUARE-BOTTOM]  : VSquareTopOutline df top sw
+				__                         : VShapeOutline df bodyShape top sw
 			include : FlipAround df.middle (top / 2)
 
 		export : define [Outer df bodyShape top sw] : new-glyph : glyph-proc
 			include : match bodyShape
-				([Just BODY-CURLY] || [Just BODY-STRAIGHT]) : VShape df bodyShape top sw
-				[Just BODY-ROUND-TOP] : UShape top 0 df.leftSB df.rightSB sw df.archDepthA df.archDepthB
+				[Just BODY-ROUND-TOP]      : UShape top 0 df.leftSB df.rightSB sw df.archDepthA df.archDepthB
+				[Just BODY-SQUARE-BOTTOM]  : VSquareTopShape df top sw
+				__                         : VShape df bodyShape top sw
 			include : FlipAround df.middle (top / 2)
 
 		define [CrossBar df bodyShape top sw] : begin
@@ -94,11 +98,22 @@ glyph-block Letter-Latin-Upper-A : begin
 			include : ASerifs df top sw slabKind
 			eject-contour 'serifRB'
 
+		define [SquareBottomBottomRightRemovedImpl df slabKind top sw] : new-glyph : glyph-proc
+			local yBar : BarPos BODY-SQUARE-BOTTOM slabKind top
+			include : difference
+				Outer df BODY-SQUARE-BOTTOM top sw
+				intersection [MaskRight df.middle] [MaskBelow (yBar - sw)]
+			include : CrossBar df BODY-SQUARE-BOTTOM top sw
+			include : ASerifs df top sw slabKind
+			eject-contour 'serifRB'
+
 		export : define [LetterBottomRightRemoved df bodyShape slabKind top sw] : match bodyShape
-			([Just BODY-CURLY] || [Just BODY-STRAIGHT]) : begin
-				return : CuspBottomRightRemovedImpl df bodyShape slabKind top sw
 			[Just BODY-ROUND-TOP] : begin
 				return : RoundTopBottomRightRemovedImpl df slabKind top sw
+			[Just BODY-SQUARE-BOTTOM] : begin
+				return : SquareBottomBottomRightRemovedImpl df slabKind top sw
+			__ : begin
+				return : CuspBottomRightRemovedImpl df bodyShape slabKind top sw
 
 	glyph-block-export ASerifs
 	define [ASerifs df top sw slabKind] : glyph-proc : begin
@@ -118,6 +133,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			straight     BODY-STRAIGHT
 			curly        BODY-CURLY
 			roundTop     BODY-ROUND-TOP
+			squareBottom BODY-SQUARE-BOTTOM
 		object
 			serifless    SLAB-NONE
 			topSerifed   SLAB-TOP
@@ -125,7 +141,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			triSerifed   [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
 
 	foreach { suffix { bodyShape slabKind } } [Object.entries AConfig] : do
-		local fBarStraight : bodyShape === BODY-STRAIGHT
+		local fBarStraight : (bodyShape === BODY-STRAIGHT) || (bodyShape === BODY-SQUARE-BOTTOM)
 		local fSlabTop : maskBits slabKind SLAB-TOP
 		local fSlabBot : maskBits slabKind [bitOr SLAB-LEFT SLAB-RIGHT]
 
@@ -171,7 +187,7 @@ glyph-block Letter-Latin-Upper-A : begin
 		create-glyph "grek/Alpha.\(suffix)" : AShapeImpl "capital" CAP true
 		create-glyph "smcpA.\(suffix)"      : AShapeImpl "e"       XH
 		create-glyph "ABar.\(suffix)"       : AShapeImpl "capital" CAP false false 1
-		if (bodyShape !== BODY-ROUND-TOP) : begin
+		if ((bodyShape !== BODY-ROUND-TOP) && (bodyShape !== BODY-SQUARE-BOTTOM)) : begin
 			if (!fSlabTop) : create-glyph "ASwash.\(suffix)" : AShapeImpl "capital" CAP false true
 			create-glyph "ASquare.\(suffix)" : glyph-proc
 				local df : include : DivFrame [if fSlabTop para.advanceScaleT 1]

@@ -105,6 +105,50 @@ glyph-block Letter-Latin-V : begin
 			# bottom cap
 			include : tagged 'bottomCap' : VBottomCapShape df fBarStraight sw
 
+	# Square-top V: two verticals, then a V at the bottom (not a closing bar).
+	glyph-block-export VSquareTopYJoin
+	define [VSquareTopYJoin top] : mix 0 top 0.5
+
+	glyph-block-export VSquareTopOutline
+	define [VSquareTopOutline] : with-params [df top [sw Stroke]] : glyph-proc
+		define cornerHW : VCornerHalfWidth * (sw / Stroke)
+		local yJoin : VSquareTopYJoin top
+		include : spiro-outline
+			corner df.leftSB  top
+			corner df.leftSB  yJoin
+			corner (df.middle - cornerHW) 0
+			corner (df.middle + cornerHW) 0
+			corner df.rightSB yJoin
+			corner df.rightSB top
+
+	glyph-block-export VSquareTopShape
+	define [VSquareTopShape] : with-params [df top [sw Stroke]] : glyph-proc
+		define cornerHW : VCornerHalfWidth * (sw / Stroke)
+		local yJoin : VSquareTopYJoin top
+		local vxEndL : df.middle - cornerHW
+		local vxEndR : df.middle + cornerHW
+		define dgCor : DiagCor yJoin (df.middle - df.leftSB) 0 sw
+		define startSW : dgCor * sw
+		define midSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
+		define endSW : Math.min sw : VShapeFineStraight * (sw / Stroke) * dgCor
+		local pInktrap : 2 / 3
+
+		include : tagged 'strokeDown' : dispiro
+			widths.lhs sw
+			corner df.leftSB top   [heading Downward]
+			corner df.leftSB yJoin [heading Downward]
+			corner [mix df.leftSB vxEndL pInktrap] [mix yJoin 0 pInktrap] [widths.lhs.heading midSW Downward]
+			corner vxEndL 0 [widths.lhs.heading endSW Downward]
+
+		include : tagged 'strokeUp' : dispiro
+			widths.rhs sw
+			corner df.rightSB top   [heading Downward]
+			corner df.rightSB yJoin [heading Downward]
+			corner [mix df.rightSB vxEndR pInktrap] [mix yJoin 0 pInktrap] [widths.rhs.heading midSW Downward]
+			corner vxEndR 0 [widths.rhs.heading endSW Downward]
+
+		include : tagged 'bottomCap' : VBottomCapShape df true startSW
+
 	glyph-block-export VHookRightShape
 	define [VHookRightShape] : with-params [df fBarStraight top [sw Stroke] [hookWidthOuter (TailX / 3)] [hookWidthInner (TailX / 3)]] : glyph-proc
 		include : VShape df fBarStraight top (sw -- sw)
@@ -167,25 +211,29 @@ glyph-block Letter-Latin-V : begin
 		return : composite-proc sf.lt.outer
 
 	define VStandardConfig : SuffixCfg.weave
-		object # straight bar
-			straight              true
-			curly                 false
+		object # body
+			straight              { true  0 }
+			curly                 { false 0 }
+			squareTop             { true  1 }
 		object # serifs
 			""                    VAutoSerifs
 			serifless             no-shape
 			motionSerifed         VMotionSerifs
 			serifed               VSerifs
 
-	foreach { suffix { fStraightBar Serifs } } [Object.entries VStandardConfig] : do
+	foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries VStandardConfig] : do
+		local fSerifStraight : if fSquareTop 0 fStraightBar
 		create-glyph "V.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : VShape [DivFrame 1] fStraightBar CAP Stroke
-			include : Serifs [DivFrame 1] fStraightBar CAP Stroke
+			if fSquareTop : include : VSquareTopShape [DivFrame 1] CAP Stroke
+			: else : include : VShape [DivFrame 1] fStraightBar CAP Stroke
+			include : Serifs [DivFrame 1] fSerifStraight CAP Stroke
 
 		create-glyph "v.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : VShape [DivFrame 1] fStraightBar XH Stroke
-			include : Serifs [DivFrame 1] fStraightBar XH Stroke
+			if fSquareTop : include : VSquareTopShape [DivFrame 1] XH Stroke
+			: else : include : VShape [DivFrame 1] fStraightBar XH Stroke
+			include : Serifs [DivFrame 1] fSerifStraight XH Stroke
 
 		create-glyph "vPalatalHook.\(suffix)" : glyph-proc
 			include [refer-glyph "v.\(suffix)"] AS_BASE ALSO_METRICS

@@ -593,6 +593,17 @@ selectorAffix.AHookLeft = "straight"
 selectorAffix."A/roundTop" = "roundTop"
 selectorAffix.ASquare = "straight"
 
+[prime.capital-a.variants-buildup.stages.body.square-bottom]
+rank = 4
+descriptionAffix = "square bottom"
+selectorAffix.A = "squareBottom"
+selectorAffix."A/sansSerif" = "squareBottom"
+selectorAffix."AE/E.serifless/A" = "squareBottom"
+selectorAffix."AE/E.topLeftSerifed/A" = "squareBottom"
+selectorAffix.AHookLeft = "straight"
+selectorAffix."A/roundTop" = "roundTop"
+selectorAffix.ASquare = "straight"
+
 [prime.capital-a.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
@@ -1918,6 +1929,14 @@ selectorAffix."V/sansSerif" = "curly"
 selectorAffix.VScript = "rounded"
 selectorAffix."Hv/v" = "rounded"
 
+[prime.capital-v.variants-buildup.stages.body.square-top]
+rank = 3
+descriptionAffix = "square top"
+selectorAffix.V = "squareTop"
+selectorAffix."V/sansSerif" = "squareTop"
+selectorAffix.VScript = "rounded"
+selectorAffix."Hv/v" = "rounded"
+
 [prime.capital-v.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
@@ -1988,6 +2007,14 @@ selectorAffix.W = "curly"
 selectorAffix."W/sansSerif" = "curly"
 selectorAffix.WHookRight = "curly"
 
+[prime.capital-w.variants-buildup.stages.body.square-top]
+rank = 5
+groupRank = 4
+descriptionAffix = "square top"
+selectorAffix.W = "squareTop"
+selectorAffix."W/sansSerif" = "squareTop"
+selectorAffix.WHookRight = "straight"
+
 [prime.capital-w.variants-buildup.stages.center."*"]
 next = "serifs"
 
@@ -2014,7 +2041,7 @@ selectorAffix.WHookRight = "flatTop"
 
 [prime.capital-w.variants-buildup.stages.center.asymmetric]
 rank = 4
-enableIf = [{ body = "straight" }, { body = "curly" }]
+enableIf = [{ body = "straight" }, { body = "curly" }, { body = "square-top" }]
 descriptionAffix = "asymmetric center"
 selectorAffix.W = "asymmetric"
 selectorAffix."W/sansSerif" = "asymmetric"
@@ -2022,7 +2049,7 @@ selectorAffix.WHookRight = "asymmetric"
 
 [prime.capital-w.variants-buildup.stages.center.double-v]
 rank = 5
-enableIf = [{ body = "straight" }]
+enableIf = [{ body = "straight" }, { body = "square-top" }]
 descriptionAffix = "crossing center, like double V"
 selectorAffix.W = "doubleV"
 selectorAffix."W/sansSerif" = "doubleV"
@@ -3013,7 +3040,7 @@ selectorAffix.fLenis = "flatHook"
 selectorAffix.fHookBottom = "flatHook"
 
 [prime.f.variants-buildup.stages.tail."*"]
-next = "crossbar"
+next = "symmetry"
 
 [prime.f.variants-buildup.stages.tail.serifless]
 rank = 1
@@ -3080,6 +3107,37 @@ selectorAffix."f/compLigLeft3" = "diagonalTailed"
 selectorAffix."f/compLigLeft4" = "diagonalTailed"
 selectorAffix.fLenis = "serifless"
 selectorAffix.fHookBottom = "tailed"
+
+[prime.f.variants-buildup.stages.symmetry."*"]
+next = "crossbar"
+
+[prime.f.variants-buildup.stages.symmetry.symmetric]
+rank = 1
+keyAffix = ""
+selectorAffix.f = ""
+selectorAffix."f/sansSerif" = ""
+selectorAffix."f/phoneticLeft" = ""
+selectorAffix."f/compLigLeft1" = ""
+selectorAffix."f/compLigLeft2" = ""
+selectorAffix."f/compLigLeft3" = ""
+selectorAffix."f/compLigLeft4" = ""
+selectorAffix.fLenis = ""
+selectorAffix.fHookBottom = ""
+
+[prime.f.variants-buildup.stages.symmetry.asymmetric]
+rank = 2
+nonBreakingVariantAdditionPriority = 200
+keyAffix = "asymmetric"
+descriptionAffix = "crossbar at only right side of the vertical stem"
+selectorAffix.f = "asymmetric"
+selectorAffix."f/sansSerif" = "asymmetric"
+selectorAffix."f/phoneticLeft" = "asymmetric"
+selectorAffix."f/compLigLeft1" = ""
+selectorAffix."f/compLigLeft2" = ""
+selectorAffix."f/compLigLeft3" = ""
+selectorAffix."f/compLigLeft4" = ""
+selectorAffix.fLenis = "asymmetric"
+selectorAffix.fHookBottom = "asymmetric"
 
 [prime.f.variants-buildup.stages.crossbar.standard]
 rank = 1
@@ -3295,6 +3353,20 @@ selectorAffix."g/singleStorey/autoSerifed/slab" = "earlessRounded"
 selectorAffix."g/singleStorey/autoSerifed/sans" = "earlessRounded"
 selectorAffix."gCrossedTail/singleStorey/autoSerifed/slab" = "earlessRounded"
 selectorAffix."gCrossedTail/singleStorey/autoSerifed/sans" = "earlessRounded"
+
+[prime.g.variants-buildup.stages.storey.double-circle]
+next = "END"
+rank = 3
+nonBreakingVariantAdditionPriority = 200
+descriptionAffix = "double-circle shape"
+selectorAffix.g = "doubleCircle"
+selectorAffix."g/sansSerif" = "doubleCircle"
+selectorAffix."g/hookTopBase" = "singleStoreyBentHookSerifless"
+selectorAffix."g/doubleStorey" = "doubleStoreyClosed"
+selectorAffix."g/singleStorey/autoSerifed/slab" = "singleStoreyBentHookSerifed"
+selectorAffix."g/singleStorey/autoSerifed/sans" = "singleStoreyBentHookSerifless"
+selectorAffix."gCrossedTail/singleStorey/autoSerifed/slab" = "singleStoreyBentHookSerifed"
+selectorAffix."gCrossedTail/singleStorey/autoSerifed/sans" = "singleStoreyBentHookSerifless"
 
 
 
@@ -5315,6 +5387,16 @@ selectorAffix."hv/v" = "rounded"
 selectorAffix.vHookRight = "straight"
 selectorAffix.vLoop = "straight"
 
+[prime.v.variants-buildup.stages.body.square-top]
+rank = 4
+descriptionAffix = "square top"
+selectorAffix.v = "squareTop"
+selectorAffix."v/sansSerif" = "squareTop"
+selectorAffix.vScript = "rounded"
+selectorAffix."hv/v" = "rounded"
+selectorAffix.vHookRight = "straight"
+selectorAffix.vLoop = "straight"
+
 [prime.v.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
@@ -5401,6 +5483,14 @@ selectorAffix.w = "cursive"
 selectorAffix."w/sansSerif" = "cursive"
 selectorAffix.wHookRight = "cursive"
 
+[prime.w.variants-buildup.stages.body.square-top]
+rank = 6
+groupRank = 5
+descriptionAffix = "square top"
+selectorAffix.w = "squareTop"
+selectorAffix."w/sansSerif" = "squareTop"
+selectorAffix.wHookRight = "straight"
+
 [prime.w.variants-buildup.stages.center."*"]
 next = "serifs"
 
@@ -5427,7 +5517,7 @@ selectorAffix.wHookRight = "flatTop"
 
 [prime.w.variants-buildup.stages.center.asymmetric]
 rank = 4
-enableIf = [{ body = "straight" }, { body = "curly" }]
+enableIf = [{ body = "straight" }, { body = "curly" }, { body = "square-top" }]
 descriptionAffix = "asymmetric center"
 selectorAffix.w = "asymmetric"
 selectorAffix."w/sansSerif" = "asymmetric"
@@ -5435,7 +5525,7 @@ selectorAffix.wHookRight = "asymmetric"
 
 [prime.w.variants-buildup.stages.center.double-v]
 rank = 5
-enableIf = [{ body = "straight" }]
+enableIf = [{ body = "straight" }, { body = "square-top" }]
 descriptionAffix = "crossing center, like double V"
 selectorAffix.w = "doubleV"
 selectorAffix."w/sansSerif" = "doubleV"
@@ -6488,6 +6578,11 @@ rank = 2
 description = "Slightly curly Greek capital Delta (`Δ`), like Iosevka 2.x"
 selector."grek/Delta" = "curly"
 
+[prime.capital-delta.variants.square]
+rank = 3
+description = "Square Greek capital Delta (`Δ`) with a closed baseline"
+selector."grek/Delta" = "square"
+
 
 
 [prime.lower-delta]
@@ -6823,6 +6918,13 @@ descriptionAffix = "curly shape"
 selectorAffix."grek/Lambda" = "curly"
 selectorAffix."grek/Lambda/sansSerif" = "curly"
 selectorAffix."cyrl/Yus" = "curly"
+
+[prime.capital-lambda.variants-buildup.stages.body.square-bottom]
+rank = 3
+descriptionAffix = "square bottom"
+selectorAffix."grek/Lambda" = "squareBottom"
+selectorAffix."grek/Lambda/sansSerif" = "squareBottom"
+selectorAffix."cyrl/Yus" = "straight"
 
 [prime.capital-lambda.variants-buildup.stages.serifs.serifless]
 rank = 1
