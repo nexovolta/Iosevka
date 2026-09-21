@@ -27,17 +27,17 @@ glyph-block Letter-Latin-Lower-F : begin
 	define dfN : DivFrame 1
 	define dfF : DivFrame para.advanceScaleF 1 0.75
 
+	# Same stem construction as asymmetric t: mix the t-style bar with the left sidebearing.
 	define [xSmallFBarLeftT df] : df.middle - df.adws * (df.adws * TBalance) - [HSwToV HalfStroke]
+	define [xSmallFCrossRefT df] : [xSmallFBarLeftT df] + df.adws * TBalance2 + [HSwToV HalfStroke]
 
-	define [FStemBarLeft df sym balancedBarLeft barAtCenter] : match sym
-		[Just SYM-LEFT] : if barAtCenter
-			mix df.leftSB (df.middle - [HSwToV HalfStroke]) 0.5
-			mix df.leftSB [xSmallFBarLeftT df] 0.5
-		__              : balancedBarLeft + 0
+	define [FBarLeftPos df sym balanced] : match sym
+		[Just SYM-LEFT] : mix df.leftSB [xSmallFBarLeftT df] 0.5
+		__              : balanced + 0
 
-	define [AsymFCrossRight df sym defaultRight] : match sym
-		[Just SYM-LEFT] : df.rightSB + 0
-		__              : defaultRight + 0
+	define [FCrossBarPos df sym xDefaultLeft xDefaultRight] : match sym
+		[Just SYM-LEFT] { ([FBarLeftPos df sym 0] + TanSlope * Stroke) ([xSmallFCrossRefT df] + LongJut * [Math.sqrt df.adws]) }
+		__              { (xDefaultLeft + 0) (xDefaultRight + 0) }
 
 	glyph-block-export ySmallFBarPos
 	define ySmallFBarPos : [mix 0 XH DesignParameters.fBarPosToXH] + Stroke * DesignParameters.fbarStrokeAdj
@@ -95,16 +95,12 @@ glyph-block Letter-Latin-Lower-F : begin
 
 	define [StandardFShape df m bh counterHook sym] : glyph-proc
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
-		local crossLeft  : mix 0        df.leftSB  m
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
-		local stdBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
-		local barLeft : FStemBarLeft df sym stdBarLeft barAtCenter
+		local balancedBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
+		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
-		local xCrossLeft : if (sym === SYM-LEFT)
-			then : barLeft + TanSlope * Stroke
-			else : df.leftSB + 0
-		local xCrossRight : AsymFCrossRight df sym [mix df.leftSB df.rightSB m]
+		local { xCrossLeft xCrossRight } : FCrossBarPos df sym df.leftSB [mix df.leftSB df.rightSB m]
 
 		include : LeaningAnchor.Above.Hook barLeft (df.rightSB + barLeft - barLeft0)
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
@@ -135,11 +131,10 @@ glyph-block Letter-Latin-Lower-F : begin
 
 	define [NarrowStdFShape df m bh counterHook sym] : glyph-proc
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
-		local crossLeft  : mix 0        df.leftSB  m
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
-		local stdBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
-		local barLeft : FStemBarLeft df sym stdBarLeft barAtCenter
+		local balancedBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
+		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
 
 		include : LeaningAnchor.Above.Hook barLeft ([mix barLeft (df.rightSB + barLeft - barLeft0) 0.75])
@@ -150,12 +145,10 @@ glyph-block Letter-Latin-Lower-F : begin
 
 		local pAdaptive : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
 		local stdCrossRight : mix df.leftSB df.rightSB m
-		local narrowCrossRight : AsymFCrossRight df sym [mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]]
+		local narrowCrossRight : mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]
 		local narrowCrossLeft : mix df.leftSB barLeft [mix 0.5 0.375 pAdaptive]
-		local xCrossLeft : if (sym === SYM-LEFT)
-			then : barLeft + TanSlope * Stroke
-			else : narrowCrossLeft + 0
-		include : HCrossBar.top xCrossLeft narrowCrossRight bh
+		local { xCrossLeft xCrossRight } : FCrossBarPos df sym narrowCrossLeft narrowCrossRight
+		include : HCrossBar.top xCrossLeft xCrossRight bh
 
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
@@ -183,14 +176,14 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
 		local crossLeft  : mix 0        df.leftSB  m
 		local crossRight : mix df.width df.rightSB m
-		local stdBarLeft : if barAtCenter
+		local balancedBarLeft : if barAtCenter
 			df.middle - [HSwToV HalfStroke]
 			[mix crossLeft crossRight 0.42] - [HSwToV : 0.375 * Stroke]
-		local barLeft : FStemBarLeft df sym stdBarLeft barAtCenter
+		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
 		local hd : FlatHookDepth df
-		local topHookRight : AsymFCrossRight df sym (crossRight + topHookExt)
-		local crossBarRight : AsymFCrossRight df sym (crossRight + crossBarExt)
+		local topHookRight : crossRight + topHookExt
+		local { xCrossLeft xCrossRight } : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
 
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 		include : LeaningAnchor.Above.Hook barLeft topHookRight
@@ -202,10 +195,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			archv.superness DesignParameters.tightHookSuperness
 			flat barLeft [Math.max XH (Ascender - hd.y)]
 			curl barLeft 0 [heading Downward]
-		local xCrossLeft : if (sym === SYM-LEFT)
-			then : barLeft + TanSlope * Stroke
-			else : crossLeft + 0
-		include : HCrossBar.top xCrossLeft crossBarRight bh
+		include : HCrossBar.top xCrossLeft xCrossRight bh
 
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
