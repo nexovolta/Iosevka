@@ -48,6 +48,19 @@ glyph-block Symbol-Punctuation-Small : begin
 		define swEnd : Math.min [AdviceStroke 2] (r * 1.0)
 		define commaOverflow : r - swEnd / 2
 		define rFill : ro - sw / 4
+		define [CircularTail] : dispiro
+			g4 r r [widths.rhs (sw / 4)]
+			arcvh
+			g4 0 o [widths.rhs (sw / 2)]
+			archv
+			g4 (-ro) r
+			arcvh
+			g4 0 (r + ro)
+			archv
+			g4 (+ro) r [widths.rhs sw]
+			quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
+			g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+
 		export : define [round cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				spiro-outline
@@ -60,18 +73,7 @@ glyph-block Symbol-Punctuation-Small : begin
 					g4 0 (2 * rFill)
 					archv
 					close
-				dispiro
-					g4 r r [widths.rhs (sw / 4)]
-					arcvh
-					g4 0 o [widths.rhs (sw / 2)]
-					archv
-					g4 (-ro) r
-					arcvh
-					g4 0 (r + ro)
-					archv
-					g4 (+ro) r [widths.rhs sw]
-					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+				CircularTail
 
 		export : define [square cx cy] : with-transform [Translate cx cy] : glyph-proc
 			include : union
@@ -82,15 +84,10 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
 
-		export : define [diamond cx cy] : with-transform [Translate cx cy] : glyph-proc
-			local q : r * Math.SQRT2
+		export : define [diamond cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				DiamondAt 0 r r
-				dispiro
-					flat q 0 [widths.rhs sw]
-					curl q (-r * 0.25) [widths.rhs sw]
-					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+				CircularTail
 
 	define [RevCommaShape kdr o] : namespace
 		define r : PeriodRadius * kdr
@@ -99,6 +96,19 @@ glyph-block Symbol-Punctuation-Small : begin
 		define swEnd : Math.min [AdviceStroke 2] (r * 1.0)
 		define commaOverflow : r - swEnd / 2
 		define rFill : ro - sw / 4
+		define [CircularTail] : dispiro
+			g4 (-r) r [widths.lhs (sw / 4)]
+			arcvh
+			g4 0 o [widths.lhs (sw / 2)]
+			archv
+			g4 (+ro) r
+			arcvh
+			g4 0 (r + ro)
+			archv
+			g4 (-ro) r [widths.lhs sw]
+			quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
+			g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
+
 		export : define [round cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				spiro-outline
@@ -111,18 +121,7 @@ glyph-block Symbol-Punctuation-Small : begin
 					g4 0 (2 * rFill)
 					archv
 					close
-				dispiro
-					g4 (-r) r [widths.lhs (sw / 4)]
-					arcvh
-					g4 0 o [widths.lhs (sw / 2)]
-					archv
-					g4 (+ro) r
-					arcvh
-					g4 0 (r + ro)
-					archv
-					g4 (-ro) r [widths.lhs sw]
-					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
+				CircularTail
 
 		export : define [square cx cy] : with-transform [Translate cx cy] : glyph-proc
 			include : union
@@ -133,15 +132,10 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
 
-		export : define [diamond cx cy] : with-transform [Translate cx cy] : glyph-proc
-			local q : r * Math.SQRT2
+		export : define [diamond cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				DiamondAt 0 r r
-				dispiro
-					flat (-q) 0 [widths.lhs sw]
-					curl (-q) (-r * 0.25)
-					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
+				CircularTail
 
 	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 		create-glyph "comma.\(suffix)" : glyph-proc

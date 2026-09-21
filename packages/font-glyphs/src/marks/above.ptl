@@ -1315,12 +1315,10 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 
 		local radius : commaAboveRadius * SquareDotScalar
-		local q : radius * Math.SQRT2
 		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
 		include : dispiro
 			widths.rhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			flat (markMiddle + q) (aboveMarkTop - radius) [heading Downward]
-			curl (markMiddle + q) (aboveMarkTop - 2 * radius) [heading Downward]
+			straight.down.start (markMiddle + radius) (aboveMarkTop - radius + commaOvershoot)
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)
@@ -1382,12 +1380,10 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 
 		local radius : commaAboveRadius * SquareDotScalar
-		local q : radius * Math.SQRT2
 		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
 		include : dispiro
 			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			flat (markMiddle - q) (aboveMarkTop - radius) [heading Downward]
-			curl (markMiddle - q) (aboveMarkTop - 2 * radius) [heading Downward]
+			straight.down.start (markMiddle - radius) (aboveMarkTop - radius + commaOvershoot)
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)
