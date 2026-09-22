@@ -102,9 +102,9 @@ glyph-block Digits-Six : begin
 		include : StraightBarSixShape CAP
 	define [SixBodyClosedFlatHook] : glyph-proc
 		include : ClosedContourSixShape CAP (flatHook -- true)
-	define [SixBodyAlmostVertical] : glyph-proc
+	define [SixBodySteepBar] : glyph-proc
 		include : StraightBarSixShape CAP (xTerminalMix -- 0.28)
-	define [SixBodyVerticalContour] : glyph-proc
+	define [SixBodyVerticalBar] : glyph-proc
 		include : ClosedContourSixShape CAP (vertical -- true)
 
 	glyph-block-export SixConfig
@@ -113,8 +113,8 @@ glyph-block Digits-Six : begin
 		openContour        SixBodyOpen
 		straightBar        SixBodyStraightBar
 		closedFlatHook     SixBodyClosedFlatHook
-		almostVertical     SixBodyAlmostVertical
-		verticalContour    SixBodyVerticalContour
+		steepBar           SixBodySteepBar
+		verticalBar        SixBodyVerticalBar
 
 	foreach { suffix body } [pairs-of SixConfig] : do
 		create-glyph "six.lnum.\(suffix)" : glyph-proc
