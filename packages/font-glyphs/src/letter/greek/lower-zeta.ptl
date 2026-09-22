@@ -8,40 +8,14 @@ glyph-module
 glyph-block Letter-Greek-Lower-Zeta : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 	glyph-block-import Letter-Arc-Hook : Flat
-	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender FlatHookDepth
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedBendDescender RoundedBendTailDescender
 
 	define TAIL-CURLY            0
 	define TAIL-STRAIGHT         1
 	define TAIL-DIAGONAL         2
 	define TAIL-STRAIGHT-ROUNDED 3
 	define TAIL-DIAGONAL-ROUNDED 4
-
-	define TailBot : (-LongVJut) + QuarterStroke
-
-	define [RoundedTailStraightKnots yHoriz xDown wHoriz] : begin
-		local hd : FlatHookDepth [DivFrame 1]
-		local xTurn : xDown - hd.x
-		return : list
-			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot [mix SB RightSB 0.55] Stroke] yHoriz wHoriz
-			curl xTurn yHoriz [heading Rightward]
-			archv.superness DesignParameters.tightHookSuperness
-			flat xDown (yHoriz - hd.y) [heading Downward]
-			curl xDown TailBot [heading Downward]
-
-	define [RoundedTailDiagonalKnots yHoriz xDown wHoriz] : begin
-		local hd : FlatHookDepth [DivFrame 1]
-		local xTurn : xDown - hd.x
-		local xDiagEnd : xDown + [mix 0 Descender 0.24]
-		return : list
-			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot [mix SB RightSB 0.55] Stroke] yHoriz wHoriz
-			curl xTurn yHoriz [heading Rightward]
-			archv.superness DesignParameters.tightHookSuperness
-			flat xDown (yHoriz - hd.y) [widths.rhs Stroke]
-			curl xDiagEnd TailBot
 
 	define [ZetaShape tail] : glyph-proc
 		local fine : AdviceStroke 3
@@ -63,16 +37,15 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 					arcvh 16
 					flat (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) Descender
 					curl [Math.min (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1 - 1) [mix SB RightSB 0.5]] Descender
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : list
 					arcvh.superness DesignParameters.tightHookSuperness
 					flat [Math.min (Arc.xRHook - TanSlope * Stroke) : Arch.adjust-x.top [mix Arc.xLArc Arc.xRArc 0.55] Stroke] Stroke [widths.rhs.heading Stroke Rightward]
 					corner Arc.xRHook Stroke
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r     RightSB 0 RightSB
+			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
 			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			([Just TAIL-STRAIGHT-ROUNDED] || [Just TAIL-DIAGONAL-ROUNDED]) : ExtendBelowBaseAnchors TailBot
+			[Just TAIL-STRAIGHT-ROUNDED] : RoundedBendDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-ROUNDED] : RoundedBendTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	create-glyph "grek/zeta.curlyTail" : glyph-proc

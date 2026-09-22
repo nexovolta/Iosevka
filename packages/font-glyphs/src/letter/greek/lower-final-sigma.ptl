@@ -2,24 +2,20 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
 import [Box] from "@iosevka/geometry/box"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
 
 glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 	glyph-block-import Letter-Arc-Hook : Flat
-	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender FlatHookDepth
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedBendDescender RoundedBendTailDescender
 
 	define TAIL-CURLY            0
 	define TAIL-STRAIGHT         1
 	define TAIL-DIAGONAL         2
 	define TAIL-STRAIGHT-ROUNDED 3
 	define TAIL-DIAGONAL-ROUNDED 4
-
-	define TailBot : (-LongVJut) + QuarterStroke
 
 	define [FinalSigmaEndingKnots] : list
 		arcvh
@@ -29,29 +25,6 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 		arcvh
 		flat (RightSB - HookX + OX) (Descender + Stroke)
 		curl [Math.min (RightSB - [HSwToV : 1.5 * Stroke]) (RightSB - HookX + OX - 1)] (Descender + Stroke)
-
-	define [RoundedTailStraightKnots yHoriz xDown wHoriz] : begin
-		local hd : FlatHookDepth [DivFrame 1]
-		local xTurn : xDown - hd.x
-		return : list
-			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot [mix SB RightSB 0.55] Stroke] yHoriz wHoriz
-			curl xTurn yHoriz [heading Rightward]
-			archv.superness DesignParameters.tightHookSuperness
-			flat xDown (yHoriz - hd.y) [heading Downward]
-			curl xDown TailBot [heading Downward]
-
-	define [RoundedTailDiagonalKnots yHoriz xDown wHoriz] : begin
-		local hd : FlatHookDepth [DivFrame 1]
-		local xTurn : xDown - hd.x
-		local xDiagEnd : xDown + [mix 0 Descender 0.24]
-		return : list
-			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot [mix SB RightSB 0.55] Stroke] yHoriz wHoriz
-			curl xTurn yHoriz [heading Rightward]
-			archv.superness DesignParameters.tightHookSuperness
-			flat xDown (yHoriz - hd.y) [widths.lhs Stroke]
-			curl xDiagEnd TailBot
 
 	define [FinalSigmaShape tail] : glyph-proc
 		local box : new Box XH 0 SB RightSB
@@ -63,13 +36,12 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
 				[Just TAIL-CURLY] : FinalSigmaEndingKnots
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots 0 RightSB [widths.lhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots 0 RightSB [widths.lhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r     RightSB 0 RightSB
+			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
 			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			([Just TAIL-STRAIGHT-ROUNDED] || [Just TAIL-DIAGONAL-ROUNDED]) : ExtendBelowBaseAnchors TailBot
+			[Just TAIL-STRAIGHT-ROUNDED] : RoundedBendDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-ROUNDED] : RoundedBendTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	create-glyph "grek/sigmaFinal.curlyTail" : glyph-proc
@@ -107,13 +79,12 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
 				[Just TAIL-CURLY] : FinalSigmaEndingKnots
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots 0 RightSB [widths.lhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots 0 RightSB [widths.lhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r     RightSB 0 RightSB
+			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
 			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			([Just TAIL-STRAIGHT-ROUNDED] || [Just TAIL-DIAGONAL-ROUNDED]) : ExtendBelowBaseAnchors TailBot
+			[Just TAIL-STRAIGHT-ROUNDED] : RoundedBendDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-ROUNDED] : RoundedBendTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	create-glyph "grek/stigma.curlyTail" : glyph-proc
