@@ -300,12 +300,13 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : Translate 0 (+[mix bottom top 0.5])
 
 	define [FlipAsLambda top bot shape] : union : glyph-proc
-		set currentGlyph.gizmo : Italify (-para.slopeAngle)
 		include shape
-		set currentGlyph.gizmo : Italify (+para.slopeAngle)
-		include : Translate 0 (-[mix bot top 0.5])
+		local midY : mix bot top 0.5
+		include : Ungizmo
+		include : Translate 0 (-midY)
 		include : Scale (+1) (-1)
-		include : Translate 0 (+[mix bot top 0.5])
+		include : Translate 0 (+midY)
+		include : Regizmo
 
 	define [SquareTopYShape slabKind bottomShape top bot] : glyph-proc
 		local { doSlabTop doSlabBottom doSlabMotion } slabKind
