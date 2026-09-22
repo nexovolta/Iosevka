@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSerifs VMotionSerifs
 
 	define SLAB-NONE           { false false false }
 	define SLAB-AUTO           { SLAB  SLAB  false }
@@ -298,10 +299,52 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : Scale (+1) (-1)
 			include : Translate 0 (+[mix bottom top 0.5])
 
+	define [FlipAsLambda top bot shape] : union : glyph-proc
+		set currentGlyph.gizmo : Italify (-para.slopeAngle)
+		include shape
+		set currentGlyph.gizmo : Italify (+para.slopeAngle)
+		include : Translate 0 (-[mix bot top 0.5])
+		include : Scale (+1) (-1)
+		include : Translate 0 (+[mix bot top 0.5])
+
+	define [SquareTopYShape slabKind bottomShape top bot] : glyph-proc
+		local { doSlabTop doSlabBottom doSlabMotion } slabKind
+		local yVertex : if (bot < 0) 0 : mix bot top 0.4
+		include : with-transform [ApparentTranslate 0 yVertex]
+			VSquareTopShape [DivFrame 1] (top - yVertex) Stroke
+		match bottomShape
+			[Just BS-TURN] : include : difference
+				dispiro
+					widths.center Stroke
+					flat Middle yVertex [heading Downward]
+					curl Middle (bot + [Math.max Stroke : 0.35 * (yVertex - bot)]) [heading Downward]
+					arcvh
+					flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) bot [heading Leftward]
+					curl (SB + OX) bot [heading Leftward]
+				MaskAbove yVertex
+			[Just BS-LOOP] : include : difference
+				dispiro
+					widths.center Stroke
+					flat Middle yVertex [heading Downward]
+					curl Middle (bot + [Math.max Stroke : 0.4 * (yVertex - bot)]) [heading Downward]
+					arcvh
+					g4 [Arch.adjust-x.bot : mix Middle SB 0.55] bot
+					archv
+					g4 (SB + OX) [mix bot yVertex 0.55]
+					arcvh
+					flat [Arch.adjust-x.top : mix Middle SB 0.35] (yVertex - HalfStroke) [heading Rightward]
+					curl Middle (yVertex - HalfStroke) [heading Rightward]
+				MaskAbove yVertex
+			__ : if (bot < yVertex) : include : VBar.m Middle bot yVertex
+		if doSlabTop : include : VSerifs [DivFrame 1] false top
+		if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
+		if (doSlabBottom && !bottomShape) : include : HSerif.mb Middle bot MidJutCenter
+
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
-			straight      true
-			curly         false
+			straight      { true  false }
+			curly         { false false }
+			squareTop     { true  true  }
 		object # hook
 			""            BS-STRAIGHT
 			turn          BS-TURN
@@ -312,7 +355,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			serifed       SLAB-ALL
 			motionSerifed SLAB-MOTION
 
-	foreach { suffix { straightBar bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
+	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
 		define Shapes : NonCursiveYShapeT straightBar bottomShape slabKind
 
 		create-glyph "y.\(suffix)" : glyph-proc
@@ -320,15 +363,21 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'overlay' Middle 0
 			set-base-anchor 'strike'  Middle (XH / 2)
 			set-base-anchor 'yBelowDot' (RightSB - 0.5 * DotRadius) (Descender + AccentStackOffset + DotRadius)
-			include : Shapes.SmallYShape XH Descender
+			if fSquareTop : include : SquareTopYShape slabKind bottomShape XH Descender
+			if [not fSquareTop] : include : Shapes.SmallYShape XH Descender
 
-		create-glyph "yCap.\(suffix)" : glyph-proc
+		if fSquareTop : create-glyph "yCap.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			set-base-anchor 'overlay' Middle (0 - Descender)
+			set-base-anchor 'strike'  Middle (XH / 2 - Descender)
+			include : SquareTopYShape slabKind bottomShape CAP 0
+		if [not fSquareTop] : create-glyph "yCap.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			set-base-anchor 'overlay' Middle (0 - Descender)
 			set-base-anchor 'strike'  Middle (XH / 2 - Descender)
 			include : Shapes.SmallYShape CAP 0
 
-		create-glyph "yHookRight.\(suffix)" : glyph-proc
+		if [not fSquareTop] : create-glyph "yHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			set-base-anchor 'overlay' Middle 0
 			set-base-anchor 'strike'  Middle (XH / 2)
@@ -338,25 +387,36 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include [refer-glyph "y.\(suffix)"] AS_BASE ALSO_METRICS
 			include : HOverlayBar (Middle - LongJut * 0.75) (Middle + LongJut * 0.75) 0
 
-		create-glyph "grek/lambda.\(suffix)" : glyph-proc
-			include : MarkSet.b
-			include : Shapes.SmallLambdaShape Ascender 0
+		if [not fSquareTop] : begin
+			create-glyph "grek/lambda.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : Shapes.SmallLambdaShape Ascender 0
 
-		create-glyph "grek/lambdaTailed.\(suffix)" : glyph-proc
-			include : MarkSet.b
-			include : Shapes.SmallLambdaTailedShape Ascender 0
+			create-glyph "grek/lambdaTailed.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : Shapes.SmallLambdaTailedShape Ascender 0
 
-		create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
-			include : MarkSet.b
-			include : union
-				FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
-				Shapes.SmallLambdaShape Ascender 0
+			create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : union
+					FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
+					Shapes.SmallLambdaShape Ascender 0
 
-		create-glyph "latn/lambdaStrokeTailed.\(suffix)" : glyph-proc
-			include : MarkSet.b
-			include : union
-				FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
-				Shapes.SmallLambdaTailedShape Ascender 0
+			create-glyph "latn/lambdaStrokeTailed.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : union
+					FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
+					Shapes.SmallLambdaTailedShape Ascender 0
+
+	define UeSquareConfig : object
+		squareTopSerifless     SLAB-NONE
+		squareTopMotionSerifed SLAB-MOTION
+		squareTopSerifed       SLAB-ALL
+
+	foreach { suffix slabKind } [Object.entries UeSquareConfig] : do
+		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : SquareTopYShape slabKind BS-STRAIGHT XH Descender
 
 	alias 'grek/lambda.tailedTurn'                     null 'grek/lambdaTailed.straightTurn'
 	alias 'latn/lambdaStroke.tailedTurn'               null 'latn/lambdaStrokeTailed.straightTurn'
@@ -443,6 +503,30 @@ glyph-block Letter-Latin-Lower-Y : begin
 				top   -- 0
 				bot   -- (Descender + Stroke)
 				space -- { [if hookEnd (SB + [HSwToV Stroke]) 0] Width }
+
+	create-glyph 'grek/lambda.squareBottomSerifless' : glyph-proc
+		include : MarkSet.b
+		include : FlipAsLambda Ascender 0 : SquareTopYShape SLAB-NONE BS-TURN Ascender 0
+
+	create-glyph 'latn/lambdaStroke.squareBottomSerifless' : glyph-proc
+		include : MarkSet.b
+		include : union
+			FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
+			FlipAsLambda Ascender 0 : SquareTopYShape SLAB-NONE BS-TURN Ascender 0
+
+	create-glyph 'grek/lambda.cursiveSerifless' : glyph-proc
+		include : MarkSet.b
+		include : FlipAsLambda Ascender 0 : glyph-proc
+			include : CursiveYShape.Arc Ascender (Ascender - XH)
+			include : CursiveYShape.Hook Ascender 0
+
+	create-glyph 'latn/lambdaStroke.cursiveSerifless' : glyph-proc
+		include : MarkSet.b
+		include : union
+			FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
+			FlipAsLambda Ascender 0 : glyph-proc
+				include : CursiveYShape.Arc Ascender (Ascender - XH)
+				include : CursiveYShape.Hook Ascender 0
 
 	select-variant 'y' 'y'
 	link-reduced-variant 'y/sansSerif' 'y' MathSansSerif

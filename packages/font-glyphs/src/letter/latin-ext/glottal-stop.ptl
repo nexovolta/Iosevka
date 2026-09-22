@@ -15,83 +15,181 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	define [AdviceGlottalStopArchDepth top sign] : begin
 		return : (top - 0) * 0.24 + Stroke * 0.385 + sign * TanSlope * SmoothAdjust
 
-	create-glyph 'glottalStop' 0x294 : glyph-proc
-		include : MarkSet.b
-		local adb : AdviceGlottalStopArchDepth Ascender (+1)
+	define [YConnectT top bowlFloor] : mix bowlFloor (top - HalfStroke) 0.375
+	define [BowlFloor top stemBot] : Math.max stemBot : Math.max (top * 0.3) (DotSize * 1.5)
+
+	# Question-mark bodies, parameterized so letters can extend the stem to the baseline.
+	glyph-block-export QuestionSmoothShape QuestionRevSmoothShape
+	glyph-block-export QuestionCornerShape QuestionRevCornerShape
+	glyph-block-export QuestionCornerFlatShape QuestionRevCornerFlatShape
+	glyph-block-export QuestionSmoothFlatHookedShape QuestionRevSmoothFlatHookedShape
+
+	define [QuestionSmoothShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local strokeEndCor : Math.hypot 1 TanSlope
 		include : dispiro
 			widths.rhs
-			g4 SB      (Ascender - Hook)
-			HookStart Ascender
-			g4 RightSB (Ascender - adb)
-			alsoThru.g2 0.5 0.5 important
-			flat (Middle + [HSwToV HalfStroke]) [mix 0 XH 0.3]
-			curl (Middle + [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			g4 left (top - hook)
+			HookStart top
+			g4 right (top - ArchDepthB * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
 
-	create-glyph 'revGlottalStop' 0x295 : glyph-proc
-		include : MarkSet.b
-		local ada : AdviceGlottalStopArchDepth Ascender (-1)
+	define [QuestionRevSmoothShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local strokeEndCor : Math.hypot 1 TanSlope
 		include : dispiro
 			widths.lhs
-			g4 RightSB (Ascender - Hook)
-			HookStart Ascender
-			g4 SB      (Ascender - ada)
-			alsoThru.g2 0.5 0.5 important
-			flat (Middle - [HSwToV HalfStroke]) [mix 0 XH 0.3]
-			curl (Middle - [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			g4 right (top - hook)
+			HookStart top
+			g4 left (top - ArchDepthA * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
 
-	create-glyph 'capGlottalStop' 0x241 : glyph-proc
-		include : MarkSet.capital
-		local adb : AdviceGlottalStopArchDepth CAP (+1)
+	define [QuestionCornerShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
 		include : dispiro
 			widths.rhs
-			g4 SB      (CAP - Hook)
-			HookStart CAP
-			g4 RightSB (CAP - adb)
-			alsoThru.g2 0.5 0.5 important
-			flat (Middle + [HSwToV HalfStroke]) [mix 0 XH 0.3]
-			curl (Middle + [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			g4 left (top - hook)
+			HookStart top
+			g4 (right - OX) [YSmoothMidR top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.left.end [mix left right 0.5] (yConnect - Stroke) [heading Leftward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
 
-	create-glyph 'revCapGlottalStop' 0xA7CE : glyph-proc
-		include : MarkSet.capital
-		local ada : AdviceGlottalStopArchDepth CAP (-1)
+	define [QuestionRevCornerShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
 		include : dispiro
 			widths.lhs
-			g4 RightSB (CAP - Hook)
-			HookStart CAP
-			g4 SB      (CAP - ada)
-			alsoThru.g2 0.5 0.5 important
-			flat (Middle - [HSwToV HalfStroke]) [mix 0 XH 0.3]
-			curl (Middle - [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			g4 right (top - hook)
+			HookStart top
+			g4 (left + OX) [YSmoothMidL top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.right.end [mix left right 0.5] (yConnect - Stroke) [heading Rightward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
 
-	create-glyph 'smallGlottalStop' 0x242 : glyph-proc
-		include : MarkSet.e
-		local adb : AdviceGlottalStopArchDepth XH (+1)
+	define [QuestionCornerFlatShape top stemBot left right _hook] : glyph-proc
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
 		include : dispiro
 			widths.rhs
-			g4 SB      (XH - SHook)
-			HookStart XH
-			g4 RightSB (XH - adb)
-			alsoThru.g2 0.5 0.5 important
-			flat (Middle + [HSwToV HalfStroke]) [mix 0 XH 0.15]
-			curl (Middle + [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			flat [mix left right 0.125] top [heading Rightward]
+			curl [Arch.adjust-x.top (right - depth)] top
+			archv
+			g4 (right - OX) [YSmoothMidR top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.left.end [mix left right 0.5] (yConnect - Stroke) [heading Leftward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
 
-	create-glyph 'revSmallGlottalStop' 0xA7CF : glyph-proc
-		include : MarkSet.e
-		local ada : AdviceGlottalStopArchDepth XH (-1)
+	define [QuestionRevCornerFlatShape top stemBot left right _hook] : glyph-proc
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
 		include : dispiro
 			widths.lhs
-			g4 RightSB (XH - SHook)
-			HookStart XH
-			g4 SB      (XH - ada)
+			flat [mix right left 0.125] top [heading Leftward]
+			curl [Arch.adjust-x.bot (left + depth)] top
+			archv
+			g4 (left + OX) [YSmoothMidL top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.right.end [mix left right 0.5] (yConnect - Stroke) [heading Rightward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
+
+	define [QuestionSmoothFlatHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
+		local strokeEndCor : Math.hypot 1 TanSlope
+		include : dispiro
+			widths.rhs
+			flat [mix left right 0.125] top [heading Rightward]
+			curl [Arch.adjust-x.top (right - depth)] top
+			archv
+			g4 left (top - hook)
+			g4 right (top - ArchDepthB * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
+
+	define [QuestionRevSmoothFlatHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
+		local strokeEndCor : Math.hypot 1 TanSlope
+		include : dispiro
+			widths.lhs
+			flat [mix right left 0.125] top [heading Leftward]
+			curl [Arch.adjust-x.bot (left + depth)] top
+			archv
+			g4 right (top - hook)
+			g4 left (top - ArchDepthA * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
+
+	# Existing letter ʔ construction — default `smooth` so the current shape is unchanged.
+	define [SmoothLetterShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local adb : AdviceGlottalStopArchDepth top (+1)
+		local xMid : mix left right 0.5
+		local pStem : if (top > [mix XH CAP 0.5]) 0.3 0.15
+		include : dispiro
+			widths.rhs
+			g4 left (top - hook)
+			HookStart top
+			g4 right (top - adb)
 			alsoThru.g2 0.5 0.5 important
-			flat (Middle - [HSwToV HalfStroke]) [mix 0 XH 0.15]
-			curl (Middle - [HSwToV HalfStroke]) 0 [heading Downward]
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+			flat (xMid + [HSwToV HalfStroke]) [mix stemBot XH pStem]
+			curl (xMid + [HSwToV HalfStroke]) stemBot [heading Downward]
+
+	define [RevSmoothLetterShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local ada : AdviceGlottalStopArchDepth top (-1)
+		local xMid : mix left right 0.5
+		local pStem : if (top > [mix XH CAP 0.5]) 0.3 0.15
+		include : dispiro
+			widths.lhs
+			g4 right (top - hook)
+			HookStart top
+			g4 left (top - ada)
+			alsoThru.g2 0.5 0.5 important
+			flat (xMid - [HSwToV HalfStroke]) [mix stemBot XH pStem]
+			curl (xMid - [HSwToV HalfStroke]) stemBot [heading Downward]
+
+	define ForwardBodies : object
+		smooth           SmoothLetterShape
+		corner           QuestionCornerShape
+		cornerFlatHooked QuestionCornerFlatShape
+	define ReverseBodies : object
+		smooth           RevSmoothLetterShape
+		corner           QuestionRevCornerShape
+		cornerFlatHooked QuestionRevCornerFlatShape
+
+	define [CreateGlottalFamily gn marks top hook Bodies] : begin
+		foreach { suffix Impl } [Object.entries Bodies] : do
+			create-glyph "\(gn).\(suffix)" : glyph-proc
+				include : marks
+				include : Impl top 0 SB RightSB hook
+				if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+
+	CreateGlottalFamily 'glottalStop'            MarkSet.b        Ascender Hook  ForwardBodies
+	CreateGlottalFamily 'revGlottalStop'         MarkSet.b        Ascender Hook  ReverseBodies
+	CreateGlottalFamily 'capGlottalStop'         MarkSet.capital  CAP      Hook  ForwardBodies
+	CreateGlottalFamily 'revCapGlottalStop'      MarkSet.capital  CAP      Hook  ReverseBodies
+	CreateGlottalFamily 'smallGlottalStop'       MarkSet.e        XH       SHook ForwardBodies
+	CreateGlottalFamily 'revSmallGlottalStop'    MarkSet.e        XH       SHook ReverseBodies
+	CreateGlottalFamily 'mdfGlottalStop/base'    MarkSet.capital  CAP      Hook  ForwardBodies
+	CreateGlottalFamily 'mdfRevGlottalStop/base' MarkSet.capital  CAP      Hook  ReverseBodies
+
+	select-variant 'glottalStop'            0x294
+	select-variant 'revGlottalStop'         0x295  (follow -- 'glottalStop')
+	select-variant 'capGlottalStop'         0x241  (follow -- 'glottalStop')
+	select-variant 'revCapGlottalStop'      0xA7CE (follow -- 'glottalStop')
+	select-variant 'smallGlottalStop'       0x242  (follow -- 'glottalStop')
+	select-variant 'revSmallGlottalStop'    0xA7CF (follow -- 'glottalStop')
+	select-variant 'mdfGlottalStop/base'    null   (follow -- 'glottalStop')
+	select-variant 'mdfRevGlottalStop/base' null   (follow -- 'glottalStop')
 
 	CreateTurnedLetter 'invGlottalStop' 0x296 'revGlottalStop' HalfAdvance (Ascender / 2)
 
@@ -107,20 +205,20 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			CurlyTail.n [AdviceStroke 3.5] 0 SB RightSB 0 (0 + ada)
 		if SLAB : include : HSerif.mt Middle Ascender MidJutCenter
 
-	create-glyph 'glottalStopBar' 0x2A1 : glyph-proc
-		include [refer-glyph 'glottalStop'] AS_BASE
+	derive-glyphs 'glottalStopBar' 0x2A1 'glottalStop' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.m.in Middle [if SLAB Stroke 0] [mix 0 Ascender 0.5] 0.5
 
-	create-glyph 'revGlottalStopBar' 0x2A2 : glyph-proc
-		include [refer-glyph 'revGlottalStop'] AS_BASE
+	derive-glyphs 'revGlottalStopBar' 0x2A2 'revGlottalStop' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.m.in Middle [if SLAB Stroke 0] [mix 0 Ascender 0.5] 0.5
 
-	create-glyph 'revGlottalStopPalatalHook' 0x1DF3A : glyph-proc
-		include [refer-glyph 'revGlottalStop'] AS_BASE
+	derive-glyphs 'revGlottalStopPalatalHook' 0x1DF3A 'revGlottalStop' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : PalatalHook.rSideJut (Middle + [HSwToV HalfStroke]) 0 (jut -- [if SLAB MidJutCenter Jut])
 
-	create-glyph 'glottalStopDblBar' 0x1DF56 : glyph-proc
-		include [refer-glyph 'glottalStop'] AS_BASE
+	derive-glyphs 'glottalStopDblBar' 0x1DF56 'glottalStop' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
 		local gap : (XH - 0) * 0.2
 		local yBot : if SLAB Stroke 0
 		local yTop : mix 0 Ascender 0.5

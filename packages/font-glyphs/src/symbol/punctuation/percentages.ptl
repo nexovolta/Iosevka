@@ -185,6 +185,55 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			include : OShape otop  0  l2 r2 swp adap adbp
 			include : OShape otop  0  l3 r3 swp adap adbp
 
+	create-glyph 'percent.circlesContinuousSlash' : glyph-proc
+		set-width Width
+		local l   : SB / 2
+		local r   : Width - l
+		local cell : r - l
+		local d : Math.min (cell * 0.46) (CAP * 0.40)
+		local swRing : AdviceStroke 3.75
+		local swBar  : AdviceStroke 3.75
+		local fineBar : AdviceStroke 4.5
+		local ada : d / 2
+		local adb : d / 2
+		local cor : DiagCorDs CAP (r - l) swBar
+
+		include : OShape CAP (CAP - d) l (l + d) swRing ada adb
+		include : OShape d 0 (r - d) r swRing ada adb
+		include : dispiro
+			corner r CAP [widths.rhs.heading (swBar * cor) Downward]
+			corner [mix r l 0.5] [mix CAP 0 0.5] [widths.center.heading (fineBar * cor) Downward]
+			corner l 0 [widths.lhs.heading (swBar * cor) Downward]
+
+		create-forked-glyph 'percent.circlesContinuousSlashAlsoConnected' : difference
+			HBar.t [Arch.adjust-x.top [mix l (l + d) 0.5] swRing] (r - [HSwToV swBar]) CAP fineBar
+			OShapeOutline.NoOvershoot CAP (CAP - d) l (l + d) swRing ada adb
+
+	create-glyph 'percent.circlesSegmentedSlash' : glyph-proc
+		set-width Width
+		local l   : SB / 2
+		local r   : Width - l
+		local cell : r - l
+		local d : Math.min (cell * 0.46) (CAP * 0.40)
+		local swRing : AdviceStroke 3.5
+		local swBar : AdviceStroke 3
+		local fine : AdviceStroke 4
+		local ada : d / 2
+		local adb : d / 2
+		local cor : DiagCorDs CAP (r - l) swBar
+		local pFine : 0.5 - [Math.max (CAP / 10) HalfStroke] / [Math.hypot CAP (r - l)]
+
+		include : OShape CAP (CAP - d) l (l + d) swRing ada adb
+		include : OShape d 0 (r - d) r swRing ada adb
+		include : dispiro
+			widths.rhs (swBar * cor)
+			flat r CAP [heading Downward]
+			curl [mix r l pFine] [mix CAP 0 pFine] [widths.heading (fine * cor) 0 Downward]
+		include : dispiro
+			widths.rhs (swBar * cor)
+			flat l 0 [heading Upward]
+			curl [mix l r pFine] [mix 0 CAP pFine] [widths.heading (fine * cor) 0 Upward]
+
 	select-variant 'percent' '%'
 	select-variant 'permille.NWID'  [NarrowUnicode 0x2030] (follow -- 'permille.NWID')
 	select-variant 'permille.WWID'  [WideUnicode   0x2030] (follow -- 'permille.WWID')

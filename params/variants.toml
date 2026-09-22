@@ -4550,7 +4550,7 @@ selector."lRTail/reduced/decompress" = "seriflessRTailDec"
 selector.lCurlyTail = "serifless"
 selector."lyogh/l" = "serifless"
 
-[prime.l.variants.zshaped]
+[prime.l.variants.z-shaped]
 rank = 4
 groupRank = 1
 description = "Z-shaped `l`"
@@ -6265,6 +6265,14 @@ selectorAffix.w = "doubleV"
 selectorAffix."w/sansSerif" = "doubleV"
 selectorAffix.wHookRight = "doubleV"
 
+[prime.w.variants-buildup.stages.center.reverse-asymmetric]
+rank = 6
+enableIf = [{ body = "straight" }, { body = "curly" }, { body = "square-top" }]
+descriptionAffix = "reverse-asymmetric center"
+selectorAffix.w = "reverseAsymmetric"
+selectorAffix."w/sansSerif" = "reverseAsymmetric"
+selectorAffix.wHookRight = "reverseAsymmetric"
+
 [prime.w.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
@@ -6286,7 +6294,7 @@ rank = 3
 descriptionAffix = "serifs"
 selectorAffix.w = "serifed"
 selectorAffix."w/sansSerif" = "serifless"
-selectorAffix.wHookRight = { if = [{ center = "flat-top" }, { center = "asymmetric" }, { center = "double-v" }], then = "motionSerifed", else = "serifed" }
+selectorAffix.wHookRight = { if = [{ center = "flat-top" }, { center = "asymmetric" }, { center = "reverse-asymmetric" }, { center = "double-v" }], then = "motionSerifed", else = "serifed" }
 
 
 
@@ -6461,6 +6469,15 @@ selectorAffix."y/sansSerif" = "cursive"
 selectorAffix."y/nonCursive" = "straight"
 selectorAffix.yHookRight = "cursive"
 selectorAffix.yLoop = "straightLoop"
+
+[prime.y.variants-buildup.stages.body.square-top]
+rank = 4
+descriptionAffix = "square top"
+selectorAffix.y = "squareTop"
+selectorAffix."y/sansSerif" = "squareTop"
+selectorAffix."y/nonCursive" = "straight"
+selectorAffix.yHookRight = "straight"
+selectorAffix.yLoop = "squareTopLoop"
 
 [prime.y.variants-buildup.stages.hook."*"]
 next = "serifs"
@@ -7775,6 +7792,18 @@ rank = 6
 description = "More curly Greek lower Lambda (`λ`), with a tail turns leftward at top, a tail turns right at bottom-right, and curly bottom-left leg"
 selector."grek/lambda" = "curlyTailedTurnSerifless"
 selector."latn/lambda" = "curlyTailedTurn"
+
+[prime.lower-lambda.variants.square-bottom]
+rank = 7
+description = "Greek lower Lambda (`λ`) with square bottom and a hooked top, based on square-top `y`"
+selector."grek/lambda" = "squareBottomSerifless"
+selector."latn/lambda" = "squareBottomSerifless"
+
+[prime.lower-lambda.variants.cursive]
+rank = 8
+description = "Cursive Greek lower Lambda (`λ`), following serifless cursive `y`"
+selector."grek/lambda" = "cursiveSerifless"
+selector."latn/lambda" = "cursiveSerifless"
 
 
 
@@ -9671,6 +9700,14 @@ selectorAffix."cyrl/Ue" = "straight"
 selectorAffix."cyrl/Izhitsa" = "straight"
 selectorAffix."cyrl/Psi/Izhitsa" = "straight"
 
+[prime.cyrl-capital-u.variants-buildup.stages.body.square-top]
+rank = 4
+descriptionAffix = "square top"
+selectorAffix."cyrl/U" = "squareTop"
+selectorAffix."cyrl/Ue" = "straight"
+selectorAffix."cyrl/Izhitsa" = "straight"
+selectorAffix."cyrl/Psi/Izhitsa" = "straight"
+
 [prime.cyrl-capital-u.variants-buildup.stages.hook."*"]
 next = "serifs"
 
@@ -9763,6 +9800,15 @@ descriptionAffix = "cursive shape"
 selectorAffix."cyrl/u" = "cursive"
 selectorAffix."cyrl/u/nonCursive" = "straight"
 selectorAffix."cyrl/ue" = "straight"
+selectorAffix."cyrl/izhitsa" = "straight"
+selectorAffix."cyrl/psi/izhitsa" = "straight"
+
+[prime.cyrl-u.variants-buildup.stages.body.square-top]
+rank = 4
+descriptionAffix = "square top"
+selectorAffix."cyrl/u" = "squareTop"
+selectorAffix."cyrl/u/nonCursive" = "straight"
+selectorAffix."cyrl/ue" = "squareTop"
 selectorAffix."cyrl/izhitsa" = "straight"
 selectorAffix."cyrl/psi/izhitsa" = "straight"
 
@@ -10479,6 +10525,28 @@ selectorAffix."cyrl/yaye/ya" = "bottomLeftSerifed"
 
 
 
+[prime.glottal-stop]
+sampler = "ʔ"
+samplerExplain = "Glottal stop"
+tagKind = "letter"
+
+[prime.glottal-stop.variants.smooth]
+rank = 1
+description = "Smooth glottal stop (`ʔ`)"
+selector.glottalStop = "smooth"
+
+[prime.glottal-stop.variants.corner]
+rank = 2
+description = "Glottal stop (`ʔ`) with a corner at middle"
+selector.glottalStop = "corner"
+
+[prime.glottal-stop.variants.corner-flat-hooked]
+rank = 3
+description = "Glottal stop (`ʔ`) with a corner at middle and flat hook"
+selector.glottalStop = "cornerFlatHooked"
+
+
+
 [prime.tittle]
 sampler = "ij "
 hotChars = "ij"
@@ -11185,6 +11253,27 @@ selector.percent = "ringsContinuousSlashAlsoConnected"
 selector."permille.NWID" = "ringsContinuousSlash"
 selector."permille.WWID" = "ringsContinuousSlashAlsoConnected"
 
+[prime.percent.variants.circles-segmented-slash]
+rank = 5
+description = "Percent `%` with circular zeros and segmented slash"
+selector.percent = "circlesSegmentedSlash"
+selector."permille.NWID" = "ringsContinuousSlash"
+selector."permille.WWID" = "ringsContinuousSlash"
+
+[prime.percent.variants.circles-continuous-slash]
+rank = 6
+description = "Percent `%` with circular zeros and continuous bar"
+selector.percent = "circlesContinuousSlash"
+selector."permille.NWID" = "ringsContinuousSlash"
+selector."permille.WWID" = "ringsContinuousSlash"
+
+[prime.percent.variants.circles-continuous-slash-also-connected]
+rank = 7
+description = "Percent `%` with circular zeros and continuous bar and the slash in `%` is also connected to the top-left zero"
+selector.percent = "circlesContinuousSlashAlsoConnected"
+selector."permille.NWID" = "ringsContinuousSlash"
+selector."permille.WWID" = "ringsContinuousSlash"
+
 
 
 [prime.bar]
@@ -11222,6 +11311,11 @@ selector.question = "corner"
 rank = 3
 description = "Question mark (`?`) with a corner at middle and flat hook"
 selector.question = "cornerFlatHooked"
+
+[prime.question.variants.smooth-flat-hooked]
+rank = 4
+description = "Smooth question mark (`?`) with flat hook"
+selector.question = "smoothFlatHooked"
 
 
 
@@ -11575,6 +11669,7 @@ z = "straight-serifless"
 capital-eszet = "flat-top-serifless"
 long-s = "bent-hook-serifless"
 eszet = "sulzbacher-serifless"
+glottal-stop = "smooth"
 lower-eth = "curly-bar"
 capital-thorn = "serifless"
 lower-thorn = "serifless"
@@ -11858,7 +11953,7 @@ g = "double-storey"
 i = "hooky"
 j = "serifed"
 k = "straight-serifless"
-l = "zshaped"
+l = "z-shaped"
 r = "serifless"
 t = "bent-hook-short-neck"
 u = "toothed-serifless"
@@ -12708,7 +12803,7 @@ g = "single-storey-earless-corner"
 i = "zshaped"
 j = "serifed"
 k = "symmetric-touching-serifless"
-l = "zshaped"
+l = "z-shaped"
 q = "earless-corner-straight-serifless"
 r = "corner-hooked-serifless"
 t = "bent-hook-short-neck"
@@ -12838,7 +12933,7 @@ g = "double-storey"
 i = "serifed"
 j = "serifed"
 k = "curly-serifless"
-l = "zshaped"
+l = "z-shaped"
 r = "serifless"
 t = "bent-hook"
 u = "toothed-serifless"

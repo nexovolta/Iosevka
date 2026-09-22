@@ -41,87 +41,16 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				yAttach -- DotRadius
 
 	do "Question"
-		define [YConnectT top emotionBottom] : mix emotionBottom (top - HalfStroke) 0.375
-
-		define [SmoothShape top emotionBottom left right] : glyph-proc
-			local strokeEndCor : Math.hypot 1 TanSlope
-			include : dispiro
-				widths.rhs
-				g4 left (top - Hook)
-				HookStart top
-				g4 right (top - ArchDepthB * 0.9)
-				alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
-				straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) emotionBottom [widths.lhs.heading (Stroke * strokeEndCor) Downward]
-
-		define [RevSmoothShape top emotionBottom left right] : glyph-proc
-			local strokeEndCor : Math.hypot 1 TanSlope
-			include : dispiro
-				widths.lhs
-				g4 right (top - Hook)
-				HookStart top
-				g4 left (top - ArchDepthA * 0.9)
-				alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
-				straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) emotionBottom [widths.rhs.heading (Stroke * strokeEndCor) Downward]
-
-		define [CornerShape top emotionBottom left right] : glyph-proc
-			local questionYConnect : YConnectT top emotionBottom
-			include : dispiro
-				widths.rhs
-				g4 left (top - Hook)
-				HookStart top
-				g4 (right - OX) [YSmoothMidR top (questionYConnect - Stroke) ArchDepthA ArchDepthB]
-				arcvh
-				straight.left.end [mix left right 0.5] (questionYConnect - Stroke) [heading Leftward]
-			include : VBar.m [mix left right 0.5] emotionBottom questionYConnect
-
-		define [RevCornerShape top emotionBottom left right] : glyph-proc
-			local questionYConnect : YConnectT top emotionBottom
-			include : dispiro
-				widths.lhs
-				g4 right (top - Hook)
-				HookStart top
-				g4 (left + OX) [YSmoothMidL top (questionYConnect - Stroke) ArchDepthA ArchDepthB]
-				arcvh
-				straight.right.end [mix left right 0.5] (questionYConnect - Stroke) [heading Rightward]
-			include : VBar.m [mix left right 0.5] emotionBottom questionYConnect
-
-		define [CornerFlatShape top emotionBottom left right] : glyph-proc
-			local questionYConnect : YConnectT top emotionBottom
-			local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
-			include : dispiro
-				widths.rhs
-				flat [mix left right 0.125] top [heading Rightward]
-				curl [Arch.adjust-x.top (right - depth)] top
-				archv
-				g4 (right - OX) [YSmoothMidR top (questionYConnect - Stroke) ArchDepthA ArchDepthB]
-				arcvh
-				straight.left.end [mix left right 0.5] (questionYConnect - Stroke) [heading Leftward]
-			include : VBar.m [mix left right 0.5] emotionBottom questionYConnect
-
-		define [RevCornerFlatShape top emotionBottom left right] : glyph-proc
-			local questionYConnect : YConnectT top emotionBottom
-			local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
-			include : dispiro
-				widths.lhs
-				flat [mix right left 0.125] top [heading Leftward]
-				curl [Arch.adjust-x.bot (left + depth)] top
-				archv
-				g4 (left + OX) [YSmoothMidL top (questionYConnect - Stroke) ArchDepthA ArchDepthB]
-				arcvh
-				straight.right.end [mix left right 0.5] (questionYConnect - Stroke) [heading Rightward]
-			include : VBar.m [mix left right 0.5] emotionBottom questionYConnect
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothShape QuestionRevSmoothShape
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerShape QuestionRevCornerShape
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerFlatShape QuestionRevCornerFlatShape
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothFlatHookedShape QuestionRevSmoothFlatHookedShape
 
 		define HookConfig : object
-			smooth           { SmoothShape     RevSmoothShape }
-			corner           { CornerShape     RevCornerShape }
-			cornerFlatHooked { CornerFlatShape RevCornerFlatShape }
-		foreach { suffix { Body RevBody } } [Object.entries HookConfig] : do
-			create-glyph "mdfGlottalStop/base.\(suffix)" : glyph-proc
-				include : MarkSet.capital
-				include : Body CAP emotionBottom SB RightSB
-			create-glyph "mdfRevGlottalStop/base.\(suffix)" : glyph-proc
-				include : MarkSet.capital
-				include : RevBody CAP emotionBottom SB RightSB
+			smooth              { QuestionSmoothShape            QuestionRevSmoothShape }
+			corner              { QuestionCornerShape            QuestionRevCornerShape }
+			cornerFlatHooked    { QuestionCornerFlatShape        QuestionRevCornerFlatShape }
+			smoothFlatHooked    { QuestionSmoothFlatHookedShape  QuestionRevSmoothFlatHookedShape }
 
 		define Config : SuffixCfg.dotWeave DotVariants HookConfig
 		foreach { suffix { { DrawAt kdr overshoot } { Body RevBody } } } [Object.entries Config] : do
@@ -168,6 +97,3 @@ glyph-block Symbol-Punctuation-Emotion : begin
 			follows -- { 'punctuationDot' 'question' }
 
 		alias 'symbolForSubstituteFormTwo' 0x2426 'revQuestion'
-
-		select-variant 'mdfGlottalStop/base' null (follow -- 'question')
-		select-variant 'mdfRevGlottalStop/base' null (follow -- 'question')
