@@ -335,10 +335,15 @@ glyph-block Letter-Latin-Lower-Y : begin
 					flat [Arch.adjust-x.top : mix Middle SB 0.35] (yVertex - HalfStroke) [heading Rightward]
 					curl Middle (yVertex - HalfStroke) [heading Rightward]
 				MaskAbove yVertex
-			__ : if (bot < yVertex) : include : VBar.m Middle bot yVertex
+			__ : if (bot < yVertex) : begin
+				local xBot : mix Middle (SB + OX) 0.85
+				include : dispiro
+					widths.center Stroke
+					flat Middle yVertex
+					curl xBot bot
+				if doSlabBottom : include : HSerif.mb xBot bot MidJutCenter
 		if doSlabTop : include : VSerifs [DivFrame 1] false top
 		if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
-		if (doSlabBottom && !bottomShape) : include : HSerif.mb Middle bot MidJutCenter
 
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
