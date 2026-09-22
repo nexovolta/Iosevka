@@ -138,6 +138,11 @@ glyph-block Digits-Eight : begin
 		include : MarkSet.capital
 		include : EightCrossingAsymmetricShape CAP
 
+	create-glyph 'eight.lnum.crossingReverseAsymmetric' : glyph-proc
+		include : MarkSet.capital
+		include : with-transform [FlipAround Middle (CAP / 2) (-1) 1]
+			EightCrossingAsymmetricShape CAP
+
 	select-variant 'eight.lnum' [CodeLnum '8'] (follow -- 'eight')
 	alias 'eight.onum' [CodeOnum '8'] 'eight.lnum'
 

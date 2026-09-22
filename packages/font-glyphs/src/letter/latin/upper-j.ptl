@@ -108,6 +108,9 @@ glyph-block Letter-Latin-Upper-J : begin
 	define [JAsymmetricLongSerif df x top] : glyph-proc
 		include : HSerif.lt x top LongJut
 		include : HSerif.mt (x - [IBalance df]) top MidJutCenter
+	define [JAsymmetricFullTopbar df x top] : glyph-proc
+		include : JFullTopbar df x top
+		include : HSerif.rt x top Jut
 
 	define [JDescendingFlatHookBase df dfHook top] : glyph-proc
 		set-width df.width
@@ -135,6 +138,7 @@ glyph-block Letter-Latin-Upper-J : begin
 			asymmetricSerif        JAsymmetricSerif
 			symmetricMediumSerif   JSymmetricMediumSerif
 			asymmetricLongSerif    JAsymmetricLongSerif
+			asymmetricFullTopbar   JAsymmetricFullTopbar
 
 	foreach { suffix { {base df dfHook} serif } } [Object.entries JConfig] : do
 		create-glyph "J.\(suffix)" : glyph-proc
