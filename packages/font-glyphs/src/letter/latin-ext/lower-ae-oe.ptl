@@ -29,22 +29,33 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyConfig
 
 		foreach { suffix { body xTrailing hookStyle } } [Object.entries DoubleStoreyConfig] : do
+			create-glyph "ae/a.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.e
+				set-base-anchor 'cvDecompose' 0 0
+				local subDf : df.slice 3 2
+				include : body subDf hookStyle df.mvs
+				if xTrailing : set-base-anchor 'trailing' xTrailing 0
+
 			if (body === DoubleStorey.ToothlessRounded) : begin
-				create-glyph : glyph-proc
-					local df : include : DivFrame para.advanceScaleMM 3
-					include : df.markSet.e
+				create-glyph "ao/a.\(suffix)" : glyph-proc
+					local aoDf : include : DivFrame para.advanceScaleMM 3
+					include : aoDf.markSet.e
 					set-base-anchor 'cvDecompose' 0 0
-					local subDf : df.slice 3 2
-					local rise : ArchDepthBClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB
-					create-forked-glyph "ae/a.\(suffix)" : union
-						DoubleStorey.HookAndBar subDf hookStyle rise df.mvs (df.mvs * CThinB)
-						DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThinB)
-					create-forked-glyph "ao/a.\(suffix)" : union
-						DoubleStorey.HookAndBar subDf hookStyle rise df.mvs (df.mvs * CThin)
-						DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThin)
-					create-forked-glyph "au/a.\(suffix)" : union
-						DoubleStorey.HookAndBar subDf hookStyle rise df.mvs
-						DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThinB)
+					local aoSubDf : aoDf.slice 3 2
+					local rise : ArchDepthBClamped XH 0 aoSubDf.smallArchDepthA aoSubDf.smallArchDepthB
+					include : union
+						DoubleStorey.HookAndBar aoSubDf hookStyle rise aoDf.mvs (aoDf.mvs * CThin)
+						DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin)
+				create-glyph "au/a.\(suffix)" : glyph-proc
+					local auDf : include : DivFrame para.advanceScaleMM 3
+					include : auDf.markSet.e
+					set-base-anchor 'cvDecompose' 0 0
+					local auSubDf : auDf.slice 3 2
+					local rise : ArchDepthBClamped XH 0 auSubDf.smallArchDepthA auSubDf.smallArchDepthB
+					include : union
+						DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
+						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB)
 
 			create-glyph "aa.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -129,7 +140,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define df : DivFrame para.advanceScaleMM 3
 		define { subDf shift } : SubDfAndShift 1 df OX
 
-		foreach { suffix { body revbody } } [Object.entries SmallEConfig] : do
+		foreach { suffix { body revbody tailSlab } } [Object.entries SmallEConfig] : do
 			create-glyph "ae/e.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -139,6 +150,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						hook   -- AHook
 						ada    -- subDf.smallArchDepthA
 						adb    -- subDf.smallArchDepthB
+						styBot -- tailSlab
 
 			create-glyph "aInve/inve.\(suffix)" : glyph-proc
 				set-width 0
@@ -149,6 +161,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						hook   -- AHook
 						ada    -- subDf.smallArchDepthA
 						adb    -- subDf.smallArchDepthB
+						styBot -- tailSlab
 						turned -- true
 
 	do "u subglyphs"
@@ -414,7 +427,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 
 	select-variant "aa" 0xA733 (follow -- 'a/doubleStorey')
 
-	select-variant "ae/a"
+	select-variant "ae/a" (follow -- 'a/doubleStorey')
 	select-variant "ao/a" (follow -- 'ae/a')
 	select-variant "au/a" (follow -- 'ae/a')
 	select-variant "ae/e" (follow -- 'e')
