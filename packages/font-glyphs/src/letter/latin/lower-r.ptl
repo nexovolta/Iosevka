@@ -429,12 +429,15 @@ glyph-block Letter-Latin-Lower-R : begin
 		local xRStem : MidHeightRightHookXFromStem currentGlyph
 		local xStem : LFishHookStemXForGlyph xOrig r df xRStem
 		local xShift : xStem - xOrig
-		local xRShift : xStem - xRStem
+		local xJoin : HSwToV HalfStroke
+		local xRShift : xStem - xRStem - xJoin
 		currentGlyph.clearGeometry
 
-		local xAttach : xStem + [HSwToV HalfStroke] - O
+		# Clip through the stem (not at its right edge) so the hook overlaps and unions.
+		local xAttach : xStem - xJoin + O
 		include : union
 			LFishHookLOverlay l xShift
+			HBar.t (xStem - xJoin) (xStem + [HSwToV Stroke]) (XH + O)
 			intersection [MaskRight xAttach] : LFishHookRHook r xRShift
 
 		include : LeaningAnchor.Above.At xStem
