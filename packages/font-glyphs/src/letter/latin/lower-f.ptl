@@ -109,11 +109,13 @@ glyph-block Letter-Latin-Lower-F : begin
 		include : Translate (barLeft - barLeft0) 0
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
+		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
+		local hookSpanK : if (sym === SYM-LEFT) 0.5 1
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
 			[Just CH-SERIF]         : SmallFBottomSerif df
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
-			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max SB : barRight - (crossRight - barLeft)]
+			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define [NarrowStdFShapeT sink df offset barleft sw] : begin
@@ -150,11 +152,13 @@ glyph-block Letter-Latin-Lower-F : begin
 		local { xCrossLeft xCrossRight } : FCrossBarPos df sym narrowCrossLeft narrowCrossRight
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
+		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
+		local hookSpanK : if (sym === SYM-LEFT) 0.4 0.75
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
 			[Just CH-SERIF]         : SmallFBottomSerif df
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
-			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - 0.75 * (crossRight - barLeft)]
+			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define [NarrowFShape clcStyle] : function [df m bh counterHook sym] : glyph-proc
@@ -197,11 +201,13 @@ glyph-block Letter-Latin-Lower-F : begin
 			curl barLeft 0 [heading Downward]
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
+		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
+		local hookSpanK : if (sym === SYM-LEFT) 0.5 1
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
 			[Just CH-SERIF]         : NarrowBottomSerif df
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
-			[Just CH-HOOK]          : SmallFDownHook df barRight (barRight - (crossRight - barLeft))
+			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define SmallFConfig : SuffixCfg.weave
