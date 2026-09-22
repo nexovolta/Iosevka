@@ -101,7 +101,6 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		include : VBar.m [mix left right 0.5] stemBot yConnect
 
 	define [QuestionSmoothFlatHookedShape top stemBot left right _hook] : glyph-proc
-		local hook : fallback _hook Hook
 		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
 		local strokeEndCor : Math.hypot 1 TanSlope
 		include : dispiro
@@ -109,13 +108,11 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			flat [mix left right 0.125] top [heading Rightward]
 			curl [Arch.adjust-x.top (right - depth)] top
 			archv
-			g4 left (top - hook)
 			g4 right (top - ArchDepthB * 0.9)
 			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
 			straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
 
 	define [QuestionRevSmoothFlatHookedShape top stemBot left right _hook] : glyph-proc
-		local hook : fallback _hook Hook
 		local depth : Math.max (Stroke * 1.5) ((right - left) * 0.5)
 		local strokeEndCor : Math.hypot 1 TanSlope
 		include : dispiro
@@ -123,7 +120,6 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			flat [mix right left 0.125] top [heading Leftward]
 			curl [Arch.adjust-x.bot (left + depth)] top
 			archv
-			g4 right (top - hook)
 			g4 left (top - ArchDepthA * 0.9)
 			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
 			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
