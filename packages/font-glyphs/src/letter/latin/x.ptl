@@ -129,22 +129,46 @@ glyph-block Letter-Latin-X : begin
 			define lowerHalfLastKnot lowerHalf.rhsKnots.(lowerHalf.rhsKnots.length - 1)
 			set-base-anchor 'palatalHookAttach' lowerHalfLastKnot.x lowerHalfLastKnot.y
 
-	define STROKE-STRAIGHT     0
-	define STROKE-CURLY        1
-	define STROKE-CHANCERY     2
-	define STROKE-CURSIVE      3
-	define STROKE-CURSIVE-FLAT 4
-	define STROKE-H-SHAPED     5
+	define STROKE-STRAIGHT       0
+	define STROKE-CURLY          1
+	define STROKE-CHANCERY       2
+	define STROKE-CURSIVE        3
+	define STROKE-CURSIVE-FLAT   4
+	define STROKE-H-SHAPED       5
+	define STROKE-H-SHAPED-CURLY 6
 
-	# Symmetric-connected K legs on both sides, with no center stem.
-	define [HShapedXShape box sw] : glyph-proc
+	define [HShapedCurlyLegs left right stroke top xBar] : glyph-proc
+		local yMid : top / 2
+		include : intersection
+			Rect top 0 left VERY-FAR
+			dispiro
+				g4.down.start right top [widths.rhs.heading stroke Downward]
+				bezControls 0.0 0.3 0.5 0.65 8
+				g4 xBar yMid [widths.rhs stroke]
+		include : intersection
+			Rect top 0 left VERY-FAR
+			dispiro
+				g4.up.start (right - O) 0 [widths.lhs.heading stroke Upward]
+				quadControls 0 0.3 8
+				g4 xBar yMid [widths.lhs stroke]
+
+	define [HShapedXHalf fCurly left right sw height xBar] : glyph-proc
+		if fCurly
+		: then : include : HShapedCurlyLegs left right sw height xBar
+		: else : begin
+			local legs : KLegs.Symmetric 0
+			include : legs false left right sw height false 0
+
+	define [HShapedXShape box sw fCurly] : glyph-proc
 		local height : box.t - box.b
 		local mid box.xMid
+		local fine : [AdviceStroke 3.5] * (sw / Stroke)
+		local barHalf : [HSwToV : 0.5 * sw] + fine
 		local legsLeft : mid - [HSwToV : 0.5 * sw] - Width / 32
-		local legs : KLegs.Symmetric [AdviceStroke 6]
 		include : union
-			legs false legsLeft box.r sw height false 0
-			with-transform [FlipAround mid (height / 2)] : legs false legsLeft box.r sw height false 0
+			HShapedXHalf fCurly legsLeft box.r sw height (mid + barHalf)
+			with-transform [FlipAround mid (height / 2)] : HShapedXHalf fCurly legsLeft box.r sw height (mid + barHalf)
+		include : HBar.m (mid - barHalf) (mid + barHalf) (height / 2) sw
 		include : ApparentTranslate 0 box.b
 
 	glyph-block-export XLetterForm
@@ -164,7 +188,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t false sw
-				[Just STROKE-H-SHAPED] : HShapedXShape box sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : composite-proc
 					XCursiveHalfShape box.t box.b box.xMid box.r
 						swCoEnd  -- swCursiveCoEnd
@@ -177,7 +201,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				[Just STROKE-H-SHAPED] : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -192,13 +216,13 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.r box.t box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.t box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t true sw
-				[Just STROKE-H-SHAPED] : intersection [MaskRight box.xMid] : HShapedXShape box sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : intersection [MaskRight box.xMid] : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
 				__ : glyph-proc
 			include : match stroke2
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b true sw
-				[Just STROKE-H-SHAPED] : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -218,9 +242,10 @@ glyph-block Letter-Latin-X : begin
 	define XConfig : SuffixCfg.combine
 		SuffixCfg.weave # standard variants
 			object # body
-				straight                { STROKE-STRAIGHT STROKE-STRAIGHT }
-				curly                   { STROKE-CURLY    STROKE-CURLY    }
-				hShaped                 { STROKE-H-SHAPED STROKE-H-SHAPED }
+				straight                { STROKE-STRAIGHT       STROKE-STRAIGHT       }
+				curly                   { STROKE-CURLY          STROKE-CURLY          }
+				hShaped                 { STROKE-H-SHAPED       STROKE-H-SHAPED       }
+				hShapedCurly            { STROKE-H-SHAPED-CURLY STROKE-H-SHAPED-CURLY }
 			object # height
 				""                      { 0         'capital' 'e' }
 				descending              { Descender 'capDesc' 'p' }
