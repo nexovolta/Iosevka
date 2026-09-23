@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
-	glyph-block-import Letter-Latin-V : VSquareTopShape VSerifs VMotionSerifs
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs
 
 	define SLAB-NONE           { false false false }
 	define SLAB-AUTO           { SLAB  SLAB  false }
@@ -313,40 +313,71 @@ glyph-block Letter-Latin-Lower-Y : begin
 		local yVertex : if (bot < 0) 0 : mix bot top 0.4
 		# Centered stroke on `bot` would hang half a stroke below the metric.
 		local yHook : bot + HalfStroke
-		include : with-transform [ApparentTranslate 0 yVertex]
-			VSquareTopShape [DivFrame 1] (top - yVertex) Stroke
+		local df : DivFrame 1
+		local yJoinLocal : VSquareTopYJoin (top - yVertex)
+		local yJoinG : yVertex + yJoinLocal
 		match bottomShape
-			[Just BS-TURN] : include : difference
-				dispiro
-					widths.center Stroke
-					flat Middle yVertex [heading Downward]
-					curl Middle (yHook + [Math.max Stroke : 0.35 * (yVertex - yHook)]) [heading Downward]
-					arcvh
-					flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) yHook [heading Leftward]
-					curl (SB + OX) yHook [heading Leftward]
-				MaskAbove yVertex
-			[Just BS-LOOP] : include : difference
-				dispiro
-					widths.center Stroke
-					flat Middle yVertex [heading Downward]
-					curl Middle (yHook + [Math.max Stroke : 0.4 * (yVertex - yHook)]) [heading Downward]
-					arcvh
-					g4 [Arch.adjust-x.bot : mix Middle SB 0.55] yHook
-					archv
-					g4 (SB + OX) [mix yHook yVertex 0.55]
-					arcvh
-					flat [Arch.adjust-x.top : mix Middle SB 0.35] (yVertex - HalfStroke) [heading Rightward]
-					curl Middle (yVertex - HalfStroke) [heading Rightward]
-				MaskAbove yVertex
+			[Just BS-TURN] : begin
+				include : with-transform [ApparentTranslate 0 yVertex]
+					VSquareTopShape df (top - yVertex) Stroke
+				include : difference
+					dispiro
+						widths.center Stroke
+						flat Middle yVertex [heading Downward]
+						curl Middle (yHook + [Math.max Stroke : 0.35 * (yVertex - yHook)]) [heading Downward]
+						arcvh
+						flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) yHook [heading Leftward]
+						curl (SB + OX) yHook [heading Leftward]
+					MaskAbove yVertex
+			[Just BS-LOOP] : begin
+				include : with-transform [ApparentTranslate 0 yVertex]
+					VSquareTopShape df (top - yVertex) Stroke
+				include : difference
+					dispiro
+						widths.center Stroke
+						flat Middle yVertex [heading Downward]
+						curl Middle (yHook + [Math.max Stroke : 0.4 * (yVertex - yHook)]) [heading Downward]
+						arcvh
+						g4 [Arch.adjust-x.bot : mix Middle SB 0.55] yHook
+						archv
+						g4 (SB + OX) [mix yHook yVertex 0.55]
+						arcvh
+						flat [Arch.adjust-x.top : mix Middle SB 0.35] (yVertex - HalfStroke) [heading Rightward]
+						curl Middle (yVertex - HalfStroke) [heading Rightward]
+					MaskAbove yVertex
 			__ : if (bot < yVertex) : begin
-				local xBot : mix Middle (SB + OX) 0.85
-				include : dispiro
-					widths.center Stroke
-					flat Middle yVertex
-					curl xBot yHook
-				if doSlabBottom : include : HSerif.mb xBot bot MidJutCenter
-		if doSlabTop : include : VSerifs [DivFrame 1] false top
-		if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
+				# Right arm: one straight line from the right joint to `bot`. Left arm is
+				# the square-top V diagonal, clipped where it crosses that slash.
+				local dySlash : yJoinG - bot
+				local xPathBot : df.leftSB + [HSwToV Stroke]
+				for [local n 0] (n < 5) [inc n] : begin
+					local dxSlash : df.rightSB - xPathBot
+					local swR : [DiagCor dySlash dxSlash 0 Stroke] * Stroke
+					set xPathBot : df.leftSB + swR * [Math.hypot dxSlash dySlash] / dySlash
+				local diagSWR : [DiagCor dySlash (df.rightSB - xPathBot) 0 Stroke] * Stroke
+				local vxEndL : df.middle - VCornerHalfWidth
+				local yLeftEnd : mix yVertex bot 0.3
+				local xLeftEnd : vxEndL + (yLeftEnd - yVertex) * (vxEndL - df.leftSB) / (yVertex - yJoinG)
+				local diagSWL : [DiagCor (yJoinG - yVertex) (vxEndL - df.leftSB) 0 Stroke] * Stroke
+				include : difference
+					dispiro
+						widths.lhs Stroke
+						corner df.leftSB top [heading Downward]
+						corner df.leftSB yJoinG [heading Downward]
+						corner xLeftEnd yLeftEnd [widths.lhs.heading diagSWL Downward]
+					spiro-outline
+						corner df.rightSB yJoinG
+						corner (df.width + 2 * Stroke) yJoinG
+						corner (df.width + 2 * Stroke) (bot - 2 * Stroke)
+						corner xPathBot bot
+				include : intersection [MaskAbove bot] : dispiro
+					widths.rhs Stroke
+					corner df.rightSB top [heading Downward]
+					corner df.rightSB yJoinG [heading Downward]
+					corner xPathBot bot [widths.rhs.heading diagSWR Downward]
+				if doSlabBottom : include : HSerif.mb [mix df.leftSB xPathBot 0.5] bot MidJutCenter
+		if doSlabTop : include : VSerifs df false top
+		if doSlabMotion : include : VMotionSerifs df false top
 
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
