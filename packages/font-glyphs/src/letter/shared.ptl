@@ -1163,39 +1163,34 @@ glyph-block Letter-Shared-Shapes : begin
 					MaskAbove (y + extension)
 					ExtLineCenter (x + [mix 0 Descender 0.24]) (y + (Descender + 0.5 * sw)) x y sw 16
 
-		# Rounded-bend descender: corner is built apart from the letter body, then unioned.
-		define [RoundedBendCorner x yAttach sw] : begin
-			local hd : FlatHookDepth [DivFrame 1]
-			return : dispiro
-				widths.center sw
-				flat (x - hd.x) yAttach [heading Rightward]
-				curl x yAttach [heading Rightward]
+		# Rounded-bend tail knots: continue the letter-body dispiro (same construction as #3299).
+		glyph-block-export RoundedBendTailBot RoundedTailStraightKnots RoundedTailDiagonalKnots
+		define [RoundedBendTailBot] : (-LongVJut) + QuarterStroke
+		define [RoundedTailBendX] : Math.max [HSwToV Stroke] (0.5 * Hook)
+		define [RoundedTailBendY] : Math.max Stroke (0.5 * Hook)
+
+		define [RoundedTailStraightKnots yHoriz xDown wHoriz] : begin
+			local xTurn : xDown - [RoundedTailBendX]
+			local yCorner : yHoriz - [RoundedTailBendY]
+			return : list
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke] yHoriz wHoriz
+				curl xTurn yHoriz [heading Rightward]
 				archv.superness DesignParameters.tightHookSuperness
-				flat x (yAttach - hd.y) [heading Downward]
-				curl x (yAttach - hd.y - 0.25 * sw) [heading Downward]
+				flat xDown yCorner [heading Downward]
+				curl xDown [RoundedBendTailBot] [heading Downward]
 
-		glyph-block-export RoundedBendDescender
-		define RoundedBendDescender : Descenders : function [x y xLink yAttach yOverflow sw] : glyph-proc
-			local hd : FlatHookDepth [DivFrame 1]
-			local extension : (-LongVJut) + QuarterStroke
-			include : ExtendBelowBaseAnchors (y + extension)
-			include : union
-				xLinkStroke xLink x yAttach sw
-				RoundedBendCorner x yAttach sw
-				VBar.m x (yAttach - hd.y) (y + extension) sw
-
-		glyph-block-export RoundedBendTailDescender
-		define RoundedBendTailDescender : Descenders : function [x y xLink yAttach yOverflow sw] : glyph-proc
-			local hd : FlatHookDepth [DivFrame 1]
-			local extension : (-LongVJut) + QuarterStroke
-			include : ExtendBelowBaseAnchors (y + extension)
-			include : union
-				xLinkStroke xLink x yAttach sw
-				RoundedBendCorner x yAttach sw
-				intersection
-					MaskBelow (yAttach - hd.y + Stroke)
-					MaskAbove (y + extension)
-					ExtLineCenter (x + [mix 0 Descender 0.24]) (y + (Descender + 0.5 * sw)) x (yAttach - hd.y) sw 16
+		define [RoundedTailDiagonalKnots yHoriz xDown wHoriz] : begin
+			local xTurn : xDown - [RoundedTailBendX]
+			local yCorner : yHoriz - [RoundedTailBendY]
+			local xDiagEnd : xDown + [mix 0 Descender 0.24]
+			return : list
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke] yHoriz wHoriz
+				curl xTurn yHoriz [heading Rightward]
+				archv.superness DesignParameters.tightHookSuperness
+				flat xDown yCorner [widths.rhs Stroke]
+				curl xDiagEnd [RoundedBendTailBot]
 
 		# Cyrillic long curl descender, used by old Abkazian letters
 		glyph-block-export CyrCurlDescender

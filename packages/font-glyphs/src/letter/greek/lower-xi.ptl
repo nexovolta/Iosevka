@@ -9,7 +9,8 @@ glyph-block Letter-Greek-Lower-Xi : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Arc-Hook : Flat
-	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedBendDescender RoundedBendTailDescender
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
+	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
 	define SHAPE-ROUNDED  0
 	define SHAPE-FLAT-TOP 1
@@ -80,12 +81,14 @@ glyph-block Letter-Greek-Lower-Xi : begin
 					arcvh 16
 					flat                    (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1)      (Descender + Stroke)
 					curl [Math.min Middle : (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) - 1] (Descender + Stroke)
+				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
 			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
 			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			[Just TAIL-STRAIGHT-ROUNDED] : RoundedBendDescender.r RightSB 0 RightSB
-			[Just TAIL-DIAGONAL-ROUNDED] : RoundedBendTailDescender.r RightSB 0 RightSB
+			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			__ : begin [glyph-proc]
 
 	create-glyph : glyph-proc

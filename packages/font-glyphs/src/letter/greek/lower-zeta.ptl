@@ -9,7 +9,8 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Arc-Hook : Flat
-	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedBendDescender RoundedBendTailDescender
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
+	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
 	define TAIL-CURLY            0
 	define TAIL-STRAIGHT         1
@@ -37,6 +38,8 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 					arcvh 16
 					flat (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) Descender
 					curl [Math.min (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1 - 1) [mix SB RightSB 0.5]] Descender
+				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : list
 					arcvh.superness DesignParameters.tightHookSuperness
 					flat [Math.min (Arc.xRHook - TanSlope * Stroke) : Arch.adjust-x.top [mix Arc.xLArc Arc.xRArc 0.55] Stroke] Stroke [widths.rhs.heading Stroke Rightward]
@@ -44,8 +47,8 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 		include : match tail
 			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
 			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			[Just TAIL-STRAIGHT-ROUNDED] : RoundedBendDescender.r RightSB 0 RightSB
-			[Just TAIL-DIAGONAL-ROUNDED] : RoundedBendTailDescender.r RightSB 0 RightSB
+			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			__ : begin [glyph-proc]
 
 	create-glyph "grek/zeta.curlyTail" : glyph-proc
