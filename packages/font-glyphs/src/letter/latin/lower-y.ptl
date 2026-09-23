@@ -215,7 +215,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 
 			export : define [splitMask top bottom elev] : me.createSplitMask top bottom (+1) elev
 
-		export : define [SmallYShape top bottom yShCutoff] : glyph-proc
+		export : define [SmallYRightHalfShape top bottom yShCutoff] : glyph-proc
 			local right   : RightHalf TS-NONE SHRINK-NONE
 			local rightSh : RightHalf TS-NONE SHRINK-INNER
 			local left    : LeftHalf  TS-NONE SHRINK-INNER
@@ -238,6 +238,14 @@ glyph-block Letter-Latin-Lower-Y : begin
 						rightSh.baseKnots top bottom
 					* leftSplitMask
 
+			if doSlabBottom : include : right.baseSerif top bottom
+
+		export : define [SmallYShape top bottom yShCutoff] : glyph-proc
+			local right : RightHalf TS-NONE SHRINK-NONE
+			local left  : LeftHalf  TS-NONE SHRINK-INNER
+
+			include : SmallYRightHalfShape top bottom yShCutoff
+
 			include : tagged 'leftHalf' : difference
 				dispiro
 					left.topKnots top bottom
@@ -246,7 +254,6 @@ glyph-block Letter-Latin-Lower-Y : begin
 				Rect (bottom + sw / 2) (bottom - top) l r
 
 			if doSlabTop : include : let [sf : SerifFrame.fromDf [DivFrame 1] top bottom] : composite-proc sf.lt.full sf.rt.full
-			if doSlabBottom : include : right.baseSerif top bottom
 			if doSlabMotion : include : HSerif.lt sb top SideJut
 
 		export : define [SmallYHookRightShape top bottom yShCutoff] : glyph-proc
@@ -346,36 +353,20 @@ glyph-block Letter-Latin-Lower-Y : begin
 						curl Middle (yVertex - HalfStroke) [heading Rightward]
 					MaskAbove yVertex
 			__ : if (bot < yVertex) : begin
-				# Right arm: one straight line from the right joint to `bot`. Left arm is
-				# the square-top V diagonal, clipped where it crosses that slash.
-				local dySlash : yJoinG - bot
-				local xPathBot : df.leftSB + [HSwToV Stroke]
-				for [local n 0] (n < 5) [inc n] : begin
-					local dxSlash : df.rightSB - xPathBot
-					local swR : [DiagCor dySlash dxSlash 0 Stroke] * Stroke
-					set xPathBot : df.leftSB + swR * [Math.hypot dxSlash dySlash] / dySlash
-				local diagSWR : [DiagCor dySlash (df.rightSB - xPathBot) 0 Stroke] * Stroke
+				local straightY : NonCursiveYShapeT true BS-STRAIGHT slabKind
+				local rightHalf : straightY.RightHalf TS-NONE SHRINK-NONE
 				local vxEndL : df.middle - VCornerHalfWidth
-				local yLeftEnd : mix yVertex bot 0.3
-				local xLeftEnd : vxEndL + (yLeftEnd - yVertex) * (vxEndL - df.leftSB) / (yVertex - yJoinG)
+				local xBotL : df.leftSB + [HSwToV Stroke]
 				local diagSWL : [DiagCor (yJoinG - yVertex) (vxEndL - df.leftSB) 0 Stroke] * Stroke
-				include : difference
+				include : straightY.SmallYRightHalfShape top bot
+				include : tagged 'leftHalf' : difference
 					dispiro
 						widths.lhs Stroke
 						corner df.leftSB top [heading Downward]
 						corner df.leftSB yJoinG [heading Downward]
-						corner xLeftEnd yLeftEnd [widths.lhs.heading diagSWL Downward]
-					spiro-outline
-						corner df.rightSB yJoinG
-						corner (df.width + 2 * Stroke) yJoinG
-						corner (df.width + 2 * Stroke) (bot - 2 * Stroke)
-						corner xPathBot bot
-				include : intersection [MaskAbove bot] : dispiro
-					widths.rhs Stroke
-					corner df.rightSB top [heading Downward]
-					corner df.rightSB yJoinG [heading Downward]
-					corner xPathBot bot [widths.rhs.heading diagSWR Downward]
-				if doSlabBottom : include : HSerif.mb [mix df.leftSB xPathBot 0.5] bot MidJutCenter
+						corner vxEndL yVertex [widths.lhs.heading diagSWL Downward]
+						corner xBotL bot [widths.lhs.heading diagSWL Downward]
+					rightHalf.splitMask top bot
 		if doSlabTop : include : VSerifs df false top
 		if doSlabMotion : include : VMotionSerifs df false top
 
@@ -425,6 +416,17 @@ glyph-block Letter-Latin-Lower-Y : begin
 		create-glyph "yLowBar.\(suffix)" : glyph-proc
 			include [refer-glyph "y.\(suffix)"] AS_BASE ALSO_METRICS
 			include : HOverlayBar (Middle - LongJut * 0.75) (Middle + LongJut * 0.75) 0
+
+		if fSquareTop : begin
+			create-glyph "grek/lambda.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : FlipAsLambda Ascender 0 : SquareTopYShape slabKind bottomShape Ascender 0
+
+			create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : union
+					FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
+					FlipAsLambda Ascender 0 : SquareTopYShape slabKind bottomShape Ascender 0
 
 		if [not fSquareTop] : begin
 			create-glyph "grek/lambda.\(suffix)" : glyph-proc
