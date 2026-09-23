@@ -311,6 +311,8 @@ glyph-block Letter-Latin-Lower-Y : begin
 	define [SquareTopYShape slabKind bottomShape top bot] : glyph-proc
 		local { doSlabTop doSlabBottom doSlabMotion } slabKind
 		local yVertex : if (bot < 0) 0 : mix bot top 0.4
+		# Centered stroke on `bot` would hang half a stroke below the metric.
+		local yHook : bot + HalfStroke
 		include : with-transform [ApparentTranslate 0 yVertex]
 			VSquareTopShape [DivFrame 1] (top - yVertex) Stroke
 		match bottomShape
@@ -318,20 +320,20 @@ glyph-block Letter-Latin-Lower-Y : begin
 				dispiro
 					widths.center Stroke
 					flat Middle yVertex [heading Downward]
-					curl Middle (bot + [Math.max Stroke : 0.35 * (yVertex - bot)]) [heading Downward]
+					curl Middle (yHook + [Math.max Stroke : 0.35 * (yVertex - yHook)]) [heading Downward]
 					arcvh
-					flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) bot [heading Leftward]
-					curl (SB + OX) bot [heading Leftward]
+					flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) yHook [heading Leftward]
+					curl (SB + OX) yHook [heading Leftward]
 				MaskAbove yVertex
 			[Just BS-LOOP] : include : difference
 				dispiro
 					widths.center Stroke
 					flat Middle yVertex [heading Downward]
-					curl Middle (bot + [Math.max Stroke : 0.4 * (yVertex - bot)]) [heading Downward]
+					curl Middle (yHook + [Math.max Stroke : 0.4 * (yVertex - yHook)]) [heading Downward]
 					arcvh
-					g4 [Arch.adjust-x.bot : mix Middle SB 0.55] bot
+					g4 [Arch.adjust-x.bot : mix Middle SB 0.55] yHook
 					archv
-					g4 (SB + OX) [mix bot yVertex 0.55]
+					g4 (SB + OX) [mix yHook yVertex 0.55]
 					arcvh
 					flat [Arch.adjust-x.top : mix Middle SB 0.35] (yVertex - HalfStroke) [heading Rightward]
 					curl Middle (yVertex - HalfStroke) [heading Rightward]
@@ -341,7 +343,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				include : dispiro
 					widths.center Stroke
 					flat Middle yVertex
-					curl xBot bot
+					curl xBot yHook
 				if doSlabBottom : include : HSerif.mb xBot bot MidJutCenter
 		if doSlabTop : include : VSerifs [DivFrame 1] false top
 		if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
