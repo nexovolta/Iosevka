@@ -69,31 +69,29 @@ glyph-block Letter-Latin-Insular-G : begin
 	CreateTurnedLetter 'turngInsular' 0xA77F 'gInsular' HalfAdvance [mix Descender XH 0.5]
 
 	# Closed insular G: unserrifed T-bar over an upside-down standard sigmoid S.
-	# Bowl stays full stroke; each bar join uses insular T's fine+archv taper.
+	# Bowl stays full stroke; each bar join is insular T's fine+archv, flipped with the bowl.
 	define [ClosedInsularGShape top bot ada adb] : glyph-proc
 		local fine : Stroke * CThinB
-		local yJoin : top - Stroke + fine
-		local yCut : top - Stroke
-		local yStub : yJoin - ada - adb
+		local yJoinS : Stroke - fine
+		local yStub : yJoinS + ada + adb
 
 		include : HBar.t SB RightSB top
 
-		include : intersection
-			new-glyph : glyph-proc
-				include : SigmoidSShape (top - bot) 0 Hook
-				include : Translate 0 bot
-				include : FlipAround Middle : mix bot top 0.5
-			MaskBelow yCut
-
-		include : dispiro
-			straight.left.start [Arch.adjust-x.top Middle] yJoin [widths.lhs.heading fine Leftward]
-			archv
-			flatside.ld SB yStub yJoin ada adb nothing [widths.lhs]
-
-		include : dispiro
-			straight.right.start [Arch.adjust-x.top Middle] yJoin [widths.rhs.heading fine Rightward]
-			archv
-			flatside.rd RightSB yStub yJoin ada adb nothing [widths.rhs]
+		include : new-glyph : glyph-proc
+			include : intersection
+				new-glyph : glyph-proc
+					include : SigmoidSShape (top - bot) 0 Hook
+				MaskAbove Stroke
+			include : dispiro
+				straight.right.start Middle yJoinS [widths.lhs.heading fine Rightward]
+				archv
+				flatside.ru RightSB yJoinS yStub ada adb nothing [widths.lhs]
+			include : dispiro
+				straight.left.start Middle yJoinS [widths.rhs.heading fine Leftward]
+				archv
+				flatside.lu SB yJoinS yStub ada adb nothing [widths.rhs]
+			include : Translate 0 bot
+			include : FlipAround Middle : mix bot top 0.5
 
 	create-glyph 'GInsularClosed' 0xA7D0 : glyph-proc
 		include : MarkSet.capital
