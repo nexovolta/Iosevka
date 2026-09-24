@@ -31,11 +31,17 @@ glyph-block Digits-Nine : begin
 		local ymiddlea : (oTop - SmallArchDepthA + SmallArchDepthB) / 2
 		local ymiddleb : (oTop - SmallArchDepthB + SmallArchDepthA) / 2
 		local xRight : RightSB - OX
+		local xLeft : SB + OX
+		local xBar : [mix SB RightSB 0.85] - [HSwToV QuarterStroke]
 		# Corner radius must clear the stroke, or the hook outline folds on itself.
 		local corner : Math.max (Stroke * 1.5) (Hook * 0.94)
 		local reach : HalfStroke + QuarterStroke
 		local xDepth : corner + reach
 		local yHook : ymiddleb + corner + reach
+		# Extra length (lowercase descender) is a vertical, so the right bend
+		# keeps capital proportions instead of stretching.
+		local yExtra : Math.max 0 (yBarEnd - charTop)
+		local yVert : ymiddlea + [Math.max yExtra TINY]
 		include : dispiro
 			widths.rhs
 			flat (xRight - xDepth) yHook [heading Rightward]
@@ -44,9 +50,11 @@ glyph-block Digits-Nine : begin
 			flat xRight (yHook - corner) [heading Downward]
 			curl xRight ymiddleb [heading Downward]
 			Arch.rhs 0
-			g4.up.mid (SB + OX) ymiddlea
+			g4.up.mid xLeft ymiddlea
+			flat xLeft (ymiddlea + TINY) [heading Upward]
+			curl xLeft yVert [heading Upward]
 			quadControls 0 0.85
-			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) yBarEnd [widths.rhs]
+			g4 xBar yBarEnd [widths.rhs]
 		include : FlipAround Middle (charTop / 2)
 
 	create-glyph 'Con' 0xA76E : glyph-proc

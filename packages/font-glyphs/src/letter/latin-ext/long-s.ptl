@@ -222,14 +222,14 @@ glyph-block Letter-Latin-Long-S : begin
 
 	alias 'esh' 0x283 "longs.flatHookTailedSerifless"
 
-	# Reversed U+01AA: P-bowl on the right, esh hook on the left, plus a
-	# leftward stem at the bowl join (Julia Mono Is/is).
+	# Esh/integral stem with a right loop. Stroke starts as a left bar at the
+	# loop join, then loops around, then the esh hook on the left.
 	define [IsShape top bot] : glyph-proc
-		local xLeft SB
-		local xStem : xLeft + [HSwToV HalfStroke]
+		local xStem : mix SB RightSB 0.40
+		local xLeft : xStem - [HSwToV HalfStroke]
 		local hookx : 0 + HookX + QuarterStroke
-		local yBowlBot : mix 0 top 0.56
-		local bowlH : top - yBowlBot
+		local yLoopBot : mix 0 top 0.56
+		local bowlH : top - yLoopBot
 		local ada0 SmallArchDepthA
 		local adb0 SmallArchDepthB
 		local s : Math.min 1 : (0.9 * bowlH) / (ada0 + adb0)
@@ -238,14 +238,13 @@ glyph-block Letter-Latin-Long-S : begin
 		include : union
 			OBarLeft.shape
 				top   -- top
-				bot   -- yBowlBot
+				bot   -- yLoopBot
 				left  -- xLeft
 				right -- RightSB
 				ada   -- ada
 				adb   -- adb
-			VBar.l xLeft bot top
-			LongSLowerHalf (+1) xStem (yBowlBot + HalfStroke) bot hookx Hook
-			HBar.b (xLeft - hookx) (xLeft + [HSwToV Stroke]) yBowlBot
+			LongSLowerHalf (+1) xStem top bot hookx Hook
+			HBar.m (xLeft - hookx) (xLeft + [HSwToV Stroke]) (yLoopBot + HalfStroke)
 
 	create-glyph 'Is' 0xA76C : glyph-proc
 		include : MarkSet.capital
