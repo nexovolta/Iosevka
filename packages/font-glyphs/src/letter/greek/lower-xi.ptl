@@ -8,12 +8,13 @@ glyph-module
 glyph-block Letter-Greek-Lower-Xi : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Arc-Hook : Flat
+	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
-	define SHAPE-ROUNDED  0
-	define SHAPE-FLAT-TOP 1
+	define SHAPE-ROUNDED    0
+	define SHAPE-FLAT-TOP   1
+	define SHAPE-FLAT-HOOK  2
 
 	define TAIL-CURLY            0
 	define TAIL-STRAIGHT         1
@@ -32,20 +33,20 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		local fineMid : Stroke * CThin
 		local fineTop : Stroke * CThinB
 		local xBarStart : mix SB RightSB : match shape
-			[Just SHAPE-ROUNDED]  0.625
 			[Just SHAPE-FLAT-TOP] 0.750
+			__                   0.625
 		local xBarEnd : mix SB RightSB : match shape
-			[Just SHAPE-ROUNDED]  0.750
 			[Just SHAPE-FLAT-TOP] 0.850
+			__                   0.750
 		local yBarTop : mix Stroke Ascender pyBar
 		local yBarBot : yBarTop - Stroke
 
 		local xUpperArcLeft : match shape
-			[Just SHAPE-ROUNDED]  :      SB                + 0
 			[Just SHAPE-FLAT-TOP] : [mix SB RightSB 0.075] + OX
+			__                    :      SB                + 0
 		local xLowerArcLeft : match shape
-			[Just SHAPE-ROUNDED]  :      SB                + OX * 2
 			[Just SHAPE-FLAT-TOP] : [mix SB RightSB 0.025] + OX * 2
+			__                    :      SB                + OX * 2
 
 		local box : new Box yBarTop 0 xLowerArcLeft RightSB
 		local Arc : Flat box (sw -- Stroke)
@@ -56,13 +57,14 @@ glyph-block Letter-Greek-Lower-Xi : begin
 
 		include : dispiro
 			match shape
-				[Just SHAPE-ROUNDED] : list
-					g4   (RightSB + O) (Ascender - Hook) [widths.lhs]
-					HookStart Ascender
+				[Just SHAPE-FLAT-HOOK] : [MakeFlatHook SB RightSB Ascender 0].hookStartR
 				[Just SHAPE-FLAT-TOP] : list
 					flat                    xBarEnd    ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
 					curl [Arch.adjust-x.top xBarStart] ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
 					archv 16
+				__ : list
+					g4   (RightSB + O) (Ascender - Hook) [widths.lhs]
+					HookStart Ascender
 			g4   xUpperArcLeft [YSmoothMidL Ascender yBarBot adaTop adbTop] [widths.lhs]
 			arcvh 16
 			flat [Arch.adjust-x.bot xBarStart] (yBarTop - fineMid) [widths.lhs.heading fineMid Rightward]
@@ -95,16 +97,21 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		include : MarkSet.bp
 		create-forked-glyph "grek/xi.flatTop" : LowerXiShape SHAPE-FLAT-TOP TAIL-CURLY
 		create-forked-glyph "grek/xi.rounded" : LowerXiShape SHAPE-ROUNDED TAIL-CURLY
+		create-forked-glyph "grek/xi.flatHook" : LowerXiShape SHAPE-FLAT-HOOK TAIL-CURLY
 
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		create-forked-glyph "grek/xi.roundedStraightTail" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT
 		create-forked-glyph "grek/xi.flatTopStraightTail" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT
+		create-forked-glyph "grek/xi.flatHookStraightTail" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT
 		create-forked-glyph "grek/xi.roundedDiagonalTail" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.flatTopDiagonalTail" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL
+		create-forked-glyph "grek/xi.flatHookDiagonalTail" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.roundedStraightTailRoundedBend" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT-ROUNDED
 		create-forked-glyph "grek/xi.flatTopStraightTailRoundedBend" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT-ROUNDED
+		create-forked-glyph "grek/xi.flatHookStraightTailRoundedBend" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT-ROUNDED
 		create-forked-glyph "grek/xi.roundedDiagonalTailRoundedBend" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL-ROUNDED
 		create-forked-glyph "grek/xi.flatTopDiagonalTailRoundedBend" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL-ROUNDED
+		create-forked-glyph "grek/xi.flatHookDiagonalTailRoundedBend" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL-ROUNDED
 
 	select-variant 'grek/xi' 0x3BE
