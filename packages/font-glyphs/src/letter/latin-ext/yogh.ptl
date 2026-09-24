@@ -53,12 +53,15 @@ glyph-block Letter-Latin-Yogh : begin
 			__ : no-shape
 
 	# Et: Cyrillic ze upper (hook + waist bar) joined to a yogh lower bowl.
+	# Lowercase uses the same [XH, Descender] span as yogh; stroke weight stays
+	# on the x-height so the ze top does not thin out.
 	define [EtShape slab top bot hook ada adb] : glyph-proc
 		local ze : CyrZe slab SLAB-NONE top bot
 			hook   -- hook
 			barPos -- OverlayPos
 			ada    -- ada
 			adb    -- adb
+			stroke -- [AdviceStroke2 2 3 : top - [Math.max bot 0]]
 		define [object stroke midx midy fine] : ze.Dim
 		include : ze.UpperShape
 		include : ze.AutoStartSerifL
@@ -88,8 +91,8 @@ glyph-block Letter-Latin-Yogh : begin
 			include : MarkSet.capital
 			include : EtShape slabTop CAP 0 Hook ArchDepthA ArchDepthB
 		create-glyph "et.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			include : EtShape slabTop XH 0 SHook SmallArchDepthA SmallArchDepthB
+			include : MarkSet.p
+			include : EtShape slabTop XH Descender SHook SmallArchDepthA SmallArchDepthB
 
 	select-variant 'Yogh' 0x21C (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'yogh' 0x21D (follow -- 'cyrl/ze/topSerif')
