@@ -8,6 +8,7 @@ glyph-block Letter-Latin-Yogh : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe
 
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
@@ -51,6 +52,26 @@ glyph-block Letter-Latin-Yogh : begin
 			[Just SLAB-INWARD] : ArcStartSerif.InwardL SB top Stroke Hook
 			__ : no-shape
 
+	# Et: Cyrillic ze upper (hook + waist bar) joined to a yogh lower bowl.
+	define [EtShape slab top bot hook ada adb] : glyph-proc
+		local ze : CyrZe slab SLAB-NONE top bot
+			hook   -- hook
+			barPos -- OverlayPos
+			ada    -- ada
+			adb    -- adb
+		define [object stroke midx midy fine] : ze.Dim
+		include : ze.UpperShape
+		include : ze.AutoStartSerifL
+		local pyt : mix bot [TopYOfLowerHalf top bot OverlayPos] 1.2
+		local pyb : mix bot [TopYOfLowerHalf top bot OverlayPos] 0.2
+		include : dispiro
+			flat midx (midy - (stroke / 2 - fine)) [widths.heading 0 fine Rightward]
+			curl Middle (midy - (stroke / 2 - fine)) [heading Rightward]
+			archv
+			g4 RightSB [YSmoothMidR pyt pyb] [widths.rhs stroke]
+			alsoThruThem {{0.25 [StrokeWidthBlend 0.63 0.66]} {0.5 [StrokeWidthBlend 0.84 0.85]}} important
+			g4 (SB + [HSwToV : 0.1 * stroke]) (bot + O)
+
 	define Config : object
 		serifless               { SLAB-NONE      }
 		unilateralSerifed       { SLAB-CLASSICAL }
@@ -65,10 +86,10 @@ glyph-block Letter-Latin-Yogh : begin
 			include : YoghShape slabTop XH Descender OverlayPos
 		create-glyph "Et.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : YoghShape slabTop CAP 0 0.34
+			include : EtShape slabTop CAP 0 Hook ArchDepthA ArchDepthB
 		create-glyph "et.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : YoghShape slabTop XH 0 0.42
+			include : EtShape slabTop XH 0 SHook SmallArchDepthA SmallArchDepthB
 
 	select-variant 'Yogh' 0x21C (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'yogh' 0x21D (follow -- 'cyrl/ze/topSerif')
