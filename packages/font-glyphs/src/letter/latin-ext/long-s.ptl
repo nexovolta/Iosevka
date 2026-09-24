@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth LetterBarOverlay
-	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook VerticalHook OBarLeft
+	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook VerticalHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
 
@@ -222,29 +222,30 @@ glyph-block Letter-Latin-Long-S : begin
 
 	alias 'esh' 0x283 "longs.flatHookTailedSerifless"
 
-	# Esh/integral stem with a right loop. Stroke starts as a left bar at the
-	# loop join, then loops around, then the esh hook on the left.
+	# Esh/integral stem with a teardrop loop on the right. The left bar is the
+	# bottom of the loop; the inner counter points at the stem×bar corner
+	# instead of forming a p-bowl.
 	define [IsShape top bot] : glyph-proc
 		local xStem : mix SB RightSB 0.40
 		local xLeft : xStem - [HSwToV HalfStroke]
-		local hookx : 0 + HookX + QuarterStroke
-		local yLoopBot : mix 0 top 0.56
-		local bowlH : top - yLoopBot
-		local ada0 SmallArchDepthA
-		local adb0 SmallArchDepthB
-		local s : Math.min 1 : (0.9 * bowlH) / (ada0 + adb0)
-		local ada : ada0 * s
-		local adb : adb0 * s
+		local xRight : RightSB - OX
+		local hookx : HookX + QuarterStroke
+		local yBar : mix 0 top 0.56
+		local loopH : top - yBar
+		local s : Math.min 1 : (0.85 * loopH) / (SmallArchDepthA + SmallArchDepthB)
+		local ada : SmallArchDepthA * s
+		local yMid : mix yBar top 0.55
 		include : union
-			OBarLeft.shape
-				top   -- top
-				bot   -- yLoopBot
-				left  -- xLeft
-				right -- RightSB
-				ada   -- ada
-				adb   -- adb
-			LongSLowerHalf (+1) xStem top bot hookx Hook
-			HBar.m (xLeft - hookx) (xLeft + [HSwToV Stroke]) (yLoopBot + HalfStroke)
+			dispiro
+				widths.lhs
+				flat (xLeft - hookx) yBar [heading Rightward]
+				curl (xLeft + [HSwToV Stroke]) yBar [heading Rightward]
+				archv
+				g4.up.mid xRight yMid
+				Arch.lhs top
+				flat xLeft (top - ada) [heading Downward]
+				curl xLeft (yBar + Stroke) [heading Downward]
+			LongSLowerHalf (+1) xStem (yBar + HalfStroke) bot hookx Hook
 
 	create-glyph 'Is' 0xA76C : glyph-proc
 		include : MarkSet.capital
