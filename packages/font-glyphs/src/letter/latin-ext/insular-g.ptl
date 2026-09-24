@@ -69,15 +69,15 @@ glyph-block Letter-Latin-Insular-G : begin
 	CreateTurnedLetter 'turngInsular' 0xA77F 'gInsular' HalfAdvance [mix Descender XH 0.5]
 
 	# Closed insular G: unserrifed T-bar over an upside-down standard sigmoid S.
-	# Bowl stays full stroke; only the two top-bar joins taper, like insular T.
-	define [ClosedInsularGShape top bot] : glyph-proc
+	# Bowl stays full stroke; each bar join uses insular T's fine+archv taper.
+	define [ClosedInsularGShape top bot ada adb] : glyph-proc
 		local fine : Stroke * CThinB
-		local yJoinS : Stroke - fine
+		local yJoin : top - Stroke + fine
 		local yCut : top - Stroke
+		local yStub : yJoin - ada - adb
 
 		include : HBar.t SB RightSB top
 
-		# Full-width inverted S, with the roof that sits in the bar clipped off.
 		include : intersection
 			new-glyph : glyph-proc
 				include : SigmoidSShape (top - bot) 0 Hook
@@ -85,23 +85,20 @@ glyph-block Letter-Latin-Insular-G : begin
 				include : FlipAround Middle : mix bot top 0.5
 			MaskBelow yCut
 
-		# T-joins drawn on the sigmoid baseline, then flipped with it.
-		include : new-glyph : glyph-proc
-			include : dispiro
-				straight.right.start [Arch.adjust-x.bot Middle] yJoinS [widths.lhs.heading fine Rightward]
-				archv
-				g4 (RightSB - OX) (yJoinS + Stroke) [widths.lhs]
-			include : dispiro
-				straight.left.start [Arch.adjust-x.bot Middle] yJoinS [widths.rhs.heading fine Leftward]
-				archv
-				g4 (SB + OX) (yJoinS + Stroke) [widths.rhs]
-			include : Translate 0 bot
-			include : FlipAround Middle : mix bot top 0.5
+		include : dispiro
+			straight.left.start [Arch.adjust-x.top Middle] yJoin [widths.lhs.heading fine Leftward]
+			archv
+			flatside.ld SB yStub yJoin ada adb nothing [widths.lhs]
+
+		include : dispiro
+			straight.right.start [Arch.adjust-x.top Middle] yJoin [widths.rhs.heading fine Rightward]
+			archv
+			flatside.rd RightSB yStub yJoin ada adb nothing [widths.rhs]
 
 	create-glyph 'GInsularClosed' 0xA7D0 : glyph-proc
 		include : MarkSet.capital
-		include : ClosedInsularGShape CAP 0
+		include : ClosedInsularGShape CAP 0 ArchDepthA ArchDepthB
 
 	create-glyph 'gInsularClosed' 0xA7D1 : glyph-proc
 		include : MarkSet.p
-		include : ClosedInsularGShape XH Descender
+		include : ClosedInsularGShape XH Descender SmallArchDepthA SmallArchDepthB
