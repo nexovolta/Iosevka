@@ -54,19 +54,25 @@ glyph-block Letter-Latin-Lower-F : begin
 	define [SetPalatalHookPos barLeft] : glyph-proc
 		set-base-anchor 'palatalHookPos' (barLeft + [HSwToV : Stroke + [Math.max VJutStroke : Width / 12]]) 0
 
-	define [SmallFBottomSerif df] : glyph-proc
+	define [SmallFBottomSerif df sym barLeft] : glyph-proc
 		local l : [mix df.leftSB df.rightSB 0.020] + HalfStroke * TanSlope
-		local r : [mix df.leftSB df.rightSB 0.875] + HalfStroke * TanSlope
+		local r : match sym
+			[Just SYM-LEFT] : begin
+				local xStem : barLeft + [HSwToV HalfStroke]
+				local jut : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
+				xStem + jut + HalfStroke * TanSlope
+			__ : [mix df.leftSB df.rightSB 0.875] + HalfStroke * TanSlope
 		include : dispiro
 			widths.lhs
 			flat l 0
 			curl r 0
 		set-base-anchor 'palatalHookPos' r 0
 
-	define [NarrowBottomSerif df] : glyph-proc
+	define [NarrowBottomSerif df sym barLeft] : glyph-proc
+		local xStem : if (sym === SYM-LEFT) (barLeft + [HSwToV HalfStroke]) df.middle
 		local jut : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
-		include : HSerif.mb df.middle 0 jut
-		set-base-anchor 'palatalHookPos' (df.middle + jut + HalfStroke * TanSlope) 0
+		include : HSerif.mb xStem 0 jut
+		set-base-anchor 'palatalHookPos' (xStem + jut + HalfStroke * TanSlope) 0
 
 	define [StdFShapeT sink df offset barleft sw _hookExtra] : sink
 		widths.lhs sw
@@ -124,7 +130,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local hookSpanK : if (sym === SYM-LEFT) 0.5 1
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
-			[Just CH-SERIF]         : SmallFBottomSerif df
+			[Just CH-SERIF]         : SmallFBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
@@ -171,7 +177,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local hookSpanK : if (sym === SYM-LEFT) 0.4 0.75
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
-			[Just CH-SERIF]         : SmallFBottomSerif df
+			[Just CH-SERIF]         : SmallFBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
@@ -220,7 +226,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local hookSpanK : if (sym === SYM-LEFT) 0.5 1
 		include : match counterHook
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
-			[Just CH-SERIF]         : NarrowBottomSerif df
+			[Just CH-SERIF]         : NarrowBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
