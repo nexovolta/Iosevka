@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth LetterBarOverlay
-	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook VerticalHook
+	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook VerticalHook OBarLeft
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
 
@@ -221,6 +221,39 @@ glyph-block Letter-Latin-Long-S : begin
 	select-variant 'longsBar' 0x1E9D
 
 	alias 'esh' 0x283 "longs.flatHookTailedSerifless"
+
+	# Reversed U+01AA: P-bowl on the right, esh hook on the left, plus a
+	# leftward stem at the bowl join (Julia Mono Is/is).
+	define [IsShape top bot] : glyph-proc
+		local xLeft SB
+		local xStem : xLeft + [HSwToV HalfStroke]
+		local hookx : 0 + HookX + QuarterStroke
+		local yBowlBot : mix 0 top 0.56
+		local bowlH : top - yBowlBot
+		local ada0 SmallArchDepthA
+		local adb0 SmallArchDepthB
+		local s : Math.min 1 : (0.9 * bowlH) / (ada0 + adb0)
+		local ada : ada0 * s
+		local adb : adb0 * s
+		include : union
+			OBarLeft.shape
+				top   -- top
+				bot   -- yBowlBot
+				left  -- xLeft
+				right -- RightSB
+				ada   -- ada
+				adb   -- adb
+			VBar.l xLeft bot top
+			LongSLowerHalf (+1) xStem (yBowlBot + HalfStroke) bot hookx Hook
+			HBar.b (xLeft - hookx) (xLeft + [HSwToV Stroke]) yBowlBot
+
+	create-glyph 'Is' 0xA76C : glyph-proc
+		include : MarkSet.capital
+		include : IsShape CAP 0
+
+	create-glyph 'is' 0xA76D : glyph-proc
+		include : MarkSet.bp
+		include : IsShape Ascender Descender
 
 	create-glyph 'eshBaseline' 0xAB4D : glyph-proc
 		include : MarkSet.b

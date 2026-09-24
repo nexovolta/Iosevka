@@ -80,6 +80,17 @@ glyph-block Letter-Latin-Upper-L : begin
 			include [refer-glyph "L.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in [xLBarLeft : DivFrame 1] XH (CAP - [if (serifGrade > 1) Stroke 0])
 
+		create-glyph "LBroken.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			include : LeaningAnchor.Above.VBar.l [xLBarLeft df]
+			local yMid : mix Stroke CAP 0.5
+			local shift : HSwToV Stroke
+			include : intersection [MaskBelow yMid] : LShape df CAP serifGrade Stroke
+			include : intersection [MaskAbove yMid]
+				with-transform [ApparentTranslate shift 0]
+					LShape df CAP serifGrade Stroke
+
 	select-variant 'L' 'L'
 	link-reduced-variant 'L/sansSerif' 'L' MathSansSerif
 	select-variant 'LSlash'     0x141  (follow -- 'L')
@@ -87,6 +98,7 @@ glyph-block Letter-Latin-Upper-L : begin
 	select-variant 'smcpLSlash' 0x1D0C (follow -- 'L')
 	select-variant 'LLWelsh'    0x1EFA (follow -- 'L')
 	select-variant 'LHighBar'   0xA748 (follow -- 'L')
+	select-variant 'LBroken'    0xA746 (follow -- 'L')
 
 	CreateTurnedLetter 'turnL'           0xA780 'L'           HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'turnL/sansSerif' 0x2142 'L/sansSerif' HalfAdvance (CAP / 2)

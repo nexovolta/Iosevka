@@ -117,6 +117,32 @@ glyph-block Letter-Latin-O : begin
 				flat ((0  + SB) + O + fine) [mix Width 0 1.05]
 				curl ((XH - SB) - O - fine) [mix 0 Width 1.05]
 
+	define [OLoopAddon top ada adb] : glyph-proc
+		local fine : AdviceStroke 4.5
+		local r : Math.min (0.22 * top) (0.28 * (RightSB - SB))
+		local xL : RightSB - OX
+		local xR : mix RightSB Width 0.92
+		local yB : mix 0 top 0.48
+		local yT : Math.min top : yB + 2 * r
+		include : difference
+			dispiro
+				widths.lhs fine
+				flat [mix xL xR 0.2] yB
+				curl [mix xL xR 0.55] yB
+				archv
+				g4 (xR - O) [mix yB yT 0.5]
+				Arch.lhs yT (swBefore -- fine) (sw -- fine) (swAfter -- fine)
+				g4 xL [mix yT yB 0.5]
+			OShapeOutline.NoOvershoot top 0 SB RightSB nothing ada adb
+
+	create-glyph 'OLoop' 0xA74C : glyph-proc
+		include [refer-glyph 'O'] AS_BASE ALSO_METRICS
+		include : OLoopAddon CAP ArchDepthA ArchDepthB
+
+	create-glyph 'oLoop' 0xA74D : glyph-proc
+		include [refer-glyph 'o'] AS_BASE ALSO_METRICS
+		include : OLoopAddon XH nothing nothing
+
 	create-glyph 'OBar' 0x19F : glyph-proc
 		include : MarkSet.capital
 		local stroke : AdviceStroke2 2 3 CAP

@@ -436,6 +436,20 @@ glyph-block Letter-Latin-Lower-I : begin
 			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.m.in [xMiddleT df] XH (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
 
+		create-glyph "lBroken.\(suffix)" : glyph-proc
+			local df : include : DivFrame adws
+			include : df.markSet.b
+			local xMiddle : xMiddleT df
+			include : Marks df Ascender 0 xMiddle
+			local yMid : mix 0 Ascender 0.5
+			local shift : HSwToV Stroke
+			define [lShape] : new-glyph : union
+				Body   df Ascender 0 xMiddle
+				Serifs df Ascender 0 xMiddle
+			include : intersection [MaskBelow yMid] [lShape]
+			include : intersection [MaskAbove yMid]
+				with-transform [ApparentTranslate shift 0] [lShape]
+
 
 
 	do "i glyphs"
@@ -503,6 +517,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		select-variant 'lPalatalHook' 0x1D85 (follow -- 'l')
 		select-variant 'lPalatalHook/reduced/decompress' (shapeFrom -- 'lPalatalHook') (follow -- 'l/reduced/decompress')
 		select-variant 'lHighBar' 0xA749 (follow -- 'l')
+		select-variant 'lBroken'  0xA747 (follow -- 'l')
 
 		derive-composites 'lTildeOver'    0x26B  'l/reduced/decompress' 'tildeOver'
 		derive-composites 'lInvLazySOver' 0xAB37 'l/reduced/decompress' 'invLazySOver'

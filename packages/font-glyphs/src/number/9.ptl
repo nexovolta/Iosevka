@@ -24,6 +24,39 @@ glyph-block Digits-Nine : begin
 	select-variant 'nine.lnum' [CodeLnum '9'] (follow -- 'nine')
 	select-variant 'nine.onum' [CodeOnum '9'] (follow -- 'nine')
 
+	# Con has no variants. One open-contour-9 stroke: retroflex hook on the
+	# left, then the 9's top and curling RHS bar.
+	define [ConShape charTop yBarEnd] : glyph-proc
+		local oTop : charTop * 0.55 + HalfStroke
+		local ymiddlea : (oTop - SmallArchDepthA + SmallArchDepthB) / 2
+		local ymiddleb : (oTop - SmallArchDepthB + SmallArchDepthA) / 2
+		local xRight : RightSB - OX
+		# Corner radius must clear the stroke, or the hook outline folds on itself.
+		local corner : Math.max (Stroke * 1.5) (Hook * 0.94)
+		local reach : HalfStroke + QuarterStroke
+		local xDepth : corner + reach
+		local yHook : ymiddleb + corner + reach
+		include : dispiro
+			widths.rhs
+			flat (xRight - xDepth) yHook [heading Rightward]
+			curl (xRight - corner) yHook
+			archv
+			flat xRight (yHook - corner) [heading Downward]
+			curl xRight ymiddleb [heading Downward]
+			Arch.rhs 0
+			g4.up.mid (SB + OX) ymiddlea
+			quadControls 0 0.85
+			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) yBarEnd [widths.rhs]
+		include : FlipAround Middle (charTop / 2)
+
+	create-glyph 'Con' 0xA76E : glyph-proc
+		include : ConShape CAP (CAP - O)
+		include : MarkSet.capital
+
+	create-glyph 'con' 0xA76F : glyph-proc
+		include : ConShape XH (XH - Descender - O)
+		include : MarkSet.p
+
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/nine' 0x1D7E1 : glyph-proc
 		include : MarkSet.capital
