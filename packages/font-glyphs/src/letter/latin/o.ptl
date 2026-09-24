@@ -118,21 +118,12 @@ glyph-block Letter-Latin-O : begin
 				curl ((XH - SB) - O - fine) [mix 0 Width 1.05]
 
 	define [OLoopAddon top ada adb] : glyph-proc
-		local fine : AdviceStroke 4.5
-		local r : Math.min (0.22 * top) (0.28 * (RightSB - SB))
-		local xL : RightSB - OX
-		local xR : mix RightSB Width 0.92
-		local yB : mix 0 top 0.48
-		local yT : Math.min top : yB + 2 * r
+		local [object radiusIn radiusOut] : RingDims
+		# Conjoin a ring diacritic to the upper-right rim, like ⱺ but outside.
+		local cx : RightSB - OX + radiusOut * 0.35
+		local cy : top - OX - radiusOut * 0.45
 		include : difference
-			dispiro
-				widths.lhs fine
-				flat [mix xL xR 0.2] yB
-				curl [mix xL xR 0.55] yB
-				archv
-				g4 (xR - O) [mix yB yT 0.5]
-				Arch.lhs yT (swBefore -- fine) (sw -- fine) (swAfter -- fine)
-				g4 xL [mix yT yB 0.5]
+			RingShape cx cy
 			OShapeOutline.NoOvershoot top 0 SB RightSB nothing ada adb
 
 	create-glyph 'OLoop' 0xA74C : glyph-proc

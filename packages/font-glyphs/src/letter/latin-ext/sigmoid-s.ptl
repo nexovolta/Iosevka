@@ -1,0 +1,76 @@
+$$include '../../meta/macros.ptl'
+
+import [mix] from "@iosevka/util"
+
+glyph-module
+
+glyph-block Letter-Latin-Sigmoid-S : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+
+	define SLAB-NONE      0
+	define SLAB-CLASSICAL 1
+	define SLAB-INWARD    2
+	define SLAB-FLAT-HOOK 4
+
+	define SigmoidSConfig : object
+		serifless               SLAB-NONE
+		unilateralSerifed       SLAB-CLASSICAL
+		unilateralInwardSerifed SLAB-INWARD
+		flatHook                SLAB-FLAT-HOOK
+
+	# Delta body; only the free upper terminal follows C.
+	glyph-block-export SigmoidSShape
+	define [SigmoidSShape top styTop hook] : glyph-proc
+		local yRingTop : top * 0.58 + QuarterStroke
+		local xNeck : mix SB RightSB 0.06
+		local ada : Math.min SmallArchDepthA : yRingTop * 0.49
+		local adb : Math.min SmallArchDepthB : yRingTop * 0.49
+		local fh : MakeFlatHook SB RightSB top 0 (sw -- Stroke)
+		include : dispiro
+			match styTop
+				[Just SLAB-CLASSICAL] : list
+					g4 RightSB top [widths.lhs]
+					alsoThru 0.5 0.7
+					g4 Middle (top - O)
+					archv 2
+				[Just SLAB-INWARD] : list
+					g2 RightSB (top - DToothlessRise) [widths.lhs]
+					alsoThru 0.5 0.7
+					g4 Middle (top - O)
+					archv 2
+				[Just SLAB-FLAT-HOOK] : list
+					corner fh.xRHook top [widths.lhs]
+					curl [mix Middle RightSB 0.4] top [heading Leftward]
+					archv.superness DesignParameters.tightHookSuperness
+				__ : list
+					g4 [mix Middle RightSB 0.85] [mix yRingTop top 0.8] [widths.lhs]
+					alsoThru 0.5 0.7
+					g4 Middle (top - O)
+					archv 2
+			g4 (xNeck + Stroke) [mix (top - O - Stroke) yRingTop 0.5] [widths.rhs]
+			arcvh 2
+			g4 Middle yRingTop [heading Rightward]
+			alsoThruThem : list {0.25 0.05} {0.5 0.13}
+			flatside.rd RightSB 0 yRingTop ada adb
+			Arch.rhs 0
+			flatside.lu SB 0 yRingTop ada adb
+			arcvh
+			g4 Middle (yRingTop - QuarterStroke) [widths.rhs HalfStroke]
+		include : match styTop
+			[Just SLAB-CLASSICAL] : ArcStartSerif.R RightSB top Stroke hook
+			[Just SLAB-INWARD] : ArcStartSerif.InwardR RightSB top Stroke hook
+			__ : no-shape
+
+	foreach { suffix styTop } [Object.entries SigmoidSConfig] : do
+		create-glyph "SigmoidS.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : SigmoidSShape CAP styTop Hook
+		create-glyph "sigmoidS.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : SigmoidSShape XH styTop Hook
+
+	select-variant 'SigmoidS' 0xA7D8
+	select-variant 'sigmoidS' 0xA7D9

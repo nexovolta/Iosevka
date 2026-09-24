@@ -8,6 +8,7 @@ glyph-block Letter-Latin-Insular-G : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
+	glyph-block-import Letter-Latin-Sigmoid-S : SigmoidSShape
 
 	define [InsularGShape top bot] : glyph-proc
 		local fine : AdviceStroke 4
@@ -66,3 +67,41 @@ glyph-block Letter-Latin-Insular-G : begin
 
 	CreateTurnedLetter 'turnGInsular' 0xA77E 'GInsular' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'turngInsular' 0xA77F 'gInsular' HalfAdvance [mix Descender XH 0.5]
+
+	# Closed insular G: unserrifed T-bar over an upside-down standard sigmoid S.
+	# Bowl stays full stroke; only the two top-bar joins taper, like insular T.
+	define [ClosedInsularGShape top bot] : glyph-proc
+		local fine : Stroke * CThinB
+		local yJoinS : Stroke - fine
+		local yCut : top - Stroke
+
+		include : HBar.t SB RightSB top
+
+		# Full-width inverted S, with the roof that sits in the bar clipped off.
+		include : intersection
+			new-glyph : glyph-proc
+				include : SigmoidSShape (top - bot) 0 Hook
+				include : Translate 0 bot
+				include : FlipAround Middle : mix bot top 0.5
+			MaskBelow yCut
+
+		# T-joins drawn on the sigmoid baseline, then flipped with it.
+		include : new-glyph : glyph-proc
+			include : dispiro
+				straight.right.start [Arch.adjust-x.bot Middle] yJoinS [widths.lhs.heading fine Rightward]
+				archv
+				g4 (RightSB - OX) (yJoinS + Stroke) [widths.lhs]
+			include : dispiro
+				straight.left.start [Arch.adjust-x.bot Middle] yJoinS [widths.rhs.heading fine Leftward]
+				archv
+				g4 (SB + OX) (yJoinS + Stroke) [widths.rhs]
+			include : Translate 0 bot
+			include : FlipAround Middle : mix bot top 0.5
+
+	create-glyph 'GInsularClosed' 0xA7D0 : glyph-proc
+		include : MarkSet.capital
+		include : ClosedInsularGShape CAP 0
+
+	create-glyph 'gInsularClosed' 0xA7D1 : glyph-proc
+		include : MarkSet.p
+		include : ClosedInsularGShape XH Descender
