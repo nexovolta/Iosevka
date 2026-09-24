@@ -39,6 +39,11 @@ glyph-block Letter-Latin-Lower-F : begin
 		[Just SYM-LEFT] { ([FBarLeftPos df sym 0] + TanSlope * Stroke) ([xSmallFCrossRefT df] + LongJut * [Math.sqrt df.adws]) }
 		__              { (xDefaultLeft + 0) (xDefaultRight + 0) }
 
+	# Asymmetric f shifts the stem left; extend the top hook rightward to match.
+	define [FAsymTopHookExtra df sym barLeft barLeftRef] : match sym
+		[Just SYM-LEFT] : Math.max Jut : (barLeftRef - barLeft) + LongJut * [Math.sqrt df.adws] * 0.5
+		__              0
+
 	glyph-block-export ySmallFBarPos
 	define ySmallFBarPos : [mix 0 XH DesignParameters.fBarPosToXH] + Stroke * DesignParameters.fbarStrokeAdj
 
@@ -59,13 +64,13 @@ glyph-block Letter-Latin-Lower-F : begin
 		include : HSerif.mb df.middle 0 jut
 		set-base-anchor 'palatalHookPos' (df.middle + jut + HalfStroke * TanSlope) 0
 
-	define [StdFShapeT sink df offset barleft sw] : sink
+	define [StdFShapeT sink df offset barleft sw _hookExtra] : sink
 		widths.lhs sw
-		g4 [Math.max (barleft + offset + [HSwToV : 2.125 * sw]) (df.rightSB + RBalance2 - (OX - O) - offset)] (Ascender - Hook * 0.75)
+		g4 [Math.max (barleft + offset + [HSwToV : 2.125 * sw]) (df.rightSB + RBalance2 - (OX - O) - offset + [fallback _hookExtra 0])] (Ascender - Hook * 0.75)
 		HookStart (Ascender - offset) (sw -- sw)
 		flat (barleft + offset) (Ascender - ArchDepthA * 0.8)
 		[if offset corner curl] (barleft + offset) 0 [heading Downward]
-		if offset { [corner (df.rightSB + RBalance2 - (OX - O) - offset) 0] } {}
+		if offset { [corner (df.rightSB + RBalance2 - (OX - O) - offset + [fallback _hookExtra 0]) 0] } {}
 
 	define [SmallFDownExtension barLeft] : VBar.l barLeft [mix 0 Descender 0.9] TINY
 
@@ -102,10 +107,11 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barRight : barLeft + [HSwToV Stroke]
 		local { xCrossLeft xCrossRight } : FCrossBarPos df sym df.leftSB [mix df.leftSB df.rightSB m]
 
-		include : LeaningAnchor.Above.Hook barLeft (df.rightSB + barLeft - barLeft0)
+		local hookExtra : FAsymTopHookExtra df sym barLeft barLeft0
+		include : LeaningAnchor.Above.Hook barLeft (df.rightSB + barLeft - barLeft0 + hookExtra)
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 
-		include : StdFShapeT dispiro df 0 barLeft0 Stroke
+		include : StdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
 		include : Translate (barLeft - barLeft0) 0
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
@@ -118,10 +124,11 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
-	define [NarrowStdFShapeT sink df offset barleft sw] : begin
+	define [NarrowStdFShapeT sink df offset barleft sw _hookExtra] : begin
 		local pAdaptive : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
 		local hookScale : mix 0.9 1.0 pAdaptive
-		local hookRight : mix barleft (df.rightSB + RBalance2 - (OX - O)) hookScale
+		local hookExtra : fallback _hookExtra 0
+		local hookRight : mix barleft (df.rightSB + RBalance2 - (OX - O) + hookExtra) hookScale
 		local swTerminal : mix sw [df.adviceStroke 2.75] [mix 0.35 0.1 pAdaptive]
 		return : sink
 			widths.lhs sw
@@ -139,10 +146,11 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
 
-		include : LeaningAnchor.Above.Hook barLeft ([mix barLeft (df.rightSB + barLeft - barLeft0) 0.75])
+		local hookExtra : FAsymTopHookExtra df sym barLeft barLeft0
+		include : LeaningAnchor.Above.Hook barLeft ([mix barLeft (df.rightSB + barLeft - barLeft0 + hookExtra) 0.75])
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 
-		include : NarrowStdFShapeT dispiro df 0 barLeft0 Stroke
+		include : NarrowStdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
 		include : Translate (barLeft - barLeft0) 0
 
 		local pAdaptive : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
@@ -186,7 +194,8 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
 		local hd : FlatHookDepth df
-		local topHookRight : crossRight + topHookExt
+		local hookExtra : FAsymTopHookExtra df sym barLeft balancedBarLeft
+		local topHookRight : crossRight + topHookExt + hookExtra
 		local { xCrossLeft xCrossRight } : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
 
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
