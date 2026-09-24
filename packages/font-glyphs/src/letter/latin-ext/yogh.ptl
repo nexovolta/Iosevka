@@ -13,11 +13,11 @@ glyph-block Letter-Latin-Yogh : begin
 	define SLAB-CLASSICAL  1
 	define SLAB-INWARD     2
 
-	define [PhantomBotYOfUpperHalf top bot] : [mix bot top OverlayPos] - QuarterStroke
-	define [TopYOfLowerHalf top bot] : [mix bot top OverlayPos] + 0.06 * Stroke
+	define [PhantomBotYOfUpperHalf top bot kSplit] : [mix bot top kSplit] - QuarterStroke
+	define [TopYOfLowerHalf top bot kSplit] : [mix bot top kSplit] + 0.06 * Stroke
 
-	define [UpperHalfT sink slab offset top bot] : begin
-		local py : PhantomBotYOfUpperHalf top bot
+	define [UpperHalfT sink slab offset top bot kSplit] : begin
+		local py : PhantomBotYOfUpperHalf top bot kSplit
 		local yRightHalf : YSmoothMidR top py
 		local yBottomTerminal : mix top py 1.2
 		return : sink
@@ -29,9 +29,9 @@ glyph-block Letter-Latin-Yogh : begin
 			alsoThruThem {{0.5 0.8} {0.75 0.92}} important
 			[if (sink == dispiro) g4 corner] ([mix SB RightSB 0.1] + QuarterStroke) yBottomTerminal
 
-	define [LowerHalfT sink top bot] : begin
-		local pyt : mix bot [TopYOfLowerHalf top bot] 1.2
-		local pyb : mix bot [TopYOfLowerHalf top bot] 0.2
+	define [LowerHalfT sink top bot kSplit] : begin
+		local pyt : mix bot [TopYOfLowerHalf top bot kSplit] 1.2
+		local pyb : mix bot [TopYOfLowerHalf top bot kSplit] 0.2
 
 		return : sink
 			Arch.rhs.centerAt.ltr.t Middle pyt
@@ -40,11 +40,11 @@ glyph-block Letter-Latin-Yogh : begin
 			alsoThruThem {{0.25 [StrokeWidthBlend 0.63 0.66]} {0.5 [StrokeWidthBlend 0.84 0.85]}} important
 			g4 (SB + [HSwToV : 0.1 * Stroke]) (bot + O)
 
-	define [YoghShape slab top bot] : glyph-proc
-		include : UpperHalfT dispiro slab 0 top bot
+	define [YoghShape slab top bot kSplit] : glyph-proc
+		include : UpperHalfT dispiro slab 0 top bot kSplit
 		include : difference
-			LowerHalfT dispiro top bot
-			UpperHalfT spiro-outline slab 0.1 top bot
+			LowerHalfT dispiro top bot kSplit
+			UpperHalfT spiro-outline slab 0.1 top bot kSplit
 
 		include : match slab
 			[Just SLAB-CLASSICAL] : ArcStartSerif.L SB top Stroke Hook
@@ -59,10 +59,18 @@ glyph-block Letter-Latin-Yogh : begin
 	foreach { suffix { slabTop } } [Object.entries Config] : do
 		create-glyph "Yogh.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : YoghShape slabTop CAP 0
+			include : YoghShape slabTop CAP 0 OverlayPos
 		create-glyph "yogh.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : YoghShape slabTop XH Descender
+			include : YoghShape slabTop XH Descender OverlayPos
+		create-glyph "Et.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : YoghShape slabTop CAP 0 0.34
+		create-glyph "et.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : YoghShape slabTop XH 0 0.42
 
 	select-variant 'Yogh' 0x21C (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'yogh' 0x21D (follow -- 'cyrl/ze/topSerif')
+	select-variant 'Et'   0xA76A (follow -- 'cyrl/Ze/topSerif')
+	select-variant 'et'   0xA76B (follow -- 'cyrl/ze/topSerif')

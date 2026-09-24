@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Lower-Q : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar RightwardDiagTailedBar
-	glyph-block-import Letter-Shared-Shapes : OBarRight TopHook RetroflexHook PalatalHook
+	glyph-block-import Letter-Shared-Shapes : OBarRight TopHook RetroflexHook PalatalHook LetterBarOverlay
 
 	define TERMINAL-NORMAL  0
 	define TERMINAL-TAILED  1
@@ -171,6 +171,13 @@ glyph-block Letter-Latin-Lower-Q : begin
 			if sRB : include : sRB [DivFrame 1] Descender
 			include : LeaningAnchor.Below.VBar.r RightSB
 
+		create-glyph "qStroke.\(suffix)" : glyph-proc
+			include [refer-glyph "q.\(suffix)"] AS_BASE ALSO_METRICS
+			include : LetterBarOverlay.r.in
+				x   -- RightSB
+				bot -- (Descender + [if sRB Stroke 0])
+				top -- 0
+
 		create-glyph "qPalatalHook.\(suffix)" : match terminal
 			[Just TERMINAL-DIAG] : glyph-proc
 				include [refer-glyph "q.\(suffix)"] AS_BASE ALSO_METRICS
@@ -209,6 +216,7 @@ glyph-block Letter-Latin-Lower-Q : begin
 
 	select-variant 'q' 'q'
 	link-reduced-variant 'q/sansSerif' 'q' MathSansSerif
+	select-variant 'qStroke' 0xA757 (follow -- 'q')
 	select-variant 'QRTail' 0x24A (shapeFrom -- 'qCapRTail') (follow -- 'qRTail')
 	select-variant 'qRTail' 0x24B
 	select-variant 'qPalatalHook' 0x1DF34 (follow -- 'q')

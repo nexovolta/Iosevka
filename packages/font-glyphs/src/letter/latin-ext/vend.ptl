@@ -1,0 +1,52 @@
+$$include '../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from "@iosevka/util"
+
+glyph-module
+
+glyph-block Letter-Latin-Vend : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Letter-Shared-Shapes : SerifFrame
+
+	define [SerifLT top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.outer
+	define [SerifLB top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lb.fullSide
+
+	define [FullSerifs top bot] : composite-proc [SerifLT top bot] [SerifLB top bot]
+	define [MotionSerif top bot] : SerifLT top bot
+
+	# Vertical stem from bot to top; diagonal meets the stem at yJoin, near
+	# the bottom, so the stem continues slightly below the fork.
+	define [VendShape bot top yJoin] : glyph-proc
+		include : VBar.l SB bot top
+		local xJoin : SB + [HSwToV Stroke]
+		local dy : top - yJoin
+		local dx : RightSB - xJoin
+		local dgCor : DiagCor dy dx 0 Stroke
+		include : dispiro
+			widths.rhs (dgCor * Stroke)
+			flat RightSB top [heading Downward]
+			curl xJoin yJoin [widths.rhs Stroke]
+
+	define VendConfig : object
+		serifless     { no-shape    }
+		motionSerifed { MotionSerif }
+		serifed       { FullSerifs  }
+
+	foreach { suffix { Serifs } } [Object.entries VendConfig] : do
+		create-glyph "Vend.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : LeaningAnchor.Below.VBar.l SB
+			local yJoin : mix 0 CAP 0.18
+			include : VendShape 0 CAP yJoin
+			include : Serifs CAP 0
+		create-glyph "vend.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : LeaningAnchor.Below.VBar.l SB
+			local yJoin : 0 + HalfStroke
+			include : VendShape Descender XH yJoin
+			include : Serifs XH Descender
+
+	select-variant 'Vend' 0xA768
+	select-variant 'vend' 0xA769
