@@ -62,7 +62,7 @@ glyph-block Common-Derivatives : begin
 			local dstGlyph : query-glyph dstName
 			if dstGlyph : g.addVariantForRecursiveBuild dstGlyph
 
-			if (para.enableCvSs && isPrimary) : begin
+			if (para.enableCvSs && isPrimary && variant.tag) : begin
 				variant.set g dstName
 				if variant.nonDeriving : variant.setPreventDeriving g
 
@@ -108,12 +108,13 @@ glyph-block Common-Derivatives : begin
 					local dstGlyph : query-glyph dstName
 					if [not dstGlyph] : throw : new Error "Cannot find glyph '\(dstName)'"
 
-					cv.variant.set fromGlyph dstName
-					if cv.variant.nonDeriving : cv.variant.setPreventDeriving fromGlyph
+					if cv.variant.tag : begin
+						cv.variant.set fromGlyph dstName
+						if cv.variant.nonDeriving : cv.variant.setPreventDeriving fromGlyph
 
-					if product.isTarget : begin
-						cv.variant.set g dstName
-						if cv.variant.nonDeriving : cv.variant.setPreventDeriving g
+						if product.isTarget : begin
+							cv.variant.set g dstName
+							if cv.variant.nonDeriving : cv.variant.setPreventDeriving g
 
 	class CVariantProduct
 		public [new variants] : begin
@@ -166,11 +167,14 @@ glyph-block Common-Derivatives : begin
 			foreach { kPrime prime } para.variants.primes
 				foreach variant [prime.variants.values] : begin
 					local suffix : variant.resolveFor para selector
-					if (suffix && variant.tag && variant.rank) : atlas.allVariants.push : object
+					local isPrimary : selector === primarySelector
+					local isTarget : isPrimary && suffix === atlas.targetSuffix
+					local isTagged : suffix && variant.tag && variant.rank
+					if (isTagged || (suffix && isTarget)) : atlas.allVariants.push : object
 						suffix    suffix
 						variant   variant
-						isPrimary (selector === primarySelector)
-						isTarget  (selector === primarySelector && suffix === atlas.targetSuffix)
+						isPrimary isPrimary
+						isTarget  isTarget
 
 		CvAtlasQueryCache.set rawSelector atlas
 		return atlas

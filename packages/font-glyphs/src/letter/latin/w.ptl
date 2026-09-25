@@ -178,7 +178,20 @@ glyph-block Letter-Latin-W : begin
 					HSerif.mtAsymmetric dim.xLeft2 dim.wMidHeight jut jut
 
 	### W and w
-	define [WShapeImpl df top bodyType slabType midHClass] : glyph-proc
+	define [WAsymmetricInnerClipRight df dim] : spiro-outline
+		corner dim.xLeft2 dim.wMidHeight
+		corner dim.xBot2  0
+		corner df.width  0
+		corner df.width  dim.wMidHeight
+
+	define [WAsymmetricInnerClipLeft df dim] : spiro-outline
+		corner dim.xRight1 dim.wMidHeight
+		corner dim.xBot1  0
+		corner 0  0
+		corner 0  dim.wMidHeight
+
+	define [WShapeImpl df top bodyType slabType midHClass _fReverse] : glyph-proc
+		local fReverse : fallback _fReverse false
 		local dim : WDim df top bodyType slabType midHClass
 
 		include : tagged 'strokeDown1' : match bodyType
@@ -216,27 +229,10 @@ glyph-block Letter-Latin-W : begin
 		local shiftT  : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
 		local shiftB  : HSwToV               (0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr   )
 
-		include : tagged 'strokeUp1' : difference
-			dispiro
-				flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-				curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
-			match bodyType
-				[Just FORM-CYRL-OMEGA] : spiro-outline
-					corner df.width   (dim.wMidHeight + 1)
-					corner dim.xLeft2 (dim.wMidHeight + 1)
-					flat dim.xLeft2    dim.wMidHeight
-					curl dim.xLeft2   (dim.wMidHeight * (1 - dim.curlyStraightSegLength))
-					quadControls 0 0.3 6 unimportant
-					corner (dim.xBot2 - shiftB)   0
-					corner df.width 0
-				([Just FORM-ASYMMETRIC] || [Just FORM-CURLY-ASYMMETRIC]) : spiro-outline
-					corner dim.xLeft2 dim.wMidHeight
-					corner dim.xBot2  0
-					corner df.width  0
-					corner df.width  dim.wMidHeight
-				_ : no-shape
-
-		include : tagged 'strokeDown2' : match bodyType
+		local innerUp : dispiro
+			flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
+			curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+		local innerDown : match bodyType
 			[Just FORM-CYRL-OMEGA] : dispiro
 				flat (dim.xLeft2 - [HSwToV : 0.5 * dim.strokeOuter]) dim.wMidHeight [widths.lhs.heading dim.strokeOuter Downward]
 				curl (dim.xLeft2 - [HSwToV : 0.5 * dim.strokeOuter]) (dim.wMidHeight * (1 - dim.curlyStraightSegLength)) [heading Downward]
@@ -246,11 +242,26 @@ glyph-block Letter-Latin-W : begin
 				flat (dim.xLeft2 + shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
 				curl (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
 
+		local clipUp : match bodyType
+			[Just FORM-CYRL-OMEGA] : spiro-outline
+				corner df.width   (dim.wMidHeight + 1)
+				corner dim.xLeft2 (dim.wMidHeight + 1)
+				flat dim.xLeft2    dim.wMidHeight
+				curl dim.xLeft2   (dim.wMidHeight * (1 - dim.curlyStraightSegLength))
+				quadControls 0 0.3 6 unimportant
+				corner (dim.xBot2 - shiftB)   0
+				corner df.width 0
+			([Just FORM-ASYMMETRIC] || [Just FORM-CURLY-ASYMMETRIC]) : WAsymmetricInnerClipRight df dim
+			_ : no-shape
+		include : tagged 'strokeUp1' : difference innerUp : if fReverse [no-shape] clipUp
+		include : tagged 'strokeDown2' : difference innerDown : if fReverse [WAsymmetricInnerClipLeft df dim] [no-shape]
+
 		if (dim.wMidHeightExt > dim.wMidHeight) : include : tagged 'strokeExtension' : VBar.m df.middle dim.wMidHeight dim.wMidHeightExt (dim.fineInnerCrTop + [VSwToH : shiftT * 2])
 
 		include : WSerifs df top bodyType slabType dim
 
-	define [WSquareTopShape df top bodyType slabType midHClass] : glyph-proc
+	define [WSquareTopShape df top bodyType slabType midHClass _fReverse] : glyph-proc
+		local fReverse : fallback _fReverse false
 		local dim : WDim df top bodyType slabType midHClass
 		local yJoin : VSquareTopYJoin top
 
@@ -271,57 +282,33 @@ glyph-block Letter-Latin-W : begin
 			__                     1
 		local shiftT : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
 		local shiftB : HSwToV : 0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr
-		include : tagged 'strokeUp1' : difference
-			dispiro
-				flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-				curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
-			match bodyType
-				[Just FORM-ASYMMETRIC] : spiro-outline
-					corner dim.xLeft2 dim.wMidHeight
-					corner dim.xBot2  0
-					corner df.width  0
-					corner df.width  dim.wMidHeight
-				_ : no-shape
-		include : tagged 'strokeDown2' : dispiro
+		local innerUp : dispiro
+			flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
+			curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+		local innerDown : dispiro
 			flat (dim.xLeft2 + shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
 			curl (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+		local clipUp : match bodyType
+			[Just FORM-ASYMMETRIC] : WAsymmetricInnerClipRight df dim
+			_ : no-shape
+		include : tagged 'strokeUp1' : difference innerUp : if fReverse [no-shape] clipUp
+		include : tagged 'strokeDown2' : difference innerDown : if fReverse [WAsymmetricInnerClipLeft df dim] [no-shape]
 
 		if (dim.wMidHeightExt > dim.wMidHeight) : include : tagged 'strokeExtension' : VBar.m df.middle dim.wMidHeight dim.wMidHeightExt (dim.fineInnerCrTop + [VSwToH : shiftT * 2])
 
 		include : WSerifs df top bodyType slabType dim
 
 	define [WReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
-		local dim : WDim df top asymBodyType slabType midHClass
-		include : with-transform [FlipAround df.middle (top / 2) (-1) 1]
-			WShapeImpl df top asymBodyType SERIFS-NONE midHClass
-		include : WSerifs df top asymBodyType slabType dim
+		include : WShapeImpl df top asymBodyType slabType midHClass true
 
 	define [WSquareTopReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
-		local dim : WDim df top asymBodyType slabType midHClass
-		include : with-transform [FlipAround df.middle (top / 2) (-1) 1]
-			WSquareTopShape df top asymBodyType SERIFS-NONE midHClass
-		include : WSerifs df top asymBodyType slabType dim
+		include : WSquareTopShape df top asymBodyType slabType midHClass true
 
 	define [WHookRightReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
-		local dim : WDim df top asymBodyType slabType midHClass
-		include : with-transform [FlipAround df.middle (top / 2) (-1) 1]
-			WShapeImpl df top asymBodyType SERIFS-NONE midHClass
-		eject-contour 'strokeDown1'
-		include : dispiro
-			widths.rhs dim.strokeOuter
-			straight.down.start df.rightSB (top - TailY - 0.5 * dim.strokeOuter - O) [heading Downward]
-			quadControls 0 0.3 6 unimportant
-			g4 (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
-		include : VerticalHook.r
-			x      -- df.rightSB
-			y      -- (top - TailY - 0.5 * dim.strokeOuter - O)
-			xDepth -- TailX
-			yDepth -- (-TailY)
-			sw     -- dim.strokeOuter
-		include : WSerifs df top asymBodyType slabType dim
+		include : WHookRightShape df top asymBodyType slabType midHClass true
 
-	define [WHookRightShape df top bodyType slabType midHClass] : glyph-proc
-		include : WShapeImpl df top bodyType slabType midHClass
+	define [WHookRightShape df top bodyType slabType midHClass _fReverse] : glyph-proc
+		include : WShapeImpl df top bodyType slabType midHClass _fReverse
 
 		local dim : WDim df top bodyType slabType midHClass
 
