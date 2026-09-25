@@ -567,6 +567,72 @@ glyph-block Letter-Latin-Ezh : begin
 	CreateSelectorVariants 'lyoghCurlyTail' 0x1DF67 [Object.keys EzhConfig] (follow -- 'ezh/phoneticRight')
 	CreateSelectorVariants 'lyoghRTail'     0x1DF05 [Object.keys EzhConfig] (follow -- 'ezh/phoneticRight')
 
+	do "TZ"
+		glyph-block-import Letter-Latin-Upper-T : TConfig TShape
+
+		define tzAdws para.advanceScaleMM
+
+		foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
+			create-glyph "TZ/T.\(suffix)" : glyph-proc
+				local df : include : DivFrame tzAdws 3
+				local subDf : df.slice 3 2
+				include : df.markSet.p
+				set-base-anchor 'cvDecompose' 0 0
+				include : TShape subDf CAP doST doSB
+
+			create-glyph "tz/t.\(suffix)" : glyph-proc
+				local df : include : DivFrame tzAdws 3
+				local subDf : df.slice 3 2
+				include : df.markSet.p
+				set-base-anchor 'cvDecompose' 0 0
+				include : VBar.m subDf.middle 0 Ascender subDf.mvs
+				include : HBar.t subDf.leftSB subDf.rightSB XH subDf.mvs
+				if doST : begin
+					local swVJut : Math.min VJutStroke : VSwToH : 0.625 * (subDf.middle - subDf.leftSB - [HSwToV : 0.5 * subDf.mvs])
+					include : VSerif.dl (subDf.leftSB + 0.75 * OX) XH VJut swVJut
+					include : VSerif.dr (subDf.rightSB - 0.75 * OX) XH VJut swVJut
+
+		foreach { suffix { fCursive fSerifed } } [pairs-of EzhConfig] : do
+			create-glyph "TZ/ezh.\(suffix)" : glyph-proc
+				local df : DivFrame tzAdws 3
+				local subDf : df.slice 3 2
+				set-width 0
+				set-mark-anchor 'cvDecompose' 0 0
+				local x0 : subDf.middle - [HSwToV : 0.5 * subDf.mvs]
+				local ezhDf : DivFrame ((df.width - x0) / Width) 2
+				local stroke : ezhDf.adviceStroke2 2 3 (XH - Descender)
+				define ezh : Ezh ezhDf XH Descender
+					fCursive  -- fCursive
+					fSerifed  -- fSerifed
+					pxMidLeft -- (22 / 100)
+					pyMidLeft -- [if fCursive (50 / 100) (55 / 100)]
+					stroke    -- stroke
+					hook      -- SHook
+					origBar   -- subDf.mvs
+					ada       -- [ezhDf.archDepthAOf SmallArchDepth stroke]
+					adb       -- [ezhDf.archDepthBOf SmallArchDepth stroke]
+				include : with-transform [ApparentTranslate x0 0] : glyph-proc
+					include : ezh.Shape
+					eject-contour 'strokeTop'
+
+		select-variant 'TZ/T' (follow -- 'T')
+		select-variant 'tz/t' (follow -- 'T')
+		select-variant 'TZ/ezh' (follow -- 'ezh/phoneticRight')
+
+		derive-multi-part-glyphs 'TZ' 0xA728 { "TZ/T" "TZ/ezh" } : function [srcs gr] : glyph-proc
+			local df : include : DivFrame tzAdws 3
+			include : df.markSet.p
+			define { te ezhg } srcs
+			include [refer-glyph te]
+			include [refer-glyph ezhg]
+
+		derive-multi-part-glyphs 'tz' 0xA729 { "tz/t" "TZ/ezh" } : function [srcs gr] : glyph-proc
+			local df : include : DivFrame tzAdws 3
+			include : df.markSet.p
+			define { te ezhg } srcs
+			include [refer-glyph te]
+			include [refer-glyph ezhg]
+
 	select-variant 'ezh/phoneticRight'
 	select-variant 'ezhCurlyTail/phoneticRight'   (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhRTail/phoneticRight'       (follow -- 'ezh/phoneticRight')

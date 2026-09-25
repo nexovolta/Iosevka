@@ -74,8 +74,10 @@ glyph-block Letter-Latin-Insular-G : begin
 		local fine : Stroke * CThinB
 		local yJoinS : Stroke - fine
 		local yStub : yJoinS + ada + adb
+		local kBowl : 88 / 100
+		local barPad : 6 / 100 * (RightSB - SB)
 
-		include : HBar.t SB RightSB top
+		include : HBar.t (SB - barPad) (RightSB + barPad) top
 
 		include : new-glyph : glyph-proc
 			include : intersection
@@ -90,8 +92,9 @@ glyph-block Letter-Latin-Insular-G : begin
 				straight.left.start Middle yJoinS [widths.rhs.heading fine Leftward]
 				archv
 				flatside.lu SB yJoinS yStub ada adb nothing [widths.rhs]
-			include : Translate 0 bot
+			include : ApparentTranslate 0 bot
 			include : FlipAround Middle : mix bot top 0.5
+			include : ScaleAround Middle [mix bot top 0.5] kBowl 1
 
 	create-glyph 'GInsularClosed' 0xA7D0 : glyph-proc
 		include : MarkSet.capital

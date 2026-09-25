@@ -204,6 +204,39 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : ApparentTranslate shift 0
 				eject-contour 'serifLT'
 
+	do "v and y subglyphs for av/ay"
+		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
+		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
+		glyph-block-import Letter-Shared-Shapes : SerifFrame
+
+		define dfVY : DivFrame para.advanceScaleMM 3
+		define { subDfVY shiftVY } : SubDfAndShift 1 dfVY 0
+
+		define avVConfig : object
+			straightSerifless  { true  0 }
+			curlySerifless     { false 0 }
+			squareTopSerifless { true  1 }
+			cursiveSerifless   { true  0 }
+
+		foreach { suffix { fStraightBar fSquareTop } } [Object.entries avVConfig] : do
+			create-glyph "av/v.\(suffix)" : glyph-proc
+				include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
+					if fSquareTop : include : VSquareTopShape subDfVY XH dfVY.mvs
+					if [not fSquareTop] : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
+					include : NeedSlab SLAB : VSerifs subDfVY fStraightBar XH dfVY.mvs
+					eject-contour 'serifLT'
+
+		define slabAutoY { false SLAB false }
+		foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
+			if [not fSquareTop] : begin
+				create-glyph "ay/y.\(suffix)" : glyph-proc
+					local YShape : NonCursiveYShapeT straightBar bottomShape slabAutoY 0 subDfVY.width subDfVY.leftSB dfVY.mvs
+					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
+						include : YShape.SmallYShape XH Descender
+						include : NeedSlab SLAB : glyph-proc
+							local sf : SerifFrame.fromDf subDfVY XH Descender
+							include sf.rt.full
+
 	do "c subglyphs"
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
 
@@ -440,6 +473,32 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'ue' 0x1D6B 'ue/u' 'ae/e'
 	derive-composites 'ao' 0xA735 'ao/a' 'ao/o'
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
+	select-variant "av/v" (follow -- 'v/sansSerif')
+	select-variant "ay/y" (follow -- 'y/nonCursive')
+	derive-multi-part-glyphs 'av' 0xA739 { "au/a" "av/v" }
+		function [srcs gr] : glyph-proc
+			define df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.e
+			define { left right } srcs
+			local { subDf shift } : SubDfAndShift 1 df 0
+			include [refer-glyph left] AS_BASE ALSO_METRICS
+			include : difference [refer-glyph right]
+				intersection [MaskLeft (shift + subDf.middle)] [MaskAbove (XH - subDf.smallArchDepthB)]
+	derive-multi-part-glyphs 'ay' 0xA73D { "au/a" "ay/y" }
+		function [srcs gr] : glyph-proc
+			define df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.p
+			define { left right } srcs
+			local { subDf shift } : SubDfAndShift 1 df 0
+			include [refer-glyph left] AS_BASE ALSO_METRICS
+			include : df.markSet.p
+			include : difference [refer-glyph right]
+				intersection [MaskLeft (shift + subDf.middle)] [MaskAbove (XH - subDf.smallArchDepthB)]
+	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
+		define df : DivFrame para.advanceScaleMM 3
+		local { subDf shift } : SubDfAndShift 1 df 0
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : HOverlayBar (shift + subDf.leftSB) (shift + subDf.rightSB) (XH / 2)
 	derive-composites 'uo' 0xAB63 'uo/u' 'uo/o'
 
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
