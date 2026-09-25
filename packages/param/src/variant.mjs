@@ -29,12 +29,12 @@ export function apply(data, para, argv) {
 export function parse(data, argv) {
 	const primes = new Map();
 	const selectorTree = new SelectorTree();
-	const ta = new CvTagAllocator();
 	for (const k in data.prime) {
-		const p = new Prime(k, data.prime[k], ta);
-		p.register(selectorTree);
+		const p = new Prime(k, data.prime[k]);
 		primes.set(k, p);
 	}
+	assignOpenTypeTags(primes);
+	for (const p of primes.values()) p.register(selectorTree);
 	const defaultComposite = new Composite("{default}", data.default);
 	const composites = new Map();
 	for (const k in data.composite) {
@@ -68,59 +68,121 @@ class SelectorTree {
 	}
 }
 
-class CvTagAllocator {
-	constructor() {
-		this.cvCount = 1;
-		this.kindWiseCount = new Map();
-	}
+const DIGIT_ORDER = [
+	"zero",
+	"one",
+	"two",
+	"three",
+	"four",
+	"five",
+	"six",
+	"seven",
+	"eight",
+	"nine",
+];
 
-	createTag(kind) {
-		if (this.cvCount <= 99) {
-			return `cv${String(this.cvCount++).padStart(2, "0")}`;
-		} else {
-			let n = this.kindWiseCount.get(kind) || 0;
-			this.kindWiseCount.set(kind, ++n);
-			return `${this.mapKindToTag(kind)}${this.mapNumberToLetter(n - 1)}`;
-		}
-	}
+const GREEK_CAPITALS = new Set(["capital-gamma", "capital-delta", "capital-lambda"]);
+const GREEK_LOWERS = new Set([
+	"lower-alpha",
+	"lower-beta",
+	"lower-gamma",
+	"lower-delta",
+	"lower-zeta",
+	"lower-eta",
+	"lower-theta",
+	"lower-iota",
+	"lower-kappa",
+	"lower-lambda",
+	"lower-mu",
+	"lower-nu",
+	"lower-xi",
+	"lower-pi",
+	"lower-final-sigma",
+	"lower-tau",
+	"lower-upsilon",
+	"lower-phi",
+	"lower-chi",
+	"lower-psi",
+]);
 
-	mapKindToTag(kind) {
-		switch (kind) {
-			case "letter":
-				return "VA";
-			case "digit":
-				return "VN";
-			case "dot":
-				return "VD";
-			case "symbol":
-				return "VS";
-			case "ligature":
-				return "VL";
-		}
-	}
+function compareByKey(a, b) {
+	return a.key.localeCompare(b.key, "en");
+}
 
-	// map number from 0 1 2 3 ... to AA AB AC ...
-	// 0 => AA, 1 => AB, ... 25 => BA, 26 => BB, ...
-	// Result should be at least 2 characters
-	mapNumberToLetter(n) {
-		let ans = "";
-		do {
-			ans += String.fromCharCode((n % 26) + 0x41);
-			n = Math.floor(n / 26);
-		} while (n > 0);
-		while (ans.length < 2) ans = `A${ans}`;
-		return ans;
+function classifyLetter(key) {
+	if (key === "partial-derivative") return { script: 1, name: "", capital: 1, trailing: 1 };
+	if (key.startsWith("cyrl-")) {
+		const capital = key.startsWith("cyrl-capital-");
+		const name = capital ? key.slice("cyrl-capital-".length) : key.slice("cyrl-".length);
+		return { script: 2, name, capital: capital ? 0 : 1, trailing: 0 };
+	}
+	if (GREEK_CAPITALS.has(key)) {
+		return { script: 1, name: key.slice("capital-".length), capital: 0, trailing: 0 };
+	}
+	if (GREEK_LOWERS.has(key)) {
+		return { script: 1, name: key.slice("lower-".length), capital: 1, trailing: 0 };
+	}
+	if (key.startsWith("capital-")) {
+		return { script: 0, name: key.slice("capital-".length), capital: 0, trailing: 0 };
+	}
+	if (key.startsWith("lower-")) {
+		return { script: 0, name: key.slice("lower-".length), capital: 1, trailing: 0 };
+	}
+	return { script: 0, name: key, capital: 1, trailing: 0 };
+}
+
+function compareLetters(a, b) {
+	const ca = classifyLetter(a.key);
+	const cb = classifyLetter(b.key);
+	if (ca.script !== cb.script) return ca.script - cb.script;
+	if (ca.trailing !== cb.trailing) return ca.trailing - cb.trailing;
+	const nameCmp = ca.name.localeCompare(cb.name, "en");
+	if (nameCmp !== 0) return nameCmp;
+	return ca.capital - cb.capital;
+}
+
+// 0 => AA, 1 => AB, ... 25 => AZ, 26 => BA.
+function mapNumberToLetter(n) {
+	const lo = n % 26;
+	const hi = Math.floor(n / 26);
+	return String.fromCharCode(0x41 + hi) + String.fromCharCode(0x41 + lo);
+}
+
+function assignOpenTypeTags(primes) {
+	const digits = [];
+	const letters = [];
+	const symbols = [];
+	const other = [];
+	for (const prime of primes.values()) {
+		if (!prime.tagKind) continue;
+		if (prime.tagKind === "digit") digits.push(prime);
+		else if (prime.tagKind === "letter") letters.push(prime);
+		else if (prime.tagKind === "symbol") symbols.push(prime);
+		else other.push(prime);
+	}
+	digits.sort((a, b) => DIGIT_ORDER.indexOf(a.key) - DIGIT_ORDER.indexOf(b.key));
+	letters.sort(compareLetters);
+	symbols.sort(compareByKey);
+	other.sort(compareByKey);
+
+	const cvPrimes = [...digits, ...letters];
+	const overflow = [];
+	let cvCount = 1;
+	for (const prime of cvPrimes) {
+		if (cvCount <= 99) prime.assignTag(`cv${String(cvCount++).padStart(2, "0")}`);
+		else overflow.push(prime);
+	}
+	let vxCount = 0;
+	for (const prime of [...symbols, ...other, ...overflow]) {
+		prime.assignTag(`VX${mapNumberToLetter(vxCount++)}`);
 	}
 }
 
 class Prime {
-	constructor(key, cfg, ta) {
+	constructor(key, cfg) {
 		this.key = key;
-		if (cfg.nonBreakingTagForNewVariantSelector) {
-			this.tag = cfg.nonBreakingTagForNewVariantSelector;
-		} else if (cfg.tagKind) {
-			this.tag = ta.createTag(cfg.tagKind);
-		}
+		this.tag = null;
+		this.tagKind = cfg.tagKind || null;
 		this.sampler = cfg.sampler;
 		this.samplerExplain = cfg.samplerExplain;
 
@@ -148,6 +210,10 @@ class Prime {
 			const variant = variantConfig[varKey];
 			this.variants.set(varKey, new PrimeVariant(varKey, this.tag, variant));
 		}
+	}
+	assignTag(tag) {
+		this.tag = tag;
+		for (const variant of this.variants.values()) variant.tag = tag;
 	}
 	register(tree) {
 		for (const [k, v] of this.variants) tree.set(this.key, k, this, v);
