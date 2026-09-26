@@ -26,98 +26,68 @@ glyph-block Letter-Latin-Lower-G : begin
 	# overlay bar width for double-storey g
 	define obwDoubleStorey : Math.min ((XH - Descender) * (1 / 6) - Stroke * (2 / 3)) : AdviceStroke 5
 
-	create-glyph 'g.doubleStoreyClosed' : glyph-proc
-		include : MarkSet.p
-		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
-		include : OShape XH (obot - O) SB [mix Width RightSB 1.3]
-
-		local fine    : Stroke * CThin
-		local gleftx  : [mix 0 SB 0.85] + OX
+	glyph-block-export DoubleStoreyLowerHook
+	define [DoubleStoreyLowerHook] : with-params [bot top [fOpen false] [fFlat false] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [hook SHook] [yTip nothing] [xStart nothing]] : glyph-proc
+		local fine : sw * CThin
+		local yJoin : mix 0 top DesignParameters.gBarPos
+		local obot : yJoin - sw * 0.4
+		local gleftx : [mix 0 SB 0.85] + OX
 		local grightx : [mix Width RightSB 0.825] - OX
-		local groundy : Math.round : [mix Descender [mix 0 XH DesignParameters.gBarPos] 0.64] + HalfStroke
-		local gtipy   : [mix groundy (obot + Stroke) 1.005] - fine
-		include : dispiro
-			g4.left.start [mix SB RightSB 0.4] gtipy [widths.rhs fine]
-			g4  ([mix SB RightSB 0.0575] + Stroke * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine Stroke 0.5]]
-			flat [mix SB RightSB 0.435] groundy [widths.rhs Stroke]
+		local groundy : Math.round : [mix bot yJoin 0.64] + 0.5 * sw
+		local gtipy : fallback yTip : [mix groundy (obot + sw) 1.005] - fine
+		local x0 : fallback xStart : mix SB RightSB 0.4
+		if fFlat : include : dispiro
+			g4.left.start x0 gtipy [widths.rhs fine]
+			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
+			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
 			curl [mix SB RightSB 0.565] groundy
 			archv 4
-			g4 grightx [mix (Descender + O) [YSmoothMidR groundy (Descender + O) SmallArchDepthA SmallArchDepthB] 1.06]
-			Arch.rhs Descender
-			g4 gleftx  [mix (Descender + O) [YSmoothMidL groundy (Descender + O) SmallArchDepthA SmallArchDepthB] 1.06]
+			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			[MakeFlatHook SB RightSB groundy bot (sw -- sw)].hookEndL
+		if (fOpen && !fFlat) : include : dispiro
+			g4.left.start x0 gtipy [widths.rhs fine]
+			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
+			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
+			curl [mix SB RightSB 0.565] groundy
+			archv 4
+			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			HookEnd bot (sw -- sw)
+			g4 gleftx (bot + hook)
+		if (!fOpen && !fFlat) : include : dispiro
+			g4.left.start x0 gtipy [widths.rhs fine]
+			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
+			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
+			curl [mix SB RightSB 0.565] groundy
+			archv 4
+			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			Arch.rhs bot (sw -- sw)
+			g4 gleftx [mix (bot + O) [YSmoothMidL groundy (bot + O) ada adb] 1.06]
 			arcvh
 			g4 [mix SB RightSB 0.435] groundy [heading Rightward]
+
+	define [DoubleStoreyGShape fOpen fFlat] : glyph-proc
+		include : MarkSet.p
+		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
+		include : OShape XH (obot - O) SB [mix Width RightSB 1.3]
+		include : DoubleStoreyLowerHook Descender XH (fOpen -- fOpen) (fFlat -- fFlat)
 		local gm : mix SB [mix Width RightSB 1.3] 0.5
 		include : spiro-outline
 			corner ([mix Width RightSB 0.75] - OX)  XH
 			corner ([mix Width RightSB 0.75] - OX) (XH - Stroke)
 			corner gm (XH - Stroke - O)
 			corner gm  XH
-
+		local yJoin : mix 0 XH DesignParameters.gBarPos
+		local groundy : Math.round : [mix Descender yJoin 0.64] + HalfStroke
 		set-base-anchor 'overlay' Middle [mix (Descender + O) groundy 0.5]
 		set-base-anchor 'strike'  Middle [mix (obot      - O) XH      0.5]
 
+	create-glyph 'g.doubleStoreyClosed' : DoubleStoreyGShape false false
 	derive-composites "gStroke.doubleStoreyClosed" null "g.doubleStoreyClosed" [OverlayW obwDoubleStorey]
 
-	create-glyph 'g.doubleStoreyOpen' : glyph-proc
-		include : MarkSet.p
-		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
-		include : OShape XH (obot - O) SB [mix Width RightSB 1.3]
-
-		local fine    : Stroke * CThin
-		local gleftx  : [mix 0 SB 0.85] + OX
-		local grightx : [mix Width RightSB 0.825] - OX
-		local groundy : Math.round : [mix Descender [mix 0 XH DesignParameters.gBarPos] 0.64] + HalfStroke
-		local gtipy   : [mix groundy (obot + Stroke) 1.005] - fine
-		include : dispiro
-			g4.left.start [mix SB RightSB 0.4] gtipy [widths.rhs fine]
-			g4  ([mix SB RightSB 0.0575] + Stroke * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine Stroke 0.5]]
-			flat [mix SB RightSB 0.435] groundy [widths.rhs Stroke]
-			curl [mix SB RightSB 0.565] groundy
-			archv 4
-			g4 grightx [mix (Descender + O) [YSmoothMidR groundy (Descender + O) SmallArchDepthA SmallArchDepthB] 1.06]
-			HookEnd Descender
-			g4 gleftx  (Descender + SHook)
-		local gm : mix SB [mix Width RightSB 1.3] 0.5
-		include : spiro-outline
-			corner ([mix Width RightSB 0.75] - OX)  XH
-			corner ([mix Width RightSB 0.75] - OX) (XH - Stroke)
-			corner gm (XH - Stroke - O)
-			corner gm  XH
-
-		set-base-anchor 'overlay' Middle [mix (Descender + O) groundy 0.5]
-		set-base-anchor 'strike'  Middle [mix (obot      - O) XH      0.5]
-
+	create-glyph 'g.doubleStoreyOpen' : DoubleStoreyGShape true false
 	derive-composites "gStroke.doubleStoreyOpen" null "g.doubleStoreyOpen" [OverlayW obwDoubleStorey]
 
-	create-glyph 'g.doubleStoreyOpenFlatHook' : glyph-proc
-		include : MarkSet.p
-		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
-		include : OShape XH (obot - O) SB [mix Width RightSB 1.3]
-
-		local fine    : Stroke * CThin
-		local gleftx  : [mix 0 SB 0.85] + OX
-		local grightx : [mix Width RightSB 0.825] - OX
-		local groundy : Math.round : [mix Descender [mix 0 XH DesignParameters.gBarPos] 0.64] + HalfStroke
-		local gtipy   : [mix groundy (obot + Stroke) 1.005] - fine
-		include : dispiro
-			g4.left.start [mix SB RightSB 0.4] gtipy [widths.rhs fine]
-			g4  ([mix SB RightSB 0.0575] + Stroke * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine Stroke 0.5]]
-			flat [mix SB RightSB 0.435] groundy [widths.rhs Stroke]
-			curl [mix SB RightSB 0.565] groundy
-			archv 4
-			g4 grightx [mix (Descender + O) [YSmoothMidR groundy (Descender + O) SmallArchDepthA SmallArchDepthB] 1.06]
-			[MakeFlatHook SB RightSB groundy Descender (sw -- Stroke)].hookEndL
-		local gm : mix SB [mix Width RightSB 1.3] 0.5
-		include : spiro-outline
-			corner ([mix Width RightSB 0.75] - OX)  XH
-			corner ([mix Width RightSB 0.75] - OX) (XH - Stroke)
-			corner gm (XH - Stroke - O)
-			corner gm  XH
-
-		set-base-anchor 'overlay' Middle [mix (Descender + O) groundy 0.5]
-		set-base-anchor 'strike'  Middle [mix (obot      - O) XH      0.5]
-
+	create-glyph 'g.doubleStoreyOpenFlatHook' : DoubleStoreyGShape true true
 	derive-composites "gStroke.doubleStoreyOpenFlatHook" null "g.doubleStoreyOpenFlatHook" [OverlayW obwDoubleStorey]
 
 	define [GDoubleCircleShape stroke bot top] : glyph-proc
