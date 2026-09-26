@@ -144,17 +144,25 @@ glyph-block Digits-Two : begin
 	link-reduced-variant 'two/sansSerif.lnum' 'two.lnum' MathSansSerif (follow -- 'two/sansSerif')
 	link-reduced-variant 'two/sansSerif.onum' 'two.onum' MathSansSerif (follow -- 'two/sansSerif')
 
-	do "Rum rotunda : compressed 2 with a vertical stem, following digit 2"
-		define rumAdws 0.72
+	do "Rum rotunda : compressed 2 plus a short pipe through the base on the right"
+		define rumAdws 0.78
+		define [RumTwoArc top fStraight fFlat df hook] : if fStraight
+			TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
+			TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
 		define [RumRotundaShape top fStraight fSlab fFlat] : glyph-proc
 			local df : DivFrame rumAdws
-			local shift : (Width - df.width) / 2
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
-			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				if fStraight
-					include : TwoStraightNeckShape top fSlab fFlat df.leftSB df.rightSB df.mvs hook
-					include : TwoShape top fSlab fFlat df.leftSB df.rightSB df.mvs hook df.width
-				include : VBar.m df.middle 0 top df.mvs
+			local swPipe : AdviceStroke 2
+			local xPipe : mix SB RightSB 0.825
+			local xBarLeft : if fStraight df.leftSB (df.leftSB + df.mvs / 2)
+			# 2 body without its foot serif; compressed left to leave room for the pipe.
+			if fStraight
+				include : TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
+				include : TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
+			include : HBar.b xBarLeft RightSB 0 df.mvs
+			include : difference
+				VBar.r xPipe Descender (2.25 * df.mvs) swPipe
+				RumTwoArc top fStraight fFlat df hook
 
 		define RumTwoConfig : SuffixCfg.weave
 			object
@@ -169,10 +177,10 @@ glyph-block Digits-Two : begin
 
 		foreach { suffix { fStraight fFlat fSlab } } [pairs-of RumTwoConfig] : do
 			create-glyph "RumRotunda.\(suffix)" : glyph-proc
-				include : MarkSet.capital
+				include : MarkSet.capDesc
 				include : RumRotundaShape CAP fStraight fSlab fFlat
 			create-glyph "rumRotunda.\(suffix)" : glyph-proc
-				include : MarkSet.e
+				include : MarkSet.p
 				include : RumRotundaShape XH fStraight fSlab fFlat
 
 		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
