@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 
 glyph-module
 
@@ -9,44 +9,64 @@ glyph-block Letter-Latin-Vend : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
+	glyph-block-import Letter-Latin-V : VRightHalfShape VSerifs VMotionSerifs VCursiveShape VCursiveShapeBarPos
 
-	define [SerifLT top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.outer
-	define [SerifLB top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lb.fullSide
+	define [VendStemLT top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.outer
+	define [VendStemLTFull top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.full
+	define [VendMotionStemSerif top bot] : VendStemLT top bot
+	define [VendFullStemSerif top bot] : VendStemLTFull top bot
+	define [VendAutoStemSerif top bot] : NeedSlab SLAB : VendStemLTFull top bot
 
-	define [FullSerifs top bot] : composite-proc [SerifLT top bot] [SerifLB top bot]
-	define [MotionSerif top bot] : SerifLT top bot
+	define [VendVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
 
-	# Vertical stem from bot to top; diagonal meets the stem at yJoin, near
-	# the bottom, so the stem continues slightly below the fork.
-	define [VendShape bot top yJoin] : glyph-proc
+	# Stem through the letter; the right half of V meets it at yJoin.
+	define [VendBody] : with-params [bot top fBarStraight fSquareTop [yJoin 0]] : glyph-proc
 		include : VBar.l SB bot top
-		local xJoin : SB + [HSwToV Stroke]
-		local dy : top - yJoin
-		local dx : RightSB - xJoin
-		local dgCor : DiagCor dy dx 0 Stroke
-		include : dispiro
-			widths.rhs (dgCor * Stroke)
-			flat RightSB top [heading Downward]
-			curl xJoin yJoin [widths.rhs Stroke]
+		include : with-transform [ApparentTranslate 0 yJoin]
+			VRightHalfShape [DivFrame 1] fBarStraight fSquareTop (top - yJoin) (sw -- Stroke) (xEnd -- (SB + [HSwToV Stroke]))
+		include : LeaningAnchor.Below.VBar.l SB
 
-	define VendConfig : object
-		serifless     { no-shape    }
-		motionSerifed { MotionSerif }
-		serifed       { FullSerifs  }
+	define [VendCursiveBody] : with-params [bot top k] : glyph-proc
+		local xBar : VCursiveShapeBarPos k
+		include : VBar.l SB bot top
+		include : with-transform [ApparentTranslate (SB - xBar) 0] : VCursiveShape k top (sw -- Stroke)
+		include : LeaningAnchor.Below.VBar.l SB
 
-	foreach { suffix { Serifs } } [Object.entries VendConfig] : do
+	define VendConfig : SuffixCfg.weave
+		object # body
+			straight              { true  0 }
+			curly                 { false 0 }
+			squareTop             { true  1 }
+		object # serifs
+			""                    { VendVAutoSerifs    VendAutoStemSerif }
+			serifless             { no-shape           no-shape }
+			motionSerifed         { VMotionSerifs      VendMotionStemSerif }
+			serifed               { VSerifs            VendFullStemSerif }
+
+	foreach { suffix { { fStraightBar fSquareTop } { VSlabs StemSlab } } } [Object.entries VendConfig] : do
+		local fSerifStraight : if fSquareTop 0 fStraightBar
 		create-glyph "Vend.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : LeaningAnchor.Below.VBar.l SB
-			local yJoin : mix 0 CAP 0.18
-			include : VendShape 0 CAP yJoin
-			include : Serifs CAP 0
+			include : VendBody 0 CAP fStraightBar fSquareTop (yJoin -- (CAP / 3))
+			include : VSlabs [DivFrame 1] fSerifStraight CAP Stroke
+			eject-contour 'serifLT'
+			include : StemSlab CAP 0
 		create-glyph "vend.\(suffix)" : glyph-proc
 			include : MarkSet.p
-			include : LeaningAnchor.Below.VBar.l SB
-			local yJoin : 0 + HalfStroke
-			include : VendShape Descender XH yJoin
-			include : Serifs XH Descender
+			include : VendBody Descender XH fStraightBar fSquareTop
+			include : VSlabs [DivFrame 1] fSerifStraight XH Stroke
+			eject-contour 'serifLT'
+			include : StemSlab XH Descender
 
-	select-variant 'Vend' 0xA768
-	select-variant 'vend' 0xA769
+	define VendCursiveConfig : object
+		cursiveSerifless     { (1/24) false }
+		cursiveSerifed       { (1/16) true  }
+
+	foreach { suffix { pxBar fDoSerif } } [Object.entries VendCursiveConfig] : do
+		create-glyph "vend.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : VendCursiveBody Descender XH pxBar
+			if fDoSerif : include : tagged 'serifLT' : HSerif.lt SB XH SideJut
+
+	select-variant 'Vend' 0xA768 (follow -- 'V')
+	select-variant 'vend' 0xA769 (follow -- 'v')

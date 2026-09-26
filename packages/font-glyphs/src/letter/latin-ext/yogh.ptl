@@ -17,19 +17,24 @@ glyph-block Letter-Latin-Yogh : begin
 	define [PhantomBotYOfUpperHalf top bot kSplit] : [mix bot top kSplit] - QuarterStroke
 	define [TopYOfLowerHalf top bot kSplit] : [mix bot top kSplit] + 0.06 * Stroke
 
-	define [UpperHalfT sink slab offset top bot kSplit] : begin
+	glyph-block-export UpperHalfT
+	define [UpperHalfT sink slab offset top bot kSplit _taper] : begin
 		local py : PhantomBotYOfUpperHalf top bot kSplit
 		local yRightHalf : YSmoothMidR top py
 		local yBottomTerminal : mix top py 1.2
-		return : sink
+		local startKnots : if _taper
+			SerifedArcStart.LtrRhs SB (top - offset) Stroke [Math.max Hook : 0.15 * (top - bot)] Stroke
 			match slab
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs SB (top - offset) Stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs SB (top - offset) Stroke Hook
 				__ : list [g4 SB (top - Hook) [widths.rhs]] [HookStart (top - offset)]
+		return : sink
+			~~~ startKnots
 			g4 (RightSB - offset) yRightHalf
 			alsoThruThem {{0.5 0.8} {0.75 0.92}} important
 			[if (sink == dispiro) g4 corner] ([mix SB RightSB 0.1] + QuarterStroke) yBottomTerminal
 
+	glyph-block-export LowerHalfT
 	define [LowerHalfT sink top bot kSplit] : begin
 		local pyt : mix bot [TopYOfLowerHalf top bot kSplit] 1.2
 		local pyb : mix bot [TopYOfLowerHalf top bot kSplit] 0.2

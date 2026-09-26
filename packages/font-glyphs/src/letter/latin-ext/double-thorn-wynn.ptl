@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Letter-Latin-Upper-B : BShape
-	glyph-block-import Letter-Latin-Yogh : YoghShape
+	glyph-block-import Letter-Latin-Yogh : UpperHalfT LowerHalfT
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM
 
 	define xThornStem : mix 0 SB 1.25
@@ -50,7 +50,10 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : LeaningAnchor.Below.VBar.l xStem
 	define [DoubleWynnShape stemBot stemTop bowlBot bowlTop] : glyph-proc
 		include : VBar.l SB stemBot stemTop
-		include : YoghShape 0 bowlTop bowlBot OverlayPos
+		include : UpperHalfT dispiro 0 0 bowlTop bowlBot OverlayPos true
+		include : difference
+			LowerHalfT dispiro bowlTop bowlBot OverlayPos
+			UpperHalfT spiro-outline 0 0.1 bowlTop bowlBot OverlayPos true
 		include : LeaningAnchor.Above.VBar.l SB
 		include : LeaningAnchor.Below.VBar.l SB
 
