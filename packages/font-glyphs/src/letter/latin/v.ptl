@@ -65,7 +65,7 @@ glyph-block Letter-Latin-V : begin
 			corner df.middle [Math.min sw : if fBarStraight VShapeFineStraight VShapeFine]
 
 	glyph-block-export VShape
-	define [VShape] : with-params [df fBarStraight top [sw Stroke]] : glyph-proc
+	define [VShape] : with-params [df fBarStraight top [sw Stroke] [noTaper false]] : glyph-proc
 		define cornerHW : VCornerHalfWidth * (sw / Stroke)
 
 		local sbScale : if fBarStraight VStraightSbShrink 1
@@ -77,8 +77,8 @@ glyph-block Letter-Latin-V : begin
 		if fBarStraight : do
 			define dgCor : DiagCor (2 * top) Width 0 (2 * sw)
 			define startSW : dgCor * sw
-			define midSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
-			define endSW : Math.min sw : VShapeFineStraight * (sw / Stroke)
+			define midSW : if noTaper startSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
+			define endSW : if noTaper sw : Math.min sw : VShapeFineStraight * (sw / Stroke)
 			include : tagged 'strokeDown' : dispiro
 				flat [mix vxStartL vxEndL 0]        [mix top 0 0]        [widths.lhs.heading startSW Downward]
 				curl [mix vxStartL vxEndL pInktrap] [mix top 0 pInktrap] [widths.lhs.heading midSW Downward]
@@ -88,7 +88,7 @@ glyph-block Letter-Latin-V : begin
 				curl [mix vxStartR vxEndR pInktrap] [mix top 0 pInktrap] [widths.rhs.heading midSW Downward]
 				g4   [mix vxStartR vxEndR 1]        [mix top 0 1]        [widths.rhs.heading endSW Downward]
 		: else : do
-			define fine : Math.min sw : VShapeFine * (sw / Stroke)
+			define fine : if noTaper sw : Math.min sw : VShapeFine * (sw / Stroke)
 			include : tagged 'strokeDown' : dispiro
 				widths.lhs sw
 				flat vxStartL top                 [heading Downward]
@@ -103,7 +103,7 @@ glyph-block Letter-Latin-V : begin
 				g4   vxEndR   0                   [widths.rhs fine]
 
 			# bottom cap
-			include : tagged 'bottomCap' : VBottomCapShape df fBarStraight sw
+			if [not noTaper] : include : tagged 'bottomCap' : VBottomCapShape df fBarStraight sw
 
 	# Square-top V: two verticals, then a V at the bottom (not a closing bar).
 	glyph-block-export VSquareTopYJoin
@@ -122,15 +122,15 @@ glyph-block Letter-Latin-V : begin
 			corner df.rightSB top
 
 	glyph-block-export VSquareTopShape
-	define [VSquareTopShape] : with-params [df top [sw Stroke]] : glyph-proc
+	define [VSquareTopShape] : with-params [df top [sw Stroke] [noTaper false]] : glyph-proc
 		define cornerHW : VCornerHalfWidth * (sw / Stroke)
 		local yJoin : VSquareTopYJoin top
 		local vxEndL : df.middle - cornerHW
 		local vxEndR : df.middle + cornerHW
 		define dgCor : DiagCor yJoin (df.middle - df.leftSB) 0 sw
 		define startSW : dgCor * sw
-		define midSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
-		define endSW : Math.min sw : VShapeFineStraight * (sw / Stroke) * dgCor
+		define midSW : if noTaper startSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
+		define endSW : if noTaper sw : Math.min sw : VShapeFineStraight * (sw / Stroke) * dgCor
 		local pInktrap : 2 / 3
 
 		include : tagged 'strokeDown' : dispiro
@@ -147,7 +147,41 @@ glyph-block Letter-Latin-V : begin
 			corner [mix df.rightSB vxEndR pInktrap] [mix yJoin 0 pInktrap] [widths.rhs.heading midSW Downward]
 			corner vxEndR 0 [widths.rhs.heading endSW Downward]
 
-		include : tagged 'bottomCap' : VBottomCapShape df true startSW
+		if [not noTaper] : include : tagged 'bottomCap' : VBottomCapShape df true startSW
+
+	# Right stroke of V, full weight, with the vertex at xEnd (for letters like Vend).
+	glyph-block-export VRightHalfShape
+	define [VRightHalfShape] : with-params [df fBarStraight fSquareTop top [sw Stroke] [xEnd nothing]] : glyph-proc
+		define cornerHW : VCornerHalfWidth * (sw / Stroke)
+		local sbScale : if fBarStraight VStraightSbShrink 1
+		define vxStartR : if fSquareTop df.rightSB : mix df.width df.rightSB sbScale
+		define vxEndR : fallback xEnd : df.middle + cornerHW
+
+		if fSquareTop : begin
+			local yJoin : VSquareTopYJoin top
+			local kDiag : mix 1 [DiagCor yJoin (vxStartR - vxEndR) 0 sw] 0.4
+			include : tagged 'strokeUp' : union
+				dispiro
+					widths.rhs sw
+					flat vxStartR top   [heading Downward]
+					curl vxStartR yJoin [heading Downward]
+				dispiro
+					widths.rhs (kDiag * sw)
+					flat vxStartR yJoin
+					curl vxEndR   0
+		: else : begin
+			if fBarStraight : begin
+				local dgCorSt : DiagCor top (vxStartR - vxEndR) 0 sw
+				include : tagged 'strokeUp' : dispiro
+					flat vxStartR top [widths.rhs.heading (dgCorSt * sw) Downward]
+					curl vxEndR   0   [widths.rhs.heading sw Downward]
+			: else : begin
+				include : tagged 'strokeUp' : dispiro
+					widths.rhs sw
+					flat vxStartR top                 [heading Downward]
+					curl vxStartR [VShapeTopFlat top] [heading Downward]
+					quadControls 0 VCurviness 9 unimportant
+					g4   vxEndR   0                   [widths.rhs sw]
 
 	glyph-block-export VHookRightShape
 	define [VHookRightShape] : with-params [df fBarStraight top [sw Stroke] [hookWidthOuter (TailX / 3)] [hookWidthInner (TailX / 3)]] : glyph-proc
@@ -288,6 +322,7 @@ glyph-block Letter-Latin-V : begin
 				include : Serifs          [DivFrame 1] fStraightBar (Ascender - (yBarPos - 0.5 * subDf.mvs))
 				eject-contour 'serifRT'
 
+	glyph-block-export VCursiveShapeBarPos VCursiveShape
 	define [VCursiveShapeBarPos k] : mix SB RightSB k
 	define [VCursiveShape] : with-params [k top [sw Stroke]] : glyph-proc
 		define xBar : VCursiveShapeBarPos k
