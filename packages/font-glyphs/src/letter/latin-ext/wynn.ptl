@@ -16,18 +16,20 @@ glyph-block Letter-Latin-Wynn : begin
 	define [FullSerifs top bot] : composite-proc [SerifLT top bot] [SerifLB top bot]
 	define [MotionSerif top bot] : SerifLT top bot
 
+	glyph-block-export WynnBowl
+	define [WynnBowl xStem bowlBot bowlTop sw] : glyph-proc
+		local bowlStartDepth : 0.15 * (bowlTop - bowlBot)
+		local yCounterPesudoBottom : mix bowlBot bowlTop 0.333
+		include : dispiro
+			SerifedArcStart.LtrRhs xStem bowlTop sw [Math.max Hook bowlStartDepth] sw
+			g4 (RightSB - O) (bowlTop - [ArchDepthBOf : 0.5 * (bowlTop - yCounterPesudoBottom)]) [widths.rhs sw]
+			alsoThru 0.25 0.45 important
+			g4 (xStem + [HSwToV sw]) bowlBot
+
 	define [WynnShape bot top] : glyph-proc
 		include : VBar.l SB bot top
-
 		local bowlBottom : [mix bot top 0.15] + HalfStroke
-		local bowlStartDepth : 0.15 * (top - bowlBottom)
-		local yCounterPesudoBottom : mix bowlBottom top 0.333
-
-		include : dispiro
-			SerifedArcStart.LtrRhs SB top Stroke [Math.max Hook bowlStartDepth] Stroke
-			g4 (RightSB - O) (top - [ArchDepthBOf : 0.5 * (top - yCounterPesudoBottom)]) [widths.rhs]
-			alsoThru 0.25 0.45 important
-			g4 (SB + [HSwToV Stroke]) bowlBottom
+		include : WynnBowl SB bowlBottom top Stroke
 
 	define WynnConfig : object
 		serifless     { no-shape    false }

@@ -56,6 +56,10 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					include : union
 						DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
 						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB)
+				create-glyph "av/a.\(suffix)" : glyph-proc
+					include [refer-glyph "au/a.\(suffix)"] AS_BASE ALSO_METRICS
+				create-glyph "ay/a.\(suffix)" : glyph-proc
+					include [refer-glyph "au/a.\(suffix)"] AS_BASE ALSO_METRICS
 
 			create-glyph "aa.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -463,6 +467,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant "ae/a" (follow -- 'a/doubleStorey')
 	select-variant "ao/a" (follow -- 'ae/a')
 	select-variant "au/a" (follow -- 'ae/a')
+	select-variant "av/a" (follow -- 'ae/a')
+	select-variant "ay/a" (follow -- 'ae/a')
 	select-variant "ae/e" (follow -- 'e')
 	select-variant "au/u"
 	select-variant "ue/u"
@@ -475,7 +481,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
 	select-variant "av/v" (follow -- 'v/sansSerif')
 	select-variant "ay/y" (follow -- 'y/nonCursive')
-	derive-multi-part-glyphs 'av' 0xA739 { "au/a" "av/v" }
+	derive-multi-part-glyphs 'av' 0xA739 { "av/a" "av/v" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
@@ -483,8 +489,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			local { subDf shift } : SubDfAndShift 1 df 0
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : difference [refer-glyph right]
-				intersection [MaskLeft (shift + subDf.middle)] [MaskAbove (XH - subDf.smallArchDepthB)]
-	derive-multi-part-glyphs 'ay' 0xA73D { "au/a" "ay/y" }
+				intersection [refer-glyph left] [MaskLeft (shift + subDf.middle)]
+	derive-multi-part-glyphs 'ay' 0xA73D { "ay/a" "ay/y" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
@@ -493,7 +499,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : df.markSet.p
 			include : difference [refer-glyph right]
-				intersection [MaskLeft (shift + subDf.middle)] [MaskAbove (XH - subDf.smallArchDepthB)]
+				intersection [refer-glyph left] [MaskLeft (shift + subDf.middle)]
 	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
 		define df : DivFrame para.advanceScaleMM 3
 		local { subDf shift } : SubDfAndShift 1 df 0

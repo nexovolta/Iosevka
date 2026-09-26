@@ -598,20 +598,21 @@ glyph-block Letter-Latin-Ezh : begin
 				local subDf : df.slice 3 2
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				local x0 : subDf.middle - [HSwToV : 0.5 * subDf.mvs]
-				local ezhDf : DivFrame ((df.width - x0) / Width) 2
+				local xJoin : subDf.middle - [HSwToV : 0.5 * subDf.mvs]
+				local ezhDf : DivFrame ((df.width - xJoin) / Width) 2
 				local stroke : ezhDf.adviceStroke2 2 3 (XH - Descender)
+					local origBar : subDf.adviceStroke 2
 				define ezh : Ezh ezhDf XH Descender
 					fCursive  -- fCursive
 					fSerifed  -- fSerifed
-					pxMidLeft -- (22 / 100)
+					pxMidLeft -- [Math.max 0.40 : ([HSwToV origBar] + [Math.max (Width / 32) : AdviceStroke 24]) / (ezhDf.rightSB - ezhDf.leftSB)]
 					pyMidLeft -- [if fCursive (50 / 100) (55 / 100)]
 					stroke    -- stroke
 					hook      -- SHook
-					origBar   -- subDf.mvs
+					origBar   -- origBar
 					ada       -- [ezhDf.archDepthAOf SmallArchDepth stroke]
 					adb       -- [ezhDf.archDepthBOf SmallArchDepth stroke]
-				include : with-transform [ApparentTranslate x0 0] : glyph-proc
+				include : with-transform [ApparentTranslate (xJoin - ezhDf.leftSB) 0] : glyph-proc
 					include : ezh.Shape
 					eject-contour 'strokeTop'
 
