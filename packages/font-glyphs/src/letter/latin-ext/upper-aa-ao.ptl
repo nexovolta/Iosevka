@@ -8,7 +8,16 @@ glyph-module
 glyph-block Letter-Latin-Upper-AA-AO : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
+
+	# After overlapping A+V / A+Y, the ink no longer fills the MM frame evenly.
+	# Shift the finished digraph so its bounds sit on the advance midpoint.
+	define [CenterDigraphInFrame df] : glyph-proc
+		local b : include : MeasureGlyphBounds
+		if [not b] : return nothing
+		local xShift : df.middle - [mix b.xMin b.xMax 0.5]
+		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
 
 	do "A glyphs"
 		glyph-block-import Letter-Latin-Upper-A : AShape AConfig
@@ -42,6 +51,8 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					include : df.markSet.(mk)
 					set-base-anchor 'cvDecompose' 0 0
 					include : AHalfShape 0 df height bodyShape skLeft
+					local { subDf } : SubDfAndShift 0 df
+					set-base-anchor 'aBar' subDf.middle [AShape.BarPos bodyShape skLeft height]
 
 				create-glyph "\(prefix)AA/left/mask.\(suffix)" : glyph-proc
 					define df : include : DivFrame adws 3.5
@@ -135,7 +146,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					intersection [refer-glyph mask] [MaskLeft (subDf.width / 2 + shift)]
 
 	do "AV"
-		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
+		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs VCornerHalfWidth
 
 		define dfAV : DivFrame para.advanceScaleMM 3.5
 		define { subDfAV shiftAV0 } : SubDfAndShift 1 dfAV
@@ -164,13 +175,26 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				define { left right } srcs
 				include [refer-glyph left]
 				include [refer-glyph right]
+				include : CenterDigraphInFrame df
 
-		derive-glyphs 'AVBar' 0xA73A 'AV' : function [src sel] : glyph-proc
-			define df : DivFrame para.advanceScaleMM 3.5
-			local { subDf shift0 } : SubDfAndShift 1 df
-			local shift : subDf.rightSB - subDf.middle
-			include [refer-glyph src] AS_BASE ALSO_METRICS
-			include : HOverlayBar (shift + subDf.leftSB) (shift + subDf.rightSB) [mix 0 CAP (45 / 100)]
+		derive-multi-part-glyphs 'AVBar' 0xA73A { "AA/left" "AV/V" }
+			function [srcs gr] : glyph-proc
+				define df : include : DivFrame para.advanceScaleMM 3.5
+				include : df.markSet.capital
+				local { subDf } : SubDfAndShift 1 df
+				local shift : subDf.rightSB - subDf.middle
+				define { left right } srcs
+				include [refer-glyph left]
+				include [refer-glyph right]
+				local leftG : query-glyph left
+				local yBar : begin [leftG.gizmo.unapply leftG.baseAnchors.aBar].y
+				local yOverlay : yBar - df.mvs / 2
+				local cornerHW : VCornerHalfWidth * (df.mvs / Stroke)
+				local t : yOverlay / CAP
+				local xLeft : shift + [mix (subDf.middle - cornerHW) subDf.leftSB t]
+				local xRight : shift + [mix (subDf.middle + cornerHW) subDf.rightSB t]
+				include : HOverlayBar xLeft xRight yOverlay
+				include : CenterDigraphInFrame df
 
 	do "AY"
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
@@ -200,6 +224,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				define { left right } srcs
 				include [refer-glyph left]
 				include [refer-glyph right]
+				include : CenterDigraphInFrame df
 
 	do "Rha"
 		glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask

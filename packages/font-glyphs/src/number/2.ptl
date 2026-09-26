@@ -153,7 +153,6 @@ glyph-block Digits-Two : begin
 			local df : DivFrame rumAdws
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
 			local swPipe : AdviceStroke 2
-			local xPipe : mix SB RightSB 0.825
 			local xBarLeft : if fStraight df.leftSB (df.leftSB + df.mvs / 2)
 			# 2 body without its foot serif; compressed left to leave room for the pipe.
 			if fStraight
@@ -161,8 +160,15 @@ glyph-block Digits-Two : begin
 				include : TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
 			include : HBar.b xBarLeft RightSB 0 df.mvs
 			local yOver : 1.25 * df.mvs
+			local xSlashBot : mix SB RightSB 0.92
+			local xSlashTop : mix SB RightSB 0.68
+			local xSlashMid : [mix xSlashBot xSlashTop 0.5] - 0.35 * (xSlashBot - xSlashTop)
 			include : difference
-				VBar.r xPipe (0 - yOver) (df.mvs + yOver) swPipe
+				dispiro
+					widths.center swPipe
+					g4 xSlashBot (0 - yOver)
+					g4 xSlashMid [mix (0 - yOver) (df.mvs + yOver) 0.5]
+					g4 xSlashTop (df.mvs + yOver)
 				RumTwoArc top fStraight fFlat df hook
 
 		define RumTwoConfig : SuffixCfg.weave
