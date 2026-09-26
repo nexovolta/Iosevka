@@ -57,9 +57,16 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
 						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB)
 				create-glyph "av/a.\(suffix)" : glyph-proc
-					include [refer-glyph "au/a.\(suffix)"] AS_BASE ALSO_METRICS
+					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "ay/a.\(suffix)" : glyph-proc
-					include [refer-glyph "au/a.\(suffix)"] AS_BASE ALSO_METRICS
+					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
+				create-glyph "av/a/mask.\(suffix)" : glyph-proc
+					set-width 0
+					local avDf : DivFrame para.advanceScaleMM 3
+					local avSubDf : avDf.slice 3 2
+					include : union
+						DoubleStorey.HookAndBarMask avSubDf hookStyle [DoubleStorey.SmoothA avSubDf] avDf.mvs
+						DoubleStorey.ArcMask        avSubDf 2         [DoubleStorey.SmoothA avSubDf] avDf.mvs
 
 			create-glyph "aa.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -469,6 +476,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant "au/a" (follow -- 'ae/a')
 	select-variant "av/a" (follow -- 'ae/a')
 	select-variant "ay/a" (follow -- 'ae/a')
+	select-variant "av/a/mask" (follow -- 'ae/a')
 	select-variant "ae/e" (follow -- 'e')
 	select-variant "au/u"
 	select-variant "ue/u"
@@ -481,30 +489,28 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
 	select-variant "av/v" (follow -- 'v/sansSerif')
 	select-variant "ay/y" (follow -- 'y/nonCursive')
-	derive-multi-part-glyphs 'av' 0xA739 { "av/a" "av/v" }
+	derive-multi-part-glyphs 'av' 0xA739 { "av/a" "av/v" "av/a/mask" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			define { left right } srcs
-			local { subDf shift } : SubDfAndShift 1 df 0
+			define { left right mask } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
-			include : difference [refer-glyph right]
-				intersection [refer-glyph left] [MaskLeft (shift + subDf.middle)]
-	derive-multi-part-glyphs 'ay' 0xA73D { "ay/a" "ay/y" }
+			include : difference [refer-glyph right] [refer-glyph mask]
+	derive-multi-part-glyphs 'ay' 0xA73D { "ay/a" "ay/y" "av/a/mask" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			define { left right } srcs
-			local { subDf shift } : SubDfAndShift 1 df 0
+			define { left right mask } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : df.markSet.p
-			include : difference [refer-glyph right]
-				intersection [refer-glyph left] [MaskLeft (shift + subDf.middle)]
+			include : difference [refer-glyph right] [refer-glyph mask]
 	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
 		define df : DivFrame para.advanceScaleMM 3
+		local aSub : df.slice 3 2
 		local { subDf shift } : SubDfAndShift 1 df 0
+		local barY : [mix 0 XH DesignParameters.aBarPos] + df.mvs * DesignParameters.aBarStrokeAdj
 		include [refer-glyph src] AS_BASE ALSO_METRICS
-		include : HOverlayBar (shift + subDf.leftSB) (shift + subDf.rightSB) (XH / 2)
+		include : HBar.m aSub.leftSB (shift + subDf.rightSB) barY df.mvs
 	derive-composites 'uo' 0xAB63 'uo/u' 'uo/o'
 
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]

@@ -118,13 +118,24 @@ glyph-block Letter-Latin-O : begin
 				curl ((XH - SB) - O - fine) [mix 0 Width 1.05]
 
 	define [OLoopAddon top ada adb] : glyph-proc
-		local [object radiusIn radiusOut] : RingDims
-		# Conjoin a ring diacritic to the upper-right rim, like ⱺ but outside.
-		local cx : RightSB - OX + radiusOut * 0.35
-		local cy : top - OX - radiusOut * 0.45
+		# Partial narrow o conjoined to the upper-right as an ear (JuliaMono).
+		local fCap : top > 0.85 * CAP
+		local sw : AdviceStroke 3.5
+		local unit : RightSB - SB
+		local earH : [if fCap 0.52 0.70] * top
+		local yOver : [if fCap 0.08 0.12] * top
+		local earTop : top + yOver
+		local earBot : earTop - earH
+		local earW : [if fCap 0.44 0.48] * unit
+		local overlap : HSwToV : 0.85 * Stroke
+		local earLeft : RightSB - overlap
+		local earRight : earLeft + earW
+		local earAda : Math.min [fallback ada SmallArchDepthA] (earH / 2 - TINY)
+		local earAdb : Math.min [fallback adb SmallArchDepthB] (earH / 2 - TINY)
 		include : difference
-			RingShape cx cy
+			OShape earTop earBot earLeft earRight sw earAda earAdb
 			OShapeOutline.NoOvershoot top 0 SB RightSB nothing ada adb
+		include : ExtendAboveBaseAnchors earTop
 
 	create-glyph 'OLoop' 0xA74C : glyph-proc
 		include [refer-glyph 'O'] AS_BASE ALSO_METRICS

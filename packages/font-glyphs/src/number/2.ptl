@@ -1,6 +1,6 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -12,49 +12,65 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
-	define [TwoStraightNeckArcT sink offset sw top flatHook] : begin
+	define [TwoStraightNeckArcT sink offset sw top flatHook _left _right _hook] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local hook : fallback _hook Hook
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
-		define xLB : SB + offset
-		define xR : RightSB - OX / 2
+		define xLB : left + offset
+		define xR : right - OX / 2
 		define yPhRight : top - archDepth * 1.5 - sw / 2 * (top / CAP - TanSlope)
 		define pStraightBarStart 0.75
 		return : sink
 			widths.rhs sw
 			if flatHook
-				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				[MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				list
-					g4 SB (top - Hook)
+					g4 left (top - hook)
 					HookStart top (sw -- sw)
 			g4.down.mid xR (top - archDepth)
 			flat [mix xLB xR pStraightBarStart] [mix sw yPhRight pStraightBarStart]
 			curl xLB sw [widths.lhs sw]
 
-	define [TwoArcShapeT sink offsetU offsetD sw top flatHook] : begin
+	define [TwoArcShapeT sink offsetU offsetD sw top flatHook _left _right _hook _width] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local hook : fallback _hook Hook
+		local width : fallback _width Width
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
 		return : sink
 			widths.rhs sw
 			if flatHook
-				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				[MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				list
-					g4 (SB - offsetU) (top - Hook)
+					g4 (left - offsetU) (top - hook)
 					HookStart top (sw -- sw)
-			g4.down.mid (RightSB - offsetU - OX / 2) (top - archDepth)
-			alsoThru.g2.withOffset 0.5 ([StrokeWidthBlend 0.425 0.4 sw] * [linreg 500 1 700 0.95 Width]) 0 (0.25 * (offsetU - offsetD)) [widths.center sw]
-			flat (SB + offsetD) 1 [widths.heading sw 0 Downward]
-			[if (sink == spiro-outline) corner curl] (SB + offsetD) 0 [heading Downward]
-			if (sink == spiro-outline) { [corner (SB - offsetU) 0] } {}
+			g4.down.mid (right - offsetU - OX / 2) (top - archDepth)
+			alsoThru.g2.withOffset 0.5 ([StrokeWidthBlend 0.425 0.4 sw] * [linreg 500 1 700 0.95 width]) 0 (0.25 * (offsetU - offsetD)) [widths.center sw]
+			flat (left + offsetD) 1 [widths.heading sw 0 Downward]
+			[if (sink == spiro-outline) corner curl] (left + offsetD) 0 [heading Downward]
+			if (sink == spiro-outline) { [corner (left - offsetU) 0] } {}
 
-	define [TwoShape top slab flatHook] : glyph-proc
-		include : TwoArcShapeT dispiro 0 0 Stroke top flatHook
-		include : HBar.b  (SB + HalfStroke) RightSB 0
+	define [TwoShape top slab flatHook _left _right _sw _hook _width] : glyph-proc
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local hook : fallback _hook Hook
+		local width : fallback _width Width
+		include : TwoArcShapeT dispiro 0 0 sw top flatHook left right hook width
+		include : HBar.b (left + sw / 2) right 0 sw
 		if slab : begin
-			include : VSerif.ur RightSB 0 VJut
+			include : VSerif.ur right 0 VJut
 
-	define [TwoStraightNeckShape top slab flatHook] : glyph-proc
-		include : TwoStraightNeckArcT dispiro 0 Stroke top flatHook
-		include : HBar.b SB RightSB 0
+	define [TwoStraightNeckShape top slab flatHook _left _right _sw _hook] : glyph-proc
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local hook : fallback _hook Hook
+		include : TwoStraightNeckArcT dispiro 0 sw top flatHook left right hook
+		include : HBar.b left right 0 sw
 		if slab : begin
-			include : VSerif.ur RightSB 0 VJut
+			include : VSerif.ur right 0 VJut
 
 	create-glyph 'two.lnum.straightNeckSerifless' : glyph-proc
 		include : MarkSet.capital
@@ -127,6 +143,40 @@ glyph-block Digits-Two : begin
 
 	link-reduced-variant 'two/sansSerif.lnum' 'two.lnum' MathSansSerif (follow -- 'two/sansSerif')
 	link-reduced-variant 'two/sansSerif.onum' 'two.onum' MathSansSerif (follow -- 'two/sansSerif')
+
+	do "Rum rotunda : compressed 2 with a vertical stem, following digit 2"
+		define rumAdws 0.72
+		define [RumRotundaShape top fStraight fSlab fFlat] : glyph-proc
+			local df : DivFrame rumAdws
+			local shift : (Width - df.width) / 2
+			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				if fStraight
+					include : TwoStraightNeckShape top fSlab fFlat df.leftSB df.rightSB df.mvs hook
+					include : TwoShape top fSlab fFlat df.leftSB df.rightSB df.mvs hook df.width
+				include : VBar.m df.middle 0 top df.mvs
+
+		define RumTwoConfig : SuffixCfg.weave
+			object
+				straightNeck { true }
+				curlyNeck    { false }
+			object
+				""       { false }
+				flatHook { true }
+			object
+				serifless { false }
+				serifed   { true }
+
+		foreach { suffix { fStraight fFlat fSlab } } [pairs-of RumTwoConfig] : do
+			create-glyph "RumRotunda.\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				include : RumRotundaShape CAP fStraight fSlab fFlat
+			create-glyph "rumRotunda.\(suffix)" : glyph-proc
+				include : MarkSet.e
+				include : RumRotundaShape XH fStraight fSlab fFlat
+
+		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
+		select-variant 'rumRotunda' 0xA75D (follow -- 'two')
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/two' 0x1D7DA : glyph-proc
