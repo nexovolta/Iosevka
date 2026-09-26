@@ -1,0 +1,75 @@
+$$include '../../meta/macros.ptl'
+
+import [mix fallback] from "@iosevka/util"
+
+glyph-module
+
+glyph-block Letter-Latin-Double-Thorn-Wynn : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Letter-Shared-Shapes : SerifFrame
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM
+	glyph-block-import Letter-Latin-Yogh : YoghShape
+
+	define xThornStem : mix 0 SB 1.25
+	define SLAB-YOGH-NONE 0
+
+	define [SerifLT x top bot] : return [SerifFrame top 0 x RightSB].lt.outer
+	define [SerifLB x top bot] : return [SerifFrame top bot x RightSB].lb.fullSide
+	define [MotionSerif x top bot] : SerifLT x top bot
+	define [FullSerifs x top bot] : composite-proc [SerifLT x top bot] [SerifLB x top bot]
+
+	# Thorn stem plus closed-reversed-open-e bowls (CyrZe closed-stem, like ɞ).
+	define [DoubleThornShape xStem stemBot stemTop bowlBot bowlTop hook ada adb] : glyph-proc
+		local ze : CyrZe CLOSED-STEM CLOSED-STEM bowlTop bowlBot
+			left      -- xStem
+			right     -- RightSB
+			blend     -- 0.7
+			hook      -- hook
+			xOverflow -- 0
+			ada       -- ada
+			adb       -- adb
+		define [object stroke] : ze.Dim
+		include : ze.Shape
+		include : VBar.l xStem stemBot stemTop stroke
+		include : LeaningAnchor.Above.VBar.l xStem
+		include : LeaningAnchor.Below.VBar.l xStem
+
+	# Wynn stem plus yogh's two-part bowls.
+	define [DoubleWynnShape stemBot stemTop bowlBot bowlTop] : glyph-proc
+		include : VBar.l SB stemBot stemTop
+		include : YoghShape SLAB-YOGH-NONE bowlTop bowlBot OverlayPos
+		include : LeaningAnchor.Above.VBar.l SB
+		include : LeaningAnchor.Below.VBar.l SB
+
+	define Config : object
+		serifless     { no-shape    }
+		motionSerifed { MotionSerif }
+		serifed       { FullSerifs  }
+
+	foreach { suffix { Serifs } } [Object.entries Config] : do
+		create-glyph "ThornDouble.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : DoubleThornShape xThornStem 0 CAP 0 CAP Hook ArchDepthA ArchDepthB
+			include : Serifs xThornStem CAP 0
+
+		create-glyph "thornDouble.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			include : DoubleThornShape SB Descender Ascender 0 XH SHook SmallArchDepthA SmallArchDepthB
+			include : Serifs SB Ascender Descender
+
+		create-glyph "WynnDouble.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : DoubleWynnShape 0 CAP 0 CAP
+			include : Serifs SB CAP 0
+
+		create-glyph "wynnDouble.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : DoubleWynnShape Descender XH 0 XH
+			include : Serifs SB XH Descender
+
+	select-variant 'ThornDouble' 0xA7D2
+	select-variant 'thornDouble' 0xA7D3
+	select-variant 'WynnDouble'  0xA7D4
+	select-variant 'wynnDouble'  0xA7D5
