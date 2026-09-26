@@ -138,7 +138,9 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
 
 		define dfAV : DivFrame para.advanceScaleMM 3.5
-		define { subDfAV shiftAV } : SubDfAndShift 1 dfAV
+		define { subDfAV shiftAV0 } : SubDfAndShift 1 dfAV
+		# V's vertex sits on A's right foot so the two right-going diagonals are one line.
+		define shiftAV : subDfAV.rightSB - subDfAV.middle
 
 		define AVVConfig : object
 			straightSerifless  { true  0 }
@@ -152,21 +154,21 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					if [not fSquareTop] : include : VShape subDfAV fStraightBar CAP (sw -- dfAV.mvs)
 					include : NeedSlab SLAB : VSerifs subDfAV fStraightBar CAP dfAV.mvs
 					eject-contour 'serifLT'
+					eject-contour 'strokeDown'
 
 		select-variant 'AV/V' (follow -- 'V/sansSerif')
-		derive-multi-part-glyphs 'AV' 0xA738 { "AU/A" "AU/A/mask" "AV/V" }
+		derive-multi-part-glyphs 'AV' 0xA738 { "AA/left" "AV/V" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
-				local { subDf shift } : SubDfAndShift 1 df
 				include : df.markSet.capital
-				define { left mask right } srcs
+				define { left right } srcs
 				include [refer-glyph left]
-				include : difference [refer-glyph right]
-					intersection [refer-glyph mask] [MaskLeft (subDf.width / 2 + shift)]
+				include [refer-glyph right]
 
 		derive-glyphs 'AVBar' 0xA73A 'AV' : function [src sel] : glyph-proc
 			define df : DivFrame para.advanceScaleMM 3.5
-			local { subDf shift } : SubDfAndShift 1 df
+			local { subDf shift0 } : SubDfAndShift 1 df
+			local shift : subDf.rightSB - subDf.middle
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			include : HOverlayBar (shift + subDf.leftSB) (shift + subDf.rightSB) [mix 0 CAP (45 / 100)]
 
@@ -175,7 +177,8 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
 		define dfAY : DivFrame para.advanceScaleMM 3.5
-		define { subDfAY shiftAY } : SubDfAndShift 1 dfAY
+		define { subDfAY shiftAY0 } : SubDfAndShift 1 dfAY
+		define shiftAY : subDfAY.rightSB - subDfAY.middle
 		define slabAutoY { false SLAB false }
 
 		foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
@@ -184,20 +187,19 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					local YShape : NonCursiveYShapeT straightBar bottomShape slabAutoY 0 subDfAY.width subDfAY.leftSB dfAY.mvs
 					include : with-transform [ApparentTranslate shiftAY 0] : glyph-proc
 						include : YShape.SmallYShape CAP Descender
+						eject-contour 'leftHalf'
 						include : NeedSlab SLAB : glyph-proc
 							local sf : SerifFrame.fromDf subDfAY CAP Descender
 							include sf.rt.full
 
 		select-variant 'AY/Y' (follow -- 'y/nonCursive')
-		derive-multi-part-glyphs 'AY' 0xA73C { "AU/A" "AU/A/mask" "AY/Y" }
+		derive-multi-part-glyphs 'AY' 0xA73C { "AA/left" "AY/Y" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
-				local { subDf shift } : SubDfAndShift 1 df
 				include : df.markSet.capDesc
-				define { left mask right } srcs
+				define { left right } srcs
 				include [refer-glyph left]
-				include : difference [refer-glyph right]
-					intersection [refer-glyph mask] [MaskLeft (subDf.width / 2 + shift)]
+				include [refer-glyph right]
 
 	do "Rha"
 		glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
