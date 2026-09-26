@@ -60,13 +60,6 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "ay/a.\(suffix)" : glyph-proc
 					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
-				create-glyph "av/a/mask.\(suffix)" : glyph-proc
-					set-width 0
-					local avDf : DivFrame para.advanceScaleMM 3
-					local avSubDf : avDf.slice 3 2
-					include : union
-						DoubleStorey.HookAndBarMask avSubDf hookStyle [DoubleStorey.SmoothA avSubDf] avDf.mvs
-						DoubleStorey.ArcMask        avSubDf 2         [DoubleStorey.SmoothA avSubDf] avDf.mvs
 
 			create-glyph "aa.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -221,7 +214,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
 		define dfVY : DivFrame para.advanceScaleMM 3
-		define { subDfVY shiftVY } : SubDfAndShift 1 dfVY 0
+		define { subDfVY shiftVY0 } : SubDfAndShift 1 dfVY 0
+		define shiftVY : shiftVY0 - [HSwToV : 0.3 * dfVY.mvs]
 
 		define avVConfig : object
 			straightSerifless  { true  0 }
@@ -476,7 +470,6 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant "au/a" (follow -- 'ae/a')
 	select-variant "av/a" (follow -- 'ae/a')
 	select-variant "ay/a" (follow -- 'ae/a')
-	select-variant "av/a/mask" (follow -- 'ae/a')
 	select-variant "ae/e" (follow -- 'e')
 	select-variant "au/u"
 	select-variant "ue/u"
@@ -489,28 +482,47 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
 	select-variant "av/v" (follow -- 'v/sansSerif')
 	select-variant "ay/y" (follow -- 'y/nonCursive')
-	derive-multi-part-glyphs 'av' 0xA739 { "av/a" "av/v" "av/a/mask" }
+
+	# Vertical clip of v/y between baseline and x-height at the a's stem.
+	# Spike at XH is clipped by the a itself (shifted right) so slab
+	# serifs on v/y are not sheared by a rectangle.
+	define [AvAyJoinX df] : begin
+		local aSub : df.slice 3 2
+		return : aSub.rightSB - [HSwToV : 0.5 * df.mvs]
+	define [AvAyRightShift df] : begin
+		local { subDf shift0 } : SubDfAndShift 1 df 0
+		return : shift0 - [HSwToV : 0.3 * df.mvs]
+	define [AvAyClipRight df left src] : glyph-proc
+		local xJoin : AvAyJoinX df
+		local yShave : df.mvs * [if para.isQuasiProportional 0.85 0.4]
+		include : difference [refer-glyph src]
+			intersection [MaskLeft xJoin] : intersection [MaskBelow XH] [MaskAbove 0]
+			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.25 * df.mvs) 0] [refer-glyph left]
+			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.50 * df.mvs) 0] [refer-glyph left]
+			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.75 * df.mvs) 0] [refer-glyph left]
+
+	derive-multi-part-glyphs 'av' 0xA739 { "av/a" "av/v" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			define { left right mask } srcs
+			define { left right } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
-			include : difference [refer-glyph right] [refer-glyph mask]
-	derive-multi-part-glyphs 'ay' 0xA73D { "ay/a" "ay/y" "av/a/mask" }
+			include : AvAyClipRight df left right
+	derive-multi-part-glyphs 'ay' 0xA73D { "ay/a" "ay/y" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			define { left right mask } srcs
+			define { left right } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : df.markSet.p
-			include : difference [refer-glyph right] [refer-glyph mask]
+			include : AvAyClipRight df left right
 	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
 		define df : DivFrame para.advanceScaleMM 3
-		local aSub : df.slice 3 2
-		local { subDf shift } : SubDfAndShift 1 df 0
+		local { subDf } : SubDfAndShift 1 df 0
+		local xJoin : AvAyJoinX df
 		local barY : [mix 0 XH DesignParameters.aBarPos] + df.mvs * DesignParameters.aBarStrokeAdj
 		include [refer-glyph src] AS_BASE ALSO_METRICS
-		include : HBar.m aSub.leftSB (shift + subDf.rightSB) barY df.mvs
+		include : HBar.m xJoin ([AvAyRightShift df] + subDf.rightSB) barY df.mvs
 	derive-composites 'uo' 0xAB63 'uo/u' 'uo/o'
 
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
