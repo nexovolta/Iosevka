@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [fallback] from "@iosevka/util"
+import [mix fallback] from "@iosevka/util"
 
 glyph-module
 
@@ -31,11 +31,13 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 		local sw : df.adviceStroke2 2 3 top
 		local fine : df.adviceStroke2 3 4 top
 		local ess : [fallback _ess EssUpper] * (sw / Stroke)
-		local archDepth : AdviceSArchDepth top (-1) sw
+		# sign 0: no TanSlope sag; italic is the gizmo skew of upright.
+		local archDepth : AdviceSArchDepth top 0 sw
 		local l : df.leftSB + OX
 		local r : df.rightSB - OX
-		local xBot : Arch.adjust-x.bot Middle
+		local xBot : mix df.leftSB df.rightSB 0.5
 		local yCurl : 0.6 * top
+		local yBowl : Math.max archDepth : 0.40 * top
 
 		define [SSpine kty] : list
 			kty (df.rightSB) (top - hook) [widths.lhs sw]
@@ -57,7 +59,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 				difference
 					dispiro
 						straight.left.start r (yCurl + 0.5 * sw) [widths.lhs fine]
-						g4.down.mid l archDepth [widths.lhs sw]
+						g4.down.mid l yBowl [widths.lhs sw]
 						g4.right.mid xBot O
 					CoSpineMask (2 * df.width)
 					MaskAbove (top - archDepth)
