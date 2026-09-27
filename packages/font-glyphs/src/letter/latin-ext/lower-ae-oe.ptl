@@ -208,6 +208,11 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : ApparentTranslate shift 0
 				eject-contour 'serifLT'
 
+	# Keep Regular's 0.3 overlap; ease v/y right at heavy so the
+	# left stroke still meets the stem.
+	define [AvAyHeavyT] : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+	define [AvAyOverlapK] : mix 0.3 0.08 [AvAyHeavyT]
+
 	do "v and y subglyphs for av/ay"
 		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
@@ -215,7 +220,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 
 		define dfVY : DivFrame para.advanceScaleMM 3
 		define { subDfVY shiftVY0 } : SubDfAndShift 1 dfVY 0
-		define shiftVY : shiftVY0 - [HSwToV : 0.3 * dfVY.mvs]
+		define shiftVY : shiftVY0 - [HSwToV : dfVY.mvs * [AvAyOverlapK]]
 
 		define avVConfig : object
 			straightSerifless  { true  0 }
@@ -465,11 +470,11 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 
 	select-variant "aa" 0xA733 (follow -- 'a/doubleStorey')
 
-	select-variant "ae/a" (follow -- 'a/doubleStorey')
-	select-variant "ao/a" (follow -- 'ae/a')
-	select-variant "au/a" (follow -- 'ae/a')
-	select-variant "av/a" (follow -- 'ae/a')
-	select-variant "ay/a" (follow -- 'ae/a')
+	select-variant "ae/a"
+	select-variant "ao/a"
+	select-variant "au/a"
+	select-variant "av/a"
+	select-variant "ay/a"
 	select-variant "ae/e"
 	select-variant "au/u"
 	select-variant "ue/u"
@@ -485,16 +490,17 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 
 	# Vertical clip of v/y between baseline and x-height at the a's stem.
 	# Spike at XH is clipped by the a itself (shifted right) so slab
-	# serifs on v/y are not sheared by a rectangle.
+	# serifs on v/y are not sheared by a rectangle. At heavy, overlap
+	# and yShave ease so the left stroke still meets the stem.
 	define [AvAyJoinX df] : begin
 		local aSub : df.slice 3 2
 		return : aSub.rightSB - [HSwToV : 0.5 * df.mvs]
 	define [AvAyRightShift df] : begin
 		local { subDf shift0 } : SubDfAndShift 1 df 0
-		return : shift0 - [HSwToV : 0.3 * df.mvs]
+		return : shift0 - [HSwToV : df.mvs * [AvAyOverlapK]]
 	define [AvAyClipRight df left src] : glyph-proc
 		local xJoin : AvAyJoinX df
-		local yShave : df.mvs * [if para.isQuasiProportional 0.85 0.4]
+		local yShave : df.mvs * [if para.isQuasiProportional 0.85 [mix 0.4 0.22 [AvAyHeavyT]]]
 		include : difference [refer-glyph src]
 			intersection [MaskLeft xJoin] : intersection [MaskBelow XH] [MaskAbove 0]
 			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.25 * df.mvs) 0] [refer-glyph left]

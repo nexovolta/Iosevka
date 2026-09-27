@@ -8,16 +8,8 @@ export function apply(data, para, argv) {
 		if (!tagSet.has(prime.tag)) tagSet.add(prime.tag);
 		else throw new Error(`CV tag conflict: ${prime.tag}`);
 	}
-	const variantSelector = {};
-	parsed.defaultComposite.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
-	if (argv.shape.serifs === "slab") {
-		const slabComp = parsed.composites.get("slab");
-		slabComp.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
-	}
-	if (argv.variants) {
-		const userComposite = new Composite("{user}", argv.variants);
-		userComposite.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
-	}
+	const variantSelector = resolveSelectors(parsed, para, argv);
+	applyLigatureAFromUprightOblique(parsed, para, argv, variantSelector);
 	para.variants = {
 		selectorTree: parsed.selectorTree,
 		primes: parsed.primes,
@@ -49,6 +41,49 @@ export function parse(data, argv) {
 		}
 	}
 	return { selectorTree: selectorTree, primes, composites, defaultComposite };
+}
+
+const DEFAULT_LIGATURE_A = "doubleStoreyToothlessRounded";
+const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a"];
+
+function resolveSelectors(parsed, para, argv) {
+	const variantSelector = {};
+	parsed.defaultComposite.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
+	if (argv.shape.serifs === "slab") {
+		const slabComp = parsed.composites.get("slab");
+		slabComp.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
+	}
+	if (argv.variants) {
+		const userComposite = new Composite("{user}", argv.variants);
+		userComposite.resolve(para, parsed.selectorTree, parsed.composites, variantSelector);
+	}
+	return variantSelector;
+}
+
+function isDoubleStoreyA(suffix) {
+	return typeof suffix === "string" && suffix.startsWith("doubleStorey");
+}
+
+function pickLigatureASelector(obliqueVs, uprightVs) {
+	for (const vs of [obliqueVs, uprightVs]) {
+		if (isDoubleStoreyA(vs.a)) return vs["ae/a"] || DEFAULT_LIGATURE_A;
+	}
+	return DEFAULT_LIGATURE_A;
+}
+
+function applyLigatureAFromUprightOblique(parsed, para, argv, variantSelector) {
+	const obliqueVs = resolveSelectors(
+		parsed,
+		Object.assign({}, para, { isItalic: false, isOblique: true }),
+		argv,
+	);
+	const uprightVs = resolveSelectors(
+		parsed,
+		Object.assign({}, para, { isItalic: false, isOblique: false }),
+		argv,
+	);
+	const suffix = pickLigatureASelector(obliqueVs, uprightVs);
+	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = suffix;
 }
 
 class SelectorTree {
