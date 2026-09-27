@@ -249,6 +249,40 @@ glyph-block Letter-Cyrillic-Ze : begin
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (right - xo) (bot + hookBot)
 
+		export : define [TresilloUpperShape] : begin
+			define [object stroke midx midy fine] : Dim
+			# Clip reverse-C at xJoin (HookStart cannot terminate on the top
+			# at Regular+). Chevron arms share that vertical and the waist
+			# vertical; Leftward terminals make every join a vertical bevel.
+			# xJoin sits left of the hook so a C curve remains before the serif.
+			local yBar : midy + 0.5 * stroke
+			local middle : mix left right 0.5
+			local xJoin : mix left right : StrokeWidthBlend 0.64 0.48
+			local yArmTop : top - 0.42 * stroke
+			local xVertex : left + [HSwToV : 0.22 * stroke]
+			local yVertex : mix yBar yArmTop 0.62
+			local dxU : xJoin - xVertex
+			local dyU : yArmTop - yVertex
+			local dxL : middle - xVertex
+			local dyL : yBar - yVertex
+			local expU : Math.min Math.SQRT2 : Math.hypot 1 (dyU / dxU)
+			local expL : Math.min Math.SQRT2 : Math.hypot 1 : Math.abs (dyL / dxL)
+			local exp : Math.max expU expL
+			local swV : stroke * exp
+			return : union
+				intersection [MaskRight xJoin] [UpperShape]
+				dispiro
+					flat xJoin yArmTop [widths.center.heading stroke Leftward]
+					curl xVertex yVertex [widths.center.heading swV Leftward]
+				dispiro
+					flat middle yBar [widths.center.heading stroke Leftward]
+					curl xVertex yVertex [widths.center.heading swV Leftward]
+				dispiro
+					flat middle yBar [widths.center.heading stroke Rightward]
+					curl midx yBar [heading Rightward]
+
+		export : define [TresilloShape] : union [TresilloUpperShape] [LowerShape]
+
 		export : define [Shape] : union [UpperShape] [LowerShape]
 
 		export : define [AutoStartSerifR] : begin
@@ -400,17 +434,30 @@ glyph-block Letter-Cyrillic-Ze : begin
 				curl Middle         midy [heading Rightward]
 
 		if (!bottom) : begin
+			create-glyph "Tresillo.\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				local revZe : CyrRevZe slabTop slabBot CAP 0
+					hook   -- Hook
+					barPos -- 0.52
+					ada    -- ArchDepthA
+					adb    -- ArchDepthB
+				define [object midy] : revZe.Dim
+				set-base-anchor 'overlay' Middle midy
+				set-base-anchor 'strike'  Middle midy
+				include : union [revZe.TresilloShape] [revZe.AutoStartSerifR] [revZe.AutoEndSerifR]
+
 			create-glyph "tresillo.\(suffix)" : glyph-proc
-				include : MarkSet.b
-				local revZe : CyrRevZe slabTop slabBot Ascender 0
+				include : MarkSet.p
+				local revZe : CyrRevZe slabTop slabBot XH Descender
 					hook   -- SHook
 					barPos -- 0.55
 					ada    -- SmallArchDepthA
 					adb    -- SmallArchDepthB
+					stroke -- [AdviceStroke2 2 3 XH]
 				define [object midy] : revZe.Dim
 				set-base-anchor 'overlay' Middle midy
 				set-base-anchor 'strike'  Middle midy
-				include : union [revZe.Shape] [revZe.AutoStartSerifR] [revZe.AutoEndSerifR]
+				include : union [revZe.TresilloShape] [revZe.AutoStartSerifR] [revZe.AutoEndSerifR]
 
 			if (!slabBot) : begin
 				create-glyph "cyrl/DzjeKomi.\(suffix)" : glyph-proc
@@ -545,7 +592,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	select-variant 'cyrl/Ksi/base' (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'cyrl/ksi/base' (follow -- 'cyrl/ze/topSerif')
 
-	select-variant 'Tresillo' 0xA72A (follow -- 'C') (shapeFrom -- 'cyrl/revZe')
+	select-variant 'Tresillo' 0xA72A (follow -- 'C')
 	select-variant 'tresillo' 0xA72B (follow -- 'c')
 
 	derive-multi-part-glyphs 'cyrl/Dhe.BSH' null { 'cyrl/Ze' 'invCommaBelow' } : lambda [srcs gr] : glyph-proc
