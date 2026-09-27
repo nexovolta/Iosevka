@@ -44,7 +44,7 @@ export function parse(data, argv) {
 }
 
 const DEFAULT_LIGATURE_A = "doubleStoreyToothlessRounded";
-const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a"];
+const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a", "cyrl/aye/a"];
 
 function resolveSelectors(parsed, para, argv) {
 	const variantSelector = {};
@@ -64,9 +64,17 @@ function isDoubleStoreyA(suffix) {
 	return typeof suffix === "string" && suffix.startsWith("doubleStorey");
 }
 
+function hookAffixFromDoubleStoreyA(suffix) {
+	if (suffix.includes("HookFlat")) return "HookFlat";
+	if (suffix.includes("HookInwardSerifed")) return "HookInwardSerifed";
+	return "";
+}
+
 function pickLigatureASelector(obliqueVs, uprightVs) {
 	for (const vs of [obliqueVs, uprightVs]) {
-		if (isDoubleStoreyA(vs.a)) return vs["ae/a"] || DEFAULT_LIGATURE_A;
+		if (!isDoubleStoreyA(vs.a)) continue;
+		const hook = hookAffixFromDoubleStoreyA(vs.a);
+		return hook ? `doubleStorey${hook}ToothlessRounded` : DEFAULT_LIGATURE_A;
 	}
 	return DEFAULT_LIGATURE_A;
 }
