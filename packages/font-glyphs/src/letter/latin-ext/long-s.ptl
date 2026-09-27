@@ -222,30 +222,30 @@ glyph-block Letter-Latin-Long-S : begin
 
 	alias 'esh' 0x283 "longs.flatHookTailedSerifless"
 
-	# Esh/integral stem with a teardrop loop on the right. The left bar is the
-	# bottom of the loop; the inner counter points at the stem×bar corner
-	# instead of forming a p-bowl.
+	# Esh hook (LongS lower half) plus a Stroke-weight teardrop and crossbar
+	# like H/T. Loop does not descend into the hook, so the stem join stays smooth.
+	# Do not use a P/OBarLeft bowl — that fills at heavy weight.
 	define [IsShape top bot] : glyph-proc
+		local sw : 1 * Stroke
 		local xStem : mix SB RightSB 0.40
-		local xLeft : xStem - [HSwToV HalfStroke]
-		local xRight : RightSB - OX
+		local xLeft : xStem - [HSwToV : 0.5 * sw]
 		local hookx : HookX + QuarterStroke
-		local yBar : mix 0 top 0.56
-		local loopH : top - yBar
-		local s : Math.min 1 : (0.85 * loopH) / (SmallArchDepthA + SmallArchDepthB)
-		local ada : SmallArchDepthA * s
-		local yMid : mix yBar top 0.55
+		local xLoopR : RightSB - OX
+		local minLoopH : Math.max (xLoopR - xLeft) : 2 * sw + [AdviceStroke 3]
+		local yBar : Math.min [mix 0 top 0.56] (top - minLoopH)
+		local yJoin : mix yBar top 0.55
 		include : union
+			LongSLowerHalf (+1) xStem yJoin bot hookx Hook sw
 			dispiro
-				widths.lhs
+				widths.lhs sw
 				flat (xLeft - hookx) yBar [heading Rightward]
-				curl (xLeft + [HSwToV Stroke]) yBar [heading Rightward]
+				curl [mix xLeft xLoopR 0.5] yBar
 				archv
-				g4.up.mid xRight yMid
-				Arch.lhs top
-				flat xLeft (top - ada) [heading Downward]
-				curl xLeft (yBar + Stroke) [heading Downward]
-			LongSLowerHalf (+1) xStem (yBar + HalfStroke) bot hookx Hook
+				g4 (xLoopR - O) [mix yBar top 0.5]
+				Arch.lhs top (sw -- sw)
+				g4 xLeft [mix top yBar 0.5]
+				flat xLeft [mix yBar yJoin 0.5] [heading Downward]
+				curl xLeft yBar [heading Downward]
 
 	create-glyph 'Is' 0xA76C : glyph-proc
 		include : MarkSet.capital

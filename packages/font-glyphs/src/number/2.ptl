@@ -144,32 +144,30 @@ glyph-block Digits-Two : begin
 	link-reduced-variant 'two/sansSerif.lnum' 'two.lnum' MathSansSerif (follow -- 'two/sansSerif')
 	link-reduced-variant 'two/sansSerif.onum' 'two.onum' MathSansSerif (follow -- 'two/sansSerif')
 
-	do "Rum rotunda : compressed 2 plus a short pipe through the base on the right"
+	do "Rum rotunda : compressed 2 plus a forward slash through the base"
 		define rumAdws 0.78
-		define [RumTwoArc top fStraight fFlat df hook] : if fStraight
-			TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
-			TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
 		define [RumRotundaShape top fStraight fSlab fFlat] : glyph-proc
 			local df : DivFrame rumAdws
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
-			local swPipe : AdviceStroke 2
 			local xBarLeft : if fStraight df.leftSB (df.leftSB + df.mvs / 2)
-			# 2 body without its foot serif; compressed left to leave room for the pipe.
+			# 2 body without its foot serif; compressed left to leave room for the slash.
 			if fStraight
 				include : TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
 				include : TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
 			include : HBar.b xBarLeft RightSB 0 df.mvs
-			local yOver : 1.25 * df.mvs
-			local xSlashBot : mix SB RightSB 0.92
-			local xSlashTop : mix SB RightSB 0.68
-			local xSlashMid : [mix xSlashBot xSlashTop 0.5] - 0.35 * (xSlashBot - xSlashTop)
-			include : difference
-				dispiro
-					widths.center swPipe
-					g4 xSlashBot (0 - yOver)
-					g4 xSlashMid [mix (0 - yOver) (df.mvs + yOver) 0.5]
-					g4 xSlashTop (df.mvs + yOver)
-				RumTwoArc top fStraight fFlat df hook
+			# Parallelogram slash (`/`): top, bottom, and slope are design-unit
+			# constants, so height and angle stay the same from Thin through Heavy.
+			local swSlash : 1 * OverlayStroke
+			local yTop : 0.34 * XH
+			local yBot : 0.70 * Descender
+			local xRight : mix df.leftSB RightSB 0.82
+			local xLeft : xRight - 0.20 * (RightSB - df.leftSB)
+			local cor : [Math.hypot (xRight - xLeft) (yTop - yBot)] / (yTop - yBot)
+			include : spiro-outline
+				corner (xRight - [HSwToV : 0.5 * cor * swSlash]) yTop
+				corner (xRight + [HSwToV : 0.5 * cor * swSlash]) yTop
+				corner (xLeft  + [HSwToV : 0.5 * cor * swSlash]) yBot
+				corner (xLeft  - [HSwToV : 0.5 * cor * swSlash]) yBot
 
 		define RumTwoConfig : SuffixCfg.weave
 			object

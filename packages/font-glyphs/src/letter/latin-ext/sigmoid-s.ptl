@@ -1,14 +1,15 @@
 $$include '../../meta/macros.ptl'
 
-import [mix] from "@iosevka/util"
+import [fallback] from "@iosevka/util"
 
 glyph-module
 
 glyph-block Letter-Latin-Sigmoid-S : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
+	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck SAutoSlabStart
 
 	define SLAB-NONE      0
 	define SLAB-CLASSICAL 1
@@ -21,56 +22,67 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 		unilateralInwardSerifed SLAB-INWARD
 		flatHook                SLAB-FLAT-HOOK
 
-	# Delta body; only the free upper terminal follows C.
+	# Full Latin S as the spine. The lower terminal is extended to the S
+	# crossing like the inner curl of an asymmetric 8 (clipped to the spine).
+	# Outlines are built in design space; italic is the gizmo skew of that.
 	glyph-block-export SigmoidSShape
-	define [SigmoidSShape top styTop hook] : glyph-proc
-		local yRingTop : top * 0.58 + QuarterStroke
-		local xNeck : mix SB RightSB 0.06
-		local ada : Math.min SmallArchDepthA : yRingTop * 0.49
-		local adb : Math.min SmallArchDepthB : yRingTop * 0.49
-		local fh : MakeFlatHook SB RightSB top 0 (sw -- Stroke)
-		include : dispiro
-			match styTop
-				[Just SLAB-CLASSICAL] : list
-					g4 RightSB top [widths.lhs]
-					alsoThru 0.5 0.7
-					g4 Middle (top - O)
-					archv 2
-				[Just SLAB-INWARD] : list
-					g2 RightSB (top - DToothlessRise) [widths.lhs]
-					alsoThru 0.5 0.7
-					g4 Middle (top - O)
-					archv 2
-				[Just SLAB-FLAT-HOOK] : list
-					corner fh.xRHook top [widths.lhs]
-					curl [mix Middle RightSB 0.4] top [heading Leftward]
-					archv.superness DesignParameters.tightHookSuperness
-				__ : list
-					g4 [mix Middle RightSB 0.85] [mix yRingTop top 0.8] [widths.lhs]
-					alsoThru 0.5 0.7
-					g4 Middle (top - O)
-					archv 2
-			g4 (xNeck + Stroke) [mix (top - O - Stroke) yRingTop 0.5] [widths.rhs]
-			arcvh 2
-			g4 Middle yRingTop [heading Rightward]
-			alsoThruThem : list {0.25 0.05} {0.5 0.13}
-			flatside.rd RightSB 0 yRingTop ada adb
-			Arch.rhs 0
-			flatside.lu SB 0 yRingTop ada adb
+	define [SigmoidSShape top styTop hook _ess] : begin
+		local df : DivFrame 1
+		local sw : df.adviceStroke2 2 3 top
+		local fine : df.adviceStroke2 3 4 top
+		local ess : [fallback _ess EssUpper] * (sw / Stroke)
+		local archDepth : AdviceSArchDepth top (-1) sw
+		local l : df.leftSB + OX
+		local r : df.rightSB - OX
+		local xBot : Arch.adjust-x.bot Middle
+		local yCurl : 0.6 * top
+
+		define [SSpine kty] : list
+			kty (df.rightSB) (top - hook) [widths.lhs sw]
+			g4 (df.leftSB) (top - archDepth)
+			~~~ [SNeck df top sw ess]
+			g4 r archDepth [widths.rhs sw]
 			arcvh
-			g4 Middle (yRingTop - QuarterStroke) [widths.rhs HalfStroke]
-		include : match styTop
-			[Just SLAB-CLASSICAL] : ArcStartSerif.R RightSB top Stroke hook
-			[Just SLAB-INWARD] : ArcStartSerif.InwardR RightSB top Stroke hook
-			__ : no-shape
+			kty xBot O
+
+		define [CoSpineMask xFar] : spiro-outline
+			corner xFar (2 * top)
+			corner (df.rightSB) (2 * top)
+			SSpine corner
+			corner xBot (0 - top)
+			corner xFar (0 - top)
+
+		return : glyph-proc
+			include : union
+				difference
+					dispiro
+						straight.left.start r (yCurl + 0.5 * sw) [widths.lhs fine]
+						g4.down.mid l archDepth [widths.lhs sw]
+						g4.right.mid xBot O
+					CoSpineMask (2 * df.width)
+					MaskAbove (top - archDepth)
+				dispiro
+					match styTop
+						[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw hook
+						[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw hook
+						[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- sw)].hookStartR
+						__ : list
+							g4 (df.rightSB) (top - hook) [widths.lhs sw]
+							HookStart top (sw -- sw)
+					g4 (df.leftSB) (top - archDepth)
+					~~~ [SNeck df top sw ess]
+					g4 r archDepth [widths.rhs sw]
+					arcvh
+					g4.left.mid xBot O
+			include : SAutoSlabStart df styTop top sw hook
 
 	foreach { suffix styTop } [Object.entries SigmoidSConfig] : do
 		create-glyph "SigmoidS.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : SigmoidSShape CAP styTop Hook
+			include : SigmoidSShape CAP styTop Hook EssUpper
 		create-glyph "sigmoidS.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : SigmoidSShape XH styTop Hook
+			include : SigmoidSShape XH styTop SHook EssLower
 
 	select-variant 'SigmoidS' 0xA7D8
 	select-variant 'sigmoidS' 0xA7D9

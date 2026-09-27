@@ -118,20 +118,22 @@ glyph-block Letter-Latin-O : begin
 				curl ((XH - SB) - O - fine) [mix 0 Width 1.05]
 
 	define [OLoopAddon top ada adb] : glyph-proc
-		# Partial narrow o conjoined to the upper-right as an ear (JuliaMono).
+		# Ear is a scaled cyrl/oNarrow (DivFrame 5/6, 2), thinned at heavy so the
+		# counter does not fill into a blob.
 		local fCap : top > 0.85 * CAP
-		local sw : AdviceStroke 3.5
-		local unit : RightSB - SB
+		local subDf : DivFrame (5 / 6) 2
+		local sw : Math.min subDf.mvs : AdviceStroke : StrokeWidthBlend 4 6.5
 		local earH : [if fCap 0.52 0.70] * top
 		local yOver : [if fCap 0.08 0.12] * top
 		local earTop : top + yOver
 		local earBot : earTop - earH
-		local earW : [if fCap 0.44 0.48] * unit
+		local earW : (subDf.rightSB - subDf.leftSB) * [if fCap 0.52 0.58]
 		local overlap : HSwToV : 0.85 * Stroke
 		local earLeft : RightSB - overlap
 		local earRight : earLeft + earW
-		local earAda : Math.min [fallback ada SmallArchDepthA] (earH / 2 - TINY)
-		local earAdb : Math.min [fallback adb SmallArchDepthB] (earH / 2 - TINY)
+		local kArch : earH / XH
+		local earAda : Math.min (subDf.smallArchDepthA * kArch) (earH / 2 - TINY)
+		local earAdb : Math.min (subDf.smallArchDepthB * kArch) (earH / 2 - TINY)
 		include : difference
 			OShape earTop earBot earLeft earRight sw earAda earAdb
 			OShapeOutline.NoOvershoot top 0 SB RightSB nothing ada adb

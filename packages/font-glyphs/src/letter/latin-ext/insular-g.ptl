@@ -8,6 +8,7 @@ glyph-block Letter-Latin-Insular-G : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
+	glyph-block-import Letter-Latin-Sigmoid-S : SigmoidSShape
 
 	define [InsularGShape top bot] : glyph-proc
 		local fine : AdviceStroke 4
@@ -67,57 +68,22 @@ glyph-block Letter-Latin-Insular-G : begin
 	CreateTurnedLetter 'turnGInsular' 0xA77E 'GInsular' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'turngInsular' 0xA77F 'gInsular' HalfAdvance [mix Descender XH 0.5]
 
-	# Closed insular G: T-bar over a turned sigmoid S (delta). The original S top
-	# (a C arc, which lands at the bottom after the 180° flip) is replaced with
-	# insular T's hook; after FlipAround that hook is the horizontally mirrored T.
-	define [ClosedInsularGDeltaBody top hook] : glyph-proc
-		local yRingTop : top * 0.58 + QuarterStroke
-		local xNeck : mix SB RightSB 0.06
-		local ada : Math.min SmallArchDepthA : yRingTop * 0.49
-		local adb : Math.min SmallArchDepthB : yRingTop * 0.49
-		include : dispiro
-			g4 RightSB (top - hook) [widths.lhs]
-			HookStart top
-			g4 (xNeck + Stroke) [mix (top - O - Stroke) yRingTop 0.5] [widths.rhs]
-			arcvh 2
-			g4 Middle yRingTop [heading Rightward]
-			alsoThruThem : list {0.25 0.05} {0.5 0.13}
-			flatside.rd RightSB 0 yRingTop ada adb
-			Arch.rhs 0
-			flatside.lu SB 0 yRingTop ada adb
-			arcvh
-			g4 Middle (yRingTop - QuarterStroke) [widths.rhs HalfStroke]
-
-	define [ClosedInsularGShape top bot ada adb] : glyph-proc
-		local fine : Stroke * CThinB
-		local yJoinS : Stroke - fine
-		local yStub : yJoinS + ada + adb
-		local kBowl : 88 / 100
+	# Closed insular G: T-bar over an inverted sigmoid S.
+	define [ClosedInsularGShape top bot] : glyph-proc
+		local yCut : top - HalfStroke
 		local barPad : 6 / 100 * (RightSB - SB)
-
 		include : HBar.t (SB - barPad) (RightSB + barPad) top
-
-		include : new-glyph : glyph-proc
-			include : intersection
-				new-glyph : glyph-proc
-					include : ClosedInsularGDeltaBody (top - bot) Hook
-				MaskAbove Stroke
-			include : dispiro
-				straight.right.start Middle yJoinS [widths.lhs.heading fine Rightward]
-				archv
-				flatside.ru RightSB yJoinS yStub ada adb nothing [widths.lhs]
-			include : dispiro
-				straight.left.start Middle yJoinS [widths.rhs.heading fine Leftward]
-				archv
-				flatside.lu SB yJoinS yStub ada adb nothing [widths.rhs]
-			include : ApparentTranslate 0 bot
-			include : FlipAround Middle : mix bot top 0.5
-			include : ScaleAround Middle [mix bot top 0.5] kBowl 1
+		include : intersection
+			new-glyph : glyph-proc
+				include : SigmoidSShape (top - bot) 0 Hook
+				include : Translate 0 bot
+				include : FlipAround Middle : mix bot top 0.5
+			MaskBelow yCut
 
 	create-glyph 'GInsularClosed' 0xA7D0 : glyph-proc
 		include : MarkSet.capital
-		include : ClosedInsularGShape CAP 0 ArchDepthA ArchDepthB
+		include : ClosedInsularGShape CAP 0
 
 	create-glyph 'gInsularClosed' 0xA7D1 : glyph-proc
 		include : MarkSet.p
-		include : ClosedInsularGShape XH Descender SmallArchDepthA SmallArchDepthB
+		include : ClosedInsularGShape XH Descender
