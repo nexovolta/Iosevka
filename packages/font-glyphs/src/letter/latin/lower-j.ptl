@@ -89,6 +89,18 @@ glyph-block Letter-Latin-Lower-J : begin
 				DiagTail.L xMiddle Descender [DiagTail.StdDepth df Stroke] Stroke
 			set-base-anchor "trailing" (xMiddle - [HSwToV HalfStroke]) Descender
 
+		# Crossed/curly tail (U+029D). Stem matches BentHook; the hook is CurlyTail.
+		export : define [CurlyTailBody df top xMiddle] : glyph-proc
+			local fine : AdviceStroke 3.5
+			set-base-anchor "below" [mix (xMiddle - [HSwToV HalfStroke] - LongJut) xMiddle 0.5] Descender
+			include : dispiro
+				widths.rhs
+				flat (xMiddle + [HSwToV HalfStroke]) top [heading Downward]
+				curl (xMiddle + [HSwToV HalfStroke]) (Descender + LongVJut)
+				CurlyTail.n fine Descender ((xMiddle - [HSwToV HalfStroke]) - LongJut)
+					x2 -- (df.rightSB + [HSwToV : 0.5 * fine] + JBalance)
+					y2 -- (Descender + fine / 2)
+
 		# Keep the existing j bottom (stem + descender) and stack a casual top
 		# in the upper half of x-height, replacing the i-stem that Casual would draw.
 		export : define [WithCasualTop kind Body] : lambda [df top xMiddle] : glyph-proc
@@ -151,6 +163,14 @@ glyph-block Letter-Latin-Lower-J : begin
 		'topSemiNarrowBentHook'     { [JBody.WithCasualTop 'semi'      JBody.NarrowBentHook]  JSerifs.None XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 		'topDiagNarrowBentHook'     { [JBody.WithCasualTop 'diagonal'  JBody.NarrowBentHook]  JSerifs.None XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 
+	define JCurlyTailConfig : object
+		'bentHookSerifless' { JBody.CurlyTailBody                                  JSerifs.None  JMarks.Serifless }
+		'bentHookSerifed'   { JBody.CurlyTailBody                                  JSerifs.Long  JMarks.Serifless }
+		'topTailed'         { [JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
+		'topFlat'           { [JBody.WithCasualTop 'flat'      JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
+		'topSemi'           { [JBody.WithCasualTop 'semi'      JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
+		'topDiag'           { [JBody.WithCasualTop 'diagonal'  JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
+
 	foreach { suffix { Body Serifs xMiddleT Marks adws } } [Object.entries JConfig] : do
 		local df : DivFrame adws
 		local xMiddle : xMiddleT df
@@ -184,19 +204,15 @@ glyph-block Letter-Latin-Lower-J : begin
 	alias 'grek/yot' 0x3F3 'j'
 	alias 'cyrl/je'  0x458 'j'
 
-	create-glyph "dotlessjCurlyTail.bentHookSerifless" : glyph-proc
-		include : MarkSet.p
-		local fine : AdviceStroke 3.5
-		local xMiddle : Middle + JBalance
-		set-base-anchor 'above' xMiddle XH
-		include : dispiro
-			widths.rhs
-			flat (xMiddle + [HSwToV HalfStroke]) XH [heading Downward]
-			curl (xMiddle + [HSwToV HalfStroke]) (Descender + LongVJut)
-			CurlyTail.n fine Descender ((xMiddle - [HSwToV HalfStroke]) - LongJut)
-				x2 -- (RightSB + [HSwToV : 0.5 * fine] + JBalance)
-				y2 -- (Descender + fine / 2)
-		create-forked-glyph "dotlessjCurlyTail.bentHookSerifed" : JSerifs.Long [DivFrame 1] XH xMiddle
+	foreach { suffix { Body Serifs Marks } } [Object.entries JCurlyTailConfig] : do
+		local df : DivFrame 1
+		local xMiddle : XMiddleT.BentHook df
+		create-glyph "dotlessjCurlyTail.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.p
+			include : Body   df XH xMiddle
+			include : Serifs df XH xMiddle
+			include : Marks  df XH xMiddle
 
 	select-variant 'dotlessjCurlyTail'
 	CreateAccentedComposition 'jCurlyTail' 0x29D 'dotlessjCurlyTail' 'tittleAbove'
