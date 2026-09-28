@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 
 glyph-module
 
@@ -14,9 +14,17 @@ glyph-block Letter-Cyrillic-De : begin
 	glyph-block-export BottomExtension
 	local BottomExtension : (-LongVJut) + QuarterStroke
 
+	define SERIF-NONE   0
+	define SERIF-MOTION 1
+	define SERIF-ALL    2
+
+	define [DeSerifTypeOf _serifType] : fallback _serifType : if SLAB SERIF-ALL SERIF-NONE
+	define [DeOverflow left right serifType] : if (serifType !== SERIF-NONE) SideJut : (right - left) * 0.075
+
 	glyph-block-export CyrDeBottom
-	define [CyrDeBottom left right _sw _desc] : glyph-proc
-		local descenderOverflow : if SLAB SideJut : (right - left) * 0.075
+	define [CyrDeBottom left right _sw _desc _serifType] : glyph-proc
+		local serifType : DeSerifTypeOf _serifType
+		local descenderOverflow : DeOverflow left right serifType
 		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
 		local xTopRight : mix left right : StrokeWidthBlend 0.95 0.96
 		local swOuter : fallback _sw Stroke
@@ -32,8 +40,9 @@ glyph-block Letter-Cyrillic-De : begin
 			VBar.r (right + descenderOverflow) desc TINY swVJut
 
 	glyph-block-export CyrDeShape
-	define [CyrDeShape fCapital top left right _sw _desc] : glyph-proc
-		local descenderOverflow : if SLAB SideJut : (right - left) * 0.075
+	define [CyrDeShape fCapital top left right _sw _desc _serifType] : glyph-proc
+		local serifType : DeSerifTypeOf _serifType
+		local descenderOverflow : DeOverflow left right serifType
 		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
 		local xTopRight : mix left right : StrokeWidthBlend 0.95 0.96
 		local swOuter : fallback _sw Stroke
@@ -42,7 +51,7 @@ glyph-block Letter-Cyrillic-De : begin
 			VSwToH : 0.375 * (xTopRight - xTopLeft)
 		local desc : fallback _desc BottomExtension
 
-		include : CyrDeBottom left right swOuter desc
+		include : CyrDeBottom left right swOuter desc serifType
 
 		include : VBar.r xTopRight 0 top swInner
 		include : dispiro
@@ -51,28 +60,31 @@ glyph-block Letter-Cyrillic-De : begin
 			curl xTopLeft [mix top (0 + swOuter + TailY - swInner / 2) 0.75]
 			g4   left     (0 + swOuter)
 
-		include : if SLAB
-			dispiro
+		include : match serifType
+			[Just SERIF-ALL] : dispiro
 				widths.rhs swOuter
 				flat (xTopLeft - descenderOverflow - swOuter * SerifShiftX) top
-				if (fCapital || !para.isItalic)
-					list
-						curl (xTopRight + descenderOverflow - swOuter * SerifShiftX) top
-					list
-						curl xTopRight top [heading Rightward]
-			HBar.t xTopLeft xTopRight top swOuter
+				curl (xTopRight + descenderOverflow - swOuter * SerifShiftX) top
+			[Just SERIF-MOTION] : dispiro
+				widths.rhs swOuter
+				flat (xTopLeft - descenderOverflow - swOuter * SerifShiftX) top
+				curl xTopRight top [heading Rightward]
+			__ : HBar.t xTopLeft xTopRight top swOuter
 
 		return : object xTopLeft xTopRight swOuter swInner desc
 
 	glyph-block-import Letter-Latin-Upper-Lambda-Delta : DeltaShape
+	glyph-block-import Letter-Latin-Upper-A : ASerifs
 
-	define [CyrDeDeltaFeet] : glyph-proc
-		local descenderOverflow : if SLAB SideJut : (RightSB - SB) * 0.075
+	define A-SLAB-TOP 1
+
+	define [CyrDeDeltaFeet serifType] : glyph-proc
+		local descenderOverflow : DeOverflow SB RightSB serifType
 		include : HBar.b (SB - descenderOverflow) (RightSB + descenderOverflow) 0
 		include : VBar.l (SB      - descenderOverflow) BottomExtension TINY VJutStroke
 		include : VBar.r (RightSB + descenderOverflow) BottomExtension TINY VJutStroke
 
-	define [CyrDeDeltaLikeShape fBarStraight fSquareBottom top] : glyph-proc
+	define [CyrDeDeltaLikeShape fBarStraight fSquareBottom top serifType] : glyph-proc
 		include : DeltaShape
 			df            -- [DivFrame 1]
 			fBarStraight  -- fBarStraight
@@ -80,42 +92,51 @@ glyph-block Letter-Cyrillic-De : begin
 			top           -- top
 			bottom        -- 0
 			sw            -- Stroke
-		include : CyrDeDeltaFeet
+		if (serifType !== SERIF-NONE) : include : ASerifs [DivFrame 1] top Stroke A-SLAB-TOP
+		include : CyrDeDeltaFeet serifType
 
 	define BODY-TRAPEZOID  0
 	define BODY-TRIANGULAR 1
 	define BODY-CURLY      2
 	define BODY-SQUARE     3
+	define BODY-CURSIVE    4
 
-	define DeConfig : object
-		trapezoid   BODY-TRAPEZOID
-		triangular  BODY-TRIANGULAR
-		curly       BODY-CURLY
-		square      BODY-SQUARE
+	define DeConfig : SuffixCfg.weave
+		object
+			trapezoid   BODY-TRAPEZOID
+			triangular  BODY-TRIANGULAR
+			curly       BODY-CURLY
+			square      BODY-SQUARE
+			cursive     BODY-CURSIVE
+		object
+			serifless     SERIF-NONE
+			motionSerifed SERIF-MOTION
+			serifed       SERIF-ALL
 
-	define [CyrDeBodyShape bodyType fCapital top] : match bodyType
-		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top SB RightSB
-		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top
-		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top
-		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top
+	define [CyrDeBodyShape bodyType fCapital top serifType] : match bodyType
+		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top SB RightSB nothing nothing serifType
+		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType
+		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType
+		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType
 
-	foreach { suffix bodyType } [Object.entries DeConfig] : do
-		create-glyph "cyrl/De.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : ExtendBelowBaseAnchors BottomExtension
-			include : CyrDeBodyShape bodyType true CAP
+	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+		if (bodyType !== BODY-CURSIVE) : begin
+			create-glyph "cyrl/De.\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				include : ExtendBelowBaseAnchors BottomExtension
+				include : CyrDeBodyShape bodyType true CAP serifType
 
-		create-glyph "cyrl/de.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			include : ExtendBelowBaseAnchors BottomExtension
-			include : CyrDeBodyShape bodyType false XH
+			create-glyph "cyrl/de.\(suffix)" : glyph-proc
+				include : MarkSet.e
+				include : ExtendBelowBaseAnchors BottomExtension
+				include : CyrDeBodyShape bodyType false XH serifType
 
 	create-glyph 'cyrl/deLongLeg.upright' : glyph-proc
 		include : MarkSet.p
 		include : CyrDeShape false XH SB RightSB nothing Descender
 
 	select-variant 'cyrl/De' 0x414
-	alias 'cyrl/de.upright' null 'cyrl/de.trapezoid'
+	alias 'cyrl/de.upright' null 'cyrl/de.trapezoidSerifless'
 
 	define [CyrSoftDeShape vSlab] : function [fCapital df top _sw _desc] : glyph-proc
 		local sw : fallback _sw Stroke
@@ -224,10 +245,13 @@ glyph-block Letter-Cyrillic-De : begin
 	define [CyrDeItalicMask df _sw] : spiro-outline
 		CyrDeItalicKnots df _sw
 
-	create-glyph 'cyrl/de.cursive' : glyph-proc
+	create-glyph 'cyrl/de.cursiveSerifless' : glyph-proc
 		include : MarkSet.b
 		include : CyrDeItalicShape [DivFrame 1]
-	alias 'cyrl/de.italic' null 'cyrl/de.cursive'
+	alias 'cyrl/de.cursiveMotionSerifed' null 'cyrl/de.cursiveSerifless'
+	alias 'cyrl/de.cursiveSerifed' null 'cyrl/de.cursiveSerifless'
+	alias 'cyrl/de.cursive' null 'cyrl/de.cursiveSerifless'
+	alias 'cyrl/de.italic' null 'cyrl/de.cursiveSerifless'
 	select-variant 'cyrl/de' 0x434
 
 	create-glyph 'cyrl/dwe.italic/base' : glyph-proc

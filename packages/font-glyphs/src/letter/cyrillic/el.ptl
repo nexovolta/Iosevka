@@ -1,8 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [Point] from "@iosevka/geometry/point"
-import [DependentSelector] from "@iosevka/glyph/relation"
 import [bitOr] from "@iosevka/util/mask-bit"
 
 glyph-module
@@ -18,12 +17,20 @@ glyph-block Letter-Cyrillic-El : begin
 	define BODY-NONE     0
 	define BODY-STRAIGHT 1
 	define BODY-TAILED   2
+	define BODY-LAMBDA-TRI    10
+	define BODY-LAMBDA-CURLY  11
+	define BODY-LAMBDA-SQUARE 12
 
 	define SLAB-NONE     0
 	define SLAB-ALL      1
 	define SLAB-LOWER    2
 	define SLAB-TAILED-U 3
 	define SLAB-TAILED-I 4
+	define SLAB-MOTION   5
+
+	define SERIF-NONE   0
+	define SERIF-MOTION 1
+	define SERIF-ALL    2
 
 	glyph-block-export CyrElShape
 	define [CyrElShape left right top bodyType slabType _sw] : glyph-proc
@@ -46,6 +53,7 @@ glyph-block Letter-Cyrillic-El : begin
 			[Just SLAB-LOWER]    : HSerif.lt xTopLeft top SideJut sw
 			[Just SLAB-TAILED-U] : HSerif.lt xTopLeft top SideJut sw
 			[Just SLAB-TAILED-I] : HSerif.lt xTopLeft top SideJut sw
+			[Just SLAB-MOTION]   : HSerif.lt xTopLeft top SideJut sw
 			__                   : glyph-proc
 		include : tagged 'SerifRT' : match slabType
 			[Just SLAB-ALL]      : HSerif.rt right top SideJut sw
@@ -69,37 +77,61 @@ glyph-block Letter-Cyrillic-El : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (xTopBarRightEnd - xm)
 			include : VSerif.dr xTopBarRightEnd top VJut swVJut
 
+	define LAMBDA-SLAB-TOP        1
 	define LAMBDA-SLAB-LEFT       2
 	define LAMBDA-SLAB-RIGHT      4
 	define LAMBDA-SLAB-SMALL-CYRL 8
 
-	define [CyrElLambdaLikeShape fBarStraight fSquareBottom top fLower] : glyph-proc
+	define [ElIsLambda bodyType] : (bodyType === BODY-LAMBDA-TRI) || (bodyType === BODY-LAMBDA-CURLY) || (bodyType === BODY-LAMBDA-SQUARE)
+
+	define [ElTrapezoidSlab serifType fCapital bodyType] : begin
+		local italicLower : (!fCapital) && para.isItalic
+		if (bodyType === BODY-TAILED) : begin
+			if (serifType === SERIF-NONE) : return 0
+			if (serifType === SERIF-MOTION) : return 4
+			return 3
+		if (serifType === SERIF-NONE) : return 0
+		if (serifType === SERIF-MOTION) : begin
+			if italicLower : return 2
+			return 5
+		return 1
+
+	define [ElLambdaSlabKind serifType fLower] : begin
 		local extraCyrl : if fLower LAMBDA-SLAB-SMALL-CYRL 0
-		local slabKind : if SLAB [bitOr LAMBDA-SLAB-LEFT LAMBDA-SLAB-RIGHT extraCyrl] 0
+		local motionKind : 0 + [bitOr LAMBDA-SLAB-TOP extraCyrl]
+		local serifedKind : 0 + [bitOr [bitOr LAMBDA-SLAB-TOP LAMBDA-SLAB-LEFT] [bitOr LAMBDA-SLAB-RIGHT extraCyrl]]
+		if (serifType === SERIF-NONE) : return 0
+		if (serifType === SERIF-MOTION) : return motionKind
+		return serifedKind
+
+	define [CyrElLambdaLikeShape fBarStraight fSquareBottom top fLower serifType] : glyph-proc
 		include : LambdaShape
 			df            -- [DivFrame 1]
 			fBarStraight  -- fBarStraight
-			slabKind      -- slabKind
+			slabKind      -- [ElLambdaSlabKind serifType fLower]
 			top           -- top
 			sw            -- Stroke
 			fSquareBottom -- fSquareBottom
 
-	create-glyph 'cyrl/El.trapezoid' : glyph-proc
-		include : MarkSet.capital
-		include : CyrElShape SB RightSB CAP BODY-STRAIGHT : if SLAB SLAB-ALL SLAB-NONE
+	define [CyrElBodyShape bodyType fBarStraight fSquareBottom top fCapital serifType] : glyph-proc
+		include : if [ElIsLambda bodyType]
+			then : CyrElLambdaLikeShape fBarStraight fSquareBottom top [not fCapital] serifType
+			else : CyrElShape SB RightSB top bodyType [ElTrapezoidSlab serifType fCapital bodyType]
 
-	create-glyph 'cyrl/smcpEl.trapezoid' : glyph-proc
-		include : MarkSet.e
-		include : CyrElShape SB RightSB XH BODY-STRAIGHT : if SLAB SLAB-ALL SLAB-NONE
-
-	create-glyph 'cyrl/ElMidHook' 0x520 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capDesc
-
-		include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
-			CyrElShape df.leftSB xm CAP BODY-STRAIGHT [if SLAB SLAB-ALL SLAB-NONE] df.mvs
-			intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
-		include : MidHook.m df CAP
+	define [CyrElLeftHalf df top bodyType fBarStraight fSquareBottom serifType fLower] : glyph-proc
+		if [ElIsLambda bodyType] : begin
+			include : difference
+				LambdaShape
+					df            -- df
+					fBarStraight  -- fBarStraight
+					slabKind      -- [ElLambdaSlabKind serifType fLower]
+					top           -- top
+					sw            -- df.mvs
+					fSquareBottom -- fSquareBottom
+				intersection [MaskRight df.middle] [MaskBelow : top - df.mvs]
+		: else : begin
+			local slab : if (serifType === SERIF-NONE) SLAB-NONE SLAB-MOTION
+			include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) top BODY-NONE slab df.mvs
 
 	create-glyph : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
@@ -109,78 +141,122 @@ glyph-block Letter-Cyrillic-El : begin
 
 	select-variant 'cyrl/ElSoft' 0xA664 (follow -- 'cyrl/EnGhe/Ghe')
 
-	define ElConfig : object
-		trapezoid { BODY-STRAIGHT SLAB-ALL      SLAB-LOWER    }
-		tailed    { BODY-TAILED   SLAB-TAILED-U SLAB-TAILED-I }
-
-	define ElLambdaConfig : object
-		triangular { true  false }
-		curly      { false false }
-		square     { true  true  }
+	define ElConfig : SuffixCfg.weave
+		object
+			trapezoid   { BODY-STRAIGHT     false false }
+			triangular  { BODY-LAMBDA-TRI   true  false }
+			curly       { BODY-LAMBDA-CURLY false false }
+			square      { BODY-LAMBDA-SQUARE true  true  }
+			tailed      { BODY-TAILED       false false }
+		object
+			serifless     SERIF-NONE
+			motionSerifed SERIF-MOTION
+			serifed       SERIF-ALL
 
 	define CyrSoftElGheConfig : object
 		serifless       false
 		topRightSerifed true
 
-	foreach { suffix { body slabUpright slabItalic } } [pairs-of ElConfig] : do
-		create-glyph "cyrl/el.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			include : CyrElShape SB RightSB XH body : if SLAB [if para.isItalic slabItalic slabUpright] SLAB-NONE
+	foreach { suffix { { bodyType fBarStraight fSquareBottom } serifType } } [Object.entries ElConfig] : do
+		local fLambda : ElIsLambda bodyType
+		local fTailed : bodyType === BODY-TAILED
+		local trapezoidBody : if fTailed BODY-TAILED BODY-STRAIGHT
 
-		create-glyph "cyrl/elMidHook.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleMM 3
-			include : df.markSet.p
+		if [not fTailed] : begin
+			create-glyph "cyrl/El.\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				include : CyrElBodyShape bodyType fBarStraight fSquareBottom CAP true serifType
 
-			include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
-				CyrElShape df.leftSB xm XH body [if SLAB [if para.isItalic slabItalic slabUpright] SLAB-NONE] df.mvs
-				intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
-			include : MidHook.m df XH
+			create-glyph "cyrl/smcpEl.\(suffix)" : glyph-proc
+				include : MarkSet.e
+				include : CyrElBodyShape bodyType fBarStraight fSquareBottom XH true serifType
 
-		define cyrSoftElDf : DivFrame para.advanceScaleM 3
-
-		DefineSelectorGlyph "cyrl/elSoft" suffix cyrSoftElDf 'e'
-
-		foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
-			create-glyph "cyrl/elSoft.\(suffix).\(suffixGhe)" : glyph-proc
-				set-width 0
-				set-mark-anchor 'cvDecompose' 0 0
-				include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElDf XH body [if SLAB [if para.isItalic slabItalic slabUpright] SLAB-NONE] cyrSoftElDf.mvs
-
-		select-variant "cyrl/elSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
-
-	foreach { suffix { fBarStraight fSquareBottom } } [Object.entries ElLambdaConfig] : do
-		create-glyph "cyrl/El.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : CyrElLambdaLikeShape fBarStraight fSquareBottom CAP false
-
-		create-glyph "cyrl/smcpEl.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			include : CyrElLambdaLikeShape fBarStraight fSquareBottom XH false
+			if [not fLambda] : begin
+				create-glyph "cyrl/ElMidHook.\(suffix)" : glyph-proc
+					local df : include : DivFrame para.advanceScaleMM 3
+					include : df.markSet.capDesc
+					local slab : ElTrapezoidSlab serifType true BODY-STRAIGHT
+					include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
+						CyrElShape df.leftSB xm CAP BODY-STRAIGHT slab df.mvs
+						intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
+					include : MidHook.m df CAP
 
 		create-glyph "cyrl/el.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : CyrElLambdaLikeShape fBarStraight fSquareBottom XH true
+			include : CyrElBodyShape bodyType fBarStraight fSquareBottom XH false serifType
 
-	foreach suffix [items-of : Object.keys ElLambdaConfig] : do
-		alias "cyrl/elMidHook.\(suffix)" null 'cyrl/elMidHook.trapezoid'
-		DefineSelectorGlyph "cyrl/elSoft" suffix [DivFrame para.advanceScaleM 3] 'e'
-		alias "cyrl/elSoft.\(suffix)" null 'cyrl/elSoft.trapezoid'
+		if [not fTailed] : begin
+			create-glyph "cyrl/elDescender.\(suffix)" : glyph-proc
+				include [refer-glyph "cyrl/el.\(suffix)"] AS_BASE ALSO_METRICS
+				include [CyrDescender.rSideJut RightSB 0]
+			create-glyph "cyrl/elTail.\(suffix)" : glyph-proc
+				include [refer-glyph "cyrl/el.\(suffix)"] AS_BASE ALSO_METRICS
+				include [CyrTailDescender.rSideJut RightSB 0]
+			create-glyph "cyrl/elHook.\(suffix)" : glyph-proc
+				include [refer-glyph "cyrl/el.\(suffix)"] AS_BASE ALSO_METRICS
+				include [PalatalHook.rSideJut RightSB 0]
+
+		if [not fLambda] : begin
+			create-glyph "cyrl/elMidHook.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.p
+				local slab : ElTrapezoidSlab serifType false trapezoidBody
+				include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
+					CyrElShape df.leftSB xm XH trapezoidBody slab df.mvs
+					intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
+				include : MidHook.m df XH
+
+			define cyrSoftElDf : DivFrame para.advanceScaleM 3
+			DefineSelectorGlyph "cyrl/elSoft" suffix cyrSoftElDf 'e'
+			foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
+				create-glyph "cyrl/elSoft.\(suffix).\(suffixGhe)" : glyph-proc
+					set-width 0
+					set-mark-anchor 'cvDecompose' 0 0
+					include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElDf XH trapezoidBody [ElTrapezoidSlab serifType false trapezoidBody] cyrSoftElDf.mvs
+			select-variant "cyrl/elSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
+
+		if [not fTailed] : begin
+			create-glyph "cyrl/Lha/El.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleM 3.2
+				include : df.markSet.capital
+				set-base-anchor 'cvDecompose' 0 0
+				include : CyrElLeftHalf df CAP bodyType fBarStraight fSquareBottom serifType false
+
+		create-glyph "cyrl/lha/el.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3.2
+			include : df.markSet.e
+			set-base-anchor 'cvDecompose' 0 0
+			include : CyrElLeftHalf df XH bodyType fBarStraight fSquareBottom serifType true
+
+	foreach ser [items-of : list 'Serifless' 'MotionSerifed' 'Serifed'] : do
+		alias "cyrl/elDescender.tailed\(ser)" null "cyrl/elDescender.trapezoid\(ser)"
+		alias "cyrl/elTail.tailed\(ser)" null "cyrl/elTail.trapezoid\(ser)"
+		alias "cyrl/elHook.tailed\(ser)" null "cyrl/elHook.trapezoid\(ser)"
+		foreach lam [items-of : list 'triangular' 'curly' 'square'] : do
+			alias "cyrl/ElMidHook.\(lam)\(ser)" null "cyrl/ElMidHook.trapezoid\(ser)"
+			alias "cyrl/elMidHook.\(lam)\(ser)" null "cyrl/elMidHook.trapezoid\(ser)"
+			DefineSelectorGlyph "cyrl/elSoft" "\(lam)\(ser)" [DivFrame para.advanceScaleM 3] 'e'
+			alias "cyrl/elSoft.\(lam)\(ser)" null "cyrl/elSoft.trapezoid\(ser)"
 
 	select-variant 'cyrl/El' 0x41B
 	select-variant 'cyrl/smcpEl' 0x1D2B (follow -- 'cyrl/El')
 	select-variant 'cyrl/el' 0x43B
+	select-variant 'cyrl/ElMidHook' 0x520 (follow -- 'cyrl/El')
 	select-variant 'cyrl/elMidHook' 0x521 (follow -- 'cyrl/el')
+	select-variant 'cyrl/Lha/El' (follow -- 'cyrl/El')
+	select-variant 'cyrl/lha/el' (follow -- 'cyrl/el')
+	select-variant 'cyrl/elDescender' 0x52F (follow -- 'cyrl/el')
+	select-variant 'cyrl/elTail' 0x4C6 (follow -- 'cyrl/el')
+	select-variant 'cyrl/elHook' 0x513 (follow -- 'cyrl/el')
 
-	CreateSelectorVariants 'cyrl/elSoft' 0xA665 [list 'trapezoid' 'tailed' 'triangular' 'curly' 'square'] (follow -- 'cyrl/el')
+	CreateSelectorVariants 'cyrl/elSoft' 0xA665 [Object.keys ElConfig] (follow -- 'cyrl/el')
 
 	derive-composites 'cyrl/ElDescender' 0x52E 'cyrl/El' [CyrDescender.rSideJut RightSB 0]
-	derive-composites 'cyrl/elDescender' 0x52F 'cyrl/el.trapezoid' [CyrDescender.rSideJut RightSB 0]
-
 	derive-composites 'cyrl/ElTail' 0x4C5 'cyrl/El' [CyrTailDescender.rSideJut RightSB 0]
-	derive-composites 'cyrl/elTail' 0x4C6 'cyrl/el.trapezoid' [CyrTailDescender.rSideJut RightSB 0]
-
 	derive-composites 'cyrl/ElHook' 0x512 'cyrl/El' [PalatalHook.rSideJut RightSB 0]
-	derive-composites 'cyrl/elHook' 0x513 'cyrl/el.trapezoid' [PalatalHook.rSideJut RightSB 0]
+
+	derive-composites 'cyrl/Lha' 0x514 'cyrl/Lha/El' 'cyrl/Lha/Kha'
+	derive-composites 'cyrl/lha' 0x515 'cyrl/lha/el' 'cyrl/lha/kha'
 
 	create-glyph 'cyrl/LjeKomi' 0x508 : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
