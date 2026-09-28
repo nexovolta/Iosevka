@@ -356,8 +356,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				local straightY : NonCursiveYShapeT true BS-STRAIGHT slabKind
 				local rightHalf : straightY.RightHalf TS-NONE SHRINK-NONE
 				local vxEndL : df.middle - VCornerHalfWidth
-				local xBotL : df.leftSB + [HSwToV Stroke]
-				local diagSWL : [DiagCor (yJoinG - yVertex) (vxEndL - df.leftSB) 0 Stroke] * Stroke
+				local diagSWL : [DiagCor (top - bot) (RightSB - SB) 0 Stroke] * Stroke
 				include : straightY.SmallYRightHalfShape top bot
 				include : tagged 'leftHalf' : difference
 					dispiro
@@ -365,7 +364,6 @@ glyph-block Letter-Latin-Lower-Y : begin
 						corner df.leftSB top [heading Downward]
 						corner df.leftSB yJoinG [heading Downward]
 						corner vxEndL yVertex [widths.lhs.heading diagSWL Downward]
-						corner xBotL bot [widths.lhs.heading diagSWL Downward]
 					rightHalf.splitMask top bot
 		if doSlabTop : include : VSerifs df false top
 		if doSlabMotion : include : VMotionSerifs df false top
