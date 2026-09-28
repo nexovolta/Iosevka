@@ -16,11 +16,11 @@ glyph-block Letter-Greek-Lower-Xi : begin
 	define SHAPE-FLAT-TOP   1
 	define SHAPE-FLAT-HOOK  2
 
-	define TAIL-CURLY            0
-	define TAIL-STRAIGHT         1
-	define TAIL-DIAGONAL         2
-	define TAIL-STRAIGHT-ROUNDED 3
-	define TAIL-DIAGONAL-ROUNDED 4
+	define TAIL-CURLY                 0
+	define TAIL-STRAIGHT              1
+	define TAIL-DIAGONAL              2
+	define TAIL-STRAIGHT-SHARP-CORNER 3
+	define TAIL-DIAGONAL-SHARP-CORNER 4
 
 	define pyBar 0.55
 
@@ -83,14 +83,13 @@ glyph-block Letter-Greek-Lower-Xi : begin
 					arcvh 16
 					flat                    (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1)      (Descender + Stroke)
 					curl [Math.min Middle : (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) - 1] (Descender + Stroke)
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
-			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
-			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			([Just TAIL-STRAIGHT] || [Just TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			[Just TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-SHARP-CORNER] : CyrTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	create-glyph : glyph-proc
@@ -107,11 +106,11 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		create-forked-glyph "grek/xi.roundedDiagonalTail" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.flatTopDiagonalTail" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.flatHookDiagonalTail" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL
-		create-forked-glyph "grek/xi.roundedStraightTailRoundedBend" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT-ROUNDED
-		create-forked-glyph "grek/xi.flatTopStraightTailRoundedBend" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT-ROUNDED
-		create-forked-glyph "grek/xi.flatHookStraightTailRoundedBend" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT-ROUNDED
-		create-forked-glyph "grek/xi.roundedDiagonalTailRoundedBend" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL-ROUNDED
-		create-forked-glyph "grek/xi.flatTopDiagonalTailRoundedBend" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL-ROUNDED
-		create-forked-glyph "grek/xi.flatHookDiagonalTailRoundedBend" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL-ROUNDED
+		create-forked-glyph "grek/xi.roundedStraightTailSharpCorner" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT-SHARP-CORNER
+		create-forked-glyph "grek/xi.flatTopStraightTailSharpCorner" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT-SHARP-CORNER
+		create-forked-glyph "grek/xi.flatHookStraightTailSharpCorner" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT-SHARP-CORNER
+		create-forked-glyph "grek/xi.roundedDiagonalTailSharpCorner" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL-SHARP-CORNER
+		create-forked-glyph "grek/xi.flatTopDiagonalTailSharpCorner" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL-SHARP-CORNER
+		create-forked-glyph "grek/xi.flatHookDiagonalTailSharpCorner" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL-SHARP-CORNER
 
 	select-variant 'grek/xi' 0x3BE

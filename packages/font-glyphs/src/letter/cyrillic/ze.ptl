@@ -36,11 +36,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define KSI-SHAPE-FLAT-TOP   1
 	define KSI-SHAPE-FLAT-HOOK  2
 
-	define KSI-TAIL-CURLY            0
-	define KSI-TAIL-STRAIGHT         1
-	define KSI-TAIL-DIAGONAL         2
-	define KSI-TAIL-STRAIGHT-ROUNDED 3
-	define KSI-TAIL-DIAGONAL-ROUNDED 4
+	define KSI-TAIL-CURLY                 0
+	define KSI-TAIL-STRAIGHT              1
+	define KSI-TAIL-DIAGONAL              2
+	define KSI-TAIL-STRAIGHT-SHARP-CORNER 3
+	define KSI-TAIL-DIAGONAL-SHARP-CORNER 4
 
 	define StdBlend 0.65
 	define VolBlend 0.56
@@ -165,14 +165,14 @@ glyph-block Letter-Cyrillic-Ze : begin
 				archv
 				g4   (right - xo * 2) [YSmoothMidR (midy + stroke / 2) bot ada adb] [widths.rhs stroke]
 				match tail
-					[Just KSI-TAIL-STRAIGHT-ROUNDED] : list
+					[Just KSI-TAIL-STRAIGHT] : list
 						arcvh.superness DesignParameters.tightHookSuperness
 						flat [Math.max (xDown + bendX + TanSlope * stroke) : Arch.adjust-x.bot middle stroke] bot [widths.lhs.heading stroke Leftward]
 						curl (xDown + bendX) bot [heading Leftward]
 						archv.superness DesignParameters.tightHookSuperness
 						flat xDown (bot - bendY) [heading Downward]
 						curl xDown [RoundedBendTailBot] [heading Downward]
-					[Just KSI-TAIL-DIAGONAL-ROUNDED] : list
+					[Just KSI-TAIL-DIAGONAL] : list
 						arcvh.superness DesignParameters.tightHookSuperness
 						flat [Math.max (xDown + bendX + TanSlope * stroke) : Arch.adjust-x.bot middle stroke] bot [widths.lhs.heading stroke Leftward]
 						curl (xDown + bendX) bot [heading Leftward]
@@ -624,11 +624,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 			rounded    KSI-SHAPE-ROUNDED
 			flatHook   KSI-SHAPE-FLAT-HOOK
 		object # tail
-			""                         { KSI-TAIL-CURLY            }
-			straightTail               { KSI-TAIL-STRAIGHT         }
-			diagonalTail               { KSI-TAIL-DIAGONAL         }
-			straightTailRoundedBend    { KSI-TAIL-STRAIGHT-ROUNDED }
-			diagonalTailRoundedBend    { KSI-TAIL-DIAGONAL-ROUNDED }
+			""                         { KSI-TAIL-CURLY                 }
+			straightTail               { KSI-TAIL-STRAIGHT              }
+			diagonalTail               { KSI-TAIL-DIAGONAL              }
+			straightTailSharpCorner    { KSI-TAIL-STRAIGHT-SHARP-CORNER }
+			diagonalTailSharpCorner    { KSI-TAIL-DIAGONAL-SHARP-CORNER }
 
 	foreach { suffix { shape { tail } } } [Object.entries KsiConfig] : do
 		local slabTop : if (shape === KSI-SHAPE-FLAT-HOOK) SLAB-FLAT-HOOK SLAB-NONE
@@ -643,10 +643,9 @@ glyph-block Letter-Cyrillic-Ze : begin
 			set-base-anchor 'strike'  Middle midy
 			include : ze.KsiBaseShape shape tail (stroke * EssRatioUpper)
 			include : match tail
-				[Just KSI-TAIL-STRAIGHT] : CyrDescender.l SB 0 SB
-				[Just KSI-TAIL-DIAGONAL] : CyrTailDescender.l SB 0 SB
-				[Just KSI-TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
-				[Just KSI-TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				([Just KSI-TAIL-STRAIGHT] || [Just KSI-TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				[Just KSI-TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.l SB 0 SB
+				[Just KSI-TAIL-DIAGONAL-SHARP-CORNER] : CyrTailDescender.l SB 0 SB
 				__ : begin [glyph-proc]
 
 		create-glyph "cyrl/ksi/base.\(suffix)" : glyph-proc
@@ -660,10 +659,9 @@ glyph-block Letter-Cyrillic-Ze : begin
 			set-base-anchor 'strike'  Middle midy
 			include : ze.KsiBaseShape shape tail (stroke * EssRatioLower)
 			include : match tail
-				[Just KSI-TAIL-STRAIGHT] : CyrDescender.l SB 0 SB
-				[Just KSI-TAIL-DIAGONAL] : CyrTailDescender.l SB 0 SB
-				[Just KSI-TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
-				[Just KSI-TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				([Just KSI-TAIL-STRAIGHT] || [Just KSI-TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				[Just KSI-TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.l SB 0 SB
+				[Just KSI-TAIL-DIAGONAL-SHARP-CORNER] : CyrTailDescender.l SB 0 SB
 				__ : begin [glyph-proc]
 
 	select-variant 'cyrl/Ksi/base' (follow -- 'grek/xi')
