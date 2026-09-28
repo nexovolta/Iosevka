@@ -13,7 +13,6 @@ glyph-block Letter-Latin-Lower-E : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd ArcEndSerif
 	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markStress markFine
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
-	glyph-block-import Letter-Latin-C : CConfig
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define [SmallEHook top stroke hook doSwash] : Math.min hook : if doSwash VERY-FAR
@@ -330,55 +329,42 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		define abkCheDf : DivFrame para.advanceScaleM 3
 
-		DefineSelectorGlyph "cyrl/abk/Che"          suffix abkCheDf 'capital'
-		DefineSelectorGlyph "cyrl/abk/che"          suffix abkCheDf 'e'
-		DefineSelectorGlyph "cyrl/abk/CheDescender" suffix abkCheDf 'capDesc'
-		DefineSelectorGlyph "cyrl/abk/cheDescender" suffix abkCheDf 'p'
-
-		foreach { suffixSerif { styTop styBot } } [Object.entries CConfig] : do
-			if (!styTop || styTop == SLAB-FLAT-HOOK) : begin
-				create-glyph "cyrl/abk/Che.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : AbkCheShape false Body abkCheDf CAP
-						hook   -- Hook
-						ada    -- ArchDepthA
-						adb    -- ArchDepthB
-						styTop -- styTop
-						styBot -- styBot
-				create-glyph "cyrl/abk/che.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : AbkCheShape false Body abkCheDf XH
-						hook   -- AHook
-						ada    -- SmallArchDepthA
-						adb    -- SmallArchDepthB
-						styTop -- styTop
-						styBot -- styBot
-				create-glyph "cyrl/abk/CheDescender.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : AbkCheShape true Body abkCheDf CAP
-						hook   -- Hook
-						ada    -- ArchDepthA
-						adb    -- ArchDepthB
-						styTop -- styTop
-						styBot -- styBot
-				create-glyph "cyrl/abk/cheDescender.\(suffix).\(suffixSerif)" : glyph-proc
-					set-width 0
-					set-mark-anchor 'cvDecompose' 0 0
-					include : AbkCheShape true Body abkCheDf XH
-						hook   -- AHook
-						ada    -- SmallArchDepthA
-						adb    -- SmallArchDepthB
-						styTop -- styTop
-						styBot -- styBot
-
-		select-variant "cyrl/abk/Che.\(suffix)" (follow -- 'C/bottomSerif')
-		select-variant "cyrl/abk/che.\(suffix)" (follow -- 'c/bottomSerif')
-
-		select-variant "cyrl/abk/CheDescender.\(suffix)" (follow -- 'C/bottomSerif')
-		select-variant "cyrl/abk/cheDescender.\(suffix)" (follow -- 'c/bottomSerif')
+		create-glyph "cyrl/abk/Che.\(suffix)" : glyph-proc
+			local df : include abkCheDf
+			include : df.markSet.capital
+			include : AbkCheShape false Body df CAP
+				hook   -- Hook
+				ada    -- ArchDepthA
+				adb    -- ArchDepthB
+				styTop -- tailSlab
+				styBot -- tailSlab
+		create-glyph "cyrl/abk/che.\(suffix)" : glyph-proc
+			local df : include abkCheDf
+			include : df.markSet.e
+			include : AbkCheShape false Body df XH
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styTop -- tailSlab
+				styBot -- tailSlab
+		create-glyph "cyrl/abk/CheDescender.\(suffix)" : glyph-proc
+			local df : include abkCheDf
+			include : df.markSet.capDesc
+			include : AbkCheShape true Body df CAP
+				hook   -- Hook
+				ada    -- ArchDepthA
+				adb    -- ArchDepthB
+				styTop -- tailSlab
+				styBot -- tailSlab
+		create-glyph "cyrl/abk/cheDescender.\(suffix)" : glyph-proc
+			local df : include abkCheDf
+			include : df.markSet.p
+			include : AbkCheShape true Body df XH
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styTop -- tailSlab
+				styBot -- tailSlab
 
 	select-variant 'e' 'e'
 
@@ -463,11 +449,10 @@ glyph-block Letter-Latin-Lower-E : begin
 	alias 'cyrl/Schwa' 0x4D8 'Schwa'
 	alias 'cyrl/schwa' 0x4D9 'schwa'
 
-	CreateSelectorVariants 'cyrl/abk/Che' 0x4BC [Object.keys SmallEConfig] (follow -- 'eCap')
-	CreateSelectorVariants 'cyrl/abk/che' 0x4BD [Object.keys SmallEConfig] (follow -- 'e')
-
-	CreateSelectorVariants 'cyrl/abk/CheDescender' 0x4BE [Object.keys SmallEConfig] (follow -- 'eCap')
-	CreateSelectorVariants 'cyrl/abk/cheDescender' 0x4BF [Object.keys SmallEConfig] (follow -- 'e')
+	select-variant 'cyrl/abk/Che' 0x4BC (follow -- 'e')
+	select-variant 'cyrl/abk/che' 0x4BD (follow -- 'e')
+	select-variant 'cyrl/abk/CheDescender' 0x4BE (follow -- 'e')
+	select-variant 'cyrl/abk/cheDescender' 0x4BF (follow -- 'e')
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/e' 0x1D556 : glyph-proc

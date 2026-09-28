@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -158,65 +158,77 @@ glyph-block Letter-Cyrillic-Che : begin
 			include : VSerif.dl xTopBarLeft  top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
-	create-glyph 'cyrl/Che' 0x427 : glyph-proc
-		include : MarkSet.capital
-		include : LeaningAnchor.Below.VBar.r RightSB
-		include : CyrCheShape [DivFrame 1] CAP [if SLAB 0.45 0.35] BODY.STRAIGHT
-			if SLAB SERIFS.ALL SERIFS.NONE
+	define CheCapConfig : object
+		serifless     SERIFS.NONE
+		motionSerifed SERIFS.TL
+		serifed       SERIFS.ALL
 
-	create-glyph 'cyrl/Cche' 0xA686 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : LeaningAnchor.Below.VBar.r df.rightSB
-		include : CyrCcheShape df CAP [if SLAB 0.45 0.35] BODY.STRAIGHT
-			if SLAB SERIFS.ALL SERIFS.NONE
+	foreach { suffix slabType } [Object.entries CheCapConfig] : do
+		create-glyph "cyrl/Che.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : LeaningAnchor.Below.VBar.r RightSB
+			include : CyrCheShape [DivFrame 1] CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
+
+		create-glyph "cyrl/Cche.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : LeaningAnchor.Below.VBar.r df.rightSB
+			include : CyrCcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
+
+	select-variant 'cyrl/Che' 0x427
+	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
 
 	define TcheConfig : object
 		serifless     { false false }
 		motionSerifed { true  false }
 
-	foreach { suffix { doST doSB } } [Object.entries TcheConfig] : do
-		create-glyph "cyrl/Tche.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleT
-			include : df.markSet.capital
-			include : LeaningAnchor.Below.VBar.r df.rightSB
-			include : CyrTcheShape df CAP [if SLAB 0.45 0.35] BODY.STRAIGHT
-				if SLAB SERIFS.ALL SERIFS.NONE
-				teSerifs -- doST
+	foreach { suffixChe slabType } [Object.entries CheCapConfig] : do
+		DefineSelectorGlyph "cyrl/Tche" suffixChe [DivFrame para.advanceScaleT] 'capital'
+		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
+			create-glyph "cyrl/Tche.\(suffixChe).\(suffixTe)" : glyph-proc
+				set-width 0
+				set-mark-anchor 'cvDecompose' 0 0
+				local df : DivFrame para.advanceScaleT
+				include : LeaningAnchor.Below.VBar.r df.rightSB
+				include : CyrTcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
+					teSerifs -- doST
+		select-variant "cyrl/Tche.\(suffixChe)" (follow -- 'T/rTailBase')
 
-	select-variant 'cyrl/Tche' 0xA692 (follow -- 'T/rTailBase')
+	CreateSelectorVariants 'cyrl/Tche' 0xA692 [Object.keys CheCapConfig] (follow -- 'cyrl/Che')
 
-	create-glyph 'cyrl/CheDescender' 0x4B6 : composite-proc
-		refer-glyph 'cyrl/Che'
-		CyrDescender.rSideJut RightSB 0
-	create-glyph 'cyrl/kha/Che' 0x4CB : composite-proc
-		refer-glyph 'cyrl/Che'
-		CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)
+	derive-composites 'cyrl/CheDescender' 0x4B6 'cyrl/Che' [CyrDescender.rSideJut RightSB 0]
+	derive-composites 'cyrl/kha/Che' 0x4CB 'cyrl/Che' [CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)]
 
-	glyph-block-export ItalicConfig
-	define ItalicConfig : object
-		standard { BODY.STRAIGHT SERIFS.ALL SERIFS.ALL-BGR SERIFS.TL-BR }
-		tailed   { BODY.TAILED   SERIFS.TOP SERIFS.TOP-BGR SERIFS.TL    }
+	glyph-block-export CheConfig
+	define CheConfig : SuffixCfg.weave
+		object # body
+			standard { BODY.STRAIGHT }
+			tailed   { BODY.TAILED }
+		function [body] : object # serifs
+			serifless { SERIFS.NONE SERIFS.NONE }
+			motionSerifed : match body
+				[Just 'standard'] { SERIFS.TL-BR SERIFS.TL-BR }
+				__                { SERIFS.TL    SERIFS.TL }
+			serifed : match body
+				[Just 'standard'] { SERIFS.ALL SERIFS.ALL-BGR }
+				__                { SERIFS.TOP SERIFS.TOP-BGR }
 
-	foreach { suffix { body slabUpright slabUprightBGR slabItalic } } [pairs-of ItalicConfig] : do
+	foreach { suffix { { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
 		create-glyph "cyrl/che.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.r RightSB
-			include : CyrCheShape [DivFrame 1] XH [if SLAB 0.45 0.4] body
-				if SLAB [if para.isItalic slabItalic slabUpright] SERIFS.NONE
+			include : CyrCheShape [DivFrame 1] XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
 
 		create-glyph "cyrl/che.BGR.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.r RightSB
-			include : CyrCheShape [DivFrame 1] XH [if SLAB 0.45 0.4] body
-				if SLAB [if para.isItalic slabItalic slabUprightBGR] SERIFS.NONE
+			include : CyrCheShape [DivFrame 1] XH [if (slabTypeBGR !== SERIFS.NONE) 0.45 0.4] body slabTypeBGR
 
 		create-glyph "cyrl/cche.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
 			include : LeaningAnchor.Below.VBar.r df.rightSB
-			include : CyrCcheShape df XH [if SLAB 0.45 0.4] body
-				if SLAB [if para.isItalic slabItalic slabUpright] SERIFS.NONE
+			include : CyrCcheShape df XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
 
 		define cyrTcheDf : DivFrame para.advanceScaleT
 
@@ -227,8 +239,7 @@ glyph-block Letter-Cyrillic-Che : begin
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				include : LeaningAnchor.Below.VBar.r cyrTcheDf.rightSB
-				include : CyrTcheShape cyrTcheDf XH [if SLAB 0.45 0.4] body
-					if SLAB [if para.isItalic slabItalic slabUpright] SERIFS.NONE
+				include : CyrTcheShape cyrTcheDf XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
 					teSerifs -- doST
 
 		select-variant "cyrl/tche.upright.\(suffix)" (follow -- 'T/rTailBase')
@@ -238,15 +249,11 @@ glyph-block Letter-Cyrillic-Che : begin
 
 	select-variant 'cyrl/cche' 0xA687 (follow -- 'cyrl/che')
 
-	CreateSelectorVariants 'cyrl/tche.upright' null [Object.keys ItalicConfig] (follow -- 'cyrl/che')
+	CreateSelectorVariants 'cyrl/tche.upright' null [Object.keys CheConfig] (follow -- 'cyrl/che')
 	CreateAccentedComposition 'cyrl/tche.italic' null 'cyrl/che' 'tildeAbove'
 
-	create-glyph 'cyrl/cheDescender' 0x4B7 : composite-proc
-		refer-glyph 'cyrl/che.standard'
-		CyrDescender.rSideJut RightSB 0
-	create-glyph 'cyrl/kha/che' 0x4CC : composite-proc
-		refer-glyph 'cyrl/che.standard'
-		CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)
+	derive-composites 'cyrl/cheDescender' 0x4B7 'cyrl/che' [CyrDescender.rSideJut RightSB 0]
+	derive-composites 'cyrl/kha/che' 0x4CC 'cyrl/che' [CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)]
 
 	define [CheVBarBarShape top pyBar] : begin
 		local SwCheVBar : Math.min OverlayStroke : VSwToH : 0.625 * ((RightSB - SB) - [HSwToV : 2 * Stroke])

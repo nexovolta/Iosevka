@@ -9,34 +9,52 @@ glyph-block Letter-Cyrillic-Tse : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender CyrCurlDescender
 
-	define [CyrTseShape top fRev] : glyph-proc
+	define SERIF-NONE   0
+	define SERIF-MOTION 1
+	define SERIF-ALL    2
+
+	define [CyrTseShape top fRev serifType] : glyph-proc
 		include : VBar.l SB      0 top
 		include : VBar.r RightSB 0 top
 		include : HBar.b SB RightSB 0
 		include : if fRev
 			CyrDescender.lSideJut SB      0
 			CyrDescender.rSideJut RightSB 0
-		if SLAB : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
-			include sf.lt.full
-			include sf.rt.full
-			include sf.lb.outer
-			include sf.rb.outer
+		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
+			include : match serifType
+				[Just SERIF-MOTION] : begin sf.lt.full
+				__ : glyph-proc
+					include sf.lt.full
+					include sf.rt.full
+					include sf.lb.outer
+					include sf.rb.outer
 
-	create-glyph 'cyrl/Tse' 0x426 : glyph-proc
-		include : MarkSet.capital
-		include : CyrTseShape CAP false
+	define TseConfig : object
+		serifless     SERIF-NONE
+		motionSerifed SERIF-MOTION
+		serifed       SERIF-ALL
 
-	create-glyph 'cyrl/tse.upright' : glyph-proc
-		include : MarkSet.e
-		include : CyrTseShape XH false
+	foreach { suffix serifType } [Object.entries TseConfig] : do
+		create-glyph "cyrl/Tse.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : CyrTseShape CAP false serifType
 
-	create-glyph 'cyrl/revTse' 0xA660 : glyph-proc
-		include : MarkSet.capital
-		include : CyrTseShape CAP true
+		create-glyph "cyrl/tse.upright.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : CyrTseShape XH false serifType
 
-	create-glyph 'cyrl/revtse.upright' : glyph-proc
-		include : MarkSet.e
-		include : CyrTseShape XH true
+		create-glyph "cyrl/revTse.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : CyrTseShape CAP true serifType
+
+		create-glyph "cyrl/revtse.upright.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : CyrTseShape XH true serifType
+
+	select-variant 'cyrl/Tse' 0x426
+	select-variant 'cyrl/tse.upright'
+	select-variant 'cyrl/revTse' 0xA660 (follow -- 'cyrl/Tse')
+	select-variant 'cyrl/revtse.upright' (follow -- 'cyrl/tse.upright')
 
 	define TeTseConfig : object
 		serifless     { false false }
@@ -86,20 +104,27 @@ glyph-block Letter-Cyrillic-Tse : begin
 	select-variant 'cyrl/TeTse' 0x4B4 (follow -- 'T/rTailBase')
 	select-variant 'cyrl/tetse.upright' (follow -- 'T/rTailBase')
 
-	define [CyrTsweShape top] : glyph-proc
+	define [CyrTsweShape top serifType] : glyph-proc
 		include : VBar.l SB 0 top
 		include : HBar.b SB RightSB 0
 		include : VBar.r RightSB 0 top
 		include : CyrCurlDescender.rSideJut RightSB 0
-		if SLAB : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
-			include sf.lt.full
-			include sf.rt.full
-			include sf.lb.outer
-			include sf.rb.outer
+		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
+			include : match serifType
+				[Just SERIF-MOTION] : begin sf.lt.full
+				__ : glyph-proc
+					include sf.lt.full
+					include sf.rt.full
+					include sf.lb.outer
+					include sf.rb.outer
 
-	create-glyph 'cyrl/Tswe' 0xA68E : glyph-proc
-		include : MarkSet.capDesc
-		include : CyrTsweShape CAP
-	create-glyph 'cyrl/tswe.upright' : glyph-proc
-		include : MarkSet.p
-		include : CyrTsweShape XH
+	foreach { suffix serifType } [Object.entries TseConfig] : do
+		create-glyph "cyrl/Tswe.\(suffix)" : glyph-proc
+			include : MarkSet.capDesc
+			include : CyrTsweShape CAP serifType
+		create-glyph "cyrl/tswe.upright.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : CyrTsweShape XH serifType
+
+	select-variant 'cyrl/Tswe' 0xA68E (follow -- 'cyrl/Tse')
+	select-variant 'cyrl/tswe.upright' (follow -- 'cyrl/tse.upright')

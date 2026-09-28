@@ -33,15 +33,13 @@ glyph-block Letter-Latin-Script-R : begin
 		include : ScriptRShape true CAP [xLeft df] [xBarRight df] false df.mvs
 		include : LeaningAnchor.Below.VBar.r [xBarRight df]
 
-	define ScriptRConfig : object
-		standard  false
-		tailed    true
+	glyph-block-import Letter-Cyrillic-Che : CheConfig BODY
 
-	foreach { suffix doTail } [pairs-of ScriptRConfig] : do
+	foreach { suffix { { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
 		create-glyph "rScript.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : ScriptRShape false XH [xLeft df] [xBarRight df] doTail df.mvs
+			include : ScriptRShape false XH [xLeft df] [xBarRight df] (body === BODY.TAILED) df.mvs
 			include : LeaningAnchor.Below.VBar.r [xBarRight df]
 
 	select-variant 'rScript' 0xAB4B (follow -- 'cyrl/che')
