@@ -20,29 +20,37 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 	do "De subglyphs"
 		glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 		glyph-block-import Letter-Cyrillic-De : CyrDeShape CyrDeItalicShape BottomExtension
+		glyph-block-import Letter-Cyrillic-De : DeConfig CyrDeDeltaLikeShape
+		glyph-block-import Letter-Cyrillic-De : BODY-TRIANGULAR BODY-CURLY BODY-SQUARE BODY-CURSIVE SERIF-NONE
 
-		define [CyrDzzheDeShape fCapital df top] : glyph-proc
+		define [CyrDzzheDeShape fCapital df top bodyType serifType] : glyph-proc
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
-			local left : subDf.leftSB + [if SLAB 0.5 0] * SideJut
-			include : CyrDeShape fCapital top left subDf.rightSB sw
+			local left : subDf.leftSB + [if (serifType !== SERIF-NONE) 0.5 0] * SideJut
+			include : match bodyType
+				[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType subDf sw
+				[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType subDf sw
+				[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType subDf sw
+				__                     : CyrDeShape fCapital top left subDf.rightSB sw nothing serifType
 
 		define [CyrDzzheDeItalicShape df] : glyph-proc
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
 			include : CyrDeItalicShape subDf sw
 
-		create-glyph "cyrl/Dzzhe/left" : glyph-proc
-			define df : include : DivFrame [mix 1 para.advanceScaleMM 2] 3.5
-			include : df.markSet.capital
-			include : ExtendBelowBaseAnchors BottomExtension
-			set-base-anchor 'cvDecompose' 0 0
-			include : CyrDzzheDeShape true df CAP
+		foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+			if (bodyType !== BODY-CURSIVE) : begin
+				create-glyph "cyrl/Dzzhe/left.\(suffix)" : glyph-proc
+					define df : include : DivFrame [mix 1 para.advanceScaleMM 2] 3.5
+					include : df.markSet.capital
+					include : ExtendBelowBaseAnchors BottomExtension
+					set-base-anchor 'cvDecompose' 0 0
+					include : CyrDzzheDeShape true df CAP bodyType serifType
 
-		create-glyph "cyrl/dzzhe.upright/left" : glyph-proc
-			define df : include : DivFrame [mix 1 para.advanceScaleM 2] 3.5
-			include : df.markSet.e
-			include : ExtendBelowBaseAnchors BottomExtension
-			set-base-anchor 'cvDecompose' 0 0
-			include : CyrDzzheDeShape false df XH
+				create-glyph "cyrl/dzzhe.upright/left.\(suffix)" : glyph-proc
+					define df : include : DivFrame [mix 1 para.advanceScaleM 2] 3.5
+					include : df.markSet.e
+					include : ExtendBelowBaseAnchors BottomExtension
+					set-base-anchor 'cvDecompose' 0 0
+					include : CyrDzzheDeShape false df XH bodyType serifType
 
 		create-glyph "cyrl/dzzhe.italic/left" : glyph-proc
 			define df : include : DivFrame [mix 1 para.advanceScaleM 2] 3.5
@@ -152,6 +160,8 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 	select-variant "cyrl/zhwe/right" (follow -- "cyrl/zhe")
 	select-variant "cyrl/Zhwe/left"  (follow -- "cyrl/Zhwe/Ze")
 	select-variant "cyrl/zhwe/left"  (follow -- "cyrl/zhwe/ze")
+	select-variant "cyrl/Dzzhe/left" (follow -- "cyrl/De")
+	select-variant "cyrl/dzzhe.upright/left" (follow -- "cyrl/De")
 
 	derive-composites 'cyrl/Dzzhe' 0x52A 'cyrl/Dzzhe/left' 'cyrl/Dzzhe/right'
 	derive-composites 'cyrl/dzzhe.upright' null 'cyrl/dzzhe.upright/left' 'cyrl/dzzhe.upright/right'
