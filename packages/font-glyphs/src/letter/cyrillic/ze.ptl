@@ -15,9 +15,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart SerifedArcEnd SerifFrame
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
-	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender
+	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
+	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
@@ -29,6 +31,16 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define CLOSED-ROUND    7
 	define CLOSED-STEM     8
 	define SLAB-FLAT-HOOK  9
+
+	define KSI-SHAPE-ROUNDED    0
+	define KSI-SHAPE-FLAT-TOP   1
+	define KSI-SHAPE-FLAT-HOOK  2
+
+	define KSI-TAIL-CURLY            0
+	define KSI-TAIL-STRAIGHT         1
+	define KSI-TAIL-DIAGONAL         2
+	define KSI-TAIL-STRAIGHT-ROUNDED 3
+	define KSI-TAIL-DIAGONAL-ROUNDED 4
 
 	define StdBlend 0.65
 	define VolBlend 0.56
@@ -124,21 +136,58 @@ glyph-block Letter-Cyrillic-Ze : begin
 
 		export : define [LowerShape] : LowerShapeT dispiro
 
-		define [LowerShapeTailed] : begin
+		define [LowerShapeTailed ess] : begin
 			define [object stroke midx midy fine] : Dim
 			local middle : mix left right 0.5
+			local mockWidth : (right - left) + 2 * SB
+			local mockHeight : (midy + stroke / 2) - (bot + Descender)
+			local adb2 : AdviceSArchDepth mockHeight (+1) stroke
 			return : dispiro
-				flat ([Math.max middle : (left + 1.1 * ((bot + stroke) - [mix Descender (bot + stroke) 0.5])) + 1] + TanSlope * Stroke) Descender [widths.rhs stroke]
-				curl                    ((left + 1.1 * ((bot + stroke) - [mix Descender (bot + stroke) 0.5]))      + TanSlope * Stroke) Descender
+				flat midx   (midy - (stroke / 2 - fine)) [widths.heading 0 fine Rightward]
+				curl middle (midy - (stroke / 2 - fine)) [heading Rightward]
 				archv
-				g4.up.mid (left + [HSwToV : 0.5 * stroke]) [mix Descender (bot + stroke) 0.5] [widths.center.heading stroke Upward]
-				arcvh
-				g4   [Arch.adjust-x.bot middle] bot [widths.lhs stroke]
+				g4   (right - xo * 2) ((midy + stroke / 2) - adb2) [widths.rhs stroke]
+				~~~ [SNeck [DivFrame (mockWidth / Width) 2] mockHeight stroke ess]
+				g4   (left  + xo) ((bot + Descender) + adb2) [widths.lhs stroke]
+				HookEnd (bot + Descender) (sw -- stroke) (o -- yo)
+				g4   (right - xo) ((bot + Descender) + hookBot)
+
+		define [KsiLowerFromMid tail ess] : begin
+			define [object stroke midx midy fine] : Dim
+			local middle : mix left right 0.5
+			if (tail === KSI-TAIL-CURLY) : return : LowerShapeTailed ess
+			local bendX : Math.max [HSwToV stroke] (0.5 * hook)
+			local bendY : Math.max stroke (0.5 * hook)
+			local xDown : left + xo
+			return : dispiro
+				flat midx   (midy - (stroke / 2 - fine)) [widths.heading 0 fine Rightward]
+				curl middle (midy - (stroke / 2 - fine)) [heading Rightward]
 				archv
-				g4   (right - xo * 2) [YSmoothMidR (midy + stroke / 2) bot ada adb]
-				arcvh
-				flat middle (midy - (stroke / 2 - fine)) [widths.heading fine 0 Leftward]
-				curl midx   (midy - (stroke / 2 - fine)) [heading Leftward]
+				g4   (right - xo * 2) [YSmoothMidR (midy + stroke / 2) bot ada adb] [widths.rhs stroke]
+				match tail
+					[Just KSI-TAIL-STRAIGHT-ROUNDED] : list
+						arcvh.superness DesignParameters.tightHookSuperness
+						flat [Math.max (xDown + bendX + TanSlope * stroke) : Arch.adjust-x.bot middle stroke] bot [widths.lhs.heading stroke Leftward]
+						curl (xDown + bendX) bot [heading Leftward]
+						archv.superness DesignParameters.tightHookSuperness
+						flat xDown (bot - bendY) [heading Downward]
+						curl xDown [RoundedBendTailBot] [heading Downward]
+					[Just KSI-TAIL-DIAGONAL-ROUNDED] : list
+						arcvh.superness DesignParameters.tightHookSuperness
+						flat [Math.max (xDown + bendX + TanSlope * stroke) : Arch.adjust-x.bot middle stroke] bot [widths.lhs.heading stroke Leftward]
+						curl (xDown + bendX) bot [heading Leftward]
+						archv.superness DesignParameters.tightHookSuperness
+						flat xDown (bot - bendY) [widths.lhs stroke]
+						curl (xDown - [mix 0 Descender 0.24]) [RoundedBendTailBot]
+					__ : list
+						HookEnd bot (sw -- stroke) (o -- yo)
+						g4   (left + xo) (bot + hookBot)
+
+		define [KsiFlatTopUpper] : begin
+			define [object stroke midx midy fine] : Dim
+			return : union
+				HBar.t left right top stroke
+				ExtLineRhsToLhs right (top - stroke) midx (midy + (stroke / 2 - fine)) [VSwToH stroke]
 
 		export : define [Shape] : union
 			UpperShapeT dispiro
@@ -148,9 +197,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 			UpperShapeT spiro-outline
 			LowerShapeT spiro-outline
 
-		export : define [KsiBaseShape] : union
-			UpperShapeT dispiro
-			LowerShapeTailed
+		export : define [KsiBaseShape shape tail ess] : union
+			match shape
+				[Just KSI-SHAPE-FLAT-TOP] : KsiFlatTopUpper
+				__ : UpperShapeT dispiro
+			KsiLowerFromMid tail ess
 
 		export : define [AutoStartSerifL] : begin
 			define [object stroke] : Dim
@@ -540,28 +591,6 @@ glyph-block Letter-Cyrillic-Ze : begin
 						local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
 						include sf2.rt.full
 
-				create-glyph "cyrl/Ksi/base.\(suffix)" : glyph-proc
-					include : MarkSet.capDesc
-					local ze : CyrZe slabTop SLAB-NONE CAP 0
-						hook -- Hook
-						ada  -- ArchDepthA
-						adb  -- ArchDepthB
-					define [object midy] : ze.Dim
-					set-base-anchor 'overlay' Middle midy
-					set-base-anchor 'strike'  Middle midy
-					include : union [ze.KsiBaseShape] [ze.AutoStartSerifL]
-
-				create-glyph "cyrl/ksi/base.\(suffix)" : glyph-proc
-					include : MarkSet.p
-					local ze : CyrZe slabTop SLAB-NONE XH 0
-						hook -- SHook
-						ada  -- SmallArchDepthA
-						adb  -- SmallArchDepthB
-					define [object midy] : ze.Dim
-					set-base-anchor 'overlay' Middle midy
-					set-base-anchor 'strike'  Middle midy
-					include : union [ze.KsiBaseShape] [ze.AutoStartSerifL]
-
 	select-variant 'cyrl/Ze' 0x417
 	select-variant 'cyrl/ze' 0x437
 	select-variant 'cyrl/ze.BGR' (shapeFrom -- 'cyrl/ze')
@@ -589,8 +618,56 @@ glyph-block Letter-Cyrillic-Ze : begin
 	select-variant 'cyrl/DzjeKomi' 0x506 (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'cyrl/dzjeKomi' 0x507 (follow -- 'cyrl/ze/topSerif')
 
-	select-variant 'cyrl/Ksi/base' (follow -- 'cyrl/Ze/topSerif')
-	select-variant 'cyrl/ksi/base' (follow -- 'cyrl/ze/topSerif')
+	define KsiConfig : SuffixCfg.weave
+		object # top (mirrored from grek/xi)
+			flatTop    KSI-SHAPE-FLAT-TOP
+			rounded    KSI-SHAPE-ROUNDED
+			flatHook   KSI-SHAPE-FLAT-HOOK
+		object # tail
+			""                         { KSI-TAIL-CURLY            }
+			straightTail               { KSI-TAIL-STRAIGHT         }
+			diagonalTail               { KSI-TAIL-DIAGONAL         }
+			straightTailRoundedBend    { KSI-TAIL-STRAIGHT-ROUNDED }
+			diagonalTailRoundedBend    { KSI-TAIL-DIAGONAL-ROUNDED }
+
+	foreach { suffix { shape { tail } } } [Object.entries KsiConfig] : do
+		local slabTop : if (shape === KSI-SHAPE-FLAT-HOOK) SLAB-FLAT-HOOK SLAB-NONE
+		create-glyph "cyrl/Ksi/base.\(suffix)" : glyph-proc
+			include : MarkSet.capDesc
+			local ze : CyrZe slabTop SLAB-NONE CAP 0
+				hook -- Hook
+				ada  -- ArchDepthA
+				adb  -- ArchDepthB
+			define [object stroke midy] : ze.Dim
+			set-base-anchor 'overlay' Middle midy
+			set-base-anchor 'strike'  Middle midy
+			include : ze.KsiBaseShape shape tail (stroke * EssRatioUpper)
+			include : match tail
+				[Just KSI-TAIL-STRAIGHT] : CyrDescender.l SB 0 SB
+				[Just KSI-TAIL-DIAGONAL] : CyrTailDescender.l SB 0 SB
+				[Just KSI-TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				[Just KSI-TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				__ : begin [glyph-proc]
+
+		create-glyph "cyrl/ksi/base.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			local ze : CyrZe slabTop SLAB-NONE XH 0
+				hook -- SHook
+				ada  -- SmallArchDepthA
+				adb  -- SmallArchDepthB
+			define [object stroke midy] : ze.Dim
+			set-base-anchor 'overlay' Middle midy
+			set-base-anchor 'strike'  Middle midy
+			include : ze.KsiBaseShape shape tail (stroke * EssRatioLower)
+			include : match tail
+				[Just KSI-TAIL-STRAIGHT] : CyrDescender.l SB 0 SB
+				[Just KSI-TAIL-DIAGONAL] : CyrTailDescender.l SB 0 SB
+				[Just KSI-TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				[Just KSI-TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+				__ : begin [glyph-proc]
+
+	select-variant 'cyrl/Ksi/base' (follow -- 'grek/xi')
+	select-variant 'cyrl/ksi/base' (follow -- 'grek/xi')
 
 	select-variant 'Tresillo' 0xA72A (follow -- 'C')
 	select-variant 'tresillo' 0xA72B (follow -- 'c')
