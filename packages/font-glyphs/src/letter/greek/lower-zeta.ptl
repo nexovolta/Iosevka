@@ -51,24 +51,16 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			__ : begin [glyph-proc]
 
-	create-glyph "grek/zeta.curlyTail" : glyph-proc
-		include : MarkSet.bp
-		include : ZetaShape TAIL-CURLY
+	define ZetaConfig : object
+		curlyTail                    { TAIL-CURLY            'bp' }
+		straightTail                 { TAIL-STRAIGHT         'b'  }
+		diagonalTail                 { TAIL-DIAGONAL         'b'  }
+		straightTailRoundedBend      { TAIL-STRAIGHT-ROUNDED 'b'  }
+		diagonalTailRoundedBend      { TAIL-DIAGONAL-ROUNDED 'b'  }
 
-	create-glyph "grek/zeta.straightTail" : glyph-proc
-		include : MarkSet.b
-		include : ZetaShape TAIL-STRAIGHT
-
-	create-glyph "grek/zeta.diagonalTail" : glyph-proc
-		include : MarkSet.b
-		include : ZetaShape TAIL-DIAGONAL
-
-	create-glyph "grek/zeta.straightTailRoundedBend" : glyph-proc
-		include : MarkSet.b
-		include : ZetaShape TAIL-STRAIGHT-ROUNDED
-
-	create-glyph "grek/zeta.diagonalTailRoundedBend" : glyph-proc
-		include : MarkSet.b
-		include : ZetaShape TAIL-DIAGONAL-ROUNDED
+	foreach { suffix { tail mk } } [Object.entries ZetaConfig] : do
+		create-glyph "grek/zeta.\(suffix)" : glyph-proc
+			include : MarkSet.(mk)
+			include : ZetaShape tail
 
 	select-variant 'grek/zeta' 0x3B6

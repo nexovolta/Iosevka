@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [Box] from "@iosevka/geometry/box"
 
 glyph-module
@@ -21,7 +21,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	define TOP-ROUNDED    0
 	define TOP-FLAT-HOOK  1
 
-	define [FinalSigmaEndingKnots] : list
+	define [CurlyTailKnots] : list
 		arcvh
 		g4 [Arch.adjust-x.bot Middle] 0
 		alsoThru 0.5 0.1353
@@ -42,7 +42,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 					HookStart XH
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
-				[Just TAIL-CURLY] : FinalSigmaEndingKnots
+				[Just TAIL-CURLY] : CurlyTailKnots
 				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
@@ -52,48 +52,6 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			__ : begin [glyph-proc]
-
-	create-glyph "grek/sigmaFinal.curlyTail" : glyph-proc
-		include : MarkSet.p
-		include : FinalSigmaShape TAIL-CURLY TOP-ROUNDED
-
-	create-glyph "grek/sigmaFinal.straightTail" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-STRAIGHT TOP-ROUNDED
-
-	create-glyph "grek/sigmaFinal.diagonalTail" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-DIAGONAL TOP-ROUNDED
-
-	create-glyph "grek/sigmaFinal.straightTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-STRAIGHT-ROUNDED TOP-ROUNDED
-
-	create-glyph "grek/sigmaFinal.diagonalTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-DIAGONAL-ROUNDED TOP-ROUNDED
-
-	create-glyph "grek/sigmaFinal.flatHookCurlyTail" : glyph-proc
-		include : MarkSet.p
-		include : FinalSigmaShape TAIL-CURLY TOP-FLAT-HOOK
-
-	create-glyph "grek/sigmaFinal.flatHookStraightTail" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-STRAIGHT TOP-FLAT-HOOK
-
-	create-glyph "grek/sigmaFinal.flatHookDiagonalTail" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-DIAGONAL TOP-FLAT-HOOK
-
-	create-glyph "grek/sigmaFinal.flatHookStraightTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-STRAIGHT-ROUNDED TOP-FLAT-HOOK
-
-	create-glyph "grek/sigmaFinal.flatHookDiagonalTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : FinalSigmaShape TAIL-DIAGONAL-ROUNDED TOP-FLAT-HOOK
-
-	select-variant 'grek/sigmaFinal' 0x3C2
 
 	define [StigmaShape tail] : glyph-proc
 		define fine : AdviceStroke 3
@@ -107,7 +65,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			archv 16
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
-				[Just TAIL-CURLY] : FinalSigmaEndingKnots
+				[Just TAIL-CURLY] : CurlyTailKnots
 				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
@@ -118,25 +76,33 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			__ : begin [glyph-proc]
 
-	create-glyph "grek/stigma.curlyTail" : glyph-proc
-		include : MarkSet.p
-		include : StigmaShape TAIL-CURLY
+	define SigmaTailConfig : object
+		curlyTail                    { TAIL-CURLY            'p' }
+		straightTail                 { TAIL-STRAIGHT         'e' }
+		diagonalTail                 { TAIL-DIAGONAL         'e' }
+		straightTailRoundedBend      { TAIL-STRAIGHT-ROUNDED 'e' }
+		diagonalTailRoundedBend      { TAIL-DIAGONAL-ROUNDED 'e' }
 
-	create-glyph "grek/stigma.straightTail" : glyph-proc
-		include : MarkSet.e
-		include : StigmaShape TAIL-STRAIGHT
+	define FinalSigmaConfig : SuffixCfg.weave
+		object # top
+			""        { TOP-ROUNDED   }
+			flatHook  { TOP-FLAT-HOOK }
+		object # tail
+			curlyTail                    { TAIL-CURLY            'p' }
+			straightTail                 { TAIL-STRAIGHT         'e' }
+			diagonalTail                 { TAIL-DIAGONAL         'e' }
+			straightTailRoundedBend      { TAIL-STRAIGHT-ROUNDED 'e' }
+			diagonalTailRoundedBend      { TAIL-DIAGONAL-ROUNDED 'e' }
 
-	create-glyph "grek/stigma.diagonalTail" : glyph-proc
-		include : MarkSet.e
-		include : StigmaShape TAIL-DIAGONAL
+	foreach { suffix { { top } { tail mk } } } [Object.entries FinalSigmaConfig] : do
+		create-glyph "grek/sigmaFinal.\(suffix)" : glyph-proc
+			include : MarkSet.(mk)
+			include : FinalSigmaShape tail top
 
-	create-glyph "grek/stigma.straightTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : StigmaShape TAIL-STRAIGHT-ROUNDED
-
-	create-glyph "grek/stigma.diagonalTailRoundedBend" : glyph-proc
-		include : MarkSet.e
-		include : StigmaShape TAIL-DIAGONAL-ROUNDED
+	foreach { suffix { tail mk } } [Object.entries SigmaTailConfig] : do
+		create-glyph "grek/stigma.\(suffix)" : glyph-proc
+			include : MarkSet.(mk)
+			include : StigmaShape tail
 
 	alias 'grek/stigma.flatHookCurlyTail' null 'grek/stigma.curlyTail'
 	alias 'grek/stigma.flatHookStraightTail' null 'grek/stigma.straightTail'
@@ -144,7 +110,8 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	alias 'grek/stigma.flatHookStraightTailRoundedBend' null 'grek/stigma.straightTailRoundedBend'
 	alias 'grek/stigma.flatHookDiagonalTailRoundedBend' null 'grek/stigma.diagonalTailRoundedBend'
 
-	select-variant 'grek/stigma' 0x3DB (follow -- 'grek/sigmaFinal')
+	select-variant 'grek/sigmaFinal' 0x3C2
+	select-variant 'grek/stigma'     0x3DB (follow -- 'grek/sigmaFinal')
 
 	create-glyph 'grek/Stigma' 0x3DA : glyph-proc
 		include : MarkSet.capital
