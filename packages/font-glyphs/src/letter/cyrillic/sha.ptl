@@ -10,8 +10,12 @@ glyph-block Letter-Cyrillic-Sha : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifFrame
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrCurlDescender
 
+	define SERIF-NONE   0
+	define SERIF-MOTION 1
+	define SERIF-ALL    2
+
 	glyph-block-export CyrShaShape
-	define [CyrShaShape] : with-params [df top bot [fine Stroke] [doSerif false] [fInv false]] : glyph-proc
+	define [CyrShaShape] : with-params [df top bot [fine Stroke] [doSerif false] [serifType [if doSerif SERIF-ALL SERIF-NONE]] [fInv false]] : glyph-proc
 		local cofine : fine * df.mvs / Stroke
 		include : union
 			[if fInv HBar.t HBar.b] df.leftSB df.rightSB [if fInv top bot] fine
@@ -19,72 +23,93 @@ glyph-block Letter-Cyrillic-Sha : begin
 			VBar.r df.rightSB bot top cofine
 			VBar.m df.middle  bot top cofine
 
-		if doSerif : begin
+		if (serifType !== SERIF-NONE) : begin
 			local sf : SerifFrame.fromDf df top bot (swSerif -- cofine)
+			if (serifType === SERIF-MOTION) : include : if fInv sf.lb.outer sf.lt.outer
+			if (serifType === SERIF-ALL) : begin
+				if fInv : then : begin
+					include : composite-proc sf.lt.outer sf.rt.outer
+					include : if sf.enoughSpaceForFullSerifs
+						composite-proc sf.lb.full sf.mb.full sf.rb.full
+						composite-proc sf.lb.outer sf.rb.outer
+				: else : begin
+					include : composite-proc sf.lb.outer sf.rb.outer
+					include : if sf.enoughSpaceForFullSerifs
+						composite-proc sf.lt.full sf.mt.full sf.rt.full
+						composite-proc sf.lt.outer sf.rt.outer
 
-			if fInv : then : begin
-				include : composite-proc sf.lt.outer sf.rt.outer
-				include : if sf.enoughSpaceForFullSerifs
-					composite-proc sf.lb.full sf.mb.full sf.rb.full
-					composite-proc sf.lb.outer sf.rb.outer
-			: else : begin
-				include : composite-proc sf.lb.outer sf.rb.outer
-				include : if sf.enoughSpaceForFullSerifs
-					composite-proc sf.lt.full sf.mt.full sf.rt.full
-					composite-proc sf.lt.outer sf.rt.outer
+	define ShaConfig : object
+		serifless     SERIF-NONE
+		motionSerifed SERIF-MOTION
+		serifed       SERIF-ALL
 
-	create-glyph 'cyrl/Sha' 0x428 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : CyrShaShape df CAP 0 (doSerif -- SLAB)
+	foreach { suffix serifType } [Object.entries ShaConfig] : do
+		create-glyph "cyrl/Sha.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : CyrShaShape df CAP 0 (serifType -- serifType)
 
-	create-glyph 'cyrl/sha.upright' : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.e
-		include : CyrShaShape df XH 0 (doSerif -- SLAB)
+		create-glyph "cyrl/sha.upright.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.e
+			include : CyrShaShape df XH 0 (serifType -- serifType)
 
-	alias 'cyrl/sha/reduced.upright' null 'cyrl/sha.upright'
+		create-glyph "cyrl/sha/reduced.upright.\(suffix)" : glyph-proc
+			include [refer-glyph "cyrl/sha.upright.\(suffix)"] AS_BASE ALSO_METRICS
 
-	create-glyph 'cyrl/teThreeLeg.upright' : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.e
-		include : CyrShaShape df XH 0 (doSerif -- SLAB) (fInv -- true)
+		create-glyph "cyrl/teThreeLeg.upright.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.e
+			include : CyrShaShape df XH 0 (serifType -- serifType) (fInv -- true)
+
+	select-variant 'cyrl/Sha' 0x428
+	select-variant 'cyrl/sha.upright'
+	select-variant 'cyrl/sha/reduced.upright' (follow -- 'cyrl/sha.upright')
+	select-variant 'cyrl/teThreeLeg.upright' (follow -- 'cyrl/sha.upright')
 
 	create-glyph 'turnSmcpmCap' 0xA7FA : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		include : CyrShaShape df XH 0 (doSerif -- SLAB)
 
-	define [CyrShchaShape] : with-params [df top bot [fine Stroke] [doSerif false]] : glyph-proc
+	define [CyrShchaShape] : with-params [df top bot [fine Stroke] [doSerif false] [serifType [if doSerif SERIF-ALL SERIF-NONE]]] : glyph-proc
 		local cofine : fine * df.mvs / Stroke
-		include : CyrShaShape df top bot (fine -- fine) (doSerif -- doSerif)
-		#eject-contour 'serifRB'
+		include : CyrShaShape df top bot (fine -- fine) (serifType -- serifType)
 		include : CyrDescender.rSideJut df.rightSB bot (refSw -- cofine)
 
-	create-glyph 'cyrl/Shcha' 0x429 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : CyrShchaShape df CAP 0 (doSerif -- SLAB)
+	foreach { suffix serifType } [Object.entries ShaConfig] : do
+		create-glyph "cyrl/Shcha.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : CyrShchaShape df CAP 0 (serifType -- serifType)
 
-	create-glyph 'cyrl/shcha.upright' : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.e
-		include : CyrShchaShape df XH 0 (doSerif -- SLAB)
+		create-glyph "cyrl/shcha.upright.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.e
+			include : CyrShchaShape df XH 0 (serifType -- serifType)
 
-	alias 'cyrl/shcha/reduced.upright' null 'cyrl/shcha.upright'
+		create-glyph "cyrl/shcha/reduced.upright.\(suffix)" : glyph-proc
+			include [refer-glyph "cyrl/shcha.upright.\(suffix)"] AS_BASE ALSO_METRICS
 
-	define [CyrShweShape] : with-params [df top bot [fine Stroke] [doSerif false]] : glyph-proc
+	select-variant 'cyrl/Shcha' 0x429 (follow -- 'cyrl/Sha')
+	select-variant 'cyrl/shcha.upright' (follow -- 'cyrl/sha.upright')
+	select-variant 'cyrl/shcha/reduced.upright' (follow -- 'cyrl/sha.upright')
+
+	define [CyrShweShape] : with-params [df top bot [fine Stroke] [doSerif false] [serifType [if doSerif SERIF-ALL SERIF-NONE]]] : glyph-proc
 		local cofine : fine * df.mvs / Stroke
-		include : CyrShaShape df top bot (fine -- fine) (doSerif -- doSerif)
-		#eject-contour 'serifRB'
+		include : CyrShaShape df top bot (fine -- fine) (serifType -- serifType)
 		include : CyrCurlDescender.rSideJut df.rightSB bot (refSw -- cofine)
 
-	create-glyph 'cyrl/Shwe' 0xA696 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capDesc
-		include : CyrShweShape df CAP 0 (doSerif -- SLAB)
+	foreach { suffix serifType } [Object.entries ShaConfig] : do
+		create-glyph "cyrl/Shwe.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capDesc
+			include : CyrShweShape df CAP 0 (serifType -- serifType)
 
-	create-glyph 'cyrl/shwe.upright' : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.p
-		include : CyrShweShape df XH 0 (doSerif -- SLAB)
+		create-glyph "cyrl/shwe.upright.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.p
+			include : CyrShweShape df XH 0 (serifType -- serifType)
+
+	select-variant 'cyrl/Shwe' 0xA696 (follow -- 'cyrl/Shcha')
+	select-variant 'cyrl/shwe.upright' (follow -- 'cyrl/shcha.upright')

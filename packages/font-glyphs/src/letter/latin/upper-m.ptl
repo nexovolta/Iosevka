@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Upper-M : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
-	glyph-block-import Letter-Shared-Shapes : SerifFrame EngHook CyrTailDescender
+	glyph-block-import Letter-Shared-Shapes : SerifFrame EngHook CyrTailDescender RightwardTailedBar
 
 	define FORM-FLAT      0
 	define FORM-HANGING   1
@@ -39,7 +39,7 @@ glyph-block Letter-Latin-Upper-M : begin
 	define SLAB-FULL            4
 
 	glyph-block-export MShape
-	define [MShape] : with-params [top df form slabType slanted [kMidHang df.adws] [middleYExt nothing]] : glyph-proc
+	define [MShape] : with-params [top df form slabType slanted [kMidHang df.adws] [middleYExt nothing] [tailed false]] : glyph-proc
 		local sidesSlope : if slanted 0.04 0.00
 		local xLeftTop  : df.leftSB  + (top - 0) * sidesSlope
 		local xRightTop : df.rightSB - (top - 0) * sidesSlope
@@ -84,7 +84,8 @@ glyph-block Letter-Latin-Upper-M : begin
 			flat df.leftSB [if (form === FORM-SAN-SMALL) Descender 0] [widths.heading 0 swSideBot Upward]
 			curl [mix df.leftSB xLeftTop 0.2] (top * 0.2) [heading Upward]
 			straight.up.end xLeftTop top [widths.heading 0 swSideTop Upward]
-		include : tagged 'strokeRightBar' : dispiro
+		if tailed : include : tagged 'strokeRightBar' : RightwardTailedBar df.rightSB 0 top swSideBot
+		if (!tailed) : include : tagged 'strokeRightBar' : dispiro
 			flat df.rightSB 0 [widths.heading swSideBot 0 Upward]
 			curl [mix df.rightSB xRightTop 0.2] (top * 0.2) [heading Upward]
 			straight.up.end xRightTop top [widths.heading swSideTop 0 Upward]
@@ -106,13 +107,13 @@ glyph-block Letter-Latin-Upper-M : begin
 			fForceSymmetric -- (form !== FORM-FLAT && form !== FORM-ALMOST-FLAT)
 		include : match slabType
 			[Just SLAB-NONE] : no-shape
-			[Just SLAB-FULL] : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full sfB.rb.full
-			[Just SLAB-AUTO] : NeedSlab SLAB : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full sfB.rb.full
+			[Just SLAB-FULL] : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full [if tailed [no-shape] sfB.rb.full]
+			[Just SLAB-AUTO] : NeedSlab SLAB : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full [if tailed [no-shape] sfB.rb.full]
 			[Just SLAB-MOTION] : begin sfT.lt.outer
 			[Just SLAB-SMALL-CYRILLIC] : composite-proc sfT.lt.outer
 				if para.isItalic [no-shape]   sfT.rt.outer
 				if para.isItalic sfB.lb.outer sfB.lb.full
-				if para.isItalic sfB.rb.outer sfB.rb.full
+				if tailed [no-shape] : if para.isItalic sfB.rb.outer sfB.rb.full
 
 		return : object [swSideBot]
 
@@ -239,17 +240,47 @@ glyph-block Letter-Latin-Upper-M : begin
 		select-variant "cyrl/EmSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 		select-variant "cyrl/emSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
 
+	define EmConfig : SuffixCfg.weave
+		object # sides
+			""            false
+			slantedSides  true
+		object # body
+			""              BODY-STANDARD
+			verticalMiddle  BODY-VERTICAL
+		object # middle
+			hanging           MID-HANGING
+			flatBottom        MID-FLAT
+			almostFlatBottom  MID-ALMOST
+			yShaped           MID-YSTEM
+			yShapedAlmostFlat MID-YSTEM-ALMOST
+		object # tail
+			""      0
+			tailed  1
+		object # serifs
+			serifless     SLAB-NONE
+			motionSerifed SLAB-MOTION
+			smallCyrl     SLAB-SMALL-CYRILLIC
+
+	foreach { suffix { slanted bodyKind midKind tailed slab } } [Object.entries EmConfig] : do
+		if (!tailed || !slanted) : begin
+			define form : MFormOf bodyKind midKind
+			define middleYExt : MMiddleYExtOf bodyKind midKind
+			create-glyph "cyrl/em.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleT 3
+				include : df.markSet.e
+				include : MShape XH df form slab slanted (middleYExt -- middleYExt) (tailed -- tailed)
+
 	select-variant 'M' 'M'
 	link-reduced-variant 'M/sansSerif' 'M' MathSansSerif
 	select-variant 'Meng' 0x2C6E (follow -- 'M')
 	select-variant 'smcpM' 0x1D0D (follow -- 'M')
-	select-variant 'cyrl/em' 0x43C (shapeFrom -- 'smcpM')
+	select-variant 'cyrl/em' 0x43C
 	alias 'grek/Mu' 0x39C 'M'
 	alias-reduced-variant 'grek/Mu/sansSerif' 'grek/Mu' 'M/sansSerif' MathSansSerif
 	alias 'cyrl/Em' 0x41C 'M'
 
 	CreateSelectorVariants 'cyrl/EmSoft' 0xA666 [Object.keys MConfig] (follow -- 'M')
-	CreateSelectorVariants 'cyrl/emSoft' 0xA667 [Object.keys MConfig] (follow -- 'cyrl/em')
+	CreateSelectorVariants 'cyrl/emSoft' 0xA667 [Object.keys MConfig] (follow -- 'cyrl/emSoft')
 
 	derive-glyphs 'cyrl/EmTail' 0x4CD 'cyrl/Em' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

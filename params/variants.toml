@@ -9542,11 +9542,13 @@ next = "body"
 rank = 1
 keyAffix = ""
 selectorAffix."cyrl/em" = ""
+selectorAffix."cyrl/emSoft" = ""
 
 [prime.cyrl-em.variants-buildup.stages.sides.slanted-sides]
 rank = 2
 descriptionAffix = "slanted sides"
 selectorAffix."cyrl/em" = "slantedSides"
+selectorAffix."cyrl/emSoft" = "slantedSides"
 
 [prime.cyrl-em.variants-buildup]
 entry = "sides"
@@ -9559,31 +9561,36 @@ next = "middle"
 rank = 1
 keyAffix = ""
 selectorAffix."cyrl/em" = ""
+selectorAffix."cyrl/emSoft" = ""
 
 [prime.cyrl-em.variants-buildup.stages.body.vertical-middle]
 rank = 2
 nonBreakingVariantAdditionPriority = 100
 descriptionAffix = "vertical middle stem"
 selectorAffix."cyrl/em" = "verticalMiddle"
+selectorAffix."cyrl/emSoft" = "verticalMiddle"
 
 [prime.cyrl-em.variants-buildup.stages.middle."*"]
-next = "serifs"
+next = "tail"
 
 [prime.cyrl-em.variants-buildup.stages.middle.hanging]
 rank = 1
 descriptionAffix = "middle being hanging off baseline"
 selectorAffix."cyrl/em" = "hanging"
+selectorAffix."cyrl/emSoft" = "hanging"
 
 [prime.cyrl-em.variants-buildup.stages.middle.flat-bottom]
 rank = 2
 descriptionAffix = "middle aligned to baseline"
 selectorAffix."cyrl/em" = "flatBottom"
+selectorAffix."cyrl/emSoft" = "flatBottom"
 
 [prime.cyrl-em.variants-buildup.stages.middle.almost-flat-bottom]
 rank = 3
 nonBreakingVariantAdditionPriority = 100
 descriptionAffix = "middle almost aligned to baseline"
 selectorAffix."cyrl/em" = "almostFlatBottom"
+selectorAffix."cyrl/emSoft" = "almostFlatBottom"
 
 [prime.cyrl-em.variants-buildup.stages.middle.yshaped]
 rank = 4
@@ -9591,6 +9598,7 @@ nonBreakingVariantAdditionPriority = 100
 disableIf = [{ body = "vertical-middle" }]
 descriptionAffix = "a Y-shaped middle"
 selectorAffix."cyrl/em" = "yShaped"
+selectorAffix."cyrl/emSoft" = "yShaped"
 
 [prime.cyrl-em.variants-buildup.stages.middle.yshaped-almost-flat]
 rank = 5
@@ -9598,22 +9606,42 @@ nonBreakingVariantAdditionPriority = 100
 disableIf = [{ body = "vertical-middle" }]
 descriptionAffix = "a Y-shaped middle almost aligned to baseline"
 selectorAffix."cyrl/em" = "yShapedAlmostFlat"
+selectorAffix."cyrl/emSoft" = "yShapedAlmostFlat"
+
+[prime.cyrl-em.variants-buildup.stages.tail."*"]
+next = "serifs"
+
+[prime.cyrl-em.variants-buildup.stages.tail.straight]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/em" = ""
+selectorAffix."cyrl/emSoft" = ""
+
+[prime.cyrl-em.variants-buildup.stages.tail.tailed]
+rank = 2
+disableIf = [{ sides = "slanted-sides" }]
+descriptionAffix = "curly tailed terminal"
+selectorAffix."cyrl/em" = "tailed"
+selectorAffix."cyrl/emSoft" = ""
 
 [prime.cyrl-em.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
 descriptionJoiner = "without"
 selectorAffix."cyrl/em" = "serifless"
+selectorAffix."cyrl/emSoft" = "serifless"
 
 [prime.cyrl-em.variants-buildup.stages.serifs.motion-serifed]
 rank = 2
 descriptionAffix = "motion serifs"
 selectorAffix."cyrl/em" = "motionSerifed"
+selectorAffix."cyrl/emSoft" = "motionSerifed"
 
 [prime.cyrl-em.variants-buildup.stages.serifs.serifed]
 rank = 3
 descriptionAffix = "serifs"
 selectorAffix."cyrl/em" = "smallCyrl"
+selectorAffix."cyrl/emSoft" = "smallCyrl"
 
 
 
@@ -10131,20 +10159,204 @@ selectorAffix."cyrl/ef.BGR" = "serifed"
 
 
 
+[prime.cyrl-capital-pe]
+sampler = "П"
+samplerExplain = "Cyrillic Capital Pe"
+tagKind = "letter"
+
+[prime.cyrl-capital-pe.variants.serifless]
+rank = 1
+description = "Cyrillic Capital Pe (`П`) without serifs"
+selector."cyrl/Pe" = "serifless"
+
+[prime.cyrl-capital-pe.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Capital Pe (`П`) with motion serifs"
+selector."cyrl/Pe" = "motionSerifed"
+
+[prime.cyrl-capital-pe.variants.serifed]
+rank = 3
+description = "Cyrillic Capital Pe (`П`) with serifs"
+selector."cyrl/Pe" = "serifed"
+
+
+
+[prime.cyrl-pe]
+sampler = "п"
+samplerExplain = "Cyrillic Lower Pe"
+tagKind = "letter"
+
+[prime.cyrl-pe.variants.serifless]
+rank = 1
+description = "Cyrillic Lower Pe (`п`) without serifs"
+selector."cyrl/pe.upright" = "serifless"
+
+[prime.cyrl-pe.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Lower Pe (`п`) with motion serifs"
+selector."cyrl/pe.upright" = "motionSerifed"
+
+[prime.cyrl-pe.variants.serifed]
+rank = 3
+description = "Cyrillic Lower Pe (`п`) with serifs"
+selector."cyrl/pe.upright" = "serifed"
+
+
+
+[prime.cyrl-capital-tse]
+sampler = "Ц"
+samplerExplain = "Cyrillic Capital Tse"
+tagKind = "letter"
+
+[prime.cyrl-capital-tse.variants.serifless]
+rank = 1
+description = "Cyrillic Capital Tse (`Ц`) without serifs"
+selector."cyrl/Tse" = "serifless"
+
+[prime.cyrl-capital-tse.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Capital Tse (`Ц`) with motion serifs"
+selector."cyrl/Tse" = "motionSerifed"
+
+[prime.cyrl-capital-tse.variants.serifed]
+rank = 3
+description = "Cyrillic Capital Tse (`Ц`) with serifs"
+selector."cyrl/Tse" = "serifed"
+
+
+
+[prime.cyrl-tse]
+sampler = "ц"
+samplerExplain = "Cyrillic Lower Tse"
+tagKind = "letter"
+
+[prime.cyrl-tse.variants.serifless]
+rank = 1
+description = "Cyrillic Lower Tse (`ц`) without serifs"
+selector."cyrl/tse.upright" = "serifless"
+
+[prime.cyrl-tse.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Lower Tse (`ц`) with motion serifs"
+selector."cyrl/tse.upright" = "motionSerifed"
+
+[prime.cyrl-tse.variants.serifed]
+rank = 3
+description = "Cyrillic Lower Tse (`ц`) with serifs"
+selector."cyrl/tse.upright" = "serifed"
+
+
+
+[prime.cyrl-capital-sha]
+sampler = "Ш Щ"
+samplerExplain = "Cyrillic Capital Sha and Shcha"
+tagKind = "letter"
+
+[prime.cyrl-capital-sha.variants.serifless]
+rank = 1
+description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) without serifs"
+selector."cyrl/Sha" = "serifless"
+selector."cyrl/Shcha" = "serifless"
+
+[prime.cyrl-capital-sha.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with motion serifs"
+selector."cyrl/Sha" = "motionSerifed"
+selector."cyrl/Shcha" = "motionSerifed"
+
+[prime.cyrl-capital-sha.variants.serifed]
+rank = 3
+description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with serifs"
+selector."cyrl/Sha" = "serifed"
+selector."cyrl/Shcha" = "serifed"
+
+
+
+[prime.cyrl-sha]
+sampler = "ш щ"
+samplerExplain = "Cyrillic Lower Sha and Shcha"
+tagKind = "letter"
+
+[prime.cyrl-sha.variants.serifless]
+rank = 1
+description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) without serifs"
+selector."cyrl/sha.upright" = "serifless"
+selector."cyrl/shcha.upright" = "serifless"
+
+[prime.cyrl-sha.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) with motion serifs"
+selector."cyrl/sha.upright" = "motionSerifed"
+selector."cyrl/shcha.upright" = "motionSerifed"
+
+[prime.cyrl-sha.variants.serifed]
+rank = 3
+description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) with serifs"
+selector."cyrl/sha.upright" = "serifed"
+selector."cyrl/shcha.upright" = "serifed"
+
+
+
+[prime.cyrl-capital-che]
+sampler = "Ч"
+samplerExplain = "Cyrillic Capital Che"
+tagKind = "letter"
+
+[prime.cyrl-capital-che.variants.serifless]
+rank = 1
+description = "Cyrillic Capital Che (`Ч`) without serifs"
+selector."cyrl/Che" = "serifless"
+
+[prime.cyrl-capital-che.variants.motion-serifed]
+rank = 2
+description = "Cyrillic Capital Che (`Ч`) with motion serifs"
+selector."cyrl/Che" = "motionSerifed"
+
+[prime.cyrl-capital-che.variants.serifed]
+rank = 3
+description = "Cyrillic Capital Che (`Ч`) with serifs"
+selector."cyrl/Che" = "serifed"
+
+
+
 [prime.cyrl-che]
 sampler = "ч"
 samplerExplain = "Cyrillic Lower Che"
 tagKind = "letter"
 
-[prime.cyrl-che.variants.standard]
-rank = 1
-description = "Cyrillic Lower Che (`ч`) with standard shape"
-selector."cyrl/che" = "standard"
+[prime.cyrl-che.variants-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Che (`ч`)"
 
-[prime.cyrl-che.variants.tailed]
+[prime.cyrl-che.variants-buildup.stages.body."*"]
+next = "serifs"
+
+[prime.cyrl-che.variants-buildup.stages.body.standard]
+rank = 1
+descriptionAffix = "standard shape"
+selectorAffix."cyrl/che" = "standard"
+
+[prime.cyrl-che.variants-buildup.stages.body.tailed]
 rank = 2
-description = "Cyrillic Lower Che (`ч`) with tail"
-selector."cyrl/che" = "tailed"
+descriptionAffix = "a tail"
+selectorAffix."cyrl/che" = "tailed"
+
+[prime.cyrl-che.variants-buildup.stages.serifs.serifless]
+rank = 1
+keyAffix = ""
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/che" = "serifless"
+
+[prime.cyrl-che.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/che" = "motionSerifed"
+
+[prime.cyrl-che.variants-buildup.stages.serifs.serifed]
+rank = 3
+descriptionAffix = "serifs"
+selectorAffix."cyrl/che" = "serifed"
 
 
 
@@ -11904,6 +12116,13 @@ cyrl-er = "eared-serifless"
 cyrl-capital-u = "straight-serifless"
 cyrl-u = "straight-serifless"
 cyrl-ef = "serifless"
+cyrl-capital-pe = "serifless"
+cyrl-pe = "serifless"
+cyrl-capital-tse = "serifless"
+cyrl-tse = "serifless"
+cyrl-capital-sha = "serifless"
+cyrl-sha = "serifless"
+cyrl-capital-che = "serifless"
 cyrl-che = "standard"
 cyrl-capital-yeri = "corner"
 cyrl-yeri = "corner"
@@ -12064,6 +12283,14 @@ cyrl-er = "eared-serifed"
 cyrl-capital-u = "straight-turn-serifed"
 cyrl-u = "straight-turn-serifed"
 cyrl-ef = "serifed"
+cyrl-capital-pe = "serifed"
+cyrl-pe = "serifed"
+cyrl-capital-tse = "serifed"
+cyrl-tse = "serifed"
+cyrl-capital-sha = "serifed"
+cyrl-sha = "serifed"
+cyrl-capital-che = "serifed"
+cyrl-che = "standard-serifed"
 cyrl-capital-e = "unilateral-serifed"
 cyrl-e = "unilateral-serifed"
 cyrl-capital-ya = "straight-serifed"
@@ -12109,6 +12336,10 @@ cyrl-en = "top-left-bottom-right-serifed"
 cyrl-er = "eared-motion-serifed"
 cyrl-u = "cursive-motion-serifed"
 cyrl-ef = "cursive"
+cyrl-pe = "motion-serifed"
+cyrl-tse = "motion-serifed"
+cyrl-sha = "motion-serifed"
+cyrl-che = "standard-motion-serifed"
 cyrl-yeri = "cursive"
 cyrl-yery = "cursive"
 cyrl-e = "unilateral-bottom-inward-serifed"
