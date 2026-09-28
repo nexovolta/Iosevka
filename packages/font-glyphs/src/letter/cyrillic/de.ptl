@@ -64,19 +64,58 @@ glyph-block Letter-Cyrillic-De : begin
 
 		return : object xTopLeft xTopRight swOuter swInner desc
 
-	create-glyph 'cyrl/De' 0x414 : glyph-proc
-		include : MarkSet.capital
-		include : ExtendBelowBaseAnchors BottomExtension
-		include : CyrDeShape true CAP SB RightSB
+	glyph-block-import Letter-Latin-Upper-Lambda-Delta : DeltaShape
 
-	create-glyph 'cyrl/de.upright' : glyph-proc
-		include : MarkSet.e
-		include : ExtendBelowBaseAnchors BottomExtension
-		include : CyrDeShape false XH SB RightSB
+	define [CyrDeDeltaFeet] : glyph-proc
+		local descenderOverflow : if SLAB SideJut : (RightSB - SB) * 0.075
+		include : HBar.b (SB - descenderOverflow) (RightSB + descenderOverflow) 0
+		include : VBar.l (SB      - descenderOverflow) BottomExtension TINY VJutStroke
+		include : VBar.r (RightSB + descenderOverflow) BottomExtension TINY VJutStroke
+
+	define [CyrDeDeltaLikeShape fBarStraight fSquareBottom top] : glyph-proc
+		include : DeltaShape
+			df            -- [DivFrame 1]
+			fBarStraight  -- fBarStraight
+			fSquareBottom -- fSquareBottom
+			top           -- top
+			bottom        -- 0
+			sw            -- Stroke
+		include : CyrDeDeltaFeet
+
+	define BODY-TRAPEZOID  0
+	define BODY-TRIANGULAR 1
+	define BODY-CURLY      2
+	define BODY-SQUARE     3
+
+	define DeConfig : object
+		trapezoid   BODY-TRAPEZOID
+		triangular  BODY-TRIANGULAR
+		curly       BODY-CURLY
+		square      BODY-SQUARE
+
+	define [CyrDeBodyShape bodyType fCapital top] : match bodyType
+		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top SB RightSB
+		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top
+		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top
+		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top
+
+	foreach { suffix bodyType } [Object.entries DeConfig] : do
+		create-glyph "cyrl/De.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : ExtendBelowBaseAnchors BottomExtension
+			include : CyrDeBodyShape bodyType true CAP
+
+		create-glyph "cyrl/de.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : ExtendBelowBaseAnchors BottomExtension
+			include : CyrDeBodyShape bodyType false XH
 
 	create-glyph 'cyrl/deLongLeg.upright' : glyph-proc
 		include : MarkSet.p
 		include : CyrDeShape false XH SB RightSB nothing Descender
+
+	select-variant 'cyrl/De' 0x414
+	alias 'cyrl/de.upright' null 'cyrl/de.trapezoid'
 
 	define [CyrSoftDeShape vSlab] : function [fCapital df top _sw _desc] : glyph-proc
 		local sw : fallback _sw Stroke
@@ -185,9 +224,11 @@ glyph-block Letter-Cyrillic-De : begin
 	define [CyrDeItalicMask df _sw] : spiro-outline
 		CyrDeItalicKnots df _sw
 
-	create-glyph 'cyrl/de.italic' : glyph-proc
+	create-glyph 'cyrl/de.cursive' : glyph-proc
 		include : MarkSet.b
 		include : CyrDeItalicShape [DivFrame 1]
+	alias 'cyrl/de.italic' null 'cyrl/de.cursive'
+	select-variant 'cyrl/de' 0x434
 
 	create-glyph 'cyrl/dwe.italic/base' : glyph-proc
 		include : MarkSet.b
