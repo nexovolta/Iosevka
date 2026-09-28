@@ -107,11 +107,10 @@ glyph-block Letter-Latin-Upper-Y : begin
 			include : YSlabs                   slabType CAP 0
 			eject-contour 'serifRT'
 
-		if (slabType !== SLAB-BASE) : begin
-			create-glyph "cyrl/ue.\(suffix)" : glyph-proc
-				include : MarkSet.p
-				include : YShape bodyType slabType XH Descender (cross -- 0)
-				include : YSlabs          slabType XH Descender
+		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : YShape bodyType slabType XH Descender (cross -- 0)
+			include : YSlabs          slabType XH Descender
 
 		if ((slabType === SLAB-NONE || slabType === SLAB-BASE) && bodyType === BODY-STRAIGHT) : begin
 			create-glyph "grek/UpsilonHookSymbol.\(suffix)" : glyph-proc
@@ -137,7 +136,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 	select-variant 'grek/UpsilonHookSymbol' 0x3D2
 
 	select-variant 'cyrl/Ue' 0x4AE (shapeFrom -- 'Y')
-	select-variant 'cyrl/ue' 0x4AF
+	select-variant 'cyrl/ue' 0x4AF (follow -- 'cyrl/Ue')
 	CreateAccentedComposition 'cyrl/Uo' 0x4B0 'cyrl/Ue' 'barOver'
 	CreateAccentedComposition 'cyrl/uo' 0x4B1 'cyrl/ue' 'barOver'
 
