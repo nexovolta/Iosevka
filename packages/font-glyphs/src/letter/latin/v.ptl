@@ -184,14 +184,15 @@ glyph-block Letter-Latin-V : begin
 					g4   vxEndR   0                   [widths.rhs sw]
 
 	glyph-block-export VHookRightShape
-	define [VHookRightShape] : with-params [df fBarStraight top [sw Stroke] [hookWidthOuter (TailX / 3)] [hookWidthInner (TailX / 3)]] : glyph-proc
-		include : VShape df fBarStraight top (sw -- sw)
+	define [VHookRightShape] : with-params [df fBarStraight top [sw Stroke] [fSquareTop false] [hookWidthOuter (TailX / 3)] [hookWidthInner (TailX / 3)]] : glyph-proc
+		if fSquareTop : include : VSquareTopShape df top (sw -- sw)
+		: else : include : VShape df fBarStraight top (sw -- sw)
 		eject-contour 'strokeUp'
 		eject-contour 'bottomCap'
 
 		define cornerHW : VCornerHalfWidth * (sw / Stroke)
 		define fine     : VShapeFine       * (sw / Stroke)
-		include : union [VBottomCapShape df fBarStraight sw] : dispiro
+		include : union [VBottomCapShape df [if fSquareTop true fBarStraight] sw] : dispiro
 			widths.rhs sw
 			straight.left.start (df.rightSB + hookWidthOuter) ((top - O) - sw)
 			g4 (df.rightSB - hookWidthInner) (top - TailY - 0.5 * sw)
@@ -278,14 +279,14 @@ glyph-block Letter-Latin-V : begin
 
 		create-glyph "VHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : VHookRightShape [DivFrame 1] fStraightBar CAP
-			include : Serifs          [DivFrame 1] fStraightBar CAP
+			include : VHookRightShape [DivFrame 1] fStraightBar CAP (fSquareTop -- fSquareTop)
+			include : Serifs          [DivFrame 1] fSerifStraight CAP
 			eject-contour 'serifRT'
 
 		create-glyph "vHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : VHookRightShape [DivFrame 1] fStraightBar XH
-			include : Serifs          [DivFrame 1] fStraightBar XH
+			include : VHookRightShape [DivFrame 1] fStraightBar XH (fSquareTop -- fSquareTop)
+			include : Serifs          [DivFrame 1] fSerifStraight XH
 			eject-contour 'serifRT'
 
 		create-glyph "vLoop.\(suffix)" : glyph-proc
@@ -305,8 +306,8 @@ glyph-block Letter-Latin-V : begin
 			include : VBar.m Middle [mix O (yBarPos + 0.5 * sw) 0.5] yBarPos fine
 
 			include : with-transform [ApparentTranslate 0 (yBarPos - 0.5 * sw)] : glyph-proc
-				include : VHookRightShape [DivFrame 1] fStraightBar (CAP - (yBarPos - 0.5 * sw))
-				include : Serifs          [DivFrame 1] fStraightBar (CAP - (yBarPos - 0.5 * sw))
+				include : VHookRightShape [DivFrame 1] fStraightBar (CAP - (yBarPos - 0.5 * sw)) (fSquareTop -- fSquareTop)
+				include : Serifs          [DivFrame 1] fSerifStraight (CAP - (yBarPos - 0.5 * sw))
 				eject-contour 'serifRT'
 
 		create-glyph "cyrl/ukUnblended.\(suffix)" : glyph-proc
@@ -318,8 +319,8 @@ glyph-block Letter-Latin-V : begin
 				OShape ((yBarPos + 0.5 * subDf.mvs) + O) 0 subDf.leftSB subDf.rightSB subDf.mvs subDf.smallArchDepthA subDf.smallArchDepthB
 
 			include : with-transform [ApparentTranslate 0 (yBarPos - 0.5 * subDf.mvs)] : glyph-proc
-				include : VHookRightShape [DivFrame 1] fStraightBar (Ascender - (yBarPos - 0.5 * subDf.mvs))
-				include : Serifs          [DivFrame 1] fStraightBar (Ascender - (yBarPos - 0.5 * subDf.mvs))
+				include : VHookRightShape [DivFrame 1] fStraightBar (Ascender - (yBarPos - 0.5 * subDf.mvs)) (fSquareTop -- fSquareTop)
+				include : Serifs          [DivFrame 1] fSerifStraight (Ascender - (yBarPos - 0.5 * subDf.mvs))
 				eject-contour 'serifRT'
 
 	glyph-block-export VCursiveShapeBarPos VCursiveShape
