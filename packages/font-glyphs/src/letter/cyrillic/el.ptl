@@ -84,7 +84,7 @@ glyph-block Letter-Cyrillic-El : begin
 
 	define [ElIsLambda bodyType] : (bodyType === BODY-LAMBDA-TRI) || (bodyType === BODY-LAMBDA-CURLY) || (bodyType === BODY-LAMBDA-SQUARE)
 
-	define [ElTrapezoidSlab serifType fCapital bodyType] : begin
+	define [ElStandardSlab serifType fCapital bodyType] : begin
 		local italicLower : (!fCapital) && para.isItalic
 		if (bodyType === BODY-TAILED) : begin
 			if (serifType === SERIF-NONE) : return 0
@@ -116,7 +116,7 @@ glyph-block Letter-Cyrillic-El : begin
 	define [CyrElBodyShape bodyType fBarStraight fSquareBottom top fCapital serifType] : glyph-proc
 		include : if [ElIsLambda bodyType]
 			then : CyrElLambdaLikeShape fBarStraight fSquareBottom top [not fCapital] serifType
-			else : CyrElShape SB RightSB top bodyType [ElTrapezoidSlab serifType fCapital bodyType]
+			else : CyrElShape SB RightSB top bodyType [ElStandardSlab serifType fCapital bodyType]
 
 	define [CyrElLeftHalf df top bodyType fBarStraight fSquareBottom serifType fLower] : glyph-proc
 		if [ElIsLambda bodyType] : begin
@@ -133,17 +133,9 @@ glyph-block Letter-Cyrillic-El : begin
 			local slab : if (serifType === SERIF-NONE) SLAB-NONE SLAB-MOTION
 			include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) top BODY-NONE slab df.mvs
 
-	create-glyph : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.capital
-		create-forked-glyph "cyrl/ElSoft.serifless"       : [CyrSoftElShape false] df CAP BODY-STRAIGHT [if SLAB SLAB-ALL SLAB-NONE] df.mvs
-		create-forked-glyph "cyrl/ElSoft.topRightSerifed" : [CyrSoftElShape true]  df CAP BODY-STRAIGHT [if SLAB SLAB-ALL SLAB-NONE] df.mvs
-
-	select-variant 'cyrl/ElSoft' 0xA664 (follow -- 'cyrl/EnGhe/Ghe')
-
 	define ElConfig : SuffixCfg.weave
 		object
-			trapezoid   { BODY-STRAIGHT     false false }
+			standard    { BODY-STRAIGHT     false false }
 			triangular  { BODY-LAMBDA-TRI   true  false }
 			curly       { BODY-LAMBDA-CURLY false false }
 			square      { BODY-LAMBDA-SQUARE true  true  }
@@ -160,7 +152,7 @@ glyph-block Letter-Cyrillic-El : begin
 	foreach { suffix { { bodyType fBarStraight fSquareBottom } serifType } } [Object.entries ElConfig] : do
 		local fLambda : ElIsLambda bodyType
 		local fTailed : bodyType === BODY-TAILED
-		local trapezoidBody : if fTailed BODY-TAILED BODY-STRAIGHT
+		local standardBody : if fTailed BODY-TAILED BODY-STRAIGHT
 
 		if [not fTailed] : begin
 			create-glyph "cyrl/El.\(suffix)" : glyph-proc
@@ -175,11 +167,52 @@ glyph-block Letter-Cyrillic-El : begin
 				create-glyph "cyrl/ElMidHook.\(suffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleMM 3
 					include : df.markSet.capDesc
-					local slab : ElTrapezoidSlab serifType true BODY-STRAIGHT
+					local slab : ElStandardSlab serifType true BODY-STRAIGHT
 					include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
 						CyrElShape df.leftSB xm CAP BODY-STRAIGHT slab df.mvs
 						intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
 					include : MidHook.m df CAP
+
+				define cyrSoftElCapDf : DivFrame para.advanceScaleM 3
+				DefineSelectorGlyph "cyrl/ElSoft" suffix cyrSoftElCapDf 'capital'
+				foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
+					create-glyph "cyrl/ElSoft.\(suffix).\(suffixGhe)" : glyph-proc
+						set-width 0
+						set-mark-anchor 'cvDecompose' 0 0
+						include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElCapDf CAP BODY-STRAIGHT [ElStandardSlab serifType true BODY-STRAIGHT] cyrSoftElCapDf.mvs
+				select-variant "cyrl/ElSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
+
+			create-glyph "cyrl/LjeKomi.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.capital
+				include : CyrElLeftHalf df CAP bodyType fBarStraight fSquareBottom serifType false
+				include : UpwardHookShape
+					left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
+					right  -- df.rightSB
+					ybegin -- CAP
+					yend   -- (CAP / 2 + HalfStroke)
+					ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
+					adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
+					sw     -- df.mvs
+				if (serifType !== SERIF-NONE) : begin
+					local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
+					include sf2.rt.full
+
+			create-glyph "cyrl/ljeKomi.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.e
+				include : CyrElLeftHalf df XH bodyType fBarStraight fSquareBottom serifType true
+				include : UpwardHookShape
+					left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
+					right  -- df.rightSB
+					ybegin -- XH
+					yend   -- (XH / 2 + HalfStroke)
+					ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
+					adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
+					sw     -- df.mvs
+				if (serifType !== SERIF-NONE) : begin
+					local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
+					include sf2.rt.full
 
 		create-glyph "cyrl/el.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -200,9 +233,9 @@ glyph-block Letter-Cyrillic-El : begin
 			create-glyph "cyrl/elMidHook.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.p
-				local slab : ElTrapezoidSlab serifType false trapezoidBody
+				local slab : ElStandardSlab serifType false standardBody
 				include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
-					CyrElShape df.leftSB xm XH trapezoidBody slab df.mvs
+					CyrElShape df.leftSB xm XH standardBody slab df.mvs
 					intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
 				include : MidHook.m df XH
 
@@ -212,7 +245,7 @@ glyph-block Letter-Cyrillic-El : begin
 				create-glyph "cyrl/elSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
-					include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElDf XH trapezoidBody [ElTrapezoidSlab serifType false trapezoidBody] cyrSoftElDf.mvs
+					include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElDf XH standardBody [ElStandardSlab serifType false standardBody] cyrSoftElDf.mvs
 			select-variant "cyrl/elSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
 
 		if [not fTailed] : begin
@@ -229,14 +262,20 @@ glyph-block Letter-Cyrillic-El : begin
 			include : CyrElLeftHalf df XH bodyType fBarStraight fSquareBottom serifType true
 
 	foreach ser [items-of : list 'Serifless' 'MotionSerifed' 'Serifed'] : do
-		alias "cyrl/elDescender.tailed\(ser)" null "cyrl/elDescender.trapezoid\(ser)"
-		alias "cyrl/elTail.tailed\(ser)" null "cyrl/elTail.trapezoid\(ser)"
-		alias "cyrl/elHook.tailed\(ser)" null "cyrl/elHook.trapezoid\(ser)"
+		alias "cyrl/elDescender.tailed\(ser)" null "cyrl/elDescender.standard\(ser)"
+		alias "cyrl/elTail.tailed\(ser)" null "cyrl/elTail.standard\(ser)"
+		alias "cyrl/elHook.tailed\(ser)" null "cyrl/elHook.standard\(ser)"
+		alias "cyrl/LjeKomi.tailed\(ser)" null "cyrl/LjeKomi.standard\(ser)"
+		alias "cyrl/ljeKomi.tailed\(ser)" null "cyrl/ljeKomi.standard\(ser)"
+		DefineSelectorGlyph "cyrl/ElSoft" "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
+		alias "cyrl/ElSoft.tailed\(ser)" null "cyrl/ElSoft.standard\(ser)"
 		foreach lam [items-of : list 'triangular' 'curly' 'square'] : do
-			alias "cyrl/ElMidHook.\(lam)\(ser)" null "cyrl/ElMidHook.trapezoid\(ser)"
-			alias "cyrl/elMidHook.\(lam)\(ser)" null "cyrl/elMidHook.trapezoid\(ser)"
+			alias "cyrl/ElMidHook.\(lam)\(ser)" null "cyrl/ElMidHook.standard\(ser)"
+			alias "cyrl/elMidHook.\(lam)\(ser)" null "cyrl/elMidHook.standard\(ser)"
 			DefineSelectorGlyph "cyrl/elSoft" "\(lam)\(ser)" [DivFrame para.advanceScaleM 3] 'e'
-			alias "cyrl/elSoft.\(lam)\(ser)" null "cyrl/elSoft.trapezoid\(ser)"
+			alias "cyrl/elSoft.\(lam)\(ser)" null "cyrl/elSoft.standard\(ser)"
+			DefineSelectorGlyph "cyrl/ElSoft" "\(lam)\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
+			alias "cyrl/ElSoft.\(lam)\(ser)" null "cyrl/ElSoft.standard\(ser)"
 
 	select-variant 'cyrl/El' 0x41B
 	select-variant 'cyrl/smcpEl' 0x1D2B (follow -- 'cyrl/El')
@@ -248,7 +287,10 @@ glyph-block Letter-Cyrillic-El : begin
 	select-variant 'cyrl/elDescender' 0x52F (follow -- 'cyrl/el')
 	select-variant 'cyrl/elTail' 0x4C6 (follow -- 'cyrl/el')
 	select-variant 'cyrl/elHook' 0x513 (follow -- 'cyrl/el')
+	select-variant 'cyrl/LjeKomi' 0x508 (follow -- 'cyrl/El')
+	select-variant 'cyrl/ljeKomi' 0x509 (follow -- 'cyrl/el')
 
+	CreateSelectorVariants 'cyrl/ElSoft' 0xA664 [Object.keys ElConfig] (follow -- 'cyrl/El')
 	CreateSelectorVariants 'cyrl/elSoft' 0xA665 [Object.keys ElConfig] (follow -- 'cyrl/el')
 
 	derive-composites 'cyrl/ElDescender' 0x52E 'cyrl/El' [CyrDescender.rSideJut RightSB 0]
@@ -257,37 +299,3 @@ glyph-block Letter-Cyrillic-El : begin
 
 	derive-composites 'cyrl/Lha' 0x514 'cyrl/Lha/El' 'cyrl/Lha/Kha'
 	derive-composites 'cyrl/lha' 0x515 'cyrl/lha/el' 'cyrl/lha/kha'
-
-	create-glyph 'cyrl/LjeKomi' 0x508 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-
-		include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) CAP BODY-NONE [if SLAB SLAB-ALL SLAB-NONE] df.mvs
-		include : UpwardHookShape
-			left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
-			right  -- df.rightSB
-			ybegin -- CAP
-			yend   -- (CAP / 2 + HalfStroke)
-			ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
-			adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
-			sw     -- df.mvs
-		if SLAB : begin
-			local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
-			include sf2.rt.full
-
-	create-glyph 'cyrl/ljeKomi' 0x509 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.e
-
-		include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) XH BODY-NONE [if SLAB [if para.isItalic SLAB-LOWER SLAB-ALL] SLAB-NONE] df.mvs
-		include : UpwardHookShape
-			left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
-			right  -- df.rightSB
-			ybegin -- XH
-			yend   -- (XH / 2 + HalfStroke)
-			ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
-			adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
-			sw     -- df.mvs
-		if SLAB : begin
-			local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
-			include sf2.rt.full
