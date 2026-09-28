@@ -12,11 +12,11 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
-	define TAIL-CURLY            0
-	define TAIL-STRAIGHT         1
-	define TAIL-DIAGONAL         2
-	define TAIL-STRAIGHT-ROUNDED 3
-	define TAIL-DIAGONAL-ROUNDED 4
+	define TAIL-CURLY                 0
+	define TAIL-STRAIGHT              1
+	define TAIL-DIAGONAL              2
+	define TAIL-STRAIGHT-SHARP-CORNER 3
+	define TAIL-DIAGONAL-SHARP-CORNER 4
 
 	define TOP-ROUNDED    0
 	define TOP-FLAT-HOOK  1
@@ -43,14 +43,13 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
 				[Just TAIL-CURLY] : CurlyTailKnots
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
-			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
-			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			([Just TAIL-STRAIGHT] || [Just TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			[Just TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-SHARP-CORNER] : CyrTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	define [StigmaShape tail] : glyph-proc
@@ -66,33 +65,32 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 			flatside.ld SB 0 XH SmallArchDepthA SmallArchDepthB
 			match tail
 				[Just TAIL-CURLY] : CurlyTailKnots
-				[Just TAIL-STRAIGHT-ROUNDED] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
-				[Just TAIL-DIAGONAL-ROUNDED] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
+				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
 		include : match tail
-			[Just TAIL-STRAIGHT] : CyrDescender.r RightSB 0 RightSB
-			[Just TAIL-DIAGONAL] : CyrTailDescender.r RightSB 0 RightSB
-			[Just TAIL-STRAIGHT-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
-			[Just TAIL-DIAGONAL-ROUNDED] : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			([Just TAIL-STRAIGHT] || [Just TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
+			[Just TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.r RightSB 0 RightSB
+			[Just TAIL-DIAGONAL-SHARP-CORNER] : CyrTailDescender.r RightSB 0 RightSB
 			__ : begin [glyph-proc]
 
 	define SigmaTailConfig : object
-		curlyTail                    { TAIL-CURLY            'p' }
-		straightTail                 { TAIL-STRAIGHT         'e' }
-		diagonalTail                 { TAIL-DIAGONAL         'e' }
-		straightTailRoundedBend      { TAIL-STRAIGHT-ROUNDED 'e' }
-		diagonalTailRoundedBend      { TAIL-DIAGONAL-ROUNDED 'e' }
+		curlyTail                    { TAIL-CURLY                 'p' }
+		straightTail                 { TAIL-STRAIGHT              'e' }
+		diagonalTail                 { TAIL-DIAGONAL              'e' }
+		straightTailSharpCorner      { TAIL-STRAIGHT-SHARP-CORNER 'e' }
+		diagonalTailSharpCorner      { TAIL-DIAGONAL-SHARP-CORNER 'e' }
 
 	define FinalSigmaConfig : SuffixCfg.weave
 		object # top
 			""        { TOP-ROUNDED   }
 			flatHook  { TOP-FLAT-HOOK }
 		object # tail
-			curlyTail                    { TAIL-CURLY            'p' }
-			straightTail                 { TAIL-STRAIGHT         'e' }
-			diagonalTail                 { TAIL-DIAGONAL         'e' }
-			straightTailRoundedBend      { TAIL-STRAIGHT-ROUNDED 'e' }
-			diagonalTailRoundedBend      { TAIL-DIAGONAL-ROUNDED 'e' }
+			curlyTail                    { TAIL-CURLY                 'p' }
+			straightTail                 { TAIL-STRAIGHT              'e' }
+			diagonalTail                 { TAIL-DIAGONAL              'e' }
+			straightTailSharpCorner      { TAIL-STRAIGHT-SHARP-CORNER 'e' }
+			diagonalTailSharpCorner      { TAIL-DIAGONAL-SHARP-CORNER 'e' }
 
 	foreach { suffix { { top } { tail mk } } } [Object.entries FinalSigmaConfig] : do
 		create-glyph "grek/sigmaFinal.\(suffix)" : glyph-proc
@@ -107,8 +105,8 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	alias 'grek/stigma.flatHookCurlyTail' null 'grek/stigma.curlyTail'
 	alias 'grek/stigma.flatHookStraightTail' null 'grek/stigma.straightTail'
 	alias 'grek/stigma.flatHookDiagonalTail' null 'grek/stigma.diagonalTail'
-	alias 'grek/stigma.flatHookStraightTailRoundedBend' null 'grek/stigma.straightTailRoundedBend'
-	alias 'grek/stigma.flatHookDiagonalTailRoundedBend' null 'grek/stigma.diagonalTailRoundedBend'
+	alias 'grek/stigma.flatHookStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
+	alias 'grek/stigma.flatHookDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
 
 	select-variant 'grek/sigmaFinal' 0x3C2
 	select-variant 'grek/stigma'     0x3DB (follow -- 'grek/sigmaFinal')
