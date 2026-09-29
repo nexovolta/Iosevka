@@ -133,6 +133,17 @@ glyph-block Letter-Cyrillic-El : begin
 			local slab : if (serifType === SERIF-NONE) SLAB-NONE SLAB-MOTION
 			include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) top BODY-NONE slab df.mvs
 
+	define ElCapConfig : SuffixCfg.weave
+		object
+			standard    { BODY-STRAIGHT     false false }
+			triangular  { BODY-LAMBDA-TRI   true  false }
+			curly       { BODY-LAMBDA-CURLY false false }
+			square      { BODY-LAMBDA-SQUARE true  true  }
+		object
+			serifless     SERIF-NONE
+			motionSerifed SERIF-MOTION
+			serifed       SERIF-ALL
+
 	define ElConfig : SuffixCfg.weave
 		object
 			standard    { BODY-STRAIGHT     false false }
@@ -290,7 +301,7 @@ glyph-block Letter-Cyrillic-El : begin
 	select-variant 'cyrl/LjeKomi' 0x508 (follow -- 'cyrl/El')
 	select-variant 'cyrl/ljeKomi' 0x509 (follow -- 'cyrl/el')
 
-	CreateSelectorVariants 'cyrl/ElSoft' 0xA664 [Object.keys ElConfig] (follow -- 'cyrl/El')
+	CreateSelectorVariants 'cyrl/ElSoft' 0xA664 [Object.keys ElCapConfig] (follow -- 'cyrl/El')
 	CreateSelectorVariants 'cyrl/elSoft' 0xA665 [Object.keys ElConfig] (follow -- 'cyrl/el')
 
 	derive-composites 'cyrl/ElDescender' 0x52E 'cyrl/El' [CyrDescender.rSideJut RightSB 0]
