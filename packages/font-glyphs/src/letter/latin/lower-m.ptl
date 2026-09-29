@@ -8,7 +8,7 @@ glyph-module
 glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Adjustment : LeaningAnchor TurnMarks
 	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender CyrCurlDescender PalatalHook EngHook
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame
@@ -478,6 +478,20 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : df.markSet.e
 			include : turnMShapeBodyImpl df XH Body toothless true tailed LSerifs
 			eject-contour 'serifMB'
+			set-base-anchor 'above' df.middle : XH - [SmallMShortLegHeight df XH]
+
+		create-glyph "ui.\(suffix)" : glyph-proc
+			local df : include dfM
+			include : df.markSet.e
+			include [refer-glyph "uNotch.\(suffix)"] AS_BASE ALSO_METRICS
+			include [refer-glyph 'tittleAbove']
+
+		create-glyph "turnui.\(suffix)" : glyph-proc
+			local df : include dfM
+			include : df.markSet.e
+			include [refer-glyph "ui.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround df.middle (XH / 2)
+			include : TurnMarks df.middle (XH / 2)
 
 		if (!tailed) : begin
 			create-glyph "turnmLongLeg.\(suffix)" : glyph-proc
@@ -517,6 +531,8 @@ glyph-block Letter-Latin-Lower-M : begin
 
 	select-variant 'UNotch' 0x1DF7C (follow -- 'U')
 	select-variant 'uNotch' 0x1DF7D (follow -- 'u')
+	select-variant 'ui'     0xAB50 (follow -- 'u')
+	select-variant 'turnui' 0xAB51 (follow -- 'u')
 
 	select-variant 'cyrl/sha.italic' (shapeFrom -- 'turnm') (follow -- [conditional-follow [MEnoughSpaceForFullSerifs dfM] 'cyrl/sha.italic' 'cyrl/sha.italic/reduced'])
 	select-variant 'cyrl/sha/reduced.italic' (shapeFrom -- 'turnm') (follow -- 'cyrl/sha.italic/reduced')
