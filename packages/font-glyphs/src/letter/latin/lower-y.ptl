@@ -353,18 +353,50 @@ glyph-block Letter-Latin-Lower-Y : begin
 						curl Middle (yVertex - HalfStroke) [heading Rightward]
 					MaskAbove yVertex
 			__ : if (bot < yVertex) : begin
-				local straightY : NonCursiveYShapeT true BS-STRAIGHT slabKind
-				local rightHalf : straightY.RightHalf TS-NONE SHRINK-NONE
+				# Entire right leg: vertical, then one constant-weight slash to `bot`.
+				# Left square-top arm is clipped where that slash crosses it.
 				local vxEndL : df.middle - VCornerHalfWidth
-				local diagSWL : [DiagCor (top - bot) (RightSB - SB) 0 Stroke] * Stroke
-				include : straightY.SmallYRightHalfShape top bot
-				include : tagged 'leftHalf' : difference
+				local dySlash : yJoinG - bot
+				local xPathBot : df.leftSB + [HSwToV Stroke]
+				for [local n 0] (n < 5) [inc n] : begin
+					local dxSlash : df.rightSB - xPathBot
+					local swR : [DiagCor dySlash dxSlash 0 Stroke] * Stroke
+					set xPathBot : df.leftSB + swR * [Math.hypot dxSlash dySlash] / dySlash
+				local diagSWR : [DiagCor dySlash (df.rightSB - xPathBot) 0 Stroke] * Stroke
+				local diagSWL : [DiagCor (yJoinG - yVertex) (vxEndL - df.leftSB) 0 Stroke] * Stroke
+				local yLeftEnd : mix yVertex bot 0.3
+				local xLeftEnd : mix df.leftSB vxEndL ((yLeftEnd - yJoinG) / (yVertex - yJoinG))
+				# Overshoot `bot` so MaskAbove cuts a flat foot for a possible bottom serif.
+				local ySlashEnd : bot - 2 * Stroke
+				local xSlashEnd : mix df.rightSB xPathBot ((ySlashEnd - yJoinG) / (bot - yJoinG))
+				define [RightSlash] : dispiro
+					widths.rhs diagSWR
+					corner df.rightSB yJoinG
+					corner xSlashEnd ySlashEnd
+				include : tagged 'rightHalf' : union
 					dispiro
-						widths.lhs Stroke
-						corner df.leftSB top [heading Downward]
-						corner df.leftSB yJoinG [heading Downward]
-						corner vxEndL yVertex [widths.lhs.heading diagSWL Downward]
-					rightHalf.splitMask top bot
+						widths.rhs Stroke
+						corner df.rightSB top [heading Downward]
+						corner df.rightSB yJoinG [heading Downward]
+					intersection [MaskAbove bot] : RightSlash
+				include : tagged 'leftHalf' : difference
+					union
+						dispiro
+							widths.lhs Stroke
+							corner df.leftSB top [heading Downward]
+							corner df.leftSB yJoinG [heading Downward]
+						dispiro
+							widths.lhs diagSWL
+							corner df.leftSB yJoinG
+							corner xLeftEnd yLeftEnd
+					union
+						RightSlash
+						spiro-outline
+							corner df.rightSB yJoinG
+							corner (df.width + 2 * Stroke) yJoinG
+							corner (df.width + 2 * Stroke) ySlashEnd
+							corner xSlashEnd ySlashEnd
+				if doSlabBottom : include : HSerif.mb [mix df.leftSB xPathBot 0.5] bot MidJutCenter
 		if doSlabTop : include : VSerifs df false top
 		if doSlabMotion : include : VMotionSerifs df false top
 
