@@ -192,42 +192,32 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			DotAt cx cy radiusOut
 			DotAt cx cy : Math.max radiusIn (radiusOut * 0.4)
 
-	create-glyph 'percent.circlesContinuousSlash' : glyph-proc
-		set-width Width
-		local l   : SB / 2
-		local r   : Width - l
-		local cell : r - l
-		local d : Math.min (cell * 0.46) (CAP * 0.40)
-		local radius : d / 2
-		local swBar  : AdviceStroke 3.75
-		local fineBar : AdviceStroke 4.5
-		local cor : DiagCorDs CAP (r - l) swBar
+	# Inscribed in the same half-width / half-height cell as rings-segmented-slash.
+	define [PercentCircleDiam cell] : Math.min (cell / 2) (CAP / 2)
+	# Previous percent circle size, kept for permille and per-ten-thousand.
+	define [SmallPercentCircleDiam cell] : Math.min (cell * 0.46) (CAP * 0.40)
 
+	define [CircleZeros l r radius extra] : glyph-proc
 		include : PercentCircle (l + radius) (CAP - radius) radius
 		include : PercentCircle (r - radius) radius radius
+		local step : 2 * radius + [Math.max (SB / 2) (radius * 0.35)]
+		foreach i [range 1 (extra + 1)] : begin
+			include : PercentCircle (r - radius + i * step) radius radius
+
+	define [CircleSlashContinuous l r] : glyph-proc
+		local swBar : AdviceStroke 3.75
+		local fineBar : AdviceStroke 4.5
+		local cor : DiagCorDs CAP (r - l) swBar
 		include : dispiro
 			corner r CAP [widths.rhs.heading (swBar * cor) Downward]
 			corner [mix r l 0.5] [mix CAP 0 0.5] [widths.center.heading (fineBar * cor) Downward]
 			corner l 0 [widths.lhs.heading (swBar * cor) Downward]
 
-		create-forked-glyph 'percent.circlesContinuousSlashAlsoConnected' : difference
-			HBar.t [Arch.adjust-x.top (l + radius) fineBar] (r - [HSwToV swBar]) CAP fineBar
-			DotAt (l + radius) (CAP - radius) radius
-
-	create-glyph 'percent.circlesSegmentedSlash' : glyph-proc
-		set-width Width
-		local l   : SB / 2
-		local r   : Width - l
-		local cell : r - l
-		local d : Math.min (cell * 0.46) (CAP * 0.40)
-		local radius : d / 2
+	define [CircleSlashSegmented l r] : glyph-proc
 		local swBar : AdviceStroke 3
 		local fine : AdviceStroke 4
 		local cor : DiagCorDs CAP (r - l) swBar
 		local pFine : 0.5 - [Math.max (CAP / 10) HalfStroke] / [Math.hypot CAP (r - l)]
-
-		include : PercentCircle (l + radius) (CAP - radius) radius
-		include : PercentCircle (r - radius) radius radius
 		include : dispiro
 			widths.rhs (swBar * cor)
 			flat r CAP [heading Downward]
@@ -236,6 +226,68 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			widths.rhs (swBar * cor)
 			flat l 0 [heading Upward]
 			curl [mix l r pFine] [mix 0 CAP pFine] [widths.heading (fine * cor) 0 Upward]
+
+	define [CircleAlsoConnectedBar l r radius] : begin
+		local swBar : AdviceStroke 3.75
+		local fineBar : AdviceStroke 4.5
+		return : difference
+			HBar.t [Arch.adjust-x.top (l + radius) fineBar] (r - [HSwToV swBar]) CAP fineBar
+			DotAt (l + radius) (CAP - radius) radius
+
+	define [CirclePercentGlyph extra fSegmented fConnected] : glyph-proc
+		local l : SB / 2
+		local r : Width - l
+		local diamFn : if extra SmallPercentCircleDiam PercentCircleDiam
+		local radius : [diamFn (r - l)] / 2
+		local step : 2 * radius + [Math.max (SB / 2) (radius * 0.35)]
+		include : CircleZeros l r radius extra
+		include : if fSegmented [CircleSlashSegmented l r] [CircleSlashContinuous l r]
+		if fConnected : include : CircleAlsoConnectedBar l r radius
+		if extra : begin
+			set-width WideWidth0
+			include : Translate ((WideWidth0 - r - extra * step) / 2) 0
+
+	create-glyph 'percent.circlesContinuousSlash' : glyph-proc
+		include : CirclePercentGlyph 0 false false
+	create-glyph 'percent.circlesContinuousSlashAlsoConnected' : glyph-proc
+		include : CirclePercentGlyph 0 false true
+	create-glyph 'percent.circlesSegmentedSlash' : glyph-proc
+		include : CirclePercentGlyph 0 true false
+
+	create-glyph 'permille.WWID.circlesContinuousSlash' : glyph-proc
+		include : CirclePercentGlyph 1 false false
+	create-glyph 'permille.WWID.circlesContinuousSlashAlsoConnected' : glyph-proc
+		include : CirclePercentGlyph 1 false true
+	create-glyph 'permille.WWID.circlesSegmentedSlash' : glyph-proc
+		include : CirclePercentGlyph 1 true false
+	create-glyph 'basepoint.WWID.circlesContinuousSlash' : glyph-proc
+		include : CirclePercentGlyph 2 false false
+	create-glyph 'basepoint.WWID.circlesContinuousSlashAlsoConnected' : glyph-proc
+		include : CirclePercentGlyph 2 false true
+	create-glyph 'basepoint.WWID.circlesSegmentedSlash' : glyph-proc
+		include : CirclePercentGlyph 2 true false
+
+	define [CirclePermilleNwid extra fSegmented] : glyph-proc
+		local width : Width * para.advanceScaleM
+		set-width width
+		local l : SB / 2
+		local r : width - l
+		local radius : [SmallPercentCircleDiam (Width - SB)] / 2
+		local step : 2 * radius + [Math.max (SB / 2) (radius * 0.35)]
+		include : PercentCircle (l + radius) (CAP - radius) radius
+		include : PercentCircle (r - radius) radius radius
+		foreach i [range 1 (extra + 1)] : begin
+			include : PercentCircle (r - radius - i * step) radius radius
+		include : if fSegmented [CircleSlashSegmented l r] [CircleSlashContinuous l r]
+
+	create-glyph 'permille.NWID.circlesContinuousSlash' : glyph-proc
+		include : CirclePermilleNwid 1 false
+	create-glyph 'permille.NWID.circlesSegmentedSlash' : glyph-proc
+		include : CirclePermilleNwid 1 true
+	create-glyph 'basepoint.NWID.circlesContinuousSlash' : glyph-proc
+		include : CirclePermilleNwid 2 false
+	create-glyph 'basepoint.NWID.circlesSegmentedSlash' : glyph-proc
+		include : CirclePermilleNwid 2 true
 
 	select-variant 'percent' '%'
 	select-variant 'permille.NWID'  [NarrowUnicode 0x2030] (follow -- 'permille.NWID')
