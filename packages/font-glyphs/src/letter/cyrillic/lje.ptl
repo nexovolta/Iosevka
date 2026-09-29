@@ -1,46 +1,38 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Point] from "@iosevka/geometry/point"
+import [mix] from "@iosevka/util"
 
 glyph-module
 
 glyph-block Letter-Cyrillic-Lje : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : LegShape
 	glyph-block-import Letter-Cyrillic-Yeri : YeriConfig
 
-	define [CyrLjeShape Yeri df top] : glyph-proc
-		local sw : df.adviceThinnerStroke2 3 3 top
-		local xTopLeft : mix df.leftSB df.rightSB 0.025
-		local xBotLeft : mix df.leftSB 0 : if SLAB 1.00 0.75
+	define [CyrLjeRightHalf Yeri df top] : glyph-proc
+		local sw : df.mvs + 0
 		local jut : Math.min
 			Jut - [HSwToV : 0.5 * (Stroke - sw)]
 			mix [HSwToV : 0.5 * sw] Jut ((2 / df.hPack) * df.adws)
-		include : LegShape
-			ztop -- [Point.fromXY Point.Type.Corner xTopLeft top]
-			zbot -- [Point.fromXY Point.Type.Corner xBotLeft 0]
-			xmid -- xTopLeft
-			sw   -- sw
 		include : Yeri top
 			left   -- (df.middle - [HSwToV : 0.5 * sw])
 			right  -- (df.rightSB - O)
 			stroke -- sw
 			jut    -- jut
-		include : HBar.t xTopLeft df.middle top sw
-		if SLAB : include : HSerif.lt xTopLeft top (jut - [HSwToV : 0.5 * sw]) sw
 
 	foreach { suffix { Uc Lc BGRc } } [Object.entries YeriConfig] : do
-		create-glyph "cyrl/Lje.\(suffix)"  : glyph-proc
+		create-glyph "cyrl/Lje/rightHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
-			include : CyrLjeShape Uc df CAP
+			include : CyrLjeRightHalf Uc df CAP
 
-		create-glyph "cyrl/lje.\(suffix)" : glyph-proc
+		create-glyph "cyrl/lje/rightHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			include : CyrLjeShape Lc df XH
+			include : CyrLjeRightHalf Lc df XH
 
-	select-variant 'cyrl/Lje' 0x409 (follow -- 'cyrl/Lje/rightHalf')
-	select-variant 'cyrl/lje' 0x459 (follow -- 'cyrl/lje/rightHalf')
+	select-variant 'cyrl/Lje/rightHalf'
+	select-variant 'cyrl/lje/rightHalf'
+
+	derive-composites 'cyrl/Lje' 0x409 'cyrl/Lje/leftHalf' 'cyrl/Lje/rightHalf'
+	derive-composites 'cyrl/lje' 0x459 'cyrl/lje/leftHalf' 'cyrl/lje/rightHalf'
