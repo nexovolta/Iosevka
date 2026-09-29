@@ -501,6 +501,17 @@ glyph-block Letter-Latin-Lower-R : begin
 		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df RMode.Half top bottom false false
 		eject-contour 'strokeL'
 
+	define [doubleRHalfDf pairWidth] : begin
+		local dfI : DivFrame para.advanceScaleI
+		local dim : RDim dfI RMode.Half
+		local xShift0 : Math.max TINY : dim.rHookX - dim.rBarLeftX - [HSwToV Stroke]
+		local k : Math.min 1 (pairWidth / (dfI.width + xShift0))
+		DivFrame (k * para.advanceScaleI)
+
+	define [MaskedExtraHalfRHook Body df xShift rArchDepthA] : glyph-proc
+		define [extra] : with-transform [ApparentTranslate xShift 0] : HalfRHookOnly Body df XH 0
+		include : difference [extra] : MaskBelow (XH - rArchDepthA + Stroke)
+
 	foreach { suffix { Body { doTS doBS } } } [pairs-of HalfRConfig] : do
 		create-glyph "rHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
@@ -518,36 +529,39 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : PalatalHook.r (x -- pos.x) (y -- pos.y) (xLink -- attach.x)
 
 		create-glyph "rDouble.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleI
+			local df : include : DivFrame para.advanceScaleM
 			include : df.markSet.e
+			local dfHalf : doubleRHalfDf df.width
 
-			define [object rBarLeftX rHookX setMarks] : RDim df RMode.Half
+			define [object rBarLeftX rHookX rArchDepthA setMarks] : RDim dfHalf RMode.Half
 			local xShift : Math.max TINY : rHookX - rBarLeftX - [HSwToV Stroke]
-			set-width (df.width + xShift)
 			include : setMarks XH 0 doTS doBS
-			include : Body df RMode.Half XH 0 doTS doBS
-			include : with-transform [ApparentTranslate xShift 0] : HalfRHookOnly Body df XH 0
+			include : Body dfHalf RMode.Half XH 0 doTS doBS
+			include : MaskedExtraHalfRHook Body dfHalf xShift rArchDepthA
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookX + xShift)
-			set-base-anchor 'overlay' ((df.width + xShift) / 2) [mix 0 XH 0.5]
+			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM
+			include : df.markSet.e
 			local tailSerif : if doTS 'topSerifed' 'serifless'
 			local tailBody : match Body
 				[Just HalfRShape.FlatTop]        'flatTop'
 				[Just HalfRShape.EarlessCorner]  'earlessCorner'
 				[Just HalfRShape.EarlessRounded] 'earlessRounded'
 				__                               ''
-			include [refer-glyph "rCrossedTail.\[joinCamel tailBody tailSerif]"] AS_BASE ALSO_METRICS
-			local dfHalf : DivFrame para.advanceScaleI
-			define [object rBarLeftX rHookX] : RDim dfHalf RMode.Half
+			include [refer-glyph "rCrossedTail.\[joinCamel tailBody tailSerif]"]
+			local dfHalf : doubleRHalfDf df.width
+			define [object rBarLeftX rHookX rArchDepthA] : RDim dfHalf RMode.Half
 			local rMd : begin
 				if (Body === HalfRShape.Standard)
 				: then : if doTS RMode.StandardSerifed RMode.Standard
 				: else : if doTS RMode.EarlessSerifed RMode.Earless
 			local rExt : RDim [DivFrame 1] rMd
-			local xShift : Math.max TINY : rExt.rHookX - rBarLeftX - [HSwToV Stroke]
-			set-width (currentGlyph.advanceWidth + xShift)
-			include : with-transform [ApparentTranslate xShift 0] : HalfRHookOnly Body dfHalf XH 0
+			local xNeed : rExt.rHookX - rBarLeftX - [HSwToV Stroke]
+			local xMax : df.width - OX - rHookX
+			local xShift : Math.max TINY : Math.min xNeed xMax
+			include : MaskedExtraHalfRHook Body dfHalf xShift rArchDepthA
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookX + xShift)
 
 	select-variant 'rHalf' 0xAB47
