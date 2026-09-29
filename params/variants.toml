@@ -10602,6 +10602,13 @@ rank = 2
 descriptionAffix = "asymmetric shape, like mirrored asymmetric Latin capital N (`N`)"
 selectorAffix."cyrl/i.upright" = "asymmetric"
 
+[prime.cyrl-i.variants-buildup.stages.body.cursive]
+rank = 3
+next = "cursive-body"
+groupRank = 20
+descriptionAffix = "cursive shape, like Latin `u`"
+selectorAffix."cyrl/i.upright" = "cursive"
+
 [prime.cyrl-i.variants-buildup.stages.serifs.serifless]
 rank = 1
 descriptionAffix = "serifs"
@@ -10615,6 +10622,57 @@ selectorAffix."cyrl/i.upright" = "motionSerifed"
 
 [prime.cyrl-i.variants-buildup.stages.serifs.serifed]
 rank = 3
+descriptionAffix = "serifs"
+selectorAffix."cyrl/i.upright" = "serifed"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body.toothed]
+rank = 1
+descriptionAffix = "toothed shape"
+selectorAffix."cyrl/i.upright" = "toothed"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body.tailed]
+rank = 2
+descriptionAffix = "tailed shape"
+selectorAffix."cyrl/i.upright" = "tailed"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body.flat-bottom]
+rank = 3
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/i.upright" = "flatBottom"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body.toothless-corner]
+rank = 4
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/i.upright" = "toothlessCorner"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-body.toothless-rounded]
+rank = 5
+descriptionAffix = "toothless (rounded) shape"
+selectorAffix."cyrl/i.upright" = "toothlessRounded"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/i.upright" = "serifless"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-serifs.bottom-right-serifed]
+rank = 2
+enableIf = [{ cursive-body = "toothed" }, { cursive-body = "flat-bottom" }]
+descriptionAffix = "serif at bottom-right"
+selectorAffix."cyrl/i.upright" = "bottomRightSerifed"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-serifs.motion-serifed]
+rank = 3
+descriptionAffix = "motion serifs at top-left and bottom-right"
+selectorAffix."cyrl/i.upright" = "motionSerifed"
+
+[prime.cyrl-i.variants-buildup.stages.cursive-serifs.serifed]
+rank = 4
 descriptionAffix = "serifs"
 selectorAffix."cyrl/i.upright" = "serifed"
 
@@ -10647,20 +10705,101 @@ sampler = "п"
 samplerExplain = "Cyrillic Lower Pe"
 tagKind = "letter"
 
-[prime.cyrl-pe.variants.serifless]
+[prime.cyrl-pe.variants-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Pe (`п`)"
+
+[prime.cyrl-pe.variants-buildup.stages.body."*"]
+next = "serifs"
+
+[prime.cyrl-pe.variants-buildup.stages.body.standard]
 rank = 1
-description = "Cyrillic Lower Pe (`п`) without serifs"
-selector."cyrl/pe.upright" = "serifless"
+keyAffix = ""
+groupRank = 1
+selectorAffix."cyrl/pe.upright" = ""
 
-[prime.cyrl-pe.variants.motion-serifed]
+[prime.cyrl-pe.variants-buildup.stages.body.cursive]
 rank = 2
-description = "Cyrillic Lower Pe (`п`) with motion serifs"
-selector."cyrl/pe.upright" = "motionSerifed"
+next = "cursive-body"
+groupRank = 10
+descriptionAffix = "cursive shape, like Latin `n`"
+selectorAffix."cyrl/pe.upright" = "cursive"
 
-[prime.cyrl-pe.variants.serifed]
+[prime.cyrl-pe.variants-buildup.stages.serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/pe.upright" = "serifless"
+
+[prime.cyrl-pe.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/pe.upright" = "motionSerifed"
+
+[prime.cyrl-pe.variants-buildup.stages.serifs.serifed]
 rank = 3
-description = "Cyrillic Lower Pe (`п`) with serifs"
-selector."cyrl/pe.upright" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/pe.upright" = "serifed"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-body."*"]
+next = "cursive-terminal"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-body.eared]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/pe.upright" = ""
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-body.flat-top]
+rank = 2
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "flat top"
+selectorAffix."cyrl/pe.upright" = "flatTop"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-body.earless-corner]
+rank = 3
+descriptionAffix = "earless (corner top-left) body shape"
+selectorAffix."cyrl/pe.upright" = "earlessCorner"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-body.earless-rounded]
+rank = 4
+descriptionAffix = "earless (rounded top-left) body shape"
+selectorAffix."cyrl/pe.upright" = "earlessRounded"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-terminal."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-terminal.straight]
+rank = 1
+descriptionAffix = "straight terminal"
+selectorAffix."cyrl/pe.upright" = "straight"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-terminal.tailed]
+rank = 2
+descriptionAffix = "tailed terminal"
+selectorAffix."cyrl/pe.upright" = "tailed"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-serifs.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/pe.upright" = "serifless"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-serifs.top-left-serifed]
+rank = 2
+descriptionAffix = "serif at top left"
+enableIf = [{ cursive-body = "eared", cursive-terminal = "NOT tailed" }, { cursive-body = "flat-top", cursive-terminal = "NOT tailed" }]
+selectorAffix."cyrl/pe.upright" = "topLeftSerifed"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-serifs.motion-serifed]
+rank = 3
+descriptionAffix = "serif at top left and bottom right"
+disableIf = [{ cursive-body = "earless-corner", cursive-terminal = "tailed" }, { cursive-body = "earless-rounded", cursive-terminal = "tailed" }]
+selectorAffix."cyrl/pe.upright" = "motionSerifed"
+
+[prime.cyrl-pe.variants-buildup.stages.cursive-serifs.serifed]
+rank = 4
+descriptionAffix = "serifs"
+selectorAffix."cyrl/pe.upright" = "serifed"
 
 
 
@@ -10691,20 +10830,247 @@ sampler = "ц"
 samplerExplain = "Cyrillic Lower Tse"
 tagKind = "letter"
 
-[prime.cyrl-tse.variants.serifless]
+[prime.cyrl-tse.variants-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Tse (`ц`)"
+
+[prime.cyrl-tse.variants-buildup.stages.body."*"]
+next = "serifs"
+
+[prime.cyrl-tse.variants-buildup.stages.body.standard]
 rank = 1
-description = "Cyrillic Lower Tse (`ц`) without serifs"
-selector."cyrl/tse.upright" = "serifless"
+keyAffix = ""
+groupRank = 1
+selectorAffix."cyrl/tse.upright" = ""
 
-[prime.cyrl-tse.variants.motion-serifed]
+[prime.cyrl-tse.variants-buildup.stages.body.cursive]
 rank = 2
-description = "Cyrillic Lower Tse (`ц`) with motion serifs"
-selector."cyrl/tse.upright" = "motionSerifed"
+next = "cursive-body"
+groupRank = 10
+descriptionAffix = "cursive shape, like Latin `u`"
+selectorAffix."cyrl/tse.upright" = "cursive"
 
-[prime.cyrl-tse.variants.serifed]
+[prime.cyrl-tse.variants-buildup.stages.serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/tse.upright" = "serifless"
+
+[prime.cyrl-tse.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/tse.upright" = "motionSerifed"
+
+[prime.cyrl-tse.variants-buildup.stages.serifs.serifed]
 rank = 3
-description = "Cyrillic Lower Tse (`ц`) with serifs"
-selector."cyrl/tse.upright" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/tse.upright" = "serifed"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body.toothed]
+rank = 1
+descriptionAffix = "toothed shape"
+selectorAffix."cyrl/tse.upright" = "toothed"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body.tailed]
+rank = 2
+descriptionAffix = "tailed shape"
+selectorAffix."cyrl/tse.upright" = "tailed"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body.flat-bottom]
+rank = 3
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/tse.upright" = "flatBottom"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body.toothless-corner]
+rank = 4
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/tse.upright" = "toothlessCorner"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-body.toothless-rounded]
+rank = 5
+descriptionAffix = "toothless (rounded) shape"
+selectorAffix."cyrl/tse.upright" = "toothlessRounded"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/tse.upright" = "serifless"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-serifs.bottom-right-serifed]
+rank = 2
+enableIf = [{ cursive-body = "toothed" }, { cursive-body = "flat-bottom" }]
+descriptionAffix = "serif at bottom-right"
+selectorAffix."cyrl/tse.upright" = "bottomRightSerifed"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-serifs.motion-serifed]
+rank = 3
+descriptionAffix = "motion serifs at top-left and bottom-right"
+selectorAffix."cyrl/tse.upright" = "motionSerifed"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-serifs.serifed]
+rank = 4
+descriptionAffix = "serifs"
+selectorAffix."cyrl/tse.upright" = "serifed"
+
+
+
+[prime.cyrl-te]
+sampler = "т"
+samplerExplain = "Cyrillic Lower Te"
+tagKind = "letter"
+
+[prime.cyrl-te.variants-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Te (`т`)"
+
+[prime.cyrl-te.variants-buildup.stages.body."*"]
+next = "serifs"
+
+[prime.cyrl-te.variants-buildup.stages.body.standard]
+rank = 1
+keyAffix = ""
+groupRank = 1
+selectorAffix."cyrl/te.upright" = ""
+selectorAffix."cyrl/te/reduced.upright" = ""
+
+[prime.cyrl-te.variants-buildup.stages.body.cursive]
+rank = 2
+next = "cursive-body"
+groupRank = 10
+descriptionAffix = "cursive shape, like Latin `m`"
+selectorAffix."cyrl/te.upright" = "cursive"
+selectorAffix."cyrl/te/reduced.upright" = "cursive"
+
+[prime.cyrl-te.variants-buildup.stages.serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/te.upright" = "serifless"
+selectorAffix."cyrl/te/reduced.upright" = "serifless"
+
+[prime.cyrl-te.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/te.upright" = "motionSerifed"
+selectorAffix."cyrl/te/reduced.upright" = "motionSerifed"
+
+[prime.cyrl-te.variants-buildup.stages.serifs.serifed]
+rank = 3
+descriptionAffix = "serifs"
+selectorAffix."cyrl/te.upright" = "serifed"
+selectorAffix."cyrl/te/reduced.upright" = "serifed"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body."*"]
+next = "cursive-leg"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body.eared]
+rank = 1
+groupRank = 10
+keyAffix = ""
+descriptionAffix = "eared body shape"
+selectorAffix."cyrl/te.upright" = ""
+selectorAffix."cyrl/te/reduced.upright" = ""
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body.flat-top]
+rank = 2
+groupRank = 20
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "flat top"
+selectorAffix."cyrl/te.upright" = "flatTop"
+selectorAffix."cyrl/te/reduced.upright" = "flatTop"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body.earless-corner-double-arch]
+rank = 3
+groupRank = 30
+descriptionAffix = "earless (corner top-left) double-arch body shape"
+selectorAffix."cyrl/te.upright" = "earlessCornerDoubleArch"
+selectorAffix."cyrl/te/reduced.upright" = "earlessCornerDoubleArch"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body.earless-rounded-double-arch]
+rank = 4
+groupRank = 40
+descriptionAffix = "earless (rounded top-left) double-arch body shape"
+selectorAffix."cyrl/te.upright" = "earlessRoundedDoubleArch"
+selectorAffix."cyrl/te/reduced.upright" = "earlessRoundedDoubleArch"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-body.earless-single-arch]
+rank = 5
+groupRank = 50
+descriptionAffix = "earless (corner top-left) single-arch body shape"
+selectorAffix."cyrl/te.upright" = "earlessSingleArch"
+selectorAffix."cyrl/te/reduced.upright" = "earlessSingleArch"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-leg."*"]
+next = "cursive-tail"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-leg.normal]
+rank = 1
+groupRank = 1
+keyAffix = ""
+descriptionAffix = "normal middle leg"
+selectorAffix."cyrl/te.upright" = ""
+selectorAffix."cyrl/te/reduced.upright" = ""
+
+[prime.cyrl-te.variants-buildup.stages.cursive-leg.short-leg]
+rank = 2
+groupRank = { if = [{ cursive-body = "eared" }, { cursive-body = "flat-top" }], then = 2, else = 1 }
+descriptionAffix = "shorter middle leg (like Ubuntu Mono)"
+selectorAffix."cyrl/te.upright" = "shortLeg"
+selectorAffix."cyrl/te/reduced.upright" = "shortLeg"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-tail."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-tail.normal]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/te.upright" = ""
+selectorAffix."cyrl/te/reduced.upright" = ""
+
+[prime.cyrl-te.variants-buildup.stages.cursive-tail.tailed]
+rank = 2
+descriptionAffix = "tail"
+selectorAffix."cyrl/te.upright" = "tailed"
+selectorAffix."cyrl/te/reduced.upright" = "tailed"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-serifs.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/te.upright" = "serifless"
+selectorAffix."cyrl/te/reduced.upright" = "serifless"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-serifs.top-left-serifed]
+rank = 2
+descriptionAffix = "serif at top left"
+enableIf = [{ cursive-body = "eared" }, { cursive-body = "flat-top" }]
+selectorAffix."cyrl/te.upright" = "topLeftSerifed"
+selectorAffix."cyrl/te/reduced.upright" = "topLeftSerifed"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-serifs.top-left-and-bottom-right-serifed]
+rank = 3
+descriptionAffix = "serifs at top left and bottom right"
+enableIf = [{ cursive-body = "eared", cursive-tail = "NOT tailed" }, { cursive-body = "flat-top", cursive-tail = "NOT tailed" }]
+selectorAffix."cyrl/te.upright" = "topLeftAndBottomRightSerifed"
+selectorAffix."cyrl/te/reduced.upright" = "topLeftAndBottomRightSerifed"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-serifs.bottom-right-serifed]
+rank = 3
+descriptionAffix = "serifs at bottom right"
+disableIf = [{ cursive-body = "eared" }, { cursive-body = "flat-top" }, { cursive-tail = "tailed" }]
+selectorAffix."cyrl/te.upright" = "bottomRightSerifed"
+selectorAffix."cyrl/te/reduced.upright" = "bottomRightSerifed"
+
+[prime.cyrl-te.variants-buildup.stages.cursive-serifs.serifed]
+rank = 4
+descriptionAffix = "serifs"
+selectorAffix."cyrl/te.upright" = "serifed"
+selectorAffix."cyrl/te/reduced.upright" = "serifed"
 
 
 
@@ -10738,23 +11104,106 @@ sampler = "ш щ"
 samplerExplain = "Cyrillic Lower Sha and Shcha"
 tagKind = "letter"
 
-[prime.cyrl-sha.variants.serifless]
+[prime.cyrl-sha.variants-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Sha and Shcha (`ш`, `щ`)"
+
+[prime.cyrl-sha.variants-buildup.stages.body."*"]
+next = "serifs"
+
+[prime.cyrl-sha.variants-buildup.stages.body.standard]
 rank = 1
-description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) without serifs"
-selector."cyrl/sha.upright" = "serifless"
-selector."cyrl/shcha.upright" = "serifless"
+keyAffix = ""
+groupRank = 1
+selectorAffix."cyrl/sha.upright" = ""
+selectorAffix."cyrl/shcha.upright" = ""
 
-[prime.cyrl-sha.variants.motion-serifed]
+[prime.cyrl-sha.variants-buildup.stages.body.cursive]
 rank = 2
-description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) with motion serifs"
-selector."cyrl/sha.upright" = "motionSerifed"
-selector."cyrl/shcha.upright" = "motionSerifed"
+next = "cursive-body"
+groupRank = 10
+descriptionAffix = "cursive shape, like Latin turned `m`"
+selectorAffix."cyrl/sha.upright" = "cursive"
+selectorAffix."cyrl/shcha.upright" = "cursive"
 
-[prime.cyrl-sha.variants.serifed]
+[prime.cyrl-sha.variants-buildup.stages.serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/sha.upright" = "serifless"
+selectorAffix."cyrl/shcha.upright" = "serifless"
+
+[prime.cyrl-sha.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/sha.upright" = "motionSerifed"
+selectorAffix."cyrl/shcha.upright" = "motionSerifed"
+
+[prime.cyrl-sha.variants-buildup.stages.serifs.serifed]
 rank = 3
-description = "Cyrillic Lower Sha and Shcha (`ш`, `щ`) with serifs"
-selector."cyrl/sha.upright" = "serifed"
-selector."cyrl/shcha.upright" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/sha.upright" = "serifed"
+selectorAffix."cyrl/shcha.upright" = "serifed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body.toothed]
+rank = 1
+descriptionAffix = "toothed shape"
+selectorAffix."cyrl/sha.upright" = "toothed"
+selectorAffix."cyrl/shcha.upright" = "toothed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body.tailed]
+rank = 2
+descriptionAffix = "tailed shape"
+selectorAffix."cyrl/sha.upright" = "tailed"
+selectorAffix."cyrl/shcha.upright" = "tailed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body.flat-bottom]
+rank = 3
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/sha.upright" = "flatBottom"
+selectorAffix."cyrl/shcha.upright" = "flatBottom"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body.toothless-corner]
+rank = 4
+descriptionAffix = "toothless (corner bottom-right) shape"
+selectorAffix."cyrl/sha.upright" = "toothlessCorner"
+selectorAffix."cyrl/shcha.upright" = "toothlessCorner"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-body.toothless-rounded]
+rank = 5
+descriptionAffix = "toothless (rounded) shape"
+selectorAffix."cyrl/sha.upright" = "toothlessRounded"
+selectorAffix."cyrl/shcha.upright" = "toothlessRounded"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/sha.upright" = "serifless"
+selectorAffix."cyrl/shcha.upright" = "serifless"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-serifs.bottom-right-serifed]
+rank = 2
+enableIf = [{ cursive-body = "toothed" }, { cursive-body = "flat-bottom" }]
+descriptionAffix = "serif at bottom-right"
+selectorAffix."cyrl/sha.upright" = "bottomRightSerifed"
+selectorAffix."cyrl/shcha.upright" = "bottomRightSerifed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-serifs.motion-serifed]
+rank = 3
+descriptionAffix = "motion serifs at top-left and bottom-right"
+selectorAffix."cyrl/sha.upright" = "motionSerifed"
+selectorAffix."cyrl/shcha.upright" = "motionSerifed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-serifs.serifed]
+rank = 4
+descriptionAffix = "serifs"
+selectorAffix."cyrl/sha.upright" = "serifed"
+selectorAffix."cyrl/shcha.upright" = "serifed"
 
 
 
@@ -12641,6 +13090,7 @@ cyrl-u = "straight-serifless"
 cyrl-ef = "serifless"
 cyrl-capital-pe = "serifless"
 cyrl-pe = "serifless"
+cyrl-te = "serifless"
 cyrl-capital-tse = "serifless"
 cyrl-tse = "serifless"
 cyrl-capital-sha = "serifless"
@@ -12815,6 +13265,7 @@ cyrl-u = "straight-turn-serifed"
 cyrl-ef = "serifed"
 cyrl-capital-pe = "serifed"
 cyrl-pe = "serifed"
+cyrl-te = "serifed"
 cyrl-capital-tse = "serifed"
 cyrl-tse = "serifed"
 cyrl-capital-sha = "serifed"
@@ -12872,6 +13323,7 @@ cyrl-er = "eared-motion-serifed"
 cyrl-u = "cursive-motion-serifed"
 cyrl-ef = "cursive"
 cyrl-pe = "motion-serifed"
+cyrl-te = "motion-serifed"
 capital-delta = "straight-motion-serifed"
 capital-pi = "motion-serifed"
 cyrl-tse = "motion-serifed"

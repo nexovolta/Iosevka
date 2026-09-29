@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg boole] from "@iosevka/util"
+import [mix clamp fallback SuffixCfg boole joinCamel] from "@iosevka/util"
 import [MathSansSerif Joining] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -328,6 +328,11 @@ glyph-block Letter-Latin-Lower-N : begin
 			if sRB : include : sRB subDf 0
 
 			include : MidHook.m df XH
+
+		create-glyph "cyrl/pe.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "n.\(suffix)"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/peMidHook.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "cyrl/peMidHook.italic.\(suffix)"] AS_BASE ALSO_METRICS
 
 		if (!tailed) : create-glyph "cyrl/yat.italic/base.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3

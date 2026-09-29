@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
+import [mix fallback SuffixCfg joinCamel] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -305,6 +305,11 @@ glyph-block Letter-Latin-Lower-M : begin
 
 				include : Serifs df XH 0 [if shortLeg [SmallMShortLegHeight df XH] 0] 0 true earless sw
 
+		create-glyph "cyrl/te.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "m.\(suffix)"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/te/reduced.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "m.\(suffix)"] AS_BASE ALSO_METRICS
+
 		if (Body === SmallMArches && !shortLeg) : begin
 			if (!tailed) : begin
 				create-glyph "cyrl/tjeKomi.italic.\(suffix)" : glyph-proc
@@ -420,6 +425,28 @@ glyph-block Letter-Latin-Lower-M : begin
 			local df : include dfM
 			include : df.markSet.e
 			include : turnMShapeBody df XH
+
+		create-glyph "cyrl/sha.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "turnm.\(suffix)"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/sha/reduced.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "turnm.\(suffix)"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/teThreeLeg.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "turnm.\(suffix)"] AS_BASE ALSO_METRICS
+
+		create-glyph "cyrl/shcha.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			local df : include dfM
+			include : df.markSet.e
+			include : turnMShapeBody df XH
+			eject-contour 'serifLT'
+			include : CyrDescender.rSideJut df.rightSB 0 (refSw -- df.mvs)
+		create-glyph "cyrl/shcha/reduced.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "cyrl/shcha.upright.\[joinCamel 'cursive' suffix]"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/shwe.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			local df : include dfM
+			include : df.markSet.p
+			include : turnMShapeBody df XH
+			eject-contour 'serifLT'
+			include : CyrCurlDescender.rSideJut df.rightSB 0 (refSw -- df.mvs)
 
 		create-glyph "turnmCap.\(suffix)" : glyph-proc
 			local df : include dfM

@@ -165,6 +165,11 @@ glyph-block Letter-Latin-Upper-T : begin
 			set-base-anchor 'bottomRight' (df.middle + [HSwToV HalfStroke]) 0
 			include : TShape df XH doST doSB
 
+		create-glyph "cyrl/te.upright.\(suffix)" : glyph-proc
+			include [refer-glyph "smcpT.\(suffix)"] AS_BASE ALSO_METRICS
+		create-glyph "cyrl/te/reduced.upright.\(suffix)" : glyph-proc
+			include [refer-glyph "smcpT.\(suffix)"] AS_BASE ALSO_METRICS
+
 		create-glyph "cyrl/teDescender.upright.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include : df.markSet.e
@@ -269,8 +274,8 @@ glyph-block Letter-Latin-Upper-T : begin
 	alias-reduced-variant 'grek/Tau/sansSerif' 'grek/Tau' 'T/sansSerif' MathSansSerif
 
 	alias 'cyrl/Te' 0x422 'T'
-	alias 'cyrl/te.upright' null 'smcpT'
-	alias 'cyrl/te/reduced.upright' null 'smcpT'
+	select-variant 'cyrl/te.upright'
+	select-variant 'cyrl/te/reduced.upright' (follow -- 'cyrl/te.upright')
 
 	select-variant 'cyrl/TeDescender' 0x4AC (follow -- 'T')
 	select-variant 'cyrl/teDescender.upright' (follow -- 'T')
