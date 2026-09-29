@@ -508,9 +508,11 @@ glyph-block Letter-Latin-Lower-R : begin
 		local k : Math.min 1 (pairWidth / (dfI.width + xShift0))
 		DivFrame (k * para.advanceScaleI)
 
-	define [MaskedExtraHalfRHook Body df xShift rArchDepthA] : glyph-proc
+	define [MaskedExtraHalfRHook Body df xShift rBarLeftX] : glyph-proc
 		define [extra] : with-transform [ApparentTranslate xShift 0] : HalfRHookOnly Body df XH 0
-		include : difference [extra] : MaskBelow (XH - rArchDepthA + Stroke)
+		include : difference [extra] : intersection
+			MaskBelow (XH - Stroke)
+			MaskLeft (rBarLeftX + xShift + [HSwToV Stroke])
 
 	foreach { suffix { Body { doTS doBS } } } [pairs-of HalfRConfig] : do
 		create-glyph "rHalf.\(suffix)" : glyph-proc
@@ -533,11 +535,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : df.markSet.e
 			local dfHalf : doubleRHalfDf df.width
 
-			define [object rBarLeftX rHookX rArchDepthA setMarks] : RDim dfHalf RMode.Half
+			define [object rBarLeftX rHookX setMarks] : RDim dfHalf RMode.Half
 			local xShift : Math.max TINY : rHookX - rBarLeftX - [HSwToV Stroke]
 			include : setMarks XH 0 doTS doBS
 			include : Body dfHalf RMode.Half XH 0 doTS doBS
-			include : MaskedExtraHalfRHook Body dfHalf xShift rArchDepthA
+			include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookX + xShift)
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
@@ -552,7 +554,7 @@ glyph-block Letter-Latin-Lower-R : begin
 				__                               ''
 			include [refer-glyph "rCrossedTail.\[joinCamel tailBody tailSerif]"]
 			local dfHalf : doubleRHalfDf df.width
-			define [object rBarLeftX rHookX rArchDepthA] : RDim dfHalf RMode.Half
+			define [object rBarLeftX rHookX] : RDim dfHalf RMode.Half
 			local rMd : begin
 				if (Body === HalfRShape.Standard)
 				: then : if doTS RMode.StandardSerifed RMode.Standard
@@ -561,7 +563,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			local xNeed : rExt.rHookX - rBarLeftX - [HSwToV Stroke]
 			local xMax : df.width - OX - rHookX
 			local xShift : Math.max TINY : Math.min xNeed xMax
-			include : MaskedExtraHalfRHook Body dfHalf xShift rArchDepthA
+			include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookX + xShift)
 
 	select-variant 'rHalf' 0xAB47
