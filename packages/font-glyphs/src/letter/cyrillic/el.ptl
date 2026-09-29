@@ -266,6 +266,16 @@ glyph-block Letter-Cyrillic-El : begin
 				set-base-anchor 'cvDecompose' 0 0
 				include : CyrElLeftHalf df CAP bodyType fBarStraight fSquareBottom serifType false
 
+			create-glyph "cyrl/Lje/leftHalf.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.capital
+				include : CyrElLeftHalf df CAP bodyType fBarStraight fSquareBottom serifType false
+
+			create-glyph "cyrl/lje/leftHalf.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.e
+				include : CyrElLeftHalf df XH bodyType fBarStraight fSquareBottom serifType true
+
 		create-glyph "cyrl/lha/el.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3.2
 			include : df.markSet.e
@@ -278,6 +288,7 @@ glyph-block Letter-Cyrillic-El : begin
 		alias "cyrl/elHook.tailed\(ser)" null "cyrl/elHook.standard\(ser)"
 		alias "cyrl/LjeKomi.tailed\(ser)" null "cyrl/LjeKomi.standard\(ser)"
 		alias "cyrl/ljeKomi.tailed\(ser)" null "cyrl/ljeKomi.standard\(ser)"
+		alias "cyrl/lje/leftHalf.tailed\(ser)" null "cyrl/lje/leftHalf.standard\(ser)"
 		DefineSelectorGlyph "cyrl/ElSoft" "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
 		alias "cyrl/ElSoft.tailed\(ser)" null "cyrl/ElSoft.standard\(ser)"
 		foreach lam [items-of : list 'triangular' 'curly' 'square'] : do
@@ -295,6 +306,8 @@ glyph-block Letter-Cyrillic-El : begin
 	select-variant 'cyrl/elMidHook' 0x521 (follow -- 'cyrl/el')
 	select-variant 'cyrl/Lha/El' (follow -- 'cyrl/El')
 	select-variant 'cyrl/lha/el' (follow -- 'cyrl/el')
+	select-variant 'cyrl/Lje/leftHalf' (follow -- 'cyrl/El')
+	select-variant 'cyrl/lje/leftHalf' (follow -- 'cyrl/el')
 	select-variant 'cyrl/elDescender' 0x52F (follow -- 'cyrl/el')
 	select-variant 'cyrl/elTail' 0x4C6 (follow -- 'cyrl/el')
 	select-variant 'cyrl/elHook' 0x513 (follow -- 'cyrl/el')
