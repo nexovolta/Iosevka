@@ -51,20 +51,23 @@ glyph-block Letter-Greek-Pi : begin
 					[Just TERMINAL-STRAIGHT] sf.rb.full
 					__                       [no-shape]
 
-	create-glyph 'grek/Pi' 0x3A0 : glyph-proc
-		include : MarkSet.capital
-		include : PiShape [DivFrame 1] CAP 0 (shrinkRate -- 0) (doSerif -- SLAB)
-
-	CreateTurnedLetter 'amalg' 0x2A3F 'grek/Pi' HalfAdvance (CAP / 2)
-
-	create-glyph 'grek/smcpPi' 0x1D28 : glyph-proc
-		include : MarkSet.e
-		include : PiShape [DivFrame 1] XH 0 (shrinkRate -- 0) (doSerif -- SLAB)
-
 	define PeConfig : object
 		serifless     SERIF-NONE
 		motionSerifed SERIF-MOTION
 		serifed       SERIF-ALL
+
+	foreach { suffix serifType } [Object.entries PeConfig] : do
+		create-glyph "grek/Pi.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : PiShape [DivFrame 1] CAP 0 (shrinkRate -- 0) (serifType -- serifType)
+
+		create-glyph "grek/smcpPi.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : PiShape [DivFrame 1] XH 0 (shrinkRate -- 0) (serifType -- serifType)
+
+	select-variant 'grek/Pi' 0x3A0
+	select-variant 'grek/smcpPi' 0x1D28 (follow -- 'grek/Pi')
+	CreateTurnedLetter 'amalg' 0x2A3F 'grek/Pi' HalfAdvance (CAP / 2)
 
 	foreach { suffix serifType } [Object.entries PeConfig] : do
 		create-glyph "cyrl/Pe.\(suffix)" : glyph-proc
