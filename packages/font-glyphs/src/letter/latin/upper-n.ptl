@@ -24,6 +24,7 @@ glyph-block Letter-Latin-Upper-N : begin
 	define SLAB-CYR-I      4
 	define SLAB-UPPER-TSAN 5
 	define SLAB-LOWER-TSAN 6
+	define SLAB-CYR-I-MOTION 7
 
 	define pInkTrap 0.4
 
@@ -128,6 +129,7 @@ glyph-block Letter-Latin-Upper-N : begin
 			[Just SLAB-ALL]    : composite-proc sf.lt.full sf.rt.outer sf.rb.full
 			[Just SLAB-AUTO]   : NeedSlab SLAB : composite-proc sf.lt.full sf.rt.outer sf.rb.full
 			[Just SLAB-MOTION] : composite-proc sf.rt.outer
+			[Just SLAB-CYR-I-MOTION] : composite-proc sf.lt.outer sf.rb.outer
 			[Just SLAB-CYR-I]  : NeedSlab SLAB : match bodyType
 				[Just BODY-CYR-I-SLAB] : composite-proc sf.lt.full sf.lb.full  sf.rt.full  sf.rb.full
 				__                     : composite-proc sf.lt.full sf.lb.outer sf.rt.outer sf.rb.full
@@ -143,6 +145,15 @@ glyph-block Letter-Latin-Upper-N : begin
 			""             SLAB-AUTO
 			serifless      SLAB-NONE
 			motionSerifed  SLAB-MOTION
+			serifed        SLAB-ALL
+
+	define CyrIConfig : SuffixCfg.weave
+		object # body
+			standard     { BODY-SYMMETRIC  4 }
+			asymmetric   { BODY-ASYMMETRIC 3 }
+		object # slab
+			serifless      SLAB-NONE
+			motionSerifed  SLAB-CYR-I-MOTION
 			serifed        SLAB-ALL
 
 	foreach { suffix { { bodyType crDiag } slabType } } [Object.entries NConfig] : do
@@ -207,10 +218,21 @@ glyph-block Letter-Latin-Upper-N : begin
 	CreateAccentedComposition 'NAcute'    0x143 'N' 'acuteAbove'
 	CreateAccentedComposition 'NAcute.PLK' null 'N' 'kreskaAbove'
 
-	create-glyph 'cyrl/I' 0x418 : glyph-proc
-		include : MarkSet.capital
-		include : RevNShape [DivFrame 1] CAP BODY-CYR-I SLAB-CYR-I
+	foreach { suffix { { bodyType crDiag } slabType } } [Object.entries CyrIConfig] : do
+		create-glyph "cyrl/I.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : RevNShape [DivFrame 1] CAP bodyType slabType
+				swDiag -- [AdviceStroke crDiag]
+
+		create-glyph "cyrl/i.upright.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : RevNShape [DivFrame 1] XH bodyType slabType
+				swDiag -- [AdviceStroke crDiag]
+
+	select-variant 'cyrl/I' 0x418
+	select-variant 'cyrl/i.upright'
 	derive-composites 'cyrl/ITail' null 'cyrl/I' [CyrTailDescender.rSideJut RightSB 0]
+	derive-composites 'cyrl/iTail.upright' null 'cyrl/i.upright' [CyrTailDescender.rSideJut RightSB 0]
 
 	CreateAccentedComposition 'cyrl/IBreve' 0x419 'cyrl/I' 'breveAbove'
 	CreateAccentedComposition 'cyrl/IGrave' 0x40D 'cyrl/I' 'graveAbove'
@@ -221,11 +243,6 @@ glyph-block Letter-Latin-Upper-N : begin
 
 	CreateAccentedComposition 'cyrl/IBreve.BGR' null 'cyrl/I.BGR' 'breveAbove'
 	CreateAccentedComposition 'cyrl/IGrave.BGR' null 'cyrl/I.BGR' 'graveAbove'
-
-	create-glyph 'cyrl/i.upright' : glyph-proc
-		include : MarkSet.e
-		include : RevNShape [DivFrame 1] XH BODY-CYR-I SLAB-CYR-I
-	derive-composites 'cyrl/iTail.upright' null 'cyrl/i.upright' [CyrTailDescender.rSideJut RightSB 0]
 
 	create-glyph 'grek/Tsan' 0x376 : glyph-proc
 		include : MarkSet.capital
