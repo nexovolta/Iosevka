@@ -341,18 +341,18 @@ glyph-block Letter-Latin-Lower-M : begin
 					include [refer-glyph "cyrl/tje.italic/base/corner.\(suffix)"] AS_BASE ALSO_METRICS
 					eject-contour 'serifRB'
 
-			create-glyph "cyrl/teMidHook.italic.\(suffix)" : glyph-proc
-				local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
-				include : df.markSet.e
-				local subDf : df.slice 4 3 0
-				include : mShapeBody subDf XH
-				include : MidHook.general
-					left   -- subDf.rightSB
-					right  -- df.rightSB
-					top    -- (XH * 0.625 + df.mvs / 4)
-					ada    -- ArchDepthA
-					adb    -- ArchDepthB
-					sw     -- subDf.mvs
+		create-glyph "cyrl/teMidHook.italic.\(suffix)" : glyph-proc
+			local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
+			include : df.markSet.e
+			local subDf : df.slice 4 3 0
+			include : mShapeBody subDf XH
+			include : MidHook.general
+				left   -- subDf.rightSB
+				right  -- df.rightSB
+				top    -- (XH * 0.625 + df.mvs / 4)
+				ada    -- ArchDepthA
+				adb    -- ArchDepthB
+				sw     -- subDf.mvs
 
 	select-variant 'm' 'm'
 	select-variant 'm/descBase' (shapeFrom -- 'm')
