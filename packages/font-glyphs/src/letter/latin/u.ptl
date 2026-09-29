@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
+import [mix fallback SuffixCfg joinCamel] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -217,6 +217,9 @@ glyph-block Letter-Latin-U : begin
 			include : Base  df XH Stroke
 			include : Slabs df XH Stroke
 
+		create-glyph "cyrl/i.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "u.\(suffix)"] AS_BASE ALSO_METRICS
+
 		create-glyph "grek/mu.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
@@ -236,6 +239,9 @@ glyph-block Letter-Latin-U : begin
 			eject-contour 'serifRB'
 			include : CyrDescender.rSideJut df.rightSB 0
 
+		create-glyph "cyrl/tse.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "cyrl/tse.italic.\(suffix)"] AS_BASE ALSO_METRICS
+
 		create-glyph "cyrl/tswe.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
@@ -243,6 +249,9 @@ glyph-block Letter-Latin-U : begin
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : CyrCurlDescender.rSideJut df.rightSB 0
+
+		create-glyph "cyrl/tswe.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "cyrl/tswe.italic.\(suffix)"] AS_BASE ALSO_METRICS
 
 		create-glyph "cyrl/revtse.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -253,6 +262,9 @@ glyph-block Letter-Latin-U : begin
 				curl df.leftSB SmallArchDepthB [heading Upward]
 			include : Slabs df XH Stroke
 			include : CyrDescender.lSideJut df.leftSB 0
+
+		create-glyph "cyrl/revtse.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "cyrl/revtse.italic.\(suffix)"] AS_BASE ALSO_METRICS
 
 		create-glyph "turnh.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -365,6 +377,8 @@ glyph-block Letter-Latin-U : begin
 
 	select-variant 'cyrl/i.italic' (shapeFrom -- 'u')
 	select-variant 'cyrl/i.italic/descBase' (shapeFrom -- 'u')
+	select-variant 'cyrl/i.upright'
+	derive-composites 'cyrl/iTail.upright' null 'cyrl/i.upright' [CyrTailDescender.rSideJut RightSB 0]
 
 	select-variant 'cyrl/tse.italic'
 	select-variant 'cyrl/revtse.italic'
