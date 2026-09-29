@@ -160,12 +160,31 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				HBar.b 0 df.width 0 sw
 				LambdaMask df fBarStraight shapeHeight sw fSquareBottom
 
-	define DeltaConfig : object
-		straight { true  false }
-		curly    { false false }
-		square   { true  true  }
+	define SERIF-NONE   0
+	define SERIF-MOTION 1
+	define SERIF-ALL    2
+	define A-SLAB-TOP   1
+	define A-SLAB-LEFT  2
+	define A-SLAB-RIGHT 4
 
-	foreach { suffix { fBarStraight fSquareBottom } } [Object.entries DeltaConfig] : do
+	define [DeltaSerifs df top bottom sw serifType] : glyph-proc
+		local height : Math.abs : top - bottom
+		include : with-transform [ApparentTranslate 0 bottom] : match serifType
+			[Just SERIF-MOTION] : ASerifs df height sw A-SLAB-TOP
+			[Just SERIF-ALL]    : ASerifs df height sw [bitOr A-SLAB-TOP [bitOr A-SLAB-LEFT A-SLAB-RIGHT]]
+			__                  : no-shape
+
+	define DeltaConfig : SuffixCfg.weave
+		object
+			straight { true  false }
+			curly    { false false }
+			square   { true  true  }
+		object
+			serifless     SERIF-NONE
+			motionSerifed SERIF-MOTION
+			serifed       SERIF-ALL
+
+	foreach { suffix { { fBarStraight fSquareBottom } serifType } } [Object.entries DeltaConfig] : do
 		create-glyph "grek/Delta.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape
@@ -175,6 +194,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- CAP
 				bottom        -- 0
 				sw            -- Stroke
+			include : DeltaSerifs [DivFrame 1] CAP 0 Stroke serifType
 
 		create-glyph "increment.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -185,6 +205,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- CAP
 				bottom        -- 0
 				sw            -- OperatorStroke
+			include : DeltaSerifs [DivFrame 1] CAP 0 OperatorStroke serifType
 
 		create-glyph "increment.aplForm.\(suffix)" : glyph-proc
 			include : MarkSet.oper
@@ -195,16 +216,19 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- OperTop
 				bottom        -- OperBot
 				sw            -- OperatorStroke
+			include : DeltaSerifs [DivFrame 1] OperTop OperBot OperatorStroke serifType
 
 		create-glyph "increment.aplThin.\(suffix)" : glyph-proc
 			include : MarkSet.oper
+			local sw : AdviceStroke 3.75
 			include : DeltaShape
 				df            -- [DivFrame 1]
 				fBarStraight  -- fBarStraight
 				fSquareBottom -- fSquareBottom
 				top           -- OperTop
 				bottom        -- OperBot
-				sw            -- [AdviceStroke 3.75]
+				sw            -- sw
+			include : DeltaSerifs [DivFrame 1] OperTop OperBot sw serifType
 
 	define [CodeNonApl u] : if (para.variantSelector.__enableAplForm === 'enable') null u
 	define [CodeApl    u] : if (para.variantSelector.__enableAplForm === 'enable') u null
