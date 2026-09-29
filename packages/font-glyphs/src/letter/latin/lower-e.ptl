@@ -193,6 +193,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : adb      -- SmallArchDepthB
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
+		local-parameter : fDown    -- false
 
 		local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * stroke] + stroke / 16
 		local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
@@ -214,13 +215,18 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		local hd : FlatHookDepth df
 		local yBarBottom : [mix 0 top DesignParameters.eBarPos] - stroke / 2
-		include : intersection [MaskLeft : subDf.leftSB + shift] : dispiro
+		local yBar : yBarBottom + 0.5 * stroke
+		local flourish : intersection [MaskLeft : subDf.leftSB + shift] : dispiro
 			widths.lhs stroke
 			flat (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + Hook) [heading Downward]
 			curl (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + [Math.min Hook hd.y] - 0.25 * stroke) [heading Downward]
 			arcvh
 			flat [Math.min (df.leftSB + hd.x - [HSwToV : 0.5 * stroke]) (subDf.leftSB + shift)] yBarBottom
 			curl (subDf.middle + shift) yBarBottom
+		include : with-transform [if fDown [FlipAround 0 yBar 1 (-1)] [Translate 0 0]] flourish
+		if fDown : begin
+			local yFlourishBot : yBarBottom + stroke - Hook
+			if (yFlourishBot < 0) : include : ExtendBelowBaseAnchors yFlourishBot
 
 	glyph-block-export SmallEConfig
 	define SmallEConfig : object
@@ -366,12 +372,24 @@ glyph-block Letter-Latin-Lower-E : begin
 				styTop -- tailSlab
 				styBot -- tailSlab
 
+		create-glyph "eFlourish.\(suffix)" : glyph-proc
+			local df : include abkCheDf
+			include : df.markSet.e
+			include : AbkCheShape false Body df XH
+				hook   -- AHook
+				ada    -- SmallArchDepthA
+				adb    -- SmallArchDepthB
+				styTop -- tailSlab
+				styBot -- tailSlab
+				fDown  -- true
+
 	select-variant 'e' 'e'
 
 	select-variant 'eOgonek'        0x119  (follow -- 'e')
 	select-variant 'eRetroflexHook' 0x1D92 (follow -- 'e')
 	select-variant 'eNotch'         0x2C78
 	select-variant 'eBar'           0xAB33 (follow -- 'e')
+	select-variant 'eFlourish'      0xAB34 (follow -- 'e')
 
 	select-variant     'reve'  0x258 (follow -- 'e')
 	CreateTurnedLetter 'turne' 0x1DD 'e' HalfAdvance (XH / 2)
