@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg joinCamel] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -546,24 +546,23 @@ glyph-block Letter-Latin-Lower-R : begin
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM
 			include : df.markSet.e
-			local tailSerif : if doTS 'topSerifed' 'serifless'
-			local tailBody : match Body
-				[Just HalfRShape.FlatTop]        'flatTop'
-				[Just HalfRShape.EarlessCorner]  'earlessCorner'
-				[Just HalfRShape.EarlessRounded] 'earlessRounded'
-				__                               ''
-			include [refer-glyph "rCrossedTail.\[joinCamel tailBody tailSerif]"]
 			local dfHalf : doubleRHalfDf df.width
-			define [object rBarLeftX rHookX] : RDim dfHalf RMode.Half
-			local rMd : begin
-				if (Body === HalfRShape.Standard)
-				: then : if doTS RMode.StandardSerifed RMode.Standard
-				: else : if doTS RMode.EarlessSerifed RMode.Earless
-			local rExt : RDim [DivFrame 1] rMd
-			local xNeed : rExt.rHookX - rBarLeftX - [HSwToV Stroke]
-			local xMax : df.width - OX - rHookX
-			local xShift : Math.max TINY : Math.min xNeed xMax
+
+			define [object rBarLeftX rHookX setMarks] : RDim dfHalf RMode.Half
+			local xShift : Math.max TINY : rHookX - rBarLeftX - [HSwToV Stroke]
+			include : setMarks XH 0 doTS doBS
+
+			local fine : AdviceStroke 4
+			local rinner : XH * 0.15 - fine * 0.75
+			local m2 : rBarLeftX + [HSwToV : AdviceStroke 3] - (RightSB - SB) / 2 - [HSwToV : 0.5 * fine]
+			local x2 : rBarLeftX + [HSwToV : AdviceStroke 2] + SideJut
+			local y2 : rinner * 2 + fine - O
+			include : Body dfHalf RMode.Half XH (y2 + O) doTS doBS
 			include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
+			include : dispiro
+				widths.rhs
+				straight.down.start (rBarLeftX + [HSwToV Stroke]) y2 [heading Downward]
+				CurlyTail.f fine 0 m2 x2
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookX + xShift)
 
 	select-variant 'rHalf' 0xAB47
