@@ -136,8 +136,9 @@ glyph-block Letter-Latin-Lower-P : begin
 			local swA : df.adviceThinnerStroke2 2 3 XH 0.65
 			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
-			local gap : 0.25 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
-			local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
+			# Body 66%; left flourish 33% of the M-frame.
+			local bodyK : Math.min (2 / 3) (0.66 * df.adws)
+			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
 			local xBodyLeft : subDf.leftSB + 0
 			local xBodyRight : subDf.rightSB + 0
@@ -169,8 +170,8 @@ glyph-block Letter-Latin-Lower-P : begin
 			local xStem : xBodyLeft + shift
 			local ink : HSwToV sw
 			local hd : FlatHookDepth df
-			# Top edge of the flourish bar on the baseline; reserve turn before flat.
-			local flourishWidth : 0.25 * df.width
+			# Top edge of the flourish bar collinear with the baseline.
+			local flourishWidth : (1 / 3) * df.width
 			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
 			local turnNeed : Math.max (1.15 * sw) (hd.x - [HSwToV : 0.5 * sw])
 			local flatMin : Math.max (0.85 * sw) TINY
@@ -179,10 +180,12 @@ glyph-block Letter-Latin-Lower-P : begin
 			local xTurn : xHook + turnNeed
 			local bendY : Math.min (0 - (Descender + O) - TINY) : Math.max (1.15 * sw) hd.y
 			local yTip : 0 - bendY
+			# Guaranteed flat bar on y=0 into the stem, then AbkChe-style hook turn.
+			include : HBar.t xTurn (xStem + ink) 0 sw
 			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
 				widths.lhs sw
-				corner xStem 0 [heading Leftward]
-				curl xTurn 0 [heading Leftward]
+				corner xTurn 0 [heading Leftward]
+				curl [Math.max (xHook + TINY) (xTurn - TINY)] 0 [heading Leftward]
 				archv
 				flat xHook (0 - bendY + 0.25 * sw) [heading Downward]
 				curl xHook yTip [heading Downward]

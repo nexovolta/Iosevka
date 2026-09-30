@@ -402,24 +402,31 @@ glyph-block Letter-Latin-Upper-B : begin
 		create-glyph "BFlourish.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
-			local sw : AdviceStroke2 2 3 (CAP - 0)
-			local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
-			local kBody : (df.width - gap) / Width
-			local kFit : Math.min 1 : Math.min kBody (0.75 * df.adws)
-			local shift : df.width - kFit * Width
-			local swDraw : sw / kFit
+			local swA : df.adviceThinnerStroke2 2 3 CAP 0.65
+			local swB : df.adviceThinnerStroke 2.75 0.75
+			local sw : Math.min swA swB
+			# Body 66%; left flourish 33% of the M-frame.
+			local bodyK : Math.min (2 / 3) (0.66 * df.adws)
+			# Scale about the right edge, then park that edge on the M-frame right.
+			local shift : df.width - Width
+			local swDraw : sw / bodyK
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				include : with-transform [ScaleAround Width 0 kFit 1] : glyph-proc
+				include : with-transform [ScaleAround Width 0 bodyK 1] : glyph-proc
 					include : body CAP swDraw ts bs
-			local xStem : Width + kFit * (SB - Width) + shift
+			local xStem : Width + bodyK * (SB - Width) + shift
+			local ink : HSwToV sw
 			local bowl : mix sw CAP bp
 			local yBarBottom : bowl - sw
 			local xJoin : xStem + [HSwToV : 0.5 * sw]
+			local flourishWidth : (1 / 3) * df.width
+			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
+			local xLeft : Math.max 0 : Math.min (xStem - flourishWidth) (xStem - minGap - ink)
 			include : AbkCheLeftFlourish df yBarBottom
 				xJoin  -- xJoin
 				xClip  -- xStem
 				stroke -- sw
 				fDown  -- true
+				xLeft  -- xLeft
 
 		if (!fGap) : create-glyph "BBar.\(suffix)" : glyph-proc
 			include [refer-glyph "B.\(suffix)"] AS_BASE ALSO_METRICS
