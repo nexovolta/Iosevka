@@ -12,7 +12,6 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : OBarLeft TopHook
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
-	glyph-block-import Letter-Latin-C : CLetterForm
 
 	define [ToothedBody yTop] : union
 		OBarLeft.shape
@@ -96,8 +95,9 @@ glyph-block Letter-Latin-Lower-B : begin
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
-			local sw : df.adviceStroke2 2 3 (Ascender - Descender)
-			local bodyK : Math.min 0.62 (0.75 * df.adws)
+			local sw : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.75
+			# Body takes ~3/4; left flourish is 1/4 of the M-frame.
+			local bodyK : Math.min 0.75 (0.75 * df.adws)
 			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
 			local xLeft : subDf.leftSB + 0
@@ -105,24 +105,7 @@ glyph-block Letter-Latin-Lower-B : begin
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				if (Body === ToothedBody) : include : union
-					OBarLeft.shape (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
-					VBar.l xLeft 0 Ascender sw
-				if (Body === BottomCutBody) : begin
-					local xCut : xLeft + [HSwToV sw]
-					include : union
-						OBarLeft.shape (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
-						VBar.l xLeft HalfStroke Ascender sw
-						spiro-outline
-							corner xLeft 0
-							corner xLeft HalfStroke
-							corner xCut HalfStroke
-				if (Body === FlatBottomBody) : include : union
-					OBarLeft.toothlessCorner (rise -- 0) (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
-					VBar.l xLeft 0 Ascender sw
-				if (Body === ToothlessCornerBody) : include : union
-					OBarLeft.toothlessCorner (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
-					VBar.l xLeft DToothlessRise Ascender sw
+				# Flat bowl bottom (no tooth/spur) at the stem; flourish attaches cleanly.
 				if (Body === ToothlessRoundedBody) : include : OBarLeft.toothlessRounded
 					yTerminal -- Ascender
 					left -- xLeft
@@ -130,20 +113,42 @@ glyph-block Letter-Latin-Lower-B : begin
 					sw -- sw
 					ada -- ada
 					adb -- adb
+				: else : begin
+					include : union
+						OBarLeft.toothlessCorner (rise -- 0) (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
+						VBar.l xLeft 0 Ascender sw
 				if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt xLeft Ascender SideJut sw
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
-			local cSpan : Math.min 1 : (xStem - df.leftSB + [HSwToV sw]) / Width
-			local cDf : DivFrame cSpan
-			local cShift : xStem + [HSwToV : 0.25 * sw] - cDf.rightSB
-			define FLAT-CONNECTION 3
-			local lf : CLetterForm cDf FLAT-CONNECTION FLAT-CONNECTION XH Descender
-				sw   -- sw
-				hook -- AHook
-				ada  -- cDf.smallArchDepthA
-				adb  -- cDf.smallArchDepthB
-			include : intersection [MaskLeft xStem] : with-transform [ApparentTranslate cShift 0] : lf.base
+			local halfSw : HSwToV : 0.5 * sw
+			local flourishWidth : 0.25 * df.width
+			local xHookFloor : df.leftSB + halfSw
+			local xHookCand : xStem - flourishWidth
+			local xHook : Math.max xHookFloor xHookCand
+			local yTop : XH - O
+			local yBot : Descender + O
+			local span : Math.max TINY : xStem - xHook
+			local flatRunA : 0.6 * span
+			local flatRunB : Math.max (0.45 * span) sw
+			local flatRun : Math.min flatRunA flatRunB
+			local xTurnCand : xHook + halfSw + TINY
+			local xTurn : Math.max xTurnCand (xStem - flatRun)
+			local turnYCap : 1.15 * sw
+			local turnYFloor : 0.16 * (yTop - yBot)
+			local turnY : Math.min turnYCap turnYFloor
+			local xJoin : xStem + [HSwToV sw]
+			# Flat top/bottom into the stem, then dip on the left (1/4-width open C).
+			include : intersection [MaskLeft xJoin] : dispiro
+				widths.center sw
+				flat xJoin yTop [heading Leftward]
+				curl xTurn yTop [heading Leftward]
+				archv
+				flat xHook (yTop - turnY) [heading Downward]
+				curl xHook (yBot + turnY) [heading Downward]
+				arcvh
+				flat xTurn yBot [heading Rightward]
+				curl xJoin yBot [heading Rightward]
 
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
