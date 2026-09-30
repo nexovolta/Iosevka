@@ -182,6 +182,29 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		if turned : include : FlipAround df.middle (top / 2)
 
+	glyph-block-export AbkCheLeftFlourish
+	define flex-params [AbkCheLeftFlourish] : glyph-proc
+		local-parameter : df
+		local-parameter : yBarBottom
+		local-parameter : xJoin
+		local-parameter : xClip
+		local-parameter : stroke -- Stroke
+		local-parameter : fDown  -- false
+
+		local hd : FlatHookDepth df
+		local yBar : yBarBottom + 0.5 * stroke
+		local flourish : intersection [MaskLeft xClip] : dispiro
+			widths.lhs stroke
+			flat (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + Hook) [heading Downward]
+			curl (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + [Math.min Hook hd.y] - 0.25 * stroke) [heading Downward]
+			arcvh
+			flat [Math.min (df.leftSB + hd.x - [HSwToV : 0.5 * stroke]) xClip] yBarBottom
+			curl xJoin yBarBottom
+		include : with-transform [if fDown [FlipAround 0 yBar 1 (-1)] [Translate 0 0]] flourish
+		if fDown : begin
+			local yFlourishBot : yBarBottom + stroke - Hook
+			if (yFlourishBot < 0) : include : ExtendBelowBaseAnchors yFlourishBot
+
 	define flex-params [AbkCheShape] : glyph-proc
 		local-parameter : fDesc
 		local-parameter : Body
@@ -213,20 +236,14 @@ glyph-block Letter-Latin-Lower-E : begin
 		local shift : df.width - subDf.width
 		include : Translate shift 0
 
-		local hd : FlatHookDepth df
 		local yBarBottom : [mix 0 top DesignParameters.eBarPos] - stroke / 2
-		local yBar : yBarBottom + 0.5 * stroke
-		local flourish : intersection [MaskLeft : subDf.leftSB + shift] : dispiro
-			widths.lhs stroke
-			flat (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + Hook) [heading Downward]
-			curl (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + [Math.min Hook hd.y] - 0.25 * stroke) [heading Downward]
-			arcvh
-			flat [Math.min (df.leftSB + hd.x - [HSwToV : 0.5 * stroke]) (subDf.leftSB + shift)] yBarBottom
-			curl (subDf.middle + shift) yBarBottom
-		include : with-transform [if fDown [FlipAround 0 yBar 1 (-1)] [Translate 0 0]] flourish
-		if fDown : begin
-			local yFlourishBot : yBarBottom + stroke - Hook
-			if (yFlourishBot < 0) : include : ExtendBelowBaseAnchors yFlourishBot
+		local xJoin : subDf.middle + shift
+		local xClip : subDf.leftSB + shift
+		include : AbkCheLeftFlourish df yBarBottom
+			xJoin  -- xJoin
+			xClip  -- xClip
+			stroke -- stroke
+			fDown  -- fDown
 
 	glyph-block-export SmallEConfig
 	define SmallEConfig : object

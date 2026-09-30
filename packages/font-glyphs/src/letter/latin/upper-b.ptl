@@ -11,6 +11,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame LeftHook PalatalHook
+	glyph-block-import Letter-Latin-Lower-E : AbkCheLeftFlourish
 
 	glyph-block-export BShape
 	define BArcMix 0.93
@@ -398,6 +399,28 @@ glyph-block Letter-Latin-Upper-B : begin
 			include : LetterBarOverlay.l.in SB swCap ([mix swCap CAP bp] - swCap)
 				space -- { 0 (RightSB - [HSwToV swCap]) }
 
+		create-glyph "BFlourish.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			local sw : AdviceStroke2 2 3 (CAP - 0)
+			local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
+			local kBody : (df.width - gap) / Width
+			local kFit : Math.min 1 : Math.min kBody (0.75 * df.adws)
+			local shift : df.width - kFit * Width
+			local swDraw : sw / kFit
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				include : with-transform [ScaleAround Width 0 kFit 1] : glyph-proc
+					include : body CAP swDraw ts bs
+			local xStem : Width + kFit * (SB - Width) + shift
+			local bowl : mix sw CAP bp
+			local yBarBottom : bowl - sw
+			local xJoin : xStem + [HSwToV : 0.5 * sw]
+			include : AbkCheLeftFlourish df yBarBottom
+				xJoin  -- xJoin
+				xClip  -- xStem
+				stroke -- sw
+				fDown  -- true
+
 		if (!fGap) : create-glyph "BBar.\(suffix)" : glyph-proc
 			include [refer-glyph "B.\(suffix)"] AS_BASE ALSO_METRICS
 			include : BOverlayBar CAP bp
@@ -440,6 +463,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	link-reduced-variant 'B/sansSerif' 'B' MathSansSerif
 	select-variant 'BHookLeft' 0x181
 	select-variant 'BStroke'   0x243 (follow -- 'B')
+	select-variant 'BFlourish' 0xA796 (follow -- 'B')
 	select-variant 'BBar'
 	select-variant 'smcpB'     0x299
 	select-variant 'smcpBBar'  0x1D03
