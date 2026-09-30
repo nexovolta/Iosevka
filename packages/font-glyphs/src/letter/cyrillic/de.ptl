@@ -163,10 +163,12 @@ glyph-block Letter-Cyrillic-De : begin
 			[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType deDf sw _desc
 			__                     : CyrDeShape fCapital top df.leftSB xm sw _desc serifType
 
+		local fDeltaLike : (bodyType === BODY-TRIANGULAR) || (bodyType === BODY-CURLY) || (bodyType === BODY-SQUARE)
+		local xJoin : if fDeltaLike [deDf.middle + [HSwToV : 0.5 * sw]] xTopRight
 		local xTopBarRightEnd : mix df.width df.rightSB : if vSlab 0.250 0.375
-		include : HBar.t (xTopRight + O) xTopBarRightEnd top sw
+		include : HBar.t (xJoin + O) xTopBarRightEnd top sw
 		if vSlab : begin
-			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (xTopBarRightEnd - xTopRight)
+			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (xTopBarRightEnd - xJoin)
 			include : VSerif.dr xTopBarRightEnd top VJut swVJut
 
 	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
