@@ -354,23 +354,21 @@ glyph-block Letter-Latin-Lower-Y : begin
 					MaskAbove yVertex
 			__ : if (bot < yVertex) : begin
 				# Entire right leg: vertical, then one constant-weight slash to `bot`.
+				# Diagonals use the vertical stroke so they do not look heavier.
 				# Left square-top arm is clipped where that slash crosses it.
 				local vxEndL : df.middle - VCornerHalfWidth
 				local dySlash : yJoinG - bot
 				local xPathBot : df.leftSB + [HSwToV Stroke]
 				for [local n 0] (n < 5) [inc n] : begin
 					local dxSlash : df.rightSB - xPathBot
-					local swR : [DiagCor dySlash dxSlash 0 Stroke] * Stroke
-					set xPathBot : df.leftSB + swR * [Math.hypot dxSlash dySlash] / dySlash
-				local diagSWR : [DiagCor dySlash (df.rightSB - xPathBot) 0 Stroke] * Stroke
-				local diagSWL : [DiagCor (yJoinG - yVertex) (vxEndL - df.leftSB) 0 Stroke] * Stroke
+					set xPathBot : df.leftSB + Stroke * [Math.hypot dxSlash dySlash] / dySlash
 				local yLeftEnd : mix yVertex bot 0.3
 				local xLeftEnd : mix df.leftSB vxEndL ((yLeftEnd - yJoinG) / (yVertex - yJoinG))
 				# Overshoot `bot` so MaskAbove cuts a flat foot for a possible bottom serif.
 				local ySlashEnd : bot - 2 * Stroke
 				local xSlashEnd : mix df.rightSB xPathBot ((ySlashEnd - yJoinG) / (bot - yJoinG))
 				define [RightSlash] : dispiro
-					widths.rhs diagSWR
+					widths.rhs Stroke
 					corner df.rightSB yJoinG
 					corner xSlashEnd ySlashEnd
 				include : tagged 'rightHalf' : union
@@ -386,7 +384,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 							corner df.leftSB top [heading Downward]
 							corner df.leftSB yJoinG [heading Downward]
 						dispiro
-							widths.lhs diagSWL
+							widths.lhs Stroke
 							corner df.leftSB yJoinG
 							corner xLeftEnd yLeftEnd
 					union
