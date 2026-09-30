@@ -37,7 +37,14 @@ glyph-block Letter-Latin-Lower-G : begin
 		local gtipy : fallback yTip : [mix groundy (obot + sw) 1.005] - fine
 		local x0 : fallback xStart : mix SB RightSB 0.4
 		local gap : Math.max (0.55 * sw) (0.08 * (RightSB - SB))
-		if fDisjoint : include : dispiro
+		if (fDisjoint && fFlat) : include : dispiro
+			widths.rhs sw
+			flat (x0 + gap) groundy [heading Rightward]
+			curl [mix SB RightSB 0.565] groundy
+			archv 4
+			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			[MakeFlatHook SB RightSB groundy bot (sw -- sw)].hookEndL
+		if (fDisjoint && !fFlat) : include : dispiro
 			widths.rhs sw
 			flat (x0 + gap) groundy [heading Rightward]
 			curl [mix SB RightSB 0.565] groundy
@@ -104,6 +111,9 @@ glyph-block Letter-Latin-Lower-G : begin
 
 	create-glyph 'g.doubleStoreyDisjoint' : DoubleStoreyGShape false false true
 	derive-composites "gStroke.doubleStoreyDisjoint" null "g.doubleStoreyDisjoint" [OverlayW obwDoubleStorey]
+
+	create-glyph 'g.doubleStoreyDisjointFlatHook' : DoubleStoreyGShape false true true
+	derive-composites "gStroke.doubleStoreyDisjointFlatHook" null "g.doubleStoreyDisjointFlatHook" [OverlayW obwDoubleStorey]
 
 	define [GDoubleCircleShape stroke bot top _fDisjoint] : glyph-proc
 		local fDisjoint : fallback _fDisjoint false
