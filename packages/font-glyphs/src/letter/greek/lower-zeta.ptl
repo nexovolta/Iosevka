@@ -18,6 +18,20 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 	define TAIL-STRAIGHT-SHARP-CORNER 3
 	define TAIL-DIAGONAL-SHARP-CORNER 4
 
+	define [ZetaCurlyTailKnots] : begin
+		local yCurlMid : mix Descender Stroke 0.5
+		local hookIn : Math.max
+			(Stroke - yCurlMid) * 1.1
+			[HSwToV Stroke] + 2 * [Math.max TightBendInnerRadius (0.25 * Stroke)]
+		return : list
+			arcvh 16
+			g2 [mix SB RightSB 0.55] Stroke [heading Rightward]
+			archv 16
+			g4.down.mid RightSB yCurlMid [heading Downward]
+			arcvh 16
+			flat (RightSB - hookIn) Descender
+			curl [Math.min (RightSB - hookIn - 1) [mix SB RightSB 0.5]] Descender
+
 	define [ZetaShape tail] : glyph-proc
 		local fine : AdviceStroke 3
 		include : HBar.m SB RightSB (Ascender - HalfStroke)
@@ -30,14 +44,7 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 			bezControls 0.7 0.35 1 0.64 12
 			g4.down.mid (SB + [HSwToV Stroke]) [mix 0 Ascender (0.54 * SmallArchDepthB / (SmallArchDepthA + SmallArchDepthB))] [widths.rhs Stroke]
 			match tail
-				[Just TAIL-CURLY] : list
-					arcvh 16
-					g2 [mix SB RightSB 0.55] Stroke [heading Rightward]
-					archv 16
-					g4.down.mid RightSB [mix Descender Stroke 0.5] [heading Downward]
-					arcvh 16
-					flat (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) Descender
-					curl [Math.min (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1 - 1) [mix SB RightSB 0.5]] Descender
+				[Just TAIL-CURLY] : ZetaCurlyTailKnots
 				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : list

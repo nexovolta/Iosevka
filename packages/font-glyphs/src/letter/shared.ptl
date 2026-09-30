@@ -1166,33 +1166,39 @@ glyph-block Letter-Shared-Shapes : begin
 		# Rounded-bend tail knots: continue the letter-body dispiro (same construction as #3299).
 		glyph-block-export RoundedBendTailBot RoundedTailStraightKnots RoundedTailDiagonalKnots
 		define [RoundedBendTailBot] : (-LongVJut) + QuarterStroke
-		define [RoundedTailBendX] : Math.max [HSwToV Stroke] (0.5 * Hook)
-		define [RoundedTailBendY] : Math.max Stroke (0.5 * Hook)
+		define [RoundedTailBendX] : [Math.max [HSwToV Stroke] (0.5 * Hook)] + [Math.max TightBendInnerRadius [HSwToV : 0.25 * Stroke]]
+		define [RoundedTailBendY] : [Math.max         Stroke  (0.5 * Hook)] + [Math.max TightBendInnerRadius         (0.25 * Stroke)]
 
 		define [RoundedTailStraightKnots yHoriz xDown wHoriz] : begin
-			local xTurn : xDown - [RoundedTailBendX]
+			local xArch : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke
+			local xTurnPref : xDown - [RoundedTailBendX]
+			local xTurnMin : xArch + [Math.abs : TanSlope * Stroke] + TINY
+			local xTurn : Math.max xTurnPref xTurnMin
 			local yCorner : yHoriz - [RoundedTailBendY]
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
-				flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke] yHoriz wHoriz
+				flat [Math.min (xTurn - TanSlope * Stroke) xArch] yHoriz wHoriz
 				curl xTurn yHoriz [heading Rightward]
 				archv.superness DesignParameters.tightHookSuperness
 				flat xDown yCorner [heading Downward]
 				curl xDown [RoundedBendTailBot] [heading Downward]
 
 		define [RoundedTailDiagonalKnots yHoriz xDown wHoriz] : begin
-			local xTurn : xDown - [RoundedTailBendX]
+			local xArch : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke
+			local xTurnPref : xDown - [RoundedTailBendX]
+			local xTurnMin : xArch + [Math.abs : TanSlope * Stroke] + TINY
+			local xTurn : Math.max xTurnPref xTurnMin
 			local yCorner : yHoriz - [RoundedTailBendY]
 			local xDiagEnd : xDown + [mix 0 Descender 0.24]
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
-				flat [Math.min (xTurn - TanSlope * Stroke) : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke] yHoriz wHoriz
+				flat [Math.min (xTurn - TanSlope * Stroke) xArch] yHoriz wHoriz
 				curl xTurn yHoriz [heading Rightward]
 				archv.superness DesignParameters.tightHookSuperness
 				flat xDown yCorner [widths.rhs Stroke]
 				curl xDiagEnd [RoundedBendTailBot]
 
-		# Cyrillic long curl descender, used by old Abkazian letters
+		# Cyrillic long curl descender, used by old Abkhazian letters
 		glyph-block-export CyrCurlDescender
 		define CyrCurlDescender : Descenders : function [x y xLink yAttach yOverflow sw] : glyph-proc
 			local thinStroke : Math.min (0.25 * (0 - Descender)) [AdviceStroke 4]

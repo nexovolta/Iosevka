@@ -24,6 +24,20 @@ glyph-block Letter-Greek-Lower-Xi : begin
 
 	define pyBar 0.55
 
+	define [XiCurlyTailKnots xLowerArcLeft] : begin
+		local yCurlMid : mix Descender Stroke 0.5
+		local hookIn : Math.max
+			(Stroke - yCurlMid) * 1.1
+			[HSwToV Stroke] + 2 * [Math.max TightBendInnerRadius (0.25 * Stroke)]
+		return : list
+			arcvh 16
+			g4   [mix (xLowerArcLeft + [HSwToV Stroke]) (RightSB - [HSwToV Stroke]) 0.6] 0 [heading Rightward]
+			archv 16
+			g4.down.mid (RightSB - [HSwToV Stroke]) yCurlMid [heading Downward]
+			arcvh 16
+			flat                    (RightSB - hookIn)      (Descender + Stroke)
+			curl [Math.min Middle : (RightSB - hookIn) - 1] (Descender + Stroke)
+
 	define [LowerXiShape shape tail] : glyph-proc
 		local adaTop : ArchDepthAOf : ArchDepth * (1 - pyBar)
 		local adbTop : ArchDepthBOf : ArchDepth * (1 - pyBar)
@@ -75,14 +89,7 @@ glyph-block Letter-Greek-Lower-Xi : begin
 			archv 16
 			g4   xLowerArcLeft [mix 0 [YSmoothMidL yBarTop 0 adaBot adbBot] 0.9] [widths.lhs]
 			match tail
-				[Just TAIL-CURLY] : list
-					arcvh 16
-					g4   [mix (xLowerArcLeft + [HSwToV Stroke]) (RightSB - [HSwToV Stroke]) 0.6] 0 [heading Rightward]
-					archv 16
-					g4.down.mid (RightSB - [HSwToV Stroke]) [mix Descender Stroke 0.5] [heading Downward]
-					arcvh 16
-					flat                    (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1)      (Descender + Stroke)
-					curl [Math.min Middle : (RightSB - (Stroke - [mix Descender Stroke 0.5]) * 1.1) - 1] (Descender + Stroke)
+				[Just TAIL-CURLY] : XiCurlyTailKnots xLowerArcLeft
 				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
