@@ -11,6 +11,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : OBarLeft LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook SerifFrame
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 
 
 	define [SmallThornEaredBody] : glyph-proc
@@ -132,8 +133,8 @@ glyph-block Letter-Latin-Lower-P : begin
 		create-glyph "pFlourish.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.p
-			local swA : df.adviceThinnerStroke2 2 3 XH 0.7
-			local swB : df.adviceThinnerStroke 2.5 0.8
+			local swA : df.adviceThinnerStroke2 2 3 XH 0.65
+			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
 			local gap : 0.25 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
 			local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
@@ -167,30 +168,25 @@ glyph-block Letter-Latin-Lower-P : begin
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
 			local ink : HSwToV sw
-			# Top edge of the flourish bar sits on the baseline; stroke hangs below.
-			local yMid : 0 - 0.5 * sw
+			local hd : FlatHookDepth df
+			# Top edge of the flourish bar on the baseline; reserve turn before flat.
 			local flourishWidth : 0.25 * df.width
-			local minGap : Math.max (0.55 * sw) [AdviceStroke 10]
-			local xHookFromWidth : xStem - flourishWidth + 0.5 * ink
-			local xHookFromGap : xStem - minGap - 0.5 * ink
-			local xHook : Math.max (0.5 * ink) : Math.min xHookFromWidth xHookFromGap
-			local span : Math.max TINY : xStem - xHook
-			local flatRunCap : 0.55 * span
-			local flatRunFloor : Math.max (0.42 * span) (1.05 * sw)
-			local flatRun : Math.min flatRunCap flatRunFloor
-			local xTurnFloor : xHook + 0.5 * ink + TINY
-			local xTurn : Math.max xTurnFloor (xStem - flatRun)
-			local turnY : Math.max (1.05 * sw) (0.5 * Hook)
-			local yTipFloor : Descender + 0.5 * sw
-			local yTip : Math.min (yMid - turnY) yTipFloor
-			include : intersection [MaskLeft xStem] : dispiro
-				widths.center sw
-				flat xStem yMid [heading Leftward]
-				curl xTurn yMid [heading Leftward]
+			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
+			local turnNeed : Math.max (1.15 * sw) (hd.x - [HSwToV : 0.5 * sw])
+			local flatMin : Math.max (0.85 * sw) TINY
+			local xHookPref : Math.max 0 : Math.min (xStem - flourishWidth) (xStem - minGap - ink)
+			local xHook : Math.min xHookPref (xStem - turnNeed - flatMin)
+			local xTurn : xHook + turnNeed
+			local bendY : Math.min (0 - (Descender + O) - TINY) : Math.max (1.15 * sw) hd.y
+			local yTip : 0 - bendY
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
+				widths.lhs sw
+				corner xStem 0 [heading Leftward]
+				curl xTurn 0 [heading Leftward]
 				archv
-				flat xHook (yMid - turnY) [heading Downward]
+				flat xHook (0 - bendY + 0.25 * sw) [heading Downward]
 				curl xHook yTip [heading Downward]
-			include : ExtendBelowBaseAnchors (yTip - 0.5 * sw)
+			include : ExtendBelowBaseAnchors yTip
 
 	select-variant 'p' 'p'
 	link-reduced-variant 'p/sansSerif' 'p' MathSansSerif
