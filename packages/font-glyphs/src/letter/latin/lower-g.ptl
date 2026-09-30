@@ -105,7 +105,8 @@ glyph-block Letter-Latin-Lower-G : begin
 	create-glyph 'g.doubleStoreyDisjoint' : DoubleStoreyGShape false false true
 	derive-composites "gStroke.doubleStoreyDisjoint" null "g.doubleStoreyDisjoint" [OverlayW obwDoubleStorey]
 
-	define [GDoubleCircleShape stroke bot top] : glyph-proc
+	define [GDoubleCircleShape stroke bot top _fDisjoint] : glyph-proc
+		local fDisjoint : fallback _fDisjoint false
 		local yJoin : mix 0 top DesignParameters.gBarPos
 		local obot : yJoin - stroke * 0.4
 		local topRight : mix Width RightSB 1.3
@@ -124,18 +125,22 @@ glyph-block Letter-Latin-Lower-G : begin
 		local bowlW : RightSB - SB
 		local cr : Math.min (hBot / 2) (bowlW / 2)
 		include : RoundRectShapeT dispiro yBotTop bot SB RightSB stroke cr
-		include : VBar.m gm (yBotTop - stroke * 0.85) (yTopBot + stroke * 0.85) stroke
+		if [not fDisjoint] : include : VBar.m gm (yBotTop - stroke * 0.85) (yTopBot + stroke * 0.85) stroke
 
-	create-glyph 'g.doubleCircle' : glyph-proc
+	define [GDoubleCircleGlyph fDisjoint] : glyph-proc
 		include : MarkSet.p
-		include : GDoubleCircleShape Stroke Descender XH
+		include : GDoubleCircleShape Stroke Descender XH fDisjoint
 		local yJoin : mix 0 XH DesignParameters.gBarPos
 		local yBotTop : mix Descender yJoin 0.775
 		local yTopBot : yJoin - Stroke * 0.4
 		set-base-anchor 'overlay' Middle [mix (Descender + O) yBotTop 0.5]
 		set-base-anchor 'strike'  Middle [mix (yTopBot - O) XH 0.5]
 
+	create-glyph 'g.doubleCircle' : GDoubleCircleGlyph false
 	derive-composites "gStroke.doubleCircle" null "g.doubleCircle" [OverlayW obwDoubleStorey]
+
+	create-glyph 'g.doubleCircleDisjoint' : GDoubleCircleGlyph true
+	derive-composites "gStroke.doubleCircleDisjoint" null "g.doubleCircleDisjoint" [OverlayW obwDoubleStorey]
 
 	define SingleStorey : namespace
 		export : define [BentHookT sink df yTop offset sw _ada _adb] : begin
