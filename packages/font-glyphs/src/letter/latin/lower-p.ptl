@@ -8,10 +8,9 @@ glyph-module
 glyph-block Letter-Latin-Lower-P : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors LeaningAnchor
+	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : OBarLeft LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook SerifFrame
-	glyph-block-import Letter-Latin-Lower-E : AbkCheLeftFlourish
 
 
 	define [SmallThornEaredBody] : glyph-proc
@@ -133,30 +132,61 @@ glyph-block Letter-Latin-Lower-P : begin
 		create-glyph "pFlourish.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.p
-			local sw : df.adviceStroke2 2 3 XH
-			local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
+			local sw : df.adviceThinnerStroke2 2 3 XH 0.75
+			local gap : 0.25 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
 			local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
 			local shift : df.width - subDf.width
 			local xBodyLeft : subDf.leftSB + 0
 			local xBodyRight : subDf.rightSB + 0
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
+			local fine : ShoulderFine * (sw / Stroke)
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				include : Body
-					left -- xBodyLeft
-					right -- xBodyRight
-					sw -- sw
-					ada -- ada
-					adb -- adb
+				# Flat bowl bottom (no tooth/spur): bar continues straight into the flourish dip.
+				if (Body === EarlessRoundedBody) : begin
+					include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- Descender)
+						left  -- xBodyLeft
+						right -- xBodyRight
+						sw    -- sw
+						fine  -- fine
+						ada   -- ada
+						adb   -- adb
+				: else : begin
+					include : tagged 'bowl' : OBarLeft.toothlessCorner
+						rise  -- 0
+						left  -- xBodyLeft
+						right -- xBodyRight
+						sw    -- sw
+						fine  -- fine
+						ada   -- ada
+						adb   -- adb
+					include : tagged 'stemLeft' : VBar.l xBodyLeft Descender XH sw
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
-			local xJoin : xStem + [HSwToV : 0.5 * sw]
-			include : AbkCheLeftFlourish df 0
-				xJoin  -- xJoin
-				xClip  -- xStem
-				stroke -- sw
-				fDown  -- true
+			local halfSw : HSwToV : 0.5 * sw
+			# Flat bar from the bowl bottom, then dip (no return curl = no spur).
+			local flourishWidth : 0.25 * df.width
+			local xHookCand : xStem - flourishWidth
+			local xHook : Math.max halfSw xHookCand
+			local span : Math.max TINY : xStem - xHook
+			local flatRunA : 0.55 * span
+			local flatRunB : Math.max (0.4 * span) (0.85 * sw)
+			local flatRun : Math.min flatRunA flatRunB
+			local xTurnCand : xHook + halfSw + TINY
+			local xTurn : Math.max xTurnCand (xStem - flatRun)
+			local turnYCap : 0.85 * Hook
+			local turnYFloor : Math.max sw (0.55 * Hook)
+			local turnY : Math.min turnYCap turnYFloor
+			local yBarBottom : 0 + 0
+			include : intersection [MaskLeft xStem] : dispiro
+				widths.center sw
+				flat xStem yBarBottom [heading Leftward]
+				curl xTurn yBarBottom [heading Leftward]
+				archv
+				flat xHook (yBarBottom - turnY) [heading Downward]
+				curl xHook (yBarBottom - Hook) [heading Downward]
+			include : ExtendBelowBaseAnchors (yBarBottom - Hook - 0.5 * sw)
 
 	select-variant 'p' 'p'
 	link-reduced-variant 'p/sansSerif' 'p' MathSansSerif

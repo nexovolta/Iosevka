@@ -190,15 +190,19 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : xClip
 		local-parameter : stroke -- Stroke
 		local-parameter : fDown  -- false
+		local-parameter : xLeft  -- nothing
 
 		local hd : FlatHookDepth df
+		local xHook : fallback xLeft : df.leftSB - [HSwToV : 0.25 * stroke]
+		# Keep enough room for the hook turn so a flat bar remains before the dip.
+		local xTurn : Math.min (xHook + hd.x - [HSwToV : 0.5 * stroke]) [mix xHook xClip 0.55]
 		local yBar : yBarBottom + 0.5 * stroke
 		local flourish : intersection [MaskLeft xClip] : dispiro
 			widths.lhs stroke
-			flat (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + Hook) [heading Downward]
-			curl (df.leftSB - [HSwToV : 0.25 * stroke]) (yBarBottom + [Math.min Hook hd.y] - 0.25 * stroke) [heading Downward]
+			flat xHook (yBarBottom + Hook) [heading Downward]
+			curl xHook (yBarBottom + [Math.min Hook hd.y] - 0.25 * stroke) [heading Downward]
 			arcvh
-			flat [Math.min (df.leftSB + hd.x - [HSwToV : 0.5 * stroke]) xClip] yBarBottom
+			flat [Math.max (xHook + TINY) xTurn] yBarBottom
 			curl xJoin yBarBottom
 		include : with-transform [if fDown [FlipAround 0 yBar 1 (-1)] [Translate 0 0]] flourish
 		if fDown : begin
