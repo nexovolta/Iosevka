@@ -11,6 +11,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : OBarLeft LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook SerifFrame
+	glyph-block-import Letter-Latin-Lower-E : AbkCheLeftFlourish
 
 
 	define [SmallThornEaredBody] : glyph-proc
@@ -129,6 +130,34 @@ glyph-block Letter-Latin-Lower-P : begin
 				yAttach -- [mix O SmallArchDepthA : archv.yFromX 0.75]
 				maskOut -- [intersection [MaskBelow 0] [MaskLeft xMask]]
 
+		create-glyph "pFlourish.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.p
+			local sw : df.adviceStroke2 2 3 XH
+			local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
+			local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
+			local shift : df.width - subDf.width
+			local xBodyLeft : subDf.leftSB + 0
+			local xBodyRight : subDf.rightSB + 0
+			local ada : subDf.smallArchDepthA + 0
+			local adb : subDf.smallArchDepthB + 0
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				include : Body
+					left -- xBodyLeft
+					right -- xBodyRight
+					sw -- sw
+					ada -- ada
+					adb -- adb
+				include : Serifs subDf XH sw
+				include : LeaningAnchor.Below.VBar.l xBodyLeft
+			local xStem : xBodyLeft + shift
+			local xJoin : xStem + [HSwToV : 0.5 * sw]
+			include : AbkCheLeftFlourish df 0
+				xJoin  -- xJoin
+				xClip  -- xStem
+				stroke -- sw
+				fDown  -- true
+
 	select-variant 'p' 'p'
 	link-reduced-variant 'p/sansSerif' 'p' MathSansSerif
 	link-reduced-variant 'p/hookTopBase' 'p'
@@ -138,6 +167,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	alias 'grek/rho' 0x3C1 'p.earlessRoundedSerifless'
 
 	select-variant 'pStrokeBottom' 0xA751 (follow -- 'p')
+	select-variant 'pFlourish' 0xA753 (follow -- 'p')
 
 	alias 'grek/rhoStroke' 0x3FC 'pStrokeBottom.earlessRoundedSerifless'
 
