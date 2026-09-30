@@ -9,7 +9,7 @@ glyph-block Letter-Latin-Vend : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
-	glyph-block-import Letter-Latin-V : VRightHalfShape VSerifs VMotionSerifs VCursiveShape VCursiveShapeBarPos
+	glyph-block-import Letter-Latin-V : VRightHalfShape VSerifs VMotionSerifs VTopRightMotionSerifs VBilateralMotionSerifs VCursiveShape VCursiveShapeBarPos
 
 	define [VendStemLT top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.outer
 	define [VendStemLTFull top bot] : return [SerifFrame.fromDf [DivFrame 1] top bot].lt.full
@@ -39,9 +39,11 @@ glyph-block Letter-Latin-Vend : begin
 			squareTop             { true  1 }
 		object # serifs
 			""                    { VendVAutoSerifs    VendAutoStemSerif }
-			serifless             { no-shape           no-shape }
-			motionSerifed         { VMotionSerifs      VendMotionStemSerif }
-			serifed               { VSerifs            VendFullStemSerif }
+			serifless              { no-shape                 no-shape }
+			motionSerifed          { VMotionSerifs            VendMotionStemSerif }
+			topRightMotionSerifed  { VTopRightMotionSerifs    no-shape }
+			bilateralMotionSerifed { VBilateralMotionSerifs   VendMotionStemSerif }
+			serifed                { VSerifs                  VendFullStemSerif }
 
 	foreach { suffix { { fStraightBar fSquareTop } { VSlabs StemSlab } } } [Object.entries VendConfig] : do
 		local fSerifStraight : if fSquareTop 0 fStraightBar

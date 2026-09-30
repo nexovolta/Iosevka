@@ -244,6 +244,20 @@ glyph-block Letter-Latin-V : begin
 		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
 		return : composite-proc sf.lt.outer
 
+	glyph-block-export VTopRightMotionSerifs
+	define [VTopRightMotionSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : begin
+		local sbScale  : if fBarStraight VStraightSbShrink 1
+		local sbOffset : if fBarStraight VStraightSbOffset 0
+		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
+		return : composite-proc sf.rt.inner
+
+	glyph-block-export VBilateralMotionSerifs
+	define [VBilateralMotionSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : begin
+		local sbScale  : if fBarStraight VStraightSbShrink 1
+		local sbOffset : if fBarStraight VStraightSbOffset 0
+		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
+		return : composite-proc sf.lt.outer sf.rt.inner
+
 	define VStandardConfig : SuffixCfg.weave
 		object # body
 			straight              { true  0 }
@@ -253,6 +267,8 @@ glyph-block Letter-Latin-V : begin
 			""                    VAutoSerifs
 			serifless             no-shape
 			motionSerifed         VMotionSerifs
+			topRightMotionSerifed VTopRightMotionSerifs
+			bilateralMotionSerifed VBilateralMotionSerifs
 			serifed               VSerifs
 
 	foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries VStandardConfig] : do

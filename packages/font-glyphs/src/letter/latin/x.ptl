@@ -234,8 +234,12 @@ glyph-block Letter-Latin-X : begin
 	define XSerifs : namespace
 		export : define [Full sf]             : composite-proc sf.lt.full sf.rt.full sf.lb.full sf.rb.full
 		export : define [SemiChancery sf]     : composite-proc sf.rt.full sf.lb.full
-		export : define [UnilateralMotion sf] : composite-proc sf.lt.outer
-		export : define [BilateralMotion sf]  : composite-proc sf.lt.outer sf.rb.outer
+		export : define [UnilateralMotion sf]    : composite-proc sf.lt.outer
+		export : define [TopRightMotion sf]      : composite-proc sf.rt.inner
+		export : define [BilateralMotion sf]     : composite-proc sf.lt.outer sf.rb.outer
+		export : define [BilateralTopMotion sf] : glyph-proc
+			include : tagged 'serifLT' : HSerif.lt sf.left sf.top sf.sideJut sf.swSerif
+			include : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top sf.sideJut sf.swSerif
 		export : define [GrekLowerChi sf]     : composite-proc sf.lt.outer sf.rt.full sf.lb.full sf.rb.outer
 
 	glyph-block-export XConfig
@@ -250,10 +254,12 @@ glyph-block Letter-Latin-X : begin
 				""                      { 0         'capital' 'e' }
 				descending              { Descender 'capDesc' 'p' }
 			object # serifs
-				serifless               { null                     false }
-				unilateralMotionSerifed { XSerifs.UnilateralMotion false }
-				bilateralMotionSerifed  { XSerifs.BilateralMotion  false }
-				serifed                 { XSerifs.Full             true  }
+				serifless               { null                        false }
+				unilateralMotionSerifed { XSerifs.UnilateralMotion    false }
+				topRightMotionSerifed   { XSerifs.TopRightMotion      false }
+				bilateralMotionSerifed  { XSerifs.BilateralMotion     false }
+				bilateralTopMotionSerifed { XSerifs.BilateralTopMotion false }
+				serifed                 { XSerifs.Full                true  }
 				grekLowerChiSerifed     { XSerifs.GrekLowerChi     true  }
 		SuffixCfg.weave # semi-chancery variants
 			object # body

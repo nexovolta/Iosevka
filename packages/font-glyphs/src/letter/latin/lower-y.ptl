@@ -12,13 +12,15 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
-	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs
 
-	define SLAB-NONE           { false false false }
-	define SLAB-AUTO           { SLAB  SLAB  false }
-	define SLAB-ALL            { true  true  false }
-	define SLAB-MOTION         { false false true  }
-	define SLAB-CURSIVE-MOTION { true  true  true  }
+	define SLAB-NONE             { false false false false }
+	define SLAB-AUTO             { SLAB  SLAB  false false }
+	define SLAB-ALL              { true  true  false false }
+	define SLAB-MOTION           { false false true  false }
+	define SLAB-TOP-RIGHT-MOTION { false false false true  }
+	define SLAB-BILATERAL-MOTION { false false true  true  }
+	define SLAB-CURSIVE-MOTION   { true  true  true  false }
 
 	define TS-NONE       0
 	define TS-HOOK-RIGHT 1
@@ -32,7 +34,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 
 	glyph-block-export NonCursiveYShapeT NonCursiveYConfig
 	define [NonCursiveYShapeT straightBar bottomShape slabKind _l _r _sb _sw] : namespace
-		local { doSlabTop doSlabBottom doSlabMotion } slabKind
+		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
 
 		local l : fallback _l 0
 		local r : fallback _r Width
@@ -254,7 +256,8 @@ glyph-block Letter-Latin-Lower-Y : begin
 				Rect (bottom + sw / 2) (bottom - top) l r
 
 			if doSlabTop : include : let [sf : SerifFrame.fromDf [DivFrame 1] top bottom] : composite-proc sf.lt.full sf.rt.full
-			if doSlabMotion : include : HSerif.lt sb top SideJut
+			if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
+			if doSlabTopRightMotion : include : VTopRightMotionSerifs [DivFrame 1] false top
 
 		export : define [SmallYHookRightShape top bottom yShCutoff] : glyph-proc
 			local right   : RightHalf TS-HOOK-RIGHT SHRINK-NONE
@@ -316,7 +319,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 		include : Regizmo
 
 	define [SquareTopYShape slabKind bottomShape top bot] : glyph-proc
-		local { doSlabTop doSlabBottom doSlabMotion } slabKind
+		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
 		local yVertex : if (bot < 0) 0 : mix bot top 0.4
 		# Centered stroke on `bot` would hang half a stroke below the metric.
 		local yHook : bot + HalfStroke
@@ -397,6 +400,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				if doSlabBottom : include : HSerif.mb [mix df.leftSB xPathBot 0.5] bot MidJutCenter
 		if doSlabTop : include : VSerifs df false top
 		if doSlabMotion : include : VMotionSerifs df false top
+		if doSlabTopRightMotion : include : VTopRightMotionSerifs df false top
 
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
@@ -409,9 +413,11 @@ glyph-block Letter-Latin-Lower-Y : begin
 			loop          BS-LOOP
 		object # serifs
 			""            SLAB-AUTO
-			serifless     SLAB-NONE
-			serifed       SLAB-ALL
-			motionSerifed SLAB-MOTION
+			serifless              SLAB-NONE
+			serifed                SLAB-ALL
+			motionSerifed          SLAB-MOTION
+			topRightMotionSerifed  SLAB-TOP-RIGHT-MOTION
+			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
 	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
 		define Shapes : NonCursiveYShapeT straightBar bottomShape slabKind
@@ -521,21 +527,25 @@ glyph-block Letter-Latin-Lower-Y : begin
 				flat (RightSB - hd.x) bottom
 				curl xTerminal bottom
 
-		export : define [Serifs top slabType] : begin
-			local { doSlabTop doSlabBottom doSlabMotion } slabKind
-			return : if [not doSlabTop] [no-shape] : glyph-proc
-				local sf : SerifFrame.fromDf [DivFrame 1] top 0
+		export : define [Serifs top slabKind] : glyph-proc
+			local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+			local sf : SerifFrame.fromDf [DivFrame 1] top 0
+			if doSlabTop : begin
 				include sf.lt.outer
 				if [not doSlabMotion] : include sf.rt.inner
+			if ([not doSlabTop] && doSlabMotion) : include sf.lt.outer
+			if ([not doSlabTop] && doSlabTopRightMotion) : include sf.rt.inner
 
 	define CursiveYConfig : SuffixCfg.weave
 		object # body
 			cursive         { CursiveYShape.Hook     SHook }
 			cursiveFlatHook { CursiveYShape.FlatHook 0     }
 		object # serifs
-			serifless         SLAB-NONE
-			serifed           SLAB-ALL
-			motionSerifed     SLAB-CURSIVE-MOTION
+			serifless              SLAB-NONE
+			serifed                SLAB-ALL
+			motionSerifed          SLAB-CURSIVE-MOTION
+			topRightMotionSerifed  SLAB-TOP-RIGHT-MOTION
+			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
 	foreach { suffix { { hookShape hookEnd } slabKind } } [Object.entries CursiveYConfig] : do
 		create-glyph "y.\(suffix)" : glyph-proc

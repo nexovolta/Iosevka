@@ -3735,6 +3735,19 @@ selectorAffix."g/singleStorey/autoSerifed/sans" = ""
 selectorAffix."gCrossedTail/singleStorey/autoSerifed/slab" = ""
 selectorAffix."gCrossedTail/singleStorey/autoSerifed/sans" = ""
 
+[prime.g.variants-buildup.stages.openness.disjoint]
+rank = 3
+nonBreakingVariantAdditionPriority = 300
+descriptionAffix = "disjoint lower storey"
+selectorAffix.g = "disjoint"
+selectorAffix."g/sansSerif" = "disjoint"
+selectorAffix."g/hookTopBase" = ""
+selectorAffix."g/doubleStorey" = "disjoint"
+selectorAffix."g/singleStorey/autoSerifed/slab" = ""
+selectorAffix."g/singleStorey/autoSerifed/sans" = ""
+selectorAffix."gCrossedTail/singleStorey/autoSerifed/slab" = ""
+selectorAffix."gCrossedTail/singleStorey/autoSerifed/sans" = ""
+
 [prime.g.variants-buildup.stages.bottom."*"]
 next = "END"
 
@@ -6213,6 +6226,36 @@ selectorAffix."av/v" = ""
 selectorAffix.vend = "serifed"
 selectorAffix."cyrl/izhitsa" = { if = [{ body = "cursive" }], then = "motionSerifed", else = "serifed" }
 
+[prime.v.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 100
+disableIf = [{ body = "cursive" }]
+descriptionAffix = "motion serifs at top-right"
+selectorAffix.v = "topRightMotionSerifed"
+selectorAffix."v/sansSerif" = "serifless"
+selectorAffix.vScript = "serifless"
+selectorAffix."hv/v" = "serifless"
+selectorAffix.vHookRight = "serifless"
+selectorAffix.vLoop = "topRightMotionSerifed"
+selectorAffix."av/v" = ""
+selectorAffix.vend = "topRightMotionSerifed"
+selectorAffix."cyrl/izhitsa" = "serifless"
+
+[prime.v.variants-buildup.stages.serifs.bilateral-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+disableIf = [{ body = "cursive" }]
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix.v = "bilateralMotionSerifed"
+selectorAffix."v/sansSerif" = "serifless"
+selectorAffix.vScript = "motionSerifed"
+selectorAffix."hv/v" = "serifless"
+selectorAffix.vHookRight = "motionSerifed"
+selectorAffix.vLoop = "topRightMotionSerifed"
+selectorAffix."av/v" = ""
+selectorAffix.vend = "bilateralMotionSerifed"
+selectorAffix."cyrl/izhitsa" = "motionSerifed"
+
 
 
 [prime.w]
@@ -6345,6 +6388,24 @@ descriptionAffix = "serifs"
 selectorAffix.w = "serifed"
 selectorAffix."w/sansSerif" = "serifless"
 selectorAffix.wHookRight = { if = [{ center = "flat-top" }, { center = "asymmetric" }, { center = "reverse-asymmetric" }, { center = "double-v" }], then = "motionSerifed", else = "serifed" }
+
+[prime.w.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 100
+enableIf = [{ body = "NOT cursive" }]
+descriptionAffix = "motion serifs at top-right"
+selectorAffix.w = "topRightMotionSerifed"
+selectorAffix."w/sansSerif" = "serifless"
+selectorAffix.wHookRight = "serifless"
+
+[prime.w.variants-buildup.stages.serifs.bilateral-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+enableIf = [{ body = "NOT cursive" }]
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix.w = "bilateralMotionSerifed"
+selectorAffix."w/sansSerif" = "serifless"
+selectorAffix.wHookRight = "motionSerifed"
 
 
 
@@ -6480,6 +6541,28 @@ selectorAffix."x/descBase" = "serifed"
 selectorAffix."latn/chi" = "serifed"
 selectorAffix."cyrl/rha/kha" = "serifed"
 
+[prime.x.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+disableIf = [{ body = "semi-chancery-straight" }, { body = "semi-chancery-curly" }]
+descriptionAffix = "motion serifs at top-right"
+selectorAffix.x = "topRightMotionSerifed"
+selectorAffix."x/sansSerif" = "serifless"
+selectorAffix."x/descBase" = "topRightMotionSerifed"
+selectorAffix."latn/chi" = "topRightMotionSerifed"
+selectorAffix."cyrl/rha/kha" = "serifless"
+
+[prime.x.variants-buildup.stages.serifs.bilateral-top-motion-serifed]
+rank = 6
+nonBreakingVariantAdditionPriority = 100
+disableIf = [{ body = "semi-chancery-straight" }, { body = "semi-chancery-curly" }]
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix.x = "bilateralTopMotionSerifed"
+selectorAffix."x/sansSerif" = "serifless"
+selectorAffix."x/descBase" = "unilateralMotionSerifed"
+selectorAffix."latn/chi" = "bilateralTopMotionSerifed"
+selectorAffix."cyrl/rha/kha" = "bilateralTopMotionSerifed"
+
 
 
 [prime.y]
@@ -6588,6 +6671,26 @@ selectorAffix."y/sansSerif" = "serifless"
 selectorAffix."y/nonCursive" = "serifed"
 selectorAffix.yHookRight = { if = [{ body = "cursive" }], then = "motionSerifed", else = "serifed" }
 selectorAffix.yLoop = "serifed"
+
+[prime.y.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-right"
+selectorAffix.y = "topRightMotionSerifed"
+selectorAffix."y/sansSerif" = "serifless"
+selectorAffix."y/nonCursive" = "topRightMotionSerifed"
+selectorAffix.yHookRight = "serifless"
+selectorAffix.yLoop = "topRightMotionSerifed"
+
+[prime.y.variants-buildup.stages.serifs.bilateral-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix.y = "bilateralMotionSerifed"
+selectorAffix."y/sansSerif" = "serifless"
+selectorAffix."y/nonCursive" = "bilateralMotionSerifed"
+selectorAffix.yHookRight = "motionSerifed"
+selectorAffix.yLoop = "bilateralMotionSerifed"
 
 
 
@@ -10313,6 +10416,18 @@ rank = 3
 descriptionAffix = "serifs"
 selectorAffix."cyrl/U" = "serifed"
 
+[prime.cyrl-capital-u.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-right"
+selectorAffix."cyrl/U" = "topRightMotionSerifed"
+
+[prime.cyrl-capital-u.variants-buildup.stages.serifs.bilateral-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix."cyrl/U" = "bilateralMotionSerifed"
+
 
 
 [prime.cyrl-u]
@@ -10392,6 +10507,20 @@ rank = 3
 descriptionAffix = "serifs"
 selectorAffix."cyrl/u" = "serifed"
 selectorAffix."cyrl/u/nonCursive" = "serifed"
+
+[prime.cyrl-u.variants-buildup.stages.serifs.top-right-motion-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-right"
+selectorAffix."cyrl/u" = "topRightMotionSerifed"
+selectorAffix."cyrl/u/nonCursive" = "topRightMotionSerifed"
+
+[prime.cyrl-u.variants-buildup.stages.serifs.bilateral-motion-serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix."cyrl/u" = "bilateralMotionSerifed"
+selectorAffix."cyrl/u/nonCursive" = "bilateralMotionSerifed"
 
 
 

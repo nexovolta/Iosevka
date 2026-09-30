@@ -39,6 +39,8 @@ glyph-block Letter-Latin-W : begin
 	define SERIFS-ALL-OUTER       8
 	define SERIFS-ALL-ASYMMETRIC  9
 	define SERIFS-ALL-REVERSE-ASYMMETRIC 10
+	define SERIFS-TOP-RIGHT-MOTION 11
+	define SERIFS-BILATERAL-MOTION 12
 
 	define CwFineOuter            5.0
 	define CwFineInner            6.0
@@ -168,6 +170,8 @@ glyph-block Letter-Latin-W : begin
 			[Just SERIFS-ALL-ASYMMETRIC] : composite-proc sfm.lt.outer sfm.rt.full
 			[Just SERIFS-ALL-REVERSE-ASYMMETRIC] : composite-proc sfm.lt.full sfm.rt.outer
 			[Just SERIFS-MOTION]         : begin sfm.lt.outer
+			[Just SERIFS-TOP-RIGHT-MOTION] : begin sfm.rt.inner
+			[Just SERIFS-BILATERAL-MOTION] : composite-proc sfm.lt.outer sfm.rt.inner
 			[Just SERIFS-DOUBLE-V]       : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.outer
 			[Just SERIFS-ASYMMETRIC]     : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.full
 			[Just SERIFS-CURSIVE]        : NeedSlab SLAB sf.lt.outer
@@ -332,8 +336,8 @@ glyph-block Letter-Latin-W : begin
 	define [VYShape df top straightBar bottomShape slabKind] : glyph-proc
 		# Y -> W configs
 		local wBodyType : if straightBar FORM-STRAIGHT FORM-CURLY
-		local { doSlabTop doSlabBottom doSlabMotion } slabKind
-		local wSlabType : if doSlabTop SERIFS-ALL-OUTER : if doSlabMotion SERIFS-MOTION SERIFS-NONE
+		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+		local wSlabType : if doSlabTop SERIFS-ALL-OUTER : if (doSlabMotion && doSlabTopRightMotion) SERIFS-BILATERAL-MOTION : if doSlabMotion SERIFS-MOTION : if doSlabTopRightMotion SERIFS-TOP-RIGHT-MOTION SERIFS-NONE
 		local dim : WDim df top wBodyType wSlabType MIDH-TOP
 
 		local r df.width
@@ -444,6 +448,8 @@ glyph-block Letter-Latin-W : begin
 		include : match slabType
 			[Just SERIFS-CURSIVE] : NeedSlab SLAB sf.lt.outer
 			[Just SERIFS-MOTION]  : begin sf.lt.outer
+			[Just SERIFS-TOP-RIGHT-MOTION] : begin sf.rt.inner
+			[Just SERIFS-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
 			___                   : glyph-proc
 
 	define [WCursiveImpl      df top bodyType slabType midHClass] : WCursiveImplImpl false df top bodyType slabType midHClass
@@ -482,8 +488,10 @@ glyph-block Letter-Latin-W : begin
 		function [body] : if (body == 'cyrlOmega')
 			then : object [""  SERIFS-CYRL-OMEGA]
 			else : object
-				serifless     SERIFS-NONE
-				motionSerifed SERIFS-MOTION
+				serifless              SERIFS-NONE
+				motionSerifed          SERIFS-MOTION
+				topRightMotionSerifed  SERIFS-TOP-RIGHT-MOTION
+				bilateralMotionSerifed SERIFS-BILATERAL-MOTION
 				serifed     : match body
 					[Just 'straightAsymmetric']           SERIFS-ALL-ASYMMETRIC
 					[Just 'straightReverseAsymmetric']    SERIFS-ALL-REVERSE-ASYMMETRIC
