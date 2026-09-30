@@ -95,7 +95,9 @@ glyph-block Letter-Latin-Lower-B : begin
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
-			local sw : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.75
+			local swA : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.7
+			local swB : df.adviceThinnerStroke 2.5 0.8
+			local sw : Math.min swA swB
 			# Body takes ~3/4; left flourish is 1/4 of the M-frame.
 			local bodyK : Math.min 0.75 (0.75 * df.adws)
 			local subDf : DivFrame bodyK 2
@@ -121,25 +123,26 @@ glyph-block Letter-Latin-Lower-B : begin
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
-			local halfSw : HSwToV : 0.5 * sw
+			local ink : HSwToV sw
+			# Top edge of the flourish bar sits on XH; bottom edge on Descender.
+			local yTop : XH - 0.5 * sw
+			local yBot : Descender + 0.5 * sw
 			local flourishWidth : 0.25 * df.width
-			local xHookFloor : df.leftSB + halfSw
-			local xHookCand : xStem - flourishWidth
-			local xHook : Math.max xHookFloor xHookCand
-			local yTop : XH - O
-			local yBot : Descender + O
+			local minGap : Math.max (0.55 * sw) [AdviceStroke 10]
+			local xHookFromWidth : xStem - flourishWidth + 0.5 * ink
+			local xHookFromGap : xStem - minGap - 0.5 * ink
+			local xHookFloor : df.leftSB + 0.5 * ink
+			local xHook : Math.max xHookFloor : Math.min xHookFromWidth xHookFromGap
 			local span : Math.max TINY : xStem - xHook
-			local flatRunA : 0.6 * span
-			local flatRunB : Math.max (0.45 * span) sw
-			local flatRun : Math.min flatRunA flatRunB
-			local xTurnCand : xHook + halfSw + TINY
-			local xTurn : Math.max xTurnCand (xStem - flatRun)
-			local turnYCap : 1.15 * sw
-			local turnYFloor : 0.16 * (yTop - yBot)
-			local turnY : Math.min turnYCap turnYFloor
-			local xJoin : xStem + [HSwToV sw]
-			# Flat top/bottom into the stem, then dip on the left (1/4-width open C).
-			include : intersection [MaskLeft xJoin] : dispiro
+			local flatRunCap : 0.58 * span
+			local flatRunFloor : Math.max (0.45 * span) (1.05 * sw)
+			local flatRun : Math.min flatRunCap flatRunFloor
+			local xTurnFloor : xHook + 0.5 * ink + TINY
+			local xTurn : Math.max xTurnFloor (xStem - flatRun)
+			local turnY : Math.max (1.05 * sw) (0.14 * (yTop - yBot))
+			# Join at the stem's left edge so the bottom bar does not slab under the stem.
+			local xJoin : xStem + 0.5 * ink
+			include : intersection [MaskLeft (xStem + ink)] : dispiro
 				widths.center sw
 				flat xJoin yTop [heading Leftward]
 				curl xTurn yTop [heading Leftward]
