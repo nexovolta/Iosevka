@@ -12,6 +12,19 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : OBarLeft TopHook
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+
+	# Flat top and flat bottom into the stem — no tooth/spur at either end.
+	define [FlourishFlatEndsBowl] : with-params [top bot left right sw ada adb] : begin
+		return : dispiro
+			widths.lhs sw
+			flat (left + TINY) bot [heading Rightward]
+			curl [Arch.adjust-x.bot [mix left right 0.5] (sw -- sw)] bot
+			archv
+			flatside.ru right bot top ada adb
+			arcvh
+			flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] top
+			curl (left + TINY) top [heading Leftward]
 
 	define [ToothedBody yTop] : union
 		OBarLeft.shape
@@ -95,8 +108,8 @@ glyph-block Letter-Latin-Lower-B : begin
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
-			local swA : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.7
-			local swB : df.adviceThinnerStroke 2.5 0.8
+			local swA : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.65
+			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
 			# Body takes ~3/4; left flourish is 1/4 of the M-frame.
 			local bodyK : Math.min 0.75 (0.75 * df.adws)
@@ -107,51 +120,36 @@ glyph-block Letter-Latin-Lower-B : begin
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				# Flat bowl bottom (no tooth/spur) at the stem; flourish attaches cleanly.
-				if (Body === ToothlessRoundedBody) : include : OBarLeft.toothlessRounded
-					yTerminal -- Ascender
-					left -- xLeft
-					right -- xRight
-					sw -- sw
-					ada -- ada
-					adb -- adb
-				: else : begin
-					include : union
-						OBarLeft.toothlessCorner (rise -- 0) (left -- xLeft) (right -- xRight) (sw -- sw) (ada -- ada) (adb -- adb)
-						VBar.l xLeft 0 Ascender sw
+				# Force flat top into the stem regardless of the base b bottom CV.
+				include : union
+					FlourishFlatEndsBowl XH 0 xLeft xRight sw ada adb
+					VBar.l xLeft 0 Ascender sw
 				if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt xLeft Ascender SideJut sw
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
 			local ink : HSwToV sw
-			# Top edge of the flourish bar sits on XH; bottom edge on Descender.
-			local yTop : XH - 0.5 * sw
-			local yBot : Descender + 0.5 * sw
+			# Open C: flat top on XH, flat bottom on Descender; turn radius before flat.
+			local hd : FlatHookDepth df
 			local flourishWidth : 0.25 * df.width
-			local minGap : Math.max (0.55 * sw) [AdviceStroke 10]
-			local xHookFromWidth : xStem - flourishWidth + 0.5 * ink
-			local xHookFromGap : xStem - minGap - 0.5 * ink
-			local xHookFloor : df.leftSB + 0.5 * ink
-			local xHook : Math.max xHookFloor : Math.min xHookFromWidth xHookFromGap
-			local span : Math.max TINY : xStem - xHook
-			local flatRunCap : 0.58 * span
-			local flatRunFloor : Math.max (0.45 * span) (1.05 * sw)
-			local flatRun : Math.min flatRunCap flatRunFloor
-			local xTurnFloor : xHook + 0.5 * ink + TINY
-			local xTurn : Math.max xTurnFloor (xStem - flatRun)
-			local turnY : Math.max (1.05 * sw) (0.14 * (yTop - yBot))
-			# Join at the stem's left edge so the bottom bar does not slab under the stem.
-			local xJoin : xStem + 0.5 * ink
-			include : intersection [MaskLeft (xStem + ink)] : dispiro
-				widths.center sw
-				flat xJoin yTop [heading Leftward]
-				curl xTurn yTop [heading Leftward]
+			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
+			local turnNeed : Math.max (1.15 * sw) (hd.x - [HSwToV : 0.5 * sw])
+			local flatMin : Math.max (0.85 * sw) TINY
+			local xHookPref : Math.max df.leftSB : Math.min (xStem - flourishWidth) (xStem - minGap - ink)
+			local xHook : Math.min xHookPref (xStem - turnNeed - flatMin)
+			local xTurn : xHook + turnNeed
+			local midX : mix xHook xStem 0.5
+			local adaF : Math.min ada : 0.45 * (XH - Descender)
+			local adbF : Math.min adb : 0.45 * (XH - Descender)
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
+				widths.lhs sw
+				corner xStem XH [heading Leftward]
+				curl [Math.min xTurn : Arch.adjust-x.top midX (sw -- sw)] XH [heading Leftward]
 				archv
-				flat xHook (yTop - turnY) [heading Downward]
-				curl xHook (yBot + turnY) [heading Downward]
+				flatside.ld xHook Descender XH adaF adbF
 				arcvh
-				flat xTurn yBot [heading Rightward]
-				curl xJoin yBot [heading Rightward]
+				flat [Math.min xTurn : Arch.adjust-x.bot midX (sw -- sw)] Descender [heading Rightward]
+				corner xStem Descender [heading Rightward]
 
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
