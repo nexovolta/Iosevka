@@ -604,22 +604,33 @@ glyph-block Letter-Latin-Lower-R : begin
 			baseSerifed    { false true  }
 			serifed        { true  true  }
 
-	define [HalfRHookOnly Body df top bottom] : glyph-proc
-		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df RMode.Half top bottom false false
-		eject-contour 'strokeL'
+	# Extra ear width matches the first hook (excluding the stem).
+	define [doubleRHookShift dim] : Math.max TINY : dim.rHookRightX - dim.rBarLeftX - [HSwToV Stroke]
 
 	define [doubleRHalfDf pairWidth] : begin
 		local dfI : DivFrame para.advanceScaleI
 		local dim : RDim dfI RMode.Half
-		local xShift0 : Math.max TINY : dim.rHookRightX - dim.rBarLeftX - [HSwToV Stroke]
+		local xShift0 : doubleRHookShift dim
 		local k : Math.min 1 (pairWidth / (dfI.width + xShift0))
 		DivFrame (k * para.advanceScaleI)
 
-	define [MaskedExtraHalfRHook Body df xShift rBarLeftX] : glyph-proc
-		define [extra] : with-transform [ApparentTranslate xShift 0] : HalfRHookOnly Body df XH 0
-		include : difference [extra] : intersection
-			MaskBelow (XH - Stroke)
-			MaskLeft (rBarLeftX + xShift + [HSwToV Stroke])
+	# Second r-ear attached at the first hook's right, drawn as its own hook
+	# so the inner is a real arch rather than a rectangular mask cut.
+	define [ExtraDoubleRHook Body df xJoin] : glyph-proc
+		define [object rBarLeftX rHookRightX rArchDepthA] : RDim df RMode.Half
+		local hookSpan : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
+		local xRight : xJoin + hookSpan
+		if (Body === HalfRShape.FlatTop) : begin
+			include : dispiro
+				widths.lhs
+				flat xRight XH
+				curl (xJoin - [HSwToV HalfStroke]) XH [heading Leftward]
+		: else : begin
+			include : dispiro
+				widths.lhs
+				g4.left.start xRight (XH - O)
+				archv
+				straight.down.end (xJoin - O) [Math.max TINY (XH - rArchDepthA)] [widths.lhs.heading ShoulderFine Downward]
 
 	foreach { suffix { Body { doTS doBS } } } [pairs-of HalfRConfig] : do
 		create-glyph "rHalf.\(suffix)" : glyph-proc
@@ -643,11 +654,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : doubleRHalfDf df.width
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
+			local hookSpan : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
 			include : setMarks XH 0 doTS doBS
 			include : Body dfHalf RMode.Half XH 0 doTS doBS
-			include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
-			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
+			include : ExtraDoubleRHook Body dfHalf rHookRightX
+			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + hookSpan)
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
@@ -656,21 +667,21 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : doubleRHalfDf df.width
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
-			include : setMarks XH 0 doTS doBS
+			local hookSpan : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
+			include : setMarks XH 0 doTS false
 
 			local fine : AdviceStroke 4
 			local rinner : XH * 0.15 - fine * 0.75
 			local m2 : rBarLeftX + [HSwToV : AdviceStroke 3] - (RightSB - SB) / 2 - [HSwToV : 0.5 * fine]
 			local x2 : rBarLeftX + [HSwToV : AdviceStroke 2] + SideJut
 			local y2 : rinner * 2 + fine - O
-			include : Body dfHalf RMode.Half XH (y2 + O) doTS doBS
-			include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
+			include : Body dfHalf RMode.Half XH (y2 + O) doTS false
+			include : ExtraDoubleRHook Body dfHalf rHookRightX
 			include : dispiro
 				widths.rhs
 				straight.down.start (rBarLeftX + [HSwToV Stroke]) y2 [heading Downward]
 				CurlyTail.f fine 0 m2 x2
-			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
+			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + hookSpan)
 
 	select-variant 'rHalf' 0xAB47
 	select-variant 'rDouble' 0xAB48 (follow -- 'rHalf')
