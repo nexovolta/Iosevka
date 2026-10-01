@@ -726,6 +726,41 @@ glyph-block Letter-Latin-Lower-R : begin
 				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
 				include : tagged 'serifRB' : HSerif.lt (rBarLeftX + [HSwToV HalfStroke]) XH jut
 
+	glyph-block-import Letter-Latin-Lower-I : CasualTop
+
+	define PigtailCasualTopConfig : object
+		topTailed  'tailed'
+		topFlat    'flat'
+		topSemi    'semi'
+		topDiag    'diagonal'
+
+	foreach { suffix kind } [Object.entries PigtailCasualTopConfig] : do
+		create-glyph "dotlessiPigtail.upright.\(suffix)" : glyph-proc
+			local df : include dfF
+			include : df.markSet.e
+			define [object setTurnedMarks rBarRightX] : RDim df RMode.NarrowHook
+			include : setTurnedMarks XH 0 false false
+			local yJoin : XH / 2
+			include : difference
+				new-glyph : composite-proc
+					SmallRShape.Standard df RMode.NarrowHook XH 0 false false
+					FlipAround df.middle (XH / 2)
+				MaskAbove (yJoin + HalfStroke)
+			include : CasualTop df XH (rBarRightX - [HSwToV HalfStroke]) kind
+
+		create-glyph "dotlessiPigtail.italic.\(suffix)" : glyph-proc
+			local df : include dfF
+			include : df.markSet.e
+			define [object setInvertedMarks rBarLeftX] : RDim df RMode.NarrowHook nothing nothing nothing (-1)
+			include : setInvertedMarks XH 0 false false
+			local yJoin : XH / 2
+			include : difference
+				new-glyph : composite-proc
+					SmallRevRShape.Standard df RMode.NarrowHook XH 0 false false
+					FlipAround df.middle (XH / 2)
+				MaskAbove (yJoin + HalfStroke)
+			include : CasualTop df XH (rBarLeftX + [HSwToV HalfStroke]) kind
+
 	select-variant 'dotlessiPigtail.upright'
 	select-variant 'dotlessiPigtail.italic'
 

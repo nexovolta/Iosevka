@@ -374,6 +374,38 @@ glyph-block Letter-Latin-Lower-I : begin
 			currentGlyph.deleteBaseAnchor 'trailing'
 
 
+	# Casual i-tops on a serifless stem so AI can follow double-tailed `i`
+	# without inheriting that body's bottom tail.
+	define AiCasualTopConfig : object
+		topTailed  'tailed'
+		topFlat    'flat'
+		topSemi    'semi'
+		topDiag    'diagonal'
+
+	define [IStemWithCasualTop df top xMiddle kind] : glyph-proc
+		local yJoin : mix 0 top 0.5
+		include : difference
+			new-glyph : glyph-proc
+				include : ILBody.Serifless df top 0 xMiddle
+			MaskAbove (yJoin + HalfStroke)
+		include : ILBody.CasualTop df top xMiddle kind
+		include : ILMarks.Serifless df top 0 xMiddle
+
+	foreach { suffix kind } [Object.entries AiCasualTopConfig] : do
+		create-glyph "dotlessaiDiphthong.upright.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.e
+			local xMiddle : [XMiddleT MODE-I].Casual df
+			include : IStemWithCasualTop df XH xMiddle kind
+			include : HalfRingDescender (xMiddle - [HSwToV HalfStroke]) 0
+
+		create-glyph "dotlessaiDiphthong.italic.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.e
+			local xMiddle : [XMiddleT MODE-I].Casual df
+			include : IStemWithCasualTop df XH xMiddle kind
+			include : RetroflexHook.mExt xMiddle 0
+
 	# `l`-like letters
 	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-L]] : begin
 		define xMiddleTCenter [XMiddleT MODE-L].Center
