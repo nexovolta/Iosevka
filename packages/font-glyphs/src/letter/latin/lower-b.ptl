@@ -120,27 +120,21 @@ glyph-block Letter-Latin-Lower-B : begin
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
 			local ink : HSwToV sw
-			local yCut : XH / 2
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				# Stem kept full height; cut away the top half of the bowl only.
-				include : difference
-					union
-						FlourishFlatEndsBowl XH 0 xLeft xRight sw ada adb
-						VBar.l xLeft 0 Ascender sw
-					intersection [MaskAbove yCut] [MaskRight (xLeft + ink)]
+				include : union
+					FlourishFlatEndsBowl XH 0 xLeft xRight sw ada adb
+					VBar.l xLeft 0 Ascender sw
 				if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt xLeft Ascender SideJut sw
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
-			# Reversed stretched C (XH–Descender): flat top into the bowl, rounded bottom.
-			local lf : CLetterForm df 3 0 XH Descender
+			# Regular stretched C (XH–Descender), clipped to the stem; top meets the flat bowl.
+			local lf : CLetterForm df 0 0 XH Descender
 				ada -- [df.archDepthAOf SmallArchDepth sw]
 				adb -- [df.archDepthBOf SmallArchDepth sw]
 				sw  -- sw
-			include : intersection [MaskRight df.leftSB] : difference [lf.revFull] : intersection
-				intersection [MaskRight xStem] [MaskLeft (xStem + ink)]
-				intersection [MaskAbove 0] [MaskBelow XH]
-			include : HBar.t df.leftSB (xStem + ink) XH sw
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] [lf.full]
+
 
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
