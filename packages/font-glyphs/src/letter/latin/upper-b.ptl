@@ -23,43 +23,43 @@ glyph-block Letter-Latin-Upper-B : begin
 	define AsymmetricBTopArcShift      : (-0.05) * (RightSB - SB)
 	define AsymmetricBTopArcInnerShift : (-0.10) * (RightSB - SB)
 
-	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift] : glyph-proc
+	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [df [DivFrame 1]]] : glyph-proc
 		local bowl : mix stroke top barPos
-		local mockBowlDepth : BowlXDepth top (bowl - stroke) SB RightSB stroke
-		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth + topArcInnerShift
-		local curveLeftTop : Math.min curveLeftBot : [mix Width RightSB 1.5] - OX - stroke * 1.375 + topArcInnerShift
+		local mockBowlDepth : BowlXDepth top (bowl - stroke) df.leftSB df.rightSB stroke
+		local curveLeftBot : [mix df.width df.rightSB 1.5] - mockBowlDepth + topArcInnerShift
+		local curveLeftTop : Math.min curveLeftBot : [mix df.width df.rightSB 1.5] - OX - stroke * 1.375 + topArcInnerShift
 
-		local adaBot : ArchDepthAOf : ArchDepth * 0.9
-		local adbBot : ArchDepthBOf : ArchDepth * 0.9
-		local adaTop : ArchDepthAOf : ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)
-		local adbTop : ArchDepthBOf : ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)
+		local adaBot : ArchDepthAOf (ArchDepth * 0.9) df.width
+		local adbBot : ArchDepthBOf (ArchDepth * 0.9) df.width
+		local adaTop : ArchDepthAOf (ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)) df.width
+		local adbTop : ArchDepthBOf (ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)) df.width
 
-		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + topArcShift
+		local xTopArcRight : [mix df.leftSB df.rightSB BArcMix] - OX * 2 + topArcShift
 		local yTopArcRight : YSmoothMidR top (bowl - stroke) adaTop adbTop
-		local xBotArcRight : RightSB - OX * 2
+		local xBotArcRight : df.rightSB - OX * 2
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
 
 		include : sink
 			widths.rhs stroke
-			flat (SB - O) (top - offset) [heading Rightward]
+			flat (df.leftSB - O) (top - offset) [heading Rightward]
 			curl [Arch.adjust-x.top curveLeftTop (sw -- stroke)] (top - offset)
 			archv
 			g4   (xTopArcRight - offset) yTopArcRight
 			arcvh
 			flat [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] (bowl - fine + offset) [widths.rhs fine]
-			curl (SB - O) (bowl - fine + offset) [heading Leftward]
+			curl (df.leftSB - O) (bowl - fine + offset) [heading Leftward]
 
 		include : sink
 			widths.rhs fine
-			flat (SB - O) (bowl - stroke + fine - offset) [heading Rightward]
+			flat (df.leftSB - O) (bowl - stroke + fine - offset) [heading Rightward]
 			curl [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine - offset)
 			archv
 			g4   (xBotArcRight - offset) yBotArcRight [widths.rhs stroke]
 			arcvh
 			flat [Arch.adjust-x.bot curveLeftBot (sw -- stroke)] (0 + offset)
-			curl (SB - O) (0 + offset) [heading Leftward]
+			curl (df.leftSB - O) (0 + offset) [heading Leftward]
 
 		return : object bowl
 
@@ -71,17 +71,19 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : topArcInnerShift -- 0
 		local-parameter : serifTop         -- false
 		local-parameter : serifBot         -- false
+		local-parameter : df               -- [DivFrame 1]
 
-		include : VBar.l SB 0 top stroke
+		include : VBar.l df.leftSB 0 top stroke
 		local dims : include : [BShapeArcsT dispiro 0] top
 			stroke           -- stroke
 			barPos           -- barPos
 			topArcShift      -- topArcShift
 			topArcInnerShift -- topArcInnerShift
+			df               -- df
 
-		set-base-anchor 'strike' Middle (dims.bowl - 0.5 * stroke)
+		set-base-anchor 'strike' df.middle (dims.bowl - 0.5 * stroke)
 
-		local sf : SerifFrame.fromDf [DivFrame 1] top 0
+		local sf : SerifFrame.fromDf df top 0
 		if serifTop : include sf.lt.outer
 		if serifBot : include sf.lb.outer
 
@@ -91,48 +93,59 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : barPos           -- BBarPos
 		local-parameter : topArcShift      -- 0
 		local-parameter : topArcInnerShift -- 0
+		local-parameter : df               -- [DivFrame 1]
 
 		include : [BShapeArcsT spiro-outline 1] top
 			stroke           -- stroke
 			barPos           -- barPos
 			topArcShift      -- topArcShift
 			topArcInnerShift -- topArcInnerShift
+			df               -- df
 
-	define [InterruptShape bp] : function [top sw _st _sb] : begin
+	define [InterruptShape bp] : function [top sw _st _sb _df] : begin
+		local df : fallback _df : DivFrame 1
 		local bowl : mix sw top bp
 		return : VBar.l
-			SB + [HSwToV sw]
+			df.leftSB + [HSwToV sw]
 			bowl - sw - TINY
 			bowl      + TINY
-			[VSwToH : 0.20 * (RightSB - SB)] * ([AdviceStroke 5] / Stroke)
+			[VSwToH : 0.20 * (df.rightSB - df.leftSB)] * ([AdviceStroke 5] / Stroke)
 
-	define [StdShape top sw st sb] : BShape top
+	define [StdShape top sw st sb _df] : BShape top
 		stroke   -- sw
 		barPos   -- BBarPos
 		serifTop -- st
 		serifBot -- sb
-	define [StdShapeInterrupted top sw st sb] : difference
-		StdShape                 top sw st sb
-		[InterruptShape BBarPos] top sw st sb
-	define [StdMask top sw] : BShapeMask top
+		df       -- [fallback _df : DivFrame 1]
+	define [StdShapeInterrupted top sw st sb _df] : difference
+		StdShape                 top sw st sb _df
+		[InterruptShape BBarPos] top sw st sb _df
+	define [StdMask top sw _df] : BShapeMask top
 		stroke   -- sw
 		barPos   -- BBarPos
+		df       -- [fallback _df : DivFrame 1]
 
-	define [AsymmetricShape top sw st sb] : BShape top
-		stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
-		barPos           -- AsymmetricBBarPos
-		topArcShift      -- AsymmetricBTopArcShift
-		topArcInnerShift -- AsymmetricBTopArcInnerShift
-		serifTop         -- st
-		serifBot         -- sb
-	define [AsymmetricShapeInterrupted top sw st sb] : difference
-		AsymmetricShape                    top sw st sb
-		[InterruptShape AsymmetricBBarPos] top sw st sb
-	define [AsymmetricMask top sw] : BShapeMask top
-		stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
-		barPos           -- AsymmetricBBarPos
-		topArcShift      -- AsymmetricBTopArcShift
-		topArcInnerShift -- AsymmetricBTopArcInnerShift
+	define [AsymmetricShape top sw st sb _df] : begin
+		local df : fallback _df : DivFrame 1
+		return : BShape top
+			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
+			barPos           -- AsymmetricBBarPos
+			topArcShift      -- ((-0.05) * (df.rightSB - df.leftSB))
+			topArcInnerShift -- ((-0.10) * (df.rightSB - df.leftSB))
+			serifTop         -- st
+			serifBot         -- sb
+			df               -- df
+	define [AsymmetricShapeInterrupted top sw st sb _df] : difference
+		AsymmetricShape                    top sw st sb _df
+		[InterruptShape AsymmetricBBarPos] top sw st sb _df
+	define [AsymmetricMask top sw _df] : begin
+		local df : fallback _df : DivFrame 1
+		return : BShapeMask top
+			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
+			barPos           -- AsymmetricBBarPos
+			topArcShift      -- ((-0.05) * (df.rightSB - df.leftSB))
+			topArcInnerShift -- ((-0.10) * (df.rightSB - df.leftSB))
+			df               -- df
 
 	### Cyrillic Lower Ve
 
@@ -402,18 +415,16 @@ glyph-block Letter-Latin-Upper-B : begin
 		create-glyph "BFlourish.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
-			local swA : df.adviceThinnerStroke2 2 3 CAP 0.65
-			local swB : df.adviceThinnerStroke 2.75 0.75
-			local sw : Math.min swA swB
 			# Body 66% of capital-M width; left flourish 33%.
 			local bodyK : 0.66 * df.adws
-			# Scale about the right edge, then park that edge on the M-frame right.
-			local shift : df.width - Width
-			local swDraw : sw / bodyK
+			local swA : df.adviceThinnerStroke2 2 3 CAP bodyK
+			local swB : df.adviceThinnerStroke 2.75 bodyK
+			local sw : Math.min swA swB
+			local subDf : DivFrame bodyK 2
+			local shift : df.width - subDf.width
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				include : with-transform [ScaleAround Width 0 bodyK 1] : glyph-proc
-					include : body CAP swDraw ts bs
-			local xStem : Width + bodyK * (SB - Width) + shift
+				include : body CAP sw ts bs subDf
+			local xStem : subDf.leftSB + shift
 			local ink : HSwToV sw
 			local bowl : mix sw CAP bp
 			local yBarBottom : bowl - sw
