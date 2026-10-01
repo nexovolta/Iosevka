@@ -9,7 +9,7 @@ export function apply(data, para, argv) {
 		else throw new Error(`CV tag conflict: ${prime.tag}`);
 	}
 	const variantSelector = resolveSelectors(parsed, para, argv);
-	applyLigatureAFromUprightOblique(parsed, para, argv, variantSelector);
+	applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantSelector);
 	para.variants = {
 		selectorTree: parsed.selectorTree,
 		primes: parsed.primes,
@@ -43,8 +43,24 @@ export function parse(data, argv) {
 	return { selectorTree: selectorTree, primes, composites, defaultComposite };
 }
 
+const DEFAULT_FORCED_DOUBLE_STOREY_A = "doubleStoreySerifless";
 const DEFAULT_LIGATURE_A = "doubleStoreyToothlessRounded";
 const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a", "cyrl/aye/a"];
+const DOUBLE_STOREY_HOOKS = ["HookInwardSerifed", "HookFlat", ""];
+const DOUBLE_STOREY_SPURS = [
+	"FlatBottomSerifless",
+	"FlatBottomSerifed",
+	"ToothlessCorner",
+	"ToothlessRounded",
+	"Serifless",
+	"Serifed",
+	"Tailed",
+];
+const DOUBLE_STOREY_A_SUFFIXES = new Set(
+	DOUBLE_STOREY_HOOKS.flatMap(hook =>
+		DOUBLE_STOREY_SPURS.map(spur => `doubleStorey${hook}${spur}`),
+	),
+);
 
 function resolveSelectors(parsed, para, argv) {
 	const variantSelector = {};
@@ -60,26 +76,26 @@ function resolveSelectors(parsed, para, argv) {
 	return variantSelector;
 }
 
-function isDoubleStoreyA(suffix) {
-	return typeof suffix === "string" && suffix.startsWith("doubleStorey");
-}
-
-function hookAffixFromDoubleStoreyA(suffix) {
-	if (suffix.includes("HookFlat")) return "HookFlat";
-	if (suffix.includes("HookInwardSerifed")) return "HookInwardSerifed";
-	return "";
-}
-
-function pickLigatureASelector(obliqueVs, uprightVs) {
-	for (const vs of [obliqueVs, uprightVs]) {
-		if (!isDoubleStoreyA(vs.a)) continue;
-		const hook = hookAffixFromDoubleStoreyA(vs.a);
-		return hook ? `doubleStorey${hook}ToothlessRounded` : DEFAULT_LIGATURE_A;
+function parseDoubleStoreyA(suffix) {
+	if (!DOUBLE_STOREY_A_SUFFIXES.has(suffix)) return null;
+	for (const hook of DOUBLE_STOREY_HOOKS) {
+		const prefix = `doubleStorey${hook}`;
+		if (!suffix.startsWith(prefix)) continue;
+		const spur = suffix.slice(prefix.length);
+		if (DOUBLE_STOREY_SPURS.includes(spur)) return { hook, spur };
 	}
-	return DEFAULT_LIGATURE_A;
+	return null;
 }
 
-function applyLigatureAFromUprightOblique(parsed, para, argv, variantSelector) {
+function pickForcedDoubleStoreyA(obliqueVs, uprightVs) {
+	for (const vs of [obliqueVs, uprightVs]) {
+		const parsed = parseDoubleStoreyA(vs.a);
+		if (parsed) return `doubleStorey${parsed.hook}${parsed.spur}`;
+	}
+	return DEFAULT_FORCED_DOUBLE_STOREY_A;
+}
+
+function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantSelector) {
 	const obliqueVs = resolveSelectors(
 		parsed,
 		Object.assign({}, para, { isItalic: false, isOblique: true }),
@@ -90,8 +106,15 @@ function applyLigatureAFromUprightOblique(parsed, para, argv, variantSelector) {
 		Object.assign({}, para, { isItalic: false, isOblique: false }),
 		argv,
 	);
-	const suffix = pickLigatureASelector(obliqueVs, uprightVs);
-	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = suffix;
+	const suffix = pickForcedDoubleStoreyA(obliqueVs, uprightVs);
+	const parsedA = parseDoubleStoreyA(suffix);
+	const hook = parsedA ? parsedA.hook : "";
+	variantSelector["a/doubleStorey"] = suffix;
+	variantSelector["aRetroflexHook/doubleStorey"] = hook
+		? `doubleStorey${hook}Serifless`
+		: DEFAULT_FORCED_DOUBLE_STOREY_A;
+	const ligature = hook ? `doubleStorey${hook}ToothlessRounded` : DEFAULT_LIGATURE_A;
+	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = ligature;
 }
 
 class SelectorTree {
