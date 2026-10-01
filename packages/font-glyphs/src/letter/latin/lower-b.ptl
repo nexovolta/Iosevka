@@ -14,17 +14,54 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
 	glyph-block-import Letter-Latin-C : CLetterForm
 
-	# Flat top and flat bottom into the stem — no tooth/spur at either end.
-	define [FlourishFlatEndsBowl] : with-params [top bot left right sw ada adb] : begin
+	# Always flat at the top (C joins here). Bottom follows the `b` spur variant.
+	define [FlourishFlatTopKnots left right top sw] : list
+		arcvh
+		flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] top
+		curl (left + TINY) top [heading Leftward]
+
+	define [FlourishBowl] : with-params [Body top bot left right sw ada adb] : begin
+		local fine : ShoulderFine * (sw / Stroke)
+		if (Body === ToothedBody || Body === BottomCutBody) : begin
+			# Toothed / bottom-cut spur at the baseline; flat into the stem at XH.
+			return : OBarLeft.earlessCorner
+				rise  -- 0
+				top   -- top
+				bot   -- bot
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+		if (Body === ToothlessCornerBody) : begin
+			return : dispiro
+				widths.lhs sw
+				g4 left (bot + DToothlessRise)
+				Arch.lhs bot (sw -- sw) (blendPre -- {})
+				flatside.ru right bot top ada adb
+				FlourishFlatTopKnots left right top sw
+		if (Body === ToothlessRoundedBody) : begin
+			return : dispiro
+				widths.lhs sw
+				flat left (bot + adb + TINY) [heading Downward]
+				curl left (bot + adb)
+				Arch.lhs bot (sw -- sw)
+				flatside.ru right bot top ada adb
+				FlourishFlatTopKnots left right top sw
+		# FlatBottomBody: both ends flat into the stem.
 		return : dispiro
 			widths.lhs sw
 			flat (left + TINY) bot [heading Rightward]
 			curl [Arch.adjust-x.bot [mix left right 0.5] (sw -- sw)] bot
 			archv
 			flatside.ru right bot top ada adb
-			arcvh
-			flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] top
-			curl (left + TINY) top [heading Leftward]
+			FlourishFlatTopKnots left right top sw
+
+	define [FlourishStemBot Body sw] : begin
+		if (Body === BottomCutBody) : return (0.5 * sw)
+		if (Body === ToothlessCornerBody) : return DToothlessRise
+		return 0
 
 	define [ToothedBody yTop] : union
 		OBarLeft.shape
@@ -105,14 +142,14 @@ glyph-block Letter-Latin-Lower-B : begin
 			include : LeaningAnchor.Above.VBar.l SB
 
 		create-glyph "bFlourish.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
+			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
 			local swA : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.65
 			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
-			# Body 66%; left flourish 33% of the M-frame.
-			local bodyK : Math.min (2 / 3) (0.66 * df.adws)
+			# Body 66% of small-m width; left flourish 33%.
+			local bodyK : 0.66 * df.adws
 			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
 			local xLeft : subDf.leftSB + 0
@@ -120,18 +157,26 @@ glyph-block Letter-Latin-Lower-B : begin
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
 			local ink : HSwToV sw
+			local yStemBot : FlourishStemBot Body sw
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : union
-					FlourishFlatEndsBowl XH 0 xLeft xRight sw ada adb
-					VBar.l xLeft 0 Ascender sw
+					FlourishBowl Body XH 0 xLeft xRight sw ada adb
+					VBar.l xLeft yStemBot Ascender sw
+					if (Body === BottomCutBody)
+						spiro-outline
+							corner xLeft                    0
+							corner xLeft                    yStemBot
+							corner (xLeft + [HSwToV sw])    yStemBot
+						no-shape
 				if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt xLeft Ascender SideJut sw
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
-			# Regular stretched C (XH–Descender), clipped to the stem; top meets the flat bowl.
-			local lf : CLetterForm df 0 0 XH Descender
-				ada -- [df.archDepthAOf SmallArchDepth sw]
-				adb -- [df.archDepthBOf SmallArchDepth sw]
+			# C on a 1-em frame so the bowl, not the flourish, keeps m-width in Aile/Etoile.
+			local cDf : DivFrame [Math.min 1 df.adws]
+			local lf : CLetterForm cDf 0 0 XH Descender
+				ada -- [cDf.archDepthAOf SmallArchDepth sw]
+				adb -- [cDf.archDepthBOf SmallArchDepth sw]
 				sw  -- sw
 			include : intersection [MaskLeft (xStem + 0.5 * ink)] [lf.full]
 
