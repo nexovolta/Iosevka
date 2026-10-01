@@ -279,10 +279,6 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			flat (l + xShift) 0 [heading Upward]
 			curl ([mix l r pFine] + xShift) [mix 0 CAP pFine] [widths.heading (fine * cor) 0 Upward]
 
-	define [CirclePermilleSlash fSegmented fMyriad l r xShift xBot xTop] : glyph-proc
-		if fSegmented : include : CircleSlashSegmentedShifted l r xShift
-		if [not fSegmented] : include : if fMyriad [CircleSlashContinuousSteep xBot xTop] [CircleSlashContinuousEnds xBot xTop]
-
 	define [CirclePercentGlyph extra fSegmented fConnected] : glyph-proc
 		local l : SB / 2
 		local r : Width - l
@@ -297,63 +293,74 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			include : Translate ((WideWidth0 - r - extra * step) / 2) 0
 
 	define [CirclePermilleGlyph extra fSegmented fConnected fNarrow] : glyph-proc
-		local l : SB / 2
-		local r : Width - l
-		local largeR : [PercentCircleDiam (r - l)] / 2
 		local fMyriad : extra > 1
-		local sR : largeR * [if fMyriad 0.46 0.56]
-		local dist : 1.30 * sR
-		local cell : r - l
-		local swCont : AdviceStroke 3.75
-		local slashHalf : HSwToV : 1.15 * swCont
-		local slashGap : Math.max slashHalf (0.08 * cell)
+		local fHori para.isQuasiProportional
+		local mW : Width * para.advanceScaleM
+		local dblW : 2 * Width
+		local destNarrow mW
+		if fMyriad : set destNarrow dblW
+		local destWide WideWidth0
+		if fMyriad : set destWide : Math.max WideWidth0 dblW
+		local destW destWide
+		if fNarrow : set destW destNarrow
 
-		local xUp : r - sR
-		local yLow sR
-		local xLow : xUp - 0.50 * dist
-		local yUp : yLow + 0.87 * dist
-		local xStem : r - sR
-		local yBot sR
-		local yTop : sR + dist
-		local xHook : xStem - dist
-		local yHook sR
+		local l : SB / 2
+		local rW : Width - l
+		local largeR : [PercentCircleDiam (Width - SB)] / 2
+		local sR largeR
+		local dist : 1.16 * sR
+		local slashGap : Math.max [HSwToV : 1.15 * [AdviceStroke 3.75]] (0.08 * (Width - SB))
 
-		local clusterLeft : if fMyriad [xHook - sR] [xLow - sR]
-		local clusterRight : if fMyriad [xStem + sR] [xUp + sR]
-		local nwidW : Width * para.advanceScaleM
-		local destW : if fNarrow nwidW WideWidth0
-		local clusterSpan : clusterRight - clusterLeft
-		local kFit : (r - clusterLeft) / [Math.max TINY clusterSpan]
+		local cx0 : rW - sR
+		local cy0 sR
+		local xLow : cx0 - 0.50 * dist
+		local yLow cy0
+		local xUp cx0
+		local yUp : cy0 + 0.87 * dist
+		local xHook cx0
+		local yHook cy0
+		local xStem : cx0 + dist
+		local yBot cy0
+		local yTop : cy0 + dist
+		local xHori0 cx0
+		local xHori1 : cx0 + dist
+		local xHori2 : cx0 + 2 * dist
+		local yHori cy0
+
+		local contentRight rW
+		if fHori : set contentRight : rW + extra * dist
+		if [not fHori] : begin
+			if fMyriad : set contentRight : rW + dist
+		local contentW : contentRight + l
+		local kFit : destW / [Math.max TINY contentW]
 		local k : Math.min 1 kFit
 
-		local xSlashBot l
-		local xSlashTop r
-		if fMyriad : begin
-			local tanPad : Math.abs : TanSlope * 2 * largeR
-			local xTopMin : l + 2 * largeR + slashGap + slashHalf + tanPad
-			local xBotMax : clusterLeft - slashGap - slashHalf
-			set xSlashTop : Math.min r xTopMin
-			local xBotPref : xSlashTop - 0.38 * cell
-			local xBotMid : Math.min xBotMax xBotPref
-			set xSlashBot : Math.max l xBotMid
+		local clusterLeft xLow
+		if fHori : set clusterLeft : xHori0 - sR
+		if [not fHori] : begin
+			if fMyriad : set clusterLeft : xHook - sR
+		local cl : l + k * (clusterLeft - l)
 
-		local hypotLen : Math.hypot CAP cell
+		local hypotLen : Math.hypot CAP (rW - l)
 		local pFine : 0.5 - [Math.max (CAP / 10) HalfStroke] / hypotLen
-		local stubEndX : mix l r pFine
-		local xShiftPref : clusterLeft - slashGap - stubEndX
+		local stubEndX : mix l rW pFine
+		local xShiftPref : cl - slashGap - stubEndX
 		local xShiftMin : 0 - l
 		local xShiftClamped : Math.min 0 xShiftPref
 		local xShift : Math.max xShiftMin xShiftClamped
 
 		set-width destW
 		include : PercentCircle (l + largeR) (CAP - largeR) largeR
-		include : with-transform [ScaleAround clusterLeft 0 k k] : glyph-proc
-			if fMyriad
-			: then : include : CircleClusterTriple xHook yHook xStem yBot xStem yTop sR
-			: else : include : CircleClusterPair xLow yLow xUp yUp sR
-		include : CirclePermilleSlash fSegmented fMyriad l r xShift xSlashBot xSlashTop
-		if fConnected : include : CircleAlsoConnectedBar l xSlashTop largeR
-		include : Translate ((destW - Width) / 2) 0
+		include : with-transform [ScaleAround l 0 k k] : glyph-proc
+			if fHori : begin
+				if fMyriad : include : CircleClusterTriple xHori0 yHori xHori1 yHori xHori2 yHori sR
+				if [not fMyriad] : include : CircleClusterPair xHori0 yHori xHori1 yHori sR
+			if [not fHori] : begin
+				if fMyriad : include : CircleClusterTriple xHook yHook xStem yBot xStem yTop sR
+				if [not fMyriad] : include : CircleClusterPair xLow yLow xUp yUp sR
+		include : if fSegmented [CircleSlashSegmentedShifted l rW xShift] [CircleSlashContinuous l rW]
+		if fConnected : include : CircleAlsoConnectedBar l rW largeR
+		include : Translate ((destW - k * contentW) / 2) 0
 
 	create-glyph 'percent.circlesContinuousSlash' : glyph-proc
 		include : CirclePercentGlyph 0 false false
