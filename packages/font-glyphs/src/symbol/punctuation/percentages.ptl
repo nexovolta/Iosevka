@@ -25,50 +25,53 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			corner  df.rightSB                        CAP
 			corner (df.leftSB  + [HSwToV : cor * sw]) 0
 
+	define [DotsPercentGlyph nLower] : glyph-proc
+		set-width Width
+		local df : DivFrame 1
+		include : PercentBarShape df Stroke
+		local yTopBot : mix CAP 0 0.3
+		local yBotTop : mix 0 CAP 0.3
+		local refSw : [AdviceStroke 4] * 1.5
+		include : VBar.l SB yTopBot CAP refSw
+
+		local shrink 1
+		if (nLower >= 2) : set shrink 0.92
+		if (nLower >= 3) : set shrink 0.84
+		local barW : refSw * shrink
+		local gapN : if (nLower >= 3) 0.20 0.26
+		local gap : [if (nLower > 1) gapN 0] * [HSwToV barW]
+		local cor : PercentBarCor df Stroke
+		local slashRight : mix (df.leftSB + [HSwToV : cor * Stroke]) df.rightSB (yBotTop / CAP)
+		local clear : Math.max [HSwToV : 0.18 * Stroke] (0.04 * Width)
+		local avail : df.rightSB - slashRight - clear
+		local barX : HSwToV barW
+		local total : nLower * barX + (nLower - 1) * gap
+		if (total > avail) : begin
+			local k : avail / [Math.max TINY total]
+			set barW : barW * k
+			set gap : gap * k
+			set barX : HSwToV barW
+		foreach i [range 0 nLower] : begin
+			local xRight : df.rightSB - (nLower - 1 - i) * (barX + gap)
+			include : VBar.r xRight 0 yBotTop barW
+
 	create-glyph 'percent.dots' : glyph-proc
-		include : PercentBarShape [DivFrame 1] Stroke
-		local dotwidth : [AdviceStroke 4] * 1.5
-		include : VBar.l SB [mix CAP 0 0.3] CAP dotwidth
-		include : VBar.r RightSB 0 [mix 0 CAP 0.3] dotwidth
+		include : DotsPercentGlyph 1
+
+	create-glyph 'permille.NWID.dots' : glyph-proc
+		include : DotsPercentGlyph 2
+	create-glyph 'permille.WWID.dots' : glyph-proc
+		include : DotsPercentGlyph 2
+	create-glyph 'basepoint.NWID.dots' : glyph-proc
+		include : DotsPercentGlyph 3
+	create-glyph 'basepoint.WWID.dots' : glyph-proc
+		include : DotsPercentGlyph 3
 
 	WithDotVariants "commercialMinusSign" 0x2052 : function [DrawAt kdr overshoot] : glyph-proc
 		include : PercentBarShape [DivFrame 1] [AdviceStroke 4]
 		local r : PeriodRadius * kdr
 		include : DrawAt (SB      + r) (CAP - r) (r - overshoot)
 		include : DrawAt (RightSB - r) (0   + r) (r - overshoot)
-
-	create-glyph 'permille.NWID.dots' : glyph-proc
-		define df : include : DivFrame para.advanceScaleM
-		define slopeDf : DivFrame 1
-
-		define refSw : df.adviceStroke 4
-
-		include : PercentBarShape slopeDf refSw
-		local dotwidth : refSw * 1.5
-		include : VBar.l SB [mix CAP 0 0.3] CAP dotwidth
-
-		local cor : PercentBarCor slopeDf refSw
-		local gap : [mix 0 df.rightSB 0.9] - [HSwToV : cor * refSw]
-		local lowerDotWidth : 1.5 * [AdviceStroke 3 (gap / Width)]
-		include : VBar.r (df.rightSB - gap * 0.45) 0 [mix 0 CAP 0.3] lowerDotWidth
-		include : VBar.r  df.rightSB               0 [mix 0 CAP 0.3] lowerDotWidth
-
-	create-glyph 'basepoint.NWID.dots' : glyph-proc
-		define df : include : DivFrame para.advanceScaleM
-		define slopeDf : DivFrame (0.75 * para.advanceScaleM)
-
-		define refSw : df.adviceStroke 5
-
-		include : PercentBarShape slopeDf refSw
-		local dotwidth : refSw * 1.5
-		include : VBar.l SB [mix CAP 0 0.3] CAP dotwidth
-
-		local cor : PercentBarCor slopeDf refSw
-		local gap : [mix 0 df.rightSB 0.9] - [HSwToV : cor * refSw]
-		local lowerDotWidth : 1.5 * [AdviceStroke 4 (gap / Width)]
-		include : VBar.r (df.rightSB - gap * 0.6) 0 [mix 0 CAP 0.3] lowerDotWidth
-		include : VBar.r (df.rightSB - gap * 0.3) 0 [mix 0 CAP 0.3] lowerDotWidth
-		include : VBar.r  df.rightSB              0 [mix 0 CAP 0.3] lowerDotWidth
 
 	create-glyph 'percent.ringsContinuousSlash' : glyph-proc
 		set-width Width
