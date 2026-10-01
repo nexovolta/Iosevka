@@ -14,6 +14,9 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
 	glyph-block-import Letter-Latin-C : CLetterForm
 
+	define SLAB-NONE      0
+	define SLAB-FLAT-HOOK 4
+
 	# Always flat at the top (C joins here). Bottom follows the `b` spur variant.
 	define [FlourishFlatTopKnots left right top sw] : list
 		arcvh
@@ -174,12 +177,11 @@ glyph-block Letter-Latin-Lower-B : begin
 			local xStem : xLeft + shift
 			# C on a 1-em frame so the bowl, not the flourish, keeps m-width in Aile/Etoile.
 			local cDf : DivFrame [Math.min 1 df.adws]
-			local lf : CLetterForm cDf 0 0 XH Descender
+			local lf : CLetterForm cDf SLAB-NONE SLAB-FLAT-HOOK XH Descender
 				ada -- [cDf.archDepthAOf SmallArchDepth sw]
 				adb -- [cDf.archDepthBOf SmallArchDepth sw]
 				sw  -- sw
 			include : intersection [MaskLeft (xStem + 0.5 * ink)] [lf.full]
-
 
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
