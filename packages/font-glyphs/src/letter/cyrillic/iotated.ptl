@@ -14,12 +14,32 @@ glyph-block Letter-Cyrillic-Iotated : begin
 	define SLAB-FULL     1
 	define SLAB-OUTWARD  2
 
+	define IOTATION-SERIF-NONE   0
+	define IOTATION-SERIF-MOTION 1
+	define IOTATION-SERIF-ALL    2
+
+	glyph-block-export IotationSerifConfig
+	define IotationSerifConfig : object
+		serifless     IOTATION-SERIF-NONE
+		motionSerifed IOTATION-SERIF-MOTION
+		serifed       IOTATION-SERIF-ALL
+
+	define [ResolvedIotationSerifType serifType] : fallback serifType : if SLAB IOTATION-SERIF-ALL IOTATION-SERIF-NONE
+	define [IotationItalicReduce fCapital serifType] : [not fCapital] && para.isItalic && (serifType === nothing)
+
+	glyph-block-export IotationSerifFromSelector
+	define [IotationSerifFromSelector gn] : begin
+		match para.variantSelector.(gn)
+			[Just 'motionSerifed'] IOTATION-SERIF-MOTION
+			[Just 'serifed']       IOTATION-SERIF-ALL
+			__                     IOTATION-SERIF-NONE
+
 	glyph-block-export Iotation
 	define Iotation : namespace
 		export : define [Shape] : with-params [df top hBarRight [hBarY (top / 2)] [slabTop SLAB-NONE] [slabBottom SLAB-NONE] [swRef df.mvs] [swSerif swRef] [fForceSymmetric false]] : glyph-proc
 			include : VBar.l df.leftSB 0 top swRef
 			if (hBarRight > df.leftSB) : include : HBar.m df.leftSB hBarRight hBarY swRef
-			if SLAB : begin
+			if (slabTop || slabBottom) : begin
 				local sf : SerifFrame.fromDf df top 0 (swRef -- swRef) (swSerif -- swSerif) (fForceSymmetric -- fForceSymmetric)
 				include : tagged "serifLT" : match slabTop
 					[Just SLAB-FULL]    : begin sf.lt.full
@@ -30,72 +50,106 @@ glyph-block Letter-Cyrillic-Iotated : begin
 					[Just SLAB-OUTWARD] : begin sf.lb.outer
 					__                  : glyph-proc
 
-		export : define [RevShape] : with-params [df top hBarLeft [hBarY (top / 2)] [slabTop SLAB-NONE] [slabBottom SLAB-NONE] [swRef df.mvs] [swSerif swRef] [fTailed false]] : glyph-proc
+		export : define [RevShape] : with-params [df top hBarLeft [hBarY (top / 2)] [slabTop SLAB-NONE] [slabBottom SLAB-NONE] [swRef df.mvs] [swSerif swRef] [fTailed false] [serifType nothing]] : glyph-proc
 			include : if fTailed
 				RightwardTailedBar df.rightSB 0 top swRef
 				VBar.r             df.rightSB 0 top swRef
 			if (hBarLeft < df.rightSB) : include : HBar.m hBarLeft df.rightSB hBarY swRef
-			if SLAB : begin
+			local resolved : ResolvedIotationSerifType serifType
+			local topSlab : if (serifType !== nothing)
+				match resolved
+					[Just IOTATION-SERIF-MOTION] SLAB-OUTWARD
+					[Just IOTATION-SERIF-ALL]    SLAB-FULL
+					__                           SLAB-NONE
+				begin slabTop
+			local botSlab : if (serifType !== nothing)
+				match resolved
+					[Just IOTATION-SERIF-ALL] SLAB-FULL
+					__                        SLAB-NONE
+				begin slabBottom
+			if (topSlab || botSlab) : begin
 				local sf : SerifFrame.fromDf df top 0 (swRef -- swRef) (swSerif -- swSerif)
-				include : tagged "serifRT" : match slabTop
+				include : tagged "serifRT" : match topSlab
 					[Just SLAB-FULL]    : begin sf.rt.full
 					[Just SLAB-OUTWARD] : begin sf.rt.outer
 					__                  : glyph-proc
-				if [not fTailed] : include : tagged "serifRB" : match slabBottom
+				if [not fTailed] : include : tagged "serifRB" : match botSlab
 					[Just SLAB-FULL]    : begin sf.rb.full
 					[Just SLAB-OUTWARD] : begin sf.rb.outer
 					__                  : glyph-proc
 
 		# "Default" version
-		export : define [full] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef]] : begin
-			local useItalicShape : [not fCapital] && para.isItalic
+		export : define [full] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef] [serifType nothing]] : begin
+			local resolved : ResolvedIotationSerifType serifType
+			local useItalicShape : IotationItalicReduce fCapital serifType
 			return : new-glyph : Shape
 				df         -- df
 				top        -- top
 				hBarRight  -- hBarRight
 				hBarY      -- hBarY
-				slabTop    -- [if useItalicShape SLAB-OUTWARD SLAB-FULL]
-				slabBottom -- [if useItalicShape SLAB-NONE SLAB-FULL]
+				slabTop    -- : match resolved
+					[Just IOTATION-SERIF-MOTION] SLAB-OUTWARD
+					[Just IOTATION-SERIF-ALL]    : if useItalicShape SLAB-OUTWARD SLAB-FULL
+					__                           SLAB-NONE
+				slabBottom -- : match resolved
+					[Just IOTATION-SERIF-ALL] : if useItalicShape SLAB-NONE SLAB-FULL
+					__                        SLAB-NONE
 				swRef      -- swRef
 				swSerif    -- swSerif
 
 		# Outwards only
-		export : define [outer] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef]] : begin
-			local useItalicShape : [not fCapital] && para.isItalic
+		export : define [outer] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef] [serifType nothing]] : begin
+			local resolved : ResolvedIotationSerifType serifType
+			local useItalicShape : IotationItalicReduce fCapital serifType
 			return : new-glyph : Shape
 				df         -- df
 				top        -- top
 				hBarRight  -- hBarRight
 				hBarY      -- hBarY
-				slabTop    -- SLAB-OUTWARD
-				slabBottom -- [if useItalicShape SLAB-NONE SLAB-OUTWARD]
+				slabTop    -- : match resolved
+					[Just IOTATION-SERIF-NONE] SLAB-NONE
+					__                         SLAB-OUTWARD
+				slabBottom -- : match resolved
+					[Just IOTATION-SERIF-ALL] : if useItalicShape SLAB-NONE SLAB-OUTWARD
+					__                        SLAB-NONE
 				swRef      -- swRef
 				swSerif    -- swSerif
 
 		# Iotated A-shaped glyphs
-		export : define [A] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef]] : begin
-			local useItalicShape : [not fCapital] && para.isItalic
+		export : define [A] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef] [serifType nothing]] : begin
+			local resolved : ResolvedIotationSerifType serifType
+			local useItalicShape : IotationItalicReduce fCapital serifType
 			return : new-glyph : Shape
 				df         -- df
 				top        -- top
 				hBarRight  -- hBarRight
 				hBarY      -- hBarY
-				slabTop    -- [if useItalicShape SLAB-OUTWARD SLAB-FULL]
-				slabBottom -- [if useItalicShape SLAB-NONE SLAB-OUTWARD]
+				slabTop    -- : match resolved
+					[Just IOTATION-SERIF-MOTION] SLAB-OUTWARD
+					[Just IOTATION-SERIF-ALL]    : if useItalicShape SLAB-OUTWARD SLAB-FULL
+					__                           SLAB-NONE
+				slabBottom -- : match resolved
+					[Just IOTATION-SERIF-ALL] : if useItalicShape SLAB-NONE SLAB-OUTWARD
+					__                        SLAB-NONE
 				swRef      -- swRef
 				swSerif    -- swSerif
 				fForceSymmetric -- true
 
 		# Used for Bulgarian Lower Yu
-		export : define [ascender] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef]] : begin
-			local useItalicShape : [not fCapital] && para.isItalic
+		export : define [ascender] : with-params [df top hBarRight hBarY [fCapital false] [swRef df.mvs] [swSerif swRef] [serifType nothing]] : begin
+			local resolved : ResolvedIotationSerifType serifType
+			local useItalicShape : IotationItalicReduce fCapital serifType
 			return : new-glyph : Shape
 				df         -- df
 				top        -- top
 				hBarRight  -- hBarRight
 				hBarY      -- hBarY
-				slabTop    -- SLAB-OUTWARD
-				slabBottom -- [if useItalicShape SLAB-NONE SLAB-FULL]
+				slabTop    -- : match resolved
+					[Just IOTATION-SERIF-NONE] SLAB-NONE
+					__                         SLAB-OUTWARD
+				slabBottom -- : match resolved
+					[Just IOTATION-SERIF-ALL] : if useItalicShape SLAB-NONE SLAB-FULL
+					__                        SLAB-NONE
 				swRef      -- swRef
 				swSerif    -- swSerif
 
@@ -122,7 +176,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						MaskLeft [mix xIotifiedBarRight [Math.min (subDf.leftSB + shift) (xIotifiedBarRight + botGap)] 0.5]
 
 				include : difference
-					Iotation.A df CAP [mix df.leftSB df.rightSB 0.75] (CAP / 2) (fCapital -- true) (swRef -- sw)
+					Iotation.A df CAP [mix df.leftSB df.rightSB 0.75] (CAP / 2) (fCapital -- true) (swRef -- sw) (serifType -- [IotationSerifFromSelector 'cyrl/Yu'])
 					with-transform [ApparentTranslate shift 0]
 						AShape.Mask subDf bodyShape CAP sw
 
@@ -143,7 +197,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 					body subDf hookStyle sw
 
 				include : difference
-					Iotation.full df XH [mix df.leftSB df.rightSB 0.75] (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs)
+					Iotation.full df XH [mix df.leftSB df.rightSB 0.75] (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 					with-transform [ApparentTranslate shift 0]
 						DoubleStorey.Mask body df sw
 
@@ -160,7 +214,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				include : with-transform [ApparentTranslate shift 0]
 					body subDf XH bar sw
 
-				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs)
+				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
 	do "Iotated e"
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
@@ -185,6 +239,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 					hBarY     -- (top / 2)
 					fCapital  -- fCapital
 					swRef     -- sw
+					serifType -- [IotationSerifFromSelector : if fCapital 'cyrl/Yu' 'cyrl/yu']
 
 				if fMidSerif : begin
 					local { jutTop jutBot jutMid } : EFVJutLength top 0 0.5 sw
@@ -232,7 +287,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						ada    -- (SmallArchDepthA * 0.75 * df.adws)
 						adb    -- (SmallArchDepthB * 0.75 * df.adws)
 
-				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw)
+				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
 	select-variant 'cyrl/AIotated' 0xA656 (follow -- 'A')
 	select-variant 'cyrl/aIotated' 0xA657 (follow -- 'cyrl/a')
