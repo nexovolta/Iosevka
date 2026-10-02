@@ -38,6 +38,22 @@ glyph-block Digits-Seven : begin
 			alsoThru.g2 0.5 0.5
 			g4.down.end RightSB (-top) [widths.rhs.heading Stroke Downward]
 
+	define [SevenSquareYShoulder top] : top - Stroke - [Math.max (0.12 * top) Stroke]
+	define [SevenSquareYFoot top] : Math.max (0.14 * top) Stroke
+	define [SquareBody top] : begin
+		local swH : HSwToV Stroke
+		local yShoulder : SevenSquareYShoulder top
+		local yFoot : SevenSquareYFoot top
+		return : union
+			HBar.t SB RightSB top
+			VBar.r RightSB yShoulder top
+			VBar.l SevenXLeft 0 yFoot
+			spiro-outline
+				corner (RightSB - swH) yShoulder
+				corner RightSB yShoulder
+				corner (SevenXLeft + swH) yFoot
+				corner SevenXLeft yFoot
+
 	define [StartSerif top] : VSerif.dl (SB + (OX - O)) top VJut
 	define [StartSerifThick top] : VSerif.dl (SB + (OX - O)) top VJut [AdviceStroke 2.75]
 
@@ -62,11 +78,21 @@ glyph-block Digits-Seven : begin
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
 			mix 0 (top - QuarterStroke) 0.5
 
+	define [SquareCrossbar top] : glyph-proc
+		local yShoulder : SevenSquareYShoulder top
+		local yFoot : SevenSquareYFoot top
+		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
+		include : HBar.m
+			m - [HSwToV QuarterStroke] - LongJut * 0.8
+			m + [HSwToV QuarterStroke] + LongJut * 0.7
+			mix yFoot yShoulder 0.5
+
 	local SevenConfig : SuffixCfg.weave
 		object # body
 			straight              StraightBody
 			bend                  BendBody
 			curly                 CurlyBody
+			square                SquareBody
 		object # serif
 			serifless             nothing
 			serifed               StartSerif
@@ -76,6 +102,7 @@ glyph-block Digits-Seven : begin
 				[Just "straight"] Crossbar
 				[Just "bend"]     BendCrossbar
 				[Just "curly"]    CurlyCrossbar
+				[Just "square"]   SquareCrossbar
 
 	foreach { suffix { Body Serif Crossbar } } [Object.entries SevenConfig] : do
 		create-glyph "seven.lnum.\(suffix)" : glyph-proc
