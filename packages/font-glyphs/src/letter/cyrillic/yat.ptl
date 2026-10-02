@@ -12,7 +12,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 	glyph-block-import Letter-Shared : CreateDependentComposite
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Cyrillic-Yeri : YeriConfig YeriBarPos
-	glyph-block-import Letter-Cyrillic-Iotated : Iotation
+	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifFromSelector
 
 	define [yYatDefaultCrossbarPos top pBar stroke] : begin
 		local bowl : [mix 0 top pBar] + stroke / 2
@@ -64,6 +64,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 		local-parameter : stroke        -- [AdviceStroke 2.75 (df.adws * (7 / 9))]
 		local-parameter : yCrossbarPos  -- [yYatDefaultCrossbarPos top pBar stroke]
 		local-parameter : xCrossbarLeftExt -- df.leftSB
+		local-parameter : serifType     -- nothing
 
 		local gap : 0.25 * (df.rightSB - df.leftSB) + [if SLAB 0.375 0.125] * stroke
 		local subDf : DivFrame [Math.min ((df.width - gap) / Width) (df.adws * (7 / 9))] 2
@@ -82,8 +83,9 @@ glyph-block Letter-Cyrillic-Yat : begin
 		include : with-transform [ApparentTranslate shift 0] : Yat
 
 		include : Iotation.[if fCapital 'full' 'ascender'] df top 0
-			fCapital -- fCapital
-			swRef    -- stroke
+			fCapital  -- fCapital
+			swRef     -- stroke
+			serifType -- serifType
 
 	define [SakhaYatShape Yeri df top] : glyph-proc
 		local jut : Math.min
@@ -128,22 +130,6 @@ glyph-block Letter-Cyrillic-Yat : begin
 				stroke -- [df.adviceThinnerStroke2 2.75 3 XH]
 				yCrossbarPos -- Ascender
 
-		create-glyph "cyrl/YatIotated.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleMM 3
-			include : df.markSet.capital
-			include : IotatedYatShape df Uc CAP
-				pBar     -- 0.5
-				fCapital -- true
-				stroke   -- [df.adviceThinnerStroke2 2.75 3 CAP (7 / 9)]
-
-		create-glyph "cyrl/yatIotated.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleMM 3
-			include : df.markSet.b
-			include : IotatedYatShape df Lc Ascender
-				pBar   -- ([mix 0 XH YeriBarPos] / Ascender)
-				stroke -- [df.adviceThinnerStroke2 2.75 3 XH (7 / 9)]
-				yCrossbarPos -- XH
-
 		create-glyph "latn/yatSakha.upright.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
@@ -179,6 +165,25 @@ glyph-block Letter-Cyrillic-Yat : begin
 			eject-contour 'serifYeriLB'
 
 			DependentSelector.set currentGlyph : if (suffix === "corner") 'full' 'reduced'
+
+	foreach { suffix { Uc Lc BGRc } } [pairs-of YeriConfig] : do
+		create-glyph "cyrl/YatIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : IotatedYatShape df Uc CAP
+				pBar      -- 0.5
+				fCapital  -- true
+				stroke    -- [df.adviceThinnerStroke2 2.75 3 CAP (7 / 9)]
+				serifType -- [IotationSerifFromSelector 'cyrl/Yu']
+
+		create-glyph "cyrl/yatIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.b
+			include : IotatedYatShape df Lc Ascender
+				pBar       -- ([mix 0 XH YeriBarPos] / Ascender)
+				stroke     -- [df.adviceThinnerStroke2 2.75 3 XH (7 / 9)]
+				yCrossbarPos -- XH
+				serifType  -- [IotationSerifFromSelector 'cyrl/yu']
 
 	select-variant 'cyrl/Yat' 0x462 (follow -- 'cyrl/Yeri')
 	select-variant 'cyrl/yat.upright' (follow -- 'cyrl/yeri')
