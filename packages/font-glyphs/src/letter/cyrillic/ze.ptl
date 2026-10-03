@@ -999,32 +999,52 @@ glyph-block Letter-Cyrillic-Ze : begin
 			include : VBar.r df.rightSB ada top stroke
 			include : slab df top stroke
 
-		define SmallUConfig : SuffixCfg.weave
+		define UeVolapukConfig : SuffixCfg.weave
 			object # body
 				toothed           UToothed
 				tailed            UTailed
 				flatBottom        UFlatBottom
 				toothlessCorner   UToothlessCorner
 				toothlessRounded  UToothlessRounded
-			function [body] : object # serifs
-				serifless            { no-shape            no-shape            }
-				bottomRightSerifed   { USerifs.BottomRight USerifs.BottomRight }
+			function [body] : object # capital U serifs
+				serifless               no-shape
+				bottomRightSerifed      USerifs.BottomRight
+				bilateralMotionSerifed  USerifs.BilateralMotion
 				motionSerifed : match body
-					([Just 'toothed'] || [Just 'flatBottom']) { USerifs.MotionToothed   USerifs.MotionToothed   }
-					__                                        { USerifs.MotionToothless USerifs.MotionToothless }
+					([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
+					__                                       USerifs.MotionToothless
 				serifed : match body
-					([Just 'toothed'] || [Just 'flatBottom']) { USerifs.Toothed         USerifs.SmallToothed    }
-					__                                        { USerifs.Toothless       USerifs.SmallToothless  }
+					([Just 'toothed'] || [Just 'flatBottom']) USerifs.Toothed
+					__                                       USerifs.Toothless
 
-		foreach { suffix { Base { USlabs LSlabs } } } [Object.entries SmallUConfig] : do
+		define ueVolapukConfig : SuffixCfg.weave
+			object # body
+				toothed           UToothed
+				tailed            UTailed
+				flatBottom        UFlatBottom
+				toothlessCorner   UToothlessCorner
+				toothlessRounded  UToothlessRounded
+			function [body] : object # small u serifs
+				serifless            no-shape
+				bottomRightSerifed   USerifs.BottomRight
+				motionSerifed : match body
+					([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
+					__                                       USerifs.MotionToothless
+				serifed : match body
+					([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
+					__                                       USerifs.SmallToothless
+
+		foreach { suffix { Base Slabs } } [Object.entries UeVolapukConfig] : do
 			create-glyph "UeVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
-				include : Base df CAP USlabs Hook ArchDepthA ArchDepthB
+				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB
+
+		foreach { suffix { Base Slabs } } [Object.entries ueVolapukConfig] : do
 			create-glyph "ueVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e
-				include : Base df XH LSlabs SHook SmallArchDepthA SmallArchDepthB
+				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB
 
-		select-variant 'UeVolapuk' 0xA79E (follow -- 'u')
+		select-variant 'UeVolapuk' 0xA79E (follow -- 'U')
 		select-variant 'ueVolapuk' 0xA79F (follow -- 'u')
