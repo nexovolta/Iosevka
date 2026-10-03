@@ -564,12 +564,15 @@ glyph-block Letter-Latin-Lower-R : begin
 			if doTopSerif    : include : rTopLeftSerif    top
 
 		export : define [FlatTop df md top bottom doTopSerif doBottomSerif] : glyph-proc
-			define [object rBarLeftX rBottomLeftSerif rTopLeftSerif rArchMiddleX rHookRightX rHookDepthY] : RDim df md
+			define [object rBarLeftX rBottomLeftSerif rTopLeftSerif rHookRightX rHookDepthY] : RDim df md
+			local xHookRight : rHookRightX + 0.12 * HookX
+			local yHookDepth : rHookDepthY + 0.10 * RHook
+			local xArchMid : mix rBarLeftX xHookRight 0.5
 			include : dispiro
 				widths.lhs
-				g4.up.start rHookRightX (top - rHookDepthY) [heading Upward]
+				g4.up.start xHookRight (top - yHookDepth) [heading Upward]
 				arcvh nothing DesignParameters.rHookSuperness
-				flat [Arch.adjust-x.top rArchMiddleX] top
+				flat [Arch.adjust-x.top xArchMid] top
 				curl (rBarLeftX - O) top [heading Leftward]
 			include : tagged 'strokeL' : VBar.l rBarLeftX bottom top
 			if doBottomSerif : include : rBottomLeftSerif bottom
@@ -610,16 +613,19 @@ glyph-block Letter-Latin-Lower-R : begin
 		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df RMode.Half XH 0 false false
 		eject-contour 'strokeL'
 
-	# Flat-top extra hook: TR quadrant plus a hook-depth T-stem, no full-height stem.
+	# Flat-top extra hook: same TR arc as the body, no stem. Curl into the first
+	# hook's flat top so the join is a clip, not a vertical cap / T-junction.
 	define [FlatTopExtraHook df] : glyph-proc
-		define [object rBarLeftX rArchMiddleX rHookRightX rHookDepthY] : RDim df RMode.Half
+		define [object rBarLeftX rHookRightX rHookDepthY] : RDim df RMode.Half
+		local xHookRight : rHookRightX + 0.12 * HookX
+		local yHookDepth : rHookDepthY + 0.10 * RHook
+		local xArchMid : mix rBarLeftX xHookRight 0.5
 		include : dispiro
 			widths.lhs
-			g4.up.start rHookRightX (XH - rHookDepthY) [heading Upward]
+			g4.up.start xHookRight (XH - yHookDepth) [heading Upward]
 			arcvh nothing DesignParameters.rHookSuperness
-			flat [Arch.adjust-x.top rArchMiddleX] XH
+			flat [Arch.adjust-x.top xArchMid] XH
 			curl (rBarLeftX - O) XH [heading Leftward]
-		include : VBar.l rBarLeftX (XH - rHookDepthY) XH
 
 	define [doubleRHookShift dim Body] : Math.max TINY : dim.rHookRightX - dim.rBarLeftX - [HSwToV Stroke]
 
@@ -657,25 +663,29 @@ glyph-block Letter-Latin-Lower-R : begin
 		create-glyph "rDouble.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM
 			include : df.markSet.e
-			local dfHalf : doubleRHalfDf df.width Body
+			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
+			local xHookRight : if (Body === HalfRShape.FlatTop) (rHookRightX + 0.12 * HookX) rHookRightX
+			local xArchMid : mix rBarLeftX xHookRight 0.5
+			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * Stroke]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
 			include : setMarks XH 0 doTS doBS
 			include : Body dfHalf RMode.Half XH 0 doTS doBS
 			if (Body === HalfRShape.FlatTop)
 			: then : include : with-transform [ApparentTranslate xShift 0] : FlatTopExtraHook dfHalf
 			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
-			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
+			include : LeaningAnchor.Above.Hook rBarLeftX (xHookRight + xShift)
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM
 			include : df.markSet.e
-			local dfHalf : doubleRHalfDf df.width Body
+			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
+			local xHookRight : if (Body === HalfRShape.FlatTop) (rHookRightX + 0.12 * HookX) rHookRightX
+			local xArchMid : mix rBarLeftX xHookRight 0.5
+			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * Stroke]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
 			include : setMarks XH 0 doTS false
 
 			local fine : AdviceStroke 4
@@ -691,7 +701,7 @@ glyph-block Letter-Latin-Lower-R : begin
 				widths.rhs
 				straight.down.start (rBarLeftX + [HSwToV Stroke]) y2 [heading Downward]
 				CurlyTail.f fine 0 m2 x2
-			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
+			include : LeaningAnchor.Above.Hook rBarLeftX (xHookRight + xShift)
 
 	select-variant 'rHalf' 0xAB47
 	select-variant 'rDouble' 0xAB48 (follow -- 'rHalf')
