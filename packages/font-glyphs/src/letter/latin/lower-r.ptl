@@ -563,13 +563,14 @@ glyph-block Letter-Latin-Lower-R : begin
 			if doBottomSerif : include : rBottomLeftSerif bottom
 			if doTopSerif    : include : rTopLeftSerif    top
 
-		export : define [FlatTop df md top bottom doTopSerif doBottomSerif] : glyph-proc
+		export : define [FlatTop df md top bottom doTopSerif doBottomSerif _sw] : glyph-proc
 			define [object rBarLeftX rBottomLeftSerif rTopLeftSerif rHookRightX rHookDepthY] : RDim df md
+			local sw : fallback _sw Stroke
 			local xHookRight : rHookRightX + 0.12 * HookX
 			local yHookDepth : rHookDepthY + 0.10 * RHook
 			local xArchMid : mix rBarLeftX xHookRight 0.5
 			include : dispiro
-				widths.lhs
+				widths.lhs sw
 				g4.up.start xHookRight (top - yHookDepth) [heading Upward]
 				arcvh nothing DesignParameters.rHookSuperness
 				flat [Arch.adjust-x.top xArchMid] top
@@ -617,11 +618,12 @@ glyph-block Letter-Latin-Lower-R : begin
 	# hook's flat top so the join is a clip, not a vertical cap / T-junction.
 	define [FlatTopExtraHook df] : glyph-proc
 		define [object rBarLeftX rHookRightX rHookDepthY] : RDim df RMode.Half
+		local sw : Stroke * [StrokeWidthBlend 0.8 0.6]
 		local xHookRight : rHookRightX + 0.12 * HookX
 		local yHookDepth : rHookDepthY + 0.10 * RHook
 		local xArchMid : mix rBarLeftX xHookRight 0.5
 		include : dispiro
-			widths.lhs
+			widths.lhs sw
 			g4.up.start xHookRight (XH - yHookDepth) [heading Upward]
 			arcvh nothing DesignParameters.rHookSuperness
 			flat [Arch.adjust-x.top xArchMid] XH
@@ -666,11 +668,14 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
+			local hookSw : Stroke * [StrokeWidthBlend 0.8 0.6]
 			local xHookRight : if (Body === HalfRShape.FlatTop) (rHookRightX + 0.12 * HookX) rHookRightX
 			local xArchMid : mix rBarLeftX xHookRight 0.5
-			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * Stroke]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
+			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * hookSw]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
 			include : setMarks XH 0 doTS doBS
-			include : Body dfHalf RMode.Half XH 0 doTS doBS
+			if (Body === HalfRShape.FlatTop)
+			: then : include : Body dfHalf RMode.Half XH 0 doTS doBS hookSw
+			: else : include : Body dfHalf RMode.Half XH 0 doTS doBS
 			if (Body === HalfRShape.FlatTop)
 			: then : include : with-transform [ApparentTranslate xShift 0] : FlatTopExtraHook dfHalf
 			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
@@ -683,9 +688,10 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
+			local hookSw : Stroke * [StrokeWidthBlend 0.8 0.6]
 			local xHookRight : if (Body === HalfRShape.FlatTop) (rHookRightX + 0.12 * HookX) rHookRightX
 			local xArchMid : mix rBarLeftX xHookRight 0.5
-			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * Stroke]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
+			local xShift : Math.max TINY : if (Body === HalfRShape.FlatTop) (xHookRight - xArchMid - [HSwToV : 0.4 * hookSw]) (rHookRightX - rBarLeftX - [HSwToV Stroke])
 			include : setMarks XH 0 doTS false
 
 			local fine : AdviceStroke 4
@@ -693,7 +699,9 @@ glyph-block Letter-Latin-Lower-R : begin
 			local m2 : rBarLeftX + [HSwToV : AdviceStroke 3] - (RightSB - SB) / 2 - [HSwToV : 0.5 * fine]
 			local x2 : rBarLeftX + [HSwToV : AdviceStroke 2] + SideJut
 			local y2 : rinner * 2 + fine - O
-			include : Body dfHalf RMode.Half XH (y2 + O) doTS false
+			if (Body === HalfRShape.FlatTop)
+			: then : include : Body dfHalf RMode.Half XH (y2 + O) doTS false hookSw
+			: else : include : Body dfHalf RMode.Half XH (y2 + O) doTS false
 			if (Body === HalfRShape.FlatTop)
 			: then : include : with-transform [ApparentTranslate xShift 0] : FlatTopExtraHook dfHalf
 			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
