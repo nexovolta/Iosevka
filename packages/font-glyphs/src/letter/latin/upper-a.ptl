@@ -187,26 +187,25 @@ glyph-block Letter-Latin-Upper-A : begin
 		create-glyph "grek/Alpha.\(suffix)" : AShapeImpl "capital" CAP true
 		create-glyph "smcpA.\(suffix)"      : AShapeImpl "e"       XH
 		create-glyph "ABar.\(suffix)"       : AShapeImpl "capital" CAP false false 1
-		if ((bodyShape !== BODY-ROUND-TOP) && (bodyShape !== BODY-SQUARE-BOTTOM)) : begin
-			if (!fSlabTop) : create-glyph "ASwash.\(suffix)" : AShapeImpl "capital" CAP false true
-			create-glyph "ASquare.\(suffix)" : glyph-proc
-				local df : include : DivFrame [if fSlabTop para.advanceScaleT 1]
-				local shift : df.middle - Middle
-				include : with-transform [Translate shift 0] : glyph-proc
-					include [refer-glyph "A.\(suffix)"]
-					eject-contour 'serifLT'
-				include : df.markSet.capital
-				local xTopBarLeft  : Math.min
-					df.leftSB  + 0.75 * OX
-					[mix 0     SB      : if fBarStraight VStraightSbShrink 1] - [if fBarStraight VStraightSbOffset 0] - [if fSlabTop SideJut 0] + shift
-				local xTopBarRight : Math.max
-					df.rightSB - 0.75 * OX
-					[mix Width RightSB : if fBarStraight VStraightSbShrink 1] + [if fBarStraight VStraightSbOffset 0] + [if fSlabTop SideJut 0] + shift
-				include : HBar.t xTopBarLeft xTopBarRight CAP
-				if fSlabTop : begin
-					local swVJut : Math.min VJutStroke : df.adviceStroke 4.5
-					include : tagged 'serifLT' : VSerif.dl xTopBarLeft  CAP VJut swVJut
-					include : tagged 'serifRT' : VSerif.dr xTopBarRight CAP VJut swVJut
+		create-glyph "ASwash.\(suffix)"     : AShapeImpl "capital" CAP false true
+		create-glyph "ASquare.\(suffix)" : glyph-proc
+			local df : include : DivFrame [if fSlabTop para.advanceScaleT 1]
+			local shift : df.middle - Middle
+			include : with-transform [Translate shift 0] : glyph-proc
+				include [refer-glyph "A.\(suffix)"]
+				eject-contour 'serifLT'
+			include : df.markSet.capital
+			local xTopBarLeft  : Math.min
+				df.leftSB  + 0.75 * OX
+				[mix 0     SB      : if fBarStraight VStraightSbShrink 1] - [if fBarStraight VStraightSbOffset 0] - [if fSlabTop SideJut 0] + shift
+			local xTopBarRight : Math.max
+				df.rightSB - 0.75 * OX
+				[mix Width RightSB : if fBarStraight VStraightSbShrink 1] + [if fBarStraight VStraightSbOffset 0] + [if fSlabTop SideJut 0] + shift
+			include : HBar.t xTopBarLeft xTopBarRight CAP
+			if fSlabTop : begin
+				local swVJut : Math.min VJutStroke : df.adviceStroke 4.5
+				include : tagged 'serifLT' : VSerif.dl xTopBarLeft  CAP VJut swVJut
+				include : tagged 'serifRT' : VSerif.dr xTopBarRight CAP VJut swVJut
 
 		create-glyph "currency/australSign.\(suffix)" : AShapeImpl "capital" CAP false false 2
 
@@ -214,9 +213,9 @@ glyph-block Letter-Latin-Upper-A : begin
 	link-reduced-variant 'A/sansSerif' 'A' MathSansSerif
 	select-variant 'smcpA'     0x1D00  (follow -- 'A')
 	select-variant 'ABar'      0x1DF40 (follow -- 'A')
-	select-variant 'ASwash'    0x1DF68 (follow -- 'AHookLeft')
+	select-variant 'ASwash'    0x1DF68 (follow -- 'A')
 	select-variant 'ARoundTop' 0x1DF6A (shapeFrom -- 'A') (follow -- 'A/roundTop')
-	select-variant 'ASquare'   0x1DF80
+	select-variant 'ASquare'   0x1DF80 (follow -- 'A')
 
 	select-variant 'grek/Alpha' 0x391 (follow -- 'A')
 	link-reduced-variant 'grek/Alpha/sansSerif' 'grek/Alpha' MathSansSerif (follow -- 'A/sansSerif')
