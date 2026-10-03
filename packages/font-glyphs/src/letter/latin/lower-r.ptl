@@ -610,7 +610,18 @@ glyph-block Letter-Latin-Lower-R : begin
 		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df RMode.Half XH 0 false false
 		eject-contour 'strokeL'
 
-	define [doubleRHookShift dim Body] : Math.max TINY : dim.rHookRightX - dim.rBarLeftX - [if (Body === HalfRShape.FlatTop) 0 : HSwToV Stroke]
+	# Flat-top extra hook: TR quadrant plus a hook-depth T-stem, no full-height stem.
+	define [FlatTopExtraHook df] : glyph-proc
+		define [object rBarLeftX rArchMiddleX rHookRightX rHookDepthY] : RDim df RMode.Half
+		include : dispiro
+			widths.lhs
+			g4.up.start rHookRightX (XH - rHookDepthY) [heading Upward]
+			arcvh nothing DesignParameters.rHookSuperness
+			flat [Arch.adjust-x.top rArchMiddleX] XH
+			curl (rBarLeftX - O) XH [heading Leftward]
+		include : VBar.l rBarLeftX (XH - rHookDepthY) XH
+
+	define [doubleRHookShift dim Body] : Math.max TINY : dim.rHookRightX - dim.rBarLeftX - [HSwToV Stroke]
 
 	define [doubleRHalfDf pairWidth Body] : begin
 		local dfI : DivFrame para.advanceScaleI
@@ -649,11 +660,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : doubleRHalfDf df.width Body
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [if (Body === HalfRShape.FlatTop) 0 : HSwToV Stroke]
+			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
 			include : setMarks XH 0 doTS doBS
 			include : Body dfHalf RMode.Half XH 0 doTS doBS
 			if (Body === HalfRShape.FlatTop)
-			: then : include : with-transform [ApparentTranslate xShift 0] : Body dfHalf RMode.Half XH 0 false false
+			: then : include : with-transform [ApparentTranslate xShift 0] : FlatTopExtraHook dfHalf
 			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
@@ -664,7 +675,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			local dfHalf : doubleRHalfDf df.width Body
 
 			define [object rBarLeftX rHookRightX setMarks] : RDim dfHalf RMode.Half
-			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [if (Body === HalfRShape.FlatTop) 0 : HSwToV Stroke]
+			local xShift : Math.max TINY : rHookRightX - rBarLeftX - [HSwToV Stroke]
 			include : setMarks XH 0 doTS false
 
 			local fine : AdviceStroke 4
@@ -673,16 +684,13 @@ glyph-block Letter-Latin-Lower-R : begin
 			local x2 : rBarLeftX + [HSwToV : AdviceStroke 2] + SideJut
 			local y2 : rinner * 2 + fine - O
 			include : Body dfHalf RMode.Half XH (y2 + O) doTS false
-			define [CrossedTail] : dispiro
+			if (Body === HalfRShape.FlatTop)
+			: then : include : with-transform [ApparentTranslate xShift 0] : FlatTopExtraHook dfHalf
+			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
+			include : dispiro
 				widths.rhs
 				straight.down.start (rBarLeftX + [HSwToV Stroke]) y2 [heading Downward]
 				CurlyTail.f fine 0 m2 x2
-			include : CrossedTail
-			if (Body === HalfRShape.FlatTop)
-			: then : begin
-				include : with-transform [ApparentTranslate xShift 0] : Body dfHalf RMode.Half XH (y2 + O) false false
-				include : with-transform [ApparentTranslate xShift 0] : CrossedTail
-			: else : include : MaskedExtraHalfRHook Body dfHalf xShift rBarLeftX
 			include : LeaningAnchor.Above.Hook rBarLeftX (rHookRightX + xShift)
 
 	select-variant 'rHalf' 0xAB47
