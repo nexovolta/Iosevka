@@ -220,8 +220,7 @@ glyph-block Letter-Latin-X : begin
 					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
 					include : HalfXStrand false fSlab box.r box.t   box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : glyph-proc
-					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
-					include : HalfXStrand false fSlab box.r box.t   box.xMid midy turn 0.4 tension sw
+					include : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : glyph-proc
 					include : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
 					local xExt : box.l + [HSwToV : 0.5 * sw]
@@ -230,13 +229,12 @@ glyph-block Letter-Latin-X : begin
 						flat xExt botLong [heading Upward]
 						curl xExt (box.b + 0.75 * sw) [heading Upward]
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
-					include : XCursiveHalfShape box.t box.b box.xMid box.r
+					include : intersection [MaskAbove (midy - TINY)] : with-transform [FlipAround box.xMid midy] : XCursiveHalfShape box.t box.b box.xMid box.r
 						swCoEnd  -- swCursiveCoEnd
 						swEnd    -- swCursiveEnd
 						swMid    -- swCursiveMid
 						flatTail -- (stroke1 === STROKE-CURSIVE-FLAT)
-					include : FlipAround box.xMid midy
-					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand true fSlab box.l botLong box.xMid midy turn 0.4 tension sw
 				__ : glyph-proc
 			include : match stroke2
 				[Just STROKE-STRAIGHT] : glyph-proc
@@ -245,9 +243,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-CURLY] : glyph-proc
 					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
 					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
-				[Just STROKE-CHANCERY] : glyph-proc
-					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
-					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
+				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
@@ -303,8 +299,10 @@ glyph-block Letter-Latin-X : begin
 				[Just XSerifs.GrekLowerChi]         : composite-proc sf.lt.outer sf.rt.full sfLong.lb.full sf.rb.outer
 				__                                  : serifShape sf
 
-	define [LowLeftVerticalSerif x y] : glyph-proc
-		include : tagged 'serifLowLeft' : VSerif.ul x y VJut
+	define [LowLeftBottomSerif x y _sw] : glyph-proc
+		local sw : fallback _sw Stroke
+		local jut : Math.max Jut : [HSwToV : 0.5 * sw] + SideJut
+		include : tagged 'serifLowLeft' : HSerif.mb (x + [HSwToV : 0.5 * sw]) y jut sw
 
 	glyph-block-export XConfig
 	define XConfig : SuffixCfg.combine
@@ -374,12 +372,12 @@ glyph-block Letter-Latin-X : begin
 				local df : include : DivFrame 1 2
 				include : df.markSet.p
 				include : longLeftShape df XH Descender 0.1 0.20
-				include : LowLeftVerticalSerif df.leftSB Descender
+				include : LowLeftBottomSerif df.leftSB Descender
 				include : LeaningAnchor.Below.VBar.l df.leftSB
 
 		if bottom : create-glyph "latn/chiLowLeftSerif.\(suffix)" : glyph-proc
 			include [refer-glyph "x.\(suffix)"] AS_BASE ALSO_METRICS
-			include : LowLeftVerticalSerif SB Descender
+			include : LowLeftBottomSerif SB Descender
 
 		if bottom : create-glyph "latn/chiPalatalHook.\(suffix)" : match stroke2
 			[Just STROKE-CURSIVE] : glyph-proc
