@@ -32,6 +32,12 @@ glyph-block Letter-Latin-Lower-Y : begin
 	define BS-TURN     1
 	define BS-LOOP     2
 
+	define [YShortRightCut top] : mix [Math.min SmallArchDepthA : YSmoothMidR top 0 SmallArchDepthA SmallArchDepthB] top 0.5
+
+	define [YShortRightMask top] : intersection
+		MaskAbove : YShortRightCut top
+		MaskRight Middle
+
 	glyph-block-export NonCursiveYShapeT NonCursiveYConfig
 	define [NonCursiveYShapeT straightBar bottomShape slabKind _l _r _sb _sw] : namespace
 		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
@@ -447,6 +453,16 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'strike'  Middle (XH / 2)
 			include : Shapes.SmallYHookRightShape XH Descender
 
+		create-glyph "yShortLeg.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			set-base-anchor 'overlay' Middle 0
+			set-base-anchor 'strike'  Middle (XH / 2)
+			include : difference
+				glyph-proc
+					if fSquareTop : include : SquareTopYShape slabKind bottomShape XH Descender
+					if [not fSquareTop] : include : Shapes.SmallYShape XH Descender
+				YShortRightMask XH
+
 		create-glyph "yLowBar.\(suffix)" : glyph-proc
 			include [refer-glyph "y.\(suffix)"] AS_BASE ALSO_METRICS
 			include : HOverlayBar (Middle - LongJut * 0.75) (Middle + LongJut * 0.75) 0
@@ -575,6 +591,18 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : CursiveYShape.Serifs XH slabKind
 			eject-contour 'serifRT'
 
+		create-glyph "yShortLeg.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
+			set-base-anchor 'strike'  Middle (XH / 2)
+			local yCut : YShortRightCut XH
+			include : difference
+				CursiveYShape.Arc XH 0
+				intersection [MaskAbove yCut] [MaskRight Middle]
+			include : hookShape yCut Descender
+			include : CursiveYShape.Serifs XH slabKind
+			eject-contour 'serifRT'
+
 		create-glyph "yLowBar.\(suffix)" : glyph-proc
 			include [refer-glyph "y.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.r.in
@@ -625,6 +653,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	link-reduced-variant 'y/sansSerif' 'y' MathSansSerif
 	select-variant 'y/nonCursive' (shapeFrom -- 'y')
 	select-variant 'yHookRight' 0x1B4
+	select-variant 'yShortLeg' 0xAB5A (follow -- 'y')
 	select-variant 'yLowBar' 0x1DF55 (follow -- 'y')
 
 	select-variant 'cyrl/U' 0x423 (shapeFrom -- 'yCap')

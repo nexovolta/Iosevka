@@ -13,6 +13,7 @@ glyph-block Letter-Latin-X : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail
 	glyph-block-import Letter-Shared-Shapes : CyrDescender PalatalHook
 	glyph-block-import Letter-Latin-K : KLegs
+	glyph-block-import Mark-Adjustment : LeaningAnchor
 
 	glyph-block-export HalfXStrand
 	define [HalfXStrand stb fSlab _xOuter yOuter xCenter yCenter turn pStraight tension _sw _pConn] : glyph-proc
@@ -209,6 +210,52 @@ glyph-block Letter-Latin-X : begin
 					setMark -- true
 				__ : glyph-proc
 
+		export : define [longLeftLeg fSlab botLong] : glyph-proc
+			local midy : mix box.t box.b 0.5
+			include : match stroke1
+				[Just STROKE-STRAIGHT] : glyph-proc
+					include : HalfXStrand true  fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand true  fSlab box.r box.t   box.xMid midy turn 0.4 tension sw
+				[Just STROKE-CURLY] : glyph-proc
+					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand false fSlab box.r box.t   box.xMid midy turn 0.4 tension sw
+				[Just STROKE-CHANCERY] : glyph-proc
+					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand false fSlab box.r box.t   box.xMid midy turn 0.4 tension sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : glyph-proc
+					include : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
+					local xExt : box.l + [HSwToV : 0.5 * sw]
+					include : dispiro
+						widths.center sw
+						flat xExt botLong [heading Upward]
+						curl xExt (box.b + 0.75 * sw) [heading Upward]
+				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
+					include : XCursiveHalfShape box.t box.b box.xMid box.r
+						swCoEnd  -- swCursiveCoEnd
+						swEnd    -- swCursiveEnd
+						swMid    -- swCursiveMid
+						flatTail -- (stroke1 === STROKE-CURSIVE-FLAT)
+					include : FlipAround box.xMid midy
+					include : HalfXStrand false fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+				__ : glyph-proc
+			include : match stroke2
+				[Just STROKE-STRAIGHT] : glyph-proc
+					include : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand true  fSlab box.r box.b box.xMid midy turn 0.4 tension sw
+				[Just STROKE-CURLY] : glyph-proc
+					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
+				[Just STROKE-CHANCERY] : glyph-proc
+					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
+					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
+				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
+					swCoEnd -- swCursiveCoEnd
+					swEnd   -- swCursiveEnd
+					swMid   -- swCursiveMid
+					setMark -- true
+				__ : glyph-proc
+
 		export : define [rightHalf fSlab] : glyph-proc
 			local midy : mix box.t box.b 0.5
 
@@ -241,6 +288,23 @@ glyph-block Letter-Latin-X : begin
 			include : tagged 'serifLT' : HSerif.lt sf.left sf.top sf.sideJut sf.swSerif
 			include : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top sf.sideJut sf.swSerif
 		export : define [GrekLowerChi sf]     : composite-proc sf.lt.outer sf.rt.full sf.lb.full sf.rb.outer
+
+	define [XLongLeftSerifs serifShape df top botLong] : glyph-proc
+		if serifShape : begin
+			local sf : SerifFrame.fromDf df top 0
+			local sfLong : SerifFrame.fromDf df top botLong
+			include : match serifShape
+				[Just XSerifs.Full]                 : composite-proc sf.lt.full sf.rt.full sfLong.lb.full sf.rb.full
+				[Just XSerifs.SemiChancery]         : composite-proc sf.rt.full sfLong.lb.full
+				[Just XSerifs.UnilateralMotion]     : XSerifs.UnilateralMotion sf
+				[Just XSerifs.TopRightMotion]       : XSerifs.TopRightMotion sf
+				[Just XSerifs.BilateralMotion]      : XSerifs.BilateralMotion sf
+				[Just XSerifs.BilateralTopMotion]   : XSerifs.BilateralTopMotion sf
+				[Just XSerifs.GrekLowerChi]         : composite-proc sf.lt.outer sf.rt.full sfLong.lb.full sf.rb.outer
+				__                                  : serifShape sf
+
+	define [LowLeftVerticalSerif x y] : glyph-proc
+		include : tagged 'serifLowLeft' : VSerif.ul x y VJut
 
 	glyph-block-export XConfig
 	define XConfig : SuffixCfg.combine
@@ -294,6 +358,29 @@ glyph-block Letter-Latin-X : begin
 			include : MarkSet.(mkXH)
 			include : letterShape [DivFrame 1 2] XH bottom 0.1 0.20
 
+		if [not bottom] : begin
+			define [longLeftShape df top botLong turn tension _sw] : glyph-proc
+				local lf : XLetterForm [df.bodyBox top 0] stroke1 stroke2 turn tension _sw
+				include : WithSerifOverflowMask fMaskBase [df.bodyBox top botLong] : lf.longLeftLeg fMaskBase botLong
+				include : XLongLeftSerifs serifShape df top botLong
+
+			create-glyph "xLongLeftLeg.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1 2
+				include : df.markSet.p
+				include : longLeftShape df XH Descender 0.1 0.20
+				include : LeaningAnchor.Below.VBar.l df.leftSB
+
+			create-glyph "xLongLeftLegSerif.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1 2
+				include : df.markSet.p
+				include : longLeftShape df XH Descender 0.1 0.20
+				include : LowLeftVerticalSerif df.leftSB Descender
+				include : LeaningAnchor.Below.VBar.l df.leftSB
+
+		if bottom : create-glyph "latn/chiLowLeftSerif.\(suffix)" : glyph-proc
+			include [refer-glyph "x.\(suffix)"] AS_BASE ALSO_METRICS
+			include : LowLeftVerticalSerif SB Descender
+
 		if bottom : create-glyph "latn/chiPalatalHook.\(suffix)" : match stroke2
 			[Just STROKE-CURSIVE] : glyph-proc
 				include [refer-glyph "x.\(suffix)"] AS_BASE ALSO_METRICS
@@ -329,7 +416,10 @@ glyph-block Letter-Latin-X : begin
 	select-variant 'grek/chi' 0x3C7 (shapeFrom -- 'x')
 	link-reduced-variant 'grek/chi/sansSerif' 'grek/chi' MathSansSerif (shapeFrom -- 'x')
 	select-variant 'latn/chi' 0xAB53 (shapeFrom -- 'x')
+	select-variant 'latn/chiLowLeftSerif' 0xAB55 (follow -- 'latn/chi')
 	select-variant 'latn/chiPalatalHook' 0x1DF3D (follow -- 'latn/chi')
+	select-variant 'xLongLeftLeg' 0xAB57 (follow -- 'x')
+	select-variant 'xLongLeftLegSerif' 0xAB59 (follow -- 'x')
 
 	alias 'cyrl/Kha' 0x425 'X'
 	alias 'cyrl/kha' 0x445 'x'
