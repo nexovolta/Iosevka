@@ -117,6 +117,10 @@ glyph-block Letter-Latin-U : begin
 			if trAnchor : begin
 				set-base-anchor 'trailing' (trAnchor.x + sf.sideJut) trAnchor.y
 
+		export : define [BottomLeft df top _sw] : glyph-proc
+			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
+			include sf.lb.outer
+
 		export : define [Toothless df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			return : composite-proc sf.lt.full sf.rt.full
@@ -129,9 +133,17 @@ glyph-block Letter-Latin-U : begin
 			include : Toothless   df top _sw
 			include : BottomRight df top _sw
 
+		export : define [ToothedReversed df top _sw] : glyph-proc
+			include : Toothless  df top _sw
+			include : BottomLeft df top _sw
+
 		export : define [SmallToothed df top _sw] : glyph-proc
 			include : SmallToothless df top _sw
 			include : BottomRight    df top _sw
+
+		export : define [SmallToothedReversed df top _sw] : glyph-proc
+			include : SmallToothless df top _sw
+			include : BottomLeft     df top _sw
 
 		export : define [BilateralMotion df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
@@ -144,6 +156,19 @@ glyph-block Letter-Latin-U : begin
 		export : define [MotionToothed df top _sw] : glyph-proc
 			include : MotionToothless df top _sw
 			include : BottomRight     df top _sw
+
+		export : define [MotionToothedReversed df top _sw] : glyph-proc
+			include : MotionToothless df top _sw
+			include : BottomLeft      df top _sw
+
+	define [ReversedUSerifs slabs] : piecewise
+		(slabs === USerifs.BottomRight)  USerifs.BottomLeft
+		(slabs === USerifs.MotionToothed) USerifs.MotionToothedReversed
+		(slabs === USerifs.Toothed)      USerifs.ToothedReversed
+		(slabs === USerifs.SmallToothed) USerifs.SmallToothedReversed
+		true                             slabs
+
+	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
 
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
@@ -164,14 +189,9 @@ glyph-block Letter-Latin-U : begin
 				([Just 'toothed'] || [Just 'flatBottom']) { USerifs.Toothed         true  }
 				__                                        { USerifs.Toothless       true  }
 
-	define [ForceToothedUSuffix suffix] : piecewise
-		(suffix === 'toothlessRounded.serifless')              'toothed.serifless'
-		(suffix === 'toothlessRounded.motionSerifed')          'toothed.motionSerifed'
-		(suffix === 'toothlessRounded.bilateralMotionSerifed') 'toothed.bilateralMotionSerifed'
-		(suffix === 'toothlessRounded.serifed')                'toothed.serifed'
-		true                                                   suffix
-
 	foreach { suffix { { Base xRB yRB } { Slabs fSlabLT } } } [Object.entries : CapitalUConfigT UUpper] : do
+		local revBody : ReversedUBody UUpper Base suffix
+		local revSlabs : ReversedUSerifs Slabs
 		create-glyph "U.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
@@ -199,8 +219,12 @@ glyph-block Letter-Latin-U : begin
 			include : Slabs df XH Stroke
 
 		create-glyph "UReversed.\(suffix)" : glyph-proc
-			include [refer-glyph "U.\[ForceToothedUSuffix suffix]"] AS_BASE ALSO_METRICS
-			include : FlipAround (currentGlyph.advanceWidth / 2) 0 (-1) 1
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			local flipped : new-glyph : glyph-proc
+				include : revBody df CAP Stroke
+				include : FlipAround df.middle 0 (-1) 1
+			include : union flipped [revSlabs df CAP Stroke]
 
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
@@ -222,6 +246,8 @@ glyph-block Letter-Latin-U : begin
 				__                                        USerifs.SmallToothless
 
 	foreach { suffix { { Base xRB yRB } Slabs } } [Object.entries : SmallUConfigT ULower] : do
+		local revBody : ReversedUBody ULower Base suffix
+		local revSlabs : ReversedUSerifs Slabs
 		create-glyph "u.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
@@ -229,8 +255,12 @@ glyph-block Letter-Latin-U : begin
 			include : Slabs df XH Stroke
 
 		create-glyph "uReversed.\(suffix)" : glyph-proc
-			include [refer-glyph "u.\[ForceToothedUSuffix suffix]"] AS_BASE ALSO_METRICS
-			include : FlipAround (currentGlyph.advanceWidth / 2) 0 (-1) 1
+			local df : include : DivFrame 1
+			include : df.markSet.e
+			local flipped : new-glyph : glyph-proc
+				include : revBody df XH Stroke
+				include : FlipAround df.middle 0 (-1) 1
+			include : union flipped [revSlabs df XH Stroke]
 
 		create-glyph "cyrl/i.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "u.\(suffix)"] AS_BASE ALSO_METRICS
@@ -369,12 +399,12 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'smcpU' 0x1D1C (follow -- 'U')
 	select-variant 'URTail' 0x1DF7A
 	select-variant 'uCap' (shapeFrom -- 'U') (follow -- 'u')
-	select-variant 'UReversed' 0x1DF7E (follow -- 'U')
+	select-variant 'UReversed' 0x1DF7E
 
 	select-variant 'u' 'u'
 	link-reduced-variant 'u/sansSerif' 'u' MathSansSerif
 	select-variant 'u/descBase' (shapeFrom -- 'u')
-	select-variant 'uReversed' 0x1DF7F (follow -- 'u')
+	select-variant 'uReversed' 0x1DF7F
 
 	select-variant 'turnh'     0x265 (follow -- 'uLongLeg')
 	select-variant 'uShortLeg' 0xAB4E
