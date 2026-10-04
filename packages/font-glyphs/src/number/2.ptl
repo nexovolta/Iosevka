@@ -247,12 +247,15 @@ glyph-block Digits-Two : begin
 			if [query-glyph gn] : return gn
 			return src
 
-		derive-glyphs 'dum'     0xA771 'd'     : MakeUm
+		derive-glyphs 'dum'     0xA771 'd'     : lambda [src gr] : glyph-proc
+			include : MakeUmAt src para.advanceScaleM
 		derive-glyphs 'lum'     0xA772 'l'     : lambda [src gr] : glyph-proc
 			include : MakeUmAt [LumLSrc src] 1
 		derive-glyphs 'mum'     0xA773 'm'     : MakeUm
-		derive-glyphs 'num'     0xA774 'n'     : MakeUm
-		derive-glyphs 'smcpRum' 0xA776 'smcpR' : MakeUm
+		derive-glyphs 'num'     0xA774 'n'     : lambda [src gr] : glyph-proc
+			include : MakeUmAt src para.advanceScaleM
+		derive-glyphs 'smcpRum' 0xA776 'smcpR' : lambda [src gr] : glyph-proc
+			include : MakeUmAt src para.advanceScaleM
 		# Rum-rotunda slash through the r ear, not the stem.
 		derive-glyphs 'rum' 0xA775 'r' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
