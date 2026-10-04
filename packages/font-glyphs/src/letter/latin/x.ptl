@@ -54,9 +54,8 @@ glyph-block Letter-Latin-X : begin
 		include : HalfXStrand stb slab xLeft  yLeft  xMid yMid turn pStraight tension _sw (-0.001)
 		include : HalfXStrand stb slab xRight yRight xMid yMid turn pStraight tension _sw (-0.001)
 
-	define [XChanceryStrand sign fSlab leftX leftY rightX rightY fHalf _sw _fStretch] : begin
+	define [XChanceryStrand sign fSlab leftX leftY rightX rightY fHalf _sw] : begin
 		local sw : fallback _sw Stroke
-		local fStretch : fallback _fStretch false
 		local blendK1X : StrokeWidthBlend 0.58 0.65
 		local blendK1Y   0.2
 		local blendK2X   0.78
@@ -66,44 +65,6 @@ glyph-block Letter-Latin-X : begin
 		local pStraightY : StrokeWidthBlend 0.2 0.25
 		local fine : [AdviceStroke 3] * (sw / Stroke)
 		local slab : if fSlab SideJut 0
-
-		if fStretch : begin
-			local yL : leftY - sign * sw / 2
-			local yR : rightY + sign * sw / 2
-			local xM : mix leftX rightX 0.5
-			local yM : mix leftY rightY 0.5
-			local turn : StrokeWidthBlend 0.16 0.24
-			local tension : StrokeWidthBlend 0.28 0.38
-			local pStraight : StrokeWidthBlend 0.45 0.52
-			local turnxL : mix leftX xM turn
-			local cxL : mix turnxL xM tension
-			local sxL : mix cxL xM pStraight
-			local syL : mix yL yM pStraight
-			local kL : (cxL - turnxL) / (sxL - turnxL)
-			local turnxR : mix rightX xM turn
-			local cxR : mix turnxR xM tension
-			local sxR : mix cxR xM pStraight
-			local syR : mix yR yM pStraight
-			local kR : (cxR - turnxR) / (sxR - turnxR)
-			local xML : mix xM leftX (-0.001)
-			local yML : mix yM yL (-0.001)
-			local xMR : mix xM rightX (-0.001)
-			local yMR : mix yM yR (-0.001)
-			return : union
-				dispiro
-					widths.center sw
-					flat (leftX - slab) yL [heading Rightward]
-					curl turnxL yL [heading Rightward]
-					quadControls kL 0 24
-					g4 sxL syL
-					g4 xML yML
-				dispiro
-					widths.center sw
-					flat (rightX + slab) yR [heading Leftward]
-					curl turnxR yR [heading Leftward]
-					quadControls kR 0 24
-					g4 sxR syR
-					g4 xMR yMR
 
 		return : dispiro
 			if fHalf
@@ -299,7 +260,7 @@ glyph-block Letter-Latin-X : begin
 			include : match stroke1
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l botLong box.r box.t turn 0.4 tension sw
-				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw true
+				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : HShapedXShapeLongLeft box sw (stroke1 === STROKE-H-SHAPED-CURLY) botLong
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
 					include : intersection [MaskAbove (midy - TINY)] : with-transform [FlipAround box.xMid midy] : XCursiveHalfShape box.t box.b box.xMid box.r
