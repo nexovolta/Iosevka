@@ -1,0 +1,45 @@
+$$include '../../meta/macros.ptl'
+
+import [mix fallback] from "@iosevka/util"
+
+glyph-module
+
+glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
+
+	define kHook : 1 / 4
+	define kLetter : 1 - kHook
+
+	# r-ear mirrored to the left of `xStem` at `yTop`. `xStem` is the letter's
+	# left ink; the down-end overlaps it so the hook unions with the stem.
+	define [MidHeightLeftHook xStem yTop] : glyph-proc
+		local xHook : mix 0 xStem 0.08
+		include : dispiro
+			widths.rhs
+			g4.right.start xHook (yTop - O)
+			archv
+			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
+
+	# `k` horizontal scale about the right of the em; `1` = no squeeze (l).
+	define [MakeMidHeightLeftHook k yTop] : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		if (k < 1)
+			include : with-transform [ScaleAround Width 0 k 1] : refer-glyph src
+			include : with-transform [ApparentTranslate (kHook * Width) 0] : refer-glyph src
+		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
+		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
+		local xStem : Width + k * (SB - Width)
+		if b : set xStem : mix b.xMin b.xMin 0
+		include : MidHeightLeftHook xStem yTop
+		include : LeaningAnchor.Above.At [mix xStem Width 0.35]
+		include : LeaningAnchor.Below.At [mix xStem Width 0.35]
+
+	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook kLetter XH
+	derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHook 1 XH
+	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook kLetter XH
+	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook kLetter XH
+	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook kLetter (XH - Stroke)
