@@ -245,7 +245,7 @@ glyph-block Letter-Latin-Lower-M : begin
 		local sw : fallback _sw df.mvs
 		include : body df top 0 [if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0] [if tailed ([SmallMSmoothHeight df top sw _ada _adb] + O) 0] sw _ada _adb
 		if tailed : include : RightwardTailedBar df.rightSB 0 [SmallMSmoothHeight df top sw _ada _adb] (sw -- sw)
-		include : serifs df top 0 [if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0] 0 earless shortLeg tailed
+		include : serifs df top 0 [if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0] 0 earless shortLeg tailed sw
 		set-base-anchor 'overlay' df.middle (top / 2)
 		set-base-anchor 'strike'  df.middle (top / 2)
 
@@ -280,9 +280,10 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : mShapeBody df XH
 
 		create-glyph "m/pack75.\(suffix)" : glyph-proc
-			local df : include : ThreeQuarterDf para.advanceScaleMM dfM.mvs 3 para.advanceScaleMM
+			local df : include : ThreeQuarterDf para.advanceScaleMM Stroke 3 para.advanceScaleMM
+			local sw : [df.slice 3 2].adviceThinnerStroke2 2 3 XH
 			include : df.markSet.e
-			include : mShapeBody df XH
+			include : mShapeBody df XH sw
 
 		if (!tailed) : begin
 			create-glyph "meng.\(suffix)" : glyph-proc
