@@ -9,7 +9,7 @@ glyph-block Letter-Latin-Lower-N : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared : CreateAccentedComposition
+	glyph-block-import Letter-Shared : CreateAccentedComposition ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : VerticalHook EngHook SerifFrame
@@ -175,6 +175,16 @@ glyph-block Letter-Latin-Lower-N : begin
 			if sLT : include : sLT [DivFrame 1] XH
 			if sLB : include : sLB [DivFrame 1] 0
 			if sRB : include : sRB [DivFrame 1] 0
+
+		create-glyph "n/pack34.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleM
+			include : df.markSet.e
+			set-base-anchor 'trailing' df.rightSB 0
+			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke df.smallArchDepthA df.smallArchDepthB
+			if tailed : include : EndingTail df.rightSB 0 (XH - df.smallArchDepthB) Stroke
+			if sLT : include : sLT df XH
+			if sLB : include : sLB df 0
+			if sRB : include : sRB df 0
 
 		if (!tailed) : create-glyph "engCap.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -346,6 +356,7 @@ glyph-block Letter-Latin-Lower-N : begin
 			if sRB : include : sRB subDf 0
 
 	select-variant 'n' 'n'
+	select-variant 'n/pack34' (follow -- 'n')
 	link-reduced-variant 'n/sansSerif' 'n' MathSansSerif
 	link-reduced-variant 'n/descBase' 'n'
 	select-variant 'cyrl/pe.italic' (shapeFrom -- 'n')

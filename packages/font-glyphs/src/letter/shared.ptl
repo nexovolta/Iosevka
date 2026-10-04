@@ -14,6 +14,30 @@ glyph-block Letter-Shared : begin
 	glyph-block-import Mark-Adjustment : TurnMarks LeaningAnchorMap
 	glyph-block-import Letter-Accent-Builder : TransformGlyphCompositionSequence
 
+	# Same-weight 3/4 cell: keep mvs, squeeze only when the source is wider.
+	glyph-block-export ThreeQuarterDf
+	define [ThreeQuarterDf cellAdws _mvs _hPack _origAdws] : begin
+		local mvs : fallback _mvs Stroke
+		local hp : Math.max 1 : fallback _hPack 1
+		local origAdws : fallback _origAdws 1
+		local w : Math.min (origAdws * Width) : cellAdws * Width * 3 / 4
+		local sb : SB * [clamp 0 1 : (w / hp - mvs) / (2 * SB)]
+		local ox 0
+		return : DivFrame.fromParams : object
+			width : 0 + w
+			sb : 0 + sb
+			hPack : 0 + hp
+			mvs : 0 + mvs
+			ox : 0 + ox
+
+	glyph-block-export PackSrc
+	define [PackSrc prefix src] : begin
+		local rest : src.slice : prefix.length + 1
+		local gn : prefix + '/pack34'
+		if (src !== prefix) : set gn : prefix + '/pack34.' + rest
+		if [query-glyph gn] : return gn
+		return src
+
 	glyph-block-export CreateAccentedComposition
 	define [CreateAccentedComposition dst u srcGid accentGid]
 		CreateMultiAccentedComposition dst u srcGid { accentGid }

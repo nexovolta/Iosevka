@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition
-	glyph-block-import Letter-Shared : CreateDependentComposite CreateTurnedLetter
+	glyph-block-import Letter-Shared : CreateDependentComposite CreateTurnedLetter ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth ConnectedCedilla
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook PalatalHook
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
@@ -289,6 +289,13 @@ glyph-block Letter-Latin-Lower-T : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
 
+		create-glyph "t/pack34.\(suffix)" : glyph-proc
+			local dfPack : include : ThreeQuarterDf para.advanceScaleM Stroke 1 df.adws
+			include : dfPack.markSet.b
+			include : Style.Body dfPack sym top 0
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
+
 		create-glyph "t/phoneticLeft2.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.b
@@ -375,6 +382,7 @@ glyph-block Letter-Latin-Lower-T : begin
 
 
 	select-variant 't' 't'
+	select-variant 't/pack34' (follow -- 't')
 	select-variant 't/compLigRight'
 
 	select-variant 't/phoneticLeft1' (shapeFrom -- 't')
