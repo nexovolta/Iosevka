@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender CyrCurlDescender PalatalHook EngHook
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame
+	glyph-block-import Letter-Shared : ThreeQuarterDf
 
 	define dfM : DivFrame para.advanceScaleMM 3
 
@@ -278,6 +279,11 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : df.markSet.e
 			include : mShapeBody df XH
 
+		create-glyph "m/pack34.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleMM dfM.mvs 3 para.advanceScaleMM
+			include : df.markSet.e
+			include : mShapeBody df XH
+
 		if (!tailed) : begin
 			create-glyph "meng.\(suffix)" : glyph-proc
 				local df : include dfM
@@ -355,6 +361,7 @@ glyph-block Letter-Latin-Lower-M : begin
 				sw     -- subDf.mvs
 
 	select-variant 'm' 'm'
+	select-variant 'm/pack34' (follow -- 'm')
 	select-variant 'm/descBase' (shapeFrom -- 'm')
 	link-reduced-variant 'm/sansSerif' 'm' MathSansSerif
 

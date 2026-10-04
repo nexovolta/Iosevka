@@ -12,6 +12,7 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
+	glyph-block-import Letter-Shared : PackSrc
 
 	define [TwoStraightNeckArcT sink offset sw top flatHook _left _right _hook] : begin
 		local left : fallback _left SB
@@ -248,14 +249,15 @@ glyph-block Digits-Two : begin
 			return src
 
 		derive-glyphs 'dum'     0xA771 'd'     : lambda [src gr] : glyph-proc
-			include : MakeUmAt src para.advanceScaleM
+			include : MakeUmAt [PackSrc 'd' src] para.advanceScaleM
 		derive-glyphs 'lum'     0xA772 'l'     : lambda [src gr] : glyph-proc
 			include : MakeUmAt [LumLSrc src] 1
-		derive-glyphs 'mum'     0xA773 'm'     : MakeUm
+		derive-glyphs 'mum'     0xA773 'm'     : lambda [src gr] : glyph-proc
+			include : MakeUmAt [PackSrc 'm' src] para.advanceScaleMM
 		derive-glyphs 'num'     0xA774 'n'     : lambda [src gr] : glyph-proc
-			include : MakeUmAt src para.advanceScaleM
+			include : MakeUmAt [PackSrc 'n' src] para.advanceScaleM
 		derive-glyphs 'smcpRum' 0xA776 'smcpR' : lambda [src gr] : glyph-proc
-			include : MakeUmAt src para.advanceScaleM
+			include : MakeUmAt [PackSrc 'smcpR' src] para.advanceScaleM
 		# Rum-rotunda slash through the r ear, not the stem.
 		derive-glyphs 'rum' 0xA775 'r' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
@@ -265,10 +267,10 @@ glyph-block Digits-Two : begin
 			local xStem : mix overlay.x overlay.x 0
 			local xLean : mix lean.x lean.x 0
 			local xEar : xStem + (xLean - xStem) * (16 / 7)
-			local xMid : mix xStem xEar (7 / 8)
+			local xMid : mix xStem xEar 1
 			local yMid : XH - Hook * (2 / 5)
 			local dfSlash : DivFrame rumAdws
-			local kLen : 2 / 5
+			local kLen : 3 / 4
 			local dx : kLen * 0.20 * (RightSB - dfSlash.leftSB)
 			local dy : kLen * (rumSlashYTop - rumSlashYBot)
 			include : RumRotundaSlash (xMid - dx / 2) (xMid + dx / 2) (yMid + dy / 2) (yMid - dy / 2) OverlayStroke

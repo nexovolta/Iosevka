@@ -9,6 +9,7 @@ glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
+	glyph-block-import Letter-Shared : PackSrc
 
 	define kHook : 1 / 5
 
@@ -22,16 +23,16 @@ glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 			archv
 			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
 
-	# Capital-M advance; shift the letter right to make room for the hook
-	# when the extra width allows it (Aile/Etoile).
-	define [MakeMidHeightLeftHook yTop] : lambda [src gr] : glyph-proc
-		include [refer-glyph src] AS_BASE ALSO_METRICS
+	# Capital-M advance. Letter occupies the right 3/4 (same stroke);
+	# the left 1/4 is padding for the hook. l and r stay on their own advance.
+	define [MakeMidHeightLeftHook prefix yTop] : lambda [src gr] : glyph-proc
+		local packed : PackSrc prefix src
+		include [refer-glyph packed] AS_BASE ALSO_METRICS
 		local letterW : mix currentGlyph.advanceWidth currentGlyph.advanceWidth 0
 		currentGlyph.clearGeometry
 		local df : include : DivFrame para.advanceScaleM
-		local hookSpace : kHook * Width
-		local shift : Math.min hookSpace [Math.max 0 (df.width - letterW)]
-		include : with-transform [ApparentTranslate shift 0] : refer-glyph src
+		local shift : Math.max 0 (df.width - letterW)
+		include : with-transform [ApparentTranslate shift 0] : refer-glyph packed
 		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
 		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
 		local xStem : shift + SB
@@ -53,8 +54,8 @@ glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 		include : LeaningAnchor.Above.At [mix xStem Width 0.35]
 		include : LeaningAnchor.Below.At [mix xStem Width 0.35]
 
-	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook XH
+	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook 'd' XH
 	derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHookL XH
-	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook XH
-	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook XH
-	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook (XH - Stroke)
+	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook 'n' XH
+	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook 's' XH
+	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook 't' (XH - Stroke)

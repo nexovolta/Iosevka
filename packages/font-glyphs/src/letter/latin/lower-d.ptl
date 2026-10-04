@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markExtend
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition
+	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : OBarRight RightwardTailedBar CurlyTail
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
@@ -97,13 +97,15 @@ glyph-block Letter-Latin-Lower-D : begin
 		local yOverlay : mix XH (Ascender - [if topSerif Stroke 0]) 0.5
 
 		do
-			create-glyph "d.\(suffix)"           : make [DivFrame 1.00] false
-			create-glyph "dCaron/base.\(suffix)" : make [DivFrame 0.95] false
+			create-glyph "d.\(suffix)"           : make [DivFrame 1.00] [DivFrame 1] false
+			create-glyph "dCaron/base.\(suffix)" : make [DivFrame 0.95] [DivFrame 1] false
+			create-glyph "d/pack34.\(suffix)"    : make [ThreeQuarterDf para.advanceScaleM] [ThreeQuarterDf para.advanceScaleM] false
 			if ([not bottomSerif] && Body === ToothedBody) : create-glyph "d/phoneticLeft2.\(suffix)" : make
 				DivFrame (([mix Width RightSB 0.5] - [HSwToV QuarterStroke]) / Width) 2 1
+				DivFrame 1
 				begin true
-		: where : [make df fPhoneticLeft] : glyph-proc
-			include : DivFrame 1
+		: where : [make df dfMetrics fPhoneticLeft] : glyph-proc
+			include dfMetrics
 			include : df.markSet.b
 			include : Body df Ascender
 			if topSerif    : include : topSerif    df Ascender
@@ -140,6 +142,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			include : LeaningAnchor.Above.VBar.r df.rightSB
 
 	select-variant 'd' 'd'
+	select-variant 'd/pack34' (follow -- 'd')
 	link-reduced-variant 'd/sansSerif' 'd' MathSansSerif
 	select-variant 'dCaron/base' (follow -- 'd')
 
