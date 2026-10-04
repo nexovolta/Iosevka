@@ -11,7 +11,6 @@ glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 
 	define kHook : 1 / 5
-	define kLetter : 1 - kHook
 
 	# r-ear mirrored to the left of `xStem` at `yTop`. `xStem` is the letter's
 	# left ink; the down-end overlaps it so the hook unions with the stem.
@@ -23,23 +22,39 @@ glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 			archv
 			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
 
-	# `k` horizontal scale about the right of the em; `1` = no squeeze (l).
-	define [MakeMidHeightLeftHook k yTop] : lambda [src gr] : glyph-proc
+	# Capital-M advance; shift the letter right to make room for the hook
+	# when the extra width allows it (Aile/Etoile).
+	define [MakeMidHeightLeftHook yTop] : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
+		local letterW : mix currentGlyph.advanceWidth currentGlyph.advanceWidth 0
 		currentGlyph.clearGeometry
-		if (k < 1)
-			include : with-transform [ScaleAround Width 0 k 1] : refer-glyph src
-			include : with-transform [ApparentTranslate (kHook * Width) 0] : refer-glyph src
+		local df : include : DivFrame para.advanceScaleM
+		local hookSpace : kHook * Width
+		local shift : Math.min hookSpace [Math.max 0 (df.width - letterW)]
+		include : with-transform [ApparentTranslate shift 0] : refer-glyph src
 		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
 		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
-		local xStem : Width + k * (SB - Width)
+		local xStem : shift + SB
+		if b : set xStem : mix b.xMin b.xMin 0
+		include : MidHeightLeftHook xStem yTop
+		include : LeaningAnchor.Above.At [mix xStem df.width 0.35]
+		include : LeaningAnchor.Below.At [mix xStem df.width 0.35]
+
+	# l stays on its own advance; only shifted for the hook.
+	define [MakeMidHeightLeftHookL yTop] : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		include : with-transform [ApparentTranslate (kHook * Width) 0] : refer-glyph src
+		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
+		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
+		local xStem : kHook * Width + SB
 		if b : set xStem : mix b.xMin b.xMin 0
 		include : MidHeightLeftHook xStem yTop
 		include : LeaningAnchor.Above.At [mix xStem Width 0.35]
 		include : LeaningAnchor.Below.At [mix xStem Width 0.35]
 
-	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook kLetter XH
-	derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHook 1 XH
-	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook kLetter XH
-	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook kLetter XH
-	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook kLetter (XH - Stroke)
+	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook XH
+	derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHookL XH
+	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook XH
+	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook XH
+	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook (XH - Stroke)
