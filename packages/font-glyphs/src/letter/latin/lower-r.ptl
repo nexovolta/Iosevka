@@ -29,6 +29,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		Earless            8
 		EarlessSerifed     9
 		Half              10
+		HalfStretch       11
 
 	define [RDim df mode _stroke _strokeBar _fine _sign] : namespace
 		local stroke    : fallback _stroke    Stroke
@@ -48,29 +49,31 @@ glyph-block Letter-Latin-Lower-R : begin
 			[Just RMode.Earless]           {  1                 1       (1 / 2)  (1 / 3) }
 			[Just RMode.EarlessSerifed]    { (4 / 3)            1       (1 / 2)  (2 / 3) }
 			[Just RMode.Half]              {  1                 1       (1 / 2)   0      }
+			[Just RMode.HalfStretch]       {  1                 1       (1 / 2)   0      }
 
 		export : local rBarLeftX : match mode
 			[Just RMode.Half] : mix df.leftSB (df.middle - [HSwToV : 0.5 * strokeBar] - [IBalance2 df]) rBalanceMultiplier
+			[Just RMode.HalfStretch] : df.middle - [HSwToV : 0.5 * strokeBar]
 			__                : df.leftSB + RBalance * rBalanceMultiplier
 		export : local rBarRightX : df.width - rBarLeftX
 
 		local rTopLeftSerifX : rBarLeftX + [HSwToV : 0.5 * strokeBar]
 		local rTopRightSerifX : df.width - rTopLeftSerifX
 		export : local rTopSerifJut : match mode
-			[Just RMode.Half] : Math.max ([HSwToV : 0.5 * strokeBar] + SideJut) : mix (MidJutCenter - [IBalance df]) (rTopLeftSerifX - df.leftSB) rSerifLeftExtender
+			([Just RMode.Half] || [Just RMode.HalfStretch]) : Math.max ([HSwToV : 0.5 * strokeBar] + SideJut) : mix (MidJutCenter - [IBalance df]) (rTopLeftSerifX - df.leftSB) rSerifLeftExtender
 			__                : [HSwToV : 0.5 * strokeBar] + SideJut + RBalance * rSerifLeftExtender
 		export : local [rTopLeftSerif  y] : tagged 'serifLT' : HSerif.lt rTopLeftSerifX  y rTopSerifJut strokeA
 		export : local [rTopRightSerif y] : tagged 'serifRT' : HSerif.rt rTopRightSerifX y rTopSerifJut strokeA
 
 		local rBottomLeftSerifX : match mode
-			[Just RMode.Half] : rTopLeftSerifX + [IBalance df]
+			([Just RMode.Half] || [Just RMode.HalfStretch]) : rTopLeftSerifX + [IBalance df]
 			__                : begin rTopLeftSerifX
 		local rBottomRightSerifX : df.width - rBottomLeftSerifX
 		export : local rBottomSerifJutOut : match mode
-			[Just RMode.Half] : rTopSerifJut + [IBalance df]
+			([Just RMode.Half] || [Just RMode.HalfStretch]) : rTopSerifJut + [IBalance df]
 			__                : begin rTopSerifJut
 		export : local rBottomSerifJutIn : mix [HSwToV : 0.5 * strokeBar] rBottomSerifJutOut : match mode
-			[Just RMode.Half] : begin 1.0
+			([Just RMode.Half] || [Just RMode.HalfStretch]) : begin 1.0
 			__                : begin 1.2
 		export : local [rBottomLeftSerif y] : tagged 'serifLB' : union
 			HSerif.lb rBottomLeftSerifX y rBottomSerifJutOut strokeA
@@ -87,6 +90,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			[Just RMode.Half] : Math.max
 				rBarLeftX + [HSwToV : strokeBar + 0.125 * stroke] + TINY + [Math.abs : TanSlope * stroke]
 				[Arch.adjust-x.top (rBarLeftX + [HSwToV : 0.5 * strokeBar] + HookX) (sw -- strokeA)] - OXHook
+			[Just RMode.HalfStretch] : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
 			__ : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
 		export : local rArchMiddleX : match mode
 			([Just RMode.Standard]        || [Just RMode.NarrowHook])        : mix (rBarLeftX + [HSwToV : strokeBar - fine]) rHookRightXFull (0.54 + sign * 2 * TanSlope * strokeBar / Width)
@@ -117,6 +121,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		local rArchDepth : match mode
 			([Just RMode.Earless] || [Just RMode.EarlessSerifed]) : begin SmallArchDepth
 			[Just RMode.Half]                                     : begin Hook
+			[Just RMode.HalfStretch]                              : begin Hook
 			__                                                    : 0.47 * (XH - 0)
 		export : local rArchDepthA : ArchDepthAClamped XH 0
 			ArchDepthAOf rArchDepth
@@ -611,8 +616,9 @@ glyph-block Letter-Latin-Lower-R : begin
 			baseSerifed    { false true  }
 			serifed        { true  true  }
 
-	define [HalfRHookOnly Body df] : glyph-proc
-		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df RMode.Half XH 0 false false
+	define [HalfRHookOnly Body df _mode] : glyph-proc
+		local md : fallback _mode RMode.Half
+		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df md XH 0 false false
 		eject-contour 'strokeL'
 
 	# Flat-top extra hook: same TR arc as the body, no stem. Curl into the first
@@ -647,10 +653,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			MaskBelow (XH - rArchDepthA)
 			MaskLeft (rBarLeftX + xShift + [HSwToV Stroke])
 
-	define [MaskedFlippedHalfRHook Body df rBarLeftX] : glyph-proc
-		define [object rArchDepthA] : RDim df RMode.Half
+	define [MaskedFlippedHalfRHook Body df rBarLeftX _mode] : glyph-proc
+		local md : fallback _mode RMode.Half
+		define [object rArchDepthA] : RDim df md
 		local xStemC : rBarLeftX + [HSwToV : 0.5 * Stroke]
-		define [extra] : with-transform [FlipAround xStemC 0 (-1) 1] : HalfRHookOnly Body df
+		define [extra] : with-transform [FlipAround xStemC 0 (-1) 1] : HalfRHookOnly Body df md
 		include : difference [extra] : intersection
 			MaskBelow (XH - rArchDepthA)
 			MaskRight rBarLeftX
@@ -723,24 +730,15 @@ glyph-block Letter-Latin-Lower-R : begin
 		create-glyph "rMidHeightLeftHook.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			local dfI : DivFrame para.advanceScaleI
-			local dim0 : RDim dfI RMode.Half
-			local xHookRight0 : if (Body === HalfRShape.FlatTop) (dim0.rHookRightX + 0.12 * HookX) dim0.rHookRightX
-			local xStemC0 : dim0.rBarLeftX + [HSwToV : 0.5 * Stroke]
-			local need : 2 * (xHookRight0 - xStemC0)
-			local inner : df.rightSB - df.leftSB
-			local k : Math.min 1 : inner / [Math.max TINY need]
-			local dfHalf : DivFrame (k * para.advanceScaleI)
-			define [object rBarLeftX] : RDim dfHalf RMode.Half
-			local xStemC : rBarLeftX + [HSwToV : 0.5 * Stroke]
-			local xShift : df.middle - xStemC
-			# Hooks occupy the top; skip r top serifs so they do not collide.
+			define [object rBarLeftX] : RDim df RMode.HalfStretch
+			# Stem at center; each hook fills half the cell (stretched to SB).
+			# Skip r top serifs so they do not collide with the hooks.
 			if (Body === HalfRShape.FlatTop)
 			: then : include : TShape df XH false doBS
 			: else : begin
 				local hookBody : if (Body === HalfRShape.EarlessCorner) HalfRShape.Standard Body
-				include : with-transform [ApparentTranslate xShift 0] : hookBody dfHalf RMode.Half XH 0 false doBS
-				include : with-transform [ApparentTranslate xShift 0] : MaskedFlippedHalfRHook hookBody dfHalf rBarLeftX
+				include : hookBody df RMode.HalfStretch XH 0 false doBS
+				include : MaskedFlippedHalfRHook hookBody df rBarLeftX RMode.HalfStretch
 			include : LeaningAnchor.Above.At df.middle
 			include : LeaningAnchor.Below.At df.middle
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]

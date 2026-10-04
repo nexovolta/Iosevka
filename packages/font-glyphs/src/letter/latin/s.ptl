@@ -265,6 +265,14 @@ glyph-block Letter-Latin-S : begin
 			include : SAutoSlabStart df doTS XH sw Hook
 			include : SAutoSlabEnd   df doBS 0  sw [if fDesc SHook Hook]
 
+		create-glyph "s/pack80.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)
+			include : df.markSet.e
+			local sw : DfLower.adviceStroke2 2 3 (XH - 0)
+			include : SmallSStrokeImpl df XH 0 doTS doBS sw EssLower
+			include : SAutoSlabStart df doTS XH sw Hook
+			include : SAutoSlabEnd   df doBS 0  sw [if fDesc SHook Hook]
+
 		create-glyph "s/phoneticRight.\(suffix)" : glyph-proc
 			local df : include DfLower
 			include : df.markSet.e
@@ -353,6 +361,7 @@ glyph-block Letter-Latin-S : begin
 
 	select-variant 's' 's'
 	select-variant 's/pack34' (follow -- 's')
+	select-variant 's/pack80' (follow -- 's')
 	link-reduced-variant 's/sansSerif' 's' MathSansSerif
 	select-variant 's/phoneticRight'
 
