@@ -199,6 +199,16 @@ glyph-block Digits-Two : begin
 
 		# Full-weight letter plus rum-rotunda 2-foot. Advance matches ae/oe
 		# (MM), growing if the unscaled letter plus foot needs more.
+		define [MakeUmAt src adws] : glyph-proc
+			include : refer-glyph src
+			local b : include : MeasureGlyphBoundsInY 0 Stroke
+			local df : include : DivFrame adws
+			include : df.markSet.p
+			local xJoin : df.rightSB - [HSwToV : 0.5 * Stroke]
+			if b : set xJoin : [mix b.xMax b.xMax 0] - [HSwToV : 0.5 * Stroke]
+			if (xJoin > df.rightSB) : set xJoin : df.rightSB - [HSwToV : 0.5 * Stroke]
+			include : TwoBaseWithSlash xJoin df.rightSB xJoin Stroke
+
 		define [MakeUm] : lambda [src gr] : glyph-proc
 			include : refer-glyph src
 			local b : include : MeasureGlyphBoundsInY 0 Stroke
@@ -211,8 +221,35 @@ glyph-block Digits-Two : begin
 			include : df.markSet.p
 			include : TwoBaseWithSlash xJoin df.rightSB xJoin Stroke
 
+		# Tails flatten so the 2-foot can join; serifs stay; serifless uses hooky.
+		define [LumLSrc src] : begin
+			local suffix : if (src == 'l') [fallback para.variantSelector.l 'serifless'] : src.slice 2
+			local mapped : match suffix
+				[Just 'serifless']             'hooky'
+				[Just 'seriflessDec']          'hookyDec'
+				[Just 'tailed']                'flatTailed'
+				[Just 'tailedDec']             'flatTailedDec'
+				[Just 'tailedSerifed']         'serifedFlatTailed'
+				[Just 'diagonalTailed']        'flatTailed'
+				[Just 'diagonalTailedDec']     'flatTailedDec'
+				[Just 'serifedDiagonalTailed'] 'serifedFlatTailed'
+				[Just 'semiTailed']            'flatTailed'
+				[Just 'semiTailedDec']         'flatTailedDec'
+				[Just 'serifedSemiTailed']     'serifedFlatTailed'
+				[Just 'doubleTailed']          'doubleFlatTailed'
+				[Just 'doubleTailedDec']       'doubleFlatTailedDec'
+				[Just 'doubleSemiTailed']      'doubleFlatTailed'
+				[Just 'doubleSemiTailedDec']   'doubleFlatTailedDec'
+				[Just 'doubleDiagTailed']      'doubleFlatTailed'
+				[Just 'doubleDiagTailedDec']   'doubleFlatTailedDec'
+				__                             suffix
+			local gn : 'l.' + mapped
+			if [query-glyph gn] : return gn
+			return src
+
 		derive-glyphs 'dum'     0xA771 'd'     : MakeUm
-		derive-glyphs 'lum'     0xA772 'l'     : MakeUm
+		derive-glyphs 'lum'     0xA772 'l'     : lambda [src gr] : glyph-proc
+			include : MakeUmAt [LumLSrc src] 1
 		derive-glyphs 'mum'     0xA773 'm'     : MakeUm
 		derive-glyphs 'num'     0xA774 'n'     : MakeUm
 		derive-glyphs 'smcpRum' 0xA776 'smcpR' : MakeUm
