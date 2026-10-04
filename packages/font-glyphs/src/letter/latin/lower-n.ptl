@@ -186,6 +186,16 @@ glyph-block Letter-Latin-Lower-N : begin
 			if sLB : include : sLB df 0
 			if sRB : include : sRB df 0
 
+		create-glyph "n/pack80.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)
+			include : df.markSet.e
+			set-base-anchor 'trailing' df.rightSB 0
+			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke df.smallArchDepthA df.smallArchDepthB
+			if tailed : include : EndingTail df.rightSB 0 (XH - df.smallArchDepthB) Stroke
+			if sLT : include : sLT df XH
+			if sLB : include : sLB df 0
+			if sRB : include : sRB df 0
+
 		if (!tailed) : create-glyph "engCap.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : Body CAP SB RightSB (O + Hook + HalfStroke) Stroke ArchDepthA ArchDepthB
@@ -357,6 +367,7 @@ glyph-block Letter-Latin-Lower-N : begin
 
 	select-variant 'n' 'n'
 	select-variant 'n/pack34' (follow -- 'n')
+	select-variant 'n/pack80' (follow -- 'n')
 	link-reduced-variant 'n/sansSerif' 'n' MathSansSerif
 	link-reduced-variant 'n/descBase' 'n'
 	select-variant 'cyrl/pe.italic' (shapeFrom -- 'n')

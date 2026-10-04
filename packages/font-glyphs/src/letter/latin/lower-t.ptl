@@ -296,6 +296,13 @@ glyph-block Letter-Latin-Lower-T : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
 
+		create-glyph "t/pack80.\(suffix)" : glyph-proc
+			local dfPack : include : ThreeQuarterDf para.advanceScaleM Stroke 1 df.adws (4 / 5)
+			include : dfPack.markSet.b
+			include : Style.Body dfPack sym top 0
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
+
 		create-glyph "t/phoneticLeft2.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.b
@@ -383,6 +390,7 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	select-variant 't' 't'
 	select-variant 't/pack34' (follow -- 't')
+	select-variant 't/pack80' (follow -- 't')
 	select-variant 't/compLigRight'
 
 	select-variant 't/phoneticLeft1' (shapeFrom -- 't')
