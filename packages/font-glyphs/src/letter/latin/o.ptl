@@ -274,6 +274,14 @@ glyph-block Letter-Latin-O : begin
 			flat (RightSB - OX) [Math.min SmallArchDepthA : XH / 2 - TINY]
 			curl (RightSB - OX) (XH / 2) [heading Upward]
 
+	derive-glyphs 'oSplit' 0x1DF58 'o' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		local gap : 0.12 * XH
+		currentGlyph.clearGeometry
+		include : difference
+			refer-glyph src
+			Rect (XH / 2 + gap / 2) (XH / 2 - gap / 2) [mix 0 Width (-2)] [mix 0 Width 3]
+
 	create-glyph 'oWithLightCentralizationStroke' : glyph-proc
 		include : MarkSet.p
 		include : refer-glyph "o"
