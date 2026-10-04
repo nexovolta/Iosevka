@@ -18,10 +18,11 @@ glyph-block Letter-Latin-Yogh : begin
 	define [TopYOfLowerHalf top bot kSplit] : [mix bot top kSplit] + 0.06 * Stroke
 
 	glyph-block-export UpperHalfT
-	define [UpperHalfT sink slab offset top bot kSplit _taper] : begin
+	define [UpperHalfT sink slab offset top bot kSplit _taper _xEnd] : begin
 		local py : PhantomBotYOfUpperHalf top bot kSplit
 		local yRightHalf : YSmoothMidR top py
 		local yBottomTerminal : mix top py 1.2
+		local xEnd : fallback _xEnd : [mix SB RightSB 0.1] + QuarterStroke
 		local startKnots : if _taper
 			SerifedArcStart.LtrRhs SB (top - offset) Stroke [Math.max Hook : 0.15 * (top - bot)] Stroke
 			match slab
@@ -32,19 +33,24 @@ glyph-block Letter-Latin-Yogh : begin
 			~~~ startKnots
 			g4 (RightSB - offset) yRightHalf
 			alsoThruThem {{0.5 0.8} {0.75 0.92}} important
-			[if (sink == dispiro) g4 corner] ([mix SB RightSB 0.1] + QuarterStroke) yBottomTerminal
+			if (sink == dispiro && _xEnd)
+				g4 xEnd yBottomTerminal [heading Leftward]
+			: else : [if (sink == dispiro) g4 corner] xEnd yBottomTerminal
 
 	glyph-block-export LowerHalfT
-	define [LowerHalfT sink top bot kSplit] : begin
+	define [LowerHalfT sink top bot kSplit _xEnd] : begin
 		local pyt : mix bot [TopYOfLowerHalf top bot kSplit] 1.2
 		local pyb : mix bot [TopYOfLowerHalf top bot kSplit] 0.2
+		local xEnd : fallback _xEnd : SB + [HSwToV : 0.1 * Stroke]
 
 		return : sink
 			Arch.rhs.centerAt.ltr.t Middle pyt
 			archv
 			g4 RightSB [YSmoothMidR pyt pyb]
 			alsoThruThem {{0.25 [StrokeWidthBlend 0.63 0.66]} {0.5 [StrokeWidthBlend 0.84 0.85]}} important
-			g4 (SB + [HSwToV : 0.1 * Stroke]) (bot + O)
+			if _xEnd
+				g4 xEnd (bot + O) [heading Leftward]
+			: else : g4 xEnd (bot + O)
 
 	glyph-block-export YoghShape
 	define [YoghShape slab top bot kSplit] : glyph-proc
