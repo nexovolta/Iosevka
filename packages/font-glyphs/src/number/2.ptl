@@ -11,6 +11,7 @@ glyph-block Digits-Two : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 
 	define [TwoStraightNeckArcT sink offset sw top flatHook _left _right _hook] : begin
 		local left : fallback _left SB
@@ -146,6 +147,22 @@ glyph-block Digits-Two : begin
 
 	do "Rum rotunda : compressed 2 plus a forward slash through the base"
 		define rumAdws 0.78
+		# 2's foot bar plus `/` slash. `xSlashRefLeft` is the 2-body left SB
+		# used to place the slash; the bar itself may start further right.
+		define [TwoBaseWithSlash xBarLeft xBarRight xSlashRefLeft sw] : glyph-proc
+			include : HBar.b xBarLeft xBarRight 0 sw
+			local swSlash : 1 * OverlayStroke
+			local yTop : 0.34 * XH
+			local yBot : 0.70 * Descender
+			local xRight : mix xSlashRefLeft xBarRight 0.82
+			local xLeft : xRight - 0.20 * (xBarRight - xSlashRefLeft)
+			local cor : [Math.hypot (xRight - xLeft) (yTop - yBot)] / (yTop - yBot)
+			include : spiro-outline
+				corner (xRight - [HSwToV : 0.5 * cor * swSlash]) yTop
+				corner (xRight + [HSwToV : 0.5 * cor * swSlash]) yTop
+				corner (xLeft  + [HSwToV : 0.5 * cor * swSlash]) yBot
+				corner (xLeft  - [HSwToV : 0.5 * cor * swSlash]) yBot
+
 		define [RumRotundaShape top fStraight fSlab fFlat] : glyph-proc
 			local df : DivFrame rumAdws
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
@@ -154,20 +171,7 @@ glyph-block Digits-Two : begin
 			if fStraight
 				include : TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
 				include : TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
-			include : HBar.b xBarLeft RightSB 0 df.mvs
-			# Parallelogram slash (`/`): top, bottom, and slope are design-unit
-			# constants, so height and angle stay the same from Thin through Heavy.
-			local swSlash : 1 * OverlayStroke
-			local yTop : 0.34 * XH
-			local yBot : 0.70 * Descender
-			local xRight : mix df.leftSB RightSB 0.82
-			local xLeft : xRight - 0.20 * (RightSB - df.leftSB)
-			local cor : [Math.hypot (xRight - xLeft) (yTop - yBot)] / (yTop - yBot)
-			include : spiro-outline
-				corner (xRight - [HSwToV : 0.5 * cor * swSlash]) yTop
-				corner (xRight + [HSwToV : 0.5 * cor * swSlash]) yTop
-				corner (xLeft  + [HSwToV : 0.5 * cor * swSlash]) yBot
-				corner (xLeft  - [HSwToV : 0.5 * cor * swSlash]) yBot
+			include : TwoBaseWithSlash xBarLeft RightSB df.leftSB df.mvs
 
 		define RumTwoConfig : SuffixCfg.weave
 			object
@@ -190,6 +194,50 @@ glyph-block Digits-Two : begin
 
 		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
 		select-variant 'rumRotunda' 0xA75D (follow -- 'two')
+
+		define kUmLetter : 2 / 3
+		define kMumLetter : 29 / 50
+		# Letter on the left; rum-rotunda 2-foot (HBar + `/`) attached at the
+		# letter's right ink and running to RightSB. Slash uses rum's compressed
+		# frame so it matches rum rotunda, not the join x.
+		define [MakeUm k] : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			include : MarkSet.p
+			currentGlyph.clearGeometry
+			include : with-transform [ScaleAround 0 0 k 1] : refer-glyph src
+			local b : include : MeasureGlyphBoundsInY 0 Stroke
+			local dfSlash : DivFrame rumAdws
+			local xJoin : k * RightSB - [HSwToV : 0.5 * Stroke]
+			if b : set xJoin : [mix b.xMax b.xMax 0] - [HSwToV : 0.5 * Stroke]
+			include : TwoBaseWithSlash xJoin RightSB dfSlash.leftSB Stroke
+
+		derive-glyphs 'dum'     0xA771 'd'     : MakeUm kUmLetter
+		derive-glyphs 'lum'     0xA772 'l'     : MakeUm kUmLetter
+		derive-glyphs 'num'     0xA774 'n'     : MakeUm kUmLetter
+		# Aile/Etoile m is already MM-wide; keep that advance and park the
+		# rum-rotunda 2-foot in the remaining space after squeezing m.
+		define [MakeMum] : lambda [src gr] : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM
+			include : df.markSet.p
+			include : with-transform [ScaleAround 0 0 kMumLetter 1] : refer-glyph src
+			local b : include : MeasureGlyphBoundsInY 0 Stroke
+			local xJoin : kMumLetter * df.rightSB - [HSwToV : 0.5 * Stroke]
+			if b : set xJoin : [mix b.xMax b.xMax 0] - [HSwToV : 0.5 * Stroke]
+			include : TwoBaseWithSlash xJoin df.rightSB df.leftSB Stroke
+		derive-glyphs 'mum' 0xA773 'm' : MakeMum
+		# Slash through the r ear, not the stem.
+		derive-glyphs 'rum' 0xA775 'r' : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			include : MarkSet.e
+			local overlay currentGlyph.baseAnchors.overlay
+			local lean : fallback currentGlyph.baseAnchors.leaningAbove currentGlyph.baseAnchors.above overlay
+			local xStem : mix overlay.x overlay.x 0
+			local xLean : mix lean.x lean.x 0
+			local xEar : xStem + (xLean - xStem) * (16 / 7)
+			local xMid : mix xStem xEar (3 / 4)
+			local yMid : XH - Hook * 7 / 25
+			include : FlatSlashShape xMid yMid (0.5 * OverlayStroke) (11 / 20) (7 / 25)
+		derive-glyphs 'smcpRum' 0xA776 'smcpR' : MakeUm kUmLetter
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/two' 0x1D7DA : glyph-proc

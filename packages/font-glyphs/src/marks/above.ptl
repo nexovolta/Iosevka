@@ -26,7 +26,7 @@ glyph-block Mark-Above : begin
 	define aboveMarkStack : XH + AccentStackOffset
 	define toneAboveBaseline aboveMarkBot
 
-	glyph-block-export MeasureGlyphBounds CenterMarkHorizontally AlignToneMarkAbove
+	glyph-block-export MeasureGlyphBounds MeasureGlyphBoundsInY CenterMarkHorizontally AlignToneMarkAbove
 	define [MeasureGlyphBounds] : glyph-proc
 		local xMin 0x7fffffff
 		local xMax (0 - 0x7fffffff)
@@ -54,6 +54,23 @@ glyph-block Mark-Above : begin
 			yMax : 0 + yMax
 			xAvg : xSum / n
 			yAvg : ySum / n
+
+	define [MeasureGlyphBoundsInY yLo yHi] : glyph-proc
+		local xMin 0x7fffffff
+		local xMax (0 - 0x7fffffff)
+		local n 0
+		foreach contour [items-of : currentGlyph.geometry.toBezArcs] : foreach arc [items-of contour] : begin
+			foreach i [range 0 25] : begin
+				local z : arc.eval (i / 24)
+				local p : currentGlyph.gizmo.unapply z
+				if (p.y >= yLo && p.y <= yHi) : begin
+					if (p.x < xMin) : set xMin p.x
+					if (p.x > xMax) : set xMax p.x
+					set n : n + 1
+		if (n <= 0) : return nothing
+		return : object
+			xMin : 0 + xMin
+			xMax : 0 + xMax
 
 	define [CenterMarkHorizontally] : glyph-proc
 		local b : include : MeasureGlyphBounds
