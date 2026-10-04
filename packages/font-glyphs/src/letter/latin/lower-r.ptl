@@ -9,8 +9,9 @@ glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared : CreateAccentedComposition
+	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth PalatalHook RetroflexHook
+	glyph-block-import Letter-Latin-Upper-T : TShape
 
 	local dfN : DivFrame 1
 	local dfF : DivFrame para.advanceScaleF 1 0.75
@@ -616,9 +617,9 @@ glyph-block Letter-Latin-Lower-R : begin
 
 	# Flat-top extra hook: same TR arc as the body, no stem. Curl into the first
 	# hook's flat top so the join is a clip, not a vertical cap / T-junction.
-	define [FlatTopExtraHook df] : glyph-proc
+	define [FlatTopExtraHook df _sw] : glyph-proc
 		define [object rBarLeftX rHookRightX rHookDepthY] : RDim df RMode.Half
-		local sw : Stroke * [StrokeWidthBlend 0.8 0.6]
+		local sw : fallback _sw : Stroke * [StrokeWidthBlend 0.8 0.6]
 		local xHookRight : rHookRightX + 0.12 * HookX
 		local yHookDepth : rHookDepthY + 0.10 * RHook
 		local xArchMid : mix rBarLeftX xHookRight 0.5
@@ -645,6 +646,14 @@ glyph-block Letter-Latin-Lower-R : begin
 		include : difference [extra] : intersection
 			MaskBelow (XH - rArchDepthA)
 			MaskLeft (rBarLeftX + xShift + [HSwToV Stroke])
+
+	define [MaskedFlippedHalfRHook Body df rBarLeftX] : glyph-proc
+		define [object rArchDepthA] : RDim df RMode.Half
+		local xStemC : rBarLeftX + [HSwToV : 0.5 * Stroke]
+		define [extra] : with-transform [FlipAround xStemC 0 (-1) 1] : HalfRHookOnly Body df
+		include : difference [extra] : intersection
+			MaskBelow (XH - rArchDepthA)
+			MaskRight rBarLeftX
 
 	foreach { suffix { Body { doTS doBS } } } [pairs-of HalfRConfig] : do
 		create-glyph "rHalf.\(suffix)" : glyph-proc
@@ -711,9 +720,37 @@ glyph-block Letter-Latin-Lower-R : begin
 				CurlyTail.f fine 0 m2 x2
 			include : LeaningAnchor.Above.Hook rBarLeftX (xHookRight + xShift)
 
+		create-glyph "rMidHeightLeftHook.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.e
+			local dfI : DivFrame para.advanceScaleI
+			local dim0 : RDim dfI RMode.Half
+			local xHookRight0 : if (Body === HalfRShape.FlatTop) (dim0.rHookRightX + 0.12 * HookX) dim0.rHookRightX
+			local xStemC0 : dim0.rBarLeftX + [HSwToV : 0.5 * Stroke]
+			local need : 2 * (xHookRight0 - xStemC0)
+			local inner : df.rightSB - df.leftSB
+			local k : Math.min 1 : inner / [Math.max TINY need]
+			local dfHalf : DivFrame (k * para.advanceScaleI)
+			define [object rBarLeftX] : RDim dfHalf RMode.Half
+			local xStemC : rBarLeftX + [HSwToV : 0.5 * Stroke]
+			local xShift : df.middle - xStemC
+			# Hooks occupy the top; skip r top serifs so they do not collide.
+			if (Body === HalfRShape.FlatTop)
+			: then : include : TShape df XH false doBS
+			: else : begin
+				local hookBody : if (Body === HalfRShape.EarlessCorner) HalfRShape.Standard Body
+				include : with-transform [ApparentTranslate xShift 0] : hookBody dfHalf RMode.Half XH 0 false doBS
+				include : with-transform [ApparentTranslate xShift 0] : MaskedFlippedHalfRHook hookBody dfHalf rBarLeftX
+			include : LeaningAnchor.Above.At df.middle
+			include : LeaningAnchor.Below.At df.middle
+			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
+			set-base-anchor 'hooktopAttach' df.middle XH
+
 	select-variant 'rHalf' 0xAB47
 	select-variant 'rDouble' 0xAB48 (follow -- 'rHalf')
 	select-variant 'rDoubleCrossedTail' 0xAB4A (follow -- 'rHalf')
+	select-variant 'rMidHeightLeftHook' 0x1DF28 (follow -- 'rHalf')
+	CreateTurnedLetter 'turnrMidHeightLeftHook' 0x1DF57 'rMidHeightLeftHook' HalfAdvance (XH / 2)
 	select-variant 'rFlap' 0x27E (shapeFrom -- 'rHalf')
 	select-variant 'rFlapPalatalHook' 0x1DF16 (shapeFrom -- 'rHalfPalatalHook') (follow -- 'rFlap')
 

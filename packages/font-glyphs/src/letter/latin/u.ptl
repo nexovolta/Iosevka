@@ -405,6 +405,13 @@ glyph-block Letter-Latin-U : begin
 	link-reduced-variant 'u/sansSerif' 'u' MathSansSerif
 	select-variant 'u/descBase' (shapeFrom -- 'u')
 	select-variant 'uReversed' 0x1DF7F
+	derive-glyphs 'uSplit' 0x1DF59 'u' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		local gap : 0.12 * XH
+		currentGlyph.clearGeometry
+		include : difference
+			refer-glyph src
+			Rect (XH / 2 + gap / 2) (XH / 2 - gap / 2) [mix 0 Width (-2)] [mix 0 Width 3]
 
 	select-variant 'turnh'     0x265 (follow -- 'uLongLeg')
 	select-variant 'uShortLeg' 0xAB4E
