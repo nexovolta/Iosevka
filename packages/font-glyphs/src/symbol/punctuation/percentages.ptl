@@ -249,6 +249,13 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			flat l 0 [heading Upward]
 			curl [mix l r pFine] [mix 0 CAP pFine] [widths.heading (fine * cor) 0 Upward]
 
+	# Both stubs share one centerline so the angle does not change with weight.
+	define [CircleSlashSegmentedLocked l r] : glyph-proc
+		local swBar : AdviceStroke 3
+		local pFine : 0.5 - (CAP / 10) / [Math.hypot CAP (r - l)]
+		include : ExtLineCenter r CAP [mix r l pFine] [mix CAP 0 pFine] swBar
+		include : ExtLineCenter l 0 [mix l r pFine] [mix 0 CAP pFine] swBar
+
 	define [CircleAlsoConnectedBar l r radius] : begin
 		local swBar : AdviceStroke 3.75
 		local fineBar : AdviceStroke 4.5
@@ -334,7 +341,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		local yHook sR
 		local yTopC : yHook + dist
 		include : PercentCircle (l + largeR) (CAP - largeR) largeR
-		include : if fSegmented [CircleSlashSegmented l r] [CircleSlashContinuous l r]
+		include : if fSegmented [CircleSlashSegmentedLocked l r] [CircleSlashContinuous l r]
 		if fConnected : include : CircleAlsoConnectedBar l r largeR
 		include : CircleClusterTriple xHook yHook xStem yHook xStem yTopC sR
 
