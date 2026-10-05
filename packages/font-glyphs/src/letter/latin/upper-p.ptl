@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook FlatHookDepth
 	glyph-block-import Letter-Latin-Lower-E : AbkCheLeftFlourish
 
 	glyph-block-export PBarPosY
@@ -258,6 +258,47 @@ glyph-block Letter-Latin-Upper-P : begin
 				fDown  -- true
 				xLeft  -- xLeft
 
+		create-glyph "PSquirrelTail.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			# Body 66% of capital-M width; left tail 33%, same packing as PFlourish.
+			local bodyK : 0.66 * df.adws
+			local swA : df.adviceThinnerStroke2 2 3 CAP bodyK
+			local swB : df.adviceThinnerStroke 2.75 bodyK
+			local sw : Math.min swA swB
+			local subDf : DivFrame bodyK 2
+			local shift : df.width - subDf.width
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				include : LeaningAnchor.Below.VBar.l [mix 0 subDf.leftSB PShape.defaultMul] sw
+				include : difference
+					PShape CAP (df -- subDf) (sw -- sw) (slab -- slabs)
+					if fGap
+						PShape.OpenGap (top -- CAP) (df -- subDf) (bot -- [if fSlabBot sw 0]) (sw -- sw)
+						no-shape
+			local xStem : [mix 0 subDf.leftSB PShape.defaultMul] + shift
+			local ink : HSwToV sw
+			local hd : FlatHookDepth [DivFrame 1]
+			local yBowl : PBarPosY CAP sw PShape.BarPos
+			local yBarTop : yBowl + sw
+			local turnNeed : Math.max (1.15 * sw) (1.25 * ink)
+			local hookDrop : Math.max (Hook * 0.75) (1.05 * sw)
+			local hookWidth : Math.max Hook (2.1 * ink)
+			local xHookL : Math.min hookWidth (xStem - turnNeed)
+			local xTip : xHookL - hookWidth
+			local xTurn : xHookL + turnNeed
+			local adaHook : Math.min (ArchDepthA * 0.55) [Math.max (hookDrop + 0.35 * sw) (0.28 * (CAP - yBarTop))]
+			# Flat bar collinear with the P bowl; tail curls up and hooks outward.
+			include : HBar.b xTurn (xStem + ink) yBowl sw
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
+				widths.rhs sw
+				g4 xTip (CAP - hookDrop)
+				HookStart CAP (sw -- sw)
+				flat xHookL (CAP - adaHook)
+				curl xHookL (yBarTop + hd.y) [heading Downward]
+				arcvh
+				flat [Math.max (xHookL + TINY) (xTurn - TINY)] yBarTop [heading Rightward]
+				curl (xStem + [HSwToV : 0.5 * sw]) yBarTop [heading Rightward]
+
 		if (!fGap) : create-glyph "currency/rubleSign.\(suffix)" : glyph-proc
 			include [refer-glyph "P.\(suffix)"] AS_BASE ALSO_METRICS
 
@@ -317,6 +358,7 @@ glyph-block Letter-Latin-Upper-P : begin
 
 	select-variant 'PStrokeBottom' 0xA750 (follow -- 'P')
 	select-variant 'PFlourish' 0xA752 (follow -- 'P')
+	select-variant 'PSquirrelTail' 0xA754 (follow -- 'P')
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-export BBPShape

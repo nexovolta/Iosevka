@@ -192,6 +192,66 @@ glyph-block Letter-Latin-Lower-P : begin
 				curl xHook yTip [heading Downward]
 			include : ExtendBelowBaseAnchors yTip
 
+		create-glyph "pSquirrelTail.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.p
+			local swA : df.adviceThinnerStroke2 2 3 XH 0.65
+			local swB : df.adviceThinnerStroke 2.75 0.75
+			local sw : Math.min swA swB
+			# Body 66% of W width; left tail 33%, same packing as pFlourish.
+			local bodyK : 0.66 * df.adws
+			local subDf : DivFrame bodyK 2
+			local shift : df.width - subDf.width
+			local xBodyLeft : subDf.leftSB + 0
+			local xBodyRight : subDf.rightSB + 0
+			local ada : subDf.smallArchDepthA + 0
+			local adb : subDf.smallArchDepthB + 0
+			local fine : ShoulderFine * (sw / Stroke)
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				# Flat bowl bottom (no tooth/spur): bar continues straight into the upward tail.
+				if (Body === EarlessRoundedBody) : begin
+					include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- Descender)
+						left  -- xBodyLeft
+						right -- xBodyRight
+						sw    -- sw
+						fine  -- fine
+						ada   -- ada
+						adb   -- adb
+				: else : begin
+					include : tagged 'bowl' : OBarLeft.toothlessCorner
+						rise  -- 0
+						left  -- xBodyLeft
+						right -- xBodyRight
+						sw    -- sw
+						fine  -- fine
+						ada   -- ada
+						adb   -- adb
+					include : tagged 'stemLeft' : VBar.l xBodyLeft Descender XH sw
+				include : Serifs subDf XH sw
+				include : LeaningAnchor.Below.VBar.l xBodyLeft
+			local xStem : xBodyLeft + shift
+			local ink : HSwToV sw
+			local hd : FlatHookDepth [DivFrame 1]
+			local yBarTop : 0 + sw
+			local turnNeed : Math.max (1.15 * sw) (1.25 * ink)
+			local hookDrop : Math.max (Hook * 0.75) (1.05 * sw)
+			local hookWidth : Math.max Hook (2.1 * ink)
+			local xHookL : Math.min hookWidth (xStem - turnNeed)
+			local xTip : xHookL - hookWidth
+			local xTurn : xHookL + turnNeed
+			local adaHook : Math.min (SmallArchDepthA * 0.55) [Math.max (hookDrop + 0.35 * sw) (0.28 * (XH - yBarTop))]
+			# Flat bar collinear with the p's bottom stroke; tail curls up and hooks outward.
+			include : HBar.b xTurn (xStem + ink) 0 sw
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
+				widths.rhs sw
+				g4 xTip (XH - hookDrop)
+				HookStart XH (sw -- sw)
+				flat xHookL (XH - adaHook)
+				curl xHookL (yBarTop + hd.y) [heading Downward]
+				arcvh
+				flat [Math.max (xHookL + TINY) (xTurn - TINY)] yBarTop [heading Rightward]
+				curl (xStem + [HSwToV : 0.5 * sw]) yBarTop [heading Rightward]
+
 	select-variant 'p' 'p'
 	link-reduced-variant 'p/sansSerif' 'p' MathSansSerif
 	link-reduced-variant 'p/hookTopBase' 'p'
@@ -202,6 +262,7 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	select-variant 'pStrokeBottom' 0xA751 (follow -- 'p')
 	select-variant 'pFlourish' 0xA753 (follow -- 'p')
+	select-variant 'pSquirrelTail' 0xA755 (follow -- 'p')
 
 	alias 'grek/rhoStroke' 0x3FC 'pStrokeBottom.earlessRoundedSerifless'
 
