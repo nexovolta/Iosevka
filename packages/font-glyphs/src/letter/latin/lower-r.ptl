@@ -505,52 +505,51 @@ glyph-block Letter-Latin-Lower-R : begin
 	CreateAccentedComposition 'turnrBar' 0x1DF50 'turnr' 'barOver'
 
 	glyph-block-export MidHeightRightHookXFromStem
-	define [MidHeightRightHookXFromStem g] : begin [g.gizmo.unapply : fallback g.baseAnchors.hooktopAttach g.baseAnchors.overlay].x
+	define [MidHeightRightHookXFromStem g] : begin [g.gizmo.unapply (g.baseAnchors.hooktopAttach || g.baseAnchors.overlay)].x
 
-	define [LFishHookStemX xOrig rGn dfOuter] : begin
+	define [LFlapStemX xOrig rGn dfOuter] : begin
 		local rRef : query-glyph rGn
-		local xRStem : begin [rRef.gizmo.unapply : fallback rRef.baseAnchors.hooktopAttach rRef.baseAnchors.overlay].x
-		local xRHook : begin [rRef.gizmo.unapply : fallback rRef.baseAnchors.leaningAbove rRef.baseAnchors.above].x
+		local xRStem : begin [rRef.gizmo.unapply (rRef.baseAnchors.hooktopAttach || rRef.baseAnchors.overlay)].x
+		local xRHook : begin [rRef.gizmo.unapply (rRef.baseAnchors.leaningAbove || rRef.baseAnchors.above)].x
 		local spread : Math.max TINY : xRHook - xRStem + [HSwToV HalfStroke]
 		local k : Math.min 1 : (dfOuter.rightSB - xOrig - [HSwToV HalfStroke] - O) / spread
 		return : xOrig - k * spread
 
-	define [LFishHookStemXForGlyph xOrig rGn dfOuter xRStem] : match para.isQuasiProportional
-		true : begin xRStem
-		__   : LFishHookStemX xOrig rGn dfOuter
+	define [LFlapStemXForGlyph xOrig rGn dfOuter xRStem] : if para.isQuasiProportional xRStem : LFlapStemX xOrig rGn dfOuter
 
-	define [LFishHookLOverlay lGn xShift] : glyph-proc
-		include : with-transform [Translate xShift 0] : refer-glyph lGn
+	define [LFlapLOverlay lGn xShift] : with-transform [Translate xShift 0] : refer-glyph lGn
 
-	define [LFishHookRHook rGn xRShift] : new-glyph : glyph-proc
-		include [refer-glyph rGn]
-		include : Translate xRShift 0
-		eject-contour 'strokeL'
-		eject-contour 'serifLT'
-		eject-contour 'serifLB'
+	define [LFlapBody lGn xShift xStem] : glyph-proc
+		local rLeanAbove : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.leaningAbove
+		local yHookTop : XH + O
+		local yHookBot : rLeanAbove.y - O
+		local xStemRight : xStem + [HSwToV HalfStroke] + O
+		include : union
+			intersection [MaskAbove yHookTop] : LFlapLOverlay lGn xShift
+			intersection [MaskBelow yHookBot] : LFlapLOverlay lGn xShift
+			intersection [MaskAbove yHookBot] [MaskBelow yHookTop] [MaskLeft xStemRight] : LFlapLOverlay lGn xShift
 
-	derive-multi-part-glyphs 'lFishHook' 0x1DF11 {'l' 'r'} : lambda [srcs gr] : glyph-proc
+	link-reduced-variant 'lFlap/r' 'r'
+	derive-multi-part-glyphs 'lFlap' 0x1DF11 { 'l' 'lFlap/r' } : lambda [srcs gr] : glyph-proc
 		local { l r } srcs
 		local df : DivFrame 1
 		include : df.markSet.b
 
 		local lRef : query-glyph l
-		local xOrig : begin [lRef.gizmo.unapply : fallback lRef.baseAnchors.hooktopAttach lRef.baseAnchors.overlay].x
+		local xOrig : begin [lRef.gizmo.unapply (lRef.baseAnchors.hooktopAttach || lRef.baseAnchors.overlay)].x
 		local lOverlay : lRef.gizmo.unapply lRef.baseAnchors.overlay
 
 		include [refer-glyph r] AS_BASE ALSO_METRICS
 		local xRStem : MidHeightRightHookXFromStem currentGlyph
-		local xStem : LFishHookStemXForGlyph xOrig r df xRStem
+		local xStem : LFlapStemXForGlyph xOrig r df xRStem
 		local xShift : xStem - xOrig
-		local xJoin : HSwToV HalfStroke
-		local xRShift : xStem - xRStem - xJoin
-		currentGlyph.clearGeometry
+		include : Translate (xStem - xRStem) 0
 
-		# Clip through the stem (not at its right edge) so the hook overlaps and unions.
-		local xAttach : xStem - xJoin + O
-		include : union
-			LFishHookLOverlay l xShift
-			intersection [MaskRight xAttach] : LFishHookRHook r xRShift
+		eject-contour 'strokeL'
+		eject-contour 'serifLT'
+		eject-contour 'serifLB'
+
+		include : LFlapBody l xShift xStem
 
 		include : LeaningAnchor.Above.At xStem
 		include : LeaningAnchor.Below.At xStem

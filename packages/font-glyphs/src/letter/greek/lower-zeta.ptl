@@ -32,6 +32,20 @@ glyph-block Letter-Greek-Lower-Zeta : begin
 			flat (RightSB - hookIn) Descender
 			curl [Math.min (RightSB - hookIn - 1) [mix SB RightSB 0.5]] Descender
 
+	define [CurlyTailKnots] : begin
+		local yCurlMid : mix Descender Stroke 0.5
+		local hookIn : Math.max
+			(Stroke - yCurlMid) * 1.1
+			[HSwToV Stroke] + [Math.max TightBendInnerDiameter HalfStroke]
+		return : list
+			arcvh 16
+			g2 [mix SB RightSB 0.55] Stroke [heading Rightward]
+			archv 16
+			g4.down.mid RightSB yCurlMid [heading Downward]
+			arcvh 16
+			flat (RightSB - hookIn) Descender
+			curl [Math.min (RightSB - hookIn - 1) [mix SB RightSB 0.5]] Descender
+
 	define [ZetaShape tail] : glyph-proc
 		local fine : AdviceStroke 3
 		include : HBar.m SB RightSB (Ascender - HalfStroke)
