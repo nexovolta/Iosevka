@@ -263,10 +263,22 @@ glyph-block Letter-Latin-Long-S : begin
 		create-glyph "tum.\(suffix)" : glyph-proc
 			local df : include : DivFrame tumAdws 2
 			include : df.markSet.b
+			# Teardrop + t-stem share a half-cell; lighten from that crowded space.
+			local loopH : Math.max (top - XH) (0.28 * top)
+			local sw : Math.min Stroke : AdviceStroke2 3.5 2.75 loopH (0.58 * tumAdws)
 			local subDf : df.sliceFine 2 1 0.5
-			local sw : Math.min Stroke : AdviceStroke 3.25
-			include : Style.Body subDf sym top 0 sw
 			local swV : HSwToV sw
+			local fHasBowl : [suffix.includes 'bentHook'] || [suffix.startsWith 'flatHook']
+			local xT0 : [Style.BarLeftPos subDf sym] + 0.625 * swV
+			local xLeft0 : mix xT0 df.rightSB 0.45
+			# Keep the t bowl clear of the vertical Is stem, tighter at heavy.
+			# Protect the full T-bar (XH down to XH-sw); clip only the bowl below it.
+			local kGap : Math.max 0 : StrokeWidthBlend (-0.65) 0.55
+			if fHasBowl
+			: then : include : intersection
+				union [MaskAbove : XH - sw - TINY] [MaskLeft : xLeft0 - swV * kGap]
+				Style.Body subDf sym top 0 sw
+			: else : include : Style.Body subDf sym top 0 sw
 			local overlay currentGlyph.baseAnchors.overlay
 			local xT overlay.x
 			local xLeft : mix xT df.rightSB 0.45
