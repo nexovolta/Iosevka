@@ -14,6 +14,7 @@ glyph-block Letter-Latin-X : begin
 	glyph-block-import Letter-Shared-Shapes : CyrDescender PalatalHook
 	glyph-block-import Letter-Latin-K : KLegs
 	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Above : RingDims
 
 	glyph-block-export HalfXStrand
 	define [HalfXStrand stb fSlab _xOuter yOuter xCenter yCenter turn pStraight tension _sw _pConn] : glyph-proc
@@ -307,6 +308,64 @@ glyph-block Letter-Latin-X : begin
 					setMark -- true
 				__ : glyph-proc
 
+		export : define [lowRightRing fSlab] : glyph-proc
+			local midy : mix box.t box.b 0.5
+			include : match stroke1
+				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.b box.r box.t turn 0.4 tension sw
+				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.b box.r box.t turn 0.4 tension sw
+				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t false sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : difference
+					HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
+					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
+				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : composite-proc
+					XCursiveHalfShape box.t box.b box.xMid box.r
+						swCoEnd  -- swCursiveCoEnd
+						swEnd    -- swCursiveEnd
+						swMid    -- swCursiveMid
+						flatTail -- (stroke1 === STROKE-CURSIVE-FLAT)
+					FlipAround box.xMid midy
+				__ : glyph-proc
+			include : match stroke2
+				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
+				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
+				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
+				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
+					swCoEnd -- swCursiveCoEnd
+					swEnd   -- swCursiveEnd
+					swMid   -- swCursiveMid
+				__ : glyph-proc
+			include : XLowRightRingTail box sw (stroke2 === STROKE-STRAIGHT) fSlab turn tension
+
+		export : define [longLeftLowRightRing fSlab botLong] : glyph-proc
+			local midy : mix box.t box.b 0.5
+			include : match stroke1
+				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l botLong box.r box.t turn 0.4 tension sw
+				[Just STROKE-CURLY]    : XStrand false fSlab box.l botLong box.r box.t turn 0.4 tension sw
+				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : difference
+					HShapedXShapeLongLeft box sw (stroke1 === STROKE-H-SHAPED-CURLY) botLong
+					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
+				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
+					include : intersection [MaskAbove (midy - TINY)] : with-transform [FlipAround box.xMid midy] : XCursiveHalfShape box.t box.b box.xMid box.r
+						swCoEnd  -- swCursiveCoEnd
+						swEnd    -- swCursiveEnd
+						swMid    -- swCursiveMid
+						flatTail -- (stroke1 === STROKE-CURSIVE-FLAT)
+					include : HalfXStrand true fSlab box.l botLong box.xMid midy turn 0.4 tension sw
+				__ : glyph-proc
+			include : match stroke2
+				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
+				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
+				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : no-shape
+				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
+					swCoEnd -- swCursiveCoEnd
+					swEnd   -- swCursiveEnd
+					swMid   -- swCursiveMid
+				__ : glyph-proc
+			include : XLowRightRingTail box sw (stroke2 === STROKE-STRAIGHT) fSlab turn tension
+
 	glyph-block-export XSerifs
 	define XSerifs : namespace
 		export : define [Full sf]             : composite-proc sf.lt.full sf.rt.full sf.lb.full sf.rb.full
@@ -338,6 +397,57 @@ glyph-block Letter-Latin-X : begin
 		local length : Math.max VJut : Math.max LongVJut : sw * [StrokeWidthBlend 1.2 1.5]
 		local swSerif : Math.max VJutStroke : sw * [StrokeWidthBlend 0.5 0.65]
 		include : tagged 'serifLowLeft' : VSerif.ur x y length swSerif
+
+	define [XLowRightRingTail box sw stb fSlab turn tension] : glyph-proc
+		local [object radiusIn radiusOut] : RingDims
+		local xMid box.xMid
+		local yMid : mix box.t box.b 0.5
+		local cy : box.b + radiusOut
+		local cx : mix xMid box.r : Math.min 1 : Math.max 0 : (yMid - cy) / (yMid - box.b)
+		local sx : cx - xMid
+		local sy : cy - yMid
+		local px : -sy
+		local py sx
+		local far VERY-FAR
+		local farSide : spiro-outline
+			corner (cx + px * far) (cy + py * far)
+			corner (cx - px * far) (cy - py * far)
+			corner (cx - px * far + sx * far) (cy - py * far + sy * far)
+			corner (cx + px * far + sx * far) (cy + py * far + sy * far)
+		include : difference
+			union
+				difference
+					HalfXStrand stb fSlab box.r box.b xMid yMid turn 0.4 tension sw (-0.001)
+					difference farSide : DotAt cx cy radiusOut
+				DotAt cx cy radiusOut
+			DotAt cx cy radiusIn
+
+	define [XLowRightRingSerifs serifShape df top bot] : glyph-proc
+		if serifShape : begin
+			local sf : SerifFrame.fromDf df top bot
+			include : match serifShape
+				[Just XSerifs.Full]               : composite-proc sf.lt.full sf.rt.full sf.lb.full
+				[Just XSerifs.SemiChancery]       : composite-proc sf.rt.full
+				[Just XSerifs.UnilateralMotion]   : XSerifs.UnilateralMotion sf
+				[Just XSerifs.TopRightMotion]     : XSerifs.TopRightMotion sf
+				[Just XSerifs.BilateralMotion]    : composite-proc sf.lt.outer
+				[Just XSerifs.BilateralTopMotion] : XSerifs.BilateralTopMotion sf
+				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer sf.rt.full sf.lb.full
+				__                                : serifShape sf
+
+	define [XLongLeftLowRightRingSerifs serifShape df top botLong] : glyph-proc
+		if serifShape : begin
+			local sf : SerifFrame.fromDf df top 0
+			local sfLong : SerifFrame.fromDf df top botLong
+			include : match serifShape
+				[Just XSerifs.Full]               : composite-proc sf.lt.full sf.rt.full sfLong.lb.full
+				[Just XSerifs.SemiChancery]       : composite-proc sf.rt.full
+				[Just XSerifs.UnilateralMotion]   : XSerifs.UnilateralMotion sf
+				[Just XSerifs.TopRightMotion]     : XSerifs.TopRightMotion sf
+				[Just XSerifs.BilateralMotion]    : composite-proc sf.lt.outer
+				[Just XSerifs.BilateralTopMotion] : XSerifs.BilateralTopMotion sf
+				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer sf.rt.full sfLong.lb.full
+				__                                : serifShape sf
 
 	glyph-block-export XConfig
 	define XConfig : SuffixCfg.combine
@@ -410,9 +520,31 @@ glyph-block Letter-Latin-X : begin
 				include : LowLeftBottomSerif df.leftSB Descender
 				include : LeaningAnchor.Below.VBar.l df.leftSB
 
+			create-glyph "xLowRightRing.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1 2
+				include : df.markSet.e
+				local lf : XLetterForm [df.bodyBox XH 0] stroke1 stroke2 0.1 0.20
+				include : WithSerifOverflowMask fMaskBase [df.bodyBox XH 0] : lf.lowRightRing fMaskBase
+				include : XLowRightRingSerifs serifShape df XH 0
+
+			create-glyph "xLongLeftLegLowRightRing.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1 2
+				include : df.markSet.p
+				local lf : XLetterForm [df.bodyBox XH 0] stroke1 stroke2 0.1 0.20
+				include : WithSerifOverflowMask fMaskBase [df.bodyBox XH Descender] : lf.longLeftLowRightRing fMaskBase Descender
+				include : XLongLeftLowRightRingSerifs serifShape df XH Descender
+				include : LeaningAnchor.Below.VBar.l df.leftSB
+
 		if bottom : create-glyph "latn/chiLowLeftSerif.\(suffix)" : glyph-proc
 			include [refer-glyph "x.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LowLeftBottomSerif SB Descender
+
+		if bottom : create-glyph "latn/chiLowRightRing.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1 2
+			include : df.markSet.p
+			local lf : XLetterForm [df.bodyBox XH bottom] stroke1 stroke2 0.1 0.20
+			include : WithSerifOverflowMask fMaskBase [df.bodyBox XH bottom] : lf.lowRightRing fMaskBase
+			include : XLowRightRingSerifs serifShape df XH bottom
 
 		if bottom : create-glyph "latn/chiPalatalHook.\(suffix)" : match stroke2
 			[Just STROKE-CURSIVE] : glyph-proc
@@ -450,9 +582,12 @@ glyph-block Letter-Latin-X : begin
 	link-reduced-variant 'grek/chi/sansSerif' 'grek/chi' MathSansSerif (shapeFrom -- 'x')
 	select-variant 'latn/chi' 0xAB53 (shapeFrom -- 'x')
 	select-variant 'latn/chiLowLeftSerif' 0xAB55 (follow -- 'latn/chi')
+	select-variant 'latn/chiLowRightRing' 0xAB54 (follow -- 'latn/chi')
 	select-variant 'latn/chiPalatalHook' 0x1DF3D (follow -- 'latn/chi')
 	select-variant 'xLongLeftLeg' 0xAB57 (follow -- 'x')
 	select-variant 'xLongLeftLegSerif' 0xAB59 (follow -- 'x')
+	select-variant 'xLowRightRing' 0xAB56 (follow -- 'x')
+	select-variant 'xLongLeftLegLowRightRing' 0xAB58 (follow -- 'x')
 
 	alias 'cyrl/Kha' 0x425 'X'
 	alias 'cyrl/kha' 0x445 'x'
