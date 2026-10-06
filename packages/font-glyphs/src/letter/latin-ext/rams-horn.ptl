@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
-
+import [Box] from "@iosevka/geometry/box"
 
 glyph-module
 
@@ -9,6 +9,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifFrame PalatalHook
+	glyph-block-import Letter-Arc-Hook : Flat
 
 	define [LatinGammaShape df top bottom fMask] : glyph-proc
 		local fine : df.adviceStroke 4
@@ -59,10 +60,10 @@ glyph-block Letter-Latin-Rams-Horn : begin
 				maskOut -- [intersection [MaskBelow 0] [MaskLeft : subDf.middle + d + tinyGap]]
 			LatinGammaShape subDf XH Descender true
 
-	define [RamsHornShape df top bottom fFill] : glyph-proc
+	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt] : glyph-proc
 		local k1 0.625
 		local k2 0.7
-		local kIntersection 0.15
+		local kIntersection : fallback _kInt 0.15
 
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
@@ -74,23 +75,29 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
 
-		local sw   : AdviceStroke : if SLAB 3.50 2.75
-		local fine : AdviceStroke : if SLAB 3.75 3.50
+		local sw   : fallback _sw : AdviceStroke : if SLAB 3.50 2.75
+		local fine : Math.min sw : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / k2
 		local fillOffset : sw * 0.25
 
 		include : union
 			dispiro
 				widths.rhs sw
-				flat lExt   top [heading Rightward]
-				curl lInner top [heading Rightward]
-				g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
+				if omitLeft
+					then : g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
+					else : list
+						flat lExt   top [heading Rightward]
+						curl lInner top [heading Rightward]
+						g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
 				g4.down.mid  [mix df.middle rInner k1] ([mix top bottom k2] - d) [widths.rhs fine]
 				Arch.rhs bottom (sw -- fine)
 				g4.up.mid    [mix df.middle lInner k1] ([mix top bottom k2] + d)
 				g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
-				flat rInner top [widths.rhs.heading sw Rightward]
-				curl rExt   top [heading Rightward]
+				if omitRight
+					then : list
+					else : list
+						flat rInner top [widths.rhs.heading sw Rightward]
+						curl rExt   top [heading Rightward]
 			if fFill
 				then : spiro-outline
 					corner df.middle ([mix top bottom kIntersection] - fillOffset)
@@ -100,7 +107,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 					close
 				else : no-shape
 
-		if SLAB : begin
+		if (SLAB && [not omitLeft] && [not omitRight]) : begin
 			local swSlab : Math.min VJutStroke : df.adviceStroke 4.5
 			include : VSerif.dl lExt (top - sw) (VJut * (sw / Stroke) - sw) swSlab
 			include : VSerif.dr rExt (top - sw) (VJut * (sw / Stroke) - sw) swSlab
@@ -121,3 +128,33 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		include : df.markSet.e
 		include : RamsHornShape df XH 0 true
 		include : FlipAround df.middle (XH / 2)
+
+	# Upside-down rams horn on top; left V is a short stub, right arm continues
+	# into a flat-hook 5-like bowl that sits on the baseline.
+	create-glyph 'um' 0xA778 : glyph-proc
+		local df : include : DivFrame [if SLAB para.advanceScaleT 1]
+		include : df.markSet.e
+
+		local sw : AdviceStroke : if SLAB 5.00 4.50
+		local lExt : df.leftSB  + 0.75 * OX
+		local rExt : df.rightSB - 0.75 * OX
+		local yJoin : mix 0 XH 0.42
+		local loopH : XH - yJoin
+		local kIntersection : Math.min 0.32 : Math.max 0.15 (1.2 * sw / loopH)
+		local yPinch : mix yJoin XH kIntersection
+		local ada : ArchDepthAClamped yJoin 0
+		local adb : ArchDepthBClamped yJoin 0
+		local Arc : Flat [new Box yJoin 0 lExt rExt] (sw -- sw)
+
+		include : with-transform [FlipAround df.middle [mix yJoin XH 0.5]] : RamsHornShape df XH yJoin false true true sw kIntersection
+
+		include : dispiro
+			widths.center sw
+			flat df.middle yPinch
+			curl [mix lExt df.middle 0.18] [mix yPinch 0 0.30]
+
+		include : dispiro
+			widths.rhs sw
+			g4 df.middle yPinch
+			g4 rExt [YSmoothMidR yJoin 0 ada adb]
+			Arc.arcEndL
