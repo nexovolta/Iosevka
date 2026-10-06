@@ -131,15 +131,19 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	# One stroke: inverted rams horn (left stub + top loop) continuing through
 	# the pinch into a flat-hook 5-like bowl on the baseline.
 	# Quasi-proportional families use a monospace cell (HalfUPM), not Width.
+	# Tall like b/h/l: ascender height, near-normal stroke for a one-cell letter.
 	create-glyph 'um' 0xA778 : glyph-proc
 		local umAdws : if para.isQuasiProportional (HalfUPM / Width) 1
 		local df : include : DivFrame umAdws 1 umAdws
-		include : df.markSet.e
+		include : df.markSet.b
+		local top Ascender
 
 		local k1 0.625
 		local k2 0.7
-		local sw   : Math.min Stroke : AdviceStroke2 [if SLAB 5.00 4.50] 3.25 XH umAdws
-		local fine : Math.min sw     : AdviceStroke2 [if SLAB 5.25 4.75] 3.50 XH umAdws
+		local yJoin : mix 0 top 0.42
+		local loopH : top - yJoin
+		local sw   : Math.min Stroke : AdviceStroke2 [if SLAB 3.25 2.75] 3.75 loopH umAdws
+		local fine : Math.min sw     : AdviceStroke2 [if SLAB 3.50 3.00] 4.00 loopH umAdws
 
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
@@ -148,15 +152,13 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
 
-		local yJoin : mix 0 XH 0.42
-		local loopH : XH - yJoin
 		local kIntersection : Math.min 0.28 : Math.max 0.15 (1.05 * sw / loopH)
 		local coFine : mix sw fine : kIntersection / k2
-		local cy : mix yJoin XH 0.5
-		local yFiveTop : XH + yJoin - sw
-		local yPinch : mix XH yJoin kIntersection
-		local adaFive : ArchDepthAClamped yFiveTop yPinch df.smallArchDepthA df.smallArchDepthB
-		local adbFive : ArchDepthBClamped yFiveTop yPinch df.smallArchDepthA df.smallArchDepthB
+		local cy : mix yJoin top 0.5
+		local yFiveTop : top + yJoin - sw
+		local yPinch : mix top yJoin kIntersection
+		local adaFive : ArchDepthAClamped yFiveTop yPinch df.archDepthA df.archDepthB
+		local adbFive : ArchDepthBClamped yFiveTop yPinch df.archDepthA df.archDepthB
 
 		# Hook back sits near the ramshorn loop, not the far sidebearing.
 		local xHook : mix df.middle lInner 0.52
@@ -166,7 +168,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local xStubF : mix lExt df.middle 0.22
 		local yStubF : mix yJoin 0 0.22
 		local xStub : 2 * df.middle - xStubF
-		local yStub : (XH + yJoin) - yStubF
+		local yStub : (top + yJoin) - yStubF
 		local xStubMid : mix df.middle xStub 0.40
 		local yStubMid : mix yPinch yStub 0.40
 		local stubLen : Math.hypot (xStub - xStubMid) (yStub - yStubMid)
@@ -179,9 +181,9 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			archv.superness DesignParameters.tightHookSuperness
 			g4.down.mid (xHook + OX) [YSmoothMidL yFiveTop yPinch adaFive adbFive] [widths.rhs coFine]
 			g4 df.middle yPinch [widths.rhs coFine]
-			g4.down.mid [mix df.middle rInner k1] ([mix XH yJoin k2] - d) [widths.rhs fine]
+			g4.down.mid [mix df.middle rInner k1] ([mix top yJoin k2] - d) [widths.rhs fine]
 			Arch.rhs yJoin (sw -- fine)
-			g4.up.mid [mix df.middle lInner k1] ([mix XH yJoin k2] + d)
+			g4.up.mid [mix df.middle lInner k1] ([mix top yJoin k2] + d)
 			g4 df.middle yPinch [widths.rhs coFine]
 			flat xStubMid yStubMid [widths.rhs.heading sw stubNormal]
 			curl xStub yStub [heading stubNormal]
