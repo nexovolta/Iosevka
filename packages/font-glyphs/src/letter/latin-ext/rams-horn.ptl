@@ -133,7 +133,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	# Quasi-proportional families use a monospace cell (HalfUPM), not Width.
 	create-glyph 'um' 0xA778 : glyph-proc
 		local umAdws : if para.isQuasiProportional (HalfUPM / Width) 1
-		local df : include : DivFrame umAdws
+		local df : include : DivFrame umAdws 1 umAdws
 		include : df.markSet.e
 
 		local k1 0.625
@@ -143,7 +143,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
-		local dfLoop : DivFrame umAdws
+		local dfLoop : DivFrame umAdws 1 umAdws
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
@@ -155,9 +155,13 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local cy : mix yJoin XH 0.5
 		local yFiveTop : XH + yJoin - sw
 		local yPinch : mix XH yJoin kIntersection
-		local adaFive : ArchDepthAClamped yFiveTop XH
-		local adbFive : ArchDepthBClamped yFiveTop XH
-		local xTopCurl : Math.min (rExt - 0.35 * (rExt - lExt)) : Arch.adjust-x.top df.middle sw
+		local adaFive : ArchDepthAClamped yFiveTop yPinch df.smallArchDepthA df.smallArchDepthB
+		local adbFive : ArchDepthBClamped yFiveTop yPinch df.smallArchDepthA df.smallArchDepthB
+
+		# Hook back sits near the ramshorn loop, not the far sidebearing.
+		local xHook : mix df.middle lInner 0.52
+		local xFiveR : mix rExt df.middle 0.08
+		local xTopCurl : Math.min (xFiveR - 0.28 * (xFiveR - xHook)) : Arch.adjust-x.top df.middle sw
 
 		local xStubF : mix lExt df.middle 0.22
 		local yStubF : mix yJoin 0 0.22
@@ -170,10 +174,10 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 		include : with-transform [FlipAround df.middle cy] : dispiro
 			widths.rhs sw
-			flat rExt yFiveTop [heading Leftward]
+			flat xFiveR yFiveTop [heading Leftward]
 			curl xTopCurl yFiveTop [heading Leftward]
-			archv
-			g4 (lExt + OX) [YSmoothMidL yFiveTop XH adaFive adbFive]
+			archv.superness DesignParameters.tightHookSuperness
+			g4.down.mid (xHook + OX) [YSmoothMidL yFiveTop yPinch adaFive adbFive] [widths.rhs coFine]
 			g4 df.middle yPinch [widths.rhs coFine]
 			g4.down.mid [mix df.middle rInner k1] ([mix XH yJoin k2] - d) [widths.rhs fine]
 			Arch.rhs yJoin (sw -- fine)
