@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [Vec2] from "@iosevka/geometry/point"
 
 glyph-module
 
@@ -129,25 +130,27 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 	# One stroke: inverted rams horn (left stub + top loop) continuing through
 	# the pinch into a flat-hook 5-like bowl on the baseline.
+	# Quasi-proportional families use a monospace cell (HalfUPM), not Width.
 	create-glyph 'um' 0xA778 : glyph-proc
-		local df : include : DivFrame [if SLAB para.advanceScaleT 1]
+		local umAdws : if para.isQuasiProportional (HalfUPM / Width) 1
+		local df : include : DivFrame umAdws
 		include : df.markSet.e
 
 		local k1 0.625
 		local k2 0.7
-		local sw   : AdviceStroke : if SLAB 5.00 4.50
-		local fine : Math.min sw : AdviceStroke : if SLAB 5.25 4.75
+		local sw   : Math.min Stroke : AdviceStroke2 [if SLAB 5.00 4.50] 3.25 XH umAdws
+		local fine : Math.min sw     : AdviceStroke2 [if SLAB 5.25 4.75] 3.50 XH umAdws
 
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
-		local dfLoop : DivFrame 1
+		local dfLoop : DivFrame umAdws
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
 
 		local yJoin : mix 0 XH 0.42
 		local loopH : XH - yJoin
-		local kIntersection : Math.min 0.32 : Math.max 0.15 (1.2 * sw / loopH)
+		local kIntersection : Math.min 0.28 : Math.max 0.15 (1.05 * sw / loopH)
 		local coFine : mix sw fine : kIntersection / k2
 		local cy : mix yJoin XH 0.5
 		local yFiveTop : XH + yJoin - sw
@@ -160,6 +163,10 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local yStubF : mix yJoin 0 0.22
 		local xStub : 2 * df.middle - xStubF
 		local yStub : (XH + yJoin) - yStubF
+		local xStubMid : mix df.middle xStub 0.40
+		local yStubMid : mix yPinch yStub 0.40
+		local stubLen : Math.hypot (xStub - xStubMid) (yStub - yStubMid)
+		local stubNormal : new Vec2 (HVContrast * (-(yStub - yStubMid) / stubLen)) ((xStub - xStubMid) / stubLen)
 
 		include : with-transform [FlipAround df.middle cy] : dispiro
 			widths.rhs sw
@@ -172,5 +179,5 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			Arch.rhs yJoin (sw -- fine)
 			g4.up.mid [mix df.middle lInner k1] ([mix XH yJoin k2] + d)
 			g4 df.middle yPinch [widths.rhs coFine]
-			g4 [mix df.middle xStub 0.45] [mix yPinch yStub 0.45] [widths.rhs sw]
-			curl xStub yStub [heading Upward]
+			flat xStubMid yStubMid [widths.rhs.heading sw stubNormal]
+			curl xStub yStub [heading stubNormal]
