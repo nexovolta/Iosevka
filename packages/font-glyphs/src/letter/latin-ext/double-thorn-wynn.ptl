@@ -8,9 +8,9 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared-Shapes : SerifFrame
+	glyph-block-import Letter-Shared-Shapes : SerifFrame SerifedArcStart
 	glyph-block-import Letter-Latin-Upper-B : BShape
-	glyph-block-import Letter-Latin-Yogh : UpperHalfT LowerHalfT
+	glyph-block-import Letter-Latin-Yogh : LowerHalfT
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM
 
 	define xThornStem : mix 0 SB 1.25
@@ -48,13 +48,28 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : VBar.l xStem stemBot stemTop stroke
 		include : LeaningAnchor.Above.VBar.l xStem
 		include : LeaningAnchor.Below.VBar.l xStem
+
+	# Two bowls on a through stem, joined like yogh: the lower half is clipped
+	# to the upper's down-curve so the middle is one smooth stroke into the stem.
+	define [DoubleWynnUpper sink offset bowlTop bowlBot] : begin
+		local py : [mix bowlBot bowlTop OverlayPos] - QuarterStroke
+		local yRight : YSmoothMidR bowlTop py
+		local yBottomTerminal : mix bowlTop py 1.2
+		local xEnd : SB + [HSwToV : 0.1 * Stroke]
+		local startKnots : SerifedArcStart.LtrRhs SB (bowlTop - offset) Stroke [Math.max Hook : 0.15 * (bowlTop - bowlBot)] Stroke
+		return : sink
+			~~~ startKnots
+			g4 (RightSB - offset) yRight
+			alsoThruThem {{0.5 0.8} {0.75 0.92}} important
+			[if (sink == dispiro) g4 corner] xEnd yBottomTerminal
+
 	define [DoubleWynnShape stemBot stemTop bowlBot bowlTop] : glyph-proc
-		local xJoin : SB + [HSwToV Stroke]
-		local yUpperEnd : [mix bowlBot bowlTop OverlayPos] - QuarterStroke
 		include : VBar.l SB stemBot stemTop
 		include : intersection [MaskRight SB] : union
-			UpperHalfT dispiro 0 0 bowlTop bowlBot OverlayPos true xJoin yUpperEnd
-			LowerHalfT dispiro bowlTop bowlBot OverlayPos xJoin
+			DoubleWynnUpper dispiro 0 bowlTop bowlBot
+			difference
+				LowerHalfT dispiro bowlTop bowlBot OverlayPos
+				DoubleWynnUpper spiro-outline 0.1 bowlTop bowlBot
 		include : LeaningAnchor.Above.VBar.l SB
 		include : LeaningAnchor.Below.VBar.l SB
 
