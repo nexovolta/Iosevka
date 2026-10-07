@@ -15,7 +15,6 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
-	glyph-block-import Letter-Latin-Lower-T : SmallTConfig
 
 	define SLAB_SERIFLESS       0
 	define SLAB_BOTTOM          1
@@ -257,37 +256,14 @@ glyph-block Letter-Latin-Long-S : begin
 			flat xLeft [mix yBar yJoin 0.5] [heading Downward]
 			curl xLeft bot [heading Downward]
 
-	define tumAdws para.advanceScaleMM
-
-	foreach { suffix { { tDf Style } sym top } } [pairs-of SmallTConfig] : do
-		create-glyph "tum.\(suffix)" : glyph-proc
-			local df : include : DivFrame tumAdws 2
-			include : df.markSet.b
-			# Teardrop + t-stem share a half-cell; lighten from that crowded space.
-			local loopH : Math.max (top - XH) (0.28 * top)
-			local sw : Math.min Stroke : AdviceStroke2 3.5 2.75 loopH (0.58 * tumAdws)
-			local subDf : df.sliceFine 2 1 0.5
-			local swV : HSwToV sw
-			local fHasBowl : [suffix.includes 'bentHook'] || [suffix.startsWith 'flatHook']
-			local xT0 : [Style.BarLeftPos subDf sym] + 0.625 * swV
-			local xLeft0 : mix xT0 df.rightSB 0.45
-			# Keep the t bowl clear of the vertical Is stem, tighter at heavy.
-			# Protect the full T-bar (XH down to XH-sw); clip only the bowl below it.
-			local kGap : Math.max 0 : StrokeWidthBlend (-0.65) 0.55
-			if fHasBowl
-			: then : include : intersection
-				union [MaskAbove : XH - sw - TINY] [MaskLeft : xLeft0 - swV * kGap]
-				Style.Body subDf sym top 0 sw
-			: else : include : Style.Body subDf sym top 0 sw
-			local overlay currentGlyph.baseAnchors.overlay
-			local xT overlay.x
-			local xLeft : mix xT df.rightSB 0.45
-			include : HCrossBar.top xT (xLeft + 1.25 * swV) XH sw
-			include : IsLoopVertical xLeft df.rightSB top (XH - sw) 0 sw
-			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
-			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
-
-	select-variant 'tum' 0xA777 (follow -- 't')
+	# Right half of tum: Is teardrop to the baseline (no esh descender).
+	# Packed with t/phoneticLeft3 like tesh (ʧ).
+	create-glyph 'is/phoneticRight' : glyph-proc
+		include : MarkSet.b
+		local sw Stroke
+		local xStem : mix SB RightSB 0.40
+		local xLeft : xStem - [HSwToV : 0.5 * sw]
+		include : IsLoopVertical xLeft RightSB Ascender (XH - sw) 0 sw
 
 	create-glyph 'eshBaseline' 0xAB4D : glyph-proc
 		include : MarkSet.b
