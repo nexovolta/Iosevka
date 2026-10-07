@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook nShoulder EngHook
 
 	define CH-NONE          0
 	define CH-SERIF         1
@@ -285,6 +285,61 @@ glyph-block Letter-Latin-Lower-F : begin
 	select-variant 'f/compLigLeft2' (shapeFrom -- 'f')
 	select-variant 'f/compLigLeft3' (shapeFrom -- 'f')
 	select-variant 'f/compLigLeft4' (shapeFrom -- 'f')
+
+	# LATIN SMALL LETTER FENG DIGRAPH WITH TRILL (U+1DF00).
+	# Feng body; three rounded humps as one stroke (crests + rightward valleys).
+	create-glyph 'fengTrill' 0x1DF00 : glyph-proc
+		local df : include : DivFrame para.advanceScaleMM 3
+		include : df.markSet.bp
+		local sw : Math.min Stroke df.mvs
+
+		local xF : df.leftSB + [HSwToV : 0.25 * sw]
+		local xEng : df.rightSB + 0
+		local gap : (xEng - xF - [HSwToV : 2 * sw]) / 2
+		local xN : xF + gap
+
+		local yTop : Ascender - O
+		local span : [mix xN xEng 0.78] - xF
+		local wEach : span / 3
+		local h : Math.min (Hook * 0.75 - O) (0.9 * wEach)
+		local yBot : yTop - h
+		local trillSw : Math.min sw (0.24 * wEach) (0.30 * h)
+		local xC1 : xF + 0.5 * wEach
+		local xV1 : xF + 1.0 * wEach
+		local xC2 : xF + 1.5 * wEach
+		local xV2 : xF + 2.0 * wEach
+		local xC3 : xF + 2.5 * wEach
+		local xHang : xF + 3.0 * wEach
+
+		include : VBar.l xF 0 yBot sw
+		include : dispiro
+			widths.rhs trillSw
+			flat xF 0 [heading Upward]
+			curl xF yBot
+			arcvh
+			g4.right.mid [Arch.adjust-x.top xC1 (sw -- trillSw)] yTop
+			g4.right.mid [Arch.adjust-x.bot xV1 (sw -- trillSw)] yBot
+			g4.right.mid [Arch.adjust-x.top xC2 (sw -- trillSw)] yTop
+			g4.right.mid [Arch.adjust-x.bot xV2 (sw -- trillSw)] yBot
+			g4.right.mid [Arch.adjust-x.top xC3 (sw -- trillSw)] yTop
+			archv
+			g4.down.end xHang yBot [heading Downward]
+
+		include : VBar.l xN 0 XH sw
+		include : nShoulder.shape
+			left   -- (xN + [HSwToV sw])
+			right  -- xEng
+			top    -- XH
+			bottom -- 0
+			stroke -- sw
+			ada    -- df.smallArchDepthA
+			adb    -- df.smallArchDepthB
+		include : EngHook xEng 0 Descender (sw -- sw)
+		include : HCrossBar.top df.leftSB (xN + [HSwToV sw]) ySmallFBarPos sw
+
+		include : LeaningAnchor.Above.Hook xF xHang
+		include : LeaningAnchor.Below.VBar.r xEng sw
+		set-base-anchor 'overlay' [mix xF xEng 0.5] [mix 0 XH 0.5]
 
 	CreateAccentedComposition 'fTildeOver' 0x1D6E 'f' 'tildeOver'
 	CreateAccentedComposition 'fDot'       0x1E1F 'f' 'dotAbove'
