@@ -10,7 +10,7 @@ glyph-block Mark-Overlay : begin
 
 	glyph-block-import Mark-Shared-Metrics : markExtend MarkStroke markStress markFine
 	glyph-block-import Mark-Shared-Metrics : markMiddle markDotsRadius
-	glyph-block-import Mark-Above : aboveMarkTop aboveMarkBot aboveMarkMid TildeShape RingShape
+	glyph-block-import Mark-Above : aboveMarkTop aboveMarkBot aboveMarkMid TildeShape RingShape MeasureGlyphBounds StdAnchors
 
 	define tildeHeight : 0.75 * (aboveMarkTop - aboveMarkBot)
 	define tildeHalfWidth : markExtend + [HSwToV : 0.4 * Stroke]
@@ -56,26 +56,47 @@ glyph-block Mark-Overlay : begin
 				rightEnd  --  (markMiddle + tildeHalfWidth)
 				hs        --  ([AdviceStroke 4] / 2)
 
-		create-glyph 'invLazySOver' : glyph-proc
-			set-width 0
-			set-mark-anchor 'overlay' 0 0 0 0
+		define [InvLazySOverShape sw xStart r] : dispiro
+			widths.center sw
+			straight.right.start (+xStart) ((+r) * 2) [heading Rightward]
+			archv
+			g2.down.mid ((+xStart) + (+r)) ((+r) * 1) [heading Downward]
+			arcvh
+			flat (+xStart) 0 [heading Leftward]
+			curl (-xStart) 0 [heading Leftward]
+			archv
+			g2.down.mid ((-xStart) + (-r)) ((-r) * 1) [heading Downward]
+			arcvh
+			straight.right.end (-xStart) ((-r) * 2) [heading Rightward]
 
+		define [InvLazySOverlay] : glyph-proc
 			local sw : AdviceStroke 4
 			local gap : Math.max (Width * 0.1) : AdviceStroke 6
 			local xStart : [HSwToV HalfStroke] + gap
 			local r : Math.max (0.75 * markExtend) sw
-			include : dispiro
-				widths.center sw
-				straight.right.start (+xStart) ((+r) * 2) [heading Rightward]
-				archv
-				g2.down.mid ((+xStart) + (+r)) ((+r) * 1) [heading Downward]
-				arcvh
-				flat (+xStart) 0 [heading Leftward]
-				curl (-xStart) 0 [heading Leftward]
-				archv
-				g2.down.mid ((-xStart) + (-r)) ((-r) * 1) [heading Downward]
-				arcvh
-				straight.right.end (-xStart) ((-r) * 2) [heading Rightward]
+			include : InvLazySOverShape sw xStart r
+
+		create-glyph 'invLazySOver' : glyph-proc
+			set-width 0
+			set-mark-anchor 'overlay' 0 0 0 0
+			include : InvLazySOverlay
+
+		# Same lazy S as AB37, rotated 45° clockwise so it lies horizontally.
+		create-glyph 'urAbove' 0x1DD1 : glyph-proc
+			set-width 0
+			local giz currentGlyph.gizmo
+			include : ForceUpright
+			include : InvLazySOverlay
+			include : Rotate (Math.PI / 4)
+			include : Translate markMiddle aboveMarkMid
+			local b : include : MeasureGlyphBounds
+			if b : begin
+				local h : Math.max TINY (b.yMax - b.yMin)
+				local s : (aboveMarkTop - aboveMarkBot) / h
+				include : ScaleAround markMiddle aboveMarkMid s s
+			set currentGlyph.gizmo giz
+			include : Regizmo
+			include : StdAnchors.wide
 
 		create-glyph 'barOver' 0x335 : glyph-proc
 			set-width 0
