@@ -92,7 +92,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 			select-variant "\(prefix)AA/right"      (follow -- 'A')
 			select-variant "\(prefix)AA/right/mask" (follow -- 'A')
 
-			derive-multi-part-glyphs "\(prefix)AA" code
+			derive-multi-part-glyphs-baked "\(prefix)AA" code
 				list "\(prefix)AA/left" "\(prefix)AA/left/mask" "\(prefix)AA/right" "\(prefix)AA/right/mask"
 				function [srcs gr] : glyph-proc
 					define df : DivFrame adws 3.5
@@ -110,7 +110,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 							with-transform [ApparentTranslate (OX - TINY) 0] [refer-glyph rightMask]
 
 	do "AO"
-		derive-multi-part-glyphs 'AO' 0xA734 { "AA/left" "AA/left/mask" "AO/O" }
+		derive-multi-part-glyphs-baked 'AO' 0xA734 { "AA/left" "AA/left/mask" "AO/O" }
 			function [srcs gr] : glyph-proc
 				define df : DivFrame para.advanceScaleMM 3.5
 				define topSerifGap : Math.max (0.1 * (df.rightSB - df.leftSB)) : AdviceStroke 6
@@ -135,7 +135,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 	do "AU"
 		select-variant 'AU/A'      (follow -- 'A')
 		select-variant 'AU/A/mask' (follow -- 'A')
-		derive-multi-part-glyphs 'AU' 0xA736 { "AU/A" "AU/A/mask" "AU/U" }
+		derive-multi-part-glyphs-baked 'AU' 0xA736 { "AU/A" "AU/A/mask" "AU/U" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				local { subDf shift } : SubDfAndShift 1 df
@@ -168,7 +168,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					eject-contour 'strokeDown'
 
 		select-variant 'AV/V' (follow -- 'V/sansSerif')
-		derive-multi-part-glyphs 'AV' 0xA738 { "AA/left" "AV/V" }
+		derive-multi-part-glyphs-baked 'AV' 0xA738 { "AA/left" "AV/V" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capital
@@ -177,7 +177,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include [refer-glyph right]
 				include : CenterDigraphInFrame df
 
-		derive-multi-part-glyphs 'AVBar' 0xA73A { "AA/left" "AV/V" }
+		derive-multi-part-glyphs-baked 'AVBar' 0xA73A { "AA/left" "AV/V" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capital
@@ -217,7 +217,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 							include sf.rt.full
 
 		select-variant 'AY/Y' (follow -- 'y/nonCursive')
-		derive-multi-part-glyphs 'AY' 0xA73C { "AA/left" "AY/Y" }
+		derive-multi-part-glyphs-baked 'AY' 0xA73C { "AA/left" "AY/Y" }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capDesc
@@ -267,4 +267,4 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 		select-variant 'cyrl/Rha/Er' (follow -- 'cyrl/Er')
 		select-variant 'cyrl/Rha/Kha'
-		derive-multi-part-glyphs 'cyrl/Rha' 0x516 { "cyrl/Rha/Er" "cyrl/Rha/Kha" } BuildRha
+		derive-multi-part-glyphs-baked 'cyrl/Rha' 0x516 { "cyrl/Rha/Er" "cyrl/Rha/Kha" } BuildRha
