@@ -35,11 +35,7 @@ glyph-block Autobuild-Enclosure-Shared : begin
 
 	glyph-block-export EnsureComponentGlyphT
 	define [EnsureComponentGlyphT gnPart fnBuildup] : begin
-		local rs : new Set
-		return : DeriveMeshT { gnPart } AnyCvOrCherryPicking
-			function [gns gr] : fnBuildup gns.0
-			function [gniFrom gniTo] : begin
-				[query-glyph gniFrom].tryBecomeMirrorOf [query-glyph gniTo] rs
+		return : fnBuildup gnPart
 
 	glyph-block-export getGlyphDefaultShift
 	define [getGlyphDefaultShift bal baly g] : begin
@@ -69,27 +65,11 @@ glyph-block Autobuild-Enclosure-Shared : begin
 			local restInfo    : demand.slice 2
 			local origJobGlyphGn : CircName unicode prefix origParts suffix
 
-			local demandDecomposable : para.enableCvSs && globallyDecomposable
-			foreach part [items-of mappedParts] : if [query-glyph part] : begin
-				local g : query-glyph part
-				local relatedGlyphs : AnyCvOrCherryPicking.query g
-				foreach gr [items-of relatedGlyphs] : if [query-glyph : gr.get g] : begin
-					# Multi-part enclosure, proportinal
-					if (allowProportional && [query-glyph : gr.get g].advanceWidth != g.advanceWidth)
-						set demandDecomposable false
-					# Multi-part enclosure, different Y-offset
-					if (centered && [getGlyphDefaultShift 0 0 : query-glyph : gr.get g] != [getGlyphDefaultShift 0 0 g])
-						set demandDecomposable false
+			# Bake the build-plan-selected parts only. Live cv##/VX## do not
+			# restyle the compound, even when enableCvSs is true.
+			nonDecomposable.push { origJobGlyphGn unicode mappedParts :: restInfo }
 
-			local jobsOrig : if demandDecomposable decomposableJobs nonDecomposable
-			jobsOrig.push { origJobGlyphGn unicode mappedParts :: restInfo }
-
-			if demandDecomposable
-			: then : foreach part [items-of mappedParts] : begin
-				local mesh : getGrMesh { part } AnyCvOrCherryPicking query-glyph
-				foreach {gr fromParts toParts} [items-of mesh] : foreach gn [items-of toParts]
-					decomposableRelGlyphs.add gn
-			: else : begin
+			if [not globallyDecomposable] : begin
 				local mesh : getGrMesh mappedParts AnyCvOrCherryPicking query-glyph
 				foreach {gr fromParts toParts} [items-of mesh] : do
 					local fromGn : CircNameNoCheck unicode prefix fromParts suffix

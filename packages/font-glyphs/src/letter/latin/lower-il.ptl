@@ -279,6 +279,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		#
 		'seriflessPL'           { ILBody.PhoneticLeft  ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0      }
 		'hookyPL'               { ILBody.PhoneticLeft  ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
+		'topTailedPL'           { [ILWithCasualTop 'tailed'    ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
+		'topFlatPL'             { [ILWithCasualTop 'flat'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
+		'topSemiPL'             { [ILWithCasualTop 'semi'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
+		'topDiagPL'             { [ILWithCasualTop 'diagonal'  ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
 		# Special variants for Tau, which is built using `dotlessi`
 		'tau/tailless'          { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             1                    0      }
 		'tau/tailed'            { ILBody.Tailed        ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             1                    Stroke }
@@ -290,6 +294,22 @@ glyph-block Letter-Latin-Lower-I : begin
 	glyph-block-export Casual CasualTop
 	define [Casual df top bot xMiddle topKind botKind _stroke] : ILBody.Casual df top bot xMiddle topKind botKind _stroke
 	define [CasualTop df top xMiddle kind _stroke] : ILBody.CasualTop df top xMiddle kind _stroke
+
+	# Keep the existing bottom of `Body` and stack a casual top in the upper half.
+	define [ILWithCasualTop kind Body] : lambda [df top bot xMiddle _stroke] : glyph-proc
+		local yJoin : mix 0 top 0.5
+		include : difference
+			new-glyph : glyph-proc
+				include : Body df top bot xMiddle _stroke
+			MaskAbove (yJoin + HalfStroke)
+		include : CasualTop df top xMiddle kind _stroke
+
+	define [CasualKindOf Body] : match Body
+		[Just ILBody.DoubleTailed]    'tailed'
+		[Just ILBody.DoubleFlat]      'flat'
+		[Just ILBody.DoubleSemi]      'semi'
+		[Just ILBody.DoubleDiagonal]  'diagonal'
+		__                            nothing
 
 	# `i`-like letters
 	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-I]] : begin
@@ -313,14 +333,24 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : Serifs df CAP 0 xMiddle
 
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
-			include [refer-glyph "dotlessi.\(suffix)"] AS_BASE ALSO_METRICS
-			local { attach posX maskY } : CalcPhoneticHookPos currentGlyph
-			include : ExtendBelowBaseAnchors Descender
-			include : intersection [MaskBelow maskY] : RetroflexHook.r
-				x -- posX
-				y -- 0
-				xLink -- attach.x
-				yOverflow -- Stroke
+			local kind : CasualKindOf Body
+			if kind : begin
+				local df : include : DivFrame adws
+				include : df.markSet.p
+				local xMiddle : xMiddleT df
+				include : [ILWithCasualTop kind ILBody.Serifless] df XH 0 xMiddle
+				include : ILMarks.Serifless df XH 0 xMiddle
+				include : RetroflexHook.mExt xMiddle 0
+				include : ExtendBelowBaseAnchors Descender
+			: else : begin
+				include [refer-glyph "dotlessi.\(suffix)"] AS_BASE ALSO_METRICS
+				local { attach posX maskY } : CalcPhoneticHookPos currentGlyph
+				include : ExtendBelowBaseAnchors Descender
+				include : intersection [MaskBelow maskY] : RetroflexHook.r
+					x -- posX
+					y -- 0
+					xLink -- attach.x
+					yOverflow -- Stroke
 
 		if (Body !== ILBody.Serifed) : create-glyph "dotlessaiDiphthong.upright.\(suffix)" : glyph-proc
 			local df : DivFrame adws
@@ -426,9 +456,19 @@ glyph-block Letter-Latin-Lower-I : begin
 			set-base-anchor 'cvDecompose' [Math.max ([xMiddleTCenter df] + HalfStroke + DotRadius) (df.rightSB - DotRadius)] [mix y0R Ascender 0.5]
 
 		create-glyph "lRTail.\(suffix)" : glyph-proc
-			local df : DivFrame adws
-			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
-			include : RetroflexHook.mExt [xMiddleT df] 0
+			local kind : CasualKindOf Body
+			if kind : begin
+				local df : include : DivFrame adws
+				include : df.markSet.p
+				local xMiddle : xMiddleT df
+				include : [ILWithCasualTop kind ILBody.Serifless] df Ascender 0 xMiddle
+				include : Marks df Ascender 0 xMiddle
+				include : RetroflexHook.mExt xMiddle 0
+				include : ExtendBelowBaseAnchors Descender
+			: else : begin
+				local df : DivFrame adws
+				include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
+				include : RetroflexHook.mExt [xMiddleT df] 0
 
 		if (Body !== ILBody.PhoneticLeft) : begin
 			define [xShift df] : [xMiddleTCenter df] - [xMiddleT df]
@@ -472,7 +512,11 @@ glyph-block Letter-Latin-Lower-I : begin
 		create-glyph "lHighBar.\(suffix)" : glyph-proc
 			local df : DivFrame adws
 			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
-			include : LetterBarOverlay.m.in [xMiddleT df] XH (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
+			local yJoin : mix 0 Ascender 0.5
+			local fCasualDouble : Body === ILBody.DoubleTailed || Body === ILBody.DoubleFlat || Body === ILBody.DoubleSemi || Body === ILBody.DoubleDiagonal
+			local yBarBot : if fCasualDouble (yJoin - HalfStroke) XH
+			local yBarTop : if fCasualDouble (yJoin + HalfStroke) (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
+			include : LetterBarOverlay.m.in [xMiddleT df] yBarBot yBarTop
 
 		create-glyph "lBroken.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
@@ -634,6 +678,29 @@ glyph-block Letter-Latin-Lower-I : begin
 				curl (xMiddle - [HSwToV HalfStroke]) (0 + LongVJut)
 				CurlyTail.n [AdviceStroke 3.5] 0 (xMiddle + [HSwToV HalfStroke] + LongJut) (SB - (Middle - xMiddle)) 0
 			create-forked-glyph "lCurlyTail.hooky" : ILSerifs.Hooky df Ascender 0 xMiddle
+
+		define LCurlyCasualTopConfig : object
+			topTailed  'tailed'
+			topFlat    'flat'
+			topSemi    'semi'
+			topDiag    'diagonal'
+
+		foreach { suffix kind } [Object.entries LCurlyCasualTopConfig] : do
+			create-glyph "lCurlyTail.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				include : df.markSet.b
+				local xMiddle : [XMiddleT MODE-L].Casual df
+				local yJoin : mix 0 Ascender 0.5
+				include : difference
+					new-glyph : glyph-proc
+						include : dispiro
+							widths.lhs
+							flat (xMiddle - [HSwToV HalfStroke]) Ascender [heading Downward]
+							curl (xMiddle - [HSwToV HalfStroke]) (0 + LongVJut)
+							CurlyTail.n [AdviceStroke 3.5] 0 (xMiddle + [HSwToV HalfStroke] + LongJut) (SB - (Middle - xMiddle)) 0
+					MaskAbove (yJoin + HalfStroke)
+				include : CasualTop df Ascender xMiddle kind
+				include : ILMarks.Serifless df Ascender 0 xMiddle
 
 		select-variant 'lCurlyTail' 0x234
 

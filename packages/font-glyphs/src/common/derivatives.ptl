@@ -268,6 +268,14 @@ glyph-block Common-Derivatives : begin
 			create-glyph gnDst unicodeDst : Fn gns gr
 			return gnDst
 
+	# One glyph from the build-plan-selected sources; no CV mesh.
+	# Use only for digraphs/multigraphs, not accented or derived letters.
+	glyph-block-export derive-multi-part-glyphs-baked
+	define [derive-multi-part-glyphs-baked dstGid dstUnicode gnSources Fn] : begin
+		if [not : glyph-is-needed dstGid] : return nothing
+		create-glyph dstGid dstUnicode : Fn gnSources null
+		return dstGid
+
 	glyph-block-export derive-composites
 	define [derive-composites dstGid dstUnicode srcGid] : begin
 		if [not : glyph-is-needed dstGid] : return nothing
