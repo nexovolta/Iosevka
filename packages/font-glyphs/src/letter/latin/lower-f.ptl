@@ -286,60 +286,130 @@ glyph-block Letter-Latin-Lower-F : begin
 	select-variant 'f/compLigLeft3' (shapeFrom -- 'f')
 	select-variant 'f/compLigLeft4' (shapeFrom -- 'f')
 
-	# LATIN SMALL LETTER FENG DIGRAPH WITH TRILL (U+1DF00).
-	# Feng body; three rounded humps as one stroke (crests + rightward valleys).
-	create-glyph 'fengTrill' 0x1DF00 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.bp
-		local sw : Math.min Stroke df.mvs
+	# Copy of the rounded f-hook as an inverted breve. Left is tapered and
+	# ends at yBot (no n-leg spur) so copies pack like n/m onto the previous hang.
+	define [FengTrillCopy xL xR yBot yTop sw fine ada adb] : nShoulder.shape
+		left    -- xL
+		right   -- xR
+		top     -- yTop
+		bottom  -- yBot
+		stroke  -- sw
+		fine    -- fine
+		ada     -- ada
+		adb     -- adb
+		leftY0  -- yBot
 
-		local xF : df.leftSB + [HSwToV : 0.25 * sw]
-		local xEng : df.rightSB + 0
-		local gap : (xEng - xF - [HSwToV : 2 * sw]) / 2
-		local xN : xF + gap
+	define [FengTrillStdHook dfF pBar ch sym] : begin
+		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK)
+		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
+		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
+		local barLeft : FBarLeftPos dfF sym balancedBarLeft
+		local { xCrossLeft xCrossRight } : FCrossBarPos dfF sym dfF.leftSB [mix dfF.leftSB dfF.rightSB pBar]
+		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight
+		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) (dfF.rightSB + RBalance2 - (OX - O) + hookExtra)
+		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
+
+	define [FengTrillNarrowHook dfF pBar ch sym] : begin
+		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK)
+		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
+		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
+		local barLeft : FBarLeftPos dfF sym balancedBarLeft
+		local pAdaptive : if (para.advanceScaleF < 1) ((1 - dfF.adws) / (1 - para.advanceScaleF)) 0
+		local hookScale : mix 0.9 1.0 pAdaptive
+		local stdCrossRight : mix dfF.leftSB dfF.rightSB pBar
+		local narrowCrossRight : mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]
+		local narrowCrossLeft : mix dfF.leftSB barLeft [mix 0.5 0.375 pAdaptive]
+		local { xCrossLeft xCrossRight } : FCrossBarPos dfF sym narrowCrossLeft narrowCrossRight
+		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight hookScale
+		local hookRight : mix barLeft0 (dfF.rightSB + RBalance2 - (OX - O) + hookExtra) hookScale
+		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) hookRight
+		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
+
+	define [FengTrillShape Body fNarrow pBar ch yBar sym] : glyph-proc
+		local df : include : DivFrame para.advanceScaleMM 2
+		include : df.markSet.bp
+
+		# Same f and eng as the feng ligature: full letter shapes, uniformly
+		# compressed to the ligature width — do not redesign f on a half-cell.
+		local dfLeft : if fNarrow dfF dfN
+		local dfEng : DivFrame 1 2
+		local kern : (dfLeft.width - dfLeft.rightSB) + dfEng.leftSB
+		local xEngPart : dfLeft.width - kern
+		local compress : Math.min 1 (df.width / (xEngPart + dfEng.width))
+
+		include : with-transform [Scale compress 1] : Body dfLeft pBar yBar ch sym
+		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
+			with-transform [Scale compress 1] : glyph-proc
+				include : VBar.l dfEng.leftSB 0 XH Stroke
+				include : nShoulder.shape
+					left   -- (dfEng.leftSB + [HSwToV Stroke])
+					right  -- dfEng.rightSB
+					top    -- XH
+					bottom -- 0
+					stroke -- Stroke
+					ada    -- dfEng.smallArchDepthA
+					adb    -- dfEng.smallArchDepthB
+				include : EngHook dfEng.rightSB 0 Descender
+
+		local { barLeft0 barLeft00 hookExtra tipX0 } : if fNarrow
+			FengTrillNarrowHook dfLeft pBar ch sym
+			FengTrillStdHook dfLeft pBar ch sym
+		local barLeft : barLeft0 * compress
+		local tipX : tipX0 * compress
+		local sw : Stroke * compress
+		local xN : (xEngPart + dfEng.leftSB) * compress
+		local xEng : (xEngPart + dfEng.rightSB) * compress
 
 		local yTop : Ascender - O
-		local span : [mix xN xEng 0.78] - xF
-		local wEach : span / 3
-		local h : Math.min (Hook * 0.75 - O) (0.9 * wEach)
-		local yBot : yTop - h
-		local trillSw : Math.min sw (0.24 * wEach) (0.30 * h)
-		local xC1 : xF + 0.5 * wEach
-		local xV1 : xF + 1.0 * wEach
-		local xC2 : xF + 1.5 * wEach
-		local xV2 : xF + 2.0 * wEach
-		local xC3 : xF + 2.5 * wEach
-		local xHang : xF + 3.0 * wEach
+		local yBot : Ascender - Hook * 0.75
+		local hArc : yTop - yBot
+		# Visible hanging spurs, same weight and width as each other and the
+		# f-hook; only the left join tapers (n/m shoulder fine).
+		local ada : Math.min dfEng.smallArchDepthA (0.9 * hArc)
+		local adb : Math.min dfEng.smallArchDepthB (0.9 * hArc)
+		local fine : ShoulderFine * (sw / Stroke)
+		local join : HSwToV fine
+		local wHook : tipX - barLeft
+		local x3max : mix xN xEng 0.82
+		local wEach : Math.min wHook : Math.max (2.4 * sw) ((x3max - tipX) / 2)
+		local x1 : tipX - [HSwToV : 0.5 * sw]
+		local x2 : x1 + wEach
+		local x3 : x2 + wEach
 
-		include : VBar.l xF 0 yBot sw
-		include : dispiro
-			widths.rhs trillSw
-			flat xF 0 [heading Upward]
-			curl xF yBot
-			arcvh
-			g4.right.mid [Arch.adjust-x.top xC1 (sw -- trillSw)] yTop
-			g4.right.mid [Arch.adjust-x.bot xV1 (sw -- trillSw)] yBot
-			g4.right.mid [Arch.adjust-x.top xC2 (sw -- trillSw)] yTop
-			g4.right.mid [Arch.adjust-x.bot xV2 (sw -- trillSw)] yBot
-			g4.right.mid [Arch.adjust-x.top xC3 (sw -- trillSw)] yTop
-			archv
-			g4.down.end xHang yBot [heading Downward]
+		include : FengTrillCopy x1 x2 yBot yTop sw fine ada adb
+		include : FengTrillCopy (x2 - join) x3 yBot yTop sw fine ada adb
 
-		include : VBar.l xN 0 XH sw
-		include : nShoulder.shape
-			left   -- (xN + [HSwToV sw])
-			right  -- xEng
-			top    -- XH
-			bottom -- 0
-			stroke -- sw
-			ada    -- df.smallArchDepthA
-			adb    -- df.smallArchDepthB
-		include : EngHook xEng 0 Descender (sw -- sw)
-		include : HCrossBar.top df.leftSB (xN + [HSwToV sw]) ySmallFBarPos sw
-
-		include : LeaningAnchor.Above.Hook xF xHang
+		include : LeaningAnchor.Above.Hook barLeft x3
 		include : LeaningAnchor.Below.VBar.r xEng sw
-		set-base-anchor 'overlay' [mix xF xEng 0.5] [mix 0 XH 0.5]
+		set-base-anchor 'overlay' [mix barLeft xEng 0.5] [mix 0 XH 0.5]
+
+	# LATIN SMALL LETTER FENG DIGRAPH WITH TRILL (U+1DF00).
+	# Rounded f-hook (forced; never flat), then two packed inverted-breve copies
+	# of that hook with the left tapered and cut onto the previous hang.
+	# Tail/descender and crossbar follow regular f.
+	define FengTrillConfig : SuffixCfg.weave
+		object # body : rounded only
+			""                                { StandardFShape  false }
+			narrow                            { NarrowStdFShape true  }
+		function [body] : object # tail
+			serifless                         { [if body pNarrowFSide 0.95]    CH-NONE          }
+			serifed                           { [if body pNarrowFSide 0.95]    CH-SERIF         }
+			extended                          { [if body pNarrowFSide 0.95]    CH-EXTENSION     }
+			tailed                            { [if body pNarrowFSide 1.00]    CH-HOOK          }
+			diagonalTailed                    { [if body pNarrowFSide 1.00]    CH-DIAGONAL-HOOK }
+		object # symmetry
+			""                                SYM-BALANCED
+			asymmetric                        SYM-LEFT
+		object # crossbar
+			""                                ySmallFBarPos
+			crossbarAtXHeight                 XH
+			crossbarAtHalfAscenderHeight      ([mix 0 Ascender 0.5] + HalfStroke)
+
+	foreach { suffix { { Body fNarrow } { pBar ch } sym yBar } } [Object.entries FengTrillConfig] : do
+		create-glyph "fengTrill.\(suffix)" : glyph-proc
+			include : FengTrillShape Body fNarrow pBar ch yBar sym
+
+	select-variant 'fengTrill' 0x1DF00
 
 	CreateAccentedComposition 'fTildeOver' 0x1D6E 'f' 'tildeOver'
 	CreateAccentedComposition 'fDot'       0x1E1F 'f' 'dotAbove'
