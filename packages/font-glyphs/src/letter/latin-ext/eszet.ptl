@@ -1,6 +1,8 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg] from "@iosevka/util"
+import [Arcs ShapeConv] from "typo-geom"
+import [TaperedOffsetCurve BezToContoursSink GEOMETRY_PRECISION] from "@iosevka/geometry/curve-util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 
 import [maskBits] from "@iosevka/util/mask-bit"
 
@@ -188,9 +190,97 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 	select-variant 'eszet' 0xDF
 	select-variant 'longssHookBottom' 0x1DF95 (shapeFrom -- 'eszet')
 
+	# Middle Scots S: eszett stem and arch only. The zett bowl is replaced
+	# by a hanging vertical tilde that finishes slightly above the baseline.
+	define [ScotsSTildeClearance _sw] : begin
+		local sw : fallback _sw Stroke
+		return : Math.max (XH * 0.055) (0.3 * sw)
+
+	# Vertical tilde as a cubic (same construction as TildeShape), first
+	# bulge inward, second outward. Amplitude stays on the right side.
+	glyph-block-export ScotsHangingTilde
+	define [ScotsHangingTilde xJoin yJoin yBot _sw] : glyph-proc
+		local sw : fallback _sw Stroke
+		local hs : 0.5 * sw
+		local xOuter : xJoin - [HSwToV hs]
+		local span : Math.max (1.65 * sw) : 0.20 * (RightSB - SB)
+		local xInner : Math.max (SB + [HSwToV : 1.85 * sw]) (xOuter - span)
+		local height : Math.abs : xOuter - xInner
+		local length : Math.abs : yJoin - yBot
+		local hsvh : (2 * hs) / [Math.max height 1]
+		local hvc : length / [Math.max height 1]
+		local tildeWaveY : [linreg 0.116 2.925 0.732 2.375 hsvh] * [linreg 2 1 4.35 1.1 hvc]
+		local tildeWaveX 0.51
+		define z1 : currentGlyph.gizmo.apply : object [x : 0 + xOuter] [y : 0 + yJoin]
+		define z2 : currentGlyph.gizmo.apply : object [x : mix xOuter xInner tildeWaveY] [y : mix yJoin yBot tildeWaveX]
+		define z3 : currentGlyph.gizmo.apply : object [x : mix xOuter xInner (1 - tildeWaveY)] [y : mix yJoin yBot (1 - tildeWaveX)]
+		define z4 : currentGlyph.gizmo.apply : object [x : 0 + xInner] [y : 0 + yBot]
+		define bone : new Arcs.Bez3 z1 z2 z3 z4
+		define inner : new TaperedOffsetCurve bone (+hs) (+hs) HVContrast
+		define outer : new Arcs.Reverted : new TaperedOffsetCurve bone (-hs) (-hs) HVContrast
+		define cs : new BezToContoursSink
+		ShapeConv.transferGenericShapeAsBezier {{inner outer}} cs GEOMETRY_PRECISION
+		currentGlyph.includeContours cs.contours
+
+	define [ScotsSLeftTerminal fTraditional slab term _sw] : glyph-proc
+		local sw : fallback _sw Stroke
+		include : EszetSerifs [DivFrame 1] fTraditional slab
+		include : match term
+			[Just TERMINAL-DESCENDING] : VBar.l SB Descender 0 sw
+			[Just TERMINAL-TAILED]     : PalatalHook.lExt SB 0 (sw -- sw)
+			[Just TERMINAL-DIAGONAL]   : LeftwardDiagTailedBar SB Descender 0 sw
+			__                         : no-shape
+
+	# Flat-top arch with a square top-right so the hanging tilde meets at a
+	# sharp corner. The VBar buries the tilde's start cap inside the top bar.
+	glyph-block-export ScotsSFlatTopArch
+	define [ScotsSFlatTopArch top ada] : glyph-proc
+		include : dispiro
+			widths.rhs
+			flat SB 0 [heading Upward]
+			curl SB [Math.max XH : top - ada]
+			arcvh
+			flat Middle top
+			curl (RightSB + O) top [heading Rightward]
+		include : VBar.r (RightSB + O) (top - Stroke) (0 + top)
+
+	define [FlatTopScotsS slab term] : glyph-proc
+		include : MarkSet.b
+		local yBot : ScotsSTildeClearance Stroke
+		include : ScotsSFlatTopArch Ascender SmallArchDepthA
+		include : ScotsHangingTilde (RightSB + O) (Ascender - HalfStroke) yBot
+		include : ScotsSLeftTerminal false slab term
+
+	define MiddleScotsSConfig : SuffixCfg.weave
+		object # body
+			traditionalBentHook      FlatTopScotsS
+			traditionalFlatHook      FlatTopScotsS
+			sulzbacher                FlatTopScotsS
+			longSSLig                 FlatTopScotsS
+		object # terminal
+			""                        TERMINAL-BASELINE
+			descending                TERMINAL-DESCENDING
+			tailed                    TERMINAL-TAILED
+			diagonalTailed            TERMINAL-DIAGONAL
+		object # serifs
+			serifless                 SERIF-NONE
+			middleSerifed             SERIF-MID
+			middleSerifedHalfAscender SERIF-MID-HALF-ASC
+			middleSerifedXH           SERIF-MID-XH
+			bottomSerifed             SERIF-BOT
+			dualSerifed               SERIF-DUAL
+			dualSerifedXH             SERIF-DUAL-XH
+			dualSerifedHalfAscender   SERIF-DUAL-HALF-ASC
+
+	foreach { suffix { Body terminal serif } } [pairs-of MiddleScotsSConfig] : do
+		create-glyph "middleScotsS.\(suffix)" : Body serif terminal
+
+	select-variant 'middleScotsS' 0xA7D7 (follow -- 'eszet')
+
 glyph-block Letter-Latin-Upper-Eszet : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Latin-Lower-Eszet : ScotsHangingTilde ScotsSFlatTopArch
 
 	define SERIF-NONE    0
 	define SERIF-BOTTOM  1
@@ -312,3 +402,30 @@ glyph-block Letter-Latin-Upper-Eszet : begin
 		create-glyph "Eszet.\(suffix)" : Body serif
 
 	select-variant 'Eszet' 0x1E9E
+
+	define [EszetFlatTopScotsSShape slab] : glyph-proc
+		include : MarkSet.capital
+		local yBot : Math.max (CAP * 0.045) (0.3 * Stroke)
+		include : ScotsSFlatTopArch CAP ArchDepthA
+		include : ScotsHangingTilde (RightSB + O) (CAP - HalfStroke) yBot
+		include : CapitalEszetSerifs slab
+
+	define CapitalMiddleScotsSConfig : SuffixCfg.combine
+		SuffixCfg.weave
+			object # body
+				rounded    EszetFlatTopScotsSShape
+				flatTop    EszetFlatTopScotsSShape
+				corner     EszetFlatTopScotsSShape
+			function [body] : object # serifs
+				serifless               SERIF-NONE
+				serifed : match body
+					[Just 'corner'] SERIF-DUAL
+					__              SERIF-BOTTOM
+		object # Exclusive corner serif variants
+			cornerMotionSerifed { EszetFlatTopScotsSShape SERIF-MOTION }
+			cornerBottomSerifed { EszetFlatTopScotsSShape SERIF-BOTTOM }
+
+	foreach { suffix { Body serif } } [pairs-of CapitalMiddleScotsSConfig] : do
+		create-glyph "MiddleScotsS.\(suffix)" : Body serif
+
+	select-variant 'MiddleScotsS' 0xA7D6 (follow -- 'Eszet')
