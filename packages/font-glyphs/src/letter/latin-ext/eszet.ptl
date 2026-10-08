@@ -406,7 +406,10 @@ glyph-block Letter-Latin-Upper-Eszet : begin
 	define [EszetFlatTopScotsSShape slab] : glyph-proc
 		include : MarkSet.capital
 		local yBot : Math.max (CAP * 0.045) (0.3 * Stroke)
-		include : ScotsSFlatTopArch CAP ArchDepthA
+		include : union
+			VBar.l SB 0 CAP
+			HBar.t (SB + 1) (RightSB + O) CAP
+		include : VBar.r (RightSB + O) (CAP - Stroke) (0 + CAP)
 		include : ScotsHangingTilde (RightSB + O) (CAP - HalfStroke) yBot
 		include : CapitalEszetSerifs slab
 
