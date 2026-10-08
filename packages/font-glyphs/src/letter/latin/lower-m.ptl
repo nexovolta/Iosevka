@@ -310,7 +310,7 @@ glyph-block Letter-Latin-Lower-M : begin
 					straight.down.start df.rightSB y2 [widths.rhs.heading sw Downward]
 					CurlyTail.f fine 0 m2 x2 (swBefore -- sw)
 
-				include : Serifs df XH 0 [if shortLeg [SmallMShortLegHeight df XH] 0] 0 true earless sw
+				include : Serifs df XH 0 [if shortLeg [SmallMShortLegHeight df XH] 0] 0 earless shortLeg true sw
 
 		create-glyph "cyrl/te.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "m.\(suffix)"] AS_BASE ALSO_METRICS
@@ -332,21 +332,18 @@ glyph-block Letter-Latin-Lower-M : begin
 						ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 						adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 						sw     -- subDf.mvs
-					include : Serifs subDf XH 0 0 (XH / 2) true false
+					include : Serifs subDf XH 0 0 (XH / 2) false false true
 					if SLAB : begin
 						local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 2 3
 						include sf2.rt.full
 
-				create-glyph "cyrl/tje.italic/base/corner.\(suffix)" : glyph-proc
+				create-glyph : glyph-proc
 					local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
 					include : df.markSet.e
 					local subDf : df.slice 4 3 0
-					include : Body   subDf XH 0 0 (XH - SmallArchDepthB * (2 / df.hPack) * df.adws - TINY)
-					include : Serifs subDf XH 0 0 0 false false
-
-				create-glyph "cyrl/tje.italic/base/cursive.\(suffix)" : glyph-proc
-					include [refer-glyph "cyrl/tje.italic/base/corner.\(suffix)"] AS_BASE ALSO_METRICS
-					eject-contour 'serifRB'
+					include : Body subDf XH 0 0 (XH - SmallArchDepthB * (2 / df.hPack) * df.adws - TINY)
+					create-forked-glyph "cyrl/tje.italic/base/corner.\(suffix)" : Serifs subDf XH 0 0 0 false false false
+					create-forked-glyph "cyrl/tje.italic/base/cursive.\(suffix)" : Serifs subDf XH 0 0 0 false false true
 
 		create-glyph "cyrl/teMidHook.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
