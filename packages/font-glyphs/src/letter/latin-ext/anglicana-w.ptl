@@ -1,13 +1,12 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp] from "@iosevka/util"
 
 glyph-module
 
 glyph-block Letter-Latin-Anglicana-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
 	glyph-block-import Letter-Greek-Lower-Nu : NuBaseShape
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-CIRCLE
@@ -25,16 +24,9 @@ glyph-block Letter-Latin-Anglicana-W : begin
 			adb       -- adb
 		include : ze.Shape
 
-	define [AnglicanaWelshV df top xR yR pL pR] : glyph-proc
-		include : dispiro
-			widths.lhs
-			g4 [mix df.leftSB xR 0.2] (top - O / 2)
-			g4.down.mid (df.leftSB + O) [mix 0 top (pL * SmallArchDepthB / (SmallArchDepthA + SmallArchDepthB))]
-			Arch.lhs 0
-			g4 xR yR
-			g4 [mix df.leftSB xR 0.72] [mix 0 top pR]
+	define [AnglicanaHeavyT] : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 
-	define [BuildAnglicanaW bodyTop welshTop mak pL pR nuK] : glyph-proc
+	define [BuildAnglicanaW bodyTop mak nuK] : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.(mak)
 		local { subDf } : SubDfAndShift 0 df OX
@@ -43,20 +35,16 @@ glyph-block Letter-Latin-Anglicana-W : begin
 		local ada : if (bodyTop === CAP) ArchDepthA SmallArchDepthA
 		local adb : if (bodyTop === CAP) ArchDepthB SmallArchDepthB
 		local ltOs : if (bodyTop === CAP) O 0
+		local sw : df.mvs + 0
+		if [not para.isQuasiProportional] : set sw : mix sw [df.adviceThinnerStroke2 2 3 bodyTop 0.75] [AnglicanaHeavyT]
 
-		include : NuBaseShape subDf bodyTop nuK ltOs
+		include : NuBaseShape subDf bodyTop nuK ltOs sw
 
 		include : with-transform [ApparentTranslate shiftR 0]
-			AnglicanaClosedRevOpenE subDf bodyTop df.mvs hook ada adb
-
-		local xAttach : shiftR + subDf.leftSB + OX
-		local yAttach : bodyTop - O / 2
-		include : AnglicanaWelshV df welshTop xAttach yAttach pL pR
-
-		if (welshTop > bodyTop) : include : ExtendAboveBaseAnchors (welshTop - bodyTop)
+			AnglicanaClosedRevOpenE subDf bodyTop sw hook ada adb
 
 	create-glyph 'AnglicanaW' 0xA7C2 : glyph-proc
-		include : BuildAnglicanaW CAP CAP 'capital' 0.75 0.625 0.4
+		include : BuildAnglicanaW CAP 'capital' 0.4
 
 	create-glyph 'anglicanaW' 0xA7C3 : glyph-proc
-		include : BuildAnglicanaW XH Ascender 'e' 0.625 0.625 0.4
+		include : BuildAnglicanaW XH 'e' 0.4

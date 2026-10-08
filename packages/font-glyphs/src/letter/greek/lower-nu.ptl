@@ -16,17 +16,18 @@ glyph-block Letter-Greek-Lower-Nu : begin
 	alias 'grek/nu.curlySerifed'   null 'v.curlyMotionSerifed'
 
 	glyph-block-export NuBaseShape
-	define [NuBaseShape df top k ltOvershoot] : glyph-proc
-		local xMid : df.middle + 0.375 * Stroke
-		local xStart : df.leftSB + [HSwToV : k * Stroke]
+	define [NuBaseShape df top k ltOvershoot _sw] : glyph-proc
+		local sw : fallback _sw Stroke
+		local xMid : df.middle + 0.375 * sw
+		local xStart : df.leftSB + [HSwToV : k * sw]
 		local yStart : top - ltOvershoot
 		include : dispiro
-			widths.rhs
+			widths.rhs sw
 			g4 xStart yStart
 			bezControls 0.33 0.2 1 0.76 6 important
 			g4.down.end xMid 0 [heading Downward]
 		include : dispiro
-			widths.rhs
+			widths.rhs sw
 			flat df.rightSB      top       [heading Downward]
 			curl df.rightSB [mix top 0 0.1] [heading Downward]
 			quadControls 0 0.35 6
