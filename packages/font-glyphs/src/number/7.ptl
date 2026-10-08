@@ -54,15 +54,21 @@ glyph-block Digits-Seven : begin
 				corner (SevenXLeft + swH) yFoot
 				corner SevenXLeft yFoot
 
-	define [SevenVerticalYHang top] : top - Stroke - [Math.max (0.16 * top) Stroke]
+	define [SevenVerticalTopStemFoot top] : mix 0 (top - Stroke) 0.34
 	define [SevenVerticalYFoot top] : Math.max (0.16 * top) Stroke
 
-	define [VerticalTopBody top] : union [HBar.t SB RightSB top] [VBar.l SB [SevenVerticalYHang top] top] : intersection
-		Rect (top - Stroke) 0 SB RightSB
-		dispiro
-			widths.rhs
-			corner RightSB (top - Stroke)
-			corner [mix RightSB (SevenXLeft + [HSwToV : 0.75 * Stroke]) 2] [mix (top - Stroke) 0 2]
+	define [VerticalTopBody top] : begin
+		local yFoot : SevenVerticalTopStemFoot top
+		local swVert : AdviceStroke 3.25
+		return : union
+			HBar.t SB RightSB top
+			VBar.l SB yFoot top swVert
+			intersection
+				Rect (top - Stroke) 0 SB RightSB
+				dispiro
+					widths.rhs
+					corner RightSB (top - Stroke)
+					corner [mix RightSB (SevenXLeft + [HSwToV : 0.75 * swVert]) 2] yFoot
 
 	define [VerticalBottomBody top] : begin
 		local swH : HSwToV Stroke
