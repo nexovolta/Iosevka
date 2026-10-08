@@ -54,6 +54,28 @@ glyph-block Digits-Seven : begin
 				corner (SevenXLeft + swH) yFoot
 				corner SevenXLeft yFoot
 
+	define [SevenVerticalYHang top] : top - Stroke - [Math.max (0.16 * top) Stroke]
+	define [SevenVerticalYFoot top] : Math.max (0.16 * top) Stroke
+
+	define [VerticalTopBody top] : union [HBar.t SB RightSB top] [VBar.l SB [SevenVerticalYHang top] top] : intersection
+		Rect (top - Stroke) 0 SB RightSB
+		dispiro
+			widths.rhs
+			corner RightSB (top - Stroke)
+			corner [mix RightSB (SevenXLeft + [HSwToV : 0.75 * Stroke]) 2] [mix (top - Stroke) 0 2]
+
+	define [VerticalBottomBody top] : begin
+		local swH : HSwToV Stroke
+		local yFoot : SevenVerticalYFoot top
+		return : union
+			HBar.t SB RightSB top
+			VBar.l SevenXLeft 0 yFoot
+			spiro-outline
+				corner (RightSB - swH) (top - Stroke)
+				corner RightSB (top - Stroke)
+				corner (SevenXLeft + swH) yFoot
+				corner SevenXLeft yFoot
+
 	define [StartSerif top] : VSerif.dl (SB + (OX - O)) top VJut
 	define [StartSerifThick top] : VSerif.dl (SB + (OX - O)) top VJut [AdviceStroke 2.75]
 
@@ -87,22 +109,34 @@ glyph-block Digits-Seven : begin
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
 			mix yFoot yShoulder 0.5
 
+	define [VerticalBottomCrossbar top] : glyph-proc
+		local yFoot : SevenVerticalYFoot top
+		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
+		include : HBar.m
+			m - [HSwToV QuarterStroke] - LongJut * 0.8
+			m + [HSwToV QuarterStroke] + LongJut * 0.7
+			mix yFoot (top - Stroke) 0.5
+
 	local SevenConfig : SuffixCfg.weave
 		object # body
 			straight              StraightBody
 			bend                  BendBody
 			curly                 CurlyBody
 			square                SquareBody
+			verticalTop           VerticalTopBody
+			verticalBottom        VerticalBottomBody
 		object # serif
 			serifless             nothing
 			serifed               StartSerif
 		function [body] : object # crossbar
 			""                    nothing
 			crossbar : match body
-				[Just "straight"] Crossbar
-				[Just "bend"]     BendCrossbar
-				[Just "curly"]    CurlyCrossbar
-				[Just "square"]   SquareCrossbar
+				[Just "straight"]        Crossbar
+				[Just "bend"]            BendCrossbar
+				[Just "curly"]           CurlyCrossbar
+				[Just "square"]          SquareCrossbar
+				[Just "verticalTop"]     Crossbar
+				[Just "verticalBottom"]  VerticalBottomCrossbar
 
 	foreach { suffix { Body Serif Crossbar } } [Object.entries SevenConfig] : do
 		create-glyph "seven.lnum.\(suffix)" : glyph-proc
