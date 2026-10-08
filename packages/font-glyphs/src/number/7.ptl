@@ -54,21 +54,20 @@ glyph-block Digits-Seven : begin
 				corner (SevenXLeft + swH) yFoot
 				corner SevenXLeft yFoot
 
-	define [SevenVerticalTopStemFoot top] : mix 0 (top - Stroke) 0.34
+	define [SevenVerticalTopYShoulder top] : mix 0 (top - Stroke) 0.56
 	define [SevenVerticalYFoot top] : Math.max (0.16 * top) Stroke
 
 	define [VerticalTopBody top] : begin
-		local yFoot : SevenVerticalTopStemFoot top
-		local swVert : AdviceStroke 3.25
+		local swH : HSwToV Stroke
+		local yShoulder : SevenVerticalTopYShoulder top
 		return : union
 			HBar.t SB RightSB top
-			VBar.l SB yFoot top swVert
-			intersection
-				Rect (top - Stroke) 0 SB RightSB
-				dispiro
-					widths.rhs
-					corner RightSB (top - Stroke)
-					corner [mix RightSB (SevenXLeft + [HSwToV : 0.75 * swVert]) 2] yFoot
+			VBar.r RightSB yShoulder top
+			spiro-outline
+				corner (RightSB - swH) yShoulder
+				corner RightSB yShoulder
+				corner (SevenXLeft + swH) 0
+				corner SevenXLeft 0
 
 	define [VerticalBottomBody top] : begin
 		local swH : HSwToV Stroke
@@ -115,6 +114,15 @@ glyph-block Digits-Seven : begin
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
 			mix yFoot yShoulder 0.5
 
+	define [VerticalTopCrossbar top] : glyph-proc
+		local swH : HSwToV Stroke
+		local yShoulder : SevenVerticalTopYShoulder top
+		local m : mix (SevenXLeft + 0.5 * swH) (RightSB - 0.5 * swH) 0.5
+		include : HBar.m
+			m - [HSwToV QuarterStroke] - LongJut * 0.8
+			m + [HSwToV QuarterStroke] + LongJut * 0.7
+			mix 0 yShoulder 0.5
+
 	define [VerticalBottomCrossbar top] : glyph-proc
 		local yFoot : SevenVerticalYFoot top
 		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
@@ -141,7 +149,7 @@ glyph-block Digits-Seven : begin
 				[Just "bend"]            BendCrossbar
 				[Just "curly"]           CurlyCrossbar
 				[Just "square"]          SquareCrossbar
-				[Just "verticalTop"]     Crossbar
+				[Just "verticalTop"]     VerticalTopCrossbar
 				[Just "verticalBottom"]  VerticalBottomCrossbar
 
 	foreach { suffix { Body Serif Crossbar } } [Object.entries SevenConfig] : do
