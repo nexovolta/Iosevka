@@ -10,18 +10,26 @@ glyph-block Letter-Latin-Upper-Y : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Latin-X : HalfXStrand
+	glyph-block-import Letter-Latin-V : VExtendedRtInner VExtendedRtFull
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 
 	define BODY-CURLY    0
 	define BODY-STRAIGHT 1
 
-	define SLAB-NONE               0
-	define SLAB-ALL                1
-	define SLAB-BASE               2
-	define SLAB-MOTION             3
-	define SLAB-TOP-RIGHT-MOTION   4
-	define SLAB-BILATERAL-MOTION   5
+	define SLAB-NONE                    0
+	define SLAB-ALL                     1
+	define SLAB-BASE                    2
+	define SLAB-MOTION                  3
+	define SLAB-TOP-RIGHT-MOTION        4
+	define SLAB-BILATERAL-MOTION        5
+	define SLAB-BASE-MOTION             6
+	define SLAB-BASE-TOP-RIGHT-MOTION   7
+	define SLAB-BASE-BILATERAL-MOTION   8
+
+	define [YHasTopLeftSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-MOTION || slabType == SLAB-BILATERAL-MOTION || slabType == SLAB-BASE-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
+	define [YHasTopRightSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-TOP-RIGHT-MOTION || slabType == SLAB-BILATERAL-MOTION || slabType == SLAB-BASE-TOP-RIGHT-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
+	define [YHasBaseSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-BASE || slabType == SLAB-BASE-MOTION || slabType == SLAB-BASE-TOP-RIGHT-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
 
 	define [YCrossPos top bot] : mix bot top 0.4
 
@@ -29,16 +37,25 @@ glyph-block Letter-Latin-Upper-Y : begin
 		local sf : SerifFrame.fromDf [DivFrame 1] top 0
 		match slabType
 			[Just SLAB-ALL] : begin
-				include : composite-proc sf.lt.full sf.rt.full
+				include : composite-proc sf.lt.full [VExtendedRtFull sf]
 				include : HSerif.mb Middle bot MidJutCenter
 			[Just SLAB-MOTION] : include sf.lt.outer
-			[Just SLAB-TOP-RIGHT-MOTION] : include sf.rt.inner
-			[Just SLAB-BILATERAL-MOTION] : include : composite-proc sf.lt.outer sf.rt.inner
+			[Just SLAB-TOP-RIGHT-MOTION] : include : VExtendedRtInner sf
+			[Just SLAB-BILATERAL-MOTION] : include : composite-proc sf.lt.outer [VExtendedRtInner sf]
 			[Just SLAB-BASE] : include : HSerif.mb Middle bot MidJutCenter
+			[Just SLAB-BASE-MOTION] : begin
+				include sf.lt.outer
+				include : HSerif.mb Middle bot MidJutCenter
+			[Just SLAB-BASE-TOP-RIGHT-MOTION] : begin
+				include : VExtendedRtInner sf
+				include : HSerif.mb Middle bot MidJutCenter
+			[Just SLAB-BASE-BILATERAL-MOTION] : begin
+				include : composite-proc sf.lt.outer [VExtendedRtInner sf]
+				include : HSerif.mb Middle bot MidJutCenter
 
 	define [YShape] : with-params [bodyType slabType top bot [cross [YCrossPos top bot]]] : glyph-proc
-		local maskLT : slabType == SLAB-ALL || slabType == SLAB-MOTION || slabType == SLAB-BILATERAL-MOTION
-		local maskRT : slabType == SLAB-ALL || slabType == SLAB-TOP-RIGHT-MOTION || slabType == SLAB-BILATERAL-MOTION
+		local maskLT : YHasTopLeftSerif slabType
+		local maskRT : YHasTopRightSerif slabType
 
 		include : tagged 'strokeLT' : WithSerifOverflowMask maskLT [[DivFrame].bodyBox top bot]
 			HalfXStrand bodyType SLAB SB top Middle cross 0.1 0.4 0.28
@@ -47,12 +64,16 @@ glyph-block Letter-Latin-Upper-Y : begin
 		include : tagged 'strokeVMid' : VBar.m Middle bot (cross + HalfStroke)
 		set-base-anchor 'overlay' Middle cross
 		set-base-anchor 'overlayOnExtension' Middle
-			[mix (bot + [if (slabType === SLAB-ALL || slabType === SLAB-BASE) Stroke 0]) cross 0.5] + (Stroke - OverlayStroke) / 2
+			[mix (bot + [if [YHasBaseSerif slabType] Stroke 0]) cross 0.5] + (Stroke - OverlayStroke) / 2
 
 	define [YenOverlayShape slabType] : glyph-proc
 		define { ks bot } : match slabType
-			([Just SLAB-ALL] || [Just SLAB-BASE])  { 0.25 Stroke }
-			otherwise                              { 0    0      }
+			[Just SLAB-ALL]                      { 0.25 Stroke }
+			[Just SLAB-BASE]                     { 0.25 Stroke }
+			[Just SLAB-BASE-MOTION]              { 0.25 Stroke }
+			[Just SLAB-BASE-TOP-RIGHT-MOTION]    { 0.25 Stroke }
+			[Just SLAB-BASE-BILATERAL-MOTION]    { 0.25 Stroke }
+			otherwise                            { 0    0      }
 		include : HOverlayBar SB RightSB ([mix bot [YCrossPos CAP 0] 0.5] - OverlayStroke * ks)
 		include : HOverlayBar SB RightSB  [mix bot [YCrossPos CAP 0] 1.0]
 
@@ -81,18 +102,24 @@ glyph-block Letter-Latin-Upper-Y : begin
 		include : YHookRightHookedStroke top bot cross
 
 	define YConfig : object
-		straightSerifless                { BODY-STRAIGHT SLAB-NONE             }
-		curlySerifless                   { BODY-CURLY    SLAB-NONE             }
-		straightBaseSerifed              { BODY-STRAIGHT SLAB-BASE             }
-		curlyBaseSerifed                 { BODY-CURLY    SLAB-BASE             }
-		straightMotionSerifed            { BODY-STRAIGHT SLAB-MOTION           }
-		curlyMotionSerifed               { BODY-CURLY    SLAB-MOTION           }
-		straightTopRightMotionSerifed    { BODY-STRAIGHT SLAB-TOP-RIGHT-MOTION }
-		curlyTopRightMotionSerifed       { BODY-CURLY    SLAB-TOP-RIGHT-MOTION }
-		straightBilateralMotionSerifed   { BODY-STRAIGHT SLAB-BILATERAL-MOTION }
-		curlyBilateralMotionSerifed      { BODY-CURLY    SLAB-BILATERAL-MOTION }
-		straightSerifed                  { BODY-STRAIGHT SLAB-ALL              }
-		curlySerifed                     { BODY-CURLY    SLAB-ALL              }
+		straightSerifless                      { BODY-STRAIGHT SLAB-NONE                   }
+		curlySerifless                         { BODY-CURLY    SLAB-NONE                   }
+		straightBaseSerifed                    { BODY-STRAIGHT SLAB-BASE                   }
+		curlyBaseSerifed                       { BODY-CURLY    SLAB-BASE                   }
+		straightMotionSerifed                  { BODY-STRAIGHT SLAB-MOTION                 }
+		curlyMotionSerifed                     { BODY-CURLY    SLAB-MOTION                 }
+		straightTopRightMotionSerifed          { BODY-STRAIGHT SLAB-TOP-RIGHT-MOTION       }
+		curlyTopRightMotionSerifed             { BODY-CURLY    SLAB-TOP-RIGHT-MOTION       }
+		straightBilateralMotionSerifed         { BODY-STRAIGHT SLAB-BILATERAL-MOTION       }
+		curlyBilateralMotionSerifed            { BODY-CURLY    SLAB-BILATERAL-MOTION       }
+		straightBaseMotionSerifed              { BODY-STRAIGHT SLAB-BASE-MOTION            }
+		curlyBaseMotionSerifed                 { BODY-CURLY    SLAB-BASE-MOTION            }
+		straightBaseTopRightMotionSerifed      { BODY-STRAIGHT SLAB-BASE-TOP-RIGHT-MOTION  }
+		curlyBaseTopRightMotionSerifed         { BODY-CURLY    SLAB-BASE-TOP-RIGHT-MOTION  }
+		straightBaseBilateralMotionSerifed     { BODY-STRAIGHT SLAB-BASE-BILATERAL-MOTION  }
+		curlyBaseBilateralMotionSerifed        { BODY-CURLY    SLAB-BASE-BILATERAL-MOTION  }
+		straightSerifed                        { BODY-STRAIGHT SLAB-ALL                    }
+		curlySerifed                           { BODY-CURLY    SLAB-ALL                    }
 
 	foreach { suffix { bodyType slabType } } [Object.entries YConfig] : do
 		create-glyph "Y.\(suffix)" : glyph-proc

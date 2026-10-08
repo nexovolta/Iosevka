@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
-	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtInner VExtendedRtFull
 
 	define SLAB-NONE             { false false false false }
 	define SLAB-AUTO             { SLAB  SLAB  false false }
@@ -261,7 +261,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				right.splitMask top bottom
 				Rect (bottom + sw / 2) (bottom - top) l r
 
-			if doSlabTop : include : let [sf : SerifFrame.fromDf [DivFrame 1] top bottom] : composite-proc sf.lt.full sf.rt.full
+			if doSlabTop : include : let [sf : SerifFrame.fromDf [DivFrame 1] top bottom] : composite-proc sf.lt.full [VExtendedRtFull sf]
 			if doSlabMotion : include : VMotionSerifs [DivFrame 1] false top
 			if doSlabTopRightMotion : include : VTopRightMotionSerifs [DivFrame 1] false top
 
@@ -548,9 +548,9 @@ glyph-block Letter-Latin-Lower-Y : begin
 			local sf : SerifFrame.fromDf [DivFrame 1] top 0
 			if doSlabTop : begin
 				include sf.lt.outer
-				if [not doSlabMotion] : include sf.rt.inner
+				if [not doSlabMotion] : include : VExtendedRtInner sf
 			if ([not doSlabTop] && doSlabMotion) : include sf.lt.outer
-			if ([not doSlabTop] && doSlabTopRightMotion) : include sf.rt.inner
+			if ([not doSlabTop] && doSlabTopRightMotion) : include : VExtendedRtInner sf
 
 	define CursiveYConfig : SuffixCfg.weave
 		object # body

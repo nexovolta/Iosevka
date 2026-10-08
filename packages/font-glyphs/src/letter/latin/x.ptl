@@ -13,6 +13,7 @@ glyph-block Letter-Latin-X : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail
 	glyph-block-import Letter-Shared-Shapes : CyrDescender PalatalHook
 	glyph-block-import Letter-Latin-K : KLegs
+	glyph-block-import Letter-Latin-V : VExtendedRtInner VExtendedRtFull VExtendedRbFull VExtendedRbOuter
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : RingDims
 
@@ -368,28 +369,28 @@ glyph-block Letter-Latin-X : begin
 
 	glyph-block-export XSerifs
 	define XSerifs : namespace
-		export : define [Full sf]             : composite-proc sf.lt.full sf.rt.full sf.lb.full sf.rb.full
-		export : define [SemiChancery sf]     : composite-proc sf.rt.full sf.lb.full
+		export : define [Full sf]             : composite-proc sf.lt.full [VExtendedRtFull sf] sf.lb.full [VExtendedRbFull sf]
+		export : define [SemiChancery sf]     : composite-proc [VExtendedRtFull sf] sf.lb.full
 		export : define [UnilateralMotion sf]    : composite-proc sf.lt.outer
-		export : define [TopRightMotion sf]      : composite-proc sf.rt.inner
-		export : define [BilateralMotion sf]     : composite-proc sf.lt.outer sf.rb.outer
+		export : define [TopRightMotion sf]      : VExtendedRtInner sf
+		export : define [BilateralMotion sf]     : composite-proc sf.lt.outer [VExtendedRbOuter sf]
 		export : define [BilateralTopMotion sf] : glyph-proc
 			include : tagged 'serifLT' : HSerif.lt sf.left sf.top sf.sideJut sf.swSerif
-			include : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top sf.sideJut sf.swSerif
-		export : define [GrekLowerChi sf]     : composite-proc sf.lt.outer sf.rt.full sf.lb.full sf.rb.outer
+			include : VExtendedRtInner sf
+		export : define [GrekLowerChi sf]     : composite-proc sf.lt.outer [VExtendedRtFull sf] sf.lb.full [VExtendedRbOuter sf]
 
 	define [XLongLeftSerifs serifShape df top botLong] : glyph-proc
 		if serifShape : begin
 			local sf : SerifFrame.fromDf df top 0
 			local sfLong : SerifFrame.fromDf df top botLong
 			include : match serifShape
-				[Just XSerifs.Full]                 : composite-proc sf.lt.full sf.rt.full sfLong.lb.full sf.rb.full
-				[Just XSerifs.SemiChancery]         : composite-proc sf.rt.full sfLong.lb.full
+				[Just XSerifs.Full]                 : composite-proc sf.lt.full [VExtendedRtFull sf] sfLong.lb.full [VExtendedRbFull sf]
+				[Just XSerifs.SemiChancery]         : composite-proc [VExtendedRtFull sf] sfLong.lb.full
 				[Just XSerifs.UnilateralMotion]     : XSerifs.UnilateralMotion sf
 				[Just XSerifs.TopRightMotion]       : XSerifs.TopRightMotion sf
 				[Just XSerifs.BilateralMotion]      : XSerifs.BilateralMotion sf
 				[Just XSerifs.BilateralTopMotion]   : XSerifs.BilateralTopMotion sf
-				[Just XSerifs.GrekLowerChi]         : composite-proc sf.lt.outer sf.rt.full sfLong.lb.full sf.rb.outer
+				[Just XSerifs.GrekLowerChi]         : composite-proc sf.lt.outer [VExtendedRtFull sf] sfLong.lb.full [VExtendedRbOuter sf]
 				__                                  : serifShape sf
 
 	define [LowLeftBottomSerif x y _sw] : glyph-proc
@@ -426,13 +427,13 @@ glyph-block Letter-Latin-X : begin
 		if serifShape : begin
 			local sf : SerifFrame.fromDf df top bot
 			include : match serifShape
-				[Just XSerifs.Full]               : composite-proc sf.lt.full sf.rt.full sf.lb.full
-				[Just XSerifs.SemiChancery]       : composite-proc sf.rt.full
+				[Just XSerifs.Full]               : composite-proc sf.lt.full [VExtendedRtFull sf] sf.lb.full
+				[Just XSerifs.SemiChancery]       : composite-proc [VExtendedRtFull sf]
 				[Just XSerifs.UnilateralMotion]   : XSerifs.UnilateralMotion sf
 				[Just XSerifs.TopRightMotion]     : XSerifs.TopRightMotion sf
 				[Just XSerifs.BilateralMotion]    : composite-proc sf.lt.outer
 				[Just XSerifs.BilateralTopMotion] : XSerifs.BilateralTopMotion sf
-				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer sf.rt.full sf.lb.full
+				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer [VExtendedRtFull sf] sf.lb.full
 				__                                : serifShape sf
 
 	define [XLongLeftLowRightRingSerifs serifShape df top botLong] : glyph-proc
@@ -440,13 +441,13 @@ glyph-block Letter-Latin-X : begin
 			local sf : SerifFrame.fromDf df top 0
 			local sfLong : SerifFrame.fromDf df top botLong
 			include : match serifShape
-				[Just XSerifs.Full]               : composite-proc sf.lt.full sf.rt.full sfLong.lb.full
-				[Just XSerifs.SemiChancery]       : composite-proc sf.rt.full
+				[Just XSerifs.Full]               : composite-proc sf.lt.full [VExtendedRtFull sf] sfLong.lb.full
+				[Just XSerifs.SemiChancery]       : composite-proc [VExtendedRtFull sf]
 				[Just XSerifs.UnilateralMotion]   : XSerifs.UnilateralMotion sf
 				[Just XSerifs.TopRightMotion]     : XSerifs.TopRightMotion sf
 				[Just XSerifs.BilateralMotion]    : composite-proc sf.lt.outer
 				[Just XSerifs.BilateralTopMotion] : XSerifs.BilateralTopMotion sf
-				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer sf.rt.full sfLong.lb.full
+				[Just XSerifs.GrekLowerChi]       : composite-proc sf.lt.outer [VExtendedRtFull sf] sfLong.lb.full
 				__                                : serifShape sf
 
 	glyph-block-export XConfig

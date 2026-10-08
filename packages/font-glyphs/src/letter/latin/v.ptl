@@ -243,12 +243,23 @@ glyph-block Letter-Latin-V : begin
 			flat [mix vxStartL vxEndL : if fBarStraight 0.500 0.425] [mix top 0 0.5] [widths.lhs coFine]
 			curl vxEndL 0 [widths.lhs fine]
 
+	# Right inner serifs use JutIn and nearly vanish at heavy; add length that
+	# grows with weight, and measure from SideJut so they stay readable.
+	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
+	define VRightSerifExtend : StrokeWidthBlend 0 (0.5 * Jut)
+
+	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top (sf.sideJut + VRightSerifExtend) sf.swSerif
+	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + VRightSerifExtend) sf.swSerif
+	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb (sf.right - [HSwToV sf.swRef]) sf.bot (sf.sideJut + VRightSerifExtend) sf.swSerif
+	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + VRightSerifExtend) sf.swSerif
+	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + VRightSerifExtend) sf.swSerif
+
 	glyph-block-export VSerifs
 	define [VSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : begin
 		local sbScale  : if fBarStraight VStraightSbShrink 1
 		local sbOffset : if fBarStraight VStraightSbOffset 0
 		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
-		return : composite-proc sf.lt.full sf.rt.full
+		return : composite-proc sf.lt.full [VExtendedRtFull sf]
 
 	define [VAutoSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : NeedSlab SLAB : VSerifs df fBarStraight top sw swRef
 
@@ -264,14 +275,14 @@ glyph-block Letter-Latin-V : begin
 		local sbScale  : if fBarStraight VStraightSbShrink 1
 		local sbOffset : if fBarStraight VStraightSbOffset 0
 		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
-		return : composite-proc sf.rt.inner
+		return : VExtendedRtInner sf
 
 	glyph-block-export VBilateralMotionSerifs
 	define [VBilateralMotionSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : begin
 		local sbScale  : if fBarStraight VStraightSbShrink 1
 		local sbOffset : if fBarStraight VStraightSbOffset 0
 		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
-		return : composite-proc sf.lt.outer sf.rt.inner
+		return : composite-proc sf.lt.outer [VExtendedRtInner sf]
 
 	define VStandardConfig : SuffixCfg.weave
 		object # body
