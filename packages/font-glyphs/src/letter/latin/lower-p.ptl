@@ -40,6 +40,27 @@ glyph-block Letter-Latin-Lower-P : begin
 			rise  -- 0
 		include : tagged 'stemLeft' : VBar.l left Descender XH sw
 
+	define [FlatBottomBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
+		include : tagged 'bowl' : OBarLeft.toothlessCorner
+			left  -- left
+			right -- right
+			sw    -- sw
+			fine  -- (ShoulderFine * (sw / Stroke))
+			ada   -- ada
+			adb   -- adb
+			rise  -- 0
+		include : tagged 'stemLeft' : VBar.l left Descender XH sw
+
+	define [FlatTopAndBottomBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
+		include : tagged 'bowl' : OBarLeft.flatTopAndBottom
+			left  -- left
+			right -- right
+			sw    -- sw
+			fine  -- (ShoulderFine * (sw / Stroke))
+			ada   -- ada
+			adb   -- adb
+		include : tagged 'stemLeft' : VBar.l left Descender XH sw
+
 	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
 		include : tagged 'bowl' : OBarLeft.earlessCorner
 			left  -- left
@@ -71,6 +92,8 @@ glyph-block Letter-Latin-Lower-P : begin
 		object # body
 			eared                EaredBody
 			flatTop              FlatTopBody
+			flatBottom           FlatBottomBody
+			flatTopAndBottom     FlatTopAndBottomBody
 			earlessCorner        EarlessCornerBody
 			earlessRounded       EarlessRoundedBody
 		object # serifs
@@ -226,7 +249,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	select-variant 'cyrl/er' 0x440 (shapeFrom -- 'p')
 	select-variant 'pPalatalHook' 0x1D88 (follow -- 'p')
 
-	alias 'grek/rho' 0x3C1 'p.earlessRoundedSerifless'
+	select-variant 'grek/rho' 0x3C1 (shapeFrom -- 'p')
 
 	select-variant 'pStrokeBottom' 0xA751 (follow -- 'p')
 	select-variant 'pFlourish' 0xA753 (follow -- 'p')

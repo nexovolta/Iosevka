@@ -163,6 +163,7 @@ const GREEK_LOWERS = new Set([
 	"lower-nu",
 	"lower-xi",
 	"lower-pi",
+	"lower-rho",
 	"lower-final-sigma",
 	"lower-tau",
 	"lower-upsilon",

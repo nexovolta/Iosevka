@@ -578,6 +578,26 @@ glyph-block Letter-Shared-Shapes : begin
 				flat left [Math.max (top - ada) (yTerminal + TINY)]
 				curl left yTerminal [widths.lhs.heading sw Downward]
 
+		export : define flex-params [flatTopAndBottom] : begin
+			local-parameter : top               -- XH
+			local-parameter : bot               -- 0
+			local-parameter : left              -- SB
+			local-parameter : right             -- RightSB
+			local-parameter : sw                -- Stroke
+			local-parameter : fine              -- ShoulderFine
+			local-parameter : ada               -- SmallArchDepthA
+			local-parameter : adb               -- SmallArchDepthB
+
+			return : dispiro
+				widths.lhs sw
+				flat (left + TINY) bot [heading Rightward]
+				curl [Arch.adjust-x.bot [mix left right 0.5] (sw -- sw)] bot
+				archv
+				flatside.ru right bot top ada adb
+				arcvh
+				flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] top
+				curl (left + TINY) top [heading Leftward]
+
 	glyph-block-export : OBarRight
 	define OBarRight : namespace
 		define kSkewShift 0.5
@@ -737,6 +757,28 @@ glyph-block Letter-Shared-Shapes : begin
 					ada       -- ada
 					adb       -- adb
 					ystart    -- (top - yend)
+				FlipAround [mix left right 0.5] [mix bot top 0.5]
+
+		export : define flex-params [flatTopAndBottom] : begin
+			local-parameter : top               -- XH
+			local-parameter : bot               -- 0
+			local-parameter : left              -- SB
+			local-parameter : right             -- RightSB
+			local-parameter : sw                -- Stroke
+			local-parameter : fine              -- ShoulderFine
+			local-parameter : ada               -- SmallArchDepthA
+			local-parameter : adb               -- SmallArchDepthB
+
+			return : new-glyph : composite-proc
+				OBarLeft.flatTopAndBottom
+					top   -- top
+					bot   -- bot
+					left  -- left
+					right -- right
+					sw    -- sw
+					fine  -- fine
+					ada   -- ada
+					adb   -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 	glyph-block-export FlatHookDepth
