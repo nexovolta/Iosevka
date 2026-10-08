@@ -251,19 +251,23 @@ glyph-block Letter-Latin-K : begin
 			local kshLeft : left + [KBalance slabLT true]
 			local kshRightBot : right + [KBalanceRight slabLegs true]
 			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
-			local xArc : kshRightTop - ox
-			local yJoin : mix 0 top 0.45
-			local arcDepth : Math.min [if (top > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xArc - kshLeft) * 0.45)
+			local xOuter : kshRightTop - ox
+			local xArc : xOuter - [HSwToV stroke]
+			local yJoin : 0.5 * top
+			local minStraight : Math.max (0.125 * stroke) TINY
+			local arcDepth : Math.max stroke : Math.min (xArc - kshLeft - minStraight) (top - yJoin - minStraight)
+			local xLeftTop : kshLeft + [HSwToV stroke]
+			local xRightBottom : kshRightBot - 2 * OX
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
-			set-base-anchor 'trailing' (kshRightBot - ox) 0
+			set-base-anchor 'trailing' xRightBottom 0
 
 			local kshRightSerifs : right + [KBalanceRight true true]
 
 			define TopMask : object
 				forStroke : function [offset] : Rect top 0 kshLeft
-					if [HasRtSerif slabLegs] (kshRightSerifs + offset + SideJut - TanSlope * Stroke) VERY-FAR
+					if [HasRtSerif slabLegs] (kshRightSerifs + offset + SideJut - TanSlope * Stroke) xOuter
 				forSerifs : function [] : intersection
 					TopMask.forStroke (-0.1)
 					Rect top yJoin (xArc - TINY) VERY-FAR
@@ -272,7 +276,7 @@ glyph-block Letter-Latin-K : begin
 				forStroke : function [offset] : Rect top 0 kshLeft
 					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut + TanSlope * Stroke) VERY-FAR
 				forSerifs : function []
-					HalfRectTriangle (kshRightBot - ox - TINY) 0 (kshLeft + stroke - TINY) yJoin
+					HalfRectTriangle (xRightBottom - TINY) 0 (xLeftTop - TINY) yJoin
 
 			if fHookRight
 			: then : begin
@@ -297,13 +301,8 @@ glyph-block Letter-Latin-K : begin
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yJoin 0 : StrokeWidthBlend 0.5 0.7]
 			include : intersection
 				BottomMask.forStroke (-0.1)
-				spiro-outline
-					corner (kshLeft + stroke) 0
-					corner (kshLeft + stroke) (yJoin + 1)
-					corner (kshRightBot - ox) 0
-				dispiro
-					flat (kshRightBot - ox) 0 [widths.lhs stroke]
-					curl (kshLeft + stroke) yJoin [widths.lhs stroke]
+				Rect yJoin 0 (-VERY-FAR) VERY-FAR
+				ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke
 
 			include : KLegSlabs
 				mode         -- slabLegs

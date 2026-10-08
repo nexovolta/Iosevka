@@ -133,38 +133,46 @@ glyph-block Letter-Cyrillic-Zhe : begin
 		export : define [RoundedLegs fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define overshoot : Overshoot fSlab df
-			define yJoin : mix bot top 0.45
+			define yJoin : mix bot top 0.5
+			define swH : HSwToV fine
 			define attach1X : df.middle - [HSwToV : 0.5 * fine]
-			define xRight : df.rightSB - overshoot
-			define xLeft : df.leftSB + overshoot
-			define arcDepth : Math.min ArchDepthA ((xRight - attach1X) * 0.45)
+			define xRightOuter : df.rightSB - overshoot
+			define xLeftOuter : df.leftSB + overshoot
+			define xRight : xRightOuter - swH
+			define xLeft : xLeftOuter + swH
+			define minStraight : Math.max (0.125 * fine) TINY
+			define arcDepth : Math.max fine : Math.min (xRight - attach1X - minStraight) (top - yJoin - minStraight)
+			define xRightBottom : xRightOuter - 2 * OX
+			define xLeftBottom : xLeftOuter + 2 * OX
 
-			local rightUpper : dispiro
-				widths.rhs fine
-				flat attach1X yJoin [heading Rightward]
-				curl (xRight - arcDepth) yJoin [heading Rightward]
-				archv
-				flat xRight (yJoin + arcDepth) [heading Upward]
-				curl xRight top [heading Upward]
+			local rightUpper : intersection [MaskRight df.middle] [MaskLeft xRightOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
+				dispiro
+					widths.rhs fine
+					flat attach1X yJoin [heading Rightward]
+					curl (xRight - arcDepth) yJoin [heading Rightward]
+					archv
+					flat xRight (yJoin + arcDepth) [heading Upward]
+					curl xRight top [heading Upward]
 
-			local leftUpper : dispiro
-				widths.lhs fine
-				flat attach1X yJoin [heading Leftward]
-				curl (xLeft + arcDepth) yJoin [heading Leftward]
-				archv
-				flat xLeft (yJoin + arcDepth) [heading Upward]
-				curl xLeft top [heading Upward]
+			local leftUpper : intersection [MaskLeft df.middle] [MaskRight xLeftOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
+				dispiro
+					widths.lhs fine
+					flat attach1X yJoin [heading Leftward]
+					curl (xLeft + arcDepth) yJoin [heading Leftward]
+					archv
+					flat xLeft (yJoin + arcDepth) [heading Upward]
+					curl xLeft top [heading Upward]
 
-			local rightLower : intersection [MaskRight df.middle] [MaskBelow yJoin]
-				ExtLineLhs xRight bot (df.width - attach1X) yJoin fine 4
-			local leftLower : intersection [MaskLeft df.middle] [MaskBelow yJoin]
-				ExtLineRhs xLeft bot attach1X yJoin fine 4
+			local rightLower : intersection [MaskRight df.middle] [MaskLeft xRightOuter] [MaskBelow yJoin]
+				ExtLineLhsToRhs attach1X yJoin xRightBottom bot fine
+			local leftLower : intersection [MaskLeft df.middle] [MaskRight xLeftOuter] [MaskBelow yJoin]
+				ExtLineRhsToLhs attach1X yJoin xLeftBottom bot fine
 
 			local rightHalf : union rightUpper rightLower
 			local leftHalf : union leftUpper leftLower
 			local fullShape : if fHalf rightHalf : union rightHalf leftHalf
 
-			return : intersection [MaskBelow top] [MaskAbove bot] fullShape
+			return : remove-holes : intersection [MaskBelow top] [MaskAbove bot] fullShape
 		define [ConnectedLegsImpl k fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define cor : DiagCor (top - bot) (df.rightSB - df.leftSB)
