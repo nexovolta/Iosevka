@@ -46,6 +46,27 @@ glyph-block Letter-Latin-Lower-D : begin
 			rise  -- 0
 		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
 
+	define [FlatTopBody df yTop] : union
+		OBarRight.earlessCorner
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
+			rise  -- 0
+		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
+
+	define [FlatTopAndBottomBody df yTop] : union
+		OBarRight.flatTopAndBottom
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
+		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
+
 	define [ToothlessCornerBody df yTop] : union
 		OBarRight.toothlessCorner
 			left  -- df.leftSB
@@ -84,6 +105,8 @@ glyph-block Letter-Latin-Lower-D : begin
 			toothed                   ToothedBody
 			tailed                    TailedBody
 			flatBottom                FlatBottomBody
+			flatTop                   FlatTopBody
+			flatTopAndBottom          FlatTopAndBottomBody
 			toothlessCorner           ToothlessCornerBody
 			toothlessCornerRTB        ToothlessCornerRTBBody
 			toothlessRounded          ToothlessRoundedBody
