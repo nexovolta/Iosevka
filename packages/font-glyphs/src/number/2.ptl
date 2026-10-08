@@ -275,6 +275,24 @@ glyph-block Digits-Two : begin
 			local dy : kLen * (rumSlashYTop - rumSlashYBot)
 			include : RumRotundaSlash (xMid - dx / 2) (xMid + dx / 2) (yMid + dy / 2) (yMid - dy / 2) OverlayStroke
 
+		# Monospace tum: t with the same compact rum slash through the bar.
+		# Aile/Etoile keep the t–Is ligature (see phoneticTum).
+		if [not para.isQuasiProportional] : begin
+			derive-glyphs 'tum' 0xA777 't' : lambda [src gr] : glyph-proc
+				include [refer-glyph src] AS_BASE ALSO_METRICS
+				local overlay currentGlyph.baseAnchors.overlay
+				local xStem : mix overlay.x overlay.x 0
+				local b : include : MeasureGlyphBoundsInY (XH - Stroke - O) (XH + O)
+				local xBarRight : 0 + RightSB
+				if b : set xBarRight : mix b.xMax b.xMax 0
+				local xMid : mix xStem xBarRight 0.72
+				local yMid : XH - HalfStroke
+				local dfSlash : DivFrame rumAdws
+				local kLen : 3 / 4
+				local dx : kLen * 0.20 * (RightSB - dfSlash.leftSB)
+				local dy : kLen * (rumSlashYTop - rumSlashYBot)
+				include : RumRotundaSlash (xMid - dx / 2) (xMid + dx / 2) (yMid + dy / 2) (yMid - dy / 2) OverlayStroke
+
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/two' 0x1D7DA : glyph-proc
 		include : MarkSet.capital
