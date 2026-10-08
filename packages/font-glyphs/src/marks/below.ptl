@@ -11,7 +11,7 @@ glyph-block Mark-Below : begin
 
 	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markHalfStroke markStress markFine
 	glyph-block-import Mark-Shared-Metrics : markMiddle markDotsRadius
-	glyph-block-import Mark-Above : WigglyLineShape SnakeBelowShape MeasureGlyphBounds CenterMarkHorizontally TildeShape
+	glyph-block-import Mark-Above : WigglyLineShape SnakeBelowShape MeasureGlyphBounds CenterMarkHorizontally TildeShape IsBelowShape
 
 	glyph-block-export belowMarkBot belowMarkTop belowMarkMid belowMarkStack
 	define belowMarkBot   (0 - AccentClearance - AccentHeight)
@@ -235,7 +235,7 @@ glyph-block Mark-Below : begin
 			hsBot  -- (0.4 * markFine)
 		include : AlignToneMarkBelow
 
-	# Combining IS below: a / from the center, tapering into a tilde on the right.
+	# Combining IS below: a / into the tilde from the top; the slash stops at the join.
 	create-glyph 'isBelow' 0x1DD0 : glyph-proc
 		set-width 0
 		include : StdAnchors.impl 0 1.5
@@ -252,23 +252,15 @@ glyph-block Mark-Below : begin
 		local tTildeBot : yJoin + 0
 		local tildeRight : markMiddle + markExtend * 1.7
 
-		include : union
-			dispiro
-				widths.center markStroke
-				flat xTop yTop
-				curl xJoin yJoin [widths.center (2 * markFine)]
-			dispiro
-				widths.center (2 * markFine)
-				flat xJoin yJoin
-				curl xBot yBot [widths.center markFine]
-			glyph-proc
-				include : TildeShape
-					ttop     -- tTildeTop
-					tbot     -- tTildeBot
-					leftEnd  -- xJoin
-					rightEnd -- tildeRight
-					hs       -- markHalfStroke
-					hsLeft   -- markFine
+		include : IsBelowShape
+			xTop     -- xTop
+			yTop     -- yTop
+			ttop     -- tTildeTop
+			tbot     -- tTildeBot
+			leftEnd  -- xJoin
+			rightEnd -- tildeRight
+			hs       -- markHalfStroke
+			hsJoin   -- markFine
 
 	define centralizationFine : AdviceStroke 6
 	define slashDx : (RightSB - SB) / 2 + O * 3 - 0.5 * centralizationFine
