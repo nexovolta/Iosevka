@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame LeftHook PalatalHook
-	glyph-block-import Letter-Latin-Lower-E : AbkCheLeftFlourish
+	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
 
 	glyph-block-export BShape
 	define BArcMix 0.93
@@ -425,19 +425,11 @@ glyph-block Letter-Latin-Upper-B : begin
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : body CAP sw ts bs subDf
 			local xStem : subDf.leftSB + shift
-			local ink : HSwToV sw
 			local bowl : mix sw CAP bp
-			local yBarBottom : bowl - sw
-			local xJoin : xStem + [HSwToV : 0.5 * sw]
-			local flourishWidth : (1 / 3) * df.width
-			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
-			local xLeft : Math.max 0 : Math.min (xStem - flourishWidth) (xStem - minGap - ink)
-			include : AbkCheLeftFlourish df yBarBottom
-				xJoin  -- xJoin
+			include : EFlourishHook df bowl
 				xClip  -- xStem
+				xJoin  -- (subDf.middle + shift)
 				stroke -- sw
-				fDown  -- true
-				xLeft  -- xLeft
 
 		if (!fGap) : create-glyph "BBar.\(suffix)" : glyph-proc
 			include [refer-glyph "B.\(suffix)"] AS_BASE ALSO_METRICS
