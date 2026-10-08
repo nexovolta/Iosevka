@@ -245,14 +245,16 @@ glyph-block Letter-Latin-V : begin
 
 	# Right inner serifs use JutIn and nearly vanish at heavy; add length that
 	# grows with weight, and measure from SideJut so they stay readable.
+	# Capitals get a full extra Jut at heavy so the right serif stays obvious
+	# on the larger body; lowercase keeps the lighter 0.5 Jut blend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
-	define VRightSerifExtend : StrokeWidthBlend 0 (0.5 * Jut)
+	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
 
-	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top (sf.sideJut + VRightSerifExtend) sf.swSerif
-	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + VRightSerifExtend) sf.swSerif
-	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb (sf.right - [HSwToV sf.swRef]) sf.bot (sf.sideJut + VRightSerifExtend) sf.swSerif
-	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + VRightSerifExtend) sf.swSerif
-	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + VRightSerifExtend) sf.swSerif
+	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb (sf.right - [HSwToV sf.swRef]) sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
 
 	glyph-block-export VSerifs
 	define [VSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : begin
