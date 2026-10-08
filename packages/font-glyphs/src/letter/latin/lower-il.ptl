@@ -412,29 +412,35 @@ glyph-block Letter-Latin-Lower-I : begin
 		topSemi    'semi'
 		topDiag    'diagonal'
 
-	define [IStemWithCasualTop df top xMiddle kind] : glyph-proc
+	define [IStemWithCasualTop df top bot xMiddle kind] : glyph-proc
 		local yJoin : mix 0 top 0.5
 		include : difference
 			new-glyph : glyph-proc
-				include : ILBody.Serifless df top 0 xMiddle
+				include : ILBody.Serifless df top bot xMiddle
 			MaskAbove (yJoin + HalfStroke)
 		include : ILBody.CasualTop df top xMiddle kind
-		include : ILMarks.Serifless df top 0 xMiddle
+		include : ILMarks.Serifless df top bot xMiddle
 
 	foreach { suffix kind } [Object.entries AiCasualTopConfig] : do
 		create-glyph "dotlessaiDiphthong.upright.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : df.markSet.e
 			local xMiddle : [XMiddleT MODE-I].Casual df
-			include : IStemWithCasualTop df XH xMiddle kind
+			include : IStemWithCasualTop df XH 0 xMiddle kind
 			include : HalfRingDescender (xMiddle - [HSwToV HalfStroke]) 0
 
 		create-glyph "dotlessaiDiphthong.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : df.markSet.e
 			local xMiddle : [XMiddleT MODE-I].Casual df
-			include : IStemWithCasualTop df XH xMiddle kind
+			include : IStemWithCasualTop df XH 0 xMiddle kind
 			include : RetroflexHook.mExt xMiddle 0
+
+		create-glyph "dotlessiStretched.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.p
+			local xMiddle : [XMiddleT MODE-I].Casual df
+			include : IStemWithCasualTop df XH Descender xMiddle kind
 
 	# `l`-like letters
 	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-L]] : begin
@@ -547,7 +553,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		CreateAccentedComposition 'iRetroflexHook' 0x1D96 'dotlessiRetroflexHook' 'tittleAbove'
 
 		select-variant 'dotlessaiDiphthong.upright' (follow -- 'dotlessiPigtail.upright')
-		select-variant 'dotlessaiDiphthong.italic'  (follow -- 'dotlessiRTail')
+		select-variant 'dotlessaiDiphthong.italic'  (follow -- 'dotlessiPigtail.italic')
 
 		select-variant 'dotlessiStretched'
 		CreateAccentedComposition 'iStretched' 0x1DF71 'dotlessiStretched' 'tittleAbove'
