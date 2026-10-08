@@ -9,7 +9,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
-	glyph-block-import Letter-Latin-V : VSquareTopYJoin
+	glyph-block-import Letter-Latin-V : VSquareTopYJoin VExtendedRtInner VExtendedRtFull
 	glyph-block-import Letter-Shared-Shapes : SerifFrame VerticalHook
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
@@ -164,16 +164,16 @@ glyph-block Letter-Latin-W : begin
 
 		include : match slabType
 			[Just SERIFS-NONE]           : glyph-proc
-			[Just SERIFS-AUTO]           : NeedSlab SLAB : composite-proc sf.lt.full sf.rt.full
-			[Just SERIFS-ALL]            : composite-proc sf.lt.full sf.rt.full
+			[Just SERIFS-AUTO]           : NeedSlab SLAB : composite-proc sf.lt.full [VExtendedRtFull sf]
+			[Just SERIFS-ALL]            : composite-proc sf.lt.full [VExtendedRtFull sf]
 			[Just SERIFS-ALL-OUTER]      : composite-proc sfm.lt.outer sfm.rt.outer
-			[Just SERIFS-ALL-ASYMMETRIC] : composite-proc sfm.lt.outer sfm.rt.full
+			[Just SERIFS-ALL-ASYMMETRIC] : composite-proc sfm.lt.outer [VExtendedRtFull sfm]
 			[Just SERIFS-ALL-REVERSE-ASYMMETRIC] : composite-proc sfm.lt.full sfm.rt.outer
 			[Just SERIFS-MOTION]         : begin sfm.lt.outer
-			[Just SERIFS-TOP-RIGHT-MOTION] : begin sfm.rt.inner
-			[Just SERIFS-BILATERAL-MOTION] : composite-proc sfm.lt.outer sfm.rt.inner
+			[Just SERIFS-TOP-RIGHT-MOTION] : VExtendedRtInner sfm
+			[Just SERIFS-BILATERAL-MOTION] : composite-proc sfm.lt.outer [VExtendedRtInner sfm]
 			[Just SERIFS-DOUBLE-V]       : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.outer
-			[Just SERIFS-ASYMMETRIC]     : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.full
+			[Just SERIFS-ASYMMETRIC]     : NeedSlab SLAB : composite-proc sfm.lt.outer [VExtendedRtFull sfm]
 			[Just SERIFS-CURSIVE]        : NeedSlab SLAB sf.lt.outer
 			[Just SERIFS-CYRL-OMEGA]     : begin
 				local jut : Math.min Jut : [HSwToV : 0.5 * dim.strokeOuter] + 0.375 * (dim.xLeft2 - df.leftSB - [HSwToV : 1.5 * dim.strokeOuter])
@@ -448,8 +448,8 @@ glyph-block Letter-Latin-W : begin
 		include : match slabType
 			[Just SERIFS-CURSIVE] : NeedSlab SLAB sf.lt.outer
 			[Just SERIFS-MOTION]  : begin sf.lt.outer
-			[Just SERIFS-TOP-RIGHT-MOTION] : begin sf.rt.inner
-			[Just SERIFS-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
+			[Just SERIFS-TOP-RIGHT-MOTION] : VExtendedRtInner sf
+			[Just SERIFS-BILATERAL-MOTION] : composite-proc sf.lt.outer [VExtendedRtInner sf]
 			___                   : glyph-proc
 
 	define [WCursiveImpl      df top bodyType slabType midHClass] : WCursiveImplImpl false df top bodyType slabType midHClass
