@@ -249,12 +249,16 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			flat l 0 [heading Upward]
 			curl [mix l r pFine] [mix 0 CAP pFine] [widths.heading (fine * cor) 0 Upward]
 
-	# Both stubs share one centerline so the angle does not change with weight.
-	define [CircleSlashSegmentedLocked l r] : glyph-proc
-		local swBar : AdviceStroke 3
-		local pFine : 0.5 - (CAP / 10) / [Math.hypot CAP (r - l)]
-		include : ExtLineCenter r CAP [mix r l pFine] [mix CAP 0 pFine] swBar
-		include : ExtLineCenter l 0 [mix l r pFine] [mix 0 CAP pFine] swBar
+	# Constant-width parallelogram stub with horizontal terminals, matching PercentBarShape.
+	define [CircleSlashParallelogram l r sw y0 y1 xShift] : begin
+		local a : Waveform.sawtooth : (r - l - sw) / CAP
+		local cor : 1 / [Math.sqrt : 1 - a * a]
+		local hw : HSwToV : cor * sw
+		return : spiro-outline
+			corner (xShift + [mix l        (r - hw) (y0 / CAP)]) y0
+			corner (xShift + [mix l        (r - hw) (y1 / CAP)]) y1
+			corner (xShift + [mix (l + hw) r        (y1 / CAP)]) y1
+			corner (xShift + [mix (l + hw) r        (y0 / CAP)]) y0
 
 	define [CircleAlsoConnectedBar l r radius] : begin
 		local swBar : AdviceStroke 3.75
@@ -341,7 +345,22 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		local yHook sR
 		local yTopC : yHook + dist
 		include : PercentCircle (l + largeR) (CAP - largeR) largeR
-		include : if fSegmented [CircleSlashSegmentedLocked l r] [CircleSlashContinuous l r]
+		if fSegmented : begin
+			local swSeg : AdviceStroke 3
+			local pFine : 0.5 - [Math.max (CAP / 10) HalfStroke] / [Math.hypot CAP (r - l)]
+			local yCutTop : mix CAP 0 pFine
+			local yCutBot : mix 0 CAP pFine
+			local a : Waveform.sawtooth : (r - l - swSeg) / CAP
+			local cor : 1 / [Math.sqrt : 1 - a * a]
+			local hw : HSwToV : cor * swSeg
+			local stubRight : mix (l + hw) r (yCutBot / CAP)
+			local clusterLeft : xHook - sR
+			local xShiftPref : clusterLeft - slashGap - stubRight
+			local xShift : Math.max (0 - l) : Math.min (0 - hw) : Math.min 0 xShiftPref
+			include : CircleSlashParallelogram l r swSeg yCutTop CAP 0
+			include : CircleSlashParallelogram l r swSeg 0 yCutBot xShift
+		: else : begin
+			include : CircleSlashContinuous l r
 		if fConnected : include : CircleAlsoConnectedBar l r largeR
 		include : CircleClusterTriple xHook yHook xStem yHook xStem yTopC sR
 
