@@ -235,7 +235,7 @@ glyph-block Mark-Below : begin
 			hsBot  -- (0.4 * markFine)
 		include : AlignToneMarkBelow
 
-	# Combining IS below: a / from the center joins the tilde from the top-left.
+	# Combining IS below: a / from the center, tapering into a tilde on the right.
 	create-glyph 'isBelow' 0x1DD0 : glyph-proc
 		set-width 0
 		include : StdAnchors.impl 0 1.5
@@ -245,23 +245,30 @@ glyph-block Mark-Below : begin
 		local xTop : markMiddle + markExtend * 0.15
 		local xBot : markMiddle - markExtend * 0.95
 		local yBot : yTop - slashH
-		local tTildeTop : mix yBot yTop 0.55
-		local tTildeBot : mix yBot yTop 0.2
-		local tildeLeft : mix xBot xTop 0.22
+		local joinK : 0 + 0.28
+		local xJoin : mix xBot xTop joinK
+		local yJoin : mix yBot yTop joinK
+		local tTildeTop : yJoin + (yTop - yBot) * 0.32
+		local tTildeBot : yJoin + 0
 		local tildeRight : markMiddle + markExtend * 1.7
 
 		include : union
 			dispiro
 				widths.center markStroke
 				flat xTop yTop
-				curl xBot yBot
+				curl xJoin yJoin [widths.center (2 * markFine)]
+			dispiro
+				widths.center (2 * markFine)
+				flat xJoin yJoin
+				curl xBot yBot [widths.center markFine]
 			glyph-proc
 				include : TildeShape
 					ttop     -- tTildeTop
 					tbot     -- tTildeBot
-					leftEnd  -- tildeLeft
+					leftEnd  -- xJoin
 					rightEnd -- tildeRight
 					hs       -- markHalfStroke
+					hsLeft   -- markFine
 
 	define centralizationFine : AdviceStroke 6
 	define slashDx : (RightSB - SB) / 2 + O * 3 - 0.5 * centralizationFine

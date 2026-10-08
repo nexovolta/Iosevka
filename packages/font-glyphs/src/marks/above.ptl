@@ -772,12 +772,13 @@ glyph-block Mark-Above : begin
 		return { z1 z2 z3 z4 }
 
 	glyph-block-export TildeShape
-	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs] : glyph-proc
+	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
 		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
 		define bone : new Arcs.Bez3 z1 z2 z3 z4
+		local hs0 : fallback hsLeft hs
 
-		define inner : new OffsetCurve bone (+hs) HVContrast
-		define outer : new Arcs.Reverted : new OffsetCurve bone (-hs) HVContrast
+		define inner : new TaperedOffsetCurve bone (+hs0) (+hs) HVContrast
+		define outer : new Arcs.Reverted : new TaperedOffsetCurve bone (-hs0) (-hs) HVContrast
 
 		define cs : new BezToContoursSink
 		ShapeConv.transferGenericShapeAsBezier {{inner outer}} cs GEOMETRY_PRECISION
