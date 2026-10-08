@@ -234,6 +234,88 @@ glyph-block Letter-Latin-K : begin
 				maskRT	     -- TopSerifMask
 				maskRB	     -- BotSerifMask
 
+		define [SwapKLegTB mode] : (mode - [HasRtSerif mode] - [HasRbSerif mode]) + [if [HasRtSerif mode] 1 0] + [if [HasRbSerif mode] 2 0]
+		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
+			include : remove-holes : new-glyph : glyph-proc
+				include : KLegs.Straight fHookRight left right stroke top slabLT [SwapKLegTB slabLegs] attachment
+				include : FlipAround [mix left right 0.5] (top / 2) 1 (-1)
+			local ox : KOvershootX slabLegs true top stroke
+			local kshRight : right + [KBalanceRight slabLegs true]
+			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'trailing' (kshRight - ox) 0
+
+		export : define [RoundedConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
+			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
+			local ox : KOvershootX slabLegs true top stroke
+			local kshLeft : left + [KBalance slabLT true]
+			local kshRightBot : right + [KBalanceRight slabLegs true]
+			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
+			local xArc : kshRightTop - ox
+			local yJoin : mix 0 top 0.45
+			local arcDepth : Math.min [if (top > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xArc - kshLeft) * 0.45)
+
+			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'trailing' (kshRightBot - ox) 0
+
+			local kshRightSerifs : right + [KBalanceRight true true]
+
+			define TopMask : object
+				forStroke : function [offset] : Rect top 0 kshLeft
+					if [HasRtSerif slabLegs] (kshRightSerifs + offset + SideJut - TanSlope * Stroke) VERY-FAR
+				forSerifs : function [] : intersection
+					TopMask.forStroke (-0.1)
+					Rect top yJoin (xArc - TINY) VERY-FAR
+
+			define BottomMask : object
+				forStroke : function [offset] : Rect top 0 kshLeft
+					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut + TanSlope * Stroke) VERY-FAR
+				forSerifs : function []
+					HalfRectTriangle (kshRightBot - ox - TINY) 0 (kshLeft + stroke - TINY) yJoin
+
+			if fHookRight
+			: then : begin
+				define kHookRightMix 0.5
+				include : dispiro
+					widths.rhs stroke
+					straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
+					flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yJoin kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
+					curl (kshLeft + stroke) yJoin [widths.rhs fine]
+			: else : begin
+				set-base-anchor 'armOverlay' [mix kshLeft xArc : StrokeWidthBlend 0.5 0.65] [mix yJoin top : StrokeWidthBlend 0.5 0.7]
+				include : intersection
+					TopMask.forStroke 0
+					dispiro
+						widths.rhs stroke
+						flat kshLeft yJoin [heading Rightward]
+						curl (xArc - arcDepth) yJoin [heading Rightward]
+						archv
+						flat xArc (yJoin + arcDepth) [heading Upward]
+						curl xArc top [heading Upward]
+
+			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yJoin 0 : StrokeWidthBlend 0.5 0.7]
+			include : intersection
+				BottomMask.forStroke (-0.1)
+				spiro-outline
+					corner (kshLeft + stroke) 0
+					corner (kshLeft + stroke) (yJoin + 1)
+					corner (kshRightBot - ox) 0
+				dispiro
+					flat (kshRightBot - ox) 0 [widths.lhs stroke]
+					curl (kshLeft + stroke) yJoin [widths.lhs stroke]
+
+			include : KLegSlabs
+				mode         -- slabLegs
+				top          -- top
+				left         -- left
+				right        -- right
+				swRef        -- stroke
+				fStraightBar -- true
+				attachment   -- attachment
+				maskRT	     -- TopMask.forSerifs
+				maskRB	     -- BottomMask.forSerifs
+
 		export : define [Curly fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
 			local kshLeft : left + [KBalance slabLT false]
@@ -409,6 +491,8 @@ glyph-block Letter-Latin-K : begin
 			curly                 KLegs.Curly
 			symmetricTouching    [KLegs.Symmetric 0]
 			symmetricConnected   [KLegs.Symmetric [AdviceStroke 6]]
+			inverseConnected     KLegs.InverseConnected
+			roundedConnected     KLegs.RoundedConnected
 			symmetricConnectedKH [KLegs.Symmetric [AdviceStroke 6] Descender]
 			symmetricConnectedVB [KLegs.Symmetric CyrlVbGap]
 		function [body] : object # serifs
@@ -572,6 +656,8 @@ glyph-block Letter-Latin-K : begin
 			cursiveTailed        KLegs.CursiveTailed
 			symmetricTouching   [KLegs.Symmetric 0]
 			symmetricConnected  [KLegs.Symmetric [AdviceStroke 6]]
+			inverseConnected    KLegs.InverseConnected
+			roundedConnected    KLegs.RoundedConnected
 		object # serifs
 			serifless                     { 0 0 0 }
 			topLeftSerifed                { 1 0 0 }

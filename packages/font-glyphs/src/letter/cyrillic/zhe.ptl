@@ -127,6 +127,44 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 		export : define [TouchingLegs   fSlab fHalf df bot top] : ConnectedLegsImpl 1.00 fSlab fHalf df bot top
 		export : define [ConnectingLegs fSlab fHalf df bot top] : ConnectedLegsImpl 0.60 fSlab fHalf df bot top
+		export : define [InverseStraightLegs fSlab fHalf df bot top] : remove-holes : new-glyph : glyph-proc
+			include : StraightLegs fSlab fHalf df bot top
+			include : FlipAround df.middle [mix bot top 0.5] 1 (-1)
+		export : define [RoundedLegs fSlab fHalf df bot top] : begin
+			define fine : ZheSw df
+			define overshoot : Overshoot fSlab df
+			define yJoin : mix bot top 0.45
+			define attach1X : df.middle - [HSwToV : 0.5 * fine]
+			define xRight : df.rightSB - overshoot
+			define xLeft : df.leftSB + overshoot
+			define arcDepth : Math.min ArchDepthA ((xRight - attach1X) * 0.45)
+
+			local rightUpper : dispiro
+				widths.rhs fine
+				flat attach1X yJoin [heading Rightward]
+				curl (xRight - arcDepth) yJoin [heading Rightward]
+				archv
+				flat xRight (yJoin + arcDepth) [heading Upward]
+				curl xRight top [heading Upward]
+
+			local leftUpper : dispiro
+				widths.lhs fine
+				flat attach1X yJoin [heading Leftward]
+				curl (xLeft + arcDepth) yJoin [heading Leftward]
+				archv
+				flat xLeft (yJoin + arcDepth) [heading Upward]
+				curl xLeft top [heading Upward]
+
+			local rightLower : intersection [MaskRight df.middle] [MaskBelow yJoin]
+				ExtLineLhs xRight bot (df.width - attach1X) yJoin fine 4
+			local leftLower : intersection [MaskLeft df.middle] [MaskBelow yJoin]
+				ExtLineRhs xLeft bot attach1X yJoin fine 4
+
+			local rightHalf : union rightUpper rightLower
+			local leftHalf : union leftUpper leftLower
+			local fullShape : if fHalf rightHalf : union rightHalf leftHalf
+
+			return : intersection [MaskBelow top] [MaskAbove bot] fullShape
 		define [ConnectedLegsImpl k fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define cor : DiagCor (top - bot) (df.rightSB - df.leftSB)
@@ -185,6 +223,8 @@ glyph-block Letter-Cyrillic-Zhe : begin
 		curly               { Zhe.CurlyLegs      SLAB  SLAB }
 		symmetricTouching   { Zhe.TouchingLegs   SLAB  SLAB }
 		symmetricConnected  { Zhe.ConnectingLegs SLAB  SLAB }
+		inverseConnected    { Zhe.InverseStraightLegs SLAB  SLAB }
+		roundedConnected    { Zhe.RoundedLegs    SLAB  SLAB }
 		cursive             { Zhe.CursiveLegs    false SLAB }
 
 	foreach { suffix { legShape fSlab fMidSlab } } [Object.entries ZheConfig] : do
