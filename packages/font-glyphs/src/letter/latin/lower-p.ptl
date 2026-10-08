@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	glyph-block-import Letter-Shared-Shapes : OBarLeft LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook SerifFrame
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
 
 
 	define [SmallThornEaredBody] : glyph-proc
@@ -144,53 +145,20 @@ glyph-block Letter-Latin-Lower-P : begin
 			local xBodyRight : subDf.rightSB + 0
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
-			local fine : ShoulderFine * (sw / Stroke)
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				# Flat bowl bottom (no tooth/spur): bar continues straight into the flourish dip.
-				if (Body === EarlessRoundedBody) : begin
-					include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- Descender)
-						left  -- xBodyLeft
-						right -- xBodyRight
-						sw    -- sw
-						fine  -- fine
-						ada   -- ada
-						adb   -- adb
-				: else : begin
-					include : tagged 'bowl' : OBarLeft.toothlessCorner
-						rise  -- 0
-						left  -- xBodyLeft
-						right -- xBodyRight
-						sw    -- sw
-						fine  -- fine
-						ada   -- ada
-						adb   -- adb
-					include : tagged 'stemLeft' : VBar.l xBodyLeft Descender XH sw
+				include : Body
+					left  -- xBodyLeft
+					right -- xBodyRight
+					sw    -- sw
+					ada   -- ada
+					adb   -- adb
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
-			local ink : HSwToV sw
-			local hd : FlatHookDepth df
-			# Bottom of the flourish bar collinear with the p's flat (y=0); hook turns down.
-			local flourishWidth : (1 / 3) * df.width
-			local minGap : Math.max (0.6 * sw) [AdviceStroke 8]
-			local turnNeed : Math.max (1.15 * sw) (hd.x - [HSwToV : 0.5 * sw])
-			local flatMin : Math.max (0.85 * sw) TINY
-			local xHookPref : Math.max 0 : Math.min (xStem - flourishWidth) (xStem - minGap - ink)
-			local xHook : Math.min xHookPref (xStem - turnNeed - flatMin)
-			local xTurn : xHook + turnNeed
-			local bendY : Math.min (0 - (Descender + O) - TINY) : Math.max (1.15 * sw) hd.y
-			local yTip : 0 - bendY
-			# Flat bar continues the p's bottom stroke: bottom on the baseline (y=0),
-			# top at y=sw, same band as OBarLeft's flat (path at 0, stroke upward).
-			include : HBar.b xTurn (xStem + ink) 0 sw
-			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
-				widths.lhs sw
-				corner xTurn sw [heading Leftward]
-				curl [Math.max (xHook + TINY) (xTurn - TINY)] sw [heading Leftward]
-				archv
-				flat xHook (0 - bendY + 0.25 * sw) [heading Downward]
-				curl xHook yTip [heading Downward]
-			include : ExtendBelowBaseAnchors yTip
+			include : EFlourishHook df sw
+				xClip  -- xStem
+				xJoin  -- (subDf.middle + shift)
+				stroke -- sw
 
 		create-glyph "pSquirrelTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
