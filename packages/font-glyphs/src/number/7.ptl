@@ -55,7 +55,9 @@ glyph-block Digits-Seven : begin
 				corner SevenXLeft yFoot
 
 	define [SevenVerticalTopYShoulder top] : mix 0 (top - Stroke) 0.56
-	define [SevenVerticalYFoot top] : Math.max (0.16 * top) Stroke
+	define [SevenVerticalYFoot top] : begin
+		local y : mix 0 (top - Stroke) 0.3
+		return : Math.max y Stroke
 
 	define [VerticalTopBody top] : begin
 		local swH : HSwToV Stroke
