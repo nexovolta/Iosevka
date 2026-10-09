@@ -248,11 +248,21 @@ glyph-block Letter-Latin-V : begin
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
 
-	# Inner-only: jut left from the inner edge of the right arm. Right jut 0 so
-	# the serif cannot stick past the outer terminal.
-	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV sf.swRef]) sf.top SideJut 0 sf.swSerif
+	# Diagonal arms are thicker horizontally than a vertical bar of the same sw.
+	define [VInnerArmInk sf] : begin
+		local dgCor : DiagCor (2 * [Math.max TINY (sf.top - sf.bot)]) Width 0 (2 * sf.swRef)
+		return : HSwToV : dgCor * sf.swRef
+
+	# Visible left jut: clear the extra diagonal thickness, then a weight-scaled flank.
+	define [VInnerLeftJut sf] : begin
+		local extra : Math.max 0 ([VInnerArmInk sf] - [HSwToV sf.swRef])
+		return : extra + [StrokeWidthBlend SideJut Jut sf.swRef]
+
+	# Attach at the vertical-terminal inner edge, overlap half a stem for a smooth join,
+	# and jut left far enough to clear the true inner of a diagonal arm.
+	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV sf.swRef]) sf.top [VInnerLeftJut sf] [HSwToV : 0.5 * sf.swRef] sf.swSerif
 	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
-	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV sf.swRef]) sf.bot SideJut 0 sf.swSerif
+	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV sf.swRef]) sf.bot [VInnerLeftJut sf] [HSwToV : 0.5 * sf.swRef] sf.swSerif
 	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
 	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
 
