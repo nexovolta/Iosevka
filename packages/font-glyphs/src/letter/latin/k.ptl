@@ -16,7 +16,23 @@ glyph-block Letter-Latin-K : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail CyrDescender
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook TopHook
 
-	glyph-block-export KLegs
+	glyph-block-export KLegs KInnerRtSerif
+
+	# Inner serif on a down-left diagonal: attach at the true inner edge, jut left.
+	define [KInnerRtSerif xOuter top left swRef swSerif] : begin
+		local stemInk : HSwToV swRef
+		local yJoin : [mix 0 top 0.42] - swRef
+		local fall : Math.max TINY (top - yJoin)
+		local run : Math.max TINY (xOuter - (left + stemInk))
+		local dgCor : DiagCor fall run
+		local armInk : HSwToV : swRef * dgCor
+		local xInner : xOuter - armInk
+		local delta : swSerif * run / fall
+		local innerJut : 0.5 * [StrokeWidthBlend SideJut Jut swRef]
+		local avail : Math.max innerJut (xInner - (left + stemInk) - 0.25 * stemInk)
+		local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 swRef
+		local leftJut : [Math.min (innerJut + delta) avail] * [mix 1 0.5 heavyT]
+		return : tagged 'serifRT' : HSerif.mtAsymmetric xInner top leftJut (0.5 * armInk) swSerif
 
 	# The mode parameter of KLegSlabs is a 4-bit mask:
 	# bit 0: Top left serif
@@ -66,22 +82,7 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		# Inner serif: true inner edge of the diagonal, jutting left into the counter.
-		# Length grows with weight so the flank stays visible; right overlap stays inside the arm.
-		if [HasRtInner mode] : begin
-			local yJoin : [mix 0 top 0.42] - swRef
-			local fall : Math.max TINY (top - yJoin)
-			local run : Math.max TINY (xOuter - (left + stemInk))
-			local dgCor : DiagCor fall run
-			local armInk : HSwToV : swRef * dgCor
-			local xInner : xOuter - armInk
-			local delta : swSerif * run / fall
-			local innerJut : 0.5 * [StrokeWidthBlend SideJut Jut swRef]
-			local avail : Math.max innerJut (xInner - (left + stemInk) - 0.25 * stemInk)
-			# Halve the jut from Regular toward Heavy so bold k does not read as r.
-			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 swRef
-			local leftJut : [Math.min (innerJut + delta) avail] * [mix 1 0.5 heavyT]
-			include : tagged 'serifRT' : HSerif.mtAsymmetric xInner top leftJut (0.5 * armInk) swSerif
+		if [HasRtInner mode] : include : KInnerRtSerif xOuter top left swRef swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference
