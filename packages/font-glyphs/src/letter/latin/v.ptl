@@ -247,7 +247,10 @@ glyph-block Letter-Latin-V : begin
 	# Full/middle bars keep VRightSerifExtend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
-	define [VInnerSerifJut sf] : Math.min para.refJut : Math.max 0 : (sf.right - [HSwToV sf.swRef] - [mix sf.left sf.right 0.5])
+	define [VInnerSerifJut sf] : begin
+		local xInner : sf.right - [HSwToV sf.swRef]
+		local xMid : mix sf.left sf.right 0.5
+		return : Math.min para.refJut : Math.max 0 (xInner - xMid)
 
 	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top [VInnerSerifJut sf] sf.swSerif
 	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
