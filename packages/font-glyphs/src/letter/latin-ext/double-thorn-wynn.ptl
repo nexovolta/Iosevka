@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback] from "@iosevka/util"
+import [mix fallback SuffixCfg] from "@iosevka/util"
 
 glyph-module
 
@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame SerifedArcStart
 	glyph-block-import Letter-Latin-Upper-B : BShape
 	glyph-block-import Letter-Latin-Yogh : LowerHalfT
-	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM FLAT-CONNECTION
 
 	define xThornStem : mix 0 SB 1.25
 
@@ -34,8 +34,8 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : LeaningAnchor.Below.VBar.l xStem
 
 	# Lower thorn: closed-stem Cyrillic ze bowls (like ɞ) on a through stem.
-	define [DoubleThornLowerShape xStem stemBot stemTop bowlBot bowlTop hook ada adb] : glyph-proc
-		local ze : CyrZe CLOSED-STEM CLOSED-STEM bowlTop bowlBot
+	define [DoubleThornLowerShape xStem stemBot stemTop bowlBot bowlTop hook ada adb slabTop slabBot] : glyph-proc
+		local ze : CyrZe slabTop slabBot bowlTop bowlBot
 			left      -- xStem
 			right     -- RightSB
 			blend     -- 0.7
@@ -84,11 +84,6 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 			include : DoubleThornShape xThornStem 0 CAP [yThornBowlBot CAP] [yThornBowlTop CAP]
 			include : Serifs xThornStem CAP 0
 
-		create-glyph "thornDouble.\(suffix)" : glyph-proc
-			include : MarkSet.bp
-			include : DoubleThornLowerShape SB Descender Ascender 0 XH SHook SmallArchDepthA SmallArchDepthB
-			include : Serifs SB Ascender Descender
-
 		create-glyph "WynnDouble.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DoubleWynnShape 0 CAP [mix 0 CAP 0.18] CAP
@@ -98,6 +93,22 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 			include : MarkSet.p
 			include : DoubleWynnShape Descender XH ([mix Descender XH 0.15] + HalfStroke) XH
 			include : Serifs SB XH Descender
+
+	define ThornDoubleLowerConfig : SuffixCfg.weave
+		object # body
+			""          { CLOSED-STEM     CLOSED-STEM }
+			flatTop     { FLAT-CONNECTION CLOSED-STEM }
+			flatBottom  { CLOSED-STEM     FLAT-CONNECTION }
+		object # serifs
+			serifless     { no-shape    }
+			motionSerifed { MotionSerif }
+			serifed       { FullSerifs  }
+
+	foreach { suffix { {slabTop slabBot} { Serifs } } } [Object.entries ThornDoubleLowerConfig] : do
+		create-glyph "thornDouble.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			include : DoubleThornLowerShape SB Descender Ascender 0 XH SHook SmallArchDepthA SmallArchDepthB slabTop slabBot
+			include : Serifs SB Ascender Descender
 
 	select-variant 'ThornDouble' 0xA7D2
 	select-variant 'thornDouble' 0xA7D3
