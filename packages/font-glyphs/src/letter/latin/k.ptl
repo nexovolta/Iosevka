@@ -256,8 +256,8 @@ glyph-block Letter-Latin-K : begin
 						maskRB	     -- BotSerifMask
 
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
-			# Flip the straight body only. Leg serifs are reapplied afterwards so
-			# inner/outer/middle stay on the top arm instead of landing on the baseline.
+			# Flip the straight body only. Leg serifs and slash overlays are applied
+			# afterwards so they sit on the inverted arms, not the pre-flip geometry.
 			include : union
 				new-glyph : glyph-proc
 					include : KLegs.Straight fHookRight left right stroke top slabLT slabLegs null true
@@ -272,10 +272,16 @@ glyph-block Letter-Latin-K : begin
 						fStraightBar -- true
 						attachment   -- attachment
 			local ox : KOvershootX slabLegs true top stroke
-			local kshRight : right + [KBalanceRight slabLegs true]
+			local kshLeft : left + [KBalance slabLT true]
+			local kshRightBot : right + [KBalanceRight slabLegs true]
+			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
+			local yAttach1 : [mix 0 top 0.42] - stroke
+			local yAttach2 : [mix 0 top 0.72] + stroke
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
-			set-base-anchor 'trailing' (kshRight - ox) 0
+			set-base-anchor 'trailing' (kshRightBot - ox) 0
+			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
+			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yAttach2 0 : StrokeWidthBlend 0.5 0.7]
 
 		export : define [RoundedConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
