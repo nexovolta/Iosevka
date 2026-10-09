@@ -12,8 +12,8 @@ glyph-block Letter-Latin-X : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 	glyph-block-import Letter-Shared-Shapes : DiagTail
 	glyph-block-import Letter-Shared-Shapes : CyrDescender PalatalHook
-	glyph-block-import Letter-Latin-K : KLegs
-	glyph-block-import Letter-Latin-V : VExtendedRtInner VExtendedRtFull VExtendedRbFull VExtendedRbOuter
+	glyph-block-import Letter-Latin-K : KLegs KInnerRtSerif
+	glyph-block-import Letter-Latin-V : VExtendedRtFull VExtendedRbFull VExtendedRbOuter
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : RingDims
 
@@ -372,11 +372,11 @@ glyph-block Letter-Latin-X : begin
 		export : define [Full sf]             : composite-proc sf.lt.full [VExtendedRtFull sf] sf.lb.full [VExtendedRbFull sf]
 		export : define [SemiChancery sf]     : composite-proc [VExtendedRtFull sf] sf.lb.full
 		export : define [UnilateralMotion sf]    : composite-proc sf.lt.outer
-		export : define [TopRightMotion sf]      : VExtendedRtInner sf
+		export : define [TopRightMotion sf]      : KInnerRtSerif sf.right sf.top sf.left sf.swRef sf.swSerif
 		export : define [BilateralMotion sf]     : composite-proc sf.lt.outer [VExtendedRbOuter sf]
 		export : define [BilateralTopMotion sf] : glyph-proc
 			include : tagged 'serifLT' : HSerif.lt sf.left sf.top sf.sideJut sf.swSerif
-			include : VExtendedRtInner sf
+			include : KInnerRtSerif sf.right sf.top sf.left sf.swRef sf.swSerif
 		export : define [GrekLowerChi sf]     : composite-proc sf.lt.outer [VExtendedRtFull sf] sf.lb.full [VExtendedRbOuter sf]
 
 	define [XLongLeftSerifs serifShape df top botLong] : glyph-proc
