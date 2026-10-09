@@ -57,9 +57,9 @@ glyph-block Letter-Latin-K : begin
 		local stemInk        : HSwToV swRef
 		local sideJutAdj     : ox + stemInk
 		local xSerif         : kshRight - sideJutAdj
-		# Inner serifs sit on a diagonal; SideJut is the outer protrusion and looks
-		# stubby on the inner side. Use Jut, and grow a little with weight.
-		local innerJut       : Jut + [StrokeWidthBlend 0 : 0.5 * Jut]
+		# Inner-only serifs use a constant jut and stop at the glyph midline.
+		# A middle (inner+outer) bar keeps SideJut.
+		local innerJut       : Math.min para.refJut : Math.max 0 : xSerif - [mix left right 0.5]
 		# ox is negative, so dropping it from the length lets the foot clear the
 		# diagonal overshoot and sit a bit further right.
 		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
@@ -67,7 +67,6 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		# Inner-only serifs are lengthened; a middle (inner+outer) bar keeps SideJut.
 		if [HasRtInner mode] : include : tagged 'serifRT'
 			HSerif.lt xSerif top [if [HasRtOuter mode] SideJut innerJut] swSerif
 
@@ -86,7 +85,7 @@ glyph-block Letter-Latin-K : begin
 			maskRB
 
 	define KLegs : namespace
-		export : define [Straight fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
+		export : define [Straight fHookRight left right stroke top slabLT slabLegs attachment omitLegSerifs] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
 			local ox : KOvershootX slabLegs true top stroke
 			local kshLeft : left + [KBalance slabLT true]
@@ -146,7 +145,9 @@ glyph-block Letter-Latin-K : begin
 						dispiro
 							flat (kshRightBot - ox) 0 [widths.lhs stroke]
 							curl (kshLeft + stroke) yAttach2 [widths.lhs fine]
-				new-glyph : glyph-proc
+				if omitLegSerifs
+				: then : no-shape
+				: else : new-glyph : glyph-proc
 					include : KLegSlabs
 						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
 						top          -- top
@@ -251,14 +252,22 @@ glyph-block Letter-Latin-K : begin
 						maskRT	     -- TopSerifMask
 						maskRB	     -- BotSerifMask
 
-		define [SwapKLegTB mode] : begin
-			local rest : maskOffBits mode [bitOr SLAB-TR-R SLAB-BR]
-			local swapped : [if [HasRtOuter mode] SLAB-BR 0] + [if [HasRbSerif mode] SLAB-TR-R 0]
-			rest + swapped
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
-			include : remove-holes : new-glyph : glyph-proc
-				include : KLegs.Straight fHookRight left right stroke top slabLT [SwapKLegTB slabLegs] attachment
-				include : FlipAround [mix left right 0.5] (top / 2) 1 (-1)
+			# Flip the straight body only. Leg serifs are reapplied afterwards so
+			# inner/outer/middle stay on the top arm instead of landing on the baseline.
+			include : union
+				new-glyph : glyph-proc
+					include : KLegs.Straight fHookRight left right stroke top slabLT slabLegs null true
+					include : FlipAround [mix left right 0.5] (top / 2) 1 (-1)
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- true
+						attachment   -- attachment
 			local ox : KOvershootX slabLegs true top stroke
 			local kshRight : right + [KBalanceRight slabLegs true]
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
