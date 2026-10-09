@@ -406,26 +406,44 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		corner r [mix bot top 0.5]
 
 	define [LessShapeHalf sign top bot l r s p] : begin
+		define fVertTerm : para.variantSelector.__lessGreaterTerminal === 'verticalTerminal'
 		define exp : LessGreaterExpansion top bot l r
 		define expAmend : Math.min Math.SQRT2 exp
-		define endAdj : 0.5 * s * (exp - expAmend)
+		define endAdj : if fVertTerm 0 : 0.5 * s * (exp - expAmend)
 		define pp : fallback p 1
+		define xOuter : mix l r pp
+		define yOuter : mix [mix top bot 0.5] [mix bot top sign] pp
+		define yInner : mix top bot 0.5
 
-		return : dispiro
+		if fVertTerm
+		: then : return : dispiro
 			widths.center s
-			flat [mix l r pp] [mix [mix top bot 0.5] [mix bot top sign] pp]
-			curl (l - endAdj) [mix top bot 0.5] [widths.center.heading (s * expAmend) Leftward]
+			flat xOuter yOuter [heading Leftward]
+			curl l yInner [heading Leftward]
+		: else : return : dispiro
+			widths.center s
+			flat xOuter yOuter
+			curl (l - endAdj) yInner [widths.center.heading (s * expAmend) Leftward]
 
 	define [GreaterShapeHalf sign top bot l r s p] : begin
+		define fVertTerm : para.variantSelector.__lessGreaterTerminal === 'verticalTerminal'
 		define exp : LessGreaterExpansion top bot l r
 		define expAmend : Math.min Math.SQRT2 exp
-		define endAdj : 0.5 * s * (exp - expAmend)
+		define endAdj : if fVertTerm 0 : 0.5 * s * (exp - expAmend)
 		define pp : fallback p 1
+		define xOuter : mix r l pp
+		define yOuter : mix [mix top bot 0.5] [mix bot top sign] pp
+		define yInner : mix top bot 0.5
 
-		return : dispiro
+		if fVertTerm
+		: then : return : dispiro
 			widths.center s
-			flat [mix r l pp] [mix [mix top bot 0.5] [mix bot top sign] pp]
-			curl (r + endAdj) [mix top bot 0.5] [widths.center.heading (s * expAmend) Rightward]
+			flat xOuter yOuter [heading Rightward]
+			curl r yInner [heading Rightward]
+		: else : return : dispiro
+			widths.center s
+			flat xOuter yOuter
+			curl (r + endAdj) yInner [widths.center.heading (s * expAmend) Rightward]
 
 	glyph-block-export LessShape
 	define [LessShape top bot l r s] : union
