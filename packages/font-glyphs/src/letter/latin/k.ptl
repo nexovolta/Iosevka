@@ -66,9 +66,14 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		# Inner serif juts left from the inner edge of the diagonal.
-		if [HasRtInner mode] : include : tagged 'serifRT'
-			HSerif.lt xInnerEdge top SideJut swSerif
+		# Inner serif juts left into the counter. Extra length covers the diagonal
+		# slope so the inner end is not a mid-stem kink, and there is no right spur.
+		if [HasRtInner mode] : begin
+			local yJoin : [mix 0 top 0.42] - swRef
+			local fall : Math.max TINY (top - yJoin)
+			local run : Math.max 0 (xInnerEdge - (left + stemInk))
+			local delta : swSerif * run / fall
+			include : tagged 'serifRT' : HSerif.mtAsymmetric xInnerEdge top (SideJut + delta) 0 swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference
