@@ -67,8 +67,11 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		if [HasRtInner mode] : include : tagged 'serifRT'
-			HSerif.lt xSerif top [if [HasRtOuter mode] SideJut innerJut] swSerif
+		if [HasRtInner mode] : begin
+			local halfInk : 0.5 * stemInk
+			include : tagged 'serifRT' : if [HasRtOuter mode]
+				HSerif.lt xSerif top SideJut swSerif
+				HSerif.mtAsymmetric (xSerif + halfInk) top (innerJut + halfInk) halfInk swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference
