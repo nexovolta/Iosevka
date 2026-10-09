@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg joinCamel] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg joinCamel] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -280,7 +280,10 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : mShapeBody df XH
 
 		create-glyph "m/pack75.\(suffix)" : glyph-proc
-			local df : include : ThreeQuarterDf para.advanceScaleMM Stroke 3 para.advanceScaleMM
+			# Slightly thinner at Heavy so mum counters do not close.
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			local sw : Stroke * [mix 1 0.88 heavyT]
+			local df : include : ThreeQuarterDf para.advanceScaleMM sw 3 para.advanceScaleMM
 			include : df.markSet.e
 			include : mShapeBody df XH df.mvs
 
