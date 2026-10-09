@@ -243,14 +243,11 @@ glyph-block Letter-Latin-V : begin
 			flat [mix vxStartL vxEndL : if fBarStraight 0.500 0.425] [mix top 0 0.5] [widths.lhs coFine]
 			curl vxEndL 0 [widths.lhs fine]
 
-	# Right inner serifs use JutIn and nearly vanish at heavy; add length that
-	# grows with weight, and measure from SideJut so they stay readable.
-	# Capitals get a full extra Jut at heavy so the right serif stays obvious
-	# on the larger body; lowercase keeps the lighter 0.5 Jut blend.
+	# Right inner serifs stop at the glyph midline and do not grow with weight.
+	# Full/middle bars keep VRightSerifExtend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
-	# Inner-only serifs (motion / top-right); full/middle bars keep VRightSerifExtend.
-	define [VInnerSerifJut sf] : Jut + [StrokeWidthBlend 0 : 0.5 * Jut]
+	define [VInnerSerifJut sf] : Math.min para.refJut : Math.max 0 : (sf.right - [HSwToV sf.swRef] - [mix sf.left sf.right 0.5])
 
 	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top [VInnerSerifJut sf] sf.swSerif
 	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
