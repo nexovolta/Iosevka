@@ -2,7 +2,7 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif HintClass] from "@iosevka/glyph/relation"
-import [maskBit maskOffBit] from "@iosevka/util/mask-bit"
+import [maskBits maskOffBits bitOr] from "@iosevka/util/mask-bit"
 
 glyph-module
 
@@ -18,17 +18,27 @@ glyph-block Letter-Latin-K : begin
 
 	glyph-block-export KLegs
 
-	define [KBalance      slabLT   fStraightBar] : if fStraightBar (Width / 32) 0
-	define [KBalanceRight slabLegs fStraightBar] : if slabLegs 0 : if fStraightBar (Width / 32) 0
-	define [KOvershootX slabLegs fStraightBar top swRef] : if fStraightBar (([if slabLegs 0 (-4)] * OX - swRef / 3) * (XH / top)) 0
+	# The mode parameter of KLegSlabs is a 4-bit mask:
+	# bit 0: Top left serif
+	# bit 1: Top right serif flanking left
+	# bit 2: Top right serif flanking right
+	# bit 3: Bottom right serif
+	define SLAB-TL   1
+	define SLAB-TR-L 2
+	define SLAB-TR-R 4
+	define SLAB-BR   8
 
-	# The mode parameter of KLegSlabs is a bitmasked interger, with the following bits [F T B]
-	# F: Whether the serif is full
-	# B: Bottom serif type
-	# T: Top serif type
-	define [HasRtSerif   mode] : maskBit mode 1
-	define [HasRbSerif   mode] : maskBit mode 0
-	define [HasFullSerif mode] : maskBit mode 2
+	define [HasTlSerif  mode] : maskBits mode SLAB-TL
+	define [HasRtInner  mode] : maskBits mode SLAB-TR-L
+	define [HasRtOuter  mode] : maskBits mode SLAB-TR-R
+	define [HasRbSerif  mode] : maskBits mode SLAB-BR
+	define [HasRtSerif  mode] : HasRtOuter mode
+	define [HasLegSerif mode] : maskBits mode [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]
+	define [HasFullRtSerif mode] : [HasRtInner mode] && [HasRtOuter mode]
+
+	define [KBalance      slabLT   fStraightBar] : if fStraightBar (Width / 32) 0
+	define [KBalanceRight slabLegs fStraightBar] : if [HasLegSerif slabLegs] 0 : if fStraightBar (Width / 32) 0
+	define [KOvershootX slabLegs fStraightBar top swRef] : if fStraightBar (([if [HasLegSerif slabLegs] 0 (-4)] * OX - swRef / 3) * (XH / top)) 0
 
 	define flex-params [KLegSlabs] : glyph-proc
 		local-parameter : mode          -- 0
@@ -43,20 +53,19 @@ glyph-block Letter-Latin-K : begin
 		local-parameter : maskRB        -- no-shape
 
 		local ox             : KOvershootX mode true top swRef
-		local kshRight       : right + [KBalanceRight true fStraightBar]
+		local kshRight       : right + [KBalanceRight SLAB-BR fStraightBar]
 		local sideJutAdj     : ox + [HSwToV swRef]
 
-		local slabIsFull : HasFullSerif mode
-
-		if [HasRtSerif mode] : include : tagged 'serifRT' : if slabIsFull
-			then : union
-				HSerif.rt (kshRight - sideJutAdj) top (SideJut + sideJutAdj) swSerif
-				HSerif.lt (kshRight - sideJutAdj) top (SideJut)              swSerif
-			else : difference
+		if [HasFullRtSerif mode] : include : tagged 'serifRT' : union
+			HSerif.rt (kshRight - sideJutAdj) top (SideJut + sideJutAdj) swSerif
+			HSerif.lt (kshRight - sideJutAdj) top (SideJut)              swSerif
+		: else : begin
+			if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 				HSerif.rt (kshRight - sideJutAdj) top (SideJut + sideJutAdj) swSerif
 				maskRT
+			if [HasRtInner mode] : include : tagged 'serifRT' : HSerif.lt (kshRight - sideJutAdj) top SideJut swSerif
 
-		if [HasRbSerif mode] : include : tagged 'serifRB' : if slabIsFull
+		if [HasRbSerif mode] : include : tagged 'serifRB' : if [HasFullRtSerif mode]
 			then : union
 				HSerif.rb (kshRight - sideJutAdj) 0   (SideJut + sideJutAdj) swSerif
 				HSerif.lb (kshRight - sideJutAdj) 0   (SideJut)              swSerif
@@ -86,7 +95,7 @@ glyph-block Letter-Latin-K : begin
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' (kshRightBot - ox) 0
 
-			local kshRightSerifs : right + [KBalanceRight true true]
+			local kshRightSerifs : right + [KBalanceRight SLAB-BR true]
 
 			define TopMask : object
 				forStroke : function [offset] : Rect top 0 kshLeft
@@ -234,7 +243,10 @@ glyph-block Letter-Latin-K : begin
 				maskRT	     -- TopSerifMask
 				maskRB	     -- BotSerifMask
 
-		define [SwapKLegTB mode] : (mode - [HasRtSerif mode] - [HasRbSerif mode]) + [if [HasRtSerif mode] 1 0] + [if [HasRbSerif mode] 2 0]
+		define [SwapKLegTB mode] : begin
+			local rest : maskOffBits mode [bitOr SLAB-TR-R SLAB-BR]
+			local swapped : [if [HasRtOuter mode] SLAB-BR 0] + [if [HasRbSerif mode] SLAB-TR-R 0]
+			rest + swapped
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			include : remove-holes : new-glyph : glyph-proc
 				include : KLegs.Straight fHookRight left right stroke top slabLT [SwapKLegTB slabLegs] attachment
@@ -263,7 +275,7 @@ glyph-block Letter-Latin-K : begin
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' xRightBottom 0
 
-			local kshRightSerifs : right + [KBalanceRight true true]
+			local kshRightSerifs : right + [KBalanceRight SLAB-BR true]
 
 			define TopMask : object
 				forStroke : function [offset] : Rect top 0 kshLeft
@@ -330,7 +342,7 @@ glyph-block Letter-Latin-K : begin
 			define [lowerCurvature] : quadControls 0 0.3 8
 
 			local xAttach1 : kshLeft + [HSwToV stroke]
-			local yAttach1 : mix 0 top : if slabLegs 0.325 0.375
+			local yAttach1 : mix 0 top : if [HasLegSerif slabLegs] 0.325 0.375
 			local xAttach2 : kshLeft + [HSwToV stroke]
 			local yAttach2 : mix 0 top 0.75
 			set-base-anchor 'armOverlay' [mix xAttach1 kshRight : StrokeWidthBlend 0.7 0.6] [mix yAttach1 top : StrokeWidthBlend 0.6 0.65]
@@ -431,7 +443,7 @@ glyph-block Letter-Latin-K : begin
 		export : define [Cursive fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			define dim : CursiveDimen left right top stroke slabLT slabLegs
 
-			define [BottomStrokeMask] : Rect XH 0 0 [if slabLegs (dim.kshRight + SideJut + TanSlope * Stroke) VERY-FAR]
+			define [BottomStrokeMask] : Rect XH 0 0 [if [HasRbSerif slabLegs] (dim.kshRight + SideJut + TanSlope * Stroke) VERY-FAR]
 
 			include : CursiveLoopT dispiro 0 left right stroke top slabLT slabLegs
 			set-base-anchor 'overlay' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
@@ -446,7 +458,7 @@ glyph-block Letter-Latin-K : begin
 			define [BotSerifMask] : HalfRectTriangle (dim.kshRight - dim.ox - TINY) 0 (dim.arcTerminalX - TINY) dim.arcTerminalY
 
 			include : KLegSlabs
-				mode         -- [maskOffBit slabLegs 1]
+				mode         -- [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]]
 				top          -- top
 				left         -- left
 				right        -- right
@@ -496,20 +508,28 @@ glyph-block Letter-Latin-K : begin
 			symmetricConnectedVB [KLegs.Symmetric CyrlVbGap]
 		function [body] : object # serifs
 			serifless                          { 0 0 0 }
-			topLeftSerifed                     { 2 0 0 }
-			bottomRightSerifed                 { 0 0 1 }
-			topLeftAndBottomRightSerifed       { 2 0 1 }
-			topRightSerifed                    { 0 0 2 }
-			topLeftAndTopRightSerifed          { 2 0 2 }
-			topRightAndBottomRightSerifed      { 0 0 3 }
-			triSerifed                         { 2 0 3 }
-			serifedKappa                       { 2 1 3 }
+			topLeftSerifed                     { 2 0 SLAB-TL }
+			bottomRightSerifed                 { 0 0 SLAB-BR }
+			topLeftAndBottomRightSerifed       { 2 0 [bitOr SLAB-TL SLAB-BR] }
+			topRightInnerSerifed               { 0 0 SLAB-TR-L }
+			topLeftAndTopRightInnerSerifed     { 2 0 [bitOr SLAB-TL SLAB-TR-L] }
+			topRightSerifed                    { 0 0 SLAB-TR-R }
+			topLeftAndTopRightSerifed          { 2 0 [bitOr SLAB-TL SLAB-TR-R] }
+			topRightBothSerifed                { 0 0 [bitOr SLAB-TR-L SLAB-TR-R] }
+			topLeftAndTopRightBothSerifed      { 2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+			topRightInnerAndBottomRightSerifed { 0 0 [bitOr SLAB-TR-L SLAB-BR] }
+			topLeftAndTopRightInnerAndBottomRightSerifed { 2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]] }
+			topRightAndBottomRightSerifed      { 0 0 [bitOr SLAB-TR-R SLAB-BR] }
+			triSerifed                         { 2 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			topRightBothAndBottomRightSerifed  { 0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]] }
+			topLeftAndTopRightBothAndBottomRightSerifed { 2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]] }
+			serifedKappa                       { 2 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
 			serifed : match body
-				[Just 'symmetricConnectedKH']  { 1 1 2 }
-				__                             { 1 1 3 }
+				[Just 'symmetricConnectedKH']  { 1 1 [bitOr SLAB-TL SLAB-TR-R] }
+				__                             { 1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
 			fullSerifed : match body
-				[Just 'symmetricConnectedKH']  { 1 1 6 }
-				__                             { 1 1 7 }
+				[Just 'symmetricConnectedKH']  { 1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+				__                             { 1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]] }
 
 	define [UpperKLTSerif top swRef xBarLeft slabType _swSerif] : begin
 		local swSerif : fallback _swSerif swRef
@@ -659,15 +679,23 @@ glyph-block Letter-Latin-K : begin
 			roundedConnected    KLegs.RoundedConnected
 		object # serifs
 			serifless                     { 0 0 0 }
-			topLeftSerifed                { 1 0 0 }
-			bottomRightSerifed            { 0 0 1 }
-			topLeftAndBottomRightSerifed  { 1 0 1 }
-			topRightSerifed               { 0 0 2 }
-			topLeftAndTopRightSerifed     { 1 0 2 }
-			topRightAndBottomRightSerifed { 0 0 3 }
-			triSerifed                    { 1 0 3 }
-			serifed                       { 1 1 3 }
-			fullSerifed                   { 1 1 7 }
+			topLeftSerifed                { 1 0 SLAB-TL }
+			bottomRightSerifed            { 0 0 SLAB-BR }
+			topLeftAndBottomRightSerifed  { 1 0 [bitOr SLAB-TL SLAB-BR] }
+			topRightInnerSerifed          { 0 0 SLAB-TR-L }
+			topLeftAndTopRightInnerSerifed { 1 0 [bitOr SLAB-TL SLAB-TR-L] }
+			topRightSerifed               { 0 0 SLAB-TR-R }
+			topLeftAndTopRightSerifed     { 1 0 [bitOr SLAB-TL SLAB-TR-R] }
+			topRightBothSerifed           { 0 0 [bitOr SLAB-TR-L SLAB-TR-R] }
+			topLeftAndTopRightBothSerifed { 1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+			topRightInnerAndBottomRightSerifed { 0 0 [bitOr SLAB-TR-L SLAB-BR] }
+			topLeftAndTopRightInnerAndBottomRightSerifed { 1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]] }
+			topRightAndBottomRightSerifed { 0 0 [bitOr SLAB-TR-R SLAB-BR] }
+			triSerifed                    { 1 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			topRightBothAndBottomRightSerifed { 0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]] }
+			topLeftAndTopRightBothAndBottomRightSerifed { 1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]] }
+			serifed                       { 1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			fullSerifed                   { 1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]] }
 
 	foreach { suffix { LegsImpl {slabLT slabLB slabLegs} } } [pairs-of LowerKConfig] : do
 		define fStraightBar : LegsImpl !== KLegs.Curly
@@ -731,7 +759,7 @@ glyph-block Letter-Latin-K : begin
 				union
 					HSerif.rb (xBarRight - [HSwToV HalfStroke]) Descender Jut
 					HSerif.lb (xBarRight - [HSwToV HalfStroke]) Descender MidJutSide
-			if slabLB : include : tagged 'serifLB' : if [HasFullSerif slabLegs]
+			if slabLB : include : tagged 'serifLB' : if [HasFullRtSerif slabLegs]
 				HSerif.mt (xBarRight - [HSwToV HalfStroke]) XH Jut
 				HSerif.rt xBarRight XH SideJut
 
