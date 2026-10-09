@@ -257,7 +257,7 @@ glyph-block Letter-Latin-V : begin
 	# Inner-only variants use a longer flank than SideJut so it reads at every weight.
 	define [VInnerLeftJut sf] : begin
 		local extra : Math.max 0 ([VInnerArmInk sf] - [HSwToV sf.swRef])
-		return : extra + Jut + [StrokeWidthBlend SideJut Jut sf.swRef]
+		return : extra + 0.5 * (Jut + [StrokeWidthBlend SideJut Jut sf.swRef])
 
 	# Attach at the vertical-terminal inner edge, overlap half a stem for a smooth join,
 	# and jut left far enough to clear the true inner of a diagonal arm.
