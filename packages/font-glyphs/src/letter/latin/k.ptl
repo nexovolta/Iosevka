@@ -59,7 +59,8 @@ glyph-block Letter-Latin-K : begin
 		local xSerif         : kshRight - sideJutAdj
 		# Inner-only serifs use a constant jut and stop at the glyph midline.
 		# A middle (inner+outer) bar keeps SideJut.
-		local innerJut       : Math.min para.refJut : Math.max 0 : xSerif - [mix left right 0.5]
+		local xMid           : mix left right 0.5
+		local innerJut       : Math.min para.refJut : Math.max 0 (xSerif - xMid)
 		# ox is negative, so dropping it from the length lets the foot clear the
 		# diagonal overshoot and sit a bit further right.
 		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
@@ -69,9 +70,14 @@ glyph-block Letter-Latin-K : begin
 			maskRT
 		if [HasRtInner mode] : begin
 			local halfInk : 0.5 * stemInk
-			include : tagged 'serifRT' : if [HasRtOuter mode]
+			if [HasRtOuter mode] : include : tagged 'serifRT'
 				HSerif.lt xSerif top SideJut swSerif
-				HSerif.mtAsymmetric (xSerif + halfInk) top (innerJut + halfInk) halfInk swSerif
+			if [not : HasRtOuter mode] : begin
+				# Sit further into the counter; outer spur compensates so the
+				# diagonal join does not notch.
+				local innerEnd : Math.max xMid (xSerif - innerJut - SideJut)
+				local x : xSerif + halfInk
+				include : tagged 'serifRT' : HSerif.mtAsymmetric x top (x - innerEnd) (halfInk + SideJut) swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference
