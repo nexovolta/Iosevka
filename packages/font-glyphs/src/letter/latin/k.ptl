@@ -57,8 +57,8 @@ glyph-block Letter-Latin-K : begin
 		local stemInk        : HSwToV swRef
 		local sideJutAdj     : ox + stemInk
 		local xSerif         : kshRight - sideJutAdj
-		# Inner edge of the upper arm at the top (dispiro path start).
-		local xInnerEdge     : kshRight - ox
+		# Path start is the OUTER edge of the upper arm (widths.rhs, traveling down-left).
+		local xOuter         : kshRight - ox
 		# ox is negative, so dropping it from the length lets the foot clear the
 		# diagonal overshoot and sit a bit further right.
 		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
@@ -66,14 +66,20 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		# Inner serif juts left into the counter. Extra length covers the diagonal
-		# slope so the inner end is not a mid-stem kink, and there is no right spur.
+		# Inner serif: true inner edge of the diagonal, jutting left into the counter.
+		# Length grows with weight so the flank stays visible; right overlap stays inside the arm.
 		if [HasRtInner mode] : begin
 			local yJoin : [mix 0 top 0.42] - swRef
 			local fall : Math.max TINY (top - yJoin)
-			local run : Math.max 0 (xInnerEdge - (left + stemInk))
+			local run : Math.max TINY (xOuter - (left + stemInk))
+			local dgCor : DiagCor fall run
+			local armInk : HSwToV : swRef * dgCor
+			local xInner : xOuter - armInk
 			local delta : swSerif * run / fall
-			include : tagged 'serifRT' : HSerif.mtAsymmetric xInnerEdge top (SideJut + delta) 0 swSerif
+			local innerJut : StrokeWidthBlend SideJut Jut swRef
+			local avail : Math.max innerJut (xInner - (left + stemInk) - 0.25 * stemInk)
+			local leftJut : Math.min (innerJut + delta) avail
+			include : tagged 'serifRT' : HSerif.mtAsymmetric xInner top leftJut (0.5 * armInk) swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference
