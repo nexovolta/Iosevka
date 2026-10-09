@@ -501,8 +501,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Greek Lower Beta
 
-	create-glyph 'grek/beta.standard' : glyph-proc
-		include : MarkSet.bp
+	define [BetaStandardShape flatBottom] : glyph-proc
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		include : LeaningAnchor.Below.VBar.l SB stroke
 
@@ -535,19 +534,37 @@ glyph-block Letter-Latin-Upper-B : begin
 					Arch.lhs Ascender (sw -- stroke)
 					flat SB (Ascender - adaTop) [widths.lhs.heading stroke Downward]
 					curl SB Descender [heading Downward]
-				dispiro
-					widths.lhs shoulderFine
-					g4.down.start (SB + [HSwToV : stroke - shoulderFine]) adbBot [heading Downward]
-					Arch.lhs 0 (sw -- stroke) (swBefore -- shoulderFine)
-					g4   xBotArcRight yBotArcRight [widths.lhs stroke]
-					arcvh
-					flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine) [widths.lhs fine]
-					curl (SB - O) (bowl - stroke + fine) [heading Leftward]
+				if flatBottom
+					dispiro
+						widths.lhs stroke
+						flat (SB + TINY) 0 [heading Rightward]
+						curl [Arch.adjust-x.bot curveLeftBot (sw -- stroke)] 0
+						archv
+						g4   xBotArcRight yBotArcRight [widths.lhs stroke]
+						arcvh
+						flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine) [widths.lhs fine]
+						curl (SB - O) (bowl - stroke + fine) [heading Leftward]
+					dispiro
+						widths.lhs shoulderFine
+						g4.down.start (SB + [HSwToV : stroke - shoulderFine]) adbBot [heading Downward]
+						Arch.lhs 0 (sw -- stroke) (swBefore -- shoulderFine)
+						g4   xBotArcRight yBotArcRight [widths.lhs stroke]
+						arcvh
+						flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine) [widths.lhs fine]
+						curl (SB - O) (bowl - stroke + fine) [heading Leftward]
 			[InterruptShape TallCyrVeBarPos] Ascender stroke
 
 		set-base-anchor 'palatalHookAttach'
 			mix [Arch.adjust-x.bot [mix (SB + [HSwToV : stroke - shoulderFine]) xBotArcRight 0.5] (sw -- stroke)] xBotArcRight 0.75
 			mix O yBotArcRight [archv.yFromX 0.75]
+
+	create-glyph 'grek/beta.standard' : glyph-proc
+		include : MarkSet.bp
+		include : BetaStandardShape false
+
+	create-glyph 'grek/beta.flatBottom' : glyph-proc
+		include : MarkSet.bp
+		include : BetaStandardShape true
 
 	alias 'grek/beta.cursive' null  'smcpB.cursiveInterruptedTall'
 	alias 'grek/betaSymbol'   0x3D0 'smcpB.cursiveInterruptedTall'

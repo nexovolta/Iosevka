@@ -19,6 +19,14 @@ glyph-block Letter-Latin-Lower-P : begin
 		include : tagged 'bowl' : OBarLeft.shape
 		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
 
+	define [SmallThornFlatTopBody] : glyph-proc
+		include : tagged 'bowl' : OBarLeft.earlessCorner (rise -- 0)
+		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
+
+	define [SmallThornFlatBottomBody] : glyph-proc
+		include : tagged 'bowl' : OBarLeft.toothlessCorner (rise -- 0)
+		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
+
 	define [EaredBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
 		include : tagged 'bowl' : OBarLeft.shape
 			left  -- left
@@ -115,26 +123,6 @@ glyph-block Letter-Latin-Lower-P : begin
 
 		create-glyph "pStrokeBottom.\(suffix)" : glyph-proc
 			include [refer-glyph "p.\(suffix)"] AS_BASE ALSO_METRICS
-			include : LetterBarOverlay.l.in
-				x   -- SB
-				bot -- (Descender + [if doBS Stroke 0])
-				top -- 0
-
-		create-glyph "thorn.\(suffix)" : glyph-proc
-			include : MarkSet.bp
-			include : SmallThornEaredBody
-			include : Serifs [DivFrame 1] Ascender
-			include : LeaningAnchor.Above.VBar.l SB
-			include : LeaningAnchor.Below.VBar.l SB
-			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
-			set-base-anchor 'strike' Middle (XH / 2)
-
-		create-glyph "thornStroke.\(suffix)" : glyph-proc
-			include [refer-glyph "thorn.\(suffix)"] AS_BASE ALSO_METRICS
-			include : LetterBarOverlay.l.in SB XH (Ascender - [if doTS Stroke 0])
-
-		create-glyph "thornStrokeBottom.\(suffix)" : glyph-proc
-			include [refer-glyph "thorn.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
 				x   -- SB
 				bot -- (Descender + [if doBS Stroke 0])
@@ -257,8 +245,41 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	alias 'grek/rhoStroke' 0x3FC 'pStrokeBottom.earlessRoundedSerifless'
 
+	define ThornConfig : SuffixCfg.weave
+		object # body
+			""           SmallThornEaredBody
+			flatTop      SmallThornFlatTopBody
+			flatBottom   SmallThornFlatBottomBody
+		object # serifs
+			serifless       { no-shape     false false }
+			motionSerifed   { MotionSerif  true  false }
+			serifed         { FullSerifs   true  true  }
+
+	foreach { suffix { Body {Serifs doTS doBS} }} [Object.entries ThornConfig] : do
+		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
+
+		create-glyph "thorn.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			include : Body
+			include : Serifs [DivFrame 1] Ascender
+			include : LeaningAnchor.Above.VBar.l SB
+			include : LeaningAnchor.Below.VBar.l SB
+			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
+			set-base-anchor 'strike' Middle (XH / 2)
+
+		create-glyph "thornStroke.\(suffix)" : glyph-proc
+			include [refer-glyph "thorn.\(suffix)"] AS_BASE ALSO_METRICS
+			include : LetterBarOverlay.l.in SB XH (Ascender - [if doTS Stroke 0])
+
+		create-glyph "thornStrokeBottom.\(suffix)" : glyph-proc
+			include [refer-glyph "thorn.\(suffix)"] AS_BASE ALSO_METRICS
+			include : LetterBarOverlay.l.in
+				x   -- SB
+				bot -- (Descender + [if doBS Stroke 0])
+				top -- 0
+
 	select-variant 'thorn' 0xFE
-	alias 'grek/sho' 0x3F8 'thorn.earedSerifless'
+	alias 'grek/sho' 0x3F8 'thorn.serifless'
 
 	select-variant 'thornStroke' 0xA765 (follow -- 'thorn')
 	select-variant 'thornStrokeBottom' 0xA767 (follow -- 'thorn')
