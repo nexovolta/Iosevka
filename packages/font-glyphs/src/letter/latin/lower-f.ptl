@@ -52,16 +52,16 @@ glyph-block Letter-Latin-Lower-F : begin
 	define ySmallFBarPos : [mix 0 XH DesignParameters.fBarPosToXH] + Stroke * DesignParameters.fbarStrokeAdj
 
 	define [SetPalatalHookPos barLeft] : glyph-proc
-		set-base-anchor 'palatalHookPos' (barLeft + [HSwToV : Stroke + [Math.max VJutStroke : Width / 12]]) 0
+		set-base-anchor 'palatalHookPos' (barLeft + [HSwToV : Stroke + [Math.max VJutStroke : VSwToH : Width / 12]]) 0
 
 	define [SmallFBottomSerif df sym barLeft] : glyph-proc
-		local l : [mix df.leftSB df.rightSB 0.020] + HalfStroke * TanSlope
+		local l : [mix df.leftSB df.rightSB 0.020] + SerifShiftS
 		local r : match sym
 			[Just SYM-LEFT] : begin
 				local xStem : barLeft + [HSwToV HalfStroke]
 				local jut : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
-				xStem + jut + HalfStroke * TanSlope
-			__ : [mix df.leftSB df.rightSB 0.875] + HalfStroke * TanSlope
+				xStem + jut + SerifShiftS
+			__ : [mix df.leftSB df.rightSB 0.875] + SerifShiftS
 		include : dispiro
 			widths.lhs
 			flat l 0
@@ -72,7 +72,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local xStem : if (sym === SYM-LEFT) (barLeft + [HSwToV HalfStroke]) df.middle
 		local jut : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
 		include : HSerif.mb xStem 0 jut
-		set-base-anchor 'palatalHookPos' (xStem + jut + HalfStroke * TanSlope) 0
+		set-base-anchor 'palatalHookPos' (xStem + jut + SerifShiftS) 0
 
 	define [StdFShapeT sink df offset barleft sw _hookExtra] : sink
 		widths.lhs sw
