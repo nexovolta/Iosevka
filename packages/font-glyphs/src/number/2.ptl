@@ -200,15 +200,16 @@ glyph-block Digits-Two : begin
 
 		# Full-weight letter plus rum-rotunda 2-foot. Advance matches ae/oe
 		# (MM), growing if the unscaled letter plus foot needs more.
-		define [MakeUmAt src adws] : glyph-proc
+		define [MakeUmAt src adws _sw] : glyph-proc
+			local sw : fallback _sw Stroke
 			include : refer-glyph src
-			local b : include : MeasureGlyphBoundsInY 0 Stroke
+			local b : include : MeasureGlyphBoundsInY 0 sw
 			local df : include : DivFrame adws
 			include : df.markSet.p
-			local xJoin : df.rightSB - [HSwToV : 0.5 * Stroke]
-			if b : set xJoin : [mix b.xMax b.xMax 0] - [HSwToV : 0.5 * Stroke]
-			if (xJoin > df.rightSB) : set xJoin : df.rightSB - [HSwToV : 0.5 * Stroke]
-			include : TwoBaseWithSlash xJoin df.rightSB xJoin Stroke
+			local xJoin : df.rightSB - [HSwToV : 0.5 * sw]
+			if b : set xJoin : [mix b.xMax b.xMax 0] - [HSwToV : 0.5 * sw]
+			if (xJoin > df.rightSB) : set xJoin : df.rightSB - [HSwToV : 0.5 * sw]
+			include : TwoBaseWithSlash xJoin df.rightSB xJoin sw
 
 		define [MakeUm] : lambda [src gr] : glyph-proc
 			include : refer-glyph src
@@ -253,7 +254,8 @@ glyph-block Digits-Two : begin
 		derive-glyphs 'lum'     0xA772 'l'     : lambda [src gr] : glyph-proc
 			include : MakeUmAt [LumLSrc src] 1
 		derive-glyphs 'mum'     0xA773 'm'     : lambda [src gr] : glyph-proc
-			include : MakeUmAt [PackSrc 'm' src] para.advanceScaleMM
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			include : MakeUmAt [PackSrc 'm' src] para.advanceScaleMM (Stroke * [mix 1 0.88 heavyT])
 		derive-glyphs 'num'     0xA774 'n'     : lambda [src gr] : glyph-proc
 			include : MakeUmAt [PackSrc 'n' src] para.advanceScaleM
 		derive-glyphs 'smcpRum' 0xA776 'smcpR' : lambda [src gr] : glyph-proc
