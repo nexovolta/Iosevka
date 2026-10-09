@@ -78,7 +78,9 @@ glyph-block Letter-Latin-K : begin
 			local delta : swSerif * run / fall
 			local innerJut : 0.5 * [StrokeWidthBlend SideJut Jut swRef]
 			local avail : Math.max innerJut (xInner - (left + stemInk) - 0.25 * stemInk)
-			local leftJut : Math.min (innerJut + delta) avail
+			# Halve the jut from Regular toward Heavy so bold k does not read as r.
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 swRef
+			local leftJut : [Math.min (innerJut + delta) avail] * [mix 1 0.5 heavyT]
 			include : tagged 'serifRT' : HSerif.mtAsymmetric xInner top leftJut (0.5 * armInk) swSerif
 
 		if [HasRbSerif mode] : begin
