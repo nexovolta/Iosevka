@@ -1,6 +1,6 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 
 glyph-module
 
@@ -21,12 +21,52 @@ glyph-block Digits-Six : begin
 			flat [Math.min (fh.xRHook - TanSlope * sw) : Arch.adjust-x.top (Middle - midShift) sw] top [widths.rhs.heading sw Rightward]
 			corner fh.xRHook top
 
+	define [SixBowlOTop charTop sw flatBowl] : begin
+		local rounded : charTop * 0.55 + sw / 2
+		if [not flatBowl] : return rounded
+		return : Math.max (2 * SmallArchDepth + TINY) rounded
+
+	# Bowl only: b toothless-rounded left stem + round bottom, with b's flat-top
+	# (earlessCorner rise 0) into the stem. The 6 stem is drawn separately from oTop up.
+	define [SixFlatBowlOBar] : with-params [oTop [left SB] [right RightSB] [sw Stroke]] : glyph-proc
+		include : dispiro
+			flat left oTop [widths.lhs.heading sw Downward]
+			curl left [Math.min SmallArchDepthB (oTop - TINY)]
+			Arch.lhs 0 (sw -- sw)
+			flatside.ru right 0 oTop SmallArchDepthA SmallArchDepthB
+			arcvh
+			flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] oTop
+			curl (left + TINY) oTop [heading Leftward]
+
+	# Original closed-6 stem/hook, starting at the top of the bowl.
+	define [SixClosedStemFromBowl] : with-params [top oTop [flatHook false] [vertical false]] : glyph-proc
+		include : dispiro
+			widths.rhs
+			flat SB oTop [heading Upward]
+			if vertical
+				curl SB top [heading Upward]
+				list
+					curl SB (top - SmallArchDepthA) [heading Upward]
+					if flatHook
+						SixFlatHookTerminal top Stroke
+						list
+							HookEnd top
+							g4 (RightSB - OX) (top - Hook)
+
 	glyph-block-export OpenContourSixShape
-	define [OpenContourSixShape charTop] : glyph-proc
-		local oTop : charTop * 0.55 + HalfStroke
+	define [OpenContourSixShape] : with-params [charTop [flatBowl false]] : glyph-proc
+		local oTop : SixBowlOTop charTop Stroke flatBowl
 		local ymiddlea : (oTop - SmallArchDepthA + SmallArchDepthB) / 2
 		local ymiddleb : (oTop - SmallArchDepthB + SmallArchDepthA) / 2
-		include : dispiro
+		if flatBowl : begin
+			include : SixFlatBowlOBar oTop
+			include : dispiro
+				widths.rhs
+				flat SB oTop [heading Upward]
+				curl SB [mix oTop charTop 0.15] [heading Upward]
+				quadControls 0 0.85
+				g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O)
+		if [not flatBowl] : include : dispiro
 			widths.rhs (ShoulderFine - TINY)
 			g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) ymiddlea
 			Arch.rhs oTop (swBefore -- (ShoulderFine - TINY))
@@ -37,9 +77,12 @@ glyph-block Digits-Six : begin
 			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O) [widths.rhs]
 
 	glyph-block-export ClosedContourSixShape
-	define [ClosedContourSixShape] : with-params [top [flatHook false] [vertical false]] : glyph-proc
+	define [ClosedContourSixShape] : with-params [top [flatHook false] [vertical false] [flatBowl false]] : glyph-proc
 		local oTop : Math.max (2 * SmallArchDepth + TINY) (top * 0.55 + HalfStroke)
-		include : dispiro
+		if flatBowl : begin
+			include : SixFlatBowlOBar oTop
+			include : SixClosedStemFromBowl top oTop (flatHook -- flatHook) (vertical -- vertical)
+		if [not flatBowl] : include : dispiro
 			widths.rhs ShoulderFine
 			straight.up.start (SB + OX + [HSwToV (Stroke - ShoulderFine)]) (oTop - SmallArchDepthA)
 			Arch.rhs oTop (swBefore -- ShoulderFine)
@@ -57,10 +100,19 @@ glyph-block Digits-Six : begin
 							HookEnd top
 							g4 (RightSB - OX) (top - Hook)
 
+	# Horizontal-ended parallelogram; italic shear keeps constant width.
+	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
+		local swH : HSwToV sw
+		return : spiro-outline
+			corner xBotL         yBot
+			corner (xBotL + swH) yBot
+			corner (xTopL + swH) yTop
+			corner xTopL         yTop
+
 	# xTerminalMix 0.6 = original diagonal bar; 0 = vertical continuation of the left stem.
 	glyph-block-export StraightBarSixShape
-	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6]] : glyph-proc
-		local oTop : charTop * 0.55 + sw / 2
+	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6] [flatBowl false]] : glyph-proc
+		local oTop : SixBowlOTop charTop sw flatBowl
 		local ymiddlea : (oTop - SmallArchDepthA + SmallArchDepthB) / 2
 		local ymiddleb : (oTop - SmallArchDepthB + SmallArchDepthA) / 2
 
@@ -72,7 +124,10 @@ glyph-block Digits-Six : begin
 		local kDiagBbd : DiagCorDs (charTop - yMockBarStart) (xTerminal0 - xMockBarStart) bbd
 		local xTerminal : xTerminal0 + (kDiagBbd * bbd / 2)
 		local pStraightBarStart : mix 1 (0.75 - (sw / charTop)) (xTerminalMix / 0.6)
-		include : intersection
+		if flatBowl : begin
+			include : SixFlatBowlOBar oTop (left -- (SB + bbd)) (right -- RightSB) (sw -- sw)
+			include : SixStraightBarParallelogram (SB + bbd) oTop xTerminal charTop sw
+		if [not flatBowl] : include : intersection
 			Rect charTop (-charTop) (-Width) (2 * Width)
 			dispiro
 				widths.rhs (ShoulderFine - TINY)
@@ -94,32 +149,36 @@ glyph-block Digits-Six : begin
 				flat [mix xMockBarStart (xTerminal - kDiagBbd * bbd) pStraightBarStart] [mix yMockBarStart charTop pStraightBarStart]
 				curl [mix xMockBarStart (xTerminal - kDiagBbd * bbd) 2]                 [mix yMockBarStart charTop 2]
 
-	define [SixBodyClosed] : glyph-proc
-		include : ClosedContourSixShape CAP
-	define [SixBodyOpen] : glyph-proc
-		include : OpenContourSixShape CAP
-	define [SixBodyStraightBar] : glyph-proc
-		include : StraightBarSixShape CAP
-	define [SixBodyClosedFlatHook] : glyph-proc
-		include : ClosedContourSixShape CAP (flatHook -- true)
-	define [SixBodySteepBar] : glyph-proc
-		include : StraightBarSixShape CAP (xTerminalMix -- 0.28)
-	define [SixBodyVerticalBar] : glyph-proc
-		include : ClosedContourSixShape CAP (vertical -- true)
+	define [SixBodyClosed fFlatBowl] : glyph-proc
+		include : ClosedContourSixShape CAP (flatBowl -- fFlatBowl)
+	define [SixBodyOpen fFlatBowl] : glyph-proc
+		include : OpenContourSixShape CAP (flatBowl -- fFlatBowl)
+	define [SixBodyStraightBar fFlatBowl] : glyph-proc
+		include : StraightBarSixShape CAP (flatBowl -- fFlatBowl)
+	define [SixBodyClosedFlatHook fFlatBowl] : glyph-proc
+		include : ClosedContourSixShape CAP (flatHook -- true) (flatBowl -- fFlatBowl)
+	define [SixBodySteepBar fFlatBowl] : glyph-proc
+		include : StraightBarSixShape CAP (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl)
+	define [SixBodyVerticalBar fFlatBowl] : glyph-proc
+		include : ClosedContourSixShape CAP (vertical -- true) (flatBowl -- fFlatBowl)
 
 	glyph-block-export SixConfig
-	define SixConfig : object
-		closedContour      SixBodyClosed
-		openContour        SixBodyOpen
-		straightBar        SixBodyStraightBar
-		closedFlatHook     SixBodyClosedFlatHook
-		steepBar           SixBodySteepBar
-		verticalBar        SixBodyVerticalBar
+	define SixConfig : SuffixCfg.weave
+		object # body
+			closedContour      SixBodyClosed
+			openContour        SixBodyOpen
+			straightBar        SixBodyStraightBar
+			closedFlatHook     SixBodyClosedFlatHook
+			steepBar           SixBodySteepBar
+			verticalBar        SixBodyVerticalBar
+		object # bowl
+			""        false
+			flatBowl  true
 
-	foreach { suffix body } [pairs-of SixConfig] : do
+	foreach { suffix { Body fFlatBowl } } [Object.entries SixConfig] : do
 		create-glyph "six.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : body
+			include : Body fFlatBowl
 
 	select-variant 'six.lnum' [CodeLnum '6'] (follow -- 'six')
 	alias          'six.onum' [CodeOnum '6'] 'six.lnum'

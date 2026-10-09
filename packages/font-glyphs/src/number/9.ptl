@@ -10,15 +10,15 @@ glyph-block Digits-Nine : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Digits-Six : SixConfig StraightBarSixShape
 
-	foreach { suffix body } [pairs-of SixConfig] : do
+	foreach { suffix { Body fFlatBowl } } [Object.entries SixConfig] : do
 		create-glyph "nine.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : body
+			include : Body fFlatBowl
 			include : FlipAround (Middle) (CAP / 2)
 
 		create-glyph "nine.onum.\(suffix)" : glyph-proc
 			include : OnumMarks.p
-			include : body
+			include : Body fFlatBowl
 			include : FlipAround (Middle) (OnumHeight / 2)
 
 	select-variant 'nine.lnum' [CodeLnum '9'] (follow -- 'nine')
