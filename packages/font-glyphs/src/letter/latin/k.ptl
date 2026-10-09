@@ -57,6 +57,8 @@ glyph-block Letter-Latin-K : begin
 		local stemInk        : HSwToV swRef
 		local sideJutAdj     : ox + stemInk
 		local xSerif         : kshRight - sideJutAdj
+		# Inner edge of the upper arm at the top (dispiro path start).
+		local xInnerEdge     : kshRight - ox
 		# ox is negative, so dropping it from the length lets the foot clear the
 		# diagonal overshoot and sit a bit further right.
 		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
@@ -64,13 +66,9 @@ glyph-block Letter-Latin-K : begin
 		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
 			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
 			maskRT
-		if [HasRtInner mode] : begin
-			if [HasRtOuter mode] : include : tagged 'serifRT'
-				HSerif.lt xSerif top SideJut swSerif
-			# Inner-only: overlap the right diagonal and flank a short SideJut
-			# inward. Do not extend past the outer edge (that is a middle serif).
-			if [not : HasRtOuter mode] : include : tagged 'serifRT'
-				HSerif.mtAsymmetric xSerif top SideJut stemInk swSerif
+		# Inner serif juts left from the inner edge of the diagonal.
+		if [HasRtInner mode] : include : tagged 'serifRT'
+			HSerif.lt xInnerEdge top SideJut swSerif
 
 		if [HasRbSerif mode] : begin
 			include : tagged 'serifRB' : difference

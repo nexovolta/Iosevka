@@ -243,25 +243,16 @@ glyph-block Letter-Latin-V : begin
 			flat [mix vxStartL vxEndL : if fBarStraight 0.500 0.425] [mix top 0 0.5] [widths.lhs coFine]
 			curl vxEndL 0 [widths.lhs fine]
 
-	# Right inner serifs overlap the stem and flank a short SideJut inward.
+	# Right inner serifs jut inward from the inner edge of the diagonal.
 	# Full/middle bars keep VRightSerifExtend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
 
-	# Inner-only bar: start at the inner edge of the right diagonal, bury
-	# through the stem (no outer spur), and jut a short SideJut left.
-	define [VInnerSerifEnds sf] : begin
-		local stemInk : HSwToV sf.swRef
-		local xInner : sf.right - stemInk
-		return : list xInner SideJut stemInk
-
-	define [VExtendedRtInner sf] : begin
-		local { x l r } : VInnerSerifEnds sf
-		return : tagged 'serifRT' : HSerif.mtAsymmetric x sf.top l r sf.swSerif
+	# Inner-only: attach at the right arm's inner edge (sf.right on a V) and
+	# jut SideJut left. Do not extend past the inner edge — that kinks the outer.
+	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt sf.right sf.top SideJut sf.swSerif
 	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
-	define [VExtendedRbInner sf] : begin
-		local { x l r } : VInnerSerifEnds sf
-		return : tagged 'serifRB' : HSerif.mbAsymmetric x sf.bot l r sf.swSerif
+	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb sf.right sf.bot SideJut sf.swSerif
 	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
 	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
 
