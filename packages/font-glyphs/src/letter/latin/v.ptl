@@ -249,10 +249,12 @@ glyph-block Letter-Latin-V : begin
 	# on the larger body; lowercase keeps the lighter 0.5 Jut blend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
+	# Inner-only serifs (motion / top-right); full/middle bars keep VRightSerifExtend.
+	define [VInnerSerifJut sf] : Jut + [StrokeWidthBlend 0 : 0.5 * Jut]
 
-	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.lt (sf.right - [HSwToV sf.swRef]) sf.top [VInnerSerifJut sf] sf.swSerif
 	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
-	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb (sf.right - [HSwToV sf.swRef]) sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.lb (sf.right - [HSwToV sf.swRef]) sf.bot [VInnerSerifJut sf] sf.swSerif
 	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
 	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
 

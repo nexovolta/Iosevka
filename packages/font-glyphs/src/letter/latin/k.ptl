@@ -54,24 +54,29 @@ glyph-block Letter-Latin-K : begin
 
 		local ox             : KOvershootX mode true top swRef
 		local kshRight       : right + [KBalanceRight SLAB-BR fStraightBar]
-		local sideJutAdj     : ox + [HSwToV swRef]
+		local stemInk        : HSwToV swRef
+		local sideJutAdj     : ox + stemInk
+		local xSerif         : kshRight - sideJutAdj
+		# Inner serifs sit on a diagonal; SideJut is the outer protrusion and looks
+		# stubby on the inner side. Use Jut, and grow a little with weight.
+		local innerJut       : Jut + [StrokeWidthBlend 0 : 0.5 * Jut]
+		# ox is negative, so dropping it from the length lets the foot clear the
+		# diagonal overshoot and sit a bit further right.
+		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
 
-		if [HasFullRtSerif mode] : include : tagged 'serifRT' : union
-			HSerif.rt (kshRight - sideJutAdj) top (SideJut + sideJutAdj) swSerif
-			HSerif.lt (kshRight - sideJutAdj) top (SideJut)              swSerif
-		: else : begin
-			if [HasRtOuter mode] : include : tagged 'serifRT' : difference
-				HSerif.rt (kshRight - sideJutAdj) top (SideJut + sideJutAdj) swSerif
-				maskRT
-			if [HasRtInner mode] : include : tagged 'serifRT' : HSerif.lt (kshRight - sideJutAdj) top SideJut swSerif
+		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
+			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
+			maskRT
+		# Inner-only serifs are lengthened; a middle (inner+outer) bar keeps SideJut.
+		if [HasRtInner mode] : include : tagged 'serifRT'
+			HSerif.lt xSerif top [if [HasRtOuter mode] SideJut innerJut] swSerif
 
-		if [HasRbSerif mode] : include : tagged 'serifRB' : if [HasFullRtSerif mode]
-			then : union
-				HSerif.rb (kshRight - sideJutAdj) 0   (SideJut + sideJutAdj) swSerif
-				HSerif.lb (kshRight - sideJutAdj) 0   (SideJut)              swSerif
-			else : difference
-				HSerif.rb (kshRight - sideJutAdj) 0   (SideJut + sideJutAdj) swSerif
+		if [HasRbSerif mode] : begin
+			include : tagged 'serifRB' : difference
+				HSerif.rb xSerif 0 rbJut swSerif
 				maskRB
+			if [HasFullRtSerif mode] : include : tagged 'serifRB'
+				HSerif.lb xSerif 0 SideJut swSerif
 
 		if attachment : include : difference
 			attachment.rSideJut
@@ -106,51 +111,52 @@ glyph-block Letter-Latin-K : begin
 
 			define BottomMask : object
 				forStroke : function [offset] : Rect top 0 kshLeft
-					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut + TanSlope * Stroke) VERY-FAR
+					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut - ox + TanSlope * Stroke) VERY-FAR
 				forSerifs : function []
 					HalfRectTriangle (kshRightBot - ox - TINY) 0 (kshLeft + stroke - TINY) yAttach2
 
-			if fHookRight
-			: then : begin
-				define kHookRightMix 0.5
-				if fHookRight : include : dispiro
-					widths.rhs stroke
-					straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
-					flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yAttach1 kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
-					curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
-			: else : begin
-				set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
-				include : intersection
-					TopMask.forStroke 0
-					dispiro
-						widths.rhs stroke
-						flat (kshRightTop - ox) top
-						curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
-
-
+			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yAttach2 0 : StrokeWidthBlend 0.5 0.7]
-			include : intersection
-				BottomMask.forStroke (-0.1)
-				spiro-outline
-					corner (kshLeft + stroke) 0
-					corner (kshLeft + stroke) (yAttach1 + 1)
-					corner (kshRightTop - ox - TINY) top
-					corner (kshRightBot - ox) top
-					corner (kshRightBot - ox) 0
-				dispiro
-					flat (kshRightBot - ox) 0 [widths.lhs stroke]
-					curl (kshLeft + stroke) yAttach2 [widths.lhs fine]
 
-			include : KLegSlabs
-				mode         -- slabLegs
-				top          -- top
-				left         -- left
-				right        -- right
-				swRef        -- stroke
-				fStraightBar -- true
-				attachment   -- attachment
-				maskRT	     -- TopMask.forSerifs
-				maskRB	     -- BottomMask.forSerifs
+			# Union serifs into the legs so overlapping contours cannot reverse winding.
+			include : union
+				new-glyph : glyph-proc
+					if fHookRight
+					: then : begin
+						define kHookRightMix 0.5
+						include : dispiro
+							widths.rhs stroke
+							straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
+							flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yAttach1 kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
+							curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
+					: else : include : intersection
+						TopMask.forStroke 0
+						dispiro
+							widths.rhs stroke
+							flat (kshRightTop - ox) top
+							curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
+					include : intersection
+						BottomMask.forStroke (-0.1)
+						spiro-outline
+							corner (kshLeft + stroke) 0
+							corner (kshLeft + stroke) (yAttach1 + 1)
+							corner (kshRightTop - ox - TINY) top
+							corner (kshRightBot - ox) top
+							corner (kshRightBot - ox) 0
+						dispiro
+							flat (kshRightBot - ox) 0 [widths.lhs stroke]
+							curl (kshLeft + stroke) yAttach2 [widths.lhs fine]
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- true
+						attachment   -- attachment
+						maskRT	     -- TopMask.forSerifs
+						maskRB	     -- BottomMask.forSerifs
 
 		export : define [Symmetric leadGap hookDepth] : function [fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke : if leadGap 3.5 3] * (stroke / Stroke)
@@ -171,58 +177,14 @@ glyph-block Letter-Latin-K : begin
 			define [StrokeMask fTop t b offset] : Rect t b kshLeft
 				if [if fTop [HasRtSerif slabLegs] [HasRbSerif slabLegs]] (kshRight + offset) VERY-FAR
 
-			if fHookRight
-			: then : begin
-				define kHookRightMix 0.5
-				include : tagged 'strokeRT' : intersection
-					Rect top (0.5 * top) kshLeft VERY-FAR
-					dispiro
-						widths.rhs stroke
-						straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
-						flat [mix (kshRightHookRight - ox) xAttach kHookRightMix] [mix top yAttach kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
-						curl [mix (kshRightHookRight - ox) xAttach 2] [mix top yAttach 2] [widths.rhs fine]
-			: else : begin
+			if [not fHookRight] : begin
 				local xRef : linreg yAttach xAttach top kshRight [mix 0 top 0.75]
 				set-base-anchor 'armOverlay' (xRef - [HSwToV HalfStroke]) [mix 0 top 0.75]
-				include : tagged 'strokeRT' : intersection
-					StrokeMask true top (0.5 * top) 0
-					dispiro
-						widths.rhs stroke
-						flat (kshRight - ox) top
-						curl [mix (kshRight - ox) xAttach 2] [mix top yAttach 2] [widths.rhs fine]
-
 			if hookDepth
-			: then : begin
-				include : ExtendBelowBaseAnchors hookDepth
-				include : tagged 'strokeRB' : dispiro
-					flat kshLeft (0.5 * top + stroke / 2) [widths.rhs.heading stroke Rightward]
-					curl [mix kshLeft right 0.5] (0.5 * top + stroke / 2)
-					archv
-					flat right ([Math.max (0.5 * top - ArchDepthB) (hookDepth + Hook + TINY)] + stroke / 2)
-					curl right (hookDepth + Hook + stroke / 2)
-					arcvh
-					straight.left.end (right - HookX - [HSwToV : 0.5 * stroke]) hookDepth
+			: then : include : ExtendBelowBaseAnchors hookDepth
 			: else : begin
 				local xRef : linreg coYAttach xAttach 0 kshRight [mix 0 top 0.25]
 				set-base-anchor 'legOverlay' (xRef - [HSwToV HalfStroke]) [mix 0 top 0.25]
-				include : tagged 'strokeRB' : intersection
-					StrokeMask false (0.5 * top) 0 0
-					dispiro
-						flat (kshRight - ox) 0 [widths.lhs stroke]
-						curl [mix (kshRight - ox) xAttach 2] [mix 0 coYAttach 2] [widths.lhs fine]
-
-				if leadGap : include : intersection
-					HBar.m kshLeft (2 * Width) (0.5 * top) stroke
-					union
-						Rect top 0 kshLeft xAttach
-						spiro-outline
-							corner ([if fHookRight kshRightHookRight kshRight] - ox - 1) top
-							corner (xAttach - 1) yAttach
-							corner (xAttach - 1) top
-						spiro-outline
-							corner (kshRight - ox - 1) 0
-							corner (xAttach - 1) coYAttach
-							corner (xAttach - 1) 0
 
 			define [TopSerifMask] : intersection
 				StrokeMask true top (0.5 * top) (-0.1)
@@ -232,16 +194,62 @@ glyph-block Letter-Latin-K : begin
 				StrokeMask false (0.5 * top) 0 (-0.1)
 				HalfRectTriangle (kshRight - ox - TINY) 0   ([mix (kshRight - ox) xAttach 2] - TINY) [mix 0 coYAttach 2]
 
-			include : KLegSlabs
-				mode         -- slabLegs
-				top          -- top
-				left         -- left
-				right        -- right
-				swRef        -- stroke
-				fStraightBar -- true
-				attachment   -- attachment
-				maskRT	     -- TopSerifMask
-				maskRB	     -- BotSerifMask
+			include : union
+				new-glyph : glyph-proc
+					if fHookRight
+					: then : begin
+						define kHookRightMix 0.5
+						include : tagged 'strokeRT' : intersection
+							Rect top (0.5 * top) kshLeft VERY-FAR
+							dispiro
+								widths.rhs stroke
+								straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
+								flat [mix (kshRightHookRight - ox) xAttach kHookRightMix] [mix top yAttach kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
+								curl [mix (kshRightHookRight - ox) xAttach 2] [mix top yAttach 2] [widths.rhs fine]
+					: else : include : tagged 'strokeRT' : intersection
+						StrokeMask true top (0.5 * top) 0
+						dispiro
+							widths.rhs stroke
+							flat (kshRight - ox) top
+							curl [mix (kshRight - ox) xAttach 2] [mix top yAttach 2] [widths.rhs fine]
+					if hookDepth
+					: then : include : tagged 'strokeRB' : dispiro
+						flat kshLeft (0.5 * top + stroke / 2) [widths.rhs.heading stroke Rightward]
+						curl [mix kshLeft right 0.5] (0.5 * top + stroke / 2)
+						archv
+						flat right ([Math.max (0.5 * top - ArchDepthB) (hookDepth + Hook + TINY)] + stroke / 2)
+						curl right (hookDepth + Hook + stroke / 2)
+						arcvh
+						straight.left.end (right - HookX - [HSwToV : 0.5 * stroke]) hookDepth
+					: else : begin
+						include : tagged 'strokeRB' : intersection
+							StrokeMask false (0.5 * top) 0 0
+							dispiro
+								flat (kshRight - ox) 0 [widths.lhs stroke]
+								curl [mix (kshRight - ox) xAttach 2] [mix 0 coYAttach 2] [widths.lhs fine]
+						if leadGap : include : intersection
+							HBar.m kshLeft (2 * Width) (0.5 * top) stroke
+							union
+								Rect top 0 kshLeft xAttach
+								spiro-outline
+									corner ([if fHookRight kshRightHookRight kshRight] - ox - 1) top
+									corner (xAttach - 1) yAttach
+									corner (xAttach - 1) top
+								spiro-outline
+									corner (kshRight - ox - 1) 0
+									corner (xAttach - 1) coYAttach
+									corner (xAttach - 1) 0
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- true
+						attachment   -- attachment
+						maskRT	     -- TopSerifMask
+						maskRB	     -- BotSerifMask
 
 		define [SwapKLegTB mode] : begin
 			local rest : maskOffBits mode [bitOr SLAB-TR-R SLAB-BR]
@@ -286,46 +294,47 @@ glyph-block Letter-Latin-K : begin
 
 			define BottomMask : object
 				forStroke : function [offset] : Rect top 0 kshLeft
-					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut + TanSlope * Stroke) VERY-FAR
+					if [HasRbSerif slabLegs] (kshRightSerifs + offset + SideJut - ox + TanSlope * Stroke) VERY-FAR
 				forSerifs : function []
 					HalfRectTriangle (xRightBottom - TINY) 0 (xLeftTop - TINY) yJoin
 
-			if fHookRight
-			: then : begin
-				define kHookRightMix 0.5
-				include : dispiro
-					widths.rhs stroke
-					straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
-					flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yJoin kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
-					curl (kshLeft + stroke) yJoin [widths.rhs fine]
-			: else : begin
-				set-base-anchor 'armOverlay' [mix kshLeft xArc : StrokeWidthBlend 0.5 0.65] [mix yJoin top : StrokeWidthBlend 0.5 0.7]
-				include : intersection
-					TopMask.forStroke 0
-					dispiro
-						widths.rhs stroke
-						flat kshLeft yJoin [heading Rightward]
-						curl (xArc - arcDepth) yJoin [heading Rightward]
-						archv
-						flat xArc (yJoin + arcDepth) [heading Upward]
-						curl xArc top [heading Upward]
-
+			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft xArc : StrokeWidthBlend 0.5 0.65] [mix yJoin top : StrokeWidthBlend 0.5 0.7]
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yJoin 0 : StrokeWidthBlend 0.5 0.7]
-			include : intersection
-				BottomMask.forStroke (-0.1)
-				Rect yJoin 0 (-VERY-FAR) VERY-FAR
-				ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke
 
-			include : KLegSlabs
-				mode         -- slabLegs
-				top          -- top
-				left         -- left
-				right        -- right
-				swRef        -- stroke
-				fStraightBar -- true
-				attachment   -- attachment
-				maskRT	     -- TopMask.forSerifs
-				maskRB	     -- BottomMask.forSerifs
+			include : union
+				new-glyph : glyph-proc
+					if fHookRight
+					: then : begin
+						define kHookRightMix 0.5
+						include : dispiro
+							widths.rhs stroke
+							straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
+							flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yJoin kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
+							curl (kshLeft + stroke) yJoin [widths.rhs fine]
+					: else : include : intersection
+						TopMask.forStroke 0
+						dispiro
+							widths.rhs stroke
+							flat kshLeft yJoin [heading Rightward]
+							curl (xArc - arcDepth) yJoin [heading Rightward]
+							archv
+							flat xArc (yJoin + arcDepth) [heading Upward]
+							curl xArc top [heading Upward]
+					include : intersection
+						BottomMask.forStroke (-0.1)
+						Rect yJoin 0 (-VERY-FAR) VERY-FAR
+						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- true
+						attachment   -- attachment
+						maskRT	     -- TopMask.forSerifs
+						maskRB	     -- BottomMask.forSerifs
 
 		export : define [Curly fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
@@ -346,52 +355,55 @@ glyph-block Letter-Latin-K : begin
 			local xAttach2 : kshLeft + [HSwToV stroke]
 			local yAttach2 : mix 0 top 0.75
 			set-base-anchor 'armOverlay' [mix xAttach1 kshRight : StrokeWidthBlend 0.7 0.6] [mix yAttach1 top : StrokeWidthBlend 0.6 0.65]
-			include : intersection
-				Rect top 0 kshLeft VERY-FAR
-				if fHookRight
-					dispiro
-						straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke) [widths.rhs stroke]
-						upperCurvatureHT
-						g4 xAttach1 yAttach1 [widths.rhs fine]
-					dispiro
-						g4.down.start (kshRight) top [widths.rhs.heading stroke Downward]
-						upperCurvature
-						g4 xAttach1 yAttach1 [widths.rhs fine]
 			set-base-anchor 'legOverlay' [mix xAttach2 kshRight : StrokeWidthBlend 0.7 0.6] [mix yAttach2 0 : StrokeWidthBlend 0.6 0.65]
-			include : difference
-				dispiro
-					g4.up.start (kshRight - O) 0 [widths.lhs.heading stroke Upward]
-					lowerCurvature
-					g4 xAttach2 yAttach2 [widths.center fine]
-				if fHookRight
-					spiro-outline
-						straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke + TINY)
-						upperCurvatureHT
-						corner (xAttach1 - TINY) yAttach1
-						corner (-VERY-FAR) yAttach1
-						corner (-VERY-FAR) (+VERY-FAR)
-						corner (+VERY-FAR) (+VERY-FAR)
-						corner (+VERY-FAR) (top - stroke + TINY)
-					spiro-outline
-						corner.down.start (kshRight - TINY) top
-						upperCurvature
-						corner (kshLeft + stroke) (yAttach1 + TINY)
-						corner kshLeft 0
-						corner kshLeft top
 
 			define [TopSerifMask] : HalfRectTriangle kshRight top xAttach1 yAttach1
 			define [BotSerifMask] : HalfRectTriangle (kshRight - O - [HSwToV : 0.5 * stroke]) 0 xAttach2 yAttach2
 
-			include : KLegSlabs
-				mode         -- slabLegs
-				top          -- top
-				left         -- left
-				right        -- right
-				swRef        -- stroke
-				fStraightBar -- false
-				attachment   -- attachment
-				maskRT	     -- TopSerifMask
-				maskRB	     -- BotSerifMask
+			include : union
+				new-glyph : glyph-proc
+					include : intersection
+						Rect top 0 kshLeft VERY-FAR
+						if fHookRight
+							dispiro
+								straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke) [widths.rhs stroke]
+								upperCurvatureHT
+								g4 xAttach1 yAttach1 [widths.rhs fine]
+							dispiro
+								g4.down.start (kshRight) top [widths.rhs.heading stroke Downward]
+								upperCurvature
+								g4 xAttach1 yAttach1 [widths.rhs fine]
+					include : difference
+						dispiro
+							g4.up.start (kshRight - O) 0 [widths.lhs.heading stroke Upward]
+							lowerCurvature
+							g4 xAttach2 yAttach2 [widths.center fine]
+						if fHookRight
+							spiro-outline
+								straight.left.start (kshRight + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke + TINY)
+								upperCurvatureHT
+								corner (xAttach1 - TINY) yAttach1
+								corner (-VERY-FAR) yAttach1
+								corner (-VERY-FAR) (+VERY-FAR)
+								corner (+VERY-FAR) (+VERY-FAR)
+								corner (+VERY-FAR) (top - stroke + TINY)
+							spiro-outline
+								corner.down.start (kshRight - TINY) top
+								upperCurvature
+								corner (kshLeft + stroke) (yAttach1 + TINY)
+								corner kshLeft 0
+								corner kshLeft top
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- false
+						attachment   -- attachment
+						maskRT	     -- TopSerifMask
+						maskRB	     -- BotSerifMask
 
 		define [CursiveDimen left right top stroke slabLT slabLegs] : begin
 			define kshLeft  : left + [KBalance slabLegs true]
@@ -443,30 +455,33 @@ glyph-block Letter-Latin-K : begin
 		export : define [Cursive fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			define dim : CursiveDimen left right top stroke slabLT slabLegs
 
-			define [BottomStrokeMask] : Rect XH 0 0 [if [HasRbSerif slabLegs] (dim.kshRight + SideJut + TanSlope * Stroke) VERY-FAR]
+			define [BottomStrokeMask] : Rect XH 0 0 [if [HasRbSerif slabLegs] (dim.kshRight + SideJut - dim.ox + TanSlope * Stroke) VERY-FAR]
 
-			include : CursiveLoopT dispiro 0 left right stroke top slabLT slabLegs
 			set-base-anchor 'overlay' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
 			set-base-anchor 'legOverlay' [mix dim.arcTerminalX dim.kshRight : StrokeWidthBlend 0.5 0.6] [mix dim.arcTerminalY 0 : StrokeWidthBlend 0.6 0.65]
-			include : difference
-				intersection [BottomStrokeMask] : dispiro
-					flat dim.arcTerminalX dim.arcTerminalY [widths.lhs]
-					curl (dim.kshRight - dim.ox) 0 [widths.rhs]
-				CursiveLoopT spiro-outline (-O) left right stroke top slabLT slabLegs
 
 			define [BotSerifMask] : HalfRectTriangle (dim.kshRight - dim.ox - TINY) 0 (dim.arcTerminalX - TINY) dim.arcTerminalY
 
-			include : KLegSlabs
-				mode         -- [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]]
-				top          -- top
-				left         -- left
-				right        -- right
-				swRef        -- stroke
-				fStraightBar -- true
-				attachment   -- attachment
-				maskRT	     -- no-shape
-				maskRB	     -- BotSerifMask
+			include : union
+				new-glyph : glyph-proc
+					include : CursiveLoopT dispiro 0 left right stroke top slabLT slabLegs
+					include : difference
+						intersection [BottomStrokeMask] : dispiro
+							flat dim.arcTerminalX dim.arcTerminalY [widths.lhs]
+							curl (dim.kshRight - dim.ox) 0 [widths.rhs]
+						CursiveLoopT spiro-outline (-O) left right stroke top slabLT slabLegs
+				new-glyph : glyph-proc
+					include : KLegSlabs
+						mode         -- [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]]
+						top          -- top
+						left         -- left
+						right        -- right
+						swRef        -- stroke
+						fStraightBar -- true
+						attachment   -- attachment
+						maskRT	     -- no-shape
+						maskRB	     -- BotSerifMask
 
 		export : define [CursiveTailed fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			define dim : CursiveDimen left right top stroke slabLT slabLegs
