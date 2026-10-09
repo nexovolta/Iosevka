@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
-	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtInner VExtendedRtFull
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull
 
 	define SLAB-NONE             { false false false false }
 	define SLAB-AUTO             { SLAB  SLAB  false false }
@@ -548,9 +548,9 @@ glyph-block Letter-Latin-Lower-Y : begin
 			local sf : SerifFrame.fromDf [DivFrame 1] top 0
 			if doSlabTop : begin
 				include sf.lt.outer
-				if [not doSlabMotion] : include : VExtendedRtInner sf
+				if [not doSlabMotion] : include sf.rt.inner
 			if ([not doSlabTop] && doSlabMotion) : include sf.lt.outer
-			if ([not doSlabTop] && doSlabTopRightMotion) : include : VExtendedRtInner sf
+			if ([not doSlabTop] && doSlabTopRightMotion) : include sf.rt.inner
 
 	define CursiveYConfig : SuffixCfg.weave
 		object # body
