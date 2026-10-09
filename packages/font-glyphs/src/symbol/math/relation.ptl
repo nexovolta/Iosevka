@@ -395,6 +395,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	glyph-block-import Symbol-Math-Relation-Addon-Glyphs
 
 	define [LessGreaterExpansion top bot l r] : Math.hypot 1 : 0.5 * (top - bot) / (r - l)
+	define [LessGreaterVertSw s] : s * [StrokeWidthBlend 1.15 1.1]
 
 	define [LessMaskShape top bot l r] : spiro-outline
 		corner r top
@@ -417,7 +418,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 
 		if fVertTerm
 		: then : return : dispiro
-			widths.center s
+			widths.center [LessGreaterVertSw s]
 			flat xOuter yOuter [heading Leftward]
 			curl l yInner [heading Leftward]
 		: else : return : dispiro
@@ -437,7 +438,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 
 		if fVertTerm
 		: then : return : dispiro
-			widths.center s
+			widths.center [LessGreaterVertSw s]
 			flat xOuter yOuter [heading Rightward]
 			curl r yInner [heading Rightward]
 		: else : return : dispiro
