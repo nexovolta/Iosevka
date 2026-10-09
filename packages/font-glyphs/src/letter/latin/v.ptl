@@ -243,26 +243,17 @@ glyph-block Letter-Latin-V : begin
 			flat [mix vxStartL vxEndL : if fBarStraight 0.500 0.425] [mix top 0 0.5] [widths.lhs coFine]
 			curl vxEndL 0 [widths.lhs fine]
 
-	# Right inner serifs stop at the glyph midline and do not grow with weight.
+	# Right inner serifs overlap the stem and flank a short SideJut inward.
 	# Full/middle bars keep VRightSerifExtend.
 	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
-	define [VInnerSerifJut sf] : begin
-		local xInner : sf.right - [HSwToV sf.swRef]
-		local xMid : mix sf.left sf.right 0.5
-		return : Math.min para.refJut : Math.max 0 (xInner - xMid)
 
-	# Inner-only bar: sit further into the counter, bury through the stem,
-	# and extend an outer spur so the diagonal join does not notch.
+	# Inner-only bar: start at the inner edge of the right diagonal, bury
+	# through the stem (no outer spur), and jut a short SideJut left.
 	define [VInnerSerifEnds sf] : begin
-		local halfInk : HSwToV : 0.5 * sf.swRef
-		local extra : 0 + sf.sideJut
-		local xInner : sf.right - [HSwToV sf.swRef]
-		local xMid : mix sf.left sf.right 0.5
-		local innerJut : VInnerSerifJut sf
-		local innerEnd : Math.max xMid (xInner - innerJut - extra)
-		local x : xInner + halfInk
-		return : list x (x - innerEnd) (halfInk + extra)
+		local stemInk : HSwToV sf.swRef
+		local xInner : sf.right - stemInk
+		return : list xInner SideJut stemInk
 
 	define [VExtendedRtInner sf] : begin
 		local { x l r } : VInnerSerifEnds sf
