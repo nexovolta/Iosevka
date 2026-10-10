@@ -11,21 +11,23 @@ glyph-block Digits-Seven : begin
 	glyph-block-import Digits-Shared : OnumMarks ShiftDown CodeLnum CodeOnum
 
 	define SevenXLeft : mix SB RightSB 0.28
+	define SevenStraightInnerX : SevenXLeft + [HSwToV : 0.75 * Stroke]
 	define [StraightBody top] : union [HBar.t SB RightSB top] : intersection
 		Rect (top - Stroke) 0 SB RightSB
 		dispiro
 			widths.rhs
 			corner RightSB (top - Stroke)
-			corner [mix RightSB (SevenXLeft + [HSwToV : 0.75 * Stroke]) 2] [mix (top - Stroke) 0 2]
+			corner [mix RightSB SevenStraightInnerX 2] [mix (top - Stroke) 0 2]
 
 	define SevenXLeftBend : mix SB RightSB 0.38
+	define SevenBendKnotX : SevenXLeftBend + [HSwToV : 0.6 * Stroke]
 	define [BendBody top] : union [HBar.t SB RightSB top] : intersection
 		MaskBelow (top - Stroke)
 		MaskAbove 0
 		dispiro
 			widths.rhs
 			g4 RightSB (top - Stroke)
-			g4.down.mid (SevenXLeftBend + [HSwToV : 0.6 * Stroke]) 0 [heading Downward]
+			g4.down.mid SevenBendKnotX 0 [heading Downward]
 			g4 RightSB (-top + Stroke)
 
 	define [CurlyBody top] : union [HBar.t SB (RightSB - HalfStroke) top] : intersection
@@ -34,7 +36,7 @@ glyph-block Digits-Seven : begin
 		dispiro
 			g4.down.start RightSB top [widths.rhs.heading Stroke Downward]
 			alsoThru.g2 0.5 0.5
-			g4.down.mid (SevenXLeftBend + [HSwToV : 0.6 * Stroke]) 0 [heading Downward]
+			g4.down.mid SevenBendKnotX 0 [heading Downward]
 			alsoThru.g2 0.5 0.5
 			g4.down.end RightSB (-top) [widths.rhs.heading Stroke Downward]
 
@@ -86,17 +88,27 @@ glyph-block Digits-Seven : begin
 	define [StartSerif top] : VSerif.dl (SB + (OX - O)) top VJut
 	define [StartSerifThick top] : VSerif.dl (SB + (OX - O)) top VJut [AdviceStroke 2.75]
 
-	define [SevenFootXMid body] : match body
-		[Just "straight"]        : SevenXLeft + [HSwToV : 1.25 * Stroke]
-		[Just "bend"]            : SevenXLeftBend + [HSwToV : 1.1 * Stroke]
-		[Just "curly"]           : SevenXLeftBend + [HSwToV : 1.1 * Stroke]
-		[Just "square"]          : SevenXLeft + [HSwToV HalfStroke]
-		[Just "verticalTop"]     : SevenXLeft + [HSwToV HalfStroke]
-		[Just "verticalBottom"]  : SevenXLeft + [HSwToV HalfStroke]
+	# Inner/outer of the stem at the baseline, from the same edges as the body.
+	define [SevenFootEdges body top] : match body
+		[Just "straight"] : begin
+			local xInner SevenStraightInnerX
+			local xOuter : xInner + Stroke * [DiagCor (top - Stroke) (RightSB - xInner)]
+			object xInner xOuter
+		([Just "bend"] || [Just "curly"]) : begin
+			local xInner SevenBendKnotX
+			local xOuter : xInner + [HSwToV Stroke]
+			object xInner xOuter
+		__ : begin
+			local xInner SevenXLeft
+			local xOuter : SevenXLeft + [HSwToV Stroke]
+			object xInner xOuter
 
-	define [BottomSerif body] : function [top] : union
-		HSerif.lb [SevenFootXMid body] 0 Jut
-		HSerif.rb [SevenFootXMid body] 0 MidJutSide
+	define [BottomSerif body] : function [top] : begin
+		local [object xInner xOuter] : SevenFootEdges body top
+		local xMid : mix xInner xOuter 0.5
+		return : union
+			HSerif.lb xMid 0 Jut
+			HSerif.rb xMid 0 MidJutSide
 
 	define [FullSerif body] : function [top] : union
 		StartSerif top
