@@ -10,20 +10,45 @@ glyph-block Letter-Cyrillic-Dzhe : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
-	define [CyrDzheShape top] : glyph-proc
+	define SERIF-NONE      0
+	define SERIF-MOTION    1
+	define SERIF-ALL       2
+	define SERIF-TR        3
+	define SERIF-BILATERAL 4
+
+	define [CyrDzheShape top serifType] : glyph-proc
 		include : VBar.l SB 0 top
 		include : HBar.b SB RightSB 0
 		include : VBar.r RightSB 0 top
 		local desc : (-LongVJut) + QuarterStroke
 		include : VBar.m Middle desc Stroke VJutStroke
 		include : ExtendBelowBaseAnchors desc
-		if SLAB : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
-			include : composite-proc sf.lt.full sf.rt.full sf.lb.outer sf.rb.outer
+		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
+			include : match serifType
+				[Just SERIF-MOTION]    : begin sf.lt.outer
+				[Just SERIF-TR]        : begin sf.rt.outer
+				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.outer
+				__ : glyph-proc
+					include sf.lt.full
+					include sf.rt.full
+					include sf.lb.outer
+					include sf.rb.outer
 
-	create-glyph 'cyrl/Dzhe' 0x40F : glyph-proc
-		include : MarkSet.capital
-		include : CyrDzheShape CAP
+	define DzheConfig : object
+		serifless              SERIF-NONE
+		motionSerifed          SERIF-MOTION
+		serifed                SERIF-ALL
+		topRightMotionSerifed  SERIF-TR
+		bilateralMotionSerifed SERIF-BILATERAL
 
-	create-glyph 'cyrl/dzhe.upright' : glyph-proc
-		include : MarkSet.e
-		include : CyrDzheShape XH
+	foreach { suffix serifType } [Object.entries DzheConfig] : do
+		create-glyph "cyrl/Dzhe.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : CyrDzheShape CAP serifType
+
+		create-glyph "cyrl/dzhe.upright.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : CyrDzheShape XH serifType
+
+	select-variant 'cyrl/Dzhe' 0x40F (follow -- 'cyrl/Tse')
+	select-variant 'cyrl/dzhe.upright' (follow -- 'cyrl/tse.upright')

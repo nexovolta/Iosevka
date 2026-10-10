@@ -9,7 +9,7 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markMiddle
-	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendBelowBaseAnchors
 	glyph-block-import Letter-Shared : CreateAccentedComposition SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Shapes : uBowl RightwardTailedBar SerifFrame
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender CyrCurlDescender
@@ -149,6 +149,10 @@ glyph-block Letter-Latin-U : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			return : composite-proc sf.lt.outer sf.rt.outer
 
+		export : define [TopRightMotion df top _sw] : begin
+			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
+			return sf.rt.outer
+
 		export : define [MotionToothless df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			return sf.lt.outer
@@ -166,6 +170,7 @@ glyph-block Letter-Latin-U : begin
 		(slabs === USerifs.MotionToothed) USerifs.MotionToothedReversed
 		(slabs === USerifs.Toothed)      USerifs.ToothedReversed
 		(slabs === USerifs.SmallToothed) USerifs.SmallToothedReversed
+		(slabs === USerifs.TopRightMotion) USerifs.MotionToothless
 		true                             slabs
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
@@ -244,6 +249,8 @@ glyph-block Letter-Latin-U : begin
 			serifed : match body
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
 				__                                        USerifs.SmallToothless
+			topRightMotionSerifed      USerifs.TopRightMotion
+			bilateralMotionSerifed     USerifs.BilateralMotion
 
 	foreach { suffix { { Base xRB yRB } Slabs } } [Object.entries : SmallUConfigT ULower] : do
 		local revBody : ReversedUBody ULower Base suffix
@@ -286,6 +293,12 @@ glyph-block Letter-Latin-U : begin
 
 		create-glyph "cyrl/tse.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "cyrl/tse.italic.\(suffix)"] AS_BASE ALSO_METRICS
+
+		create-glyph "cyrl/dzhe.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
+			include [refer-glyph "u.\(suffix)"] AS_BASE ALSO_METRICS
+			local desc : (-LongVJut) + QuarterStroke
+			include : VBar.m Middle desc Stroke VJutStroke
+			include : ExtendBelowBaseAnchors desc
 
 		create-glyph "cyrl/tswe.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -438,7 +451,7 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'cyrl/revtse.italic'
 	select-variant 'cyrl/tswe.italic' (follow -- 'cyrl/tse.italic')
 
-	select-variant 'cyrl/dzhe.italic/base' (shapeFrom -- 'u') (follow -- 'cyrl/dzhe.italic')
+	select-variant 'cyrl/dzhe.italic/base' (shapeFrom -- 'u') (follow -- 'cyrl/tse.italic')
 	CreateAccentedComposition 'cyrl/dzhe.italic' null 'cyrl/dzhe.italic/base' 'descenderBarBelow'
 
 	alias 'cyrl/i.BGR'   null 'cyrl/i.italic'

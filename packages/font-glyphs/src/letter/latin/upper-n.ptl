@@ -25,6 +25,8 @@ glyph-block Letter-Latin-Upper-N : begin
 	define SLAB-UPPER-TSAN 5
 	define SLAB-LOWER-TSAN 6
 	define SLAB-CYR-I-MOTION 7
+	define SLAB-TOP-RIGHT 8
+	define SLAB-BILATERAL-MOTION 9
 
 	define pInkTrap 0.4
 
@@ -73,6 +75,8 @@ glyph-block Letter-Latin-Upper-N : begin
 			[Just SLAB-ALL]    : composite-proc sf.lt.outer sf.lb.full sf.rt.full
 			[Just SLAB-AUTO]   : NeedSlab SLAB : composite-proc sf.lt.outer sf.lb.full sf.rt.full
 			[Just SLAB-MOTION] : composite-proc sf.lt.outer
+			[Just SLAB-TOP-RIGHT] : composite-proc sf.rt.outer
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
 			__                 : no-shape
 
 		return : object xStart yStart xEnd yEnd stroke fine
@@ -130,6 +134,8 @@ glyph-block Letter-Latin-Upper-N : begin
 			[Just SLAB-AUTO]   : NeedSlab SLAB : composite-proc sf.lt.full sf.rt.outer sf.rb.full
 			[Just SLAB-MOTION] : composite-proc sf.rt.outer
 			[Just SLAB-CYR-I-MOTION] : composite-proc sf.lt.outer sf.rb.outer
+			[Just SLAB-TOP-RIGHT] : composite-proc sf.rt.outer
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
 			[Just SLAB-CYR-I]  : NeedSlab SLAB : match bodyType
 				[Just BODY-CYR-I-SLAB] : composite-proc sf.lt.full sf.lb.full  sf.rt.full  sf.rb.full
 				__                     : composite-proc sf.lt.full sf.lb.outer sf.rt.outer sf.rb.full
@@ -146,6 +152,8 @@ glyph-block Letter-Latin-Upper-N : begin
 			serifless      SLAB-NONE
 			motionSerifed  SLAB-MOTION
 			serifed        SLAB-ALL
+			topRightMotionSerifed SLAB-TOP-RIGHT
+			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
 	define CyrIConfig : SuffixCfg.weave
 		object # body
@@ -155,6 +163,8 @@ glyph-block Letter-Latin-Upper-N : begin
 			serifless      SLAB-NONE
 			motionSerifed  SLAB-CYR-I-MOTION
 			serifed        SLAB-ALL
+			topRightMotionSerifed SLAB-TOP-RIGHT
+			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
 	foreach { suffix { { bodyType crDiag } slabType } } [Object.entries NConfig] : do
 		create-glyph "N.\(suffix)" : glyph-proc
