@@ -42,7 +42,23 @@ glyph-block Letter-Latin-Lower-H : begin
 			corner (SB + [HSwToV HalfStroke]) yOverlay
 			corner xOverlayEnd yOverlay
 
+	# n-style flat join at XH: horizontal into the left stem. The stem itself is unchanged.
+	define [SmallHHump] : with-params [fFlatHump [bottom 0]] : glyph-proc
+		if fFlatHump : include : nShoulder.earlessCorner
+			left   -- SB
+			right  -- RightSB
+			top    -- XH
+			bottom -- bottom
+			rise   -- 0
+		if [not fFlatHump] : include : nShoulder.shape
+			left   -- (SB + [HSwToV Stroke])
+			right  -- RightSB
+			bottom -- bottom
+
 	define HConfig : SuffixCfg.weave
+		object # hump
+			""        false
+			flatHump  true
 		object # tail
 			straight false
 			tailed   true
@@ -52,17 +68,15 @@ glyph-block Letter-Latin-Lower-H : begin
 			motionSerifed  { SmallHMotionSerifs true  }
 			topLeftSerifed { SmallHTopLeftSerif true  }
 
-	foreach { suffix { fTailed { Serifs fHasTopSerif } } } [Object.entries HConfig] : do
+	foreach { suffix { fFlatHump fTailed { Serifs fHasTopSerif } } } [Object.entries HConfig] : do
 		create-glyph "h.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			set-base-anchor 'overlay' Middle (XH / 2)
 			set-base-anchor 'strike'  Middle (XH / 2)
 			include : LeaningAnchor.Above.VBar.l SB
 			include : VBar.l SB 0 Ascender
-			include : nShoulder.shape
-				left -- (SB + [HSwToV Stroke])
-				right -- RightSB
-				bottom -- [if fTailed (XH - SmallArchDepthB + O) 0]
+			if fTailed : include : SmallHHump fFlatHump (bottom -- (XH - SmallArchDepthB + O))
+			if [not fTailed] : include : SmallHHump fFlatHump
 			if fTailed : include : RightwardTailedBar RightSB 0 (XH - SmallArchDepthB)
 			if Serifs : include : Serifs fTailed false
 
@@ -76,10 +90,8 @@ glyph-block Letter-Latin-Lower-H : begin
 			set-base-anchor 'strike'  Middle (XH / 2)
 			include : LeaningAnchor.Above.VBar.l SB
 			include : TopHook.toRight.lBarInner SB 0 Ascender
-			include : nShoulder.shape
-				left -- (SB + [HSwToV Stroke])
-				right -- RightSB
-				bottom -- [if fTailed (XH - SmallArchDepthB + O) 0]
+			if fTailed : include : SmallHHump fFlatHump (bottom -- (XH - SmallArchDepthB + O))
+			if [not fTailed] : include : SmallHHump fFlatHump
 			if fTailed : include : RightwardTailedBar RightSB 0 (XH - SmallArchDepthB)
 			if Serifs : include : Serifs fTailed true
 
@@ -90,10 +102,7 @@ glyph-block Letter-Latin-Lower-H : begin
 				set-base-anchor 'strike'  Middle (XH / 2)
 				include : LeaningAnchor.Above.VBar.l SB
 				include : VBar.l SB 0 Ascender
-				include : nShoulder.shape
-					left -- (SB + [HSwToV Stroke])
-					right -- RightSB
-					bottom -- 0
+				include : SmallHHump fFlatHump
 				if Serifs : include : Serifs true false
 				include : EngHook RightSB 0 Descender
 
@@ -107,10 +116,7 @@ glyph-block Letter-Latin-Lower-H : begin
 				set-base-anchor 'strike'  Middle (XH / 2)
 				include : LeaningAnchor.Above.VBar.l SB
 				include : TopHook.toRight.lBarInner SB 0 Ascender
-				include : nShoulder.shape
-					left -- (SB + [HSwToV Stroke])
-					right -- RightSB
-					bottom -- 0
+				include : SmallHHump fFlatHump
 				if Serifs : include : Serifs true true
 				include : EngHook RightSB 0 Descender
 
