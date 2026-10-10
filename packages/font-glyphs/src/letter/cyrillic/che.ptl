@@ -170,22 +170,28 @@ glyph-block Letter-Cyrillic-Che : begin
 			include : VSerif.dl xTopBarLeft  top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
-	define CheCapConfig : object
-		serifless     SERIFS.NONE
-		motionSerifed SERIFS.TL
-		serifed       SERIFS.ALL
+	define CheCapConfig : SuffixCfg.weave
+		object # hump
+			""        false
+			flatHump  true
+		object # serifs
+			serifless     SERIFS.NONE
+			motionSerifed SERIFS.TL
+			serifed       SERIFS.ALL
 
-	foreach { suffix slabType } [Object.entries CheCapConfig] : do
+	foreach { suffix { fFlatHump slabType } } [Object.entries CheCapConfig] : do
 		create-glyph "cyrl/Che.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Below.VBar.r RightSB
 			include : CyrCheShape [DivFrame 1] CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
+				fFlatHump -- fFlatHump
 
 		create-glyph "cyrl/Cche.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
 			include : LeaningAnchor.Below.VBar.r df.rightSB
 			include : CyrCcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
+				fFlatHump -- fFlatHump
 
 	select-variant 'cyrl/Che' 0x427
 	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
@@ -194,7 +200,7 @@ glyph-block Letter-Cyrillic-Che : begin
 		serifless     { false false }
 		motionSerifed { true  false }
 
-	foreach { suffixChe slabType } [Object.entries CheCapConfig] : do
+	foreach { suffixChe { fFlatHump slabType } } [Object.entries CheCapConfig] : do
 		DefineSelectorGlyph "cyrl/Tche" suffixChe [DivFrame para.advanceScaleT] 'capital'
 		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
 			create-glyph "cyrl/Tche.\(suffixChe).\(suffixTe)" : glyph-proc
@@ -203,7 +209,8 @@ glyph-block Letter-Cyrillic-Che : begin
 				local df : DivFrame para.advanceScaleT
 				include : LeaningAnchor.Below.VBar.r df.rightSB
 				include : CyrTcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
-					teSerifs -- doST
+					teSerifs  -- doST
+					fFlatHump -- fFlatHump
 		select-variant "cyrl/Tche.\(suffixChe)" (follow -- 'T/rTailBase')
 
 	CreateSelectorVariants 'cyrl/Tche' 0xA692 [Object.keys CheCapConfig] (follow -- 'cyrl/Che')
