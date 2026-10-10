@@ -137,11 +137,9 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 
 		define [NumberSignHOpenMask height] : begin
 			define { nsTop nsBot } height
-			return : Rect
-				([mix nsTop nsBot 0.3] - HalfStroke)
-				([mix nsTop nsBot 0.7] + HalfStroke)
-				(-VERY-FAR)
-				(+VERY-FAR)
+			local yBarTop : [mix nsTop nsBot 0.3] - HalfStroke
+			local yBarBot : [mix nsTop nsBot 0.7] + HalfStroke
+			return : Rect yBarTop yBarBot (-VERY-FAR) (+VERY-FAR)
 
 		define [UprightVBarsHOpen height lx l r p] : difference
 			UprightVBars height lx l r p
