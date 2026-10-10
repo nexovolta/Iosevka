@@ -10,7 +10,7 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateSelectorVariants DefineSelectorGlyph
-	glyph-block-import Letter-Shared-Shapes : SerifFrame RightwardTailedBar CyrDescender
+	glyph-block-import Letter-Shared-Shapes : SerifFrame RightwardTailedBar CyrDescender uBowl
 
 	glyph-block-export BODY
 	define BODY : object
@@ -36,9 +36,19 @@ glyph-block Letter-Cyrillic-Che : begin
 		local-parameter : ada       -- ArchDepthA
 		local-parameter : adb       -- ArchDepthB
 		local-parameter : stroke    -- Stroke
+		local-parameter : fFlatHump -- false
 
 		define xMid : [mix left right 0.5] + [HSwToV : 0.2 * stroke]
 		define rise : DToothlessRise + 0.25 * stroke
+		if fFlatHump : return : uBowl.toothlessCorner
+			left    -- left
+			right   -- right
+			top     -- top
+			bottom  -- bottom
+			ada     -- ada
+			adb     -- adb
+			stroke  -- stroke
+			rise    -- 0
 		return : dispiro
 			widths.lhs stroke
 			flat left top [heading Downward]
@@ -47,7 +57,7 @@ glyph-block Letter-Cyrillic-Che : begin
 			g4   right (bottom + rise)
 
 	glyph-block-export CyrCheShape
-	define [CyrCheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs]] : glyph-proc
+	define [CyrCheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs] [fFlatHump false]] : glyph-proc
 		local yBar : mix 0 top : fallback pyBar 0.5
 
 		include : tagged 'strokeR' : match bodyType
@@ -55,11 +65,12 @@ glyph-block Letter-Cyrillic-Che : begin
 			__                 : VBar.r             df.rightSB 0 top sw
 
 		include : CheBowl
-			left   -- df.leftSB
-			right  -- df.rightSB
-			top    -- top
-			bottom -- (yBar - sw / 2)
-			stroke -- sw
+			left      -- df.leftSB
+			right     -- df.rightSB
+			top       -- top
+			bottom    -- (yBar - sw / 2)
+			stroke    -- sw
+			fFlatHump -- fFlatHump
 
 		local sf : SerifFrame.fromDf df top 0
 		include : tagged 'serifLT' : match slabType
@@ -84,7 +95,7 @@ glyph-block Letter-Cyrillic-Che : begin
 			__                       [glyph-proc]
 
 	glyph-block-import Letter-Latin-Lower-M : EarlessCornerDoubleArchSmallMShape
-	define [CyrCcheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs]] : glyph-proc
+	define [CyrCcheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs] [fFlatHump false]] : glyph-proc
 		local yBar : mix 0 top : fallback pyBar 0.5
 
 		include : tagged 'strokeR' : match bodyType
@@ -117,7 +128,7 @@ glyph-block Letter-Cyrillic-Che : begin
 			[Just SERIFS.BR]       sf.rb.outer
 			__                     [glyph-proc]
 
-	define [CyrTcheShape] : with-params [df top pyBar bodyType slabType [sw [AdviceStroke 2.75]] [teSerifs SLAB]] : glyph-proc
+	define [CyrTcheShape] : with-params [df top pyBar bodyType slabType [sw [AdviceStroke 2.75]] [teSerifs SLAB] [fFlatHump false]] : glyph-proc
 		local yBar : mix 0 top : fallback pyBar 0.5
 
 		local left : [mix df.leftSB df.rightSB : if (df.adws > 1) 0.25 0.2] - [HSwToV : 0.25 * sw] + OX
@@ -128,11 +139,12 @@ glyph-block Letter-Cyrillic-Che : begin
 			__                 : VBar.r             right 0 top sw
 
 		include : CheBowl
-			left   -- left
-			right  -- right
-			top    -- top
-			bottom -- (yBar - sw / 2)
-			stroke -- sw
+			left      -- left
+			right     -- right
+			top       -- top
+			bottom    -- (yBar - sw / 2)
+			stroke    -- sw
+			fFlatHump -- fFlatHump
 
 		local xTopBarLeft : df.leftSB - SideJut
 		local xTopBarRight : mix xTopBarLeft (left + [HSwToV : 0.5 * sw]) 2
@@ -201,10 +213,13 @@ glyph-block Letter-Cyrillic-Che : begin
 
 	glyph-block-export CheConfig
 	define CheConfig : SuffixCfg.weave
+		object # hump
+			""        false
+			flatHump  true
 		object # body
 			standard { BODY.STRAIGHT }
 			tailed   { BODY.TAILED }
-		function [body] : object # serifs
+		function [hump body] : object # serifs
 			serifless { SERIFS.NONE SERIFS.NONE }
 			motionSerifed : match body
 				[Just 'standard'] { SERIFS.TL-BR SERIFS.TL-BR }
@@ -213,22 +228,25 @@ glyph-block Letter-Cyrillic-Che : begin
 				[Just 'standard'] { SERIFS.ALL SERIFS.ALL-BGR }
 				__                { SERIFS.TOP SERIFS.TOP-BGR }
 
-	foreach { suffix { { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
+	foreach { suffix { fFlatHump { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
 		create-glyph "cyrl/che.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.r RightSB
 			include : CyrCheShape [DivFrame 1] XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
+				fFlatHump -- fFlatHump
 
 		create-glyph "cyrl/che.BGR.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.r RightSB
 			include : CyrCheShape [DivFrame 1] XH [if (slabTypeBGR !== SERIFS.NONE) 0.45 0.4] body slabTypeBGR
+				fFlatHump -- fFlatHump
 
 		create-glyph "cyrl/cche.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
 			include : LeaningAnchor.Below.VBar.r df.rightSB
 			include : CyrCcheShape df XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
+				fFlatHump -- fFlatHump
 
 		define cyrTcheDf : DivFrame para.advanceScaleT
 
@@ -240,7 +258,8 @@ glyph-block Letter-Cyrillic-Che : begin
 				set-mark-anchor 'cvDecompose' 0 0
 				include : LeaningAnchor.Below.VBar.r cyrTcheDf.rightSB
 				include : CyrTcheShape cyrTcheDf XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
-					teSerifs -- doST
+					teSerifs  -- doST
+					fFlatHump -- fFlatHump
 
 		select-variant "cyrl/tche.upright.\(suffix)" (follow -- 'T/rTailBase')
 

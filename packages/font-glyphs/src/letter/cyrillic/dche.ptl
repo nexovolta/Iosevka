@@ -37,7 +37,7 @@ glyph-block Letter-Cyrillic-Dche : begin
 			flat SB Stroke
 			curl (RightSB - [HSwToV Stroke]) (XH - [if SLAB Stroke 0])
 
-	foreach { suffix { { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
+	foreach { suffix { fFlatHump { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
 		create-glyph "cyrl/dche.italic.\(suffix)" : glyph-proc
 			define df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.e
@@ -47,7 +47,7 @@ glyph-block Letter-Cyrillic-Dche : begin
 			local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
 			include : CyrDeItalicShape subDf sw
 			include : difference
-				CyrCheShape df XH 0.5 body slabType (sw -- sw)
+				CyrCheShape df XH 0.5 body slabType (sw -- sw) (fFlatHump -- fFlatHump)
 				MaskLeft (subDf.rightSB - [HSwToV : 0.5 * sw])
 
 	select-variant 'cyrl/dche.italic' (follow -- 'cyrl/che')
