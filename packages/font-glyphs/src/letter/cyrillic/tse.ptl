@@ -19,8 +19,8 @@ glyph-block Letter-Cyrillic-Tse : begin
 		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
 			include : match serifType
 				[Just SERIF-MOTION]    : begin sf.lt.outer
-				[Just SERIF-TR]        : begin sf.rt.outer
-				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.outer
+				[Just SERIF-TR]        : begin sf.rt.inner
+				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.inner
 				__ : glyph-proc
 					include sf.lt.full
 					include sf.rt.full

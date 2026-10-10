@@ -12592,37 +12592,58 @@ sampler = "Ш Щ"
 samplerExplain = "Cyrillic Capital Sha and Shcha"
 tagKind = "letter"
 
-[prime.cyrl-capital-sha.variants.serifless]
+[prime.cyrl-capital-sha.variants-buildup]
+entry = "stem"
+descriptionLeader = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`)"
+
+[prime.cyrl-capital-sha.variants-buildup.stages.stem."*"]
+next = "serifs"
+
+[prime.cyrl-capital-sha.variants-buildup.stages.stem.standard]
 rank = 1
-description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) without serifs"
-selector."cyrl/Sha" = "serifless"
-selector."cyrl/Shcha" = "serifless"
+keyAffix = ""
+selectorAffix."cyrl/Sha" = ""
+selectorAffix."cyrl/Shcha" = ""
 
-[prime.cyrl-capital-sha.variants.motion-serifed]
+[prime.cyrl-capital-sha.variants-buildup.stages.stem.short-stem]
 rank = 2
-description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with motion serifs"
-selector."cyrl/Sha" = "motionSerifed"
-selector."cyrl/Shcha" = "motionSerifed"
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "shorter middle stem (like Ubuntu Mono)"
+selectorAffix."cyrl/Sha" = "shortStem"
+selectorAffix."cyrl/Shcha" = "shortStem"
 
-[prime.cyrl-capital-sha.variants.serifed]
+[prime.cyrl-capital-sha.variants-buildup.stages.serifs.serifless]
+rank = 1
+descriptionAffix = "serifs"
+descriptionJoiner = "without"
+selectorAffix."cyrl/Sha" = "serifless"
+selectorAffix."cyrl/Shcha" = "serifless"
+
+[prime.cyrl-capital-sha.variants-buildup.stages.serifs.motion-serifed]
+rank = 2
+descriptionAffix = "motion serifs"
+selectorAffix."cyrl/Sha" = "motionSerifed"
+selectorAffix."cyrl/Shcha" = "motionSerifed"
+
+[prime.cyrl-capital-sha.variants-buildup.stages.serifs.serifed]
 rank = 3
-description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with serifs"
-selector."cyrl/Sha" = "serifed"
-selector."cyrl/Shcha" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."cyrl/Sha" = "serifed"
+selectorAffix."cyrl/Shcha" = "serifed"
 
-[prime.cyrl-capital-sha.variants.top-right-motion-serifed]
+[prime.cyrl-capital-sha.variants-buildup.stages.serifs.top-right-motion-serifed]
 rank = 4
 nonBreakingVariantAdditionPriority = 100
-description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with motion serif at top right"
-selector."cyrl/Sha" = "topRightMotionSerifed"
-selector."cyrl/Shcha" = "topRightMotionSerifed"
+descriptionAffix = "motion serifs at top-right"
+selectorAffix."cyrl/Sha" = "topRightMotionSerifed"
+selectorAffix."cyrl/Shcha" = "topRightMotionSerifed"
 
-[prime.cyrl-capital-sha.variants.bilateral-motion-serifed]
+[prime.cyrl-capital-sha.variants-buildup.stages.serifs.bilateral-motion-serifed]
 rank = 5
 nonBreakingVariantAdditionPriority = 100
-description = "Cyrillic Capital Sha and Shcha (`Ш`, `Щ`) with motion serifs at top left and top right"
-selector."cyrl/Sha" = "bilateralMotionSerifed"
-selector."cyrl/Shcha" = "bilateralMotionSerifed"
+descriptionAffix = "motion serifs at top-left and top-right"
+selectorAffix."cyrl/Sha" = "bilateralMotionSerifed"
+selectorAffix."cyrl/Shcha" = "bilateralMotionSerifed"
 
 
 [prime.cyrl-sha]
@@ -12635,7 +12656,7 @@ entry = "body"
 descriptionLeader = "Cyrillic Lower Sha and Shcha (`ш`, `щ`)"
 
 [prime.cyrl-sha.variants-buildup.stages.body."*"]
-next = "serifs"
+next = "stem"
 
 [prime.cyrl-sha.variants-buildup.stages.body.standard]
 rank = 1
@@ -12659,6 +12680,30 @@ selectorAffix."cyrl/sha.italic" = ""
 selectorAffix."cyrl/sha.italic/reduced" = ""
 selectorAffix."cyrl/shcha.italic" = ""
 selectorAffix."cyrl/shcha.italic/reduced" = ""
+
+[prime.cyrl-sha.variants-buildup.stages.stem."*"]
+next = "serifs"
+
+[prime.cyrl-sha.variants-buildup.stages.stem.standard]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/sha.upright" = ""
+selectorAffix."cyrl/shcha.upright" = ""
+selectorAffix."cyrl/sha.italic" = ""
+selectorAffix."cyrl/sha.italic/reduced" = ""
+selectorAffix."cyrl/shcha.italic" = ""
+selectorAffix."cyrl/shcha.italic/reduced" = ""
+
+[prime.cyrl-sha.variants-buildup.stages.stem.short-stem]
+rank = 2
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "shorter middle stem (like Ubuntu Mono)"
+selectorAffix."cyrl/sha.upright" = "shortStem"
+selectorAffix."cyrl/shcha.upright" = "shortStem"
+selectorAffix."cyrl/sha.italic" = "shortStem"
+selectorAffix."cyrl/sha.italic/reduced" = "shortStem"
+selectorAffix."cyrl/shcha.italic" = "shortStem"
+selectorAffix."cyrl/shcha.italic/reduced" = "shortStem"
 
 [prime.cyrl-sha.variants-buildup.stages.serifs.serifless]
 rank = 1
@@ -12714,7 +12759,7 @@ selectorAffix."cyrl/shcha.italic" = "bilateralMotionSerifed"
 selectorAffix."cyrl/shcha.italic/reduced" = "bilateralMotionSerifed"
 
 [prime.cyrl-sha.variants-buildup.stages.cursive-body."*"]
-next = "cursive-serifs"
+next = "cursive-stem"
 
 [prime.cyrl-sha.variants-buildup.stages.cursive-body.toothed]
 rank = 1
@@ -12746,6 +12791,30 @@ selectorAffix."cyrl/sha.italic" = "flatBottom"
 selectorAffix."cyrl/sha.italic/reduced" = "flatBottom"
 selectorAffix."cyrl/shcha.italic" = "toothed"
 selectorAffix."cyrl/shcha.italic/reduced" = "toothed"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-stem."*"]
+next = "cursive-serifs"
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-stem.standard]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/sha.upright" = ""
+selectorAffix."cyrl/shcha.upright" = ""
+selectorAffix."cyrl/sha.italic" = ""
+selectorAffix."cyrl/sha.italic/reduced" = ""
+selectorAffix."cyrl/shcha.italic" = ""
+selectorAffix."cyrl/shcha.italic/reduced" = ""
+
+[prime.cyrl-sha.variants-buildup.stages.cursive-stem.short-stem]
+rank = 2
+nonBreakingVariantAdditionPriority = 100
+descriptionAffix = "shorter middle stem (like Ubuntu Mono)"
+selectorAffix."cyrl/sha.upright" = "shortStem"
+selectorAffix."cyrl/shcha.upright" = "shortStem"
+selectorAffix."cyrl/sha.italic" = "shortStem"
+selectorAffix."cyrl/sha.italic/reduced" = "shortStem"
+selectorAffix."cyrl/shcha.italic" = "shortStem"
+selectorAffix."cyrl/shcha.italic/reduced" = "shortStem"
 
 [prime.cyrl-sha.variants-buildup.stages.cursive-serifs.serifless]
 rank = 1
