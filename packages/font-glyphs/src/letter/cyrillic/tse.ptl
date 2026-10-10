@@ -9,9 +9,23 @@ glyph-block Letter-Cyrillic-Tse : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender CyrCurlDescender
 
-	define SERIF-NONE   0
-	define SERIF-MOTION 1
-	define SERIF-ALL    2
+	define SERIF-NONE      0
+	define SERIF-MOTION    1
+	define SERIF-ALL       2
+	define SERIF-TR        3
+	define SERIF-BILATERAL 4
+
+	define [CyrTseSerifs top serifType] : glyph-proc
+		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
+			include : match serifType
+				[Just SERIF-MOTION]    : begin sf.lt.outer
+				[Just SERIF-TR]        : begin sf.rt.outer
+				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.outer
+				__ : glyph-proc
+					include sf.lt.full
+					include sf.rt.full
+					include sf.lb.outer
+					include sf.rb.outer
 
 	define [CyrTseShape top fRev serifType] : glyph-proc
 		include : VBar.l SB      0 top
@@ -20,19 +34,14 @@ glyph-block Letter-Cyrillic-Tse : begin
 		include : if fRev
 			CyrDescender.lSideJut SB      0
 			CyrDescender.rSideJut RightSB 0
-		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
-			include : match serifType
-				[Just SERIF-MOTION] : begin sf.lt.outer
-				__ : glyph-proc
-					include sf.lt.full
-					include sf.rt.full
-					include sf.lb.outer
-					include sf.rb.outer
+		include : CyrTseSerifs top serifType
 
 	define TseConfig : object
-		serifless     SERIF-NONE
-		motionSerifed SERIF-MOTION
-		serifed       SERIF-ALL
+		serifless              SERIF-NONE
+		motionSerifed          SERIF-MOTION
+		serifed                SERIF-ALL
+		topRightMotionSerifed  SERIF-TR
+		bilateralMotionSerifed SERIF-BILATERAL
 
 	foreach { suffix serifType } [Object.entries TseConfig] : do
 		create-glyph "cyrl/Tse.\(suffix)" : glyph-proc
@@ -109,14 +118,7 @@ glyph-block Letter-Cyrillic-Tse : begin
 		include : HBar.b SB RightSB 0
 		include : VBar.r RightSB 0 top
 		include : CyrCurlDescender.rSideJut RightSB 0
-		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
-			include : match serifType
-				[Just SERIF-MOTION] : begin sf.lt.outer
-				__ : glyph-proc
-					include sf.lt.full
-					include sf.rt.full
-					include sf.lb.outer
-					include sf.rb.outer
+		include : CyrTseSerifs top serifType
 
 	foreach { suffix serifType } [Object.entries TseConfig] : do
 		create-glyph "cyrl/Tswe.\(suffix)" : glyph-proc

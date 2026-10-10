@@ -25,6 +25,8 @@ glyph-block Letter-Latin-Upper-H : begin
 	define SLAB-ALL                    4
 	define SLAB-ALL-BGR                5
 	define SLAB-TAILED-BGR             6
+	define SLAB-TR                      7
+	define SLAB-BILATERAL-MOTION        8
 
 	define flex-params [HShape] : glyph-proc
 		local-parameter : df
@@ -42,6 +44,8 @@ glyph-block Letter-Latin-Upper-H : begin
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
 			[Just SLAB-TL]         : begin          sf.lt.outer
+			[Just SLAB-TR]         : begin                         sf.rt.outer
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
 			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer                        sf.rb.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full  sf.lb.full
 			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.lb.full sf.rb.full
@@ -66,6 +70,8 @@ glyph-block Letter-Latin-Upper-H : begin
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
 			[Just SLAB-TL]         : begin          sf.lt.outer
+			[Just SLAB-TR]         : begin                         sf.rt.outer
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
 			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer             sf.rb.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full
 			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.rb.fullSide
@@ -92,6 +98,7 @@ glyph-block Letter-Latin-Upper-H : begin
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
 			[Just SLAB-TL]         : begin          sf.lt.outer
+			[Just SLAB-BILATERAL-MOTION] : begin sf.lt.outer
 			[Just SLAB-TL-BR]      : begin          sf.lt.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.fullSide sf.lb.fullSide
 			[Just SLAB-ALL]        : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
@@ -122,6 +129,8 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
+			[Just SLAB-TR]         : begin          sf.rt.outer
+			[Just SLAB-BILATERAL-MOTION] : begin sf.rt.outer
 			[Just SLAB-TL-BR]      : begin                         sf.rb.outer
 			[Just SLAB-TAILED]     : begin          sf.rt.fullSide
 			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
@@ -197,6 +206,8 @@ glyph-block Letter-Latin-Upper-H : begin
 				serifedBGR                : match tail
 					[Just 'tailed']     SLAB-TAILED-BGR
 					__                  SLAB-ALL-BGR
+				topRightMotionSerifed       SLAB-TR
+				bilateralMotionSerifed      SLAB-BILATERAL-MOTION
 		object
 			serifedExceptBottomRight { false SLAB-TAILED }
 

@@ -123,6 +123,9 @@ glyph-block Letter-Latin-Lower-M : begin
 		local fFull : MEnoughSpaceForFullSerifs df _sw
 		include : SmallMBottomMotionRightSerif df top rbot fFull _sw
 
+	define [LbSerifs df top lbot mbot rbot earless shortLeg tailed _sw] : glyph-proc
+		include : SmallMBottomLeftSerif df top lbot false _sw
+
 	glyph-block-export SmallMArches
 	define [SmallMArches df top lbot mbot rbot _sw _ada _adb] : glyph-proc
 		local sw   : fallback _sw df.mvs
@@ -419,7 +422,8 @@ glyph-block Letter-Latin-Lower-M : begin
 			serifless          { no-shape   no-shape           }
 			serifed            { FullSerifs SmallTurnedMSerifs }
 			bottomRightSerifed { LtSerifs   LtSerifs           } # The name-shaping mapping is swapped by design
-			bilateralMotionSerifed { CapitalTurnedMBilateralMotionSerifs RbSerifs }
+			bilateralMotionSerifed { CapitalTurnedMBilateralMotionSerifs CapitalTurnedMBilateralMotionSerifs }
+			topRightMotionSerifed  { LbSerifs LbSerifs }
 			motionSerifed : match body
 				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) { LtRbSerifs LtRbSerifs }
 				__                                                             { LtSerifs   LtSerifs   } # The name-shaping mapping is swapped by design

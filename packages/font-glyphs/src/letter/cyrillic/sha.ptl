@@ -10,9 +10,11 @@ glyph-block Letter-Cyrillic-Sha : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifFrame
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrCurlDescender
 
-	define SERIF-NONE   0
-	define SERIF-MOTION 1
-	define SERIF-ALL    2
+	define SERIF-NONE      0
+	define SERIF-MOTION    1
+	define SERIF-ALL       2
+	define SERIF-TR        3
+	define SERIF-BILATERAL 4
 
 	glyph-block-export CyrShaShape
 	define [CyrShaShape] : with-params [df top bot [fine Stroke] [doSerif false] [serifType [if doSerif SERIF-ALL SERIF-NONE]] [fInv false]] : glyph-proc
@@ -26,6 +28,10 @@ glyph-block Letter-Cyrillic-Sha : begin
 		if (serifType !== SERIF-NONE) : begin
 			local sf : SerifFrame.fromDf df top bot (swSerif -- cofine)
 			if (serifType === SERIF-MOTION) : include : if fInv sf.lb.outer sf.lt.outer
+			if (serifType === SERIF-TR) : include : if fInv sf.rb.outer sf.rt.outer
+			if (serifType === SERIF-BILATERAL) : include : if fInv
+				composite-proc sf.lb.outer sf.rb.outer
+				composite-proc sf.lt.outer sf.rt.outer
 			if (serifType === SERIF-ALL) : begin
 				if fInv : then : begin
 					include : composite-proc sf.lt.outer sf.rt.outer
@@ -39,9 +45,11 @@ glyph-block Letter-Cyrillic-Sha : begin
 						composite-proc sf.lt.outer sf.rt.outer
 
 	define ShaConfig : object
-		serifless     SERIF-NONE
-		motionSerifed SERIF-MOTION
-		serifed       SERIF-ALL
+		serifless              SERIF-NONE
+		motionSerifed          SERIF-MOTION
+		serifed                SERIF-ALL
+		topRightMotionSerifed  SERIF-TR
+		bilateralMotionSerifed SERIF-BILATERAL
 
 	foreach { suffix serifType } [Object.entries ShaConfig] : do
 		create-glyph "cyrl/Sha.\(suffix)" : glyph-proc
