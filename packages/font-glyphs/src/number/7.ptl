@@ -91,12 +91,14 @@ glyph-block Digits-Seven : begin
 	# Inner/outer of the stem at the baseline, from the same edges as the body.
 	define [SevenFootEdges body top] : match body
 		[Just "straight"] : begin
-			local xInner SevenStraightInnerX
-			local xOuter : xInner + Stroke * [DiagCor (top - Stroke) (RightSB - xInner)]
+			# Straight stem is widths.rhs down the outer edge; ink falls inward.
+			local xOuter SevenStraightInnerX
+			local xInner : xOuter - Stroke * [DiagCor (top - Stroke) (RightSB - xOuter)]
 			object xInner xOuter
 		([Just "bend"] || [Just "curly"]) : begin
-			local xInner SevenBendKnotX
-			local xOuter : xInner + [HSwToV Stroke]
+			# Knot is widths.rhs heading down, so it is the outer edge.
+			local xOuter SevenBendKnotX
+			local xInner : xOuter - [HSwToV Stroke]
 			object xInner xOuter
 		__ : begin
 			local xInner SevenXLeft
