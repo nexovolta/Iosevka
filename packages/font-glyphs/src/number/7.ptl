@@ -86,6 +86,22 @@ glyph-block Digits-Seven : begin
 	define [StartSerif top] : VSerif.dl (SB + (OX - O)) top VJut
 	define [StartSerifThick top] : VSerif.dl (SB + (OX - O)) top VJut [AdviceStroke 2.75]
 
+	define [SevenFootXMid body] : match body
+		[Just "straight"]        : SevenXLeft + [HSwToV : 1.25 * Stroke]
+		[Just "bend"]            : SevenXLeftBend + [HSwToV : 1.1 * Stroke]
+		[Just "curly"]           : SevenXLeftBend + [HSwToV : 1.1 * Stroke]
+		[Just "square"]          : SevenXLeft + [HSwToV HalfStroke]
+		[Just "verticalTop"]     : SevenXLeft + [HSwToV HalfStroke]
+		[Just "verticalBottom"]  : SevenXLeft + [HSwToV HalfStroke]
+
+	define [BottomSerif body] : function [top] : union
+		HSerif.lb [SevenFootXMid body] 0 Jut
+		HSerif.rb [SevenFootXMid body] 0 MidJutSide
+
+	define [FullSerif body] : function [top] : union
+		StartSerif top
+		[BottomSerif body] top
+
 	define [Crossbar top] : glyph-proc
 		local m : mix SevenXLeft (RightSB - [HSwToV HalfStroke]) 0.5
 		include : HBar.m
@@ -141,9 +157,11 @@ glyph-block Digits-Seven : begin
 			square                SquareBody
 			verticalTop           VerticalTopBody
 			verticalBottom        VerticalBottomBody
-		object # serif
+		function [body] : object # serif
 			serifless             nothing
 			serifed               StartSerif
+			bottomSerifed         [BottomSerif body]
+			fullSerifed           [FullSerif body]
 		function [body] : object # crossbar
 			""                    nothing
 			crossbar : match body
