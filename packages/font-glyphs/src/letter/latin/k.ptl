@@ -304,7 +304,8 @@ glyph-block Letter-Latin-K : begin
 			local xArc : xOuter - [HSwToV stroke]
 			local yJoin : 0.5 * top
 			local minStraight : Math.max (0.125 * stroke) TINY
-			local arcDepth : Math.max stroke : Math.min (xArc - kshLeft - minStraight) (top - yJoin - minStraight)
+			local prefArc : Math.min [if (top > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xArc - kshLeft) * 0.45)
+			local arcDepth : Math.max stroke : Math.min prefArc (top - yJoin - minStraight)
 			local xLeftTop : kshLeft + [HSwToV stroke]
 			local xRightBottom : kshRightBot - 2 * OX
 
