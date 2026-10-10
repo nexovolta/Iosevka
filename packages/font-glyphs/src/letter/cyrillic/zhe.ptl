@@ -141,7 +141,8 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			define xRight : xRightOuter - swH
 			define xLeft : xLeftOuter + swH
 			define minStraight : Math.max (0.125 * fine) TINY
-			define arcDepth : Math.max fine : Math.min (xRight - attach1X - minStraight) (top - yJoin - minStraight)
+			define prefArc : Math.min [if ((top - bot) > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xRight - attach1X) * 0.45)
+			define arcDepth : Math.max fine : Math.min prefArc (top - yJoin - minStraight)
 			define xRightBottom : xRightOuter - 2 * OX
 			define xLeftBottom : xLeftOuter + 2 * OX
 
