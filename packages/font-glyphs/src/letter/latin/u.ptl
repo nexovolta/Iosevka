@@ -149,9 +149,21 @@ glyph-block Letter-Latin-U : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			return : composite-proc sf.lt.outer sf.rt.outer
 
+		export : define [BilateralMotionInnerRt df top _sw] : begin
+			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
+			return : composite-proc sf.lt.outer sf.rt.inner
+
+		export : define [BilateralMotionInnerLt df top _sw] : begin
+			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
+			return : composite-proc sf.lt.inner sf.rt.outer
+
 		export : define [TopRightMotion df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
-			return sf.rt.outer
+			return sf.rt.inner
+
+		export : define [TopLeftInner df top _sw] : begin
+			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
+			return sf.lt.inner
 
 		export : define [MotionToothless df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
@@ -170,7 +182,8 @@ glyph-block Letter-Latin-U : begin
 		(slabs === USerifs.MotionToothed) USerifs.MotionToothedReversed
 		(slabs === USerifs.Toothed)      USerifs.ToothedReversed
 		(slabs === USerifs.SmallToothed) USerifs.SmallToothedReversed
-		(slabs === USerifs.TopRightMotion) USerifs.MotionToothless
+		(slabs === USerifs.TopRightMotion) USerifs.TopLeftInner
+		(slabs === USerifs.BilateralMotionInnerRt) USerifs.BilateralMotionInnerLt
 		true                             slabs
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
@@ -250,7 +263,7 @@ glyph-block Letter-Latin-U : begin
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
 				__                                        USerifs.SmallToothless
 			topRightMotionSerifed      USerifs.TopRightMotion
-			bilateralMotionSerifed     USerifs.BilateralMotion
+			bilateralMotionSerifed     USerifs.BilateralMotionInnerRt
 
 	foreach { suffix { { Base xRB yRB } Slabs } } [Object.entries : SmallUConfigT ULower] : do
 		local revBody : ReversedUBody ULower Base suffix

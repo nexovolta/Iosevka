@@ -44,8 +44,8 @@ glyph-block Letter-Latin-Upper-H : begin
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
 			[Just SLAB-TL]         : begin          sf.lt.outer
-			[Just SLAB-TR]         : begin                         sf.rt.outer
-			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
+			[Just SLAB-TR]         : begin                         sf.rt.inner
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
 			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer                        sf.rb.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full  sf.lb.full
 			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.lb.full sf.rb.full
@@ -70,8 +70,8 @@ glyph-block Letter-Latin-Upper-H : begin
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
 			[Just SLAB-TL]         : begin          sf.lt.outer
-			[Just SLAB-TR]         : begin                         sf.rt.outer
-			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.outer
+			[Just SLAB-TR]         : begin                         sf.rt.inner
+			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
 			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer             sf.rb.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full
 			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.rb.fullSide
@@ -129,8 +129,8 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
-			[Just SLAB-TR]         : begin          sf.rt.outer
-			[Just SLAB-BILATERAL-MOTION] : begin sf.rt.outer
+			[Just SLAB-TR]         : begin          sf.rt.inner
+			[Just SLAB-BILATERAL-MOTION] : begin sf.rt.inner
 			[Just SLAB-TL-BR]      : begin                         sf.rb.outer
 			[Just SLAB-TAILED]     : begin          sf.rt.fullSide
 			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
