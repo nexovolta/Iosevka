@@ -7,7 +7,7 @@ glyph-module
 glyph-block Letter-Cyrillic-Tse : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
+	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph CreateDependentComposite
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender CyrCurlDescender
 
 	define SERIF-NONE      0
@@ -123,7 +123,12 @@ glyph-block Letter-Cyrillic-Tse : begin
 		select-variant "cyrl/tetse.upright.\(suffixTse)" (follow -- 'T/rTailBase')
 
 	CreateSelectorVariants 'cyrl/TeTse' 0x4B4 [Object.keys TseConfig] (follow -- 'cyrl/Tse')
-	CreateSelectorVariants 'cyrl/tetse.upright' null [Object.keys TseConfig] (follow -- 'cyrl/tse.upright')
+
+	select-variant 'cyrl/tetse.upright/selector'
+	do
+		local tetseParts {.}
+		foreach item [Object.keys TseConfig] : set tetseParts.(item) "cyrl/tetse.upright.\(item)"
+		CreateDependentComposite 'cyrl/tetse.upright' null 'cyrl/tetse.upright/selector' tetseParts
 
 	define [CyrTsweShape top serifType] : glyph-proc
 		include : VBar.l SB 0 top
