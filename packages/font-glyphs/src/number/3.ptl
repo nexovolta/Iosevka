@@ -10,7 +10,10 @@ glyph-block Digits-Three : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
+	glyph-block-import Letter-Latin-C : CLetterForm
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+
+	define SLAB-NONE 0
 
 	define [ThreeShapeT sink offset sw top flatHook] : glyph-proc
 		local barcenter : mix 0 top HBarPos
@@ -49,9 +52,28 @@ glyph-block Digits-Three : begin
 			fFlatHook  -- flatHook
 		include : ezh.Shape
 
+	# Seven-style top bar and diagonal, with a reversed-c bowl (like five arched, truncated).
+	define [ThreeArchedShape top] : glyph-proc
+		local xMidLeft : mix SB RightSB 0.26
+		local yMidLeft : [mix 0 top DesignParameters.fiveBarPos] + Stroke / 2
+		local xBarRight : mix SB RightSB 0.50
+		local ada2 : ArchDepthAClamped yMidLeft 0 SmallArchDepthA SmallArchDepthB
+		local adb2 : ArchDepthBClamped yMidLeft 0 SmallArchDepthA SmallArchDepthB
+
+		include : HBar.t (SB + O) xBarRight top Stroke
+		include : ExtLineRhsToLhs (RightSB - O) (top - Stroke) xMidLeft yMidLeft Stroke
+
+		local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE yMidLeft 0
+			ada -- ada2
+			adb -- adb2
+		include : lf.revFull
+
 	create-glyph 'three.lnum.rounded' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShape CAP
+	create-glyph 'three.lnum.arched' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeArchedShape CAP
 	create-glyph 'three.lnum.flatHooked' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShapeFlatHook CAP
@@ -70,6 +92,10 @@ glyph-block Digits-Three : begin
 	create-glyph 'three.onum.rounded' : glyph-proc
 		include : OnumMarks.p
 		include : ThreeShape CAP
+		include : ShiftDown
+	create-glyph 'three.onum.arched' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeArchedShape CAP
 		include : ShiftDown
 	create-glyph 'three.onum.flatHooked' : glyph-proc
 		include : OnumMarks.p
