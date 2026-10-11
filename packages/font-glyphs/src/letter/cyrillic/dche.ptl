@@ -10,32 +10,41 @@ glyph-block Letter-Cyrillic-Dche : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendBelowBaseAnchors
 	glyph-block-import Letter-Cyrillic-Che : CyrCheShape CheConfig BODY SERIFS
 	glyph-block-import Letter-Cyrillic-De : CyrDeBottom BottomExtension CyrDeItalicShape
+	glyph-block-import Letter-Cyrillic-De : DeConfig SERIF-NONE SERIF-MOTION SERIF-ALL BODY-CURSIVE
 
-	create-glyph 'cyrl/Dche' 0x52C : glyph-proc
-		include : MarkSet.capital
-		include : ExtendBelowBaseAnchors BottomExtension
-		include : CyrCheShape [DivFrame 1] CAP 0.4 BODY.STRAIGHT
-			if SLAB SERIFS.TOP SERIFS.NONE
-		include : CyrDeBottom SB RightSB
+	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+		local deSerifs : if (bodyType === BODY-CURSIVE) SERIF-NONE serifType
+		local cheSlabs : match deSerifs
+			[Just SERIF-ALL]    SERIFS.TOP
+			[Just SERIF-MOTION] SERIFS.TL
+			__                  SERIFS.NONE
 
-		local fine : AdviceStroke 3.5
-		include : dispiro
-			widths.rhs fine
-			flat SB Stroke
-			curl (RightSB - [HSwToV Stroke]) (CAP - [if SLAB Stroke 0])
+		create-glyph "cyrl/Dche.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : ExtendBelowBaseAnchors BottomExtension
+			include : CyrCheShape [DivFrame 1] CAP 0.4 BODY.STRAIGHT cheSlabs
+			include : CyrDeBottom SB RightSB nothing nothing deSerifs
 
-	create-glyph 'cyrl/dche.upright' : glyph-proc
-		include : MarkSet.e
-		include : ExtendBelowBaseAnchors BottomExtension
-		include : CyrCheShape [DivFrame 1] XH 0.4 BODY.STRAIGHT
-			if SLAB SERIFS.TOP SERIFS.NONE
-		include : CyrDeBottom SB RightSB
+			local fine : AdviceStroke 3.5
+			include : dispiro
+				widths.rhs fine
+				flat SB Stroke
+				curl (RightSB - [HSwToV Stroke]) (CAP - [if (deSerifs !== SERIF-NONE) Stroke 0])
 
-		local fine : AdviceStroke 3.5
-		include : dispiro
-			widths.rhs fine
-			flat SB Stroke
-			curl (RightSB - [HSwToV Stroke]) (XH - [if SLAB Stroke 0])
+		create-glyph "cyrl/dche.upright.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : ExtendBelowBaseAnchors BottomExtension
+			include : CyrCheShape [DivFrame 1] XH 0.4 BODY.STRAIGHT cheSlabs
+			include : CyrDeBottom SB RightSB nothing nothing deSerifs
+
+			local fine : AdviceStroke 3.5
+			include : dispiro
+				widths.rhs fine
+				flat SB Stroke
+				curl (RightSB - [HSwToV Stroke]) (XH - [if (deSerifs !== SERIF-NONE) Stroke 0])
+
+	select-variant 'cyrl/Dche' 0x52C (follow -- 'cyrl/De')
+	select-variant 'cyrl/dche.upright' (follow -- 'cyrl/de')
 
 	foreach { suffix { fFlatHump { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
 		create-glyph "cyrl/dche.italic.\(suffix)" : glyph-proc

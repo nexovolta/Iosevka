@@ -7,6 +7,7 @@ glyph-module
 glyph-block Letter-Cyrillic-Tse : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender CyrCurlDescender
 
 	define SERIF-NONE      0
@@ -65,11 +66,11 @@ glyph-block Letter-Cyrillic-Tse : begin
 	select-variant 'cyrl/revTse' 0xA660 (follow -- 'cyrl/Tse')
 	select-variant 'cyrl/revtse.upright' (follow -- 'cyrl/tse.upright')
 
-	define TeTseConfig : object
-		serifless     { false false }
-		motionSerifed { true  false }
+	define TeBarConfig : object
+		serifless     false
+		motionSerifed true
 
-	define [CyrTeTseShape df top teSerifs] : glyph-proc
+	define [CyrTeTseShape df top teSerifs serifType] : glyph-proc
 		local sw : AdviceStroke 2.75
 		local left : [mix df.leftSB df.rightSB : if (df.adws > 1) 0.25 0.2] - [HSwToV : 0.25 * sw] + OX
 		local right : df.rightSB - OX
@@ -89,29 +90,40 @@ glyph-block Letter-Cyrillic-Tse : begin
 		local sf : SerifFrame top 0 left right (swRef -- sw)
 		include : CyrDescender.rSideJut right 0 (sideJut -- sf.sideJut)
 
-		if SLAB : begin
-			include sf.rt.outer
-			include sf.lb.outer
-			include sf.rb.outer
+		if (serifType !== SERIF-NONE) : include : match serifType
+			[Just SERIF-MOTION]    : begin sf.lt.outer
+			[Just SERIF-TR]        : begin sf.rt.inner
+			[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.inner
+			__ : glyph-proc
+				include sf.rt.full
+				include sf.lb.outer
+				include sf.rb.outer
 
 		if teSerifs : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : VSerif.dl xTopBarLeft  top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
-	foreach { suffix { doST doSB } } [Object.entries TeTseConfig] : do
-		create-glyph "cyrl/TeTse.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleT
-			include : df.markSet.capital
-			include : CyrTeTseShape df CAP doST
+	foreach { suffixTse serifType } [Object.entries TseConfig] : do
+		DefineSelectorGlyph "cyrl/TeTse" suffixTse [DivFrame para.advanceScaleT] 'capital'
+		DefineSelectorGlyph "cyrl/tetse.upright" suffixTse [DivFrame para.advanceScaleT] 'e'
+		foreach { suffixTe teSerifs } [Object.entries TeBarConfig] : do
+			create-glyph "cyrl/TeTse.\(suffixTse).\(suffixTe)" : glyph-proc
+				set-width 0
+				set-mark-anchor 'cvDecompose' 0 0
+				local df : DivFrame para.advanceScaleT
+				include : CyrTeTseShape df CAP teSerifs serifType
 
-		create-glyph "cyrl/tetse.upright.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleT
-			include : df.markSet.e
-			include : CyrTeTseShape df XH doST
+			create-glyph "cyrl/tetse.upright.\(suffixTse).\(suffixTe)" : glyph-proc
+				set-width 0
+				set-mark-anchor 'cvDecompose' 0 0
+				local df : DivFrame para.advanceScaleT
+				include : CyrTeTseShape df XH teSerifs serifType
+		select-variant "cyrl/TeTse.\(suffixTse)" (follow -- 'T/rTailBase')
+		select-variant "cyrl/tetse.upright.\(suffixTse)" (follow -- 'T/rTailBase')
 
-	select-variant 'cyrl/TeTse' 0x4B4 (follow -- 'T/rTailBase')
-	select-variant 'cyrl/tetse.upright' (follow -- 'T/rTailBase')
+	CreateSelectorVariants 'cyrl/TeTse' 0x4B4 [Object.keys TseConfig] (follow -- 'cyrl/Tse')
+	CreateSelectorVariants 'cyrl/tetse.upright' null [Object.keys TseConfig] (follow -- 'cyrl/tse.upright')
 
 	define [CyrTsweShape top serifType] : glyph-proc
 		include : VBar.l SB 0 top
