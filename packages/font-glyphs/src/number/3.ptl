@@ -13,8 +13,9 @@ glyph-block Digits-Three : begin
 	glyph-block-import Letter-Latin-C : CLetterForm
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
-	define SLAB-NONE      0
-	define SLAB-FLAT-HOOK 4
+	define SLAB-NONE       0
+	define FLAT-CONNECTION 3
+	define SLAB-FLAT-HOOK  4
 
 	define [ThreeShapeT sink offset sw top flatHook] : glyph-proc
 		local barcenter : mix 0 top HBarPos
@@ -53,17 +54,18 @@ glyph-block Digits-Three : begin
 			fFlatHook  -- flatHook
 		include : ezh.Shape
 
-	# Horizontal top bar plus a tironian-et diagonal (60° from horizontal,
+	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
 	# diagonal terminal). Reversed-c bowl is clipped against that stem so
-	# the arch continues past it.
+	# the arch continues past it. The leftover mask follows the et and
+	# stops at the terminal — it does not continue the diagonal through the bowl.
 	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
-		local kFall : Math.tan (60 * Math.PI / 180)
+		local kFall : Math.tan (50 * Math.PI / 180)
 		local yBarBot : top - Stroke
 		local cor : Stroke * [DiagCor kFall 1]
 		local yEndIdeal : mix 0 top 0.50
 		local xEnd : Math.max (SB + cor) : RightSB - (yBarBot - yEndIdeal) / kFall
 		local yEnd : yBarBot - (RightSB - xEnd) * kFall
-		local yBowl : mix 0 top 0.74
+		local yBowl : mix 0 top 0.72
 		local styBot : if flatHook SLAB-FLAT-HOOK SLAB-NONE
 
 		define [etTop] : union
@@ -75,18 +77,17 @@ glyph-block Digits-Three : begin
 					flat RightSB yBarBot
 					curl xEnd yEnd
 
-		local lf : CLetterForm [DivFrame 1] SLAB-NONE styBot yBowl 0
+		local lf : CLetterForm [DivFrame 1] FLAT-CONNECTION styBot yBowl 0
 			ada -- [ArchDepthAClamped yBowl 0 ArchDepthA ArchDepthB]
 			adb -- [ArchDepthBClamped yBowl 0 ArchDepthA ArchDepthB]
 
 		include : union
 			etTop
 			difference
-				intersection
-					lf.revFull
-					MaskBelowLine RightSB yBarBot xEnd yEnd 4
+				lf.revFull
 				union
 					etTop
+					MaskAboveLine RightSB yBarBot xEnd yEnd
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
