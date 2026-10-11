@@ -13,7 +13,8 @@ glyph-block Digits-Three : begin
 	glyph-block-import Letter-Latin-C : CLetterForm
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
-	define SLAB-NONE 0
+	define SLAB-NONE      0
+	define SLAB-FLAT-HOOK 4
 
 	define [ThreeShapeT sink offset sw top flatHook] : glyph-proc
 		local barcenter : mix 0 top HBarPos
@@ -52,28 +53,58 @@ glyph-block Digits-Three : begin
 			fFlatHook  -- flatHook
 		include : ezh.Shape
 
-	# Seven-style top bar and diagonal, with a reversed-c bowl (like five arched, truncated).
-	define [ThreeArchedShape top] : glyph-proc
-		local xMidLeft : mix SB RightSB 0.26
-		local yMidLeft : [mix 0 top DesignParameters.fiveBarPos] + Stroke / 2
-		local xBarRight : mix SB RightSB 0.50
-		local ada2 : ArchDepthAClamped yMidLeft 0 SmallArchDepthA SmallArchDepthB
-		local adb2 : ArchDepthBClamped yMidLeft 0 SmallArchDepthA SmallArchDepthB
+	# Horizontal top bar plus a tironian-et diagonal (60° from horizontal,
+	# diagonal terminal). Reversed-c bowl is clipped against that stem so
+	# the arch continues past it.
+	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
+		local kFall : Math.tan (60 * Math.PI / 180)
+		local yBarBot : top - Stroke
+		local cor : Stroke * [DiagCor kFall 1]
+		local yEndIdeal : mix 0 top 0.50
+		local xEnd : Math.max (SB + cor) : RightSB - (yBarBot - yEndIdeal) / kFall
+		local yEnd : yBarBot - (RightSB - xEnd) * kFall
+		local yBowl : mix 0 top 0.74
+		local styBot : if flatHook SLAB-FLAT-HOOK SLAB-NONE
 
-		include : HBar.t (SB + O) xBarRight top Stroke
-		include : ExtLineRhsToLhs (RightSB - O) (top - Stroke) xMidLeft yMidLeft Stroke
+		define [etTop] : union
+			HBar.t SB RightSB top
+			intersection
+				Rect yBarBot (yEnd - 2 * Stroke) SB RightSB
+				dispiro
+					widths.rhs
+					flat RightSB yBarBot
+					curl xEnd yEnd
 
-		local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE yMidLeft 0
-			ada -- ada2
-			adb -- adb2
-		include : lf.revFull
+		local lf : CLetterForm [DivFrame 1] SLAB-NONE styBot yBowl 0
+			ada -- [ArchDepthAClamped yBowl 0 ArchDepthA ArchDepthB]
+			adb -- [ArchDepthBClamped yBowl 0 ArchDepthA ArchDepthB]
+
+		include : union
+			etTop
+			difference
+				intersection
+					lf.revFull
+					MaskBelowLine RightSB yBarBot xEnd yEnd 4
+				union
+					etTop
+					intersection [MaskLeft xEnd] [MaskAbove yEnd]
+		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
 	create-glyph 'three.lnum.rounded' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShape CAP
-	create-glyph 'three.lnum.arched' : glyph-proc
+	create-glyph 'three.lnum.flatTopArched' : glyph-proc
 		include : MarkSet.capital
-		include : ThreeArchedShape CAP
+		include : ThreeFlatTopArchedShape CAP false false
+	create-glyph 'three.lnum.flatTopArchedSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeFlatTopArchedShape CAP true false
+	create-glyph 'three.lnum.flatTopArchedFlatHook' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeFlatTopArchedShape CAP false true
+	create-glyph 'three.lnum.flatTopArchedSerifedFlatHook' : glyph-proc
+		include : MarkSet.capital
+		include : ThreeFlatTopArchedShape CAP true true
 	create-glyph 'three.lnum.flatHooked' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShapeFlatHook CAP
@@ -93,9 +124,21 @@ glyph-block Digits-Three : begin
 		include : OnumMarks.p
 		include : ThreeShape CAP
 		include : ShiftDown
-	create-glyph 'three.onum.arched' : glyph-proc
+	create-glyph 'three.onum.flatTopArched' : glyph-proc
 		include : OnumMarks.p
-		include : ThreeArchedShape CAP
+		include : ThreeFlatTopArchedShape CAP false false
+		include : ShiftDown
+	create-glyph 'three.onum.flatTopArchedSerifed' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeFlatTopArchedShape CAP true false
+		include : ShiftDown
+	create-glyph 'three.onum.flatTopArchedFlatHook' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeFlatTopArchedShape CAP false true
+		include : ShiftDown
+	create-glyph 'three.onum.flatTopArchedSerifedFlatHook' : glyph-proc
+		include : OnumMarks.p
+		include : ThreeFlatTopArchedShape CAP true true
 		include : ShiftDown
 	create-glyph 'three.onum.flatHooked' : glyph-proc
 		include : OnumMarks.p
