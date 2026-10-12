@@ -59,7 +59,7 @@ glyph-block Letter-Latin-Upper-A : begin
 		export : define [Letter df bodyShape slabKind top sw] : new-glyph : glyph-proc
 			include : Outer df bodyShape top sw
 			include : CrossBar df bodyShape top sw
-			include : ASerifs df top sw slabKind
+			include : ASerifs df top sw slabKind (bodyShape === BODY-SQUARE-BOTTOM)
 
 		define [CuspBottomRightRemovedImpl df bodyShape slabKind top sw] : new-glyph : glyph-proc
 			local yBar : BarPos bodyShape slabKind top
@@ -118,16 +118,16 @@ glyph-block Letter-Latin-Upper-A : begin
 	glyph-block-export ASerifs
 	define [ASerifs df top sw slabKind _fSquareBottom] : glyph-proc : begin
 		local fSquareBottom : fallback _fSquareBottom false
-		local xTopSerif : if fSquareBottom (df.middle - [VSquareTopHw sw]) df.middle
+		local hwHalf : HSwToV : 0.5 * sw
+		local xTopSerif : if fSquareBottom (df.middle - hwHalf) df.middle
+		local topSerifLen : if fSquareBottom (hwHalf + 0.75 * Jut) : if [maskBits slabKind : bitOr SLAB-LEFT SLAB-RIGHT] (MidJutSide + [HSwToV : 0.25 * sw]) [mix MidJutSide LongJut 0.5]
 		local sf : SerifFrame.fromDf df top 0
 		if [maskBits slabKind SLAB-LEFT] : include
 			if ([maskBits slabKind SLAB-SMALL-CYRL] && para.isItalic) sf.lb.outer sf.lb.full
 		if [maskBits slabKind SLAB-RIGHT] : include
 			if ([maskBits slabKind SLAB-SMALL-CYRL] && para.isItalic) sf.rb.outer sf.rb.full
 		if [maskBits slabKind SLAB-TOP] : include : tagged 'serifLT' : intersection [MaskLeft xTopSerif]
-			if [maskBits slabKind : bitOr SLAB-LEFT SLAB-RIGHT]
-			: then : HSerif.lt xTopSerif top (MidJutSide + [HSwToV : 0.25 * sw]) sf.swSerif 0
-			: else : HSerif.lt xTopSerif top [mix MidJutSide LongJut 0.5]        sf.swSerif 0
+			HSerif.lt xTopSerif top topSerifLen sf.swSerif 0
 
 	glyph-block-export AConfig
 	define AConfig : SuffixCfg.weave
