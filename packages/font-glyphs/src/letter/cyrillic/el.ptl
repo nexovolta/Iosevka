@@ -152,6 +152,31 @@ glyph-block Letter-Cyrillic-El : begin
 			local slab : if (serifType === SERIF-NONE) SLAB-NONE SLAB-MOTION
 			include : CyrElShape df.leftSB (df.middle + [HSwToV : 0.5 * df.mvs]) top BODY-NONE slab df.mvs
 
+	# Mid-hook El: lambda variants replace only the left leg; the stem and hook stay as in standard.
+	define [CyrElMidHookShape df top bodyType fBarStraight fSquareBottom serifType fLower] : glyph-proc
+		local xm : df.middle + [HSwToV : 0.5 * df.mvs]
+		if [ElIsLambda bodyType] : begin
+			include : CyrElLeftHalf df top bodyType fBarStraight fSquareBottom serifType fLower
+			include : difference
+				VBar.r xm 0 top df.mvs
+				intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
+			local slab : ElStandardSlab serifType [not fLower] BODY-STRAIGHT
+			include : tagged 'SerifRT' : match slab
+				[Just SLAB-ALL]      : HSerif.rt xm top SideJut df.mvs
+				[Just SLAB-TAILED-U] : HSerif.rt xm top SideJut df.mvs
+				__                   : glyph-proc
+			include : tagged 'SerifRB' : match slab
+				[Just SLAB-ALL]   : HSerif.mb (xm - [HSwToV : 0.5 * df.mvs]) 0 (Jut - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
+				[Just SLAB-LOWER] : HSerif.rb xm 0 SideJut df.mvs
+				__                : glyph-proc
+		: else : begin
+			local body : if (bodyType === BODY-TAILED) BODY-TAILED BODY-STRAIGHT
+			local slab : ElStandardSlab serifType [not fLower] body
+			include : difference
+				CyrElShape df.leftSB xm top body slab df.mvs
+				intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
+		include : MidHook.m df top
+
 	define ElCapConfig : SuffixCfg.weave
 		object
 			standard    { BODY-STRAIGHT     false false }
@@ -180,9 +205,7 @@ glyph-block Letter-Cyrillic-El : begin
 		topRightSerifed true
 
 	foreach { suffix { { bodyType fBarStraight fSquareBottom } serifType } } [Object.entries ElConfig] : do
-		local fLambda : ElIsLambda bodyType
 		local fTailed : bodyType === BODY-TAILED
-		local standardBody : if fTailed BODY-TAILED BODY-STRAIGHT
 
 		if [not fTailed] : begin
 			create-glyph "cyrl/El.\(suffix)" : glyph-proc
@@ -193,15 +216,10 @@ glyph-block Letter-Cyrillic-El : begin
 				include : MarkSet.e
 				include : CyrElBodyShape bodyType fBarStraight fSquareBottom XH true serifType
 
-			if [not fLambda] : begin
-				create-glyph "cyrl/ElMidHook.\(suffix)" : glyph-proc
-					local df : include : DivFrame para.advanceScaleMM 3
-					include : df.markSet.capDesc
-					local slab : ElStandardSlab serifType true BODY-STRAIGHT
-					include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
-						CyrElShape df.leftSB xm CAP BODY-STRAIGHT slab df.mvs
-						intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
-					include : MidHook.m df CAP
+			create-glyph "cyrl/ElMidHook.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.capDesc
+				include : CyrElMidHookShape df CAP bodyType fBarStraight fSquareBottom serifType false
 
 			define cyrSoftElCapDf : DivFrame para.advanceScaleM 3
 			DefineSelectorGlyph "cyrl/ElSoft" suffix cyrSoftElCapDf 'capital'
@@ -259,15 +277,10 @@ glyph-block Letter-Cyrillic-El : begin
 				include [refer-glyph "cyrl/el.\(suffix)"] AS_BASE ALSO_METRICS
 				include [PalatalHook.rSideJut RightSB 0]
 
-		if [not fLambda] : begin
-			create-glyph "cyrl/elMidHook.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleMM 3
-				include : df.markSet.p
-				local slab : ElStandardSlab serifType false standardBody
-				include : let [xm : df.middle + [HSwToV : 0.5 * df.mvs]] : difference
-					CyrElShape df.leftSB xm XH standardBody slab df.mvs
-					intersection [MaskBelow Stroke] [MaskRight : mix xm (df.rightSB - [HSwToV df.mvs]) 0.625]
-				include : MidHook.m df XH
+		create-glyph "cyrl/elMidHook.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.p
+			include : CyrElMidHookShape df XH bodyType fBarStraight fSquareBottom serifType true
 
 		define cyrSoftElDf : DivFrame para.advanceScaleM 3
 		DefineSelectorGlyph "cyrl/elSoft" suffix cyrSoftElDf 'e'
@@ -310,9 +323,6 @@ glyph-block Letter-Cyrillic-El : begin
 		alias "cyrl/lje/leftHalf.tailed\(ser)" null "cyrl/lje/leftHalf.standard\(ser)"
 		DefineSelectorGlyph "cyrl/ElSoft" "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
 		alias "cyrl/ElSoft.tailed\(ser)" null "cyrl/ElSoft.standard\(ser)"
-		foreach lam [items-of : list 'triangular' 'curly' 'square'] : do
-			alias "cyrl/ElMidHook.\(lam)\(ser)" null "cyrl/ElMidHook.standard\(ser)"
-			alias "cyrl/elMidHook.\(lam)\(ser)" null "cyrl/elMidHook.standard\(ser)"
 
 	select-variant 'cyrl/El' 0x41B
 	select-variant 'cyrl/smcpEl' 0x1D2B (follow -- 'cyrl/El')
