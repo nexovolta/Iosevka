@@ -109,45 +109,48 @@ glyph-block Letter-Latin-V : begin
 	glyph-block-export VSquareTopYJoin
 	define [VSquareTopYJoin top] : mix 0 top 0.5
 
+	# Horizontal thickness of the square-top verticals (lhs/rhs, heading Downward).
+	glyph-block-export VSquareTopHw
+	define [VSquareTopHw sw] : HSwToV sw
+
 	glyph-block-export VSquareTopOutline
 	define [VSquareTopOutline] : with-params [df top [sw Stroke]] : glyph-proc
-		define cornerHW : VCornerHalfWidth * (sw / Stroke)
+		local hw : VSquareTopHw sw
 		local yJoin : VSquareTopYJoin top
 		include : spiro-outline
 			corner df.leftSB  top
 			corner df.leftSB  yJoin
-			corner (df.middle - cornerHW) 0
-			corner (df.middle + cornerHW) 0
+			corner (df.middle - hw) 0
+			corner (df.middle + hw) 0
 			corner df.rightSB yJoin
 			corner df.rightSB top
 
 	glyph-block-export VSquareTopShape
 	define [VSquareTopShape] : with-params [df top [sw Stroke] [noTaper false]] : glyph-proc
-		define cornerHW : VCornerHalfWidth * (sw / Stroke)
+		local hw : VSquareTopHw sw
 		local yJoin : VSquareTopYJoin top
-		local vxEndL : df.middle - cornerHW
-		local vxEndR : df.middle + cornerHW
-		define dgCor : DiagCor yJoin (df.middle - df.leftSB) 0 sw
-		define startSW : dgCor * sw
-		define midSW : if noTaper startSW : dgCor * VShapeMiddleWidth * (sw / Stroke)
-		define endSW : if noTaper sw : Math.min sw : VShapeFineStraight * (sw / Stroke) * dgCor
-		local pInktrap : 2 / 3
 
-		include : tagged 'strokeDown' : dispiro
-			widths.lhs sw
-			corner df.leftSB top   [heading Downward]
-			corner df.leftSB yJoin [heading Downward]
-			corner [mix df.leftSB vxEndL pInktrap] [mix yJoin 0 pInktrap] [widths.lhs.heading midSW Downward]
-			corner vxEndL 0 [widths.lhs.heading endSW Downward]
+		include : tagged 'strokeDown' : union
+			dispiro
+				widths.lhs sw
+				corner df.leftSB top   [heading Downward]
+				corner df.leftSB yJoin [heading Downward]
+			spiro-outline
+				corner df.leftSB           yJoin
+				corner (df.leftSB + hw)    yJoin
+				corner df.middle           0
+				corner (df.middle - hw)    0
 
-		include : tagged 'strokeUp' : dispiro
-			widths.rhs sw
-			corner df.rightSB top   [heading Downward]
-			corner df.rightSB yJoin [heading Downward]
-			corner [mix df.rightSB vxEndR pInktrap] [mix yJoin 0 pInktrap] [widths.rhs.heading midSW Downward]
-			corner vxEndR 0 [widths.rhs.heading endSW Downward]
-
-		if [not noTaper] : include : tagged 'bottomCap' : VBottomCapShape df true startSW
+		include : tagged 'strokeUp' : union
+			dispiro
+				widths.rhs sw
+				corner df.rightSB top   [heading Downward]
+				corner df.rightSB yJoin [heading Downward]
+			spiro-outline
+				corner (df.rightSB - hw)   yJoin
+				corner df.rightSB          yJoin
+				corner (df.middle + hw)    0
+				corner df.middle           0
 
 	# Right stroke of V, full weight, with the vertex at xEnd (for letters like Vend).
 	glyph-block-export VRightHalfShape
