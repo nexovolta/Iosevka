@@ -101,21 +101,19 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	# Barlow 7-on-C: et ends at 50%. The reversed C starts at that terminal
-	# (one stroke) and rises to a 60% hump. Angle flattens with weight.
-	# Taper is on the C curve only; the diagonal stays full width.
+	# Barlow 7-on-C: reversed C with the top arch at 75% depth so
+	# it bends down before the et. The diagonal is long enough to
+	# clip slightly through that curve. Angle is constant.
 	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
 		local sw Stroke
-		local t2 : mix 0 top 0.60
-		local yEnd : mix 0 top 0.50
-		local angle : StrokeWidthBlend 56 40
-		local kFall : Math.tan (angle * Math.PI / 180)
+		local t2 : mix 0 top 0.66
+		local yEnd : mix 0 top 0.44
+		local kFall : Math.tan (62 * Math.PI / 180)
 		local yBarBot : top - sw
 		local xEnd : RightSB - (yBarBot - yEnd) / kFall
-		local swTerm : sw * [StrokeWidthBlend 0.85 0.70]
-		local xHump : mix xEnd RightSB 0.45
-		local ada : ArchDepthAClamped t2 0 ArchDepthA ArchDepthB
-		local adb : ArchDepthBClamped t2 0 ArchDepthA ArchDepthB
+		local hookTop : 0.75 * Hook * (top / CAP)
+		local adaTop : 0.75 * [ArchDepthAClamped t2 0 ArchDepthA ArchDepthB]
+		local adbBot : ArchDepthBClamped t2 0 ArchDepthA ArchDepthB
 		local bowlBotArcC : if flatHook Flat Rounded
 		local boxBot : new Box t2 0 SB RightSB
 		local ArcBot : bowlBotArcC boxBot
@@ -131,17 +129,20 @@ glyph-block Digits-Three : begin
 					widths.rhs
 					flat RightSB yBarBot
 					curl xEnd yEnd
-		include : dispiro
-			widths.rhs swTerm
-			g4 xEnd yEnd [heading Rightward]
-			g4 xHump t2 [widths.rhs sw]
-			archv
-			g4 (RightSB - OX) [YSmoothMidR t2 0 ada adb]
-			if flatHook
-				ArcBot.hookEndL
-				list
-					HookEnd 0 (sw -- sw)
-					g4 (SB + OX) (Hook * (top / CAP))
+			difference
+				dispiro
+					widths.rhs
+					g4 (SB + OX) (t2 - hookTop) [heading Upward]
+					HookStart t2 (sw -- sw)
+					flatside.rd (RightSB - OX) 0 t2 adaTop adbBot OX
+					if flatHook
+						ArcBot.hookEndL
+						list
+							HookEnd 0 (sw -- sw)
+							g4 (SB + OX) (Hook * (top / CAP))
+				union
+					MaskAboveLine RightSB yBarBot xEnd yEnd
+					MaskLeftLine RightSB yBarBot xEnd yEnd
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
 	create-glyph 'three.lnum.rounded' : glyph-proc
