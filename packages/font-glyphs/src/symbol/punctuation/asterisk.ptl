@@ -14,30 +14,54 @@ glyph-block Symbol-Punctuation-Asterisk : begin
 	define yLow     : mix SymbolMid yHigh    (-1)
 	define yLow_DT  : mix SymbolMid yHigh_DT (-1)
 
-	define asteriskKinds : list
-		#  sides  size  rot  pFine stroke              name             dual            triple         high            slashTop      sMid            halfXH            slashBot
-		list { 5  1.2   0    0.4   Stroke          } { 'asterisk'       'dualAsterisk'  'asterism' } { 'pentaHigh'     'pentaST'     'pentaSMid'     'pentaHalfXH'     'pentaSB'     }
-		list { 6  1.2   0    0.4   Stroke          } { 'asterisk'       'dualAsterisk'  'asterism' } { 'hexHigh'       'hexST'       'hexSMid'       'hexHalfXH'       'hexSB'       }
-		list { 5  1.2   1    0.4   Stroke          } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnPentaHigh' 'turnPentaST' 'turnPentaSMid' 'turnPentaHalfXH' 'turnPentaSB' }
-		list { 6  1.2   0.5  0.4   Stroke          } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnHexHigh'   'turnHexST'   'turnHexSMid'   'turnHexHalfXH'   'turnHexSB'   }
-		list { 5  1.2   0    0.4   GeometryStroke  } { 'opAsterisk'     ''              ''         } { ''              ''            'penta'         ''                ''            }
-		list { 6  1.2   0    0.4   GeometryStroke  } { 'opAsterisk'     ''              ''         } { ''              ''            'hex'           ''                ''            }
-		list { 5  1.2   1    0.4   GeometryStroke  } { 'opAsterisk'     ''              ''         } { ''              ''            'turnPenta'     ''                ''            }
-		list { 6  1.2   0.5  0.4   GeometryStroke  } { 'opAsterisk'     ''              ''         } { ''              ''            'turnHex'       ''                ''            }
-		list { 8  1.2   0.5  0.4  [AdviceStroke 3] } { 'flower'         ''              ''         } { 'high'          'ST'          'sMid'          ''                ''            }
+	define [AsteriskRays sides rot radius fine final] : glyph-proc
+		foreach j [range 0 sides] : begin
+			local s : Math.sin ((2 * j / sides + rot) * Math.PI)
+			local c : Math.cos ((2 * j / sides + rot) * Math.PI)
+			include : dispiro
+				flat Middle                 SymbolMid               [widths.center : 2 * fine]
+				curl (Middle + radius * s) (SymbolMid + radius * c) [widths.center : 2 * final]
 
-	foreach [{{ sides size rot pFine stroke } { name dual triple } { high slashTop sMid halfXH slashBot } } : items-of asteriskKinds] : begin
+	# Vertices sit in the gaps between arms so the cut reads as a pentagon/hexagon.
+	define [AsteriskFlowerHole sides rot r] : begin
+		local corners {}
+		foreach j [range 0 sides] : begin
+			local angle : (2 * j / sides + rot) * Math.PI
+			corners.push : corner (Middle + r * [Math.sin angle]) (SymbolMid + r * [Math.cos angle])
+		return : spiro-outline corners
+
+	define asteriskKinds : list
+		#  sides  size  rot  pFine stroke             flower  name             dual            triple         high                  slashTop            sMid                  halfXH                slashBot
+		list { 5  1.2   0    0.4   Stroke          false } { 'asterisk'       'dualAsterisk'  'asterism' } { 'pentaHigh'           'pentaST'           'pentaSMid'           'pentaHalfXH'         'pentaSB'           }
+		list { 6  1.2   0    0.4   Stroke          false } { 'asterisk'       'dualAsterisk'  'asterism' } { 'hexHigh'             'hexST'             'hexSMid'             'hexHalfXH'           'hexSB'             }
+		list { 5  1.2   1    0.4   Stroke          false } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnPentaHigh'       'turnPentaST'       'turnPentaSMid'       'turnPentaHalfXH'     'turnPentaSB'       }
+		list { 6  1.2   0.5  0.4   Stroke          false } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnHexHigh'         'turnHexST'         'turnHexSMid'         'turnHexHalfXH'       'turnHexSB'         }
+		list { 5  1.2   0    0.4   Stroke          true  } { 'asterisk'       'dualAsterisk'  'asterism' } { 'pentaFlowerHigh'     'pentaFlowerST'     'pentaFlowerSMid'     'pentaFlowerHalfXH'   'pentaFlowerSB'     }
+		list { 6  1.2   0    0.4   Stroke          true  } { 'asterisk'       'dualAsterisk'  'asterism' } { 'hexFlowerHigh'       'hexFlowerST'       'hexFlowerSMid'       'hexFlowerHalfXH'     'hexFlowerSB'       }
+		list { 5  1.2   1    0.4   Stroke          true  } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnPentaFlowerHigh' 'turnPentaFlowerST' 'turnPentaFlowerSMid' 'turnPentaFlowerHalfXH' 'turnPentaFlowerSB' }
+		list { 6  1.2   0.5  0.4   Stroke          true  } { 'asterisk'       'dualAsterisk'  'asterism' } { 'turnHexFlowerHigh'   'turnHexFlowerST'   'turnHexFlowerSMid'   'turnHexFlowerHalfXH' 'turnHexFlowerSB'   }
+		list { 5  1.2   0    0.4   GeometryStroke  false } { 'opAsterisk'     ''              ''         } { ''                    ''                  'penta'               ''                    ''                  }
+		list { 6  1.2   0    0.4   GeometryStroke  false } { 'opAsterisk'     ''              ''         } { ''                    ''                  'hex'                 ''                    ''                  }
+		list { 5  1.2   1    0.4   GeometryStroke  false } { 'opAsterisk'     ''              ''         } { ''                    ''                  'turnPenta'           ''                    ''                  }
+		list { 6  1.2   0.5  0.4   GeometryStroke  false } { 'opAsterisk'     ''              ''         } { ''                    ''                  'turnHex'             ''                    ''                  }
+		list { 5  1.2   0    0.4   GeometryStroke  true  } { 'opAsterisk'     ''              ''         } { ''                    ''                  'pentaFlower'         ''                    ''                  }
+		list { 6  1.2   0    0.4   GeometryStroke  true  } { 'opAsterisk'     ''              ''         } { ''                    ''                  'hexFlower'           ''                    ''                  }
+		list { 5  1.2   1    0.4   GeometryStroke  true  } { 'opAsterisk'     ''              ''         } { ''                    ''                  'turnPentaFlower'     ''                    ''                  }
+		list { 6  1.2   0.5  0.4   GeometryStroke  true  } { 'opAsterisk'     ''              ''         } { ''                    ''                  'turnHexFlower'       ''                    ''                  }
+		list { 8  1.2   0.5  0.4  [AdviceStroke 3] false } { 'flower'         ''              ''         } { 'high'                'ST'                'sMid'                ''                    ''                  }
+
+	foreach [{{ sides size rot pFine stroke fFlower } { name dual triple } { high slashTop sMid halfXH slashBot } } : items-of asteriskKinds] : begin
 		create-glyph (name + '.' + sMid) : glyph-proc
 			local radius : LongJut * size
 			local fine : stroke * pFine
 			local final : 0.5 * [Math.min stroke (radius * Math.PI / sides)]
-
-			foreach j [range 0 sides] : begin
-				local s : Math.sin ((2 * j / sides + rot) * Math.PI)
-				local c : Math.cos ((2 * j / sides + rot) * Math.PI)
-				include : dispiro
-					flat Middle                 SymbolMid               [widths.center : 2 * fine]
-					curl (Middle + radius * s) (SymbolMid + radius * c) [widths.center : 2 * final]
+			local rays : new-glyph : glyph-proc
+				include : AsteriskRays sides rot radius fine final
+			if fFlower : begin
+				local holeR : 0.85 * fine / [Math.sin (Math.PI / sides)]
+				include : difference rays
+					AsteriskFlowerHole sides (rot + (1 / sides)) holeR
+			: else : include rays
 
 		if high : create-glyph (name + '.' + high) : composite-proc
 			refer-glyph (name + '.' + sMid)
