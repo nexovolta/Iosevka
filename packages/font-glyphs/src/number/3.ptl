@@ -101,47 +101,47 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	# C like the arched 5. The et overlaps the C's first knot as a spur
-	# (stroke-height band), instead of kissing at one point.
+	# Barlow 7-on-C: et ends at 50%. The reversed C starts at that terminal
+	# (one stroke) and rises to a 60% hump. Angle flattens with weight.
+	# Taper is on the C curve only; the diagonal stays full width.
 	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
 		local sw Stroke
-		local t2 : mix 0 top DesignParameters.fiveBarPos
-		local xLeft : mix SB RightSB 0.025
-		local yBarBot : top - Stroke
+		local t2 : mix 0 top 0.60
+		local yEnd : mix 0 top 0.50
+		local angle : StrokeWidthBlend 56 40
+		local kFall : Math.tan (angle * Math.PI / 180)
+		local yBarBot : top - sw
+		local xEnd : RightSB - (yBarBot - yEnd) / kFall
+		local swTerm : sw * [StrokeWidthBlend 0.85 0.70]
+		local xHump : mix xEnd RightSB 0.45
+		local ada : ArchDepthAClamped t2 0 ArchDepthA ArchDepthB
+		local adb : ArchDepthBClamped t2 0 ArchDepthA ArchDepthB
 		local bowlBotArcC : if flatHook Flat Rounded
-
-		local boxTop : new Box t2 0 xLeft RightSB
 		local boxBot : new Box t2 0 SB RightSB
-		local ArcTop : Rounded boxTop
-			sw      -- sw
-			barSw   -- sw
-			hook    -- (AHook * (top / CAP))
-			xShrink -- [HSwToV : 0.5 * sw]
 		local ArcBot : bowlBotArcC boxBot
 			sw    -- sw
 			barSw -- sw
 			hook  -- (Hook * (top / CAP))
 
-		local threeStroke : include : dispiro
-			ArcTop.hookStartL
-			g4 (RightSB - OX) [YSmoothMidR t2 0 ArchDepthA ArchDepthB]
-			ArcBot.hookEndL
-		local firstKnot threeStroke.rhsKnots.0
-
 		include : union
 			HBar.t SB RightSB top
 			intersection
-				Rect (firstKnot.y + sw) firstKnot.y 0 Width
+				Rect yBarBot (yEnd - 2 * sw) SB RightSB
 				dispiro
 					widths.rhs
 					flat RightSB yBarBot
-					curl firstKnot.x firstKnot.y
-			intersection
-				Rect top (firstKnot.y + sw) 0 Width
-				dispiro
-					widths.rhs
-					flat RightSB yBarBot
-					curl firstKnot.x firstKnot.y
+					curl xEnd yEnd
+		include : dispiro
+			widths.rhs swTerm
+			g4 xEnd yEnd [heading Rightward]
+			g4 xHump t2 [widths.rhs sw]
+			archv
+			g4 (RightSB - OX) [YSmoothMidR t2 0 ada adb]
+			if flatHook
+				ArcBot.hookEndL
+				list
+					HookEnd 0 (sw -- sw)
+					g4 (SB + OX) (Hook * (top / CAP))
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
 	create-glyph 'three.lnum.rounded' : glyph-proc
