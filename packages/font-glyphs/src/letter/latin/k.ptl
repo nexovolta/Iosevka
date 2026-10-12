@@ -75,21 +75,26 @@ glyph-block Letter-Latin-K : begin
 		local xSerif         : kshRight - sideJutAdj
 		# Path start is the OUTER edge of the upper arm (widths.rhs, traveling down-left).
 		local xOuter         : kshRight - ox
-		# ox is negative, so dropping it from the length lets the foot clear the
-		# diagonal overshoot and sit a bit further right.
-		local rbJut          : SideJut + stemInk + [StrokeWidthBlend 0 : 0.5 * Jut]
+		local yJoinArm : [mix 0 top 0.42] - swRef
+		local fallArm : Math.max TINY (top - yJoinArm)
+		local runArm : Math.max TINY (xOuter - (left + stemInk))
+		local armInk : HSwToV : swRef * [DiagCor fallArm runArm]
+		local xArmMid : xOuter - 0.5 * armInk
 
-		if [HasRtOuter mode] : include : tagged 'serifRT' : difference
-			HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
+		if [HasFullRtSerif mode] : include : tagged 'serifRT' : difference
+			HSerif.mtAsymmetric xArmMid top Jut Jut swSerif
 			maskRT
-		if [HasRtInner mode] : include : KInnerRtSerif xOuter top left swRef swSerif
+		: else : begin
+			if [HasRtOuter mode] : include : tagged 'serifRT' : difference
+				HSerif.rt xSerif top (SideJut + sideJutAdj) swSerif
+				maskRT
+			if [HasRtInner mode] : include : KInnerRtSerif xOuter top left swRef swSerif
 
-		if [HasRbSerif mode] : begin
-			include : tagged 'serifRB' : difference
-				HSerif.rb xSerif 0 rbJut swSerif
-				maskRB
-			if [HasFullRtSerif mode] : include : tagged 'serifRB'
-				HSerif.lb xSerif 0 SideJut swSerif
+		if [HasRbSerif mode] : include : tagged 'serifRB' : difference
+			if [HasFullRtSerif mode]
+			: then : HSerif.mbAsymmetric xArmMid 0 Jut Jut swSerif
+			: else : HSerif.rb xSerif 0 (SideJut + sideJutAdj) swSerif
+			maskRB
 
 		if attachment : include : difference
 			attachment.rSideJut

@@ -39,7 +39,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 			if fSquareBottom : include : VSquareTopShape df top sw
 			: else : include : VShape df fBarStraight top sw
 			include : FlipAround df.middle (top / 2)
-		ASerifs df top sw slabKind
+		ASerifs df top sw slabKind fSquareBottom
 
 	define [LambdaMask] : with-params [df fBarStraight top sw fSquareBottom] : new-glyph : glyph-proc
 		if fSquareBottom : include : VSquareTopOutline df top sw
@@ -212,11 +212,11 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 	define A-SLAB-LEFT  2
 	define A-SLAB-RIGHT 4
 
-	define [DeltaSerifs df top bottom sw serifType] : glyph-proc
+	define [DeltaSerifs df top bottom sw serifType fSquareBottom] : glyph-proc
 		local height : Math.abs : top - bottom
 		include : with-transform [ApparentTranslate 0 bottom] : match serifType
-			[Just SERIF-MOTION] : ASerifs df height sw A-SLAB-TOP
-			[Just SERIF-ALL]    : ASerifs df height sw [bitOr A-SLAB-TOP [bitOr A-SLAB-LEFT A-SLAB-RIGHT]]
+			[Just SERIF-MOTION] : ASerifs df height sw A-SLAB-TOP fSquareBottom
+			[Just SERIF-ALL]    : ASerifs df height sw [bitOr A-SLAB-TOP [bitOr A-SLAB-LEFT A-SLAB-RIGHT]] fSquareBottom
 			__                  : no-shape
 
 	define DeltaConfig : SuffixCfg.weave
@@ -239,7 +239,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- CAP
 				bottom        -- 0
 				sw            -- Stroke
-			include : DeltaSerifs [DivFrame 1] CAP 0 Stroke serifType
+			include : DeltaSerifs [DivFrame 1] CAP 0 Stroke serifType fSquareBottom
 
 		create-glyph "increment.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -250,7 +250,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- CAP
 				bottom        -- 0
 				sw            -- OperatorStroke
-			include : DeltaSerifs [DivFrame 1] CAP 0 OperatorStroke serifType
+			include : DeltaSerifs [DivFrame 1] CAP 0 OperatorStroke serifType fSquareBottom
 
 		create-glyph "increment.aplForm.\(suffix)" : glyph-proc
 			include : MarkSet.oper
@@ -261,7 +261,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- OperTop
 				bottom        -- OperBot
 				sw            -- OperatorStroke
-			include : DeltaSerifs [DivFrame 1] OperTop OperBot OperatorStroke serifType
+			include : DeltaSerifs [DivFrame 1] OperTop OperBot OperatorStroke serifType fSquareBottom
 
 		create-glyph "increment.aplThin.\(suffix)" : glyph-proc
 			include : MarkSet.oper
@@ -273,7 +273,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				top           -- OperTop
 				bottom        -- OperBot
 				sw            -- sw
-			include : DeltaSerifs [DivFrame 1] OperTop OperBot sw serifType
+			include : DeltaSerifs [DivFrame 1] OperTop OperBot sw serifType fSquareBottom
 
 	define [CodeNonApl u] : if (para.variantSelector.__enableAplForm === 'enable') null u
 	define [CodeApl    u] : if (para.variantSelector.__enableAplForm === 'enable') u null
