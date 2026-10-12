@@ -247,8 +247,8 @@ glyph-block Letter-Latin-V : begin
 			curl vxEndL 0 [widths.lhs fine]
 
 	# Right inner serifs jut inward from the inner edge of the diagonal.
-	# Full/middle bars keep VRightSerifExtend.
-	glyph-block-export VRightSerifExtend VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
+	# Outer-only bottom-right keeps VRightSerifExtend; full Ts are symmetric.
+	glyph-block-export VRightSerifExtend VExtendedLtFull VExtendedLbFull VExtendedRtInner VExtendedRtFull VExtendedRbInner VExtendedRbFull VExtendedRbOuter
 	define [VRightSerifExtend sf] : StrokeWidthBlend 0 : Jut * [if (sf.top > [mix XH CAP 0.5]) 1 0.5]
 
 	# Diagonal arms are thicker horizontally than a vertical bar of the same sw.
@@ -264,10 +264,12 @@ glyph-block Letter-Latin-V : begin
 
 	# Attach at the vertical-terminal inner edge, overlap half a stem for a smooth join,
 	# and jut left far enough to clear the true inner of a diagonal arm.
+	define [VExtendedLtFull sf] : tagged 'serifLT' : HSerif.mtAsymmetric (sf.left + [HSwToV : 0.5 * sf.swRef]) sf.top sf.jut sf.jut sf.swSerif
+	define [VExtendedLbFull sf] : tagged 'serifLB' : HSerif.mbAsymmetric (sf.left + [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jut sf.jut sf.swSerif
 	define [VExtendedRtInner sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV sf.swRef]) sf.top [VInnerLeftJut sf] [HSwToV : 0.5 * sf.swRef] sf.swSerif
-	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRtFull sf] : tagged 'serifRT' : HSerif.mtAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.top sf.jut sf.jut sf.swSerif
 	define [VExtendedRbInner sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV sf.swRef]) sf.bot [VInnerLeftJut sf] [HSwToV : 0.5 * sf.swRef] sf.swSerif
-	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jutIn (sf.jut + [VRightSerifExtend sf]) sf.swSerif
+	define [VExtendedRbFull sf] : tagged 'serifRB' : HSerif.mbAsymmetric (sf.right - [HSwToV : 0.5 * sf.swRef]) sf.bot sf.jut sf.jut sf.swSerif
 	define [VExtendedRbOuter sf] : tagged 'serifRB' : HSerif.rb sf.right sf.bot (sf.sideJut + [VRightSerifExtend sf]) sf.swSerif
 
 	glyph-block-export VSerifs
@@ -275,7 +277,7 @@ glyph-block Letter-Latin-V : begin
 		local sbScale  : if fBarStraight VStraightSbShrink 1
 		local sbOffset : if fBarStraight VStraightSbOffset 0
 		local sf : SerifFrame top 0 ([mix 0 df.leftSB sbScale] - sbOffset) ([mix df.width df.rightSB sbScale] + sbOffset) (swRef -- swRef) (swSerif -- sw)
-		return : composite-proc sf.lt.full [VExtendedRtFull sf]
+		return : composite-proc [VExtendedLtFull sf] [VExtendedRtFull sf]
 
 	define [VAutoSerifs] : with-params [df fBarStraight top [sw Stroke] [swRef sw]] : NeedSlab SLAB : VSerifs df fBarStraight top sw swRef
 
