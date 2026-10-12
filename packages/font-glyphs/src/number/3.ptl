@@ -56,18 +56,18 @@ glyph-block Digits-Three : begin
 
 	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
 	# diagonal terminal). Shared by the broken and arched flat-top bodies.
-	define [ThreeFlatTopEtGeom top] : begin
+	define [ThreeFlatTopEtGeom top _yEndIdeal] : begin
 		local kFall : Math.tan (50 * Math.PI / 180)
 		local yBarBot : top - Stroke
 		local cor : Stroke * [DiagCor kFall 1]
-		local yEndIdeal : mix 0 top 0.42
+		local yEndIdeal : Math.min (yBarBot - HalfStroke) : fallback _yEndIdeal : mix 0 top 0.42
 		local xEnd : Math.max (SB + cor) : RightSB - (yBarBot - yEndIdeal) / kFall
 		local yEnd : yBarBot - (RightSB - xEnd) * kFall
 		return : object kFall yBarBot cor xEnd yEnd
 
-	define [ThreeFlatTopEtTop top _swEnd] : glyph-proc
+	define [ThreeFlatTopEtTop top _swEnd _yEndIdeal] : glyph-proc
 		local swEnd : fallback _swEnd Stroke
-		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top
+		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top _yEndIdeal
 		include : union
 			HBar.t SB RightSB top
 			intersection
@@ -100,16 +100,17 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	# C-curve of a 3. The et tapers to a smaller terminal so the bowl can
-	# meet it. Rightward tangent vs the 50° diagonal is a bevel join; the
-	# C arches immediately (no merge along the et, no clipping).
+	# Short et that tapers onto the C. The bowl starts on the et bevel and
+	# continues around (no clip).
 	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
-		local [object xEnd yEnd] : ThreeFlatTopEtGeom top
-		local swTerm : Stroke * [StrokeWidthBlend 0.5 0.35]
+		local yBarBot : top - Stroke
+		local yEndIdeal : yBarBot - [Math.max (0.2 * top) (1.55 * Stroke)]
+		local [object xEnd yEnd] : ThreeFlatTopEtGeom top yEndIdeal
+		local swTerm : Stroke * [StrokeWidthBlend 0.55 0.4]
 		local ada : ArchDepthAClamped yEnd 0 ArchDepthA ArchDepthB
 		local adb : ArchDepthBClamped yEnd 0 ArchDepthA ArchDepthB
 
-		include : ThreeFlatTopEtTop top swTerm
+		include : ThreeFlatTopEtTop top swTerm yEndIdeal
 		include : dispiro
 			widths.rhs
 			g4 xEnd yEnd [heading Rightward]
@@ -117,7 +118,7 @@ glyph-block Digits-Three : begin
 			if flatHook
 				[MakeFlatHook SB RightSB yEnd 0 (sw -- Stroke)].hookEndL
 				list
-					HookEnd 0
+					HookEnd 0 (sw -- Stroke)
 					g4 (SB + O) Hook
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
