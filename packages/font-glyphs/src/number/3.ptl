@@ -2,6 +2,7 @@ $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
+import [Box] from "@iosevka/geometry/box"
 
 glyph-module
 
@@ -11,7 +12,7 @@ glyph-block Digits-Three : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
 	glyph-block-import Letter-Latin-C : CLetterForm
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook Rounded Flat
 
 	define SLAB-NONE       0
 	define FLAT-CONNECTION 3
@@ -100,26 +101,47 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	# Short et that tapers onto the C. The bowl starts on the et bevel and
-	# continues around (no clip).
+	# C like the arched 5. The et overlaps the C's first knot as a spur
+	# (stroke-height band), instead of kissing at one point.
 	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
+		local sw Stroke
+		local t2 : mix 0 top DesignParameters.fiveBarPos
+		local xLeft : mix SB RightSB 0.025
 		local yBarBot : top - Stroke
-		local yEndIdeal : yBarBot - [Math.max (0.2 * top) (1.55 * Stroke)]
-		local [object xEnd yEnd] : ThreeFlatTopEtGeom top yEndIdeal
-		local swTerm : Stroke * [StrokeWidthBlend 0.55 0.4]
-		local ada : ArchDepthAClamped yEnd 0 ArchDepthA ArchDepthB
-		local adb : ArchDepthBClamped yEnd 0 ArchDepthA ArchDepthB
+		local bowlBotArcC : if flatHook Flat Rounded
 
-		include : ThreeFlatTopEtTop top swTerm yEndIdeal
-		include : dispiro
-			widths.rhs
-			g4 xEnd yEnd [heading Rightward]
-			g4 (RightSB - O * 2) [YSmoothMidR yEnd 0 ada adb]
-			if flatHook
-				[MakeFlatHook SB RightSB yEnd 0 (sw -- Stroke)].hookEndL
-				list
-					HookEnd 0 (sw -- Stroke)
-					g4 (SB + O) Hook
+		local boxTop : new Box t2 0 xLeft RightSB
+		local boxBot : new Box t2 0 SB RightSB
+		local ArcTop : Rounded boxTop
+			sw      -- sw
+			barSw   -- sw
+			hook    -- (AHook * (top / CAP))
+			xShrink -- [HSwToV : 0.5 * sw]
+		local ArcBot : bowlBotArcC boxBot
+			sw    -- sw
+			barSw -- sw
+			hook  -- (Hook * (top / CAP))
+
+		local threeStroke : include : dispiro
+			ArcTop.hookStartL
+			g4 (RightSB - OX) [YSmoothMidR t2 0 ArchDepthA ArchDepthB]
+			ArcBot.hookEndL
+		local firstKnot threeStroke.rhsKnots.0
+
+		include : union
+			HBar.t SB RightSB top
+			intersection
+				Rect (firstKnot.y + sw) firstKnot.y 0 Width
+				dispiro
+					widths.rhs
+					flat RightSB yBarBot
+					curl firstKnot.x firstKnot.y
+			intersection
+				Rect top (firstKnot.y + sw) 0 Width
+				dispiro
+					widths.rhs
+					flat RightSB yBarBot
+					curl firstKnot.x firstKnot.y
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
 	create-glyph 'three.lnum.rounded' : glyph-proc
