@@ -139,7 +139,7 @@ glyph-block Letter-Latin-X : begin
 	define STROKE-CURSIVE-FLAT   4
 	define STROKE-H-SHAPED            5
 	define STROKE-H-SHAPED-CURLY      6
-	define STROKE-SYMMETRIC-TOUCHING  7
+	define STROKE-STRAIGHT-TOUCHING  7
 
 	define [HShapedCurlyLegs left right stroke top xBar] : glyph-proc
 		local yMid : top / 2
@@ -177,12 +177,12 @@ glyph-block Letter-Latin-X : begin
 
 	# Four parallelograms: a left chevron and a right chevron. Each pair shares
 	# the horizontal edge at yMid; every parallelogram has one vertex at (mid, yMid).
-	define [SymmetricTouchingXHw mid xr sw yMid] : begin
+	define [StraightTouchingXHw mid xr sw yMid] : begin
 		local fall : Math.max TINY yMid
 		local run : Math.max TINY (xr - mid)
 		return : Math.min [HSwToV : sw * [DiagCor fall run]] (run - TINY)
 
-	define [SymmetricTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
+	define [StraightTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
 		# Overlap the inner vertices so the chevrons kiss after integer rounding.
 		local kiss 1
 		return : union
@@ -207,20 +207,20 @@ glyph-block Letter-Latin-X : begin
 				corner (mid + kiss) yMid
 				corner (mid - hw + kiss) yMid
 
-	define [SymmetricTouchingXShape box sw] : glyph-proc
+	define [StraightTouchingXShape box sw] : glyph-proc
 		local height : box.t - box.b
 		local mid box.xMid
 		local yMid : Math.round (height / 2)
-		local hw : SymmetricTouchingXHw mid box.r sw yMid
-		include : SymmetricTouchingXParallelograms mid yMid hw box.l box.r height 0 0
+		local hw : StraightTouchingXHw mid box.r sw yMid
+		include : StraightTouchingXParallelograms mid yMid hw box.l box.r height 0 0
 		include : ApparentTranslate 0 box.b
 
-	define [SymmetricTouchingXShapeLongLeft box sw botLong] : glyph-proc
+	define [StraightTouchingXShapeLongLeft box sw botLong] : glyph-proc
 		local height : box.t - box.b
 		local mid box.xMid
 		local yMid : Math.round (height / 2)
-		local hw : SymmetricTouchingXHw mid box.r sw yMid
-		include : SymmetricTouchingXParallelograms mid yMid hw box.l box.r height (botLong - box.b) 0
+		local hw : StraightTouchingXHw mid box.r sw yMid
+		include : StraightTouchingXParallelograms mid yMid hw box.l box.r height (botLong - box.b) 0
 		include : ApparentTranslate 0 box.b
 
 	# Stretch the left-bottom K-leg to botLong. Do not add a vertical stem.
@@ -286,7 +286,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t false sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
-				[Just STROKE-SYMMETRIC-TOUCHING] : SymmetricTouchingXShape box sw
+				[Just STROKE-STRAIGHT-TOUCHING] : StraightTouchingXShape box sw
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : composite-proc
 					XCursiveHalfShape box.t box.b box.xMid box.r
 						swCoEnd  -- swCursiveCoEnd
@@ -299,7 +299,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-SYMMETRIC-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -314,7 +314,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : HShapedXShapeLongLeft box sw (stroke1 === STROKE-H-SHAPED-CURLY) botLong
-				[Just STROKE-SYMMETRIC-TOUCHING] : SymmetricTouchingXShapeLongLeft box sw botLong
+				[Just STROKE-STRAIGHT-TOUCHING] : StraightTouchingXShapeLongLeft box sw botLong
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
 					include : intersection [MaskAbove (midy - TINY)] : with-transform [FlipAround box.xMid midy] : XCursiveHalfShape box.t box.b box.xMid box.r
 						swCoEnd  -- swCursiveCoEnd
@@ -331,7 +331,7 @@ glyph-block Letter-Latin-X : begin
 					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
 					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-SYMMETRIC-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -347,13 +347,13 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.t box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t true sw
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : intersection [MaskRight box.xMid] : HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
-				[Just STROKE-SYMMETRIC-TOUCHING] : intersection [MaskRight box.xMid] : SymmetricTouchingXShape box sw
+				[Just STROKE-STRAIGHT-TOUCHING] : intersection [MaskRight box.xMid] : StraightTouchingXShape box sw
 				__ : glyph-proc
 			include : match stroke2
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b true sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-SYMMETRIC-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -370,8 +370,8 @@ glyph-block Letter-Latin-X : begin
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : difference
 					HShapedXShape box sw (stroke1 === STROKE-H-SHAPED-CURLY)
 					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
-				[Just STROKE-SYMMETRIC-TOUCHING] : difference
-					SymmetricTouchingXShape box sw
+				[Just STROKE-STRAIGHT-TOUCHING] : difference
+					StraightTouchingXShape box sw
 					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : composite-proc
 					XCursiveHalfShape box.t box.b box.xMid box.r
@@ -385,7 +385,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-SYMMETRIC-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
 				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -402,8 +402,8 @@ glyph-block Letter-Latin-X : begin
 				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY]) : difference
 					HShapedXShapeLongLeft box sw (stroke1 === STROKE-H-SHAPED-CURLY) botLong
 					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
-				[Just STROKE-SYMMETRIC-TOUCHING] : difference
-					SymmetricTouchingXShapeLongLeft box sw botLong
+				[Just STROKE-STRAIGHT-TOUCHING] : difference
+					StraightTouchingXShapeLongLeft box sw botLong
 					intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
 				([Just STROKE-CURSIVE] || [Just STROKE-CURSIVE-FLAT]) : glyph-proc
 					include : intersection [MaskAbove (midy - TINY)] : with-transform [FlipAround box.xMid midy] : XCursiveHalfShape box.t box.b box.xMid box.r
@@ -417,7 +417,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-SYMMETRIC-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
 				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -516,7 +516,7 @@ glyph-block Letter-Latin-X : begin
 				curly                   { STROKE-CURLY          STROKE-CURLY          }
 				hShaped                 { STROKE-H-SHAPED            STROKE-H-SHAPED            }
 				hShapedCurly            { STROKE-H-SHAPED-CURLY      STROKE-H-SHAPED-CURLY      }
-				symmetricTouching       { STROKE-SYMMETRIC-TOUCHING  STROKE-SYMMETRIC-TOUCHING  }
+				straightTouching       { STROKE-STRAIGHT-TOUCHING  STROKE-STRAIGHT-TOUCHING  }
 			object # height
 				""                      { 0         'capital' 'e' }
 				descending              { Descender 'capDesc' 'p' }
