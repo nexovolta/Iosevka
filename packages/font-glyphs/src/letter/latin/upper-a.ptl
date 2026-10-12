@@ -124,8 +124,8 @@ glyph-block Letter-Latin-Upper-A : begin
 			if ([maskBits slabKind SLAB-SMALL-CYRL] && para.isItalic) sf.rb.outer sf.rb.full
 		if [maskBits slabKind SLAB-TOP] : include : tagged 'serifLT' : intersection [MaskLeft df.middle]
 			if [maskBits slabKind : bitOr SLAB-LEFT SLAB-RIGHT]
-			: then : HSerif.lt df.middle top (MidJutSide + [HSwToV : 0.25 * sw]) sf.swSerif
-			: else : HSerif.lt df.middle top [mix MidJutSide LongJut 0.5]        sf.swSerif
+			: then : HSerif.lt df.middle top (MidJutSide + [HSwToV : 0.25 * sw]) sf.swSerif 0
+			: else : HSerif.lt df.middle top [mix MidJutSide LongJut 0.5]        sf.swSerif 0
 
 	glyph-block-export AConfig
 	define AConfig : SuffixCfg.weave
