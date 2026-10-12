@@ -180,7 +180,8 @@ glyph-block Letter-Latin-X : begin
 	define [StraightTouchingXHw mid xr sw yMid] : begin
 		local fall : Math.max TINY yMid
 		local run : Math.max TINY (xr - mid)
-		return : Math.min [HSwToV : sw * [DiagCor fall run]] (run - TINY)
+		local hw : Math.min [HSwToV : sw * [DiagCor fall run]] (run - TINY)
+		return : hw * [clamp 0.8 1 : fall / (CAP / 2)]
 
 	define [StraightTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
 		# Overlap the inner vertices so the chevrons kiss after integer rounding.
