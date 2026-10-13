@@ -177,11 +177,13 @@ glyph-block Letter-Latin-X : begin
 
 	# Four parallelograms: a left chevron and a right chevron. Each pair shares
 	# the horizontal edge at yMid; every parallelogram has one vertex at (mid, yMid).
-	define [StraightTouchingXHw mid xr sw yMid] : begin
-		local fall : Math.max TINY yMid
+	define [StraightTouchingXHw mid xr sw box] : begin
+		# Thickness follows the above-baseline half, not extra descender
+		# length, so longer legs keep the same diagonal weight.
+		local fallBody : Math.max TINY : 0.5 * (box.t - [Math.max 0 box.b])
 		local run : Math.max TINY (xr - mid)
-		local hw : Math.min [HSwToV : sw * [DiagCor fall run]] (run - TINY)
-		return : hw * [clamp 0.8 1 : fall / (CAP / 2)]
+		local hw : Math.min [HSwToV : sw * [DiagCor fallBody run]] (run - TINY)
+		return : hw * [clamp 0.8 1 : fallBody / (CAP / 2)]
 
 	define [StraightTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
 		# Overlap the inner vertices so the chevrons kiss after integer rounding.
@@ -212,7 +214,7 @@ glyph-block Letter-Latin-X : begin
 		local height : box.t - box.b
 		local mid box.xMid
 		local yMid : Math.round (height / 2)
-		local hw : StraightTouchingXHw mid box.r sw yMid
+		local hw : StraightTouchingXHw mid box.r sw box
 		include : StraightTouchingXParallelograms mid yMid hw box.l box.r height 0 0
 		include : ApparentTranslate 0 box.b
 
@@ -220,7 +222,7 @@ glyph-block Letter-Latin-X : begin
 		local height : box.t - box.b
 		local mid box.xMid
 		local yMid : Math.round (height / 2)
-		local hw : StraightTouchingXHw mid box.r sw yMid
+		local hw : StraightTouchingXHw mid box.r sw box
 		include : StraightTouchingXParallelograms mid yMid hw box.l box.r height (botLong - box.b) 0
 		include : ApparentTranslate 0 box.b
 
