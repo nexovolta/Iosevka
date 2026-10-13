@@ -9,7 +9,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
-	glyph-block-import Letter-Latin-V : VSquareTopYJoin VExtendedRtInner VExtendedRtFull VExtendedLtFull
+	glyph-block-import Letter-Latin-V : VSquareTopYJoin VSquareTopHw VExtendedRtInner VExtendedRtFull VExtendedLtFull
 	glyph-block-import Letter-Shared-Shapes : SerifFrame VerticalHook
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
@@ -264,42 +264,60 @@ glyph-block Letter-Latin-W : begin
 
 		include : WSerifs df top bodyType slabType dim
 
-	define [WSquareTopShape df top bodyType slabType midHClass _fReverse] : glyph-proc
-		local fReverse : fallback _fReverse false
-		local dim : WDim df top bodyType slabType midHClass
-		local yJoin : VSquareTopYJoin top
-
-		include : tagged 'strokeDown1' : dispiro
+	# Square-top W: V-style outer diagonals (constant width, both edges on the
+	# baseline) plus a separate inner body that follows bodyType. Inner and outer
+	# share vertices at dim.xBot1 / dim.xBot2.
+	define [WSquareTopOuterLeft df top dim hw yJoin xBot] : union
+		dispiro
 			widths.lhs dim.strokeOuter
 			corner df.leftSB top   [heading Downward]
 			corner df.leftSB yJoin [heading Downward]
-			corner (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
-		include : tagged 'strokeUp2' : dispiro
+		spiro-outline
+			corner df.leftSB        yJoin
+			corner (df.leftSB + hw) yJoin
+			corner xBot             0
+			corner (xBot - hw)      0
+	define [WSquareTopOuterRight df top dim hw yJoin xBot yTop] : union
+		dispiro
 			widths.rhs dim.strokeOuter
-			corner df.rightSB top   [heading Downward]
+			corner df.rightSB yTop  [heading Downward]
 			corner df.rightSB yJoin [heading Downward]
-			corner (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
+		spiro-outline
+			corner df.rightSB        yJoin
+			corner (df.rightSB - hw) yJoin
+			corner xBot              0
+			corner (xBot + hw)       0
 
+	define [WInnerBody df top bodyType dim _fReverse] : glyph-proc
+		local fReverse : fallback _fReverse false
 		local kTopShift : match bodyType
 			[Just FORM-DOUBLE-V]   0
 			[Just FORM-ASYMMETRIC] 0
 			__                     1
 		local shiftT : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
-		local shiftB : HSwToV : 0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr
+		# Outward edge of each inner diagonal sits on the shared baseline vertex.
 		local innerUp : dispiro
 			flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-			curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+			curl (dim.xBot1 + [HSwToV : 0.5 * dim.fineOuterCr]) 0 [widths.center.heading dim.fineOuterCr Downward]
 		local innerDown : dispiro
 			flat (dim.xLeft2 + shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-			curl (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+			curl (dim.xBot2 - [HSwToV : 0.5 * dim.fineOuterCr]) 0 [widths.center.heading dim.fineOuterCr Downward]
 		local clipUp : match bodyType
 			[Just FORM-ASYMMETRIC] : WAsymmetricInnerClipRight df dim
 			_ : no-shape
 		include : tagged 'strokeUp1' : difference innerUp : if fReverse [no-shape] clipUp
 		include : tagged 'strokeDown2' : difference innerDown : if fReverse [WAsymmetricInnerClipLeft df dim] [no-shape]
-
 		if (dim.wMidHeightExt > dim.wMidHeight) : include : tagged 'strokeExtension' : VBar.m df.middle dim.wMidHeight dim.wMidHeightExt (dim.fineInnerCrTop + [VSwToH : shiftT * 2])
 
+	define [WSquareTopShape df top bodyType slabType midHClass _fReverse] : glyph-proc
+		local fReverse : fallback _fReverse false
+		local dim : WDim df top bodyType slabType midHClass
+		local yJoin : VSquareTopYJoin top
+		local hw : VSquareTopHw dim.strokeOuter
+
+		include : tagged 'strokeDown1' : WSquareTopOuterLeft df top dim hw yJoin dim.xBot1
+		include : tagged 'strokeUp2' : WSquareTopOuterRight df top dim hw yJoin dim.xBot2 top
+		include : WInnerBody df top bodyType dim fReverse
 		include : WSerifs df top bodyType slabType dim
 
 	define [WReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
@@ -310,6 +328,27 @@ glyph-block Letter-Latin-W : begin
 
 	define [WHookRightReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
 		include : WHookRightShape df top asymBodyType slabType midHClass true
+
+	define [WSquareTopHookRightShape df top bodyType slabType midHClass _fReverse] : glyph-proc
+		include : WSquareTopShape df top bodyType slabType midHClass _fReverse
+		local dim : WDim df top bodyType slabType midHClass
+		local hw : VSquareTopHw dim.strokeOuter
+		local yJoin : VSquareTopYJoin top
+		local yHook : top - TailY - 0.5 * dim.strokeOuter - O
+
+		eject-contour 'strokeUp2'
+		eject-contour 'serifRT'
+
+		include : tagged 'strokeUp2' : WSquareTopOuterRight df top dim hw yJoin dim.xBot2 yHook
+		include : VerticalHook.r
+			x      -- df.rightSB
+			y      -- yHook
+			xDepth -- TailX
+			yDepth -- (-TailY)
+			sw     -- dim.strokeOuter
+
+	define [WSquareTopHookRightReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
+		include : WSquareTopHookRightShape df top asymBodyType slabType midHClass true
 
 	define [WHookRightShape df top bodyType slabType midHClass _fReverse] : glyph-proc
 		include : WShapeImpl df top bodyType slabType midHClass _fReverse
@@ -475,12 +514,12 @@ glyph-block Letter-Latin-W : begin
 			curlyFlatTop                       { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
 			curlyAsymmetric                    { WShapeImpl   WHookRightShape   FORM-CURLY-ASYMMETRIC        MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
 			curlyReverseAsymmetric             { WReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-CURLY-ASYMMETRIC MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			squareTop                          { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
-			squareTopAlmostFlatTop             { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
-			squareTopFlatTop                   { WSquareTopShape WHookRightShape FORM-STRAIGHT         MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
-			squareTopAsymmetric                { WSquareTopShape WHookRightShape FORM-ASYMMETRIC       MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			squareTopReverseAsymmetric         { WSquareTopReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
-			squareTopDoubleV                   { WSquareTopShape WHookRightShape FORM-DOUBLE-V         MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
+			squareTop                          { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
+			squareTopAlmostFlatTop             { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
+			squareTopFlatTop                   { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
+			squareTopAsymmetric                { WSquareTopShape WSquareTopHookRightShape FORM-ASYMMETRIC       MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
+			squareTopReverseAsymmetric         { WSquareTopReverseAsymmetricShape WSquareTopHookRightReverseAsymmetricShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			squareTopDoubleV                   { WSquareTopShape WSquareTopHookRightShape FORM-DOUBLE-V         MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
 			cursive                            { WCursiveImpl WHookRightCursive FORM-CURSIVE          MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
 			cyrlOmega                          { WShapeImpl   WHookRightShape   FORM-CYRL-OMEGA       MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
 
@@ -574,13 +613,13 @@ glyph-block Letter-Latin-W : begin
 	select-variant 'W' 'W'
 	link-reduced-variant 'W/sansSerif' 'W' MathSansSerif
 	select-variant 'smcpW' 0x1D21 (follow -- 'W')
-	select-variant 'WHookRight' 0x2C72
+	select-variant 'WHookRight' 0x2C72 (follow -- 'W')
 
 	select-variant 'w' 'w'
 	link-reduced-variant 'w/sansSerif' 'w' MathSansSerif
 	select-variant 'wBar' 0x1DF3F (follow -- 'w')
 	select-variant 'ww' 0x2AC (follow -- 'w')
-	select-variant 'wHookRight' 0x2C73
+	select-variant 'wHookRight' 0x2C73 (follow -- 'w')
 
 	select-variant 'currency/wonSign' 0x20A9 (follow -- 'W')
 
