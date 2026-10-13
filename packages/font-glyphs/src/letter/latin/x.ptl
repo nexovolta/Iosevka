@@ -180,9 +180,12 @@ glyph-block Letter-Latin-X : begin
 	define [StraightTouchingXHw mid xr sw box] : begin
 		# Thickness follows the above-baseline half, not extra descender
 		# length, so longer legs keep the same diagonal weight.
+		# kFine matches HalfXStrand's crossing (AdviceStroke 3), so these
+		# constant-width chevrons track other X/x variants, especially heavy.
 		local fallBody : Math.max TINY : 0.5 * (box.t - [Math.max 0 box.b])
 		local run : Math.max TINY (xr - mid)
-		local hw : Math.min [HSwToV : sw * [DiagCor fallBody run]] (run - TINY)
+		local kFine : Math.min 0.97 : [AdviceStroke 3] / Stroke
+		local hw : Math.min [HSwToV : sw * kFine * [DiagCor fallBody run]] (run - TINY)
 		return : hw * [clamp 0.8 1 : fallBody / (CAP / 2)]
 
 	define [StraightTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
