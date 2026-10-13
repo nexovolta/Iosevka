@@ -1350,12 +1350,16 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 
 		local radius : commaAboveRadius * SquareDotScalar
-		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
+		local q : radius * Math.SQRT2
+		local swStart : 0.88 * q
+		local swTip : 0.48 * swStart
+		local yEq : aboveMarkTop - radius
+		include : DiamondAt markMiddle yEq radius
 		include : dispiro
-			widths.rhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			straight.down.start (markMiddle + radius) (aboveMarkTop - radius + commaOvershoot)
+			flat (markMiddle + q) yEq [widths.rhs.heading swStart Downward]
+			curl (markMiddle + q) (yEq - 0.18 * q) [widths.rhs.heading swStart Downward]
 			quadControls 0 0.6
-			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
+			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.rhs swTip]
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 
 	select-variant 'commaAbove' 0x313 (follow -- 'diacriticDot')
@@ -1415,12 +1419,16 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 
 		local radius : commaAboveRadius * SquareDotScalar
-		include : DiamondAt markMiddle (aboveMarkTop - radius) radius
+		local q : radius * Math.SQRT2
+		local swStart : 0.88 * q
+		local swTip : 0.48 * swStart
+		local yEq : aboveMarkTop - radius
+		include : DiamondAt markMiddle yEq radius
 		include : dispiro
-			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			straight.down.start (markMiddle - radius) (aboveMarkTop - radius + commaOvershoot)
+			flat (markMiddle - q) yEq [widths.lhs.heading swStart Downward]
+			curl (markMiddle - q) (yEq - 0.18 * q) [widths.lhs.heading swStart Downward]
 			quadControls 0 0.6
-			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
+			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.lhs swTip]
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 
 	select-variant 'revCommaAbove' 0x314 (follow -- 'diacriticDot')
