@@ -114,52 +114,51 @@ glyph-block Digits-Seven : begin
 		StartSerif top
 		[BottomSerif body] top
 
+	# Crossbar sits at the digit midline, not at the diagonal midpoint.
+	define [SevenCrossbarY top] : mix 0 (top - QuarterStroke) 0.5
+
 	define [Crossbar top] : glyph-proc
 		local m : mix SevenXLeft (RightSB - [HSwToV HalfStroke]) 0.5
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix 0 (top - QuarterStroke) 0.5
+			SevenCrossbarY top
 
 	define [BendCrossbar top] : glyph-proc
 		local m : [mix SevenXLeftBend (RightSB - [HSwToV HalfStroke]) 0.25] + 0.125 * Stroke
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix 0 (top - QuarterStroke) 0.5
+			SevenCrossbarY top
 
 	define [CurlyCrossbar top] : glyph-proc
 		local m : mix SevenXLeftBend (RightSB - [HSwToV HalfStroke]) 0.375
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix 0 (top - QuarterStroke) 0.5
+			SevenCrossbarY top
 
 	define [SquareCrossbar top] : glyph-proc
-		local yShoulder : SevenSquareYShoulder top
-		local yFoot : SevenSquareYFoot top
 		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix yFoot yShoulder 0.5
+			SevenCrossbarY top
 
 	define [VerticalTopCrossbar top] : glyph-proc
 		local swH : HSwToV Stroke
-		local yShoulder : SevenVerticalTopYShoulder top
 		local m : mix (SevenXLeft + 0.5 * swH) (RightSB - 0.5 * swH) 0.5
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix 0 yShoulder 0.5
+			SevenCrossbarY top
 
 	define [VerticalBottomCrossbar top] : glyph-proc
-		local yFoot : SevenVerticalYFoot top
 		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
 		include : HBar.m
 			m - [HSwToV QuarterStroke] - LongJut * 0.8
 			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			mix yFoot (top - Stroke) 0.5
+			SevenCrossbarY top
 
 	local SevenConfig : SuffixCfg.weave
 		object # body
