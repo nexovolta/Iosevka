@@ -84,10 +84,20 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
 
+		define q : r * Math.SQRT2
+		define swDia : 0.88 * q
+		define swDiaTip : 0.48 * swDia
+		define diamondOverflow : r - swDiaTip / 2
+		define [DiamondTail] : dispiro
+			flat q r [widths.rhs.heading swDia Downward]
+			curl q [mix r (r - q) 0.18] [widths.rhs.heading swDia Downward]
+			quadControls (0 + TanSlope / 2) (0.6 - TanSlope * (r / Descender)) 12
+			g4 ([mix 0 Descender TanSlope] - diamondOverflow) Descender [widths.rhs swDiaTip]
+
 		export : define [diamond cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				DiamondAt 0 r r
-				CircularTail
+				DiamondTail
 
 	define [RevCommaShape kdr o] : namespace
 		define r : PeriodRadius * kdr
@@ -132,10 +142,20 @@ glyph-block Symbol-Punctuation-Small : begin
 					quadControls (0 - TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
 					g4 ([mix 0 Descender TanSlope] + commaOverflow) Descender [widths.lhs swEnd]
 
+		define q : r * Math.SQRT2
+		define swDia : 0.88 * q
+		define swDiaTip : 0.48 * swDia
+		define diamondOverflow : r - swDiaTip / 2
+		define [DiamondTail] : dispiro
+			flat (-q) r [widths.lhs.heading swDia Downward]
+			curl (-q) [mix r (r - q) 0.18] [widths.lhs.heading swDia Downward]
+			quadControls (0 - TanSlope / 2) (0.6 - TanSlope * (r / Descender)) 12
+			g4 ([mix 0 Descender TanSlope] + diamondOverflow) Descender [widths.lhs swDiaTip]
+
 		export : define [diamond cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
 				DiamondAt 0 r r
-				CircularTail
+				DiamondTail
 
 	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 		create-glyph "comma.\(suffix)" : glyph-proc
