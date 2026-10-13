@@ -307,12 +307,13 @@ glyph-block Letter-Latin-K : begin
 			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
 			local xOuter : kshRightTop - ox
 			local xArc : xOuter - [HSwToV stroke]
-			local yJoin : 0.5 * top
-			local minStraight : Math.max (0.125 * stroke) TINY
-			local prefArc : Math.min [if (top > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xArc - kshLeft) * 0.45)
-			local arcDepth : Math.max stroke : Math.min prefArc (top - yJoin - minStraight)
 			local xLeftTop : kshLeft + [HSwToV stroke]
 			local xRightBottom : kshRightBot - 2 * OX
+			# Low join: the circular quarter is the prominent arm, not a
+			# leftover vertical. No horizontal into the stem.
+			local visRun : Math.max TINY (xArc - xLeftTop)
+			local yJoin : Math.min (0.4 * top) (top - visRun)
+			local xArcStart : xLeftTop + TINY
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
@@ -350,15 +351,15 @@ glyph-block Letter-Latin-K : begin
 						TopMask.forStroke 0
 						dispiro
 							widths.rhs stroke
-							flat kshLeft yJoin [heading Rightward]
-							curl (xArc - arcDepth) yJoin [heading Rightward]
-							archv
-							flat xArc (yJoin + arcDepth) [heading Upward]
+							flat xLeftTop yJoin [heading Rightward]
+							curl xArcStart yJoin [heading Rightward]
+							archv.superness 2
+							flat xArc (top - TINY) [heading Upward]
 							curl xArc top [heading Upward]
 					include : intersection
 						BottomMask.forStroke (-0.1)
 						Rect yJoin 0 (-VERY-FAR) VERY-FAR
-						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke
+						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke 0.2
 				new-glyph : glyph-proc
 					include : KLegSlabs
 						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
