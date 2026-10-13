@@ -76,6 +76,7 @@ glyph-block Letter-Cyrillic-De : begin
 
 	glyph-block-import Letter-Latin-Upper-Lambda-Delta : DeltaShape
 	glyph-block-import Letter-Latin-Upper-A : ASerifs
+	glyph-block-import Letter-Latin-V : VCornerHalfWidth VStraightSbShrink VSquareTopYJoin VSquareTopHw
 
 	define A-SLAB-TOP 1
 
@@ -108,11 +109,43 @@ glyph-block Letter-Cyrillic-De : begin
 		local swInner   sw
 		return : object xTopLeft xTopRight swOuter swInner desc
 
+	# Continue the left diagonal of a delta-like De to y=asc (Dwe tick).
+	define [CyrDweDeltaLeftJut df top asc sw jutSw fBarStraight fSquareBottom] : glyph-proc
+		if fSquareBottom : begin
+			local hw : VSquareTopHw sw
+			local yShoulder : top - [VSquareTopYJoin top]
+			local xShoulder df.leftSB
+			local xPeak : df.middle - hw
+			local xAsc : xPeak + (xPeak - xShoulder) * (asc - top) / [Math.max TINY (top - yShoulder)]
+			include : dispiro
+				widths.rhs jutSw
+				flat xPeak top
+				curl xAsc  asc
+		: else : begin
+			local cornerHW : VCornerHalfWidth * (sw / Stroke)
+			local sbScale : if fBarStraight VStraightSbShrink 1
+			local xBot : 2 * df.middle - [mix df.width df.rightSB sbScale]
+			local xPeak : df.middle - cornerHW
+			local xAsc : mix xBot xPeak (asc / top)
+			include : dispiro
+				widths.rhs jutSw
+				flat xPeak top
+				curl xAsc  asc
+
 	define BODY-TRAPEZOID  0
 	define BODY-TRIANGULAR 1
 	define BODY-CURLY      2
 	define BODY-SQUARE     3
 	define BODY-CURSIVE    4
+
+	define [CyrDweTick bodyType de top asc] : glyph-proc
+		local jutSw : Math.min de.swInner : VJutStroke * (de.swOuter / Stroke)
+		include : match bodyType
+			[Just BODY-TRAPEZOID] : VBar.l de.xTopLeft (top + O) asc jutSw
+			[Just BODY-TRIANGULAR] : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true  false
+			[Just BODY-CURLY]      : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw false false
+			[Just BODY-SQUARE]     : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true  true
+			__                     : VBar.l de.xTopLeft (top + O) asc jutSw
 
 	glyph-block-export DeConfig BODY-TRAPEZOID BODY-TRIANGULAR BODY-CURLY BODY-SQUARE BODY-CURSIVE
 	glyph-block-export SERIF-NONE SERIF-MOTION SERIF-ALL
@@ -193,7 +226,7 @@ glyph-block Letter-Cyrillic-De : begin
 				include : ExtendAboveBaseAnchors asc
 				include : ExtendBelowBaseAnchors BottomExtension
 				local de : include : CyrDeBodyShape bodyType true CAP serifType
-				include : VBar.l de.xTopLeft (CAP + O) asc [Math.min de.swInner : VJutStroke * (de.swOuter / Stroke)]
+				include : CyrDweTick bodyType de CAP asc
 
 			create-glyph "cyrl/dwe.upright.\(suffix)" : glyph-proc
 				include : MarkSet.e
@@ -201,7 +234,7 @@ glyph-block Letter-Cyrillic-De : begin
 				include : ExtendAboveBaseAnchors asc
 				include : ExtendBelowBaseAnchors BottomExtension
 				local de : include : CyrDeBodyShape bodyType false XH serifType
-				include : VBar.l de.xTopLeft (XH + O) asc [Math.min de.swInner : VJutStroke * (de.swOuter / Stroke)]
+				include : CyrDweTick bodyType de XH asc
 
 			define cyrSoftDeDf : DivFrame para.advanceScaleM 3
 			DefineDeSelectorGlyph "cyrl/DeSoft" suffix cyrSoftDeDf 'capital'
