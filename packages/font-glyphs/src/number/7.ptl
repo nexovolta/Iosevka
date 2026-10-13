@@ -86,17 +86,28 @@ glyph-block Digits-Seven : begin
 	define [StartSerif top] : VSerif.dl (SB + (OX - O)) top VJut
 	define [StartSerifThick top] : VSerif.dl (SB + (OX - O)) top VJut [AdviceStroke 2.75]
 
-	# Inner/outer of the stem at the baseline, from the same edges as the body.
+	# Inner/outer of the stem at the serif top, from the same edges as the body.
 	define [SevenFootEdges body top] : match body
 		[Just "straight"] : begin
 			# Straight stem is widths.rhs down the outer edge; ink falls inward.
-			local xOuter SevenStraightInnerX
-			local xInner : xOuter - Stroke * [DiagCor (top - Stroke) (RightSB - xOuter)]
+			# Sample at y = Stroke so the serif centers on the visible junction.
+			local yTop : top - Stroke
+			local t : Stroke / yTop
+			local xOuter0 SevenStraightInnerX
+			local thick : Stroke * [DiagCor yTop (RightSB - xOuter0)]
+			local xOuter : mix xOuter0 RightSB t
+			local xInner : mix (xOuter0 - thick) (RightSB - thick) t
 			object xInner xOuter
 		([Just "bend"] || [Just "curly"]) : begin
 			# Knot is widths.rhs heading down, so it is the outer edge.
 			local xOuter SevenBendKnotX
 			local xInner : xOuter - [HSwToV Stroke]
+			object xInner xOuter
+		[Just "verticalTop"] : begin
+			local swH : HSwToV Stroke
+			local t : Stroke / [SevenVerticalTopYShoulder top]
+			local xInner : mix SevenXLeft (RightSB - swH) t
+			local xOuter : mix (SevenXLeft + swH) RightSB t
 			object xInner xOuter
 		__ : begin
 			local xInner SevenXLeft
@@ -106,9 +117,7 @@ glyph-block Digits-Seven : begin
 	define [BottomSerif body] : function [top] : begin
 		local [object xInner xOuter] : SevenFootEdges body top
 		local xMid : mix xInner xOuter 0.5
-		return : union
-			HSerif.lb xMid 0 Jut
-			HSerif.rb xMid 0 MidJutSide
+		return : HSerif.mb xMid 0 Jut
 
 	define [FullSerif body] : function [top] : union
 		StartSerif top
