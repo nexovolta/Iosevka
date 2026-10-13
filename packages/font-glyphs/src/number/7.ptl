@@ -1,6 +1,6 @@
 $$include '../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
+import [mix clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -123,51 +123,61 @@ glyph-block Digits-Seven : begin
 		StartSerif top
 		[BottomSerif body] top
 
-	# Crossbar sits at the digit midline, not at the diagonal midpoint.
+	# Crossbar sits at the digit midline, centered on the stem at that Y.
 	define [SevenCrossbarY top] : mix 0 (top - QuarterStroke) 0.5
 
-	define [Crossbar top] : glyph-proc
-		local m : mix SevenXLeft (RightSB - [HSwToV HalfStroke]) 0.5
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
+	define [SevenStemEdges body top y] : match body
+		[Just "straight"] : begin
+			local yTop : top - Stroke
+			local t : clamp 0 1 : y / yTop
+			local xOuter0 SevenStraightInnerX
+			local thick : Stroke * [DiagCor yTop (RightSB - xOuter0)]
+			local xOuter : mix xOuter0 RightSB t
+			local xInner : mix (xOuter0 - thick) (RightSB - thick) t
+			object xInner xOuter
+		[Just "bend"] : begin
+			local yTop : top - Stroke
+			local t : clamp 0 1 : y / yTop
+			local thick : Stroke * [DiagCor yTop (RightSB - SevenBendKnotX)]
+			local xOuter : mix SevenBendKnotX RightSB t
+			local xInner : xOuter - thick
+			object xInner xOuter
+		[Just "curly"] : begin
+			local t : clamp 0 1 : y / top
+			local thick : Stroke * [DiagCor top (RightSB - SevenBendKnotX)]
+			local xOuter : mix SevenBendKnotX RightSB t
+			local xInner : xOuter - thick
+			object xInner xOuter
+		[Just "square"] : begin
+			local swH : HSwToV Stroke
+			local yShoulder : SevenSquareYShoulder top
+			local yFoot : SevenSquareYFoot top
+			local t : clamp 0 1 : (y - yFoot) / (yShoulder - yFoot)
+			local xInner : mix SevenXLeft (RightSB - swH) t
+			local xOuter : mix (SevenXLeft + swH) RightSB t
+			object xInner xOuter
+		[Just "verticalTop"] : begin
+			local swH : HSwToV Stroke
+			local yShoulder : SevenVerticalTopYShoulder top
+			local t : clamp 0 1 : y / yShoulder
+			local xInner : mix SevenXLeft (RightSB - swH) t
+			local xOuter : mix (SevenXLeft + swH) RightSB t
+			object xInner xOuter
+		__ : begin
+			local swH : HSwToV Stroke
+			local yFoot : SevenVerticalYFoot top
+			local yTop : top - Stroke
+			local t : clamp 0 1 : (y - yFoot) / (yTop - yFoot)
+			local xInner : mix SevenXLeft (RightSB - swH) t
+			local xOuter : mix (SevenXLeft + swH) RightSB t
+			object xInner xOuter
 
-	define [BendCrossbar top] : glyph-proc
-		local m : [mix SevenXLeftBend (RightSB - [HSwToV HalfStroke]) 0.25] + 0.125 * Stroke
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
-
-	define [CurlyCrossbar top] : glyph-proc
-		local m : mix SevenXLeftBend (RightSB - [HSwToV HalfStroke]) 0.375
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
-
-	define [SquareCrossbar top] : glyph-proc
-		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
-
-	define [VerticalTopCrossbar top] : glyph-proc
-		local swH : HSwToV Stroke
-		local m : mix (SevenXLeft + 0.5 * swH) (RightSB - 0.5 * swH) 0.5
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
-
-	define [VerticalBottomCrossbar top] : glyph-proc
-		local m : mix (SevenXLeft + [HSwToV HalfStroke]) (RightSB - [HSwToV HalfStroke]) 0.5
-		include : HBar.m
-			m - [HSwToV QuarterStroke] - LongJut * 0.8
-			m + [HSwToV QuarterStroke] + LongJut * 0.7
-			SevenCrossbarY top
+	define [CrossbarOnStem body] : function [top] : begin
+		local y : SevenCrossbarY top
+		local [object xInner xOuter] : SevenStemEdges body top y
+		local xMid : mix xInner xOuter 0.5
+		local jut : [HSwToV QuarterStroke] + LongJut * 0.8
+		return : HBar.m (xMid - jut) (xMid + jut) y
 
 	local SevenConfig : SuffixCfg.weave
 		object # body
@@ -184,13 +194,7 @@ glyph-block Digits-Seven : begin
 			fullSerifed           [FullSerif body]
 		function [body] : object # crossbar
 			""                    nothing
-			crossbar : match body
-				[Just "straight"]        Crossbar
-				[Just "bend"]            BendCrossbar
-				[Just "curly"]           CurlyCrossbar
-				[Just "square"]          SquareCrossbar
-				[Just "verticalTop"]     VerticalTopCrossbar
-				[Just "verticalBottom"]  VerticalBottomCrossbar
+			crossbar              [CrossbarOnStem body]
 
 	foreach { suffix { Body Serif Crossbar } } [Object.entries SevenConfig] : do
 		create-glyph "seven.lnum.\(suffix)" : glyph-proc
