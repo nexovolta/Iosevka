@@ -9,6 +9,7 @@ glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Upper-T : TShape
@@ -555,6 +556,11 @@ glyph-block Letter-Latin-Lower-R : begin
 		include : LeaningAnchor.Below.At xStem
 		set-base-anchor 'overlay' (lOverlay.x + xShift) lOverlay.y
 		set-base-anchor 'hooktopAttach' xStem XH
+
+		local b : include : MeasureGlyphBounds
+		if b : begin
+			local xCenterShift : df.middle - [mix b.xMin b.xMax 0.5]
+			if ([Math.abs xCenterShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xCenterShift 0] true
 
 	define HalfRShape : namespace
 		export : define [Standard df md top bottom doTopSerif doBottomSerif] : glyph-proc
