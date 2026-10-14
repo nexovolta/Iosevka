@@ -367,8 +367,12 @@ glyph-block Letter-Latin-K : begin
 						Rect yJoin 0 (-VERY-FAR) VERY-FAR
 						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke 0.2
 				new-glyph : glyph-proc
+					# Top-right serifs sit on the quarter-arc terminal.
+					# Outer is one bar to the right. Middle is one bar centered on that
+					# terminal: cap height for uppercase, x-height for lowercase.
+					local roundedTr : [not fHookRight] && [HasRtOuter slabLegs]
 					include : KLegSlabs
-						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						mode         -- [maskOffBits slabLegs : if (fHookRight || roundedTr) [bitOr SLAB-TR-L SLAB-TR-R] 0]
 						top          -- top
 						left         -- left
 						right        -- right
@@ -377,6 +381,11 @@ glyph-block Letter-Latin-K : begin
 						attachment   -- attachment
 						maskRT	     -- TopMask.forSerifs
 						maskRB	     -- BottomMask.forSerifs
+					if roundedTr : begin
+						local stemInk : HSwToV stroke
+						if [HasFullRtSerif slabLegs]
+						: then : include : HSerif.mt (xArc + stemInk / 2) top Jut stroke
+						: else : include : HSerif.rt (xArc + stemInk) top SideJut stroke
 
 		export : define [Curly fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
