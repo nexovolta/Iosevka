@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix fallback] from "@iosevka/util"
+import [maskBits bitOr] from "@iosevka/util/mask-bit"
 
 glyph-module
 
@@ -8,126 +9,110 @@ glyph-block Letter-Cyrillic-Little-Yus : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
-	glyph-block-import Letter-Latin-Upper-A : AShape
-	glyph-block-import Letter-Latin-Upper-Lambda-Delta : LambdaShape DeltaShape
+	glyph-block-import Letter-Latin-Upper-A : AShape AConfig ASerifs
 	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifFromSelector
 
-	define [CyrLittleYusShape df top straightBar _fine] : glyph-proc
-		local fine : fallback _fine : df.adviceThinnerStroke 3.3
-		include : LambdaShape
-			df           -- df
-			fBarStraight -- straightBar
-			slabKind     -- 0
-			top          -- top
-			sw           -- fine
-		include : intersection
-			HBar.t df.leftSB df.rightSB [mix 0 top 0.5] fine
-			AShape.Mask df [if straightBar 1 0] top fine
-		include : VBar.m df.middle [mix 0 top 0.5] 0 fine
+	define SLAB-LEFT          2
+	define SLAB-RIGHT         4
+	define BODY-SQUARE-BOTTOM 3
 
-		if SLAB : begin
+	define [CyrLittleYusShape df top bodyShape slabKind _fine] : glyph-proc
+		local fine : fallback _fine : df.adviceThinnerStroke 3.3
+		local yBar : AShape.BarPos bodyShape slabKind top
+		include : AShape.Outer df bodyShape top fine
+		include : intersection
+			HBar.t df.leftSB df.rightSB yBar fine
+			AShape.Mask df bodyShape top fine
+		include : VBar.m df.middle yBar 0 fine
+		include : ASerifs df top fine slabKind (bodyShape === BODY-SQUARE-BOTTOM)
+		if [maskBits slabKind : bitOr SLAB-LEFT SLAB-RIGHT] : begin
 			local sf : SerifFrame.fromDf df top 0 (swSerif -- fine)
-			include : tagged 'serifLB' sf.lb.outer
-			include : tagged 'serifRB' sf.rb.outer
 			if sf.enoughSpaceForFullSerifs
 				include : tagged 'serifMB' sf.mb.full
 
-	define [CyrClosedLittleYusShape df top straightBar _fine] : glyph-proc
+	define [CyrClosedLittleYusShape df top bodyShape slabKind _fine] : glyph-proc
 		local fine : fallback _fine : df.adviceThinnerStroke 2.75
-		include : DeltaShape
-			df           -- df
-			top          -- top
-			bottom       -- 0
-			sw           -- fine
-			fBarStraight -- straightBar
-			slab         -- false
+		local yBar : AShape.BarPos bodyShape slabKind top
+		include : AShape.Outer df bodyShape top fine
 		include : intersection
-			HBar.t df.leftSB df.rightSB [mix 0 top 0.5] fine
-			AShape.Mask df [if straightBar 1 0] top fine
+			HBar.b 0 df.width 0 fine
+			AShape.Mask df bodyShape top fine
+		include : intersection
+			HBar.t df.leftSB df.rightSB yBar fine
+			AShape.Mask df bodyShape top fine
+		include : ASerifs df top fine slabKind (bodyShape === BODY-SQUARE-BOTTOM)
 
-		if SLAB : begin
-			local sf : SerifFrame.fromDf df top 0 (swSerif -- fine)
-			include : tagged 'serifLB' sf.lb.outer
-			include : tagged 'serifRB' sf.rb.outer
-
-	create-glyph : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.capital
-		create-forked-glyph 'cyrl/YusLittle.straight' : CyrLittleYusShape df CAP true
-		create-forked-glyph 'cyrl/YusLittle.curly'    : CyrLittleYusShape df CAP false
-
-	create-glyph : glyph-proc
-		local df : include : DivFrame 1 3
-		include : df.markSet.e
-		create-forked-glyph 'cyrl/yusLittle.straight' : CyrLittleYusShape df XH true
-		create-forked-glyph 'cyrl/yusLittle.curly'    : CyrLittleYusShape df XH false
-
-	create-glyph : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 2
-		include : df.markSet.capital
-		create-forked-glyph 'cyrl/YusLittleClosed.straight' : CyrClosedLittleYusShape df CAP true
-		create-forked-glyph 'cyrl/YusLittleClosed.curly'    : CyrClosedLittleYusShape df CAP false
-
-	create-glyph : glyph-proc
-		local df : include : DivFrame 1 2
-		include : df.markSet.e
-		create-forked-glyph 'cyrl/yusLittleClosed.straight' : CyrClosedLittleYusShape df XH true
-		create-forked-glyph 'cyrl/yusLittleClosed.curly'    : CyrClosedLittleYusShape df XH false
-
-	select-variant 'cyrl/YusLittle' 0x466 (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/yusLittle' 0x467 (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/YusLittleClosed' 0xA658 (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/yusLittleClosed' 0xA659 (follow -- 'cyrl/Yus')
-
-	define [CyrIotatedLittleYusShape fClosed fCapital df top straightBar serifType] : glyph-proc
+	define [CyrIotatedLittleYusShape fClosed fCapital df top bodyShape slabKind serifType] : glyph-proc
 		local scalar : if fCapital 0.80 0.75
 		local fine : df.adviceThinnerStroke [if fClosed 2.75 3.3] scalar
 		local gap : (df.rightSB - df.leftSB) / 3 - [if fClosed 0 : fine / 3]
 		local subDf : DivFrame [Math.min ((df.width - gap) / Width) (df.adws * scalar)] [if fClosed 2 3]
+		local yBar : AShape.BarPos bodyShape slabKind top
 
 		local shift : df.width - subDf.width
 		local xIotaRight : df.leftSB + [HSwToV fine]
 		local botGap : Math.max (0.08 * (df.rightSB - df.leftSB)) : AdviceStroke 6
 		include : difference
 			with-transform [ApparentTranslate shift 0] : if fClosed
-				CyrClosedLittleYusShape subDf top straightBar fine
-				CyrLittleYusShape       subDf top straightBar fine
+				CyrClosedLittleYusShape subDf top bodyShape slabKind fine
+				CyrLittleYusShape       subDf top bodyShape slabKind fine
 			intersection
 				MaskBelow fine
 				MaskLeft [mix xIotaRight [Math.min (subDf.leftSB + shift) (xIotaRight + botGap)] 0.5]
 
 		include : Iotation.A df top
 			hBarRight -- [mix df.leftSB df.rightSB (2 / 3)]
-			hBarY     -- ([mix 0 top 0.5] - fine / 2)
+			hBarY     -- (yBar - fine / 2)
 			fCapital  -- fCapital
 			swRef     -- fine
 			serifType -- serifType
 
-	create-glyph : glyph-proc
-		local df : include : DivFrame [mix 1 para.advanceScaleM 2] 4.25
-		include : df.markSet.capital
-		create-forked-glyph 'cyrl/YusLittleIotated.straight' : CyrIotatedLittleYusShape false true df CAP true [IotationSerifFromSelector 'cyrl/Yu']
-		create-forked-glyph 'cyrl/YusLittleIotated.curly'    : CyrIotatedLittleYusShape false true df CAP false [IotationSerifFromSelector 'cyrl/Yu']
+	foreach { suffix { bodyShape slabKind } } [Object.entries AConfig] : do
+		create-glyph "cyrl/YusLittle.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			include : CyrLittleYusShape df CAP bodyShape slabKind
 
-	create-glyph : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 4.25
-		include : df.markSet.e
-		create-forked-glyph 'cyrl/yusLittleIotated.straight' : CyrIotatedLittleYusShape false false df XH true [IotationSerifFromSelector 'cyrl/yu']
-		create-forked-glyph 'cyrl/yusLittleIotated.curly'    : CyrIotatedLittleYusShape false false df XH false [IotationSerifFromSelector 'cyrl/yu']
+		create-glyph "cyrl/yusLittle.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1 3
+			include : df.markSet.e
+			include : CyrLittleYusShape df XH bodyShape slabKind
 
-	create-glyph : glyph-proc
-		local df : include : DivFrame [mix 1 para.advanceScaleM 2] 3.5
-		include : df.markSet.capital
-		create-forked-glyph 'cyrl/YusLittleClosedIotated.straight' : CyrIotatedLittleYusShape true true df CAP true [IotationSerifFromSelector 'cyrl/Yu']
-		create-forked-glyph 'cyrl/YusLittleClosedIotated.curly'    : CyrIotatedLittleYusShape true true df CAP false [IotationSerifFromSelector 'cyrl/Yu']
+		create-glyph "cyrl/YusLittleClosed.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 2
+			include : df.markSet.capital
+			include : CyrClosedLittleYusShape df CAP bodyShape slabKind
 
-	create-glyph : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3.5
-		include : df.markSet.e
-		create-forked-glyph 'cyrl/yusLittleClosedIotated.straight' : CyrIotatedLittleYusShape true false df XH true [IotationSerifFromSelector 'cyrl/yu']
-		create-forked-glyph 'cyrl/yusLittleClosedIotated.curly'    : CyrIotatedLittleYusShape true false df XH false [IotationSerifFromSelector 'cyrl/yu']
+		create-glyph "cyrl/yusLittleClosed.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1 2
+			include : df.markSet.e
+			include : CyrClosedLittleYusShape df XH bodyShape slabKind
 
-	select-variant 'cyrl/YusLittleIotated' 0x468 (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/yusLittleIotated' 0x469 (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/YusLittleClosedIotated' 0xA65C (follow -- 'cyrl/Yus')
-	select-variant 'cyrl/yusLittleClosedIotated' 0xA65D (follow -- 'cyrl/Yus')
+		create-glyph "cyrl/YusLittleIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame [mix 1 para.advanceScaleM 2] 4.25
+			include : df.markSet.capital
+			include : CyrIotatedLittleYusShape false true df CAP bodyShape slabKind [IotationSerifFromSelector 'cyrl/Yu']
+
+		create-glyph "cyrl/yusLittleIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 4.25
+			include : df.markSet.e
+			include : CyrIotatedLittleYusShape false false df XH bodyShape slabKind [IotationSerifFromSelector 'cyrl/yu']
+
+		create-glyph "cyrl/YusLittleClosedIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame [mix 1 para.advanceScaleM 2] 3.5
+			include : df.markSet.capital
+			include : CyrIotatedLittleYusShape true true df CAP bodyShape slabKind [IotationSerifFromSelector 'cyrl/Yu']
+
+		create-glyph "cyrl/yusLittleClosedIotated.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3.5
+			include : df.markSet.e
+			include : CyrIotatedLittleYusShape true false df XH bodyShape slabKind [IotationSerifFromSelector 'cyrl/yu']
+
+	select-variant 'cyrl/YusLittle' 0x466 (follow -- 'A')
+	select-variant 'cyrl/yusLittle' 0x467 (follow -- 'A')
+	select-variant 'cyrl/YusLittleClosed' 0xA658 (follow -- 'A')
+	select-variant 'cyrl/yusLittleClosed' 0xA659 (follow -- 'A')
+	select-variant 'cyrl/YusLittleIotated' 0x468 (follow -- 'A')
+	select-variant 'cyrl/yusLittleIotated' 0x469 (follow -- 'A')
+	select-variant 'cyrl/YusLittleClosedIotated' 0xA65C (follow -- 'A')
+	select-variant 'cyrl/yusLittleClosedIotated' 0xA65D (follow -- 'A')
