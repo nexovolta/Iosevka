@@ -29,9 +29,9 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	define ySmallTBarPos XH
 
-	glyph-block-export yShortNeck1 yShortNeck2
+	glyph-block-export yShortNeck1 yShorterNeck
 	define yShortNeck1 : clamp [mix XH Ascender 0.5] CAP : [mix XH Ascender 0.875] - Stroke * 0.125
-	define yShortNeck2 : clamp [mix XH Ascender 0.5] CAP : [mix XH Ascender 0.750] - Stroke * 0.125
+	define yShorterNeck : clamp [mix XH Ascender 0.5] CAP : [mix XH Ascender 0.750] - Stroke * 0.125
 
 	define BentHook : namespace
 		export : define [BarLeftPos df sym] : match sym
@@ -282,7 +282,7 @@ glyph-block Letter-Latin-Lower-T : begin
 		object # height
 			""                             Ascender
 			shortNeck                      yShortNeck1
-			shortNeck2                     yShortNeck2
+			shorterNeck                    yShorterNeck
 
 	foreach { suffix { { df Style } sym top } } [pairs-of SmallTConfig] : do
 		define fShortNeck : top < Ascender
@@ -487,7 +487,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	define TSUpperConfig : object
 		bentHook            { Ascender    }
 		bentHookShortNeck   { yShortNeck1 }
-		bentHookShortNeck2  { yShortNeck2 }
+		bentHookShorterNeck { yShorterNeck }
 
 	foreach { suffix { top } } [Object.entries TSUpperConfig] : do
 		create-glyph "tsLig/upperHalf.\(suffix)" : glyph-proc
