@@ -303,10 +303,10 @@ glyph-block Letter-Cyrillic-Che : begin
 	derive-composites 'cyrl/cheDescender' 0x4B7 'cyrl/che' [CyrDescender.rSideJut RightSB 0]
 	derive-composites 'cyrl/kha/che' 0x4CC 'cyrl/che' [CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)]
 
-	define [CheVBarBarShape top pyBar] : begin
+	define [CheVBarBarShape top] : begin
 		local SwCheVBar : Math.min OverlayStroke : VSwToH : 0.625 * ((RightSB - SB) - [HSwToV : 2 * Stroke])
-		local yc : [mix 0 top : fallback pyBar 0.5] + Stroke * 0.1
-		return : VBar.m Middle (yc + LongVJut * 0.8) (yc - LongVJut * 0.8) SwCheVBar
+		local half : LongVJut * 0.8
+		return : VBar.m Middle (top / 2 + half) (top / 2 - half) SwCheVBar
 
-	derive-composites 'cyrl/CheVBar' 0x4B8 'cyrl/Che' [CheVBarBarShape CAP : if SLAB 0.45 0.35]
-	derive-composites 'cyrl/cheVBar' 0x4B9 'cyrl/che' [CheVBarBarShape XH  : if SLAB 0.45 0.4]
+	derive-composites 'cyrl/CheVBar' 0x4B8 'cyrl/Che' [CheVBarBarShape CAP]
+	derive-composites 'cyrl/cheVBar' 0x4B9 'cyrl/che' [CheVBarBarShape XH]

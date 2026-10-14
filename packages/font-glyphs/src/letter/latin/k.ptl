@@ -551,7 +551,6 @@ glyph-block Letter-Latin-K : begin
 
 	define CyrlVbGap : (RightSB - SB) * 0.375
 	define [CyrlVbLength top] : (top - 0) * 0.375 + Stroke
-	define CyrlVbSw : AdviceStroke 3
 
 	define UpperKConfig : SuffixCfg.weave
 		object # body
@@ -607,11 +606,10 @@ glyph-block Letter-Latin-K : begin
 		local r : mix SB RightSB 0.92
 		include : HOverlayBar l r currentGlyph.baseAnchors.overlay.y
 
-	define [CyrlKaVBarShape top xBarLeft] : VBar.m
-		xBarLeft + [HSwToV : 0.5 * CyrlVbSw] + 0.7 * CyrlVbGap
-		top / 2 - [CyrlVbLength top] / 2
-		top / 2 + [CyrlVbLength top] / 2
-		Math.min [AdviceStroke 5] (CyrlVbGap * 0.5)
+	define [CyrlKaVBarShape top] : begin
+		local sw : Math.min [AdviceStroke 5] (CyrlVbGap * 0.5)
+		local half : [CyrlVbLength top] / 2
+		return : VBar.m Middle (top / 2 - half) (top / 2 + half) sw
 
 	# Attachment glyph used for Greek Kai Symbol
 	create-glyph 'UpperKaiSymbolAttachment' : glyph-proc
@@ -664,9 +662,8 @@ glyph-block Letter-Latin-K : begin
 			include : KBarShape CAP (SB + [KBalance slabLT fStraightBar])
 
 		create-glyph "KVBar.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : KBaseShape CyrlVbSw CAP
-			include : CyrlKaVBarShape CAP (SB + [KBalance slabLT fStraightBar])
+			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
+			include : CyrlKaVBarShape CAP
 
 		create-glyph "grek/KaiSymbol.\(suffix)" : glyph-proc
 			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
@@ -684,9 +681,8 @@ glyph-block Letter-Latin-K : begin
 			include : ExtendBelowBaseAnchors ((-LongVJut) + QuarterStroke)
 
 		create-glyph "smcpKVBar.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			include : KBaseShape CyrlVbSw XH
-			include : CyrlKaVBarShape XH (SB + [KBalance slabLT fStraightBar])
+			include [refer-glyph "smcpK.\(suffix)"] AS_BASE ALSO_METRICS
+			include : CyrlKaVBarShape XH
 
 		create-glyph "KHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -834,7 +830,7 @@ glyph-block Letter-Latin-K : begin
 
 	select-variant 'cyrl/Ka' 0x41A (shapeFrom -- 'K')
 	select-variant 'cyrl/KaDescender' 0x49A (shapeFrom -- 'KDescender')
-	select-variant 'cyrl/KaVBar' 0x49C (shapeFrom -- 'KVBar') (follow -- 'cyrl/KaVBar')
+	select-variant 'cyrl/KaVBar' 0x49C (shapeFrom -- 'KVBar') (follow -- 'cyrl/Ka')
 	select-variant 'cyrl/KaStroke' 0x49E (shapeFrom -- 'KStroke') (follow -- 'cyrl/Ka')
 	select-variant 'cyrl/KaBashkir' 0x4A0
 	select-variant 'cyrl/KaHook' 0x4C3 (shapeFrom -- 'K') (follow -- 'cyrl/KaHook')
@@ -855,7 +851,7 @@ glyph-block Letter-Latin-K : begin
 	select-variant 'cyrl/ka' 0x43A (shapeFrom -- 'smcpK')
 	select-variant 'cyrl/ka.BGR' (shapeFrom -- 'k') (follow -- 'cyrl/ka')
 	select-variant 'cyrl/kaDescender' 0x49B (shapeFrom -- 'smcpKDescender')
-	select-variant 'cyrl/kaVBar' 0x49D (shapeFrom -- 'smcpKVBar') (follow -- 'cyrl/kaVBar')
+	select-variant 'cyrl/kaVBar' 0x49D (shapeFrom -- 'smcpKVBar') (follow -- 'cyrl/ka')
 	select-variant 'cyrl/kaStroke' 0x49F (shapeFrom -- 'kStroke') (follow -- 'cyrl/ka')
 	select-variant 'cyrl/kaBashkir' 0x4A1
 	select-variant 'cyrl/kaHook' 0x4C4 (shapeFrom -- 'smcpK') (follow -- 'cyrl/kaHook')
