@@ -550,6 +550,7 @@ glyph-block Letter-Latin-K : begin
 				CursiveLoopT spiro-outline (-O) left right stroke top slabLT slabLegs
 
 	define CyrlVbGap : (RightSB - SB) * 0.375
+	define CyrlVbSplitGap : (RightSB - SB) * 0.1
 	define [CyrlVbLength top] : (top - 0) * 0.375 + Stroke
 
 	define UpperKConfig : SuffixCfg.weave
@@ -606,10 +607,30 @@ glyph-block Letter-Latin-K : begin
 		local r : mix SB RightSB 0.92
 		include : HOverlayBar l r currentGlyph.baseAnchors.overlay.y
 
-	define [CyrlKaVBarShape top] : begin
-		local sw : Math.min [AdviceStroke 5] (CyrlVbGap * 0.5)
+	define [CyrlKaVBarBody LegsImpl top sw slabLT slabLB slabLegs fStraightBar] : glyph-proc
+		local xBarLeft : SB + [KBalance slabLT fStraightBar]
+		local barSw : sw / 2
+		local barInk : HSwToV barSw
+		local stemInk : HSwToV sw
+		local dx : CyrlVbSplitGap + barInk
+		local crotch : xBarLeft + stemInk + dx
+		local cy : top / 2
+		local legRun : Math.max TINY (RightSB - xBarLeft - stemInk)
+		local sxRaw : 1 - dx / legRun
+		local sx : Math.max 0.5 sxRaw
 		local half : [CyrlVbLength top] / 2
-		return : VBar.m Middle (top / 2 - half) (top / 2 + half) sw
+		include : VBar.l xBarLeft 0 top sw
+		if slabLT : include : UpperKLTSerif top sw xBarLeft slabLT
+		if slabLB : include : UpperKLBSerif top sw xBarLeft slabLB
+		include : new-glyph : glyph-proc
+			include : LegsImpl false SB RightSB sw top slabLT slabLegs
+			include : Ungizmo
+			include : Translate dx 0
+			include : Translate (-crotch) (-cy)
+			include : Scale sx 1
+			include : Translate crotch cy
+			include : Regizmo
+		include : VBar.r crotch (top / 2 - half) (top / 2 + half) barSw
 
 	# Attachment glyph used for Greek Kai Symbol
 	create-glyph 'UpperKaiSymbolAttachment' : glyph-proc
@@ -662,8 +683,8 @@ glyph-block Letter-Latin-K : begin
 			include : KBarShape CAP (SB + [KBalance slabLT fStraightBar])
 
 		create-glyph "KVBar.\(suffix)" : glyph-proc
-			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
-			include : CyrlKaVBarShape CAP
+			include : MarkSet.capital
+			include : CyrlKaVBarBody LegsImpl CAP Stroke slabLT slabLB slabLegs fStraightBar
 
 		create-glyph "grek/KaiSymbol.\(suffix)" : glyph-proc
 			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
@@ -681,8 +702,8 @@ glyph-block Letter-Latin-K : begin
 			include : ExtendBelowBaseAnchors ((-LongVJut) + QuarterStroke)
 
 		create-glyph "smcpKVBar.\(suffix)" : glyph-proc
-			include [refer-glyph "smcpK.\(suffix)"] AS_BASE ALSO_METRICS
-			include : CyrlKaVBarShape XH
+			include : MarkSet.e
+			include : CyrlKaVBarBody LegsImpl XH Stroke slabLT slabLB slabLegs fStraightBar
 
 		create-glyph "KHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
