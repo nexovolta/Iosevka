@@ -22,7 +22,9 @@ export function applyMetricOverride(para, mo, argv) {
 const validMetricOverrideFields = new Set([
 	"cap",
 	"ascender",
+	"descender",
 	"xHeight",
+	"contrast",
 	"sb",
 	"accentWidth",
 	"accentClearance",
