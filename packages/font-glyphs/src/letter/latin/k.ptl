@@ -309,11 +309,13 @@ glyph-block Letter-Latin-K : begin
 			local xArc : xOuter - [HSwToV stroke]
 			local xLeftTop : kshLeft + [HSwToV stroke]
 			local xRightBottom : kshRightBot - 2 * OX
-			# Low join: the circular quarter is the prominent arm, not a
-			# leftover vertical. No horizontal into the stem.
+			# Top:bottom = 60:40. Circular quarter of radius visRun, then a
+			# leftover vertical so the arc is not a tall ellipse.
 			local visRun : Math.max TINY (xArc - xLeftTop)
-			local yJoin : Math.min (0.4 * top) (top - visRun)
+			local yJoin : 0.4 * top
+			local arcDepth : Math.min visRun (top - yJoin)
 			local xArcStart : xLeftTop + TINY
+			local yArcTop : yJoin + arcDepth
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
@@ -334,8 +336,18 @@ glyph-block Letter-Latin-K : begin
 				forSerifs : function []
 					HalfRectTriangle (xRightBottom - TINY) 0 (xLeftTop - TINY) yJoin
 
-			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft xArc : StrokeWidthBlend 0.5 0.65] [mix yJoin top : StrokeWidthBlend 0.5 0.7]
-			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yJoin 0 : StrokeWidthBlend 0.5 0.7]
+			local tLeg : StrokeWidthBlend 0.45 0.55
+			local dxLeg : xRightBottom - xLeftTop
+			local dyLeg : 0 - yJoin
+			local hypLeg : Math.max TINY : Math.hypot dxLeg dyLeg
+			local nxLeg : (0 - dyLeg) / hypLeg
+			local nyLeg : dxLeg / hypLeg
+			set-base-anchor 'legOverlay' ([mix xLeftTop xRightBottom tLeg] + nxLeg * stroke * 0.4) ([mix yJoin 0 tLeg] + nyLeg * stroke * 0.4)
+			if [not fHookRight] : begin
+				local s2 : Math.sqrt 0.5
+				if (top - yArcTop > stroke)
+				: then : set-base-anchor 'armOverlay' (xArc + [HSwToV : 0.5 * stroke]) [mix yArcTop top : StrokeWidthBlend 0.35 0.5]
+				: else : set-base-anchor 'armOverlay' (xLeftTop + arcDepth * s2 + s2 * stroke * 0.5) (yJoin + arcDepth * (1 - s2) - s2 * stroke * 0.5)
 
 			include : union
 				new-glyph : glyph-proc
@@ -354,7 +366,7 @@ glyph-block Letter-Latin-K : begin
 							flat xLeftTop yJoin [heading Rightward]
 							curl xArcStart yJoin [heading Rightward]
 							archv.superness 2
-							flat xArc (top - TINY) [heading Upward]
+							flat xArc [Math.min yArcTop (top - TINY)] [heading Upward]
 							curl xArc top [heading Upward]
 					include : intersection
 						BottomMask.forStroke (-0.1)
