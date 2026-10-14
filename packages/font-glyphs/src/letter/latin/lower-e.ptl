@@ -8,10 +8,10 @@ glyph-module
 glyph-block Letter-Latin-Lower-E : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph CreateTurnedLetter
+	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph CreateTurnedLetter CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth RetroflexHook RhoticHookShape
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd ArcEndSerif
-	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markStress markFine
+	glyph-block-import Mark-Shared-Metrics : markFine
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
@@ -301,44 +301,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- SmallArchDepthA
 				adb    -- SmallArchDepthB
 				styBot -- tailSlab
-
-		create-glyph "eOgonek.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			local lastKnot : include : Body [DivFrame 1] XH
-				hook   -- AHook
-				ada    -- SmallArchDepthA
-				adb    -- SmallArchDepthB
-				styBot -- tailSlab
-			include : refer-glyph 'ogonekTR/spacer'
-
-			# Connected Ogonek shape
-			local fine : AdviceStroke 8
-			local depth : (-Descender) - markStroke
-			local extL : (7 / 16) * depth + 0.25 * markStress
-			local extR : Math.max (0.0625 * markExtend) (TanSlope * (1.5 * markStroke))
-			local beginCoSlope : if para.isItalic 0.2 0
-
-			set-base-anchor 'trailing' (RightSB + extR) ((-depth) + 0.5 * O - markStroke)
-			set-base-anchor 'belowBraceL' (RightSB - extL - [HSwToV : 0.25 * markStroke]) ((-0.75) * depth)
-			set-base-anchor 'belowBraceR' (RightSB - 0.75 * extL) ((-0.75) * depth)
-
-			local turnSlope : 0.5 * ((markStroke - fine) / markStroke - (ArchDepthB - ArchDepth) / ArchDepth)
-
-			include : intersection
-				MaskBelow lastKnot.y
-				dispiro
-					g4 lastKnot.x lastKnot.y [widths.rhs fine]
-					g4 (lastKnot.x - beginCoSlope * TINY) (lastKnot.y - TINY)
-					alsoThruThem.computed { (1/3) (2/3) } : object
-						rx       : function [rt] rt
-						deltaX   : function [rt] 0
-						ry       : function [rt] : (11/48) + (5/8) * rt
-						deltaY   : function [rt] : (-0.25) * [mix fine markStroke rt]
-						modifier : function [rt] : widths.rhs [mix fine markStroke : rt ** 2]
-					g4.down.mid (RightSB - extL) ((-0.75) * depth) [widths.rhs.heading markStroke {.x HVContrast .y turnSlope}]
-					arcvh [widths.rhs markStroke]
-					g4 (RightSB + [mix (-extL) (+extR) (11/16)]) ((-depth) + O) [heading Rightward]
-					g4 (RightSB + extR) ((-depth) + 0.5 * O) [heading Rightward]
+			set-base-anchor 'trailing' RightSB 0
 
 		create-glyph "eNotch.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -444,7 +407,7 @@ glyph-block Letter-Latin-Lower-E : begin
 
 	select-variant 'e' 'e'
 
-	select-variant 'eOgonek'        0x119  (follow -- 'e')
+	CreateAccentedComposition 'eOgonek' 0x119 'e' 'ogonekBelow'
 	select-variant 'eRetroflexHook' 0x1D92 (follow -- 'e')
 	select-variant 'eNotch'         0x2C78
 	select-variant 'eBar'           0xAB33 (follow -- 'e')
