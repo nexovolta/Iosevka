@@ -943,7 +943,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				flatBottom        UFlatBottom
 				toothlessCorner   UToothlessCorner
 				toothlessRounded  UToothlessRounded
-			function [body] : object # capital U serifs
+			function [body] : begin
+				if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
+					""         ""
+				return : object
+					""         ""
+					bottomCut  "bottomCut"
+			function [body cut] : object # capital U serifs
 				serifless               no-shape
 				bottomRightSerifed      USerifs.BottomRight
 				bilateralMotionSerifed  USerifs.BilateralMotion
@@ -979,11 +985,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 					([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
 					__                                       USerifs.SmallToothless
 
-		foreach { suffix { Base Slabs } } [Object.entries UeVolapukConfig] : do
+		foreach { suffix { Base cut Slabs } } [Object.entries UeVolapukConfig] : do
 			create-glyph "UeVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
-				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB
+				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB cut
 
 		foreach { suffix { Base cut Slabs } } [Object.entries ueVolapukConfig] : do
 			create-glyph "ueVolapuk.\(suffix)" : glyph-proc
