@@ -13040,7 +13040,27 @@ selectorAffix."cyrl/tse.italic" = "bilateralMotionSerifed"
 selectorAffix."cyrl/revtse.italic" = "bilateralMotionSerifed"
 
 [prime.cyrl-tse.variants-buildup.stages.cursive-body."*"]
+next = "cursive-cut"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-cut."*"]
 next = "cursive-serifs"
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-cut.square]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/tse.upright" = ""
+selectorAffix."cyrl/tetse.upright/selector" = ""
+selectorAffix."cyrl/tse.italic" = ""
+selectorAffix."cyrl/revtse.italic" = ""
+
+[prime.cyrl-tse.variants-buildup.stages.cursive-cut.bottom-cut]
+rank = 2
+disableIf = [{ cursive-body = "tailed" }]
+descriptionAffix = "a diagonal cut at bottom"
+selectorAffix."cyrl/tse.upright" = "bottomCut"
+selectorAffix."cyrl/tetse.upright/selector" = ""
+selectorAffix."cyrl/tse.italic" = "bottomCut"
+selectorAffix."cyrl/revtse.italic" = "bottomCut"
 
 [prime.cyrl-tse.variants-buildup.stages.cursive-body.toothed]
 rank = 1
@@ -13078,7 +13098,7 @@ selectorAffix."cyrl/revtse.italic" = "serifless"
 
 [prime.cyrl-tse.variants-buildup.stages.cursive-serifs.bottom-right-serifed]
 rank = 2
-enableIf = [{ cursive-body = "toothed" }, { cursive-body = "flat-bottom" }]
+enableIf = [{ cursive-body = "toothed", cursive-cut = "NOT bottom-cut" }, { cursive-body = "flat-bottom", cursive-cut = "NOT bottom-cut" }]
 descriptionAffix = "serif at bottom-right"
 selectorAffix."cyrl/tse.upright" = "bottomRightSerifed"
 selectorAffix."cyrl/tetse.upright/selector" = "serifless"
@@ -13095,6 +13115,7 @@ selectorAffix."cyrl/revtse.italic" = "motionSerifed"
 
 [prime.cyrl-tse.variants-buildup.stages.cursive-serifs.serifed]
 rank = 4
+disableIf = [{ cursive-cut = "bottom-cut" }]
 descriptionAffix = "serifs"
 selectorAffix."cyrl/tse.upright" = "serifed"
 selectorAffix."cyrl/tetse.upright/selector" = "serifed"
