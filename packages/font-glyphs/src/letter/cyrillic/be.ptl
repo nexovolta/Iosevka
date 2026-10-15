@@ -11,9 +11,11 @@ glyph-block Letter-Cyrillic-Be : begin
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos YeriUpper RevYeriUpper
 
 	define BeConfig : object
-		standardSerifless         { false false false }
-		standardUnilateralSerifed { true  false false }
-		standardBilateralSerifed  { true  true  true  }
+		serifless        { false false false }
+		topSerifed       { false true  false }
+		bilateralSerifed { false true  true  }
+		motionSerifed    { true  true  false }
+		fullSerifed      { true  true  true  }
 
 	foreach { suffix { doSerifLT doSerifRT doSerifLB } } [Object.entries BeConfig] : do
 		create-glyph "cyrl/Be.\(suffix)" : glyph-proc
@@ -41,9 +43,8 @@ glyph-block Letter-Cyrillic-Be : begin
 			if doSerifLB : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut stroke
 
 	select-variant 'cyrl/Be' 0x411
-
-	select-variant 'latn/Be' 0x182 (shapeFrom -- 'cyrl/Be')    (follow -- 'bCap')
-	select-variant 'latn/De' 0x18B (shapeFrom -- 'cyrl/revBe') (follow -- 'dCap')
+	select-variant 'latn/Be' 0x182 (shapeFrom -- 'cyrl/Be')    (follow -- 'cyrl/Be')
+	select-variant 'latn/De' 0x18B (shapeFrom -- 'cyrl/revBe') (follow -- 'cyrl/Be')
 
 	define [StandardBody] : glyph-proc
 		local yRingTop : Math.min (XH + O) (XH - QuarterStroke)
