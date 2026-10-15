@@ -2267,7 +2267,29 @@ entry = "body"
 descriptionLeader = "`U`"
 
 [prime.capital-u.variants-buildup.stages.body."*"]
+next = "cut"
+
+[prime.capital-u.variants-buildup.stages.cut."*"]
 next = "serifs"
+
+[prime.capital-u.variants-buildup.stages.cut.square]
+rank = 1
+keyAffix = ""
+selectorAffix.U = ""
+selectorAffix.UReversed = ""
+selectorAffix."U/sansSerif" = ""
+selectorAffix.URTail = ""
+selectorAffix."AU/U" = ""
+
+[prime.capital-u.variants-buildup.stages.cut.bottom-cut]
+rank = 2
+disableIf = [{ body = "tailed" }, { body = "toothless-corner" }, { body = "toothless-rounded" }]
+descriptionAffix = "a diagonal cut at bottom"
+selectorAffix.U = "bottomCut"
+selectorAffix.UReversed = "bottomCut"
+selectorAffix."U/sansSerif" = "bottomCut"
+selectorAffix.URTail = ""
+selectorAffix."AU/U" = "bottomCut"
 
 [prime.capital-u.variants-buildup.stages.body.toothed]
 rank = 1
@@ -2327,7 +2349,7 @@ selectorAffix."AU/U" = "serifless"
 
 [prime.capital-u.variants-buildup.stages.serifs.bottom-right-serifed]
 rank = 2
-enableIf = [{ body = "toothed" }, { body = "flat-bottom" }]
+enableIf = [{ body = "toothed", cut = "NOT bottom-cut" }, { body = "flat-bottom", cut = "NOT bottom-cut" }]
 descriptionAffix = "serif at bottom-right"
 selectorAffix.U = "bottomRightSerifed"
 selectorAffix.UReversed = "bottomRightSerifed"
@@ -2343,7 +2365,7 @@ selectorAffix.U = "motionSerifed"
 selectorAffix.UReversed = "motionSerifed"
 selectorAffix."U/sansSerif" = "serifless"
 selectorAffix.URTail = "motionSerifed"
-selectorAffix."AU/U" = { if = [{ body = "tailed" }], then = "serifless", else = "bottomRightSerifed" }
+selectorAffix."AU/U" = { if = [{ body = "toothed", cut = "NOT bottom-cut" }, { body = "flat-bottom", cut = "NOT bottom-cut" }], then = "bottomRightSerifed", else = "serifless" }
 
 [prime.capital-u.variants-buildup.stages.serifs.unilateral-motion-serifed]
 rank = 4
@@ -2367,6 +2389,7 @@ selectorAffix."AU/U" = "bilateralMotionSerifed"
 
 [prime.capital-u.variants-buildup.stages.serifs.serifed]
 rank = 6
+disableIf = [{ cut = "bottom-cut" }]
 descriptionAffix = "serifs"
 selectorAffix.U = "serifed"
 selectorAffix.UReversed = "serifed"
