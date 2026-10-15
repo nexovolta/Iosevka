@@ -125,11 +125,12 @@ glyph-block Letter-Latin-Upper-P : begin
 		local-parameter : overshoot -- PShape.defaultOvershoot
 		local-parameter : sw        -- df.mvs
 		local-parameter : slab      -- null
+		local-parameter : withBar   -- true
 
 		include : tagged 'bowl' : dispiro
 			widths.lhs sw
 			RevPshapeOutlineKnots top df mul bp overshoot sw 0
-		include : tagged 'strokeR' : VBar.r [mix df.width df.rightSB mul] 0 top sw
+		if withBar : include : tagged 'strokeR' : VBar.r [mix df.width df.rightSB mul] 0 top sw
 		if slab : include : slab top df sw mul
 
 	set PShape.defaultMul 1.25
