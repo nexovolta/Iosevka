@@ -519,11 +519,18 @@ glyph-block Letter-Latin-Lower-Y : begin
 	alias 'latn/lambdaStroke.curlyTailedTurnSerifless' null 'latn/lambdaStrokeTailed.curlyTurnSerifless'
 
 	define CursiveYShape : namespace
-		export : define [Arc top bottom] : uBowl.shape
-			top    -- top
-			bottom -- bottom
-			left   -- SB
-			right  -- (RightSB - [HSwToV Stroke])
+		export : define [Arc top bottom fFlatHump] : begin
+			if fFlatHump : return : uBowl.toothlessCorner
+				top    -- top
+				bottom -- bottom
+				left   -- SB
+				right  -- RightSB
+				rise   -- 0
+			return : uBowl.shape
+				top    -- top
+				bottom -- bottom
+				left   -- SB
+				right  -- (RightSB - [HSwToV Stroke])
 
 		export : define [Hook y0 bottom] : dispiro
 			widths.rhs
@@ -554,8 +561,13 @@ glyph-block Letter-Latin-Lower-Y : begin
 
 	define CursiveYConfig : SuffixCfg.weave
 		object # body
-			cursive         { CursiveYShape.Hook     SHook }
-			cursiveFlatHook { CursiveYShape.FlatHook 0     }
+			cursive true
+		object # hump
+			""        false
+			flatHump  true
+		object # hook
+			""        { CursiveYShape.Hook     SHook }
+			flatHook  { CursiveYShape.FlatHook 0     }
 		object # serifs
 			serifless              SLAB-NONE
 			serifed                SLAB-ALL
@@ -563,13 +575,13 @@ glyph-block Letter-Latin-Lower-Y : begin
 			topRightMotionSerifed  SLAB-TOP-RIGHT-MOTION
 			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
-	foreach { suffix { { hookShape hookEnd } slabKind } } [Object.entries CursiveYConfig] : do
+	foreach { suffix { _ fFlatHump { hookShape hookEnd } slabKind } } [Object.entries CursiveYConfig] : do
 		create-glyph "y.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2)
 			set-base-anchor 'yBelowDot' Middle Descender
-			include : CursiveYShape.Arc XH 0
+			include : CursiveYShape.Arc XH 0 fFlatHump
 			include : hookShape XH Descender
 			include : CursiveYShape.Serifs XH slabKind
 
@@ -577,7 +589,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : MarkSet.capital
 			set-base-anchor 'overlay' Middle [mix (O - Descender) [Math.max hookEnd Stroke] 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2 - Descender)
-			include : CursiveYShape.Arc CAP (CAP - XH)
+			include : CursiveYShape.Arc CAP (CAP - XH) fFlatHump
 			include : hookShape CAP 0
 			include : CursiveYShape.Serifs CAP slabKind
 
@@ -585,7 +597,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : MarkSet.p
 			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2)
-			include : CursiveYShape.Arc XH 0
+			include : CursiveYShape.Arc XH 0 fFlatHump
 			include : hookShape (XH - TailY - HalfStroke) Descender
 			include : TopHook.toRight.rBarInner RightSB 0 XH
 			include : CursiveYShape.Serifs XH slabKind
@@ -597,7 +609,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'strike'  Middle (XH / 2)
 			local yCut : YShortRightCut XH
 			include : difference
-				CursiveYShape.Arc XH 0
+				CursiveYShape.Arc XH 0 fFlatHump
 				intersection [MaskAbove yCut] [MaskRight Middle]
 			include : hookShape yCut Descender
 			include : CursiveYShape.Serifs XH slabKind
@@ -611,6 +623,21 @@ glyph-block Letter-Latin-Lower-Y : begin
 				bot   -- (Descender + Stroke)
 				space -- { [if hookEnd (SB + [HSwToV Stroke]) 0] Width }
 
+		if (slabKind === SLAB-NONE) : begin
+			create-glyph "grek/lambda.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : FlipAsLambda Ascender 0 : glyph-proc
+					include : CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
+					include : hookShape Ascender 0
+
+			create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
+				include : MarkSet.b
+				include : union
+					FlatSlashShape (RightSB - [HSwToV HalfStroke]) [mix 0 Ascender 0.8] (OverlayStroke / 2)
+					FlipAsLambda Ascender 0 : glyph-proc
+						include : CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
+						include : hookShape Ascender 0
+
 	create-glyph 'grek/lambda.squareBottomSerifless' : glyph-proc
 		include : MarkSet.b
 		include : FlipAsLambda Ascender 0 : SquareTopYShape SLAB-NONE BS-TURN Ascender 0
@@ -620,34 +647,6 @@ glyph-block Letter-Latin-Lower-Y : begin
 		include : union
 			FlatSlashShape [mix SB RightSB 0.45] [mix 0 Ascender 0.8] (OverlayStroke / 2)
 			FlipAsLambda Ascender 0 : SquareTopYShape SLAB-NONE BS-TURN Ascender 0
-
-	create-glyph 'grek/lambda.cursiveSerifless' : glyph-proc
-		include : MarkSet.b
-		include : FlipAsLambda Ascender 0 : glyph-proc
-			include : CursiveYShape.Arc Ascender (Ascender - XH)
-			include : CursiveYShape.Hook Ascender 0
-
-	create-glyph 'latn/lambdaStroke.cursiveSerifless' : glyph-proc
-		include : MarkSet.b
-		include : union
-			FlatSlashShape (RightSB - [HSwToV HalfStroke]) [mix 0 Ascender 0.8] (OverlayStroke / 2)
-			FlipAsLambda Ascender 0 : glyph-proc
-				include : CursiveYShape.Arc Ascender (Ascender - XH)
-				include : CursiveYShape.Hook Ascender 0
-
-	create-glyph 'grek/lambda.cursiveFlatHookSerifless' : glyph-proc
-		include : MarkSet.b
-		include : FlipAsLambda Ascender 0 : glyph-proc
-			include : CursiveYShape.Arc Ascender (Ascender - XH)
-			include : CursiveYShape.FlatHook Ascender 0
-
-	create-glyph 'latn/lambdaStroke.cursiveFlatHookSerifless' : glyph-proc
-		include : MarkSet.b
-		include : union
-			FlatSlashShape (RightSB - [HSwToV HalfStroke]) [mix 0 Ascender 0.8] (OverlayStroke / 2)
-			FlipAsLambda Ascender 0 : glyph-proc
-				include : CursiveYShape.Arc Ascender (Ascender - XH)
-				include : CursiveYShape.FlatHook Ascender 0
 
 	select-variant 'y' 'y'
 	link-reduced-variant 'y/sansSerif' 'y' MathSansSerif
