@@ -135,10 +135,10 @@ glyph-block Letter-Latin-Lower-H : begin
 	link-reduced-variant 'hStroke/descBase' 'hStroke' (follow -- 'h/descBase')
 	derive-composites 'hStrokePalatalHook' 0x1DF32 'hStroke/descBase' [PalatalHook.rSideJut  RightSB 0]
 
-	alias 'cyrl/tshe'          0x45B  'hStroke'
-	alias 'cyrl/shha'          0x4BB  'h'
+	select-variant 'cyrl/tshe' 0x45B (follow -- 'h') (shapeFrom -- 'hStroke')
+	select-variant 'cyrl/shha' 0x4BB (follow -- 'h') (shapeFrom -- 'h')
 	alias 'cyrl/shhaDescender' 0x527  'hDescender'
-	alias 'cyrl/hwe'           0xA695 'hHookTop'
+	select-variant 'cyrl/hwe'  0xA695 (follow -- 'hHookTop') (shapeFrom -- 'hHookTop')
 
 	derive-multi-part-glyphs 'hDot' 0x1E23 { 'h' 'dotAbove' } : lambda [srcs gr] : glyph-proc
 		local { base mark } srcs
