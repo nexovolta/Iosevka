@@ -145,15 +145,10 @@ glyph-block Letter-Latin-Lower-D : begin
 			toothlessCornerRTB        ToothlessCornerRTBBody
 			toothlessRounded          ToothlessRoundedBody
 		function [tooth] : begin
-			if (tooth === 'tailed') : return : object # cut
+			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessCornerRTB' || tooth === 'toothlessRounded') : return : object
 				""         ""
-				topCut     'topCut'
-			if (tooth === 'toothlessCorner' || tooth === 'toothlessCornerRTB' || tooth === 'toothlessRounded') : return : object
-				""         ""
-				topCut     'topCut'
 			return : object
 				""         ""
-				topCut     'topCut'
 				bottomCut  'bottomCut'
 		function [tooth cut] : begin
 			if (tooth === 'tailed') : return : object

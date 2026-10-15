@@ -126,21 +126,16 @@ glyph-block Letter-Latin-Lower-Q : begin
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded') : return : object
 				""         ""
-				bottomCut  "bottomCut"
 			return : object
 				""         ""
 				topCut     "topCut"
-				bottomCut  "bottomCut"
 		function [ear cut] : object # bowl
 			""        false
 			flatBowl  true
-		function [ear cut bowl] : begin
-			if (cut === 'bottomCut') : return : object
-				""  TERMINAL-NORMAL
-			return : object
-				""                 TERMINAL-NORMAL
-				tailed             TERMINAL-TAILED
-				diagonalTailed     TERMINAL-DIAG
+		function [ear cut bowl] : object
+			""                 TERMINAL-NORMAL
+			tailed             TERMINAL-TAILED
+			diagonalTailed     TERMINAL-DIAG
 		object # serifs
 			serifless           { null        null         }
 			motionSerifed       { RtSerif     null         }
