@@ -217,7 +217,7 @@ glyph-block Letter-Latin-U : begin
 			bottomRightSerifed       { USerifs.BottomRight     false }
 			bilateralMotionSerifed   { USerifs.BilateralMotion true  }
 			motionSerifed : match body
-				([Just 'toothed'] || [Just 'flatBottom']) { USerifs.MotionToothed   true  }
+				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') { USerifs.MotionToothless true } { USerifs.MotionToothed true }]
 				__                                        { USerifs.MotionToothless true  }
 			serifed : match body
 				([Just 'toothed'] || [Just 'flatBottom']) { USerifs.Toothed         true  }
@@ -279,7 +279,7 @@ glyph-block Letter-Latin-U : begin
 			serifless                  no-shape
 			bottomRightSerifed         USerifs.BottomRight
 			motionSerifed : match tooth
-				([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
+				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') USerifs.MotionToothless USerifs.MotionToothed]
 				__                                        USerifs.MotionToothless
 			serifed : match tooth
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed

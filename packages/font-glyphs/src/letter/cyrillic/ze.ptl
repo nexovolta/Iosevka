@@ -954,7 +954,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				bottomRightSerifed      USerifs.BottomRight
 				bilateralMotionSerifed  USerifs.BilateralMotion
 				motionSerifed : match body
-					([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
+					([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') USerifs.MotionToothless USerifs.MotionToothed]
 					__                                       USerifs.MotionToothless
 				serifed : match body
 					([Just 'toothed'] || [Just 'flatBottom']) USerifs.Toothed
@@ -979,7 +979,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				serifless            no-shape
 				bottomRightSerifed   USerifs.BottomRight
 				motionSerifed : match body
-					([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
+					([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') USerifs.MotionToothless USerifs.MotionToothed]
 					__                                       USerifs.MotionToothless
 				serifed : match body
 					([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
