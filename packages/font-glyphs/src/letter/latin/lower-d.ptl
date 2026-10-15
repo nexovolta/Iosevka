@@ -12,10 +12,11 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : OBarRight RightwardTailedBar CurlyTail
+	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
 
-	define [ToothedBody df yTop fFlat] : union
+	define [ToothedBody df yTop fFlat cut] : union
 		if fFlat
 		: then : OBarRight.earlessCorner
 			left  -- df.leftSB
@@ -32,19 +33,29 @@ glyph-block Letter-Latin-Lower-D : begin
 			fine  -- df.shoulderFine
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
-		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
+		DBar df yTop cut
 
-	define [TailedBody df yTop fFlat] : union
-		OBarRight.shape
-			left  -- df.leftSB
-			right -- df.rightSB
-			sw    -- df.mvs
-			fine  -- df.shoulderFine
-			ada   -- df.smallArchDepthA
-			adb   -- df.smallArchDepthB
-		tagged 'rightBar' : RightwardTailedBar df.rightSB 0 yTop df.mvs
+	define [DBar df yTop cut _yBot] : begin
+		local yBot : fallback _yBot 0
+		local y : StemCutY (bot -- yBot) (top -- yTop) (cut -- cut)
+		return : union
+			tagged 'rightBar' : VBar.r df.rightSB y.bot y.top df.mvs
+			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- yBot) (top -- yTop) (sw -- df.mvs)
 
-	define [FlatBottomBody df yTop fFlat] : union
+	define [TailedBody df yTop fFlat cut] : begin
+		local y : StemCutY 0 yTop cut
+		return : union
+			OBarRight.shape
+				left  -- df.leftSB
+				right -- df.rightSB
+				sw    -- df.mvs
+				fine  -- df.shoulderFine
+				ada   -- df.smallArchDepthA
+				adb   -- df.smallArchDepthB
+			tagged 'rightBar' : RightwardTailedBar df.rightSB y.bot y.top df.mvs
+			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTop) (sw -- df.mvs)
+
+	define [FlatBottomBody df yTop fFlat cut] : union
 		if fFlat
 		: then : OBarRight.flatTopAndBottom
 			left  -- df.leftSB
@@ -61,9 +72,9 @@ glyph-block Letter-Latin-Lower-D : begin
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
 			rise  -- 0
-		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
+		DBar df yTop cut
 
-	define [ToothlessCornerBody df yTop fFlat] : union
+	define [ToothlessCornerBody df yTop fFlat cut] : union
 		if fFlat
 		: then : OBarRight.toothlessCornerFlat
 			left  -- df.leftSB
@@ -79,9 +90,9 @@ glyph-block Letter-Latin-Lower-D : begin
 			fine  -- df.shoulderFine
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
-		tagged 'rightBar' : VBar.r df.rightSB DToothlessRise yTop df.mvs
+		DBar df yTop cut DToothlessRise
 
-	define [ToothlessCornerRTBBody df yTop fFlat] : union
+	define [ToothlessCornerRTBBody df yTop fFlat cut] : union
 		if fFlat
 		: then : OBarRight.toothlessCornerFlat
 			left  -- df.leftSB
@@ -97,23 +108,29 @@ glyph-block Letter-Latin-Lower-D : begin
 			fine  -- df.shoulderFine
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
-		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
+		DBar df yTop cut
 
-	define [ToothlessRoundedBody df yTop fFlat] : begin
-		if fFlat : return : OBarRight.toothlessRoundedFlat (yTerminal -- yTop)
-			left  -- df.leftSB
-			right -- df.rightSB
-			sw    -- df.mvs
-			fine  -- df.shoulderFine
-			ada   -- df.smallArchDepthA
-			adb   -- df.smallArchDepthB
-		return : OBarRight.toothlessRounded (yTerminal -- yTop)
-			left  -- df.leftSB
-			right -- df.rightSB
-			sw    -- df.mvs
-			fine  -- df.shoulderFine
-			ada   -- df.smallArchDepthA
-			adb   -- df.smallArchDepthB
+	define [ToothlessRoundedBody df yTop fFlat cut] : begin
+		local body : if fFlat
+			then : OBarRight.toothlessRoundedFlat (yTerminal -- yTop)
+				left  -- df.leftSB
+				right -- df.rightSB
+				sw    -- df.mvs
+				fine  -- df.shoulderFine
+				ada   -- df.smallArchDepthA
+				adb   -- df.smallArchDepthB
+			else : OBarRight.toothlessRounded (yTerminal -- yTop)
+				left  -- df.leftSB
+				right -- df.rightSB
+				sw    -- df.mvs
+				fine  -- df.shoulderFine
+				ada   -- df.smallArchDepthA
+				adb   -- df.smallArchDepthB
+		if (cut !== 'topCut') : return body
+		return : difference body : spiro-outline
+			corner (df.rightSB - [HSwToV df.mvs]) yTop
+			corner (df.rightSB - [HSwToV df.mvs]) (yTop - HalfStroke)
+			corner df.rightSB yTop
 
 	define [TopSerif df yTop] : tagged 'serifRT' : HSerif.lt (df.rightSB - [HSwToV df.mvs]) yTop SideJut df.mvs
 
@@ -128,6 +145,17 @@ glyph-block Letter-Latin-Lower-D : begin
 			toothlessCornerRTB        ToothlessCornerRTBBody
 			toothlessRounded          ToothlessRoundedBody
 		function [tooth] : begin
+			if (tooth === 'tailed') : return : object # cut
+				""         ""
+				topCut     'topCut'
+			if (tooth === 'toothlessCorner' || tooth === 'toothlessCornerRTB' || tooth === 'toothlessRounded') : return : object
+				""         ""
+				topCut     'topCut'
+			return : object
+				""         ""
+				topCut     'topCut'
+				bottomCut  'bottomCut'
+		function [tooth cut] : begin
 			if (tooth === 'tailed') : return : object
 				""  false
 			return : object
@@ -139,7 +167,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			bottomSerifed            { null     BaseSerif }
 			serifed                  { TopSerif BaseSerif }
 
-	foreach { suffix { Body fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
+	foreach { suffix { Body cut fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
 		local yOverlay : mix XH (Ascender - [if topSerif Stroke 0]) 0.5
 
 		do
@@ -154,7 +182,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		: where : [make df dfMetrics fPhoneticLeft] : glyph-proc
 			include dfMetrics
 			include : df.markSet.b
-			include : Body df Ascender fFlat
+			include : Body df Ascender fFlat cut
 			if topSerif    : include : topSerif    df Ascender
 			if bottomSerif : include : bottomSerif df Ascender
 			if fPhoneticLeft : include : HBar.t (df.rightSB + O) (RightSB + SideJut) XH
@@ -171,7 +199,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		create-glyph "latn/de.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.b
-			include : Body df Ascender fFlat
+			include : Body df Ascender fFlat cut
 			local xTopLeft : mix df.leftSB df.rightSB 0.1
 			include : HBar.t xTopLeft (df.rightSB + O) Ascender
 			if topSerif : include : composite-proc
@@ -183,7 +211,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		if [not topSerif] : create-glyph "dHookTop.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.b
-			include : Body df (Ascender - Hook - HalfStroke) fFlat
+			include : Body df (Ascender - Hook - HalfStroke) fFlat [if (cut === 'topCut') '' cut]
 			include : TopHook.toRight.rBarInner df.rightSB (XH / 2) Ascender
 			if bottomSerif : include : bottomSerif df Ascender
 			include : LeaningAnchor.Above.VBar.r df.rightSB
@@ -239,13 +267,14 @@ glyph-block Letter-Latin-Lower-D : begin
 
 	derive-composites 'tauGallicum' 0xA7C8 'd' : HBar.m (SB - OX) (RightSB + OX) (XH * 0.5) OverlayStroke
 
-	create-glyph "dCurlyTail.toothedSerifless" : glyph-proc
+	define [DCurlyTailBody cut] : glyph-proc
 		include : MarkSet.b
 
 		local fine : AdviceStroke 4
 		local rinner : clamp (Width * 0.065) (XH * 0.05) (fine * 0.35)
 		local sw : AdviceStroke 2.75
 		local m : Math.min RightSB (Width - rinner * 2 - fine - OX)
+		local y : StemCutY (bot -- 0) (top -- Ascender) (cut -- cut)
 
 		include : LeaningAnchor.Above.VBar.r m
 		include : OBarRight.shape
@@ -254,14 +283,25 @@ glyph-block Letter-Latin-Lower-D : begin
 			sw    -- sw
 		include : dispiro
 			widths.lhs sw
-			flat (m - [HSwToV sw]) Ascender [heading Downward]
+			flat (m - [HSwToV sw]) y.top [heading Downward]
 			curl (m - [HSwToV sw]) (rinner * 2 + fine)
 			CurlyTail.n fine 0 (m + rinner * 2 + fine)
 				x2 -- ([mix SB m 0.5] - [HSwToV : 0.75 * fine])
 				y2 -- (0.37 * Descender)
 				swBefore -- sw
 				terminalSlopeAdj -- 0.25
+		include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- m) (bot -- 0) (top -- Ascender) (sw -- sw)
+
+	create-glyph "dCurlyTail.toothedSerifless" : glyph-proc
+		include : DCurlyTailBody ''
+		local sw : AdviceStroke 2.75
+		local fine : AdviceStroke 4
+		local rinner : clamp (Width * 0.065) (XH * 0.05) (fine * 0.35)
+		local m : Math.min RightSB (Width - rinner * 2 - fine - OX)
 		create-forked-glyph "dCurlyTail.toothedTopSerifed" : HSerif.lt (m - [HSwToV sw]) Ascender SideJut sw
+
+	create-glyph "dCurlyTail.toothedTopCutSerifless" : glyph-proc
+		include : DCurlyTailBody 'topCut'
 
 	select-variant 'dCurlyTail' 0x221
 

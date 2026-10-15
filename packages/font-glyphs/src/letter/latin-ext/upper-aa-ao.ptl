@@ -125,10 +125,10 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		define { subDf shift } : SubDfAndShift 1 df
 		define sg : UShapeGroup subDf.archDepthA subDf.archDepthB
 
-		foreach { suffix { { Base } { Slabs fLTSlab } } } [Object.entries : CapitalUConfigT sg] : do
+		foreach { suffix { { Base } cut { Slabs fLTSlab } } } [Object.entries : CapitalUConfigT sg] : do
 			create-glyph "AU/U.\(suffix)" : glyph-proc
 				include : with-transform [ApparentTranslate shift 0]
-					union [Base subDf CAP df.mvs] [Slabs subDf CAP df.mvs]
+					union [Base subDf CAP df.mvs nothing nothing cut] [Slabs subDf CAP df.mvs]
 
 		select-variant 'AU/U'
 

@@ -12,16 +12,24 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendBelowBaseAnchors
 	glyph-block-import Letter-Shared : CreateAccentedComposition SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Shapes : uBowl RightwardTailedBar SerifFrame
+	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender CyrCurlDescender
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook TopHook
 	glyph-block-import Letter-Latin-Upper-Q : QCurlyTail
 
+	define [URightBar x bot top sw cut] : begin
+		local y : StemCutY bot top [fallback cut '']
+		return : union
+			tagged 'strokeR' : VBar.r x y.bot y.top sw
+			ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- x) (bot -- bot) (top -- top) (sw -- sw)
+
 	glyph-block-export UShapeGroup
 	define [UShapeGroup ada adb] : namespace
-		export : define [Toothed df top sw fHookLeft fShortLeg] : glyph-proc
+		export : define [Toothed df top sw fHookLeft fShortLeg cut] : glyph-proc
 			set-base-anchor 'trailing' df.rightSB 0
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
+			local y : StemCutY 0 yTR [fallback cut '']
 			include : uBowl.shape
 				top     -- yTL
 				bottom  -- 0
@@ -31,16 +39,17 @@ glyph-block Letter-Latin-U : begin
 				fine    -- (ShoulderFine * (sw / Stroke))
 				ada     -- ada
 				adb     -- adb
-				rightY0 -- [Math.min (ada + TINY) (yTR - 0)]
+				rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : tagged 'strokeR' : VBar.r df.rightSB 0 yTR sw
+			include : URightBar df.rightSB 0 yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
-		export : define [Tailed df top sw fHookLeft fShortLeg] : glyph-proc
+		export : define [Tailed df top sw fHookLeft fShortLeg cut] : glyph-proc
 			set-base-anchor 'trailing' (df.rightSB + SideJut) 0
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
+			local y : StemCutY 0 yTR [fallback cut '']
 			include : uBowl.shape
 				top     -- yTL
 				bottom  -- 0
@@ -50,13 +59,14 @@ glyph-block Letter-Latin-U : begin
 				fine    -- (ShoulderFine * (sw / Stroke))
 				ada     -- ada
 				adb     -- adb
-				rightY0 -- [Math.min (ada + TINY) (yTR - 0)]
+				rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : tagged 'strokeR' : RightwardTailedBar df.rightSB 0 yTR (sw -- sw)
+			include : tagged 'strokeR' : RightwardTailedBar df.rightSB y.bot y.top (sw -- sw)
+			include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTR) (sw -- sw)
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
-		export : define [FlatBottom df top sw fHookLeft fShortLeg] : glyph-proc
+		export : define [FlatBottom df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			include : uBowl.toothlessCorner
@@ -69,11 +79,11 @@ glyph-block Letter-Latin-U : begin
 				adb     -- adb
 				rise    -- 0
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : tagged 'strokeR' : VBar.r df.rightSB 0 yTR sw
+			include : URightBar df.rightSB 0 yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
-		export : define [ToothlessCorner df top sw fHookLeft fShortLeg] : glyph-proc
+		export : define [ToothlessCorner df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			include : uBowl.toothlessCorner
@@ -85,22 +95,28 @@ glyph-block Letter-Latin-U : begin
 				ada     -- ada
 				adb     -- adb
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : tagged 'strokeR' : VBar.r df.rightSB DToothlessRise yTR sw
+			include : URightBar df.rightSB DToothlessRise yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
-		export : define [ToothlessRounded df top sw fHookLeft fShortLeg] : glyph-proc
+		export : define [ToothlessRounded df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
-			include : uBowl.toothlessRounded
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- df.rightSB
-				stroke  -- sw
-				ada     -- ada
-				adb     -- adb
-				rightY0 -- yTR
+			include : begin
+				local body : uBowl.toothlessRounded
+					top     -- yTL
+					bottom  -- 0
+					left    -- df.leftSB
+					right   -- df.rightSB
+					stroke  -- sw
+					ada     -- ada
+					adb     -- adb
+					rightY0 -- yTR
+				if ([fallback cut ''] === 'topCut') : return : difference body : spiro-outline
+					corner (df.rightSB - [HSwToV sw]) yTR
+					corner (df.rightSB - [HSwToV sw]) (yTR - HalfStroke)
+					corner df.rightSB yTR
+				return body
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
@@ -196,7 +212,15 @@ glyph-block Letter-Latin-U : begin
 			flatBottom       { shapeGroup.FlatBottom       RightSB            0              }
 			toothlessCorner  { shapeGroup.ToothlessCorner  RightSB            DToothlessRise }
 			toothlessRounded { shapeGroup.ToothlessRounded null               null           }
-		function [body] : object # serifs
+		function [body] : begin
+			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
+				""         ""
+				topCut     "topCut"
+			return : object
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
+		function [body cut] : object # serifs
 			serifless                { no-shape                false }
 			bottomRightSerifed       { USerifs.BottomRight     false }
 			bilateralMotionSerifed   { USerifs.BilateralMotion true  }
@@ -207,13 +231,13 @@ glyph-block Letter-Latin-U : begin
 				([Just 'toothed'] || [Just 'flatBottom']) { USerifs.Toothed         true  }
 				__                                        { USerifs.Toothless       true  }
 
-	foreach { suffix { { Base xRB yRB } { Slabs fSlabLT } } } [Object.entries : CapitalUConfigT UUpper] : do
+	foreach { suffix { { Base xRB yRB } cut { Slabs fSlabLT } } } [Object.entries : CapitalUConfigT UUpper] : do
 		local revBody : ReversedUBody UUpper Base suffix
 		local revSlabs : ReversedUSerifs Slabs
 		create-glyph "U.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
-			include : Base  df CAP Stroke
+			include : Base  df CAP Stroke nothing nothing cut
 			include : Slabs df CAP Stroke
 
 		create-glyph "U/withTonos.\(suffix)" : glyph-proc
@@ -223,7 +247,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "URTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capDesc
-			include : Base  df CAP Stroke
+			include : Base  df CAP Stroke nothing nothing cut
 			include : Slabs df CAP Stroke
 			eject-contour 'serifRB'
 			include : if xRB
@@ -233,52 +257,61 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "smcpU.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke
+			include : Base  df XH Stroke nothing nothing cut
 			include : Slabs df XH Stroke
 
 		create-glyph "UReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
 			local flipped : new-glyph : glyph-proc
-				include : revBody df CAP Stroke
+				include : revBody df CAP Stroke nothing nothing cut
 				include : FlipAround df.middle 0 (-1) 1
 			include : union flipped [revSlabs df CAP Stroke]
 
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
-		object # body
+		object # tooth
 			toothed          { shapeGroup.Toothed          RightSB            0              }
 			tailed           { shapeGroup.Tailed          (RightSB + SideJut) 0              }
 			flatBottom       { shapeGroup.FlatBottom       RightSB            0              }
 			toothlessCorner  { shapeGroup.ToothlessCorner  RightSB            DToothlessRise }
 			toothlessRounded { shapeGroup.ToothlessRounded null               null           }
 			descBase         { shapeGroup.Toothed          RightSB            0              }
-		function [body] : object # serifs
+		function [tooth] : begin
+			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
+				""         ""
+				topCut     "topCut"
+			return : object
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
+		function [tooth cut] : object # serifs
 			serifless                  no-shape
 			bottomRightSerifed         USerifs.BottomRight
-			motionSerifed : match body
+			motionSerifed : match tooth
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.MotionToothed
 				__                                        USerifs.MotionToothless
-			serifed : match body
+			serifed : match tooth
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
 				__                                        USerifs.SmallToothless
 			topRightMotionSerifed      USerifs.TopRightMotion
 			bilateralMotionSerifed     USerifs.BilateralMotionInnerRt
 
-	foreach { suffix { { Base xRB yRB } Slabs } } [Object.entries : SmallUConfigT ULower] : do
+	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT ULower] : do
 		local revBody : ReversedUBody ULower Base suffix
 		local revSlabs : ReversedUSerifs Slabs
+		define [UBase df top sw fHL fSL] : Base df top sw fHL fSL cut
 		create-glyph "u.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke
+			include : UBase  df XH Stroke
 			include : Slabs df XH Stroke
 
 		create-glyph "uReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
 			local flipped : new-glyph : glyph-proc
-				include : revBody df XH Stroke
+				include : revBody df XH Stroke nothing nothing cut
 				include : FlipAround df.middle 0 (-1) 1
 			include : union flipped [revSlabs df XH Stroke]
 
@@ -288,7 +321,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "grek/mu.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : union [Base df XH Stroke] : dispiro
+			include : union [UBase df XH Stroke] : dispiro
 				widths.rhs
 				flat df.leftSB      Descender        [heading Upward]
 				curl df.leftSB [mix Descender 0 0.5] [heading Upward]
@@ -299,7 +332,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/tse.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke
+			include : UBase  df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : CyrDescender.rSideJut df.rightSB 0
@@ -316,7 +349,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/tswe.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : Base  df XH Stroke
+			include : UBase  df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : CyrCurlDescender.rSideJut df.rightSB 0
@@ -327,7 +360,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/revtse.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : union [Base df XH Stroke] : dispiro
+			include : union [UBase df XH Stroke] : dispiro
 				widths.rhs [AdviceStroke 4]
 				flat df.leftSB 0               [heading Upward]
 				curl df.leftSB SmallArchDepthB [heading Upward]
@@ -340,7 +373,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "turnh.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : Base df XH Stroke
+			include : UBase df XH Stroke
 			eject-contour 'strokeR'
 			include : VBar.r df.rightSB Descender XH Stroke
 			include : Slabs df XH Stroke
@@ -353,21 +386,21 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "uShortLeg.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke false true
+			include : UBase  df XH Stroke false true
 			include : Slabs df XH Stroke
 			eject-contour 'serifRT'
 
 		create-glyph "uHookLeft.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke true
+			include : UBase  df XH Stroke true
 			include : Slabs df XH Stroke
 			eject-contour 'serifLT'
 
 		create-glyph "uRTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : Base  df XH Stroke
+			include : UBase  df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : if xRB
@@ -377,7 +410,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "turnhHookLeft.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : Base df XH Stroke true
+			include : UBase df XH Stroke true
 			eject-contour 'strokeR'
 			include : VBar.r df.rightSB Descender XH Stroke
 			include : Slabs df XH Stroke
@@ -391,7 +424,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "turnhHookLeftRTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : Base df XH Stroke true
+			include : UBase df XH Stroke true
 			eject-contour 'strokeR'
 			include : VBar.r df.rightSB 0 XH Stroke
 			include : Slabs df XH Stroke
@@ -404,7 +437,7 @@ glyph-block Letter-Latin-U : begin
 			local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
 			include : df.markSet.e
 			include : PointingTo Width XH Width 0 : function [] : glyph-proc
-				include : Base  df RightSB Stroke
+				include : UBase  df RightSB Stroke
 				include : Slabs df RightSB Stroke
 				include : Translate 0 (SB / 2)
 
@@ -415,7 +448,7 @@ glyph-block Letter-Latin-U : begin
 			set-width ww
 			set-base-anchor 'cvDecompose' 0 0
 			include : PointingTo ww XH ww 0 : function [] : glyph-proc
-				include : Base  df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
+				include : UBase  df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
 				include : Slabs df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
 				include : Translate 0 (SB / 2)
 

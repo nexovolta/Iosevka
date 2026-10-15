@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-P : begin
 	glyph-block-import Letter-Shared-Shapes : OBarLeft LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook SerifFrame
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
 
 
@@ -31,7 +32,15 @@ glyph-block Letter-Latin-Lower-P : begin
 		include : tagged 'bowl' : OBarLeft.flatTopAndBottom
 		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
 
-	define [EaredBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+	define [PBar left sw cut _yTop _yBot] : begin
+		local yTop : fallback _yTop XH
+		local yBot : fallback _yBot Descender
+		local y : StemCutY (bot -- yBot) (top -- yTop) (cut -- cut)
+		return : union
+			tagged 'stemLeft' : VBar.l left y.bot y.top sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- yBot) (top -- yTop) (sw -- sw)
+
+	define [EaredBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut ""]] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.toothlessCorner (rise -- 0)
@@ -48,9 +57,9 @@ glyph-block Letter-Latin-Lower-P : begin
 				fine  -- fine
 				ada   -- ada
 				adb   -- adb
-		include : tagged 'stemLeft' : VBar.l left Descender XH sw
+		include : PBar left sw cut
 
-	define [FlatTopBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+	define [FlatTopBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut ""]] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.flatTopAndBottom
@@ -67,9 +76,9 @@ glyph-block Letter-Latin-Lower-P : begin
 				fine  -- fine
 				ada   -- ada
 				adb   -- adb
-		include : tagged 'stemLeft' : VBar.l left Descender XH sw
+		include : PBar left sw cut
 
-	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut ""]] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.earlessCornerFlat
@@ -86,25 +95,31 @@ glyph-block Letter-Latin-Lower-P : begin
 				fine  -- fine
 				ada   -- ada
 				adb   -- adb
-		include : tagged 'stemLeft' : VBar.l left Descender (XH - DToothlessRise) sw
+		include : PBar left sw cut (XH - DToothlessRise)
 
-	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut ""]] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
-		include : tagged 'bowl' : if fFlat
-			then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
-				left  -- left
-				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
-			else : OBarLeft.earlessRounded (yTerminal -- Descender)
-				left  -- left
-				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+		include : tagged 'bowl' : begin
+			local body : if fFlat
+				then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
+					left  -- left
+					right -- right
+					sw    -- sw
+					fine  -- fine
+					ada   -- ada
+					adb   -- adb
+				else : OBarLeft.earlessRounded (yTerminal -- Descender)
+					left  -- left
+					right -- right
+					sw    -- sw
+					fine  -- fine
+					ada   -- ada
+					adb   -- adb
+			if (cut === 'bottomCut') : return : difference body : spiro-outline
+				corner (left + [HSwToV sw]) Descender
+				corner (left + [HSwToV sw]) (Descender + HalfStroke)
+				corner left Descender
+			return body
 
 	define [SmallPSerifLT df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lt.outer
 	define [SmallPSerifLB df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lb.fullSide
@@ -120,21 +135,29 @@ glyph-block Letter-Latin-Lower-P : begin
 			flatTop              FlatTopBody
 			earlessCorner        EarlessCornerBody
 			earlessRounded       EarlessRoundedBody
-		object # bowl
-			""                   false
-			flatBowl             true
+		function [ear] : begin
+			if (ear === 'earlessCorner' || ear === 'earlessRounded') : return : object
+				""         ""
+				bottomCut  "bottomCut"
+			return : object
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
+		function [ear cut] : object # bowl
+			""        false
+			flatBowl  true
 		object # serifs
 			serifless           { no-shape     false false }
 			motionSerifed       { MotionSerif  true  false }
 			bottomSerifed       { BottomSerif  false true  }
 			serifed             { FullSerifs   true  true  }
 
-	foreach { suffix { Body fFlat {Serifs doTS doBS} }} [Object.entries PConfig] : do
+	foreach { suffix { Body cut fFlat {Serifs doTS doBS} }} [Object.entries PConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
 
 		create-glyph "p.\(suffix)" : glyph-proc
 			include : MarkSet.p
-			include : Body (fFlat -- fFlat)
+			include : Body (fFlat -- fFlat) (cut -- cut)
 			include : Serifs [DivFrame 1] XH
 			include : LeaningAnchor.Below.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
@@ -183,6 +206,7 @@ glyph-block Letter-Latin-Lower-P : begin
 					ada   -- ada
 					adb   -- adb
 					fFlat -- fFlat
+					cut   -- cut
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
@@ -233,7 +257,7 @@ glyph-block Letter-Latin-Lower-P : begin
 						fine  -- fine
 						ada   -- ada
 						adb   -- adb
-					include : tagged 'stemLeft' : VBar.l xBodyLeft Descender XH sw
+					include : PBar xBodyLeft sw cut
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift

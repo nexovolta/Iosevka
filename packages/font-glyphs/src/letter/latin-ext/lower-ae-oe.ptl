@@ -196,12 +196,12 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				create-forked-glyph "\(prefix)/u.toothlessRoundedMotionSerifed" : USerifs.MotionToothless subDf XH df.mvs
 
 		define SmallURightConfig : SmallUConfigT : UShapeGroup subDf.smallArchDepthA subDf.smallArchDepthB
-		foreach { suffix { { Base } Slabs } } [Object.entries SmallURightConfig] : do
+		foreach { suffix { { Base } cut Slabs } } [Object.entries SmallURightConfig] : do
 			create-glyph "au/u.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				include : difference
-					Base subDf XH df.mvs
+					Base subDf XH df.mvs false false cut
 					intersection [MaskLeft subDf.middle] [MaskAbove (XH - subDf.smallArchDepthB)]
 				include : Slabs subDf XH df.mvs
 				include : ApparentTranslate shift 0
@@ -315,14 +315,14 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	do "Te (italic) subglyphs"
 		glyph-block-import Letter-Latin-Lower-M : mShapeBodyImpl SmallMConfig
 
-		foreach { suffix { { Body earless } { shortLeg } { tailed } { Serifs } } } [pairs-of SmallMConfig] : do
+		foreach { suffix { { Body earless } cut { shortLeg } { tailed } { Serifs } } } [pairs-of SmallMConfig] : do
 			create-glyph "cyrl/este.italic/te.\(suffix)" : glyph-proc
 				local df : DivFrame [mix 1 para.advanceScaleMM 2] 4.75
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				local subDfLeft : df.slice 4.5 2
 				local subDfRight : df.restCompact 0.5 subDfLeft 3
-				include : mShapeBodyImpl subDfRight XH Body earless shortLeg tailed Serifs
+				include : mShapeBodyImpl subDfRight XH Body earless shortLeg tailed Serifs cut
 				include : ApparentTranslate (df.width - subDfRight.width) 0
 
 	do "Ya subglyphs"
@@ -352,7 +352,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	do "Er subglyphs"
 		glyph-block-import Letter-Latin-Lower-P : PConfig
 
-		foreach { suffix { Body fFlat { Serifs doTS doBS } } } [Object.entries PConfig] : do
+		foreach { suffix { Body cut fFlat { Serifs doTS doBS } } } [Object.entries PConfig] : do
 			create-glyph "cyrl/rha/er.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.p
@@ -366,6 +366,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					ada   -- subDf.smallArchDepthA
 					adb   -- subDf.smallArchDepthB
 					fFlat -- fFlat
+					cut   -- cut
 				include : Serifs subDf XH df.mvs
 				include : LeaningAnchor.Below.VBar.l SB
 
