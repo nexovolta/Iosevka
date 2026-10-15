@@ -34,6 +34,23 @@ glyph-block Letter-Latin-Upper-R : begin
 				ExtLineLhsToRhs xLeftTop top xRightBottom bottom sw
 			if slab : include : tagged 'serifRB' : HSerif.rb xRightBottomSerifStart bottom (SideJut + Jut / 8) sw
 
+		export : define [BrokenJoin top bottom left right charLeft slab sw] : begin
+			local shift : RSlabExtraShift slab sw
+			local xStem : charLeft + [HSwToV sw]
+			local xRef : Math.max xStem (left - [HSwToV : 0.5 * sw] + shift)
+			local xRightBottom : [RLegTerminalX true right sw] + shift
+			local yJoin : mix top bottom ((xStem - xRef) / (xRightBottom - xRef))
+			local xRightBottomSerifStart : xRightBottom - [HSwToV : 0.25 * sw]
+			local xEnd : xRightBottom - [HSwToV sw]
+			return : object xStem yJoin xRightBottom xRightBottomSerifStart xEnd
+
+		export : define [StraightBroken top bottom left right charTop charLeft slab sw] : glyph-proc
+			local [object xStem yJoin xRightBottomSerifStart xEnd] : RLegShape.BrokenJoin top bottom left right charLeft slab sw
+			include : intersection
+				Rect charTop bottom (xStem - TINY) [if slab xRightBottomSerifStart (+VERY-FAR)]
+				ExtLineLhs xStem yJoin xEnd bottom sw 1
+			if slab : include : tagged 'serifRB' : HSerif.rb xRightBottomSerifStart bottom (SideJut + Jut / 8) sw
+
 		export : define [Curly top bottom left right charTop charLeft slab sw] : glyph-proc
 			local xRightBottom : RLegTerminalX false right sw
 			include : intersection
@@ -70,6 +87,23 @@ glyph-block Letter-Latin-Upper-R : begin
 			include : intersection
 				Rect top bottom [if slab xLeftBottomSerifStart (-VERY-FAR)] (+VERY-FAR)
 				ExtLineRhsToLhs xRightTop top xLeftBottom bottom sw
+			if slab : include : tagged 'serifLB' : HSerif.lb xLeftBottomSerifStart bottom (SideJut + Jut / 8) sw
+
+		export : define [BrokenJoin top bottom left right charRight slab sw] : begin
+			local shift : RSlabExtraShift slab sw
+			local xStem : charRight - [HSwToV sw]
+			local xRef : Math.min xStem (right + [HSwToV : 0.5 * sw] - shift)
+			local xLeftBottom : [RevRLegTerminalX true left sw] - shift
+			local yJoin : mix top bottom ((xStem - xRef) / (xLeftBottom - xRef))
+			local xLeftBottomSerifStart : xLeftBottom + [HSwToV : 0.25 * sw]
+			local xEnd : xLeftBottom + [HSwToV sw]
+			return : object xStem yJoin xLeftBottom xLeftBottomSerifStart xEnd
+
+		export : define [StraightBroken top bottom left right charTop charRight slab sw] : glyph-proc
+			local [object xStem yJoin xLeftBottomSerifStart xEnd] : RevRLegShape.BrokenJoin top bottom left right charRight slab sw
+			include : intersection
+				Rect charTop bottom [if slab xLeftBottomSerifStart (-VERY-FAR)] (xStem + TINY)
+				ExtLineRhs xStem yJoin xEnd bottom sw 1
 			if slab : include : tagged 'serifLB' : HSerif.lb xLeftBottomSerifStart bottom (SideJut + Jut / 8) sw
 
 		export : define [Curly top bottom left right charTop charRight slab sw] : glyph-proc
@@ -111,14 +145,26 @@ glyph-block Letter-Latin-Upper-R : begin
 		local-parameter : legBottom -- 0
 
 		local fSlabBot : slab && slab !== PShape.SlabMotion
+		local fBroken : legShape === RLegShape.StraightBroken
 		local right : df.rightSB - O - [if slab 0.125 0] * Jut
+		local charLeft : mix 0 df.leftSB mul
+		local legTop : RLegTop top sw bp
 		include : difference
-			PShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- slab) (bp -- bp) (sw -- sw)
+			if fBroken
+			: then : begin
+				local [object xStem yJoin xEnd] : RLegShape.BrokenJoin legTop legBottom df.middle right charLeft legSlab sw
+				union
+					tagged 'strokeL' : VBar.l charLeft 0 top sw
+					if slab [slab top df sw mul] [no-shape]
+					intersection
+						PShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- null) (bp -- bp) (sw -- sw) (withBar -- false)
+						MaskAboveLine xStem yJoin xEnd legBottom 2
+			: else : PShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- slab) (bp -- bp) (sw -- sw)
 			if open
 				PShape.OpenGap (df -- df) (mul -- mul) (bp -- bp) (top -- top) (bot -- [if fSlabBot sw 0]) (sw -- sw)
 				no-shape
 		include : difference
-			legShape [RLegTop top sw bp] legBottom df.middle right top [mix 0 df.leftSB mul] legSlab sw
+			legShape legTop legBottom df.middle right top charLeft legSlab sw
 			if open
 				PShape.OpenGap (df -- df) (mul -- mul) (bp -- bp) (top -- top) (bot -- 0) (sw -- sw)
 				no-shape
@@ -159,14 +205,26 @@ glyph-block Letter-Latin-Upper-R : begin
 		local-parameter : tailed  -- false
 
 		local fSlabBot : slab && slab !== RevPShape.SlabMotion
+		local fBroken : legShape === RevRLegShape.StraightBroken
 		local left : df.leftSB + O + [if slab 0.125 0] * Jut
+		local charRight : mix df.width df.rightSB mul
+		local legTop : RLegTop top sw bp
 		include : difference
-			RevPShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- slab) (bp -- bp) (sw -- sw)
+			if fBroken
+			: then : begin
+				local [object xStem yJoin xEnd] : RevRLegShape.BrokenJoin legTop 0 left df.middle charRight legSlab sw
+				union
+					tagged 'strokeR' : VBar.r charRight 0 top sw
+					if slab [slab top df sw mul] [no-shape]
+					intersection
+						RevPShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- null) (bp -- bp) (sw -- sw) (withBar -- false)
+						MaskAboveLine xStem yJoin xEnd 0 2
+			: else : RevPShape top (df -- df) (mul -- mul) (overshoot -- O) (slab -- slab) (bp -- bp) (sw -- sw)
 			if open
 				RevPShape.OpenGap (df -- df) (mul -- mul) (bp -- bp) (top -- top) (bot -- [if fSlabBot sw 0]) (sw -- sw)
 				no-shape
 		include : difference
-			legShape [RLegTop top sw bp] 0 left df.middle top [mix df.width df.rightSB mul] legSlab sw
+			legShape legTop 0 left df.middle top charRight legSlab sw
 			if open
 				RevPShape.OpenGap (df -- df) (mul -- mul) (bp -- bp) (top -- top) (bot -- 0) (sw -- sw)
 				no-shape
@@ -181,6 +239,7 @@ glyph-block Letter-Latin-Upper-R : begin
 	define RConfig : SuffixCfg.weave
 		object # leg shape
 			straight                       RLegShape.Straight
+			straightBroken                 RLegShape.StraightBroken
 			curly                          RLegShape.Curly
 			standing                       RLegShape.Standing
 		object # openness
@@ -194,7 +253,7 @@ glyph-block Letter-Latin-Upper-R : begin
 			serifed                      { PShape.SlabSymmetric true  }
 
 	foreach { suffix { legShape fGap { slabs doLegSlab } } } [Object.entries RConfig] : do
-		define fStraightLeg : legShape === RLegShape.Straight
+		define fStraightLeg : (legShape === RLegShape.Straight) || (legShape === RLegShape.StraightBroken)
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
 		define swCap : AdviceStroke2 2 3 CAP
 		define swXH  : AdviceStroke2 2 3 XH
@@ -292,6 +351,7 @@ glyph-block Letter-Latin-Upper-R : begin
 	define RevRConfig : SuffixCfg.weave
 		object # leg shape
 			straight                          RevRLegShape.Straight
+			straightBroken                    RevRLegShape.StraightBroken
 			curly                             RevRLegShape.Curly
 			standing                          RevRLegShape.Standing
 		object # openness
