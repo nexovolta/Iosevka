@@ -27,66 +27,84 @@ glyph-block Letter-Latin-Lower-P : begin
 		include : tagged 'bowl' : OBarLeft.toothlessCorner (rise -- 0)
 		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
 
-	define [EaredBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
-		include : tagged 'bowl' : OBarLeft.shape
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
-		include : tagged 'stemLeft' : VBar.l left Descender XH sw
-
-	define [FlatTopBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
-		include : tagged 'bowl' : OBarLeft.earlessCorner
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
-			rise  -- 0
-		include : tagged 'stemLeft' : VBar.l left Descender XH sw
-
-	define [FlatBottomBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
-		include : tagged 'bowl' : OBarLeft.toothlessCorner
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
-			rise  -- 0
-		include : tagged 'stemLeft' : VBar.l left Descender XH sw
-
-	define [FlatTopAndBottomBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
+	define [SmallThornFlatTopAndBottomBody] : glyph-proc
 		include : tagged 'bowl' : OBarLeft.flatTopAndBottom
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
+		include : tagged 'stemLeft' : VBar.l SB Descender Ascender
+
+	define [EaredBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+		local fine : ShoulderFine * (sw / Stroke)
+		include : tagged 'bowl' : if fFlat
+			then : OBarLeft.toothlessCorner (rise -- 0)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+			else : OBarLeft.shape
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
 		include : tagged 'stemLeft' : VBar.l left Descender XH sw
 
-	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
-		include : tagged 'bowl' : OBarLeft.earlessCorner
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
+	define [FlatTopBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+		local fine : ShoulderFine * (sw / Stroke)
+		include : tagged 'bowl' : if fFlat
+			then : OBarLeft.flatTopAndBottom
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+			else : OBarLeft.earlessCorner (rise -- 0)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+		include : tagged 'stemLeft' : VBar.l left Descender XH sw
+
+	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+		local fine : ShoulderFine * (sw / Stroke)
+		include : tagged 'bowl' : if fFlat
+			then : OBarLeft.earlessCornerFlat
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+			else : OBarLeft.earlessCorner
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
 		include : tagged 'stemLeft' : VBar.l left Descender (XH - DToothlessRise) sw
 
-	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB]] : glyph-proc
-		include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- Descender)
-			left  -- left
-			right -- right
-			sw    -- sw
-			fine  -- (ShoulderFine * (sw / Stroke))
-			ada   -- ada
-			adb   -- adb
+	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false]] : glyph-proc
+		local fine : ShoulderFine * (sw / Stroke)
+		include : tagged 'bowl' : if fFlat
+			then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+			else : OBarLeft.earlessRounded (yTerminal -- Descender)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
 
 	define [SmallPSerifLT df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lt.outer
 	define [SmallPSerifLB df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lb.fullSide
@@ -97,25 +115,26 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	glyph-block-export : PConfig
 	define PConfig : SuffixCfg.weave
-		object # body
+		object # ear
 			eared                EaredBody
 			flatTop              FlatTopBody
-			flatBottom           FlatBottomBody
-			flatTopAndBottom     FlatTopAndBottomBody
 			earlessCorner        EarlessCornerBody
 			earlessRounded       EarlessRoundedBody
+		object # bowl
+			""                   false
+			flat                 true
 		object # serifs
 			serifless           { no-shape     false false }
 			motionSerifed       { MotionSerif  true  false }
 			bottomSerifed       { BottomSerif  false true  }
 			serifed             { FullSerifs   true  true  }
 
-	foreach { suffix { Body {Serifs doTS doBS} }} [Object.entries PConfig] : do
+	foreach { suffix { Body fFlat {Serifs doTS doBS} }} [Object.entries PConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
 
 		create-glyph "p.\(suffix)" : glyph-proc
 			include : MarkSet.p
-			include : Body
+			include : Body (fFlat -- fFlat)
 			include : Serifs [DivFrame 1] XH
 			include : LeaningAnchor.Below.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
@@ -163,6 +182,7 @@ glyph-block Letter-Latin-Lower-P : begin
 					sw    -- sw
 					ada   -- ada
 					adb   -- adb
+					fFlat -- fFlat
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
@@ -189,13 +209,21 @@ glyph-block Letter-Latin-Lower-P : begin
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				# Flat bowl bottom (no tooth/spur): bar continues straight into the upward tail.
 				if (Body === EarlessRoundedBody) : begin
-					include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- Descender)
-						left  -- xBodyLeft
-						right -- xBodyRight
-						sw    -- sw
-						fine  -- fine
-						ada   -- ada
-						adb   -- adb
+					include : tagged 'bowl' : if fFlat
+						then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
+							left  -- xBodyLeft
+							right -- xBodyRight
+							sw    -- sw
+							fine  -- fine
+							ada   -- ada
+							adb   -- adb
+						else : OBarLeft.earlessRounded (yTerminal -- Descender)
+							left  -- xBodyLeft
+							right -- xBodyRight
+							sw    -- sw
+							fine  -- fine
+							ada   -- ada
+							adb   -- adb
 				: else : begin
 					include : tagged 'bowl' : OBarLeft.toothlessCorner
 						rise  -- 0
@@ -247,9 +275,10 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	define ThornConfig : SuffixCfg.weave
 		object # body
-			""           SmallThornEaredBody
-			flatTop      SmallThornFlatTopBody
-			flatBottom   SmallThornFlatBottomBody
+			""                 SmallThornEaredBody
+			flatTop            SmallThornFlatTopBody
+			flatBottom         SmallThornFlatBottomBody
+			flatTopAndBottom   SmallThornFlatTopAndBottomBody
 		object # serifs
 			serifless       { no-shape     false false }
 			motionSerifed   { MotionSerif  true  false }
@@ -279,7 +308,7 @@ glyph-block Letter-Latin-Lower-P : begin
 				top -- 0
 
 	select-variant 'thorn' 0xFE
-	alias 'grek/sho' 0x3F8 'thorn.serifless'
+	select-variant 'grek/sho' 0x3F8 (shapeFrom -- 'thorn') (follow -- 'thorn')
 
 	select-variant 'thornStroke' 0xA765 (follow -- 'thorn')
 	select-variant 'thornStrokeBottom' 0xA767 (follow -- 'thorn')

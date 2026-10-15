@@ -25,8 +25,8 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	define [FlourishBowl] : with-params [Body top bot left right sw ada adb] : begin
 		local fine : ShoulderFine * (sw / Stroke)
-		if (Body === ToothedBody || Body === BottomCutBody || Body === FlatTopBody) : begin
-			# Toothed / bottom-cut / flat-top spur at the baseline; flat into the stem at XH.
+		if (Body === ToothedBody || Body === BottomCutBody) : begin
+			# Toothed / bottom-cut spur at the baseline; flourish is always flat at XH.
 			return : OBarLeft.earlessCorner
 				rise  -- 0
 				top   -- top
@@ -52,7 +52,7 @@ glyph-block Letter-Latin-Lower-B : begin
 				Arch.lhs bot (sw -- sw)
 				flatside.ru right bot top ada adb
 				FlourishFlatTopKnots left right top sw
-		# FlatBottomBody / FlatTopAndBottomBody: both ends flat into the stem.
+		# FlatBottomBody (and flat-bowl): both ends flat into the stem.
 		return : dispiro
 			widths.lhs sw
 			flat (left + TINY) bot [heading Rightward]
@@ -66,11 +66,13 @@ glyph-block Letter-Latin-Lower-B : begin
 		if (Body === ToothlessCornerBody) : return DToothlessRise
 		return 0
 
-	define [ToothedBody yTop] : union
-		OBarLeft.shape
+	define [ToothedBody yTop fFlat] : union
+		if fFlat
+		: then : OBarLeft.earlessCorner (rise -- 0)
+		: else : OBarLeft.shape
 		VBar.l SB 0 yTop
 
-	define [BottomCutBody yTop] : union
+	define [BottomCutBody yTop fFlat] : union
 		OBarLeft.shape
 		VBar.l SB HalfStroke yTop
 		spiro-outline
@@ -78,23 +80,20 @@ glyph-block Letter-Latin-Lower-B : begin
 			corner  SB                    HalfStroke
 			corner (SB + [HSwToV Stroke]) HalfStroke
 
-	define [FlatBottomBody yTop] : union
-		OBarLeft.toothlessCorner (rise -- 0)
+	define [FlatBottomBody yTop fFlat] : union
+		if fFlat
+		: then : OBarLeft.flatTopAndBottom
+		: else : OBarLeft.toothlessCorner (rise -- 0)
 		VBar.l SB 0 yTop
 
-	define [FlatTopBody yTop] : union
-		OBarLeft.earlessCorner (rise -- 0)
-		VBar.l SB 0 yTop
-
-	define [FlatTopAndBottomBody yTop] : union
-		OBarLeft.flatTopAndBottom
-		VBar.l SB 0 yTop
-
-	define [ToothlessCornerBody yTop] : union
-		OBarLeft.toothlessCorner
+	define [ToothlessCornerBody yTop fFlat] : union
+		if fFlat
+		: then : OBarLeft.toothlessCornerFlat
+		: else : OBarLeft.toothlessCorner
 		VBar.l SB DToothlessRise yTop
 
-	define [ToothlessRoundedBody yTop] : begin
+	define [ToothlessRoundedBody yTop fFlat] : begin
+		if fFlat : return : OBarLeft.toothlessRoundedFlat (yTerminal -- yTop)
 		return : OBarLeft.toothlessRounded (yTerminal -- yTop)
 
 	define [LTSerifs] : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
@@ -102,25 +101,29 @@ glyph-block Letter-Latin-Lower-B : begin
 	define [FullSerifs] : composite-proc [LTSerifs] [LBSerifs]
 
 	define BConfig : SuffixCfg.weave
-		object # body
+		object # tooth
 			""                ToothedBody
 			bottomCut         BottomCutBody
 			flatBottom        FlatBottomBody
-			flatTop           FlatTopBody
-			flatTopAndBottom  FlatTopAndBottomBody
 			toothlessCorner   ToothlessCornerBody
 			toothlessRounded  ToothlessRoundedBody
+		function [tooth] : begin
+			if (tooth === 'bottomCut') : return : object
+				""  false
+			return : object
+				""    false
+				flat  true
 		object # serifs
 			serifless       { no-shape   false  }
 			motionSerifed   { LTSerifs   true   }
 			bottomSerifed   { LBSerifs   false  }
 			serifed         { FullSerifs true   }
 
-	foreach { suffix { Body { Serifs doST } } } [Object.entries BConfig] : do
+	foreach { suffix { Body fFlat { Serifs doST } } } [Object.entries BConfig] : do
 		local yOverlay : mix XH (Ascender - [if doST Stroke 0]) 0.5
 		create-glyph "b.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body Ascender
+			include : Body Ascender fFlat
 			include : Serifs
 			include : LeaningAnchor.Above.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
@@ -140,7 +143,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 		create-glyph "latn/be.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body Ascender
+			include : Body Ascender fFlat
 			include : Serifs
 			local xTopRight : mix SB RightSB 0.9
 			include : HBar.t (SB - O) xTopRight Ascender
@@ -149,7 +152,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 		if [not doST] : create-glyph "bHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body XH
+			include : Body XH fFlat
 			include : Serifs
 			include : TopHook.toRight.lBarInner SB (XH / 2) Ascender
 			include : LeaningAnchor.Above.VBar.l SB
