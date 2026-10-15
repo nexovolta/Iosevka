@@ -771,7 +771,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	do "Volapuk AE"
 		glyph-block-import Letter-Latin-Lower-A : SingleStorey
 
-		define [FullBarBody df top bar hook ada adb] : glyph-proc
+		define [FullBarBody df top bar hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe CLOSED-STEM CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -780,24 +780,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : bar df top stroke
+			include : bar df top stroke cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 
-		define [TopCutBody df top bar hook ada adb] : glyph-proc
-			local revZe : CyrRevZe CLOSED-STEM CLOSED-STEM top 0
-				blend     -- VolBlend
-				hook      -- hook
-				xOverflow -- 0
-				ada       -- ada
-				adb       -- adb
-			define [object stroke] : revZe.Dim
-			include : revZe.Shape
-			include : bar df (top - HalfStroke) stroke
-			include : spiro-outline
-				corner  df.rightSB                     top
-				corner  df.rightSB                    (top - HalfStroke)
-				corner (df.rightSB - [HSwToV stroke]) (top - HalfStroke)
-
-		define [FlatTopBody df top bar hook ada adb] : glyph-proc
+		define [FlatTopBody df top bar hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe FLAT-CONNECTION CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -806,9 +792,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : bar df top stroke
+			include : bar df top stroke cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 
-		define [EarlessCornerBody df top bar hook ada adb] : glyph-proc
+		define [EarlessCornerBody df top bar hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe SLAB-INWARD CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -817,9 +804,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : bar df (top - DToothlessRise) stroke
+			include : bar df (top - DToothlessRise) stroke cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- stroke)
 
-		define [EarlessRoundedBody df top bar hook ada adb] : glyph-proc
+		define [EarlessRoundedBody df top bar hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe CLOSED-ROUND CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -828,42 +816,46 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : bar df (top - adb) stroke
+			include : bar df (top - adb) stroke cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - adb)) (sw -- stroke)
 
-		define SingleStoreyConfig : object
-			singleStoreySerifless               { FullBarBody        SingleStorey.SeriflessBar     }
-			singleStoreyTopCutSerifless         { TopCutBody         SingleStorey.SeriflessBar     }
-			singleStoreyFlatTopSerifless        { FlatTopBody        SingleStorey.SeriflessBar     }
-			singleStoreyEarlessCornerSerifless  { EarlessCornerBody  SingleStorey.SeriflessBar     }
-			singleStoreyEarlessRoundedSerifless { EarlessRoundedBody SingleStorey.SeriflessBar     }
+		define SingleStoreyConfig : SuffixCfg.weave
+			object # ear
+				singleStorey             FullBarBody
+				singleStoreyFlatTop      FlatTopBody
+				singleStoreyEarlessCorner  EarlessCornerBody
+				singleStoreyEarlessRounded EarlessRoundedBody
+			function [ear] : begin
+				if (ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
+					""         ""
+					bottomCut  "bottomCut"
+				return : object
+					""         ""
+					topCut     "topCut"
+					bottomCut  "bottomCut"
+			function [ear cut] : begin
+				if (cut === 'bottomCut') : return : object
+					serifless SingleStorey.SeriflessBar
+				if (cut === 'topCut' || ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
+					serifless SingleStorey.SeriflessBar
+					serifed   SingleStorey.BottomSerifedBar
+					tailed    SingleStorey.TailedBar
+				return : object
+					serifless     SingleStorey.SeriflessBar
+					serifed       SingleStorey.BottomSerifedBar
+					doubleSerifed SingleStorey.DoubleSerifedBar
+					tailed        SingleStorey.TailedBar
+					tailedSerifed SingleStorey.TailedSerifedBar
 
-			singleStoreySerifed                 { FullBarBody        SingleStorey.BottomSerifedBar }
-			singleStoreyTopCutSerifed           { TopCutBody         SingleStorey.BottomSerifedBar }
-			singleStoreyFlatTopSerifed          { FlatTopBody        SingleStorey.BottomSerifedBar }
-			singleStoreyEarlessCornerSerifed    { EarlessCornerBody  SingleStorey.BottomSerifedBar }
-			singleStoreyEarlessRoundedSerifed   { EarlessRoundedBody SingleStorey.BottomSerifedBar }
-
-			singleStoreyDoubleSerifed           { FullBarBody        SingleStorey.DoubleSerifedBar }
-			singleStoreyFlatTopDoubleSerifed    { FlatTopBody        SingleStorey.DoubleSerifedBar }
-
-			singleStoreyTailed                  { FullBarBody        SingleStorey.TailedBar        }
-			singleStoreyTopCutTailed            { TopCutBody         SingleStorey.TailedBar        }
-			singleStoreyFlatTopTailed           { FlatTopBody        SingleStorey.TailedBar        }
-			singleStoreyEarlessCornerTailed     { EarlessCornerBody  SingleStorey.TailedBar        }
-			singleStoreyEarlessRoundedTailed    { EarlessRoundedBody SingleStorey.TailedBar        }
-
-			singleStoreyTailedSerifed           { FullBarBody        SingleStorey.TailedSerifedBar }
-			singleStoreyFlatTopTailedSerifed    { FlatTopBody        SingleStorey.TailedSerifedBar }
-
-		foreach { suffix { body bar } } [Object.entries SingleStoreyConfig] : do
+		foreach { suffix { body cut bar } } [Object.entries SingleStoreyConfig] : do
 			create-glyph "AeVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
-				include : body df CAP bar Hook ArchDepthA ArchDepthB
+				include : body df CAP bar Hook ArchDepthA ArchDepthB cut
 			create-glyph "aeVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e
-				include : body df XH bar SHook SmallArchDepthA SmallArchDepthB
+				include : body df XH bar SHook SmallArchDepthA SmallArchDepthB cut
 
 		select-variant 'AeVolapuk' 0xA79A (follow -- [conditional-follow SLAB 'a/singleStorey/autoSerifed/slab' 'a/singleStorey/autoSerifed/sans'])
 		select-variant 'aeVolapuk' 0xA79B (follow -- [conditional-follow SLAB 'a/singleStorey/autoSerifed/slab' 'a/singleStorey/autoSerifed/sans'])
