@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateMultiAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight OBarLeft ArcStartSerif
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar LeftwardTailedBar RetroflexHook
-	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart
+	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart StemCutY ApplyDiagCut
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define HOOK-SLAB-NONE      0
@@ -117,32 +117,34 @@ glyph-block Letter-Latin-Lower-A : begin
 			fallback _fine df.shoulderFine
 			fallback _bbd  0
 
-		export : define [Serifless df hookStyle _sw] : union
-			HookAndBar df hookStyle 0 _sw
+		export : define [Serifless df hookStyle _sw cut] : union
+			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
 			Arc        df 0         0 _sw
+			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [Serifed df hookStyle _sw] : union
-			Serifless  df hookStyle _sw
+		export : define [Serifed df hookStyle _sw cut] : union
+			Serifless  df hookStyle _sw cut
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
-		export : define [Tailed df hookStyle _sw] : union
+		export : define [Tailed df hookStyle _sw cut] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
 			Arc        df 0         0            _sw
 			RightwardTailedBar df.rightSB 0 (XH - [SmoothB df]) [fallback _sw : Sw df]
 
-		export : define [FlatBottomSerifless df hookStyle _sw] : union
-			HookAndBar df hookStyle 0 _sw
+		export : define [FlatBottomSerifless df hookStyle _sw cut] : union
+			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
 			Arc        df 1         0 _sw
+			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [FlatBottomSerifed df hookStyle _sw] : union
-			FlatBottomSerifless df hookStyle _sw
+		export : define [FlatBottomSerifed df hookStyle _sw cut] : union
+			FlatBottomSerifless df hookStyle _sw cut
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
-		export : define [ToothlessCorner df hookStyle _sw] : union
+		export : define [ToothlessCorner df hookStyle _sw cut] : union
 			HookAndBar df hookStyle DToothlessRise _sw
 			Arc        df 1         DToothlessRise _sw
 
-		export : define [ToothlessRounded df hookStyle _sw] : union
+		export : define [ToothlessRounded df hookStyle _sw cut] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
 			Arc        df 2         [SmoothA df] _sw
 
@@ -247,32 +249,34 @@ glyph-block Letter-Latin-Lower-A : begin
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
 
-		export : define [Serifless df hookStyle _sw] : union
-			HookAndBar df hookStyle 0 _sw
+		export : define [Serifless df hookStyle _sw cut] : union
+			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
 			Arc        df 0         0 _sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [Serifed df hookStyle _sw] : union
-			Serifless  df hookStyle _sw
+		export : define [Serifed df hookStyle _sw cut] : union
+			Serifless  df hookStyle _sw cut
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].lb.outer
 
-		export : define [Tailed df hookStyle _sw] : union
+		export : define [Tailed df hookStyle _sw cut] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
 			Arc        df 0         0            _sw
 			LeftwardTailedBar df.leftSB 0 (XH - [SmoothA df]) [fallback _sw : Sw df]
 
-		export : define [FlatBottomSerifless df hookStyle _sw] : union
-			HookAndBar df hookStyle 0 _sw
+		export : define [FlatBottomSerifless df hookStyle _sw cut] : union
+			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
 			Arc        df 1         0 _sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [FlatBottomSerifed df hookStyle _sw] : union
-			FlatBottomSerifless df hookStyle _sw
+		export : define [FlatBottomSerifed df hookStyle _sw cut] : union
+			FlatBottomSerifless df hookStyle _sw cut
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].lb.outer
 
-		export : define [ToothlessCorner df hookStyle _sw] : union
+		export : define [ToothlessCorner df hookStyle _sw cut] : union
 			HookAndBar df hookStyle DToothlessRise _sw
 			Arc        df 1         DToothlessRise _sw
 
-		export : define [ToothlessRounded df hookStyle _sw] : union
+		export : define [ToothlessRounded df hookStyle _sw cut] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
 			Arc        df 2         [SmoothB df] _sw
 
@@ -289,16 +293,22 @@ glyph-block Letter-Latin-Lower-A : begin
 			doubleStorey                  HOOK-SLAB-NONE
 			doubleStoreyHookInwardSerifed HOOK-SLAB-INWARD
 			doubleStoreyHookFlat          HOOK-FLAT
-		object # Body
-			serifless                   { DoubleStorey.Serifless           RevDoubleStorey.Serifless           RightSB            }
-			serifed                     { DoubleStorey.Serifed             RevDoubleStorey.Serifed            (RightSB + SideJut) }
-			tailed                      { DoubleStorey.Tailed              RevDoubleStorey.Tailed             (RightSB + SideJut) }
-			flatBottomSerifless         { DoubleStorey.FlatBottomSerifless RevDoubleStorey.FlatBottomSerifless RightSB            }
-			flatBottomSerifed           { DoubleStorey.FlatBottomSerifed   RevDoubleStorey.FlatBottomSerifed  (RightSB + SideJut) }
-			toothlessCorner             { DoubleStorey.ToothlessCorner     RevDoubleStorey.ToothlessCorner     null               }
-			toothlessRounded            { DoubleStorey.ToothlessRounded    RevDoubleStorey.ToothlessRounded    null               }
+		function [hook] : object # cut
+			""         ""
+			bottomCut  "bottomCut"
+		function [hook cut] : begin
+			if (cut === 'bottomCut') : return : object
+				serifless { DoubleStorey.Serifless RevDoubleStorey.Serifless RightSB }
+			return : object
+				serifless           { DoubleStorey.Serifless           RevDoubleStorey.Serifless           RightSB            }
+				serifed             { DoubleStorey.Serifed             RevDoubleStorey.Serifed            (RightSB + SideJut) }
+				tailed              { DoubleStorey.Tailed              RevDoubleStorey.Tailed             (RightSB + SideJut) }
+				flatBottomSerifless { DoubleStorey.FlatBottomSerifless RevDoubleStorey.FlatBottomSerifless RightSB            }
+				flatBottomSerifed   { DoubleStorey.FlatBottomSerifed   RevDoubleStorey.FlatBottomSerifed  (RightSB + SideJut) }
+				toothlessCorner     { DoubleStorey.ToothlessCorner     RevDoubleStorey.ToothlessCorner     null               }
+				toothlessRounded    { DoubleStorey.ToothlessRounded    RevDoubleStorey.ToothlessRounded    null               }
 
-	foreach { suffix { hookStyle { body revBody xTrailing } } } [Object.entries DoubleStoreyConfig] : do
+	foreach { suffix { hookStyle cut { body revBody xTrailing } } } [Object.entries DoubleStoreyConfig] : do
 		do
 			create-glyph "a.\(suffix)" : make [DivFrame 1]
 			if (!hookStyle) : begin
@@ -311,7 +321,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
 			set-base-anchor 'strike'  df.middle bp
 			if xTrailing : set-base-anchor 'trailing' xTrailing 0
-			include : body df [fallback _hookStyle hookStyle]
+			include : body df [fallback _hookStyle hookStyle] nothing cut
 
 		create-glyph "aSwash.\(suffix)" : glyph-proc
 			include [refer-glyph "a.\(suffix)"] AS_BASE ALSO_METRICS
@@ -327,7 +337,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local bp : [mix 0 XH DesignParameters.aBarPos] + sw * DesignParameters.aBarStrokeAdj
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
 			set-base-anchor 'strike'  df.middle bp
-			include : revBody df hookStyle
+			include : revBody df hookStyle nothing cut
 
 		if (body === DoubleStorey.Serifless) : begin
 			create-glyph "aRetroflexHook.\(suffix)" : glyph-proc
@@ -384,7 +394,7 @@ glyph-block Letter-Latin-Lower-A : begin
 
 	glyph-block-export SingleStorey
 	define SingleStorey : namespace
-		export : define [FullBarBody df top bar _sw _ada _adb] : glyph-proc
+		export : define [FullBarBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -396,25 +406,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				fine  -- (ShoulderFine * (sw / Stroke))
 				ada   -- ada
 				adb   -- adb
-			include : bar df top sw
-		export : define [TopCutBody df top bar _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
-			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
-			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
-			include : OBarRight.shape
-				top   -- top
-				left  -- df.leftSB
-				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
-			include : bar df (top - HalfStroke) sw
-			include : spiro-outline
-				corner  df.rightSB                 top
-				corner  df.rightSB                (top - HalfStroke)
-				corner (df.rightSB - [HSwToV sw]) (top - HalfStroke)
-		export : define [FlatTopBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df top sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- sw)
+		export : define [FlatTopBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -427,8 +421,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				ada   -- ada
 				adb   -- adb
 				rise  -- 0
-			include : bar df top sw
-		export : define [EarlessCornerBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df top sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- sw)
+		export : define [EarlessCornerBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -440,8 +435,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				fine  -- (ShoulderFine * (sw / Stroke))
 				ada   -- ada
 				adb   -- adb
-			include : bar df (top - DToothlessRise) sw
-		export : define [EarlessRoundedBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df (top - DToothlessRise) sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- sw)
+		export : define [EarlessRoundedBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -454,29 +450,32 @@ glyph-block Letter-Latin-Lower-A : begin
 				ada   -- ada
 				adb   -- adb
 				yTerminal -- ada
-			include : bar df (top - adb) sw
+			include : bar df (top - adb) sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - adb)) (sw -- sw)
 
-		export : define [SeriflessBar df top _sw] : glyph-proc
+		export : define [SeriflessBar df top _sw cut] : glyph-proc
+			local y : StemCutY (bot -- 0) (top -- top) (cut -- cut)
 			set-base-anchor 'trailing' df.rightSB 0
-			include : VBar.r df.rightSB 0 top _sw
-		export : define [BottomSerifedBar df top _sw] : glyph-proc
-			include : SeriflessBar df top _sw
+			include : VBar.r df.rightSB y.bot y.top _sw
+		export : define [BottomSerifedBar df top _sw cut] : glyph-proc
+			include : SeriflessBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include sf.rb.outer
-		export : define [DoubleSerifedBar df top _sw] : glyph-proc
-			include : SeriflessBar df top _sw
+		export : define [DoubleSerifedBar df top _sw cut] : glyph-proc
+			include : SeriflessBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include : composite-proc sf.rt.outer sf.rb.outer
-		export : define [TailedBar df top _sw] : glyph-proc
+		export : define [TailedBar df top _sw cut] : glyph-proc
+			local y : StemCutY (bot -- 0) (top -- top) (cut -- cut)
 			set-base-anchor 'trailing' (df.rightSB + SideJut) 0
-			include : RightwardTailedBar df.rightSB 0 top _sw
-		export : define [TailedSerifedBar df top _sw] : glyph-proc
-			include : TailedBar df top _sw
+			include : RightwardTailedBar df.rightSB y.bot y.top _sw
+		export : define [TailedSerifedBar df top _sw cut] : glyph-proc
+			include : TailedBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include sf.rt.outer
 
 	define RevSingleStorey : namespace
-		export : define [FullBarBody df top bar _sw _ada _adb] : glyph-proc
+		export : define [FullBarBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -488,25 +487,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				fine  -- (ShoulderFine * (sw / Stroke))
 				ada   -- ada
 				adb   -- adb
-			include : bar df top sw
-		export : define [TopCutBody df top bar _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
-			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
-			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
-			include : OBarLeft.shape
-				top   -- top
-				left  -- df.leftSB
-				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
-			include : bar df (top - HalfStroke) sw
-			include : spiro-outline
-				corner  df.leftSB                 top
-				corner  df.leftSB                (top - HalfStroke)
-				corner (df.leftSB + [HSwToV sw]) (top - HalfStroke)
-		export : define [FlatTopBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df top sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- top) (sw -- sw)
+		export : define [FlatTopBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -519,8 +502,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				ada   -- ada
 				adb   -- adb
 				rise  -- 0
-			include : bar df top sw
-		export : define [EarlessCornerBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df top sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- top) (sw -- sw)
+		export : define [EarlessCornerBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -532,8 +516,9 @@ glyph-block Letter-Latin-Lower-A : begin
 				fine  -- (ShoulderFine * (sw / Stroke))
 				ada   -- ada
 				adb   -- adb
-			include : bar df (top - DToothlessRise) sw
-		export : define [EarlessRoundedBody df top bar _sw _ada _adb] : glyph-proc
+			include : bar df (top - DToothlessRise) sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- sw)
+		export : define [EarlessRoundedBody df top bar cut _sw _ada _adb] : glyph-proc
 			local sw  : fallback _sw    df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -546,64 +531,70 @@ glyph-block Letter-Latin-Lower-A : begin
 				ada   -- ada
 				adb   -- adb
 				yTerminal -- adb
-			include : bar df (top - ada) sw
+			include : bar df (top - ada) sw cut
+			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- (top - ada)) (sw -- sw)
 
-		export : define [SeriflessBar df top _sw] : glyph-proc
-			include : VBar.l df.leftSB 0 top _sw
-		export : define [BottomSerifedBar df top _sw] : glyph-proc
-			include : SeriflessBar df top _sw
+		export : define [SeriflessBar df top _sw cut] : glyph-proc
+			local y : StemCutY (bot -- 0) (top -- top) (cut -- cut)
+			include : VBar.l df.leftSB y.bot y.top _sw
+		export : define [BottomSerifedBar df top _sw cut] : glyph-proc
+			include : SeriflessBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include sf.lb.outer
-		export : define [DoubleSerifedBar df top _sw] : glyph-proc
-			include : SeriflessBar df top _sw
+		export : define [DoubleSerifedBar df top _sw cut] : glyph-proc
+			include : SeriflessBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include : composite-proc sf.lt.outer sf.lb.outer
-		export : define [TailedBar df top _sw] : glyph-proc
-			include : LeftwardTailedBar df.leftSB 0 top _sw
-		export : define [TailedSerifedBar df top _sw] : glyph-proc
-			include : TailedBar df top _sw
+		export : define [TailedBar df top _sw cut] : glyph-proc
+			local y : StemCutY (bot -- 0) (top -- top) (cut -- cut)
+			include : LeftwardTailedBar df.leftSB y.bot y.top _sw
+		export : define [TailedSerifedBar df top _sw cut] : glyph-proc
+			include : TailedBar df top _sw cut
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include sf.lt.outer
 
 	glyph-block-export SingleStoreyConfig
-	define SingleStoreyConfig : object
-		singleStoreySerifless               { SingleStorey.FullBarBody        SingleStorey.SeriflessBar     RevSingleStorey.FullBarBody        RevSingleStorey.SeriflessBar     }
-		singleStoreyTopCutSerifless         { SingleStorey.TopCutBody         SingleStorey.SeriflessBar     RevSingleStorey.TopCutBody         RevSingleStorey.SeriflessBar     }
-		singleStoreyFlatTopSerifless        { SingleStorey.FlatTopBody        SingleStorey.SeriflessBar     RevSingleStorey.FlatTopBody        RevSingleStorey.SeriflessBar     }
-		singleStoreyEarlessCornerSerifless  { SingleStorey.EarlessCornerBody  SingleStorey.SeriflessBar     RevSingleStorey.EarlessCornerBody  RevSingleStorey.SeriflessBar     }
-		singleStoreyEarlessRoundedSerifless { SingleStorey.EarlessRoundedBody SingleStorey.SeriflessBar     RevSingleStorey.EarlessRoundedBody RevSingleStorey.SeriflessBar     }
+	define SingleStoreyConfig : SuffixCfg.weave
+		object # ear
+			singleStorey             { SingleStorey.FullBarBody        RevSingleStorey.FullBarBody        }
+			singleStoreyFlatTop      { SingleStorey.FlatTopBody        RevSingleStorey.FlatTopBody        }
+			singleStoreyEarlessCorner  { SingleStorey.EarlessCornerBody  RevSingleStorey.EarlessCornerBody  }
+			singleStoreyEarlessRounded { SingleStorey.EarlessRoundedBody RevSingleStorey.EarlessRoundedBody }
+		function [ear] : begin
+			if (ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
+				""         ""
+				bottomCut  "bottomCut"
+			return : object
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
+		function [ear cut] : begin
+			if (cut === 'bottomCut') : return : object
+				serifless { SingleStorey.SeriflessBar RevSingleStorey.SeriflessBar }
+			if (cut === 'topCut' || ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
+				serifless { SingleStorey.SeriflessBar     RevSingleStorey.SeriflessBar     }
+				serifed   { SingleStorey.BottomSerifedBar RevSingleStorey.BottomSerifedBar }
+				tailed    { SingleStorey.TailedBar        RevSingleStorey.TailedBar        }
+			return : object
+				serifless     { SingleStorey.SeriflessBar     RevSingleStorey.SeriflessBar     }
+				serifed       { SingleStorey.BottomSerifedBar RevSingleStorey.BottomSerifedBar }
+				doubleSerifed { SingleStorey.DoubleSerifedBar RevSingleStorey.DoubleSerifedBar }
+				tailed        { SingleStorey.TailedBar        RevSingleStorey.TailedBar        }
+				tailedSerifed { SingleStorey.TailedSerifedBar RevSingleStorey.TailedSerifedBar }
 
-		singleStoreySerifed                 { SingleStorey.FullBarBody        SingleStorey.BottomSerifedBar RevSingleStorey.FullBarBody        RevSingleStorey.BottomSerifedBar }
-		singleStoreyTopCutSerifed           { SingleStorey.TopCutBody         SingleStorey.BottomSerifedBar RevSingleStorey.TopCutBody         RevSingleStorey.BottomSerifedBar }
-		singleStoreyFlatTopSerifed          { SingleStorey.FlatTopBody        SingleStorey.BottomSerifedBar RevSingleStorey.FlatTopBody        RevSingleStorey.BottomSerifedBar }
-		singleStoreyEarlessCornerSerifed    { SingleStorey.EarlessCornerBody  SingleStorey.BottomSerifedBar RevSingleStorey.EarlessCornerBody  RevSingleStorey.BottomSerifedBar }
-		singleStoreyEarlessRoundedSerifed   { SingleStorey.EarlessRoundedBody SingleStorey.BottomSerifedBar RevSingleStorey.EarlessRoundedBody RevSingleStorey.BottomSerifedBar }
-
-		singleStoreyDoubleSerifed           { SingleStorey.FullBarBody        SingleStorey.DoubleSerifedBar RevSingleStorey.FullBarBody        RevSingleStorey.DoubleSerifedBar }
-		singleStoreyFlatTopDoubleSerifed    { SingleStorey.FlatTopBody        SingleStorey.DoubleSerifedBar RevSingleStorey.FlatTopBody        RevSingleStorey.DoubleSerifedBar }
-
-		singleStoreyTailed                  { SingleStorey.FullBarBody        SingleStorey.TailedBar        RevSingleStorey.FullBarBody        RevSingleStorey.TailedBar        }
-		singleStoreyTopCutTailed            { SingleStorey.TopCutBody         SingleStorey.TailedBar        RevSingleStorey.TopCutBody         RevSingleStorey.TailedBar        }
-		singleStoreyFlatTopTailed           { SingleStorey.FlatTopBody        SingleStorey.TailedBar        RevSingleStorey.FlatTopBody        RevSingleStorey.TailedBar        }
-		singleStoreyEarlessCornerTailed     { SingleStorey.EarlessCornerBody  SingleStorey.TailedBar        RevSingleStorey.EarlessCornerBody  RevSingleStorey.TailedBar        }
-		singleStoreyEarlessRoundedTailed    { SingleStorey.EarlessRoundedBody SingleStorey.TailedBar        RevSingleStorey.EarlessRoundedBody RevSingleStorey.TailedBar        }
-
-		singleStoreyTailedSerifed           { SingleStorey.FullBarBody        SingleStorey.TailedSerifedBar RevSingleStorey.FullBarBody        RevSingleStorey.TailedSerifedBar }
-		singleStoreyFlatTopTailedSerifed    { SingleStorey.FlatTopBody        SingleStorey.TailedSerifedBar RevSingleStorey.FlatTopBody        RevSingleStorey.TailedSerifedBar }
-
-	foreach { suffix { body bar revBody revBar } } [Object.entries SingleStoreyConfig] : do
+	foreach { suffix { { body revBody } cut { bar revBar } } } [Object.entries SingleStoreyConfig] : do
 		create-glyph "a.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : body df XH bar
+			include : body df XH bar cut
 		create-glyph "aCap.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
-			include : body df CAP bar nothing ArchDepthA ArchDepthB
+			include : body df CAP bar cut nothing ArchDepthA ArchDepthB
 		create-glyph "reva.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : revBody df XH revBar
+			include : revBody df XH revBar cut
 		create-glyph "aSwash.\(suffix)" : glyph-proc
 			include [refer-glyph "a.\(suffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifRB'
