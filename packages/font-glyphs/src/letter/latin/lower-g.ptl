@@ -37,30 +37,40 @@ glyph-block Letter-Latin-Lower-G : begin
 		local gtipy : fallback yTip : [mix groundy (obot + sw) 1.005] - fine
 		local x0 : fallback xStart : mix SB RightSB 0.4
 		local gap : Math.max (0.55 * sw) (0.08 * (RightSB - SB))
+		local yArcBot : bot + O
+		local span : Math.max TINY : groundy - yArcBot
+		local kArc : Math.min 1 : span / (ada + adb)
+		local adaL : kArc * ada
+		local adbL : kArc * adb
+		local xArcR : mix SB RightSB 0.565
+		local minRun : Math.max (0.35 * sw) (0.08 * (RightSB - SB))
+		local gapD : Math.min gap : Math.max 0 (xArcR - x0 - minRun)
+		local ySideR : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06
+		local ySideL : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidL groundy yArcBot adaL adbL] 1.06
 		if (fDisjoint && fFlat) : include : dispiro
 			widths.rhs sw
-			flat (x0 + gap) groundy [heading Rightward]
-			curl [mix SB RightSB 0.565] groundy
+			flat (x0 + gapD) groundy [heading Rightward]
+			curl xArcR groundy
 			archv 4
-			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			g4 grightx ySideR
 			[MakeFlatHook SB RightSB groundy bot (sw -- sw)].hookEndL
 		if (fDisjoint && !fFlat) : include : dispiro
 			widths.rhs sw
-			flat (x0 + gap) groundy [heading Rightward]
-			curl [mix SB RightSB 0.565] groundy
+			flat (x0 + gapD) groundy [heading Rightward]
+			curl xArcR groundy
 			archv 4
-			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			g4 grightx ySideR
 			Arch.rhs bot (sw -- sw)
-			g4 gleftx [mix (bot + O) [YSmoothMidL groundy (bot + O) ada adb] 1.06]
+			g4 gleftx ySideL
 			arcvh
-			g4 (x0 - gap) groundy [heading Rightward]
+			g4 (x0 - gapD) groundy [heading Rightward]
 		if (fFlat && !fDisjoint) : include : dispiro
 			g4.left.start x0 gtipy [widths.rhs fine]
 			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
 			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
 			curl [mix SB RightSB 0.565] groundy
 			archv 4
-			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			g4 grightx [mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06]
 			[MakeFlatHook SB RightSB groundy bot (sw -- sw)].hookEndL
 		if (fOpen && !fFlat && !fDisjoint) : include : dispiro
 			g4.left.start x0 gtipy [widths.rhs fine]
@@ -68,7 +78,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
 			curl [mix SB RightSB 0.565] groundy
 			archv 4
-			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			g4 grightx [mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06]
 			HookEnd bot (sw -- sw)
 			g4 gleftx (bot + hook)
 		if (!fOpen && !fFlat && !fDisjoint) : include : dispiro
@@ -77,9 +87,9 @@ glyph-block Letter-Latin-Lower-G : begin
 			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
 			curl [mix SB RightSB 0.565] groundy
 			archv 4
-			g4 grightx [mix (bot + O) [YSmoothMidR groundy (bot + O) ada adb] 1.06]
+			g4 grightx [mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06]
 			Arch.rhs bot (sw -- sw)
-			g4 gleftx [mix (bot + O) [YSmoothMidL groundy (bot + O) ada adb] 1.06]
+			g4 gleftx [mix yArcBot [YSmoothMidL groundy yArcBot adaL adbL] 1.06]
 			arcvh
 			g4 [mix SB RightSB 0.435] groundy [heading Rightward]
 
@@ -186,75 +196,116 @@ glyph-block Letter-Latin-Lower-G : begin
 				CurlyTail.n fine Descender df.leftSB df.width (Descender + 0.5 * fine)
 					yLoopTop -- ([mix Descender 0 0.85] + 0.25 * fine)
 
-		export : define [SeriflessBody df top _ada _adb] : glyph-proc
+		export : define [SeriflessBody df top fFlat _ada _adb] : glyph-proc
 			local ada : fallback _ada df.smallArchDepthA
 			local adb : fallback _adb df.smallArchDepthB
-			include : OBarRight.shape
-				top   -- top
-				left  -- df.leftSB
-				right -- df.rightSB
-				sw    -- df.mvs
-				fine  -- df.shoulderFine
-				ada   -- ada
-				adb   -- adb
+			include : if fFlat
+				then : OBarRight.toothlessCorner
+					top   -- top
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- ada
+					adb   -- adb
+					rise  -- 0
+				else : OBarRight.shape
+					top   -- top
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- ada
+					adb   -- adb
 
-		export : define [SerifedBody df top _ada _adb] : glyph-proc
-			include : SeriflessBody df top _ada _adb
+		export : define [SerifedBody df top fFlat _ada _adb] : glyph-proc
+			include : SeriflessBody df top fFlat _ada _adb
 			include : tagged 'serifRT' : HSerif.rt df.rightSB top SideJut df.mvs
 
-		export : define [TopCutBody df top _ada _adb] : glyph-proc
-			include : SeriflessBody df top _ada _adb
+		export : define [TopCutBody df top fFlat _ada _adb] : glyph-proc
+			include : SeriflessBody df top fFlat _ada _adb
 			include : spiro-outline
 				corner  df.rightSB                     top
 				corner  df.rightSB                    (top - HalfStroke)
 				corner (df.rightSB - [HSwToV df.mvs]) (top - HalfStroke)
 
-		export : define [FlatTopSeriflessBody df top _ada _adb] : glyph-proc
+		export : define [FlatTopSeriflessBody df top fFlat _ada _adb] : glyph-proc
 			local ada : fallback _ada df.smallArchDepthA
 			local adb : fallback _adb df.smallArchDepthB
-			include : OBarRight.earlessCorner
-				top    -- top
-				left   -- df.leftSB
-				right  -- df.rightSB
-				sw     -- df.mvs
-				fine   -- df.shoulderFine
-				ada    -- ada
-				adb    -- adb
-				rise   -- 0
+			include : if fFlat
+				then : OBarRight.flatTopAndBottom
+					top   -- top
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- ada
+					adb   -- adb
+				else : OBarRight.earlessCorner
+					top    -- top
+					left   -- df.leftSB
+					right  -- df.rightSB
+					sw     -- df.mvs
+					fine   -- df.shoulderFine
+					ada    -- ada
+					adb    -- adb
+					rise   -- 0
 
-		export : define [FlatTopSerifedBody df top _ada _adb] : glyph-proc
-			include : FlatTopSeriflessBody df top _ada _adb
+		export : define [FlatTopSerifedBody df top fFlat _ada _adb] : glyph-proc
+			include : FlatTopSeriflessBody df top fFlat _ada _adb
 			include : tagged 'serifRT' : HSerif.rt df.rightSB top SideJut df.mvs
 
-		export : define [EarlessCornerBody df top _ada _adb] : glyph-proc
+		export : define [EarlessCornerBody df top fFlat _ada _adb] : glyph-proc
 			local ada : fallback _ada df.smallArchDepthA
 			local adb : fallback _adb df.smallArchDepthB
-			include : OBarRight.earlessCorner
-				top    -- top
-				left   -- df.leftSB
-				right  -- df.rightSB
-				sw     -- df.mvs
-				fine   -- df.shoulderFine
-				ada    -- ada
-				adb    -- adb
+			include : if fFlat
+				then : OBarRight.earlessCornerFlat
+					top   -- top
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- ada
+					adb   -- adb
+				else : OBarRight.earlessCorner
+					top    -- top
+					left   -- df.leftSB
+					right  -- df.rightSB
+					sw     -- df.mvs
+					fine   -- df.shoulderFine
+					ada    -- ada
+					adb    -- adb
 
-		export : define [EarlessRoundedBody df top _ada _adb] : glyph-proc
+		export : define [EarlessRoundedBody df top fFlat _ada _adb] : glyph-proc
 			local ada : fallback _ada df.smallArchDepthA
 			local adb : fallback _adb df.smallArchDepthB
-			include : OBarRight.earlessRounded
-				top       -- top
-				left      -- df.leftSB
-				right     -- df.rightSB
-				yTerminal -- df.smallArchDepthA
-				sw        -- df.mvs
-				fine      -- df.shoulderFine
-				ada       -- ada
-				adb       -- adb
+			include : if fFlat
+				then : OBarRight.earlessRoundedFlat
+					top       -- top
+					left      -- df.leftSB
+					right     -- df.rightSB
+					yTerminal -- df.smallArchDepthA
+					sw        -- df.mvs
+					fine      -- df.shoulderFine
+					ada       -- ada
+					adb       -- adb
+				else : OBarRight.earlessRounded
+					top       -- top
+					left      -- df.leftSB
+					right     -- df.rightSB
+					yTerminal -- df.smallArchDepthA
+					sw        -- df.mvs
+					fine      -- df.shoulderFine
+					ada       -- ada
+					adb       -- adb
 
 	define SingleStoreyConfig : SuffixCfg.weave
 		object # hook
 			singleStoreyBentHook  { SingleStorey.BentHook             SHook                  }
 			singleStoreyFlatHook  { SingleStorey.FlatHook             0                      }
+		object # bowl
+			""                    false
+			flatBowl              true
 		object # ear/serif
 			serifless             { SingleStorey.SeriflessBody        0                      }
 			serifed               { SingleStorey.SerifedBody          0                      }
@@ -265,13 +316,13 @@ glyph-block Letter-Latin-Lower-G : begin
 			earlessCornerHTB      { SingleStorey.EarlessCornerBody    0                      }
 			earlessRounded        { SingleStorey.EarlessRoundedBody   (XH - SmallArchDepthA) }
 
-	foreach { suffix { { hookShape hookEnd } { bodyShape hookStart } } } [Object.entries SingleStoreyConfig] : do
+	foreach { suffix { { hookShape hookEnd } fFlat { bodyShape hookStart } } } [Object.entries SingleStoreyConfig] : do
 		create-glyph "g.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
 			set-base-anchor 'overlay' df.middle [mix O (Descender + [Math.max hookEnd df.mvs]) 0.5]
 			set-base-anchor 'strike'  df.middle (XH / 2)
-			include : bodyShape df  XH
+			include : bodyShape df  XH fFlat
 			include : hookShape df (XH - hookStart)
 
 		create-glyph "gCap.\(suffix)" : glyph-proc
@@ -279,7 +330,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			include : df.markSet.capDesc
 			set-base-anchor 'overlay' df.middle [mix O (Descender + [Math.max hookEnd df.mvs]) 0.5]
 			set-base-anchor 'strike'  df.middle (CAP / 2)
-			include : bodyShape df  CAP              ArchDepthA ArchDepthB
+			include : bodyShape df  CAP fFlat         ArchDepthA ArchDepthB
 			include : hookShape df (CAP - hookStart) ArchDepthA ArchDepthB
 
 		create-glyph "gStroke.\(suffix)" : glyph-proc
@@ -296,7 +347,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			local subDf : DivFrame (0.75 * para.advanceScaleM) 2
 			set-base-anchor 'overlay' subDf.middle [mix O (Descender + [Math.max hookEnd subDf.mvs]) 0.5]
 			set-base-anchor 'strike'  subDf.middle (XH / 2)
-			include : bodyShape subDf  XH
+			include : bodyShape subDf  XH fFlat
 			include : hookShape subDf (XH - hookStart)
 			include : PalatalHook.r
 				x       -- df.rightSB
@@ -316,7 +367,7 @@ glyph-block Letter-Latin-Lower-G : begin
 				include : df.markSet.p
 				set-base-anchor 'overlay' df.middle [mix O (Descender + [Math.max hookEnd df.mvs]) 0.5]
 				set-base-anchor 'strike'  df.middle (XH / 2)
-				include : bodyShape                df  XH
+				include : bodyShape                df  XH fFlat
 				include : SingleStorey.CrossedHook df (XH - hookStart)
 
 	select-variant 'g' 'g'
