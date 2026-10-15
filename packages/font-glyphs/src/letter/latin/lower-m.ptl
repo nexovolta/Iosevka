@@ -463,7 +463,7 @@ glyph-block Letter-Latin-Lower-M : begin
 			trilateralMotionSerifed { CapitalTurnedMTrilateralMotionSerifs CapitalTurnedMTrilateralMotionSerifs }
 			topRightMotionSerifed  { LbSerifs LbSerifs }
 			motionSerifed : match body
-				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) { LtRbSerifs LtRbSerifs }
+				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) [if (cut === 'bottomCut') { RbSerifs RbSerifs } { LtRbSerifs LtRbSerifs }]
 				__                                                             { LtSerifs   LtSerifs   } # The name-shaping mapping is swapped by design
 
 	foreach { suffix { { Body toothless tailed } cut { shortStem } { USerifs LSerifs } } } [pairs-of TurnMConfig] : do
