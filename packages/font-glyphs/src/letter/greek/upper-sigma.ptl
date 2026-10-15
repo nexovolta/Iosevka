@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix] from "@iosevka/util"
+import {MathSansSerif} from "@iosevka/glyph/relation"
 
 glyph-module
 
@@ -11,10 +11,12 @@ glyph-block Letter-Greek-Upper-Sigma : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 
 	glyph-block-export SigmaShape
-	define [SigmaShape] : with-params [df top bottom fine [doSerif SLAB] [pxMid 0.5] [pyMid 0.5] [offsetLeft 0]] : glyph-proc
+	define [SigmaShape] : with-params [df top bottom fine [doSerif nothing] [doSerifTop SLAB] [doSerifBot SLAB] [pxMid 0.5] [pyMid 0.5] [offsetLeft 0]] : glyph-proc
 		local cor : DiagCor (top - bottom) (df.rightSB - df.leftSB)
 		local xMid : [mix df.leftSB df.rightSB pxMid] - fine / 2
 		local yMid : mix bottom top pyMid
+		local fTop : if (doSerif !== nothing) doSerif doSerifTop
+		local fBot : if (doSerif !== nothing) doSerif doSerifBot
 
 		include : union
 			HBar.t (offsetLeft + df.leftSB) df.rightSB top    fine
@@ -27,14 +29,23 @@ glyph-block Letter-Greek-Upper-Sigma : begin
 				corner (df.leftSB + offsetLeft)              (top - fine)
 				corner (xMid      + offsetLeft)              yMid
 
-		if doSerif : begin
+		if (fTop || fBot) : begin
 			local { jutTop jutBot jutMid } : EFVJutLength top bottom pyMid fine
-			include : VSerif.dr df.rightSB top    jutTop
-			include : VSerif.ur df.rightSB bottom jutBot
+			if fTop : include : tagged 'serifRT' : VSerif.dr df.rightSB top    jutTop
+			if fBot : include : tagged 'serifRB' : VSerif.ur df.rightSB bottom jutBot
 
-	create-glyph 'grek/Sigma' 0x3A3 : glyph-proc
-		local df : include : DivFrame 1
-		include : df.markSet.capital
-		include : SigmaShape df CAP 0 Stroke
+	define SigmaConfig : object
+		serifless     { false false }
+		topSerifed    { true  false }
+		bottomSerifed { false true  }
+		fullSerifed   { true  true  }
 
-	alias 'Esh' 0x1A9 'grek/Sigma'
+	foreach { suffix { fTop fBot } } [Object.entries SigmaConfig] : do
+		create-glyph "grek/Sigma.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			include : SigmaShape df CAP 0 Stroke (doSerifTop -- fTop) (doSerifBot -- fBot)
+
+	select-variant 'grek/Sigma' 0x3A3
+	link-reduced-variant 'grek/Sigma/sansSerif' 'grek/Sigma' MathSansSerif
+	select-variant 'Esh' 0x1A9 (shapeFrom -- 'grek/Sigma') (follow -- 'grek/Sigma')
