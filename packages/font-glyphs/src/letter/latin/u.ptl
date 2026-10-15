@@ -102,21 +102,15 @@ glyph-block Letter-Latin-U : begin
 		export : define [ToothlessRounded df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
-			include : begin
-				local body : uBowl.toothlessRounded
-					top     -- yTL
-					bottom  -- 0
-					left    -- df.leftSB
-					right   -- df.rightSB
-					stroke  -- sw
-					ada     -- ada
-					adb     -- adb
-					rightY0 -- yTR
-				if ([fallback cut ''] === 'topCut') : return : difference body : spiro-outline
-					corner (df.rightSB - [HSwToV sw]) yTR
-					corner (df.rightSB - [HSwToV sw]) (yTR - HalfStroke)
-					corner df.rightSB yTR
-				return body
+			include : uBowl.toothlessRounded
+				top     -- yTL
+				bottom  -- 0
+				left    -- df.leftSB
+				right   -- df.rightSB
+				stroke  -- sw
+				ada     -- ada
+				adb     -- adb
+				rightY0 -- yTR
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)

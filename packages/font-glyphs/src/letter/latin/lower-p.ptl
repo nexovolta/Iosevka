@@ -99,27 +99,21 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut ""]] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
-		include : tagged 'bowl' : begin
-			local body : if fFlat
-				then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
-					left  -- left
-					right -- right
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
-				else : OBarLeft.earlessRounded (yTerminal -- Descender)
-					left  -- left
-					right -- right
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
-			if (cut === 'bottomCut') : return : difference body : spiro-outline
-				corner (left + [HSwToV sw]) Descender
-				corner (left + [HSwToV sw]) (Descender + HalfStroke)
-				corner left Descender
-			return body
+		include : tagged 'bowl' : if fFlat
+			then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+			else : OBarLeft.earlessRounded (yTerminal -- Descender)
+				left  -- left
+				right -- right
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
 
 	define [SmallPSerifLT df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lt.outer
 	define [SmallPSerifLB df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lb.fullSide
