@@ -10,6 +10,7 @@ glyph-block Letter-Cyrillic-De : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateSelectorVariants
+	glyph-block-import Letter-Shared-Shapes : OBarRight
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe ZeConfig SLAB-FLAT-HOOK
 
 	glyph-block-export BottomExtension
@@ -305,14 +306,15 @@ glyph-block Letter-Cyrillic-De : begin
 	CreateSelectorVariants 'cyrl/dzze.upright' null DeUprightSuffixes
 
 	## Italic
-	define [CyrDeItalicKnots df _sw] : begin
-		local sw : fallback _sw df.mvs
-		local fine : ShoulderFine * (sw / Stroke)
-
+	define [CyrDeItalicMetrics df sw] : begin
 		local yRingTop : Math.min (XH + O) (XH - QuarterStroke)
 		local ada : df.archDepthAOf (SmallArchDepth * (yRingTop / XH)) sw
 		local adb : df.archDepthBOf (SmallArchDepth * (yRingTop / XH)) sw
+		local fine : ShoulderFine * (sw / Stroke)
+		return : object yRingTop ada adb fine
 
+	define [CyrDeItalicKnots df sw] : begin
+		local [object yRingTop ada adb fine] : CyrDeItalicMetrics df sw
 		return : list
 			straight.up.start ((df.rightSB - OX) - [HSwToV : sw - fine]) (yRingTop - adb) [widths.lhs fine]
 			Arch.lhs yRingTop (sw -- sw) (swBefore -- fine)
@@ -322,13 +324,38 @@ glyph-block Letter-Cyrillic-De : begin
 			quadControls 0 0.8
 			g4 (df.leftSB + sw * 1.1) Ascender
 
+	define [CyrDeItalicFlatParts df sw] : begin
+		local [object yRingTop ada adb fine] : CyrDeItalicMetrics df sw
+		return : union
+			OBarRight.earlessCorner
+				top   -- yRingTop
+				left  -- df.leftSB
+				right -- df.rightSB
+				sw    -- sw
+				fine  -- fine
+				ada   -- ada
+				adb   -- adb
+				rise  -- 0
+			VBar.r df.rightSB 0 yRingTop sw
+			dispiro
+				widths.lhs sw
+				flat (df.rightSB - OX) yRingTop [heading Upward]
+				quadControls 0 0.8
+				g4 (df.leftSB + sw * 1.1) Ascender
+
 	glyph-block-export CyrDeItalicShape
-	define [CyrDeItalicShape df _sw] : dispiro
-		CyrDeItalicKnots df _sw
+	define [CyrDeItalicShape df _sw _fFlat] : begin
+		local sw : fallback _sw df.mvs
+		return : if [fallback _fFlat false]
+			then : CyrDeItalicFlatParts df sw
+			else : dispiro : CyrDeItalicKnots df sw
 
 	glyph-block-export CyrDeItalicMask
-	define [CyrDeItalicMask df _sw] : spiro-outline
-		CyrDeItalicKnots df _sw
+	define [CyrDeItalicMask df _sw _fFlat] : begin
+		local sw : fallback _sw df.mvs
+		return : if [fallback _fFlat false]
+			then : CyrDeItalicFlatParts df sw
+			else : spiro-outline : CyrDeItalicKnots df sw
 
 	create-glyph 'cyrl/de.cursiveSerifless' : glyph-proc
 		include : MarkSet.b
@@ -336,6 +363,12 @@ glyph-block Letter-Cyrillic-De : begin
 	alias 'cyrl/de.cursiveMotionSerifed' null 'cyrl/de.cursiveSerifless'
 	alias 'cyrl/de.cursiveSerifed' null 'cyrl/de.cursiveSerifless'
 	alias 'cyrl/de.cursive' null 'cyrl/de.cursiveSerifless'
+	create-glyph 'cyrl/de.cursiveFlatBowlSerifless' : glyph-proc
+		include : MarkSet.b
+		include : CyrDeItalicShape [DivFrame 1] nothing true
+	alias 'cyrl/de.cursiveFlatBowlMotionSerifed' null 'cyrl/de.cursiveFlatBowlSerifless'
+	alias 'cyrl/de.cursiveFlatBowlSerifed' null 'cyrl/de.cursiveFlatBowlSerifless'
+	alias 'cyrl/de.cursiveFlatBowl' null 'cyrl/de.cursiveFlatBowlSerifless'
 	alias 'cyrl/de.italic' null 'cyrl/de.cursiveSerifless'
 	select-variant 'cyrl/de' 0x434
 
