@@ -15,8 +15,17 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
 
-	define [ToothedBody df yTop] : union
-		OBarRight.shape
+	define [ToothedBody df yTop fFlat] : union
+		if fFlat
+		: then : OBarRight.earlessCorner
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
+			rise  -- 0
+		: else : OBarRight.shape
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -25,7 +34,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
 
-	define [TailedBody df yTop] : union
+	define [TailedBody df yTop fFlat] : union
 		OBarRight.shape
 			left  -- df.leftSB
 			right -- df.rightSB
@@ -35,8 +44,16 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		tagged 'rightBar' : RightwardTailedBar df.rightSB 0 yTop df.mvs
 
-	define [FlatBottomBody df yTop] : union
-		OBarRight.toothlessCorner
+	define [FlatBottomBody df yTop fFlat] : union
+		if fFlat
+		: then : OBarRight.flatTopAndBottom
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
+		: else : OBarRight.toothlessCorner
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -46,29 +63,16 @@ glyph-block Letter-Latin-Lower-D : begin
 			rise  -- 0
 		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
 
-	define [FlatTopBody df yTop] : union
-		OBarRight.earlessCorner
+	define [ToothlessCornerBody df yTop fFlat] : union
+		if fFlat
+		: then : OBarRight.toothlessCornerFlat
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
 			fine  -- df.shoulderFine
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
-			rise  -- 0
-		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
-
-	define [FlatTopAndBottomBody df yTop] : union
-		OBarRight.flatTopAndBottom
-			left  -- df.leftSB
-			right -- df.rightSB
-			sw    -- df.mvs
-			fine  -- df.shoulderFine
-			ada   -- df.smallArchDepthA
-			adb   -- df.smallArchDepthB
-		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
-
-	define [ToothlessCornerBody df yTop] : union
-		OBarRight.toothlessCorner
+		: else : OBarRight.toothlessCorner
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -77,8 +81,16 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		tagged 'rightBar' : VBar.r df.rightSB DToothlessRise yTop df.mvs
 
-	define [ToothlessCornerRTBBody df yTop] : union
-		OBarRight.toothlessCorner
+	define [ToothlessCornerRTBBody df yTop fFlat] : union
+		if fFlat
+		: then : OBarRight.toothlessCornerFlat
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
+		: else : OBarRight.toothlessCorner
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -87,7 +99,14 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		tagged 'rightBar' : VBar.r df.rightSB 0 yTop df.mvs
 
-	define [ToothlessRoundedBody df yTop] : begin
+	define [ToothlessRoundedBody df yTop fFlat] : begin
+		if fFlat : return : OBarRight.toothlessRoundedFlat (yTerminal -- yTop)
+			left  -- df.leftSB
+			right -- df.rightSB
+			sw    -- df.mvs
+			fine  -- df.shoulderFine
+			ada   -- df.smallArchDepthA
+			adb   -- df.smallArchDepthB
 		return : OBarRight.toothlessRounded (yTerminal -- yTop)
 			left  -- df.leftSB
 			right -- df.rightSB
@@ -101,22 +120,26 @@ glyph-block Letter-Latin-Lower-D : begin
 	define [BaseSerif df yTop] : tagged 'serifRB' : HSerif.rb df.rightSB 0 SideJut df.mvs
 
 	define DConfig : SuffixCfg.weave
-		object # body
+		object # tooth
 			toothed                   ToothedBody
 			tailed                    TailedBody
 			flatBottom                FlatBottomBody
-			flatTop                   FlatTopBody
-			flatTopAndBottom          FlatTopAndBottomBody
 			toothlessCorner           ToothlessCornerBody
 			toothlessCornerRTB        ToothlessCornerRTBBody
 			toothlessRounded          ToothlessRoundedBody
-		function [body] : object # serifs
+		function [tooth] : begin
+			if (tooth === 'tailed') : return : object
+				""  false
+			return : object
+				""    false
+				flat  true
+		object # serifs
 			serifless                { null     null      }
 			topSerifed               { TopSerif null      }
 			bottomSerifed            { null     BaseSerif }
 			serifed                  { TopSerif BaseSerif }
 
-	foreach { suffix { Body { topSerif bottomSerif } } } [Object.entries DConfig] : do
+	foreach { suffix { Body fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
 		local yOverlay : mix XH (Ascender - [if topSerif Stroke 0]) 0.5
 
 		do
@@ -124,14 +147,14 @@ glyph-block Letter-Latin-Lower-D : begin
 			create-glyph "dCaron/base.\(suffix)" : make [DivFrame 0.95] [DivFrame 1] false
 			create-glyph "d/pack75.\(suffix)"    : make [ThreeQuarterDf para.advanceScaleM] [ThreeQuarterDf para.advanceScaleM] false
 			create-glyph "d/pack80.\(suffix)"    : make [ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)] [ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)] false
-			if ([not bottomSerif] && Body === ToothedBody) : create-glyph "d/phoneticLeft2.\(suffix)" : make
+			if ([not bottomSerif] && Body === ToothedBody && !fFlat) : create-glyph "d/phoneticLeft2.\(suffix)" : make
 				DivFrame (([mix Width RightSB 0.5] - [HSwToV QuarterStroke]) / Width) 2 1
 				DivFrame 1
 				begin true
 		: where : [make df dfMetrics fPhoneticLeft] : glyph-proc
 			include dfMetrics
 			include : df.markSet.b
-			include : Body df Ascender
+			include : Body df Ascender fFlat
 			if topSerif    : include : topSerif    df Ascender
 			if bottomSerif : include : bottomSerif df Ascender
 			if fPhoneticLeft : include : HBar.t (df.rightSB + O) (RightSB + SideJut) XH
@@ -148,7 +171,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		create-glyph "latn/de.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.b
-			include : Body df Ascender
+			include : Body df Ascender fFlat
 			local xTopLeft : mix df.leftSB df.rightSB 0.1
 			include : HBar.t xTopLeft (df.rightSB + O) Ascender
 			if topSerif : include : composite-proc
@@ -160,7 +183,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		if [not topSerif] : create-glyph "dHookTop.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.b
-			include : Body df (Ascender - Hook - HalfStroke)
+			include : Body df (Ascender - Hook - HalfStroke) fFlat
 			include : TopHook.toRight.rBarInner df.rightSB (XH / 2) Ascender
 			if bottomSerif : include : bottomSerif df Ascender
 			include : LeaningAnchor.Above.VBar.r df.rightSB
