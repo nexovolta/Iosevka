@@ -93,37 +93,90 @@ glyph-block Letter-Latin-Lower-G : begin
 			arcvh
 			g4 [mix SB RightSB 0.435] groundy [heading Rightward]
 
-	define [DoubleStoreyGShape fOpen fFlat _fDisjoint] : glyph-proc
+	define [OShapeTopRightCorner u d l r rise _width _ada _adb] : begin
+		local middle : mix l r 0.5
+		local width : fallback _width Stroke
+		local ada : fallback _ada SmallArchDepthA
+		local adb : fallback _adb SmallArchDepthB
+		return : dispiro
+			widths.lhs width
+			g2 r (u - rise)
+			Arch.lhs u (sw -- width) (blendPre -- {})
+			flatside.ld l d u ada adb
+			arcvh
+			Arch.lhs.centerAt.ltr.b middle d (sw -- width)
+			archv
+			flat r [Math.min (d + ada) (u - rise - TINY)]
+			curl r (u - rise)
+
+	define [DoubleStoreyTeardropBowl top bot left right] : begin
+		local h : top - bot
+		local ada : Math.min SmallArchDepthA : 0.5 * h
+		local adb : Math.min SmallArchDepthB : 0.5 * h
+		return : dispiro
+			widths.lhs Stroke
+			flat (right - TINY) top [heading Leftward]
+			curl [Arch.adjust-x.top [mix left right 0.5] (sw -- Stroke)] top
+			archv
+			flatside.ld left bot top ada adb
+			Arch.lhs bot (sw -- Stroke)
+			flat right [Math.min (bot + adb) (top - TINY)]
+			curl right top [heading Upward]
+
+	define [DoubleStoreyUpperBowl ear top bot left right] : glyph-proc
+		local gm : mix left right 0.5
+		local earRight : [mix Width RightSB 0.75] - OX
+		match ear
+			[Just 'earlessRounded'] : include : OShape top bot left right
+			[Just 'earlessCorner'] : include : OShapeTopRightCorner top bot left right DToothlessRise
+			([Just 'flatBowl'] || [Just 'flatBowlSerifed']) : begin
+				include : DoubleStoreyTeardropBowl top bot left right
+				if (ear === 'flatBowlSerifed') : include : tagged 'serifRT' : HSerif.rt right top SideJut
+			[Just 'topCut'] : include : difference
+				DoubleStoreyTeardropBowl top bot left right
+				spiro-outline
+					corner (right - [HSwToV Stroke]) top
+					corner (right - [HSwToV Stroke]) (top - HalfStroke)
+					corner right                     top
+			__ : begin
+				include : OShape top bot left right
+				include : spiro-outline
+					corner earRight top
+					corner earRight (top - Stroke)
+					corner gm (top - Stroke - O)
+					corner gm top
+
+	define [DoubleStoreyGShape fOpen fFlat _fDisjoint ear] : glyph-proc
 		local fDisjoint : fallback _fDisjoint false
 		include : MarkSet.p
 		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
-		include : OShape XH (obot - O) SB [mix Width RightSB 1.3]
+		local left SB
+		local right : mix Width RightSB 1.3
+		include : DoubleStoreyUpperBowl [fallback ear 'standard'] XH (obot - O) left right
 		include : DoubleStoreyLowerHook Descender XH (fOpen -- fOpen) (fFlat -- fFlat) (fDisjoint -- fDisjoint)
-		local gm : mix SB [mix Width RightSB 1.3] 0.5
-		include : spiro-outline
-			corner ([mix Width RightSB 0.75] - OX)  XH
-			corner ([mix Width RightSB 0.75] - OX) (XH - Stroke)
-			corner gm (XH - Stroke - O)
-			corner gm  XH
 		local yJoin : mix 0 XH DesignParameters.gBarPos
 		local groundy : Math.round : [mix Descender yJoin 0.64] + HalfStroke
 		set-base-anchor 'overlay' Middle [mix (Descender + O) groundy 0.5]
 		set-base-anchor 'strike'  Middle [mix (obot      - O) XH      0.5]
 
-	create-glyph 'g.doubleStoreyClosed' : DoubleStoreyGShape false false
-	derive-composites "gStroke.doubleStoreyClosed" null "g.doubleStoreyClosed" [OverlayW obwDoubleStorey]
+	define DoubleStoreyConfig : SuffixCfg.weave
+		object # hook/openness
+			doubleStoreyClosed           { false false false }
+			doubleStoreyOpen             { true  false false }
+			doubleStoreyOpenFlatHook     { true  true  false }
+			doubleStoreyDisjoint         { false false true  }
+			doubleStoreyDisjointFlatHook { false true  true  }
+		object # ear
+			""              "standard"
+			earlessRounded  "earlessRounded"
+			earlessCorner   "earlessCorner"
+			flatBowl        "flatBowl"
+			flatBowlSerifed "flatBowlSerifed"
+			topCut          "topCut"
 
-	create-glyph 'g.doubleStoreyOpen' : DoubleStoreyGShape true false
-	derive-composites "gStroke.doubleStoreyOpen" null "g.doubleStoreyOpen" [OverlayW obwDoubleStorey]
-
-	create-glyph 'g.doubleStoreyOpenFlatHook' : DoubleStoreyGShape true true
-	derive-composites "gStroke.doubleStoreyOpenFlatHook" null "g.doubleStoreyOpenFlatHook" [OverlayW obwDoubleStorey]
-
-	create-glyph 'g.doubleStoreyDisjoint' : DoubleStoreyGShape false false true
-	derive-composites "gStroke.doubleStoreyDisjoint" null "g.doubleStoreyDisjoint" [OverlayW obwDoubleStorey]
-
-	create-glyph 'g.doubleStoreyDisjointFlatHook' : DoubleStoreyGShape false true true
-	derive-composites "gStroke.doubleStoreyDisjointFlatHook" null "g.doubleStoreyDisjointFlatHook" [OverlayW obwDoubleStorey]
+	foreach { suffix { { fOpen fFlat fDisjoint } ear } } [Object.entries DoubleStoreyConfig] : do
+		create-glyph "g.\(suffix)" : DoubleStoreyGShape fOpen fFlat fDisjoint ear
+		derive-composites "gStroke.\(suffix)" null "g.\(suffix)" [OverlayW obwDoubleStorey]
 
 	define [GDoubleCircleShape stroke bot top _fDisjoint] : glyph-proc
 		local fDisjoint : fallback _fDisjoint false
