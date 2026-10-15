@@ -16,7 +16,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
-	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot
+	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
@@ -874,7 +874,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 		glyph-block-import Letter-Latin-U : USerifs
 		glyph-block-import Letter-Shared-Shapes : RightwardTailedBar
 
-		define [UToothed df top slab hook ada adb] : glyph-proc
+		define [UVolBar df top bot stroke cut] : begin
+			local y : StemCutY (bot -- bot) (top -- top) (cut -- [fallback cut ''])
+			return : union
+				VBar.r df.rightSB y.bot y.top stroke
+				ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- bot) (top -- top) (sw -- stroke)
+
+		define [UToothed df top slab hook ada adb cut] : glyph-proc
 			set-base-anchor 'trailing' df.rightSB 0
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-STEM top 0
 				blend     -- VolBlend
@@ -884,10 +890,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : VBar.r df.rightSB 0 top stroke
+			include : UVolBar df top 0 stroke cut
 			include : slab df top stroke
 
-		define [UTailed df top slab hook ada adb] : glyph-proc
+		define [UTailed df top slab hook ada adb cut] : glyph-proc
 			set-base-anchor 'trailing' (df.rightSB + SideJut) 0
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-STEM top 0
 				blend     -- VolBlend
@@ -897,10 +903,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : RightwardTailedBar df.rightSB 0 top stroke
+			local y : StemCutY (bot -- 0) (top -- top) (cut -- [fallback cut ''])
+			include : RightwardTailedBar df.rightSB y.bot y.top stroke
+			include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 			include : slab df top stroke
 
-		define [UFlatBottom df top slab hook ada adb] : glyph-proc
+		define [UFlatBottom df top slab hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL FLAT-CONNECTION top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -909,10 +917,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : VBar.r df.rightSB 0 top stroke
+			include : UVolBar df top 0 stroke cut
 			include : slab df top stroke
 
-		define [UToothlessCorner df top slab hook ada adb] : glyph-proc
+		define [UToothlessCorner df top slab hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL SLAB-INWARD top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -921,10 +929,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : VBar.r df.rightSB DToothlessRise top stroke
+			include : UVolBar df top DToothlessRise stroke cut
 			include : slab df top stroke
 
-		define [UToothlessRounded df top slab hook ada adb] : glyph-proc
+		define [UToothlessRounded df top slab hook ada adb cut] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-ROUND top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -933,7 +941,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- adb
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
-			include : VBar.r df.rightSB ada top stroke
+			include : UVolBar df top ada stroke cut
 			include : slab df top stroke
 
 		define UeVolapukConfig : SuffixCfg.weave
@@ -961,7 +969,15 @@ glyph-block Letter-Cyrillic-Ze : begin
 				flatBottom        UFlatBottom
 				toothlessCorner   UToothlessCorner
 				toothlessRounded  UToothlessRounded
-			function [body] : object # small u serifs
+			function [body] : begin
+				if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
+					""         ""
+					topCut     "topCut"
+				return : object
+					""         ""
+					topCut     "topCut"
+					bottomCut  "bottomCut"
+			function [body cut] : object # small u serifs
 				serifless            no-shape
 				bottomRightSerifed   USerifs.BottomRight
 				motionSerifed : match body
@@ -977,11 +993,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 				include : df.markSet.capital
 				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB
 
-		foreach { suffix { Base Slabs } } [Object.entries ueVolapukConfig] : do
+		foreach { suffix { Base cut Slabs } } [Object.entries ueVolapukConfig] : do
 			create-glyph "ueVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e
-				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB
+				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB cut
 
 		select-variant 'UeVolapuk' 0xA79E (follow -- 'U')
 		select-variant 'ueVolapuk' 0xA79F (follow -- 'u')

@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : OBarLeft TopHook
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
+	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Latin-C : CLetterForm
 
 	define SLAB-NONE      0
@@ -25,7 +26,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	define [FlourishBowl] : with-params [Body top bot left right sw ada adb] : begin
 		local fine : ShoulderFine * (sw / Stroke)
-		if (Body === ToothedBody || Body === BottomCutBody) : begin
+		if (Body === ToothedBody) : begin
 			# Toothed / bottom-cut spur at the baseline; flourish is always flat at XH.
 			return : OBarLeft.earlessCorner
 				rise  -- 0
@@ -61,40 +62,47 @@ glyph-block Letter-Latin-Lower-B : begin
 			flatside.ru right bot top ada adb
 			FlourishFlatTopKnots left right top sw
 
-	define [FlourishStemBot Body sw] : begin
-		if (Body === BottomCutBody) : return (0.5 * sw)
+	define [FlourishStemBot Body cut sw] : begin
+		if (cut === 'bottomCut') : return (0.5 * sw)
 		if (Body === ToothlessCornerBody) : return DToothlessRise
 		return 0
 
-	define [ToothedBody yTop fFlat] : union
-		if fFlat
-		: then : OBarLeft.earlessCorner (rise -- 0)
-		: else : OBarLeft.shape
-		VBar.l SB 0 yTop
+	define [ToothedBody yTop fFlat cut] : begin
+		local y : StemCutY 0 yTop cut
+		return : union
+			if fFlat
+			: then : OBarLeft.earlessCorner (rise -- 0)
+			: else : OBarLeft.shape
+			VBar.l SB y.bot y.top
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- 0) (top -- yTop)
 
-	define [BottomCutBody yTop fFlat] : union
-		OBarLeft.shape
-		VBar.l SB HalfStroke yTop
-		spiro-outline
-			corner  SB                    0
-			corner  SB                    HalfStroke
-			corner (SB + [HSwToV Stroke]) HalfStroke
+	define [FlatBottomBody yTop fFlat cut] : begin
+		local y : StemCutY 0 yTop cut
+		return : union
+			if fFlat
+			: then : OBarLeft.flatTopAndBottom
+			: else : OBarLeft.toothlessCorner (rise -- 0)
+			VBar.l SB y.bot y.top
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- 0) (top -- yTop)
 
-	define [FlatBottomBody yTop fFlat] : union
-		if fFlat
-		: then : OBarLeft.flatTopAndBottom
-		: else : OBarLeft.toothlessCorner (rise -- 0)
-		VBar.l SB 0 yTop
+	define [ToothlessCornerBody yTop fFlat cut] : begin
+		local y : StemCutY DToothlessRise yTop cut
+		return : union
+			if fFlat
+			: then : OBarLeft.toothlessCornerFlat
+			: else : OBarLeft.toothlessCorner
+			VBar.l SB y.bot y.top
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- DToothlessRise) (top -- yTop)
 
-	define [ToothlessCornerBody yTop fFlat] : union
-		if fFlat
-		: then : OBarLeft.toothlessCornerFlat
-		: else : OBarLeft.toothlessCorner
-		VBar.l SB DToothlessRise yTop
-
-	define [ToothlessRoundedBody yTop fFlat] : begin
-		if fFlat : return : OBarLeft.toothlessRoundedFlat (yTerminal -- yTop)
-		return : OBarLeft.toothlessRounded (yTerminal -- yTop)
+	define [ToothlessRoundedBody yTop fFlat cut] : begin
+		local body : if fFlat
+			then : OBarLeft.toothlessRoundedFlat (yTerminal -- yTop)
+			else : OBarLeft.toothlessRounded (yTerminal -- yTop)
+		if (cut !== 'topCut') : return body
+		return : difference body : spiro-outline
+			corner (SB + [HSwToV Stroke]) yTop
+			corner (SB + [HSwToV Stroke]) (yTop - HalfStroke)
+			corner SB yTop
 
 	define [LTSerifs] : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
 	define [LBSerifs] : tagged 'serifLB' : HSerif.lb SB 0 SideJut
@@ -103,27 +111,31 @@ glyph-block Letter-Latin-Lower-B : begin
 	define BConfig : SuffixCfg.weave
 		object # tooth
 			""                ToothedBody
-			bottomCut         BottomCutBody
 			flatBottom        FlatBottomBody
 			toothlessCorner   ToothlessCornerBody
 			toothlessRounded  ToothlessRoundedBody
 		function [tooth] : begin
-			if (tooth === 'bottomCut') : return : object
-				""  false
+			if (tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
+				""      ""
+				topCut  "topCut"
 			return : object
-				""        false
-				flatBowl  true
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
+		function [tooth cut] : object # bowl
+			""        false
+			flatBowl  true
 		object # serifs
 			serifless       { no-shape   false  }
 			motionSerifed   { LTSerifs   true   }
 			bottomSerifed   { LBSerifs   false  }
 			serifed         { FullSerifs true   }
 
-	foreach { suffix { Body fFlat { Serifs doST } } } [Object.entries BConfig] : do
+	foreach { suffix { Body cut fFlat { Serifs doST } } } [Object.entries BConfig] : do
 		local yOverlay : mix XH (Ascender - [if doST Stroke 0]) 0.5
 		create-glyph "b.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body Ascender fFlat
+			include : Body Ascender fFlat cut
 			include : Serifs
 			include : LeaningAnchor.Above.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
@@ -143,7 +155,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 		create-glyph "latn/be.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body Ascender fFlat
+			include : Body Ascender fFlat cut
 			include : Serifs
 			local xTopRight : mix SB RightSB 0.9
 			include : HBar.t (SB - O) xTopRight Ascender
@@ -152,7 +164,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 		if [not doST] : create-glyph "bHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.b
-			include : Body XH fFlat
+			include : Body XH fFlat [if (cut === 'topCut') '' cut]
 			include : Serifs
 			include : TopHook.toRight.lBarInner SB (XH / 2) Ascender
 			include : LeaningAnchor.Above.VBar.l SB
@@ -173,12 +185,12 @@ glyph-block Letter-Latin-Lower-B : begin
 			local ada : subDf.smallArchDepthA + 0
 			local adb : subDf.smallArchDepthB + 0
 			local ink : HSwToV sw
-			local yStemBot : FlourishStemBot Body sw
+			local yStemBot : FlourishStemBot Body cut sw
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : union
 					FlourishBowl Body XH 0 xLeft xRight sw ada adb
 					VBar.l xLeft yStemBot Ascender sw
-					if (Body === BottomCutBody)
+					if (cut === 'bottomCut')
 						spiro-outline
 							corner xLeft                    0
 							corner xLeft                    yStemBot

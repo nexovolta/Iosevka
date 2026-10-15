@@ -13,6 +13,7 @@ glyph-block Letter-Latin-Lower-N : begin
 	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : VerticalHook EngHook SerifFrame
+	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 
 	define [AdjustTrailingAnchor] : glyph-proc
 		define trAnchor currentGlyph.baseAnchors.trailing
@@ -51,8 +52,14 @@ glyph-block Letter-Latin-Lower-N : begin
 		local sf : SerifFrame.fromDf df Ascender y (swRef -- _sw)
 		return : if sf.enoughSpaceForFullSerifs sf.rb.full [no-shape]
 
-	define [EaredBody top left right yBR sw _ada _adb] : glyph-proc
-		include : VBar.l left 0 top sw
+	define [NLeftBar left bot top sw cut] : begin
+		local y : StemCutY bot top cut
+		return : union
+			VBar.l left y.bot y.top sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- bot) (top -- top) (sw -- sw)
+
+	define [EaredBody top left right yBR sw cut _ada _adb] : glyph-proc
+		include : NLeftBar left 0 top sw cut
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.shape
@@ -67,8 +74,8 @@ glyph-block Letter-Latin-Lower-N : begin
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 
-	define [FlatTopBody top left right yBR sw _ada _adb] : glyph-proc
-		include : VBar.l left 0 top sw
+	define [FlatTopBody top left right yBR sw cut _ada _adb] : glyph-proc
+		include : NLeftBar left 0 top sw cut
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.earlessCorner
@@ -83,8 +90,8 @@ glyph-block Letter-Latin-Lower-N : begin
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 
-	define [EarlessCornerBody top left right yBR sw _ada _adb] : glyph-proc
-		include : VBar.l left 0 (top - DToothlessRise) sw
+	define [EarlessCornerBody top left right yBR sw cut _ada _adb] : glyph-proc
+		include : NLeftBar left 0 (top - DToothlessRise) sw cut
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.earlessCorner
@@ -98,9 +105,10 @@ glyph-block Letter-Latin-Lower-N : begin
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 
-	define [EarlessRoundedBody top left right yBR sw _ada _adb] : glyph-proc
+	define [EarlessRoundedBody top left right yBR sw cut _ada _adb] : glyph-proc
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
+		local y0 : if (cut === 'bottomCut') HalfStroke 0
 		include : nShoulder.earlessRounded
 			left   -- left
 			right  -- right
@@ -109,7 +117,8 @@ glyph-block Letter-Latin-Lower-N : begin
 			ada    -- ada
 			adb    -- adb
 			stroke -- sw
-			leftY0 -- 0
+			leftY0 -- y0
+		include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- 0) (top -- top) (sw -- sw)
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 
@@ -118,59 +127,67 @@ glyph-block Letter-Latin-Lower-N : begin
 		include : AdjustTrailingAnchor
 
 	define NConfig : SuffixCfg.weave
-		object # body
+		object # ear
 			""                  EaredBody
 			flatTop             FlatTopBody
 			earlessCorner       EarlessCornerBody
 			earlessRounded      EarlessRoundedBody
 			earlessCornerHTB    EarlessCornerBody
 			earlessRoundedHTB   EarlessRoundedBody
+		function [ear] : begin
+			if (ear === 'earlessCorner' || ear === 'earlessRounded' || ear === 'earlessCornerHTB' || ear === 'earlessRoundedHTB') : return : object
+				""         ""
+				bottomCut  "bottomCut"
+			return : object
+				""         ""
+				topCut     "topCut"
+				bottomCut  "bottomCut"
 		object # terminal
 			straight            0
 			tailed              1
-		function [body tail] : object # serifs
+		function [ear cut tail] : object # serifs
 			serifless           { nothing  nothing  nothing }
 			topLeftSerifed : list
-				match body
+				match ear
 					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
 					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
 					__                                                        NTopLeftSerif
 				begin nothing
 				begin nothing
 			motionSerifed : list
-				match body
+				match ear
 					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
 					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
 					__                                                        NTopLeftSerif
 				begin nothing
 				if (tail != 'tailed') NBottomRightSerifItalic
 			serifed : list
-				match body
+				match ear
 					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
 					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftSerif
 				if (tail != 'tailed') NBottomRightSerifUpright
 			serifedItalicYatCorner : list
-				match body
+				match ear
 					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
 					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin NBottomRightYatSerif
 			serifedItalicYatCursive : list
-				match body
+				match ear
 					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
 					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin nothing
 
-	foreach { suffix { Body tailed { sLT sLB sRB } } } [Object.entries NConfig] : do
+	foreach { suffix { Body cut tailed { sLT sLB sRB } } } [Object.entries NConfig] : do
 		create-glyph "n.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			set-base-anchor 'trailing' RightSB 0
-			include : Body XH SB RightSB [if tailed (XH - SmallArchDepthB + O) 0] Stroke
+			include : Body XH SB RightSB [if tailed (XH - SmallArchDepthB + O) 0] Stroke cut
 			if tailed : include : EndingTail RightSB 0 (XH - SmallArchDepthB) Stroke
 			if sLT : include : sLT [DivFrame 1] XH
 			if sLB : include : sLB [DivFrame 1] 0
@@ -180,7 +197,7 @@ glyph-block Letter-Latin-Lower-N : begin
 			local df : include : ThreeQuarterDf para.advanceScaleM
 			include : df.markSet.e
 			set-base-anchor 'trailing' df.rightSB 0
-			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke df.smallArchDepthA df.smallArchDepthB
+			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke cut df.smallArchDepthA df.smallArchDepthB
 			if tailed : include : EndingTail df.rightSB 0 (XH - df.smallArchDepthB) Stroke
 			if sLT : include : sLT df XH
 			if sLB : include : sLB df 0
@@ -190,7 +207,7 @@ glyph-block Letter-Latin-Lower-N : begin
 			local df : include : ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)
 			include : df.markSet.e
 			set-base-anchor 'trailing' df.rightSB 0
-			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke df.smallArchDepthA df.smallArchDepthB
+			include : Body XH df.leftSB df.rightSB [if tailed (XH - df.smallArchDepthB + O) 0] Stroke cut df.smallArchDepthA df.smallArchDepthB
 			if tailed : include : EndingTail df.rightSB 0 (XH - df.smallArchDepthB) Stroke
 			if sLT : include : sLT df XH
 			if sLB : include : sLB df 0
@@ -204,7 +221,7 @@ glyph-block Letter-Latin-Lower-N : begin
 		create-glyph "nCapLongLeg.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			include : LeaningAnchor.Below.VBar.r RightSB
-			include : Body CAP SB RightSB [if tailed (CAP - SmallArchDepthB + O) Descender] Stroke ArchDepthA ArchDepthB
+			include : Body CAP SB RightSB [if tailed (CAP - SmallArchDepthB + O) Descender] Stroke cut ArchDepthA ArchDepthB
 			if tailed : include : EndingTail RightSB Descender (CAP - SmallArchDepthB) Stroke
 			if sLT : include : sLT [DivFrame 1] CAP
 			if sLB : include : sLB [DivFrame 1] 0
@@ -213,7 +230,7 @@ glyph-block Letter-Latin-Lower-N : begin
 		create-glyph "nLongLeg.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : LeaningAnchor.Below.VBar.r RightSB
-			include : Body XH SB RightSB [if tailed (XH - SmallArchDepthB + O) Descender] Stroke
+			include : Body XH SB RightSB [if tailed (XH - SmallArchDepthB + O) Descender] Stroke cut
 			if tailed : include : EndingTail RightSB Descender (XH - SmallArchDepthB) Stroke
 			if sLT : include : sLT [DivFrame 1] XH
 			if sLB : include : sLB [DivFrame 1] 0
@@ -224,7 +241,7 @@ glyph-block Letter-Latin-Lower-N : begin
 			include : df.markSet.p
 
 			local subDf : df.slice 3 2
-			include : Body XH subDf.leftSB subDf.rightSB [if tailed (XH - subDf.smallArchDepthB + O) 0] df.mvs subDf.smallArchDepthA subDf.smallArchDepthB
+			include : Body XH subDf.leftSB subDf.rightSB [if tailed (XH - subDf.smallArchDepthB + O) 0] df.mvs cut subDf.smallArchDepthA subDf.smallArchDepthB
 			if tailed : include : EndingTail subDf.rightSB 0 (XH - subDf.smallArchDepthB) df.mvs
 			if sLT : include : sLT subDf XH
 			if sLB : include : sLB subDf 0
@@ -240,7 +257,7 @@ glyph-block Letter-Latin-Lower-N : begin
 		if (!tailed) : begin
 			create-glyph "nRTail.\(suffix)" : glyph-proc
 				include : MarkSet.e
-				include : Body XH SB RightSB 0 Stroke
+				include : Body XH SB RightSB 0 Stroke cut
 				include : RetroflexHook.rExt RightSB 0
 				if sLT : include : sLT [DivFrame 1] XH
 				if sLB : include : sLB [DivFrame 1] 0
@@ -253,7 +270,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				local m1 : Math.min RightSB : Width - rinner * 2 - fine - OX
 				local mockWidth : m1 + SB
 				local mockAdws : mockWidth / Width
-				include : Body XH SB m1 (rinner * 2 + fine) sw
+				include : Body XH SB m1 (rinner * 2 + fine) sw cut
 					ArchDepthAOf (SmallArchDepth * mockAdws) mockWidth
 					ArchDepthBOf (SmallArchDepth * mockAdws) mockWidth
 				include : dispiro
@@ -274,7 +291,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				local m2 : Middle - [HSwToV : 0.5 * fine]
 				local x2 : RightSB + SideJut
 				local y2 : rinner * 2 + fine - O
-				include : Body XH SB RightSB (y2 + O) sw
+				include : Body XH SB RightSB (y2 + O) sw cut
 				include : dispiro
 					straight.down.start RightSB y2 [widths.rhs.heading sw Downward]
 					CurlyTail.f fine 0 m2 x2 (swBefore -- sw)
@@ -283,7 +300,7 @@ glyph-block Letter-Latin-Lower-N : begin
 
 			create-glyph "engCap.\(suffix)" : glyph-proc
 				include : MarkSet.capital
-				include : Body CAP SB RightSB (O + Hook + HalfStroke) Stroke ArchDepthA ArchDepthB
+				include : Body CAP SB RightSB (O + Hook + HalfStroke) Stroke cut ArchDepthA ArchDepthB
 				local xHookDepth : Math.min (1.2 * HookX) : mix
 					(RightSB - [HSwToV HalfStroke]) - Middle
 					begin Jut
@@ -298,14 +315,14 @@ glyph-block Letter-Latin-Lower-N : begin
 
 			create-glyph "eng.\(suffix)" : glyph-proc
 				include : MarkSet.p
-				include : Body XH SB RightSB 0 Stroke
+				include : Body XH SB RightSB 0 Stroke cut
 				include : EngHook RightSB 0 Descender
 				if sLT : include : sLT [DivFrame 1] XH
 				if sLB : include : sLB [DivFrame 1] 0
 
 			create-glyph "engCrossedTail.\(suffix)" : glyph-proc
 				include : MarkSet.p
-				include : Body XH SB RightSB 0 Stroke
+				include : Body XH SB RightSB 0 Stroke cut
 				local fine : AdviceStroke 3.5
 				include : dispiro
 					straight.down.start RightSB (-O) [widths.rhs.heading Stroke Downward]
@@ -320,7 +337,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				local df : include : DivFrame para.advanceScaleM 1
 				include : df.markSet.p
 				local subDf : DivFrame (0.75 * para.advanceScaleM) 2
-				include : Body XH subDf.leftSB subDf.rightSB 0 subDf.mvs subDf.smallArchDepthA subDf.smallArchDepthB
+				include : Body XH subDf.leftSB subDf.rightSB 0 subDf.mvs cut subDf.smallArchDepthA subDf.smallArchDepthB
 				include : EngHook subDf.rightSB 0 Descender (sw -- subDf.mvs)
 				if sLT : include : sLT subDf XH
 				if sLB : include : sLB subDf 0
@@ -334,7 +351,7 @@ glyph-block Letter-Latin-Lower-N : begin
 			create-glyph "grek/eta.\(suffix)" : glyph-proc
 				include : MarkSet.p
 				include : LeaningAnchor.Below.VBar.r RightSB
-				include : Body XH SB RightSB Descender Stroke
+				include : Body XH SB RightSB Descender Stroke cut
 				if sLT : include : sLT [DivFrame 1] XH
 				if sLB : include : sLB [DivFrame 1] 0
 				set-base-anchor 'lf' (SB + [HSwToV HalfStroke]) 0
@@ -344,7 +361,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				include : df.markSet.e
 
 				local subDf : df.slice 3 2
-				include : Body XH subDf.leftSB subDf.rightSB (XH - subDf.smallArchDepthB - TINY) subDf.mvs subDf.smallArchDepthA subDf.smallArchDepthB
+				include : Body XH subDf.leftSB subDf.rightSB (XH - subDf.smallArchDepthB - TINY) subDf.mvs cut subDf.smallArchDepthA subDf.smallArchDepthB
 
 				if sLT : include : sLT subDf XH
 				if sLB : include : sLB subDf 0
@@ -354,7 +371,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				create-glyph "RInsular.\(suffix)" : glyph-proc
 					include : MarkSet.capDesc
 					include : LeaningAnchor.Below.VBar.l SB
-					include : Body CAP SB RightSB (-Descender) Stroke ArchDepthA ArchDepthB
+					include : Body CAP SB RightSB (-Descender) Stroke cut ArchDepthA ArchDepthB
 					include : RetroflexHook.rExt RightSB (-Descender)
 					include : VBar.l SB Descender 0
 					if sLT : include : sLT [DivFrame 1] CAP
@@ -362,7 +379,7 @@ glyph-block Letter-Latin-Lower-N : begin
 				create-glyph "rInsular.\(suffix)" : glyph-proc
 					include : MarkSet.p
 					include : LeaningAnchor.Below.VBar.l SB
-					include : Body XH SB RightSB (-Descender) Stroke
+					include : Body XH SB RightSB (-Descender) Stroke cut
 					include : RetroflexHook.rExt RightSB (-Descender)
 					include : VBar.l SB Descender 0
 					if sLT : include : sLT [DivFrame 1] XH

@@ -224,6 +224,27 @@ glyph-block Letter-Shared-Shapes : begin
 		flat       (x + [HSwToV : 0.5 * sw]) high [heading Downward]
 		DiagTail.L (x + [HSwToV : 0.5 * sw]) low (0.875 * Hook - 0.375 * sw) sw
 
+	# Outer side of the stem keeps yEnd; inner side is shortened by `cut`.
+	glyph-block-export DiagCutOuterTerminal
+	define [DiagCutOuterTerminal] : with-params [side end x yEnd [sw Stroke] [cut HalfStroke]] : begin
+		local xInner : if (side === 'l') (x + [HSwToV sw]) (x - [HSwToV sw])
+		local yCut : if (end === 'bot') (yEnd + cut) (yEnd - cut)
+		return : spiro-outline
+			corner x      yEnd
+			corner x      yCut
+			corner xInner yCut
+
+	glyph-block-export StemCutY
+	define [StemCutY] : with-params [bot top cut [len HalfStroke]] : object
+		bot : if (cut === 'bottomCut') (bot + len) bot
+		top : if (cut === 'topCut') (top - len) top
+
+	glyph-block-export ApplyDiagCut
+	define [ApplyDiagCut] : with-params [cut side x bot top [sw Stroke]] : begin
+		if (cut === 'bottomCut') : return : DiagCutOuterTerminal (side -- side) (end -- 'bot') (x -- x) (yEnd -- bot) (sw -- sw)
+		if (cut === 'topCut') : return : DiagCutOuterTerminal (side -- side) (end -- 'top') (x -- x) (yEnd -- top) (sw -- sw)
+		return : no-shape
+
 	glyph-block-export CurlyTail
 	define CurlyTail : namespace
 		define [normalBlender before _after args] : begin
