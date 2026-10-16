@@ -252,6 +252,12 @@ glyph-block Letter-Latin-Ezh : begin
 			MaskAbove (yJoin + 0.5 * sw)
 		include : CasualTop df top xMiddle kind sw
 
+	define [LyoghHookyRight xLeft top _sw] : begin
+		local sw : fallback _sw Stroke
+		tagged 'serifRT' : HSerif.rt (xLeft + [HSwToV sw]) top SideJut sw
+
+	define LyoghRightSerifSuffixes : list 'reverseHooky' 'sshaped' 'topRightSerifed' 'topRightBaseSerifed' 'topRightBaseSerifedAsymmetric'
+
 	foreach { suffix { fCursive fSerifed } } [pairs-of EzhConfig] : do
 		create-glyph "Ezh.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -401,6 +407,8 @@ glyph-block Letter-Latin-Ezh : begin
 				include : yogh.Shape
 				include : VBar.l SB 0 Ascender
 				create-forked-glyph "lyogh.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
+					create-forked-glyph "lyogh.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
 
 			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
 				create-glyph "lyogh.\(suffix).\(topSuffix)" : glyph-proc
@@ -438,6 +446,8 @@ glyph-block Letter-Latin-Ezh : begin
 				include : yogh.Shape
 				include : VBar.l SB 0 Ascender
 				create-forked-glyph "lyoghCurlyTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
+					create-forked-glyph "lyoghCurlyTail.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
 
 			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
 				create-glyph "lyoghCurlyTail.\(suffix).\(topSuffix)" : glyph-proc
@@ -477,6 +487,8 @@ glyph-block Letter-Latin-Ezh : begin
 				include : VBar.l SB 0 Ascender
 				include : RetroflexHook.lExt SB 0
 				create-forked-glyph "lyoghRTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
+					create-forked-glyph "lyoghRTail.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
 
 			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
 				create-glyph "lyoghRTail.\(suffix).\(topSuffix)" : glyph-proc
@@ -592,6 +604,8 @@ glyph-block Letter-Latin-Ezh : begin
 					VBar.l subDf.leftSB 0 Ascender origBar
 				include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
 				create-forked-glyph "lyogh/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
+				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
+					create-forked-glyph "lyogh/phoneticRight.\(suffix).\(rightSuffix)" : LyoghHookyRight (subDf.leftSB + gap) Ascender origBar
 
 			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
 				create-glyph "lyogh/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
@@ -642,6 +656,8 @@ glyph-block Letter-Latin-Ezh : begin
 					RetroflexHook.lExt subDf.leftSB 0 (sw -- origBar)
 				include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
 				create-forked-glyph "lyoghRTail/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
+				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
+					create-forked-glyph "lyoghRTail/phoneticRight.\(suffix).\(rightSuffix)" : LyoghHookyRight (subDf.leftSB + gap) Ascender origBar
 
 			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
 				create-glyph "lyoghRTail/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
