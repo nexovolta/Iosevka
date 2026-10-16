@@ -195,6 +195,24 @@ glyph-block Letter-Latin-Lower-M : begin
 			flat df.rightSB [Math.max (top - adb) (rbot + TINY)]
 			curl df.rightSB rbot [heading Downward]
 
+	glyph-block-export EarlessRoundedSingleArchSmallMShape
+	define [EarlessRoundedSingleArchSmallMShape df top lbot mbot rbot _sw cut _ada _adb] : glyph-proc
+		local sw  : fallback _sw df.mvs
+		local ada : fallback _ada : SmallMSmoothA df nothing sw
+		local adb : fallback _adb : SmallMSmoothB df nothing sw
+		local yL : if ([fallback cut ''] === 'bottomCut') (lbot + HalfStroke) lbot
+		include : nShoulder.earlessRounded
+			left   -- df.leftSB
+			right  -- df.rightSB
+			top    -- top
+			bottom -- rbot
+			ada    -- ada
+			adb    -- adb
+			stroke -- sw
+			leftY0 -- yL
+		include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'l') (x -- df.leftSB) (bot -- lbot) (top -- top) (sw -- sw)
+		include : tagged 'barM' : VBar.m df.middle mbot (top - 0.25 * sw) sw
+
 	glyph-block-export EarlessCornerDoubleArchSmallMShape
 	define [EarlessCornerDoubleArchSmallMShape df top lbot mbot rbot _sw cut _ada _adb] : glyph-proc
 		local sw  : fallback _sw df.mvs
@@ -274,11 +292,12 @@ glyph-block Letter-Latin-Lower-M : begin
 		object
 			""                             { SmallMArches                        0 }
 			"flatTop"                      { FlatTopSmallMShape                  0 }
-			"earlessSingleArch"            { EarlessSingleArchSmallMShape        1 }
-			"earlessCornerDoubleArch"      { EarlessCornerDoubleArchSmallMShape  1 }
-			"earlessRoundedDoubleArch"     { EarlessRoundedDoubleArchSmallMShape 1 }
+			"earlessSingleArch"            { EarlessSingleArchSmallMShape         1 }
+			"earlessRoundedSingleArch"     { EarlessRoundedSingleArchSmallMShape  1 }
+			"earlessCornerDoubleArch"      { EarlessCornerDoubleArchSmallMShape   1 }
+			"earlessRoundedDoubleArch"     { EarlessRoundedDoubleArchSmallMShape  1 }
 		function [ear] : begin
-			if (ear === 'earlessSingleArch' || ear === 'earlessCornerDoubleArch' || ear === 'earlessRoundedDoubleArch') : return : object
+			if (ear === 'earlessSingleArch' || ear === 'earlessRoundedSingleArch' || ear === 'earlessCornerDoubleArch' || ear === 'earlessRoundedDoubleArch') : return : object
 				""         ""
 			return : object
 				""         ""
@@ -441,13 +460,14 @@ glyph-block Letter-Latin-Lower-M : begin
 
 	define TurnMConfig : SuffixCfg.weave
 		object # body
-			toothed            { SmallMArches                        0 0 }
-			tailed             { SmallMArches                        0 1 }
-			flatBottom         { FlatTopSmallMShape                  0 0 }
-			toothlessCorner    { EarlessCornerDoubleArchSmallMShape  1 0 }
-			toothlessRounded   { EarlessRoundedDoubleArchSmallMShape 1 0 }
+			toothed                      { SmallMArches                         0 0 }
+			tailed                       { SmallMArches                         0 1 }
+			flatBottom                   { FlatTopSmallMShape                   0 0 }
+			toothlessCorner              { EarlessCornerDoubleArchSmallMShape   1 0 }
+			toothlessRounded             { EarlessRoundedDoubleArchSmallMShape  1 0 }
+			toothlessRoundedSingleArch   { EarlessRoundedSingleArchSmallMShape  1 0 }
 		function [body] : begin
-			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
+			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded' || body === 'toothlessRoundedSingleArch') : return : object
 				""         ""
 			return : object
 				""         ""

@@ -11,7 +11,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Latin-V : VSquareTopYJoin VSquareTopHw VExtendedRtInner VExtendedRtFull VExtendedLtFull
 	glyph-block-import Letter-Shared-Shapes : SerifFrame VerticalHook
-	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape
+	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape EarlessRoundedSingleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
 	glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
 
@@ -430,12 +430,35 @@ glyph-block Letter-Latin-W : begin
 
 		include : WSerifs df top bodyType slabType
 
+	define [WRoundedSingleArch df top bodyType slabType midHClass] : glyph-proc
+		local wMidHeight : WMidHeight df top bodyType midHClass
+		local wMidHeightExt : WMidHeightExt wMidHeight top bodyType midHClass
+
+		include : new-glyph : glyph-proc
+			include : EarlessRoundedSingleArchSmallMShape df top 0 (top - wMidHeightExt) 0
+			include : FlipAround (df.width / 2) (top / 2)
+
+		include : WSerifs df top bodyType slabType
+
 	define [WHookRightRounded df top bodyType slabType midHClass] : glyph-proc
 		local wMidHeight : WMidHeight df top bodyType midHClass
 		local wMidHeightExt : WMidHeightExt wMidHeight top bodyType midHClass
 
 		include : new-glyph : glyph-proc
 			include : EarlessRoundedDoubleArchSmallMShape df top ((0 + O) + TailY + HalfStroke) (top - wMidHeightExt) 0
+			include : FlipAround (df.width / 2) (top / 2)
+
+		include : WSerifs df top bodyType slabType
+		eject-contour 'serifRT'
+
+		include : VerticalHook.r df.rightSB ((top - O) - TailY - HalfStroke) TailX (-TailY) (sw -- df.mvs)
+
+	define [WHookRightRoundedSingleArch df top bodyType slabType midHClass] : glyph-proc
+		local wMidHeight : WMidHeight df top bodyType midHClass
+		local wMidHeightExt : WMidHeightExt wMidHeight top bodyType midHClass
+
+		include : new-glyph : glyph-proc
+			include : EarlessRoundedSingleArchSmallMShape df top ((0 + O) + TailY + HalfStroke) (top - wMidHeightExt) 0
 			include : FlipAround (df.width / 2) (top / 2)
 
 		include : WSerifs df top bodyType slabType
@@ -509,6 +532,9 @@ glyph-block Letter-Latin-W : begin
 			roundedVerticalSides               { WRounded     WHookRightRounded FORM-CURLY            MIDH-OTHER      para.advanceScaleMM para.advanceScaleMM }
 			roundedVerticalSidesAlmostFlatTop  { WRounded     WHookRightRounded FORM-CURLY            MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM }
 			roundedVerticalSidesFlatTop        { WRounded     WHookRightRounded FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleMM }
+			roundedSingleArch                  { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-OTHER      para.advanceScaleMM para.advanceScaleMM }
+			roundedSingleArchAlmostFlatTop     { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM }
+			roundedSingleArchFlatTop           { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-TOP        para.advanceScaleMM para.advanceScaleMM }
 			curly                              { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
 			curlyAlmostFlatTop                 { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
 			curlyFlatTop                       { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
@@ -545,6 +571,7 @@ glyph-block Letter-Latin-W : begin
 					[Just 'straightFlatTop']              SERIFS-ALL-OUTER
 					[Just 'straightVerticalSidesFlatTop'] SERIFS-ALL-OUTER
 					[Just 'roundedVerticalSidesFlatTop']  SERIFS-ALL-OUTER
+					[Just 'roundedSingleArchFlatTop']     SERIFS-ALL-OUTER
 					[Just 'curlyFlatTop']                 SERIFS-ALL-OUTER
 					[Just 'cursive']                      SERIFS-MOTION
 					[Just 'cursiveFlatTop']               SERIFS-MOTION
