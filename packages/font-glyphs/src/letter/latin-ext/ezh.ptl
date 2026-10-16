@@ -702,78 +702,63 @@ glyph-block Letter-Latin-Ezh : begin
 	CreateSelectorVariants 'lyoghRTail'     0x1DF05 [Object.keys EzhConfig] (follow -- 'ezh/phoneticRight')
 
 	do "TZ"
-		glyph-block-import Letter-Latin-Upper-T : TConfig TShape
+		glyph-block-import Letter-Latin-Upper-T : TConfig
 		glyph-block-import Letter-Latin-Lower-T : SmallTConfig
+		glyph-block-import Letter-Latin-Lower-Eszet : SulzbacherZettBowl CapitalSulzbacherZettBowl
 
-		define tzAdws para.advanceScaleMM
+		# Sulzbacher ß with the long-s stem replaced by T. Stem sits at SB
+		# like ß; the top bar runs to the right over the untouched zett bowl.
+		define [TzTShape doST doSB] : glyph-proc
+			local l : SB + 0.75 * OX
+			local r : RightSB - 0.75 * OX
+			local xMid : SB + [HSwToV HalfStroke]
+			include : tagged 'strokeV' : VBar.l SB 0 CAP
+			include : tagged 'strokeRT' : HBar.t (SB + 1) r CAP
+			if doST : begin
+				include : tagged 'serifRT' : VSerif.dr r CAP VJut
+				include : tagged 'serifLT' : VSerif.dl l CAP VJut
+			if doSB : begin
+				include : tagged 'serifMB' : HSerif.mb xMid 0 MidJutCenter
 
 		foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
 			create-glyph "TZ/T.\(suffix)" : glyph-proc
-				local df : include : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
-				include : df.markSet.p
+				local df : include : DivFrame 1
+				include : df.markSet.capital
 				set-base-anchor 'cvDecompose' 0 0
-				include : TShape subDf CAP doST doSB
+				include : TzTShape doST doSB
 
 		foreach { suffix { { tDf Style } sym top } } [pairs-of SmallTConfig] : do
 			create-glyph "tz/t.\(suffix)" : glyph-proc
-				local df : include : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
+				local df : include : DivFrame 1
 				include : df.markSet.b
 				set-base-anchor 'cvDecompose' 0 0
-				include : Style.Body subDf sym top 0
+				local xLeft : Style.BarLeftPos tDf sym
+				include : with-transform [ApparentTranslate (SB - xLeft) 0] : Style.Body tDf sym top 0
 
-		define [TzEzhGlyph xJoin fCursive fSerifed] : glyph-proc
+		create-glyph "TZ/zett" : glyph-proc
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
-			local df : DivFrame tzAdws 3
-			local ezhDf : DivFrame ((df.width - xJoin) / Width) 2
-			local origBar : AdviceStroke 2
-			local stroke : ezhDf.adviceStroke2 2 3 (XH - Descender)
-			define ezh : Ezh ezhDf XH Descender
-				fCursive  -- fCursive
-				fSerifed  -- fSerifed
-				pxMidLeft -- [Math.max 0.40 : ([HSwToV origBar] + [Math.max (Width / 32) : AdviceStroke 24]) / (ezhDf.rightSB - ezhDf.leftSB)]
-				pyMidLeft -- [if fCursive (50 / 100) (55 / 100)]
-				stroke    -- stroke
-				hook      -- SHook
-				origBar   -- origBar
-				ada       -- [ezhDf.archDepthAOf SmallArchDepth stroke]
-				adb       -- [ezhDf.archDepthBOf SmallArchDepth stroke]
-			include : with-transform [ApparentTranslate (xJoin - ezhDf.leftSB) 0] : glyph-proc
-				include : ezh.Shape
+			include : CapitalSulzbacherZettBowl
 
-		foreach { suffix { fCursive fSerifed } } [pairs-of EzhConfig] : do
-			create-glyph "TZ/ezh.\(suffix)" : glyph-proc
-				local df : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
-				# Meet T at the right of its stem, like Times: top bar does not pass through T.
-				include : TzEzhGlyph (subDf.middle + [HSwToV HalfStroke]) fCursive fSerifed
-			create-glyph "tz/ezh.\(suffix)" : glyph-proc
-				local df : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
-				local xBarLeft : subDf.middle - subDf.adws * (subDf.adws * TBalance) - [HSwToV HalfStroke]
-				include : TzEzhGlyph (xBarLeft + [HSwToV Stroke]) fCursive fSerifed
+		create-glyph "tz/zett" : glyph-proc
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			include : SulzbacherZettBowl
 
 		select-variant 'TZ/T' (follow -- 'T')
 		select-variant 'tz/t' (follow -- 't')
-		select-variant 'TZ/ezh' (follow -- 'ezh/phoneticRight')
-		select-variant 'tz/ezh' (follow -- 'ezh/phoneticRight')
 
-		derive-multi-part-glyphs-baked 'TZ' 0xA728 { "TZ/T" "TZ/ezh" } : function [srcs gr] : glyph-proc
-			local df : include : DivFrame tzAdws 3
-			include : df.markSet.p
-			define { te ezhg } srcs
-			include [refer-glyph te]
-			include [refer-glyph ezhg]
+		derive-multi-part-glyphs 'TZ' 0xA728 { "TZ/T" "TZ/zett" } : function [srcs gr] : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			define { te zett } srcs
+			include : union [refer-glyph te] [refer-glyph zett]
 
-		derive-multi-part-glyphs-baked 'tz' 0xA729 { "tz/t" "tz/ezh" } : function [srcs gr] : glyph-proc
-			local df : include : DivFrame tzAdws 3
-			include : df.markSet.bp
-			define { te ezhg } srcs
-			# t's crossbar wins where it overlaps ezh's top bar (Times tz).
-			include [refer-glyph te]
-			include : difference [refer-glyph ezhg]
+		derive-multi-part-glyphs 'tz' 0xA729 { "tz/t" "tz/zett" } : function [srcs gr] : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.b
+			define { te zett } srcs
+			include : union [refer-glyph te] : difference [refer-glyph zett]
 				intersection [refer-glyph te] [MaskAbove (XH - Stroke - TINY)]
 
 	select-variant 'ezh/phoneticRight'
