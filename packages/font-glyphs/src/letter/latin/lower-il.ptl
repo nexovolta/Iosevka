@@ -233,6 +233,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		export : define [HookyShort   df top bot xMiddle _stroke] : mix Jut [Hooky        df top bot xMiddle _stroke] 0.5
 		export : define [SerifedShort df top bot xMiddle _stroke] : mix Jut [Serifed      df top bot xMiddle _stroke] 0.5
 		export : define [SerifedRightShort df top bot xMiddle _stroke] : mix Jut [SerifedRight df top bot xMiddle _stroke] 0.5
+		export : define [Center      df top bot xMiddle _stroke] : Math.max MidJutCenter : mix [None df top bot xMiddle _stroke] LongJut df.adws
+		export : define [CenterShort df top bot xMiddle _stroke] : mix Jut [Center df top bot xMiddle _stroke] 0.5
 
 	define ILSerifs : namespace
 		export : define [None         df top bot xMiddle _stroke] : no-shape
@@ -244,6 +246,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		export : define [SerifedRight      df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.SerifedRight      df top bot xMiddle _stroke] Stroke _stroke
 		export : define [HookyRightShort   df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.HookyShort         df top bot xMiddle _stroke] Stroke _stroke
 		export : define [SerifedRightShort df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.SerifedRightShort df top bot xMiddle _stroke] Stroke _stroke
+		export : define [Center      df top bot xMiddle _stroke] : tagged 'serifMT' : HSerif.mt xMiddle top [ILJut.Center      df top bot xMiddle _stroke] _stroke
+		export : define [CenterShort df top bot xMiddle _stroke] : tagged 'serifMT' : HSerif.mt xMiddle top [ILJut.CenterShort df top bot xMiddle _stroke] _stroke
 
 	define [CalcPhoneticHookPos g] : begin
 		local attach : g.gizmo.unapply (g.baseAnchors.palatalHookAttach || g.baseAnchors.overlay)
@@ -266,6 +270,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		'baseSerifed'           { ILBody.Serifed       ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             para.advanceScaleI   Stroke }
 		'serifed'               { ILBody.Serifed       ILSerifs.Serifed       ILMarks.Serifed    [XMiddleT mode].Serifed            para.advanceScaleI   Stroke }
 		'serifedAsymmetric'     { ILBody.Serifed       ILSerifs.SerifedShort  ILMarks.Serifed    [XMiddleT mode].Serifed            para.advanceScaleI   Stroke }
+		'centerSerifed'         { ILBody.Serifed       ILSerifs.Center        ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   Stroke }
+		'centerShortSerifed'    { ILBody.Serifed       ILSerifs.CenterShort   ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   Stroke }
 		'reverseHooky'          { ILBody.Serifless     ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].HookyRight         para.advanceScaleI   0      }
 		'sshaped'               { ILBody.HookyBottomLeft ILSerifs.HookyRight  ILMarks.Serifed    [XMiddleT mode].SShaped            para.advanceScaleI   Stroke }
 		'sshapedAsymmetric'     { ILBody.HookyBottomLeft ILSerifs.HookyRightShort ILMarks.Serifed [XMiddleT mode].SShaped           para.advanceScaleI   Stroke }
