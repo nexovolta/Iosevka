@@ -24,8 +24,9 @@ glyph-block Letter-Cyrillic-De : begin
 	define [DeOverflow left right serifType] : if (serifType !== SERIF-NONE) SideJut : (right - left) * 0.075
 
 	glyph-block-export CyrDeBottom
-	define [CyrDeBottom left right _sw _desc _serifType] : glyph-proc
+	define [CyrDeBottom left right _sw _desc _serifType _fLegs] : glyph-proc
 		local serifType : DeSerifTypeOf _serifType
+		local fLegs : fallback _fLegs true
 		local descenderOverflow : DeOverflow left right serifType
 		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
 		local xTopRight : mix left right : StrokeWidthBlend 0.95 0.96
@@ -34,15 +35,14 @@ glyph-block Letter-Cyrillic-De : begin
 		local desc : fallback _desc BottomExtension
 
 		include : HBar.b xTopLeft xTopRight 0 swOuter
-		include : tagged 'footL' : union
-			HBar.b (left - descenderOverflow) xTopLeft 0 swOuter
-			VBar.l (left - descenderOverflow) desc TINY swVJut
-		include : tagged 'footR' : union
-			HBar.b xTopRight (right + descenderOverflow) 0 swOuter
-			VBar.r (right + descenderOverflow) desc TINY swVJut
+		include : tagged 'footL' : HBar.b (left - descenderOverflow) xTopLeft 0 swOuter
+		include : tagged 'footR' : HBar.b xTopRight (right + descenderOverflow) 0 swOuter
+		if fLegs : begin
+			include : tagged 'footL' : VBar.l (left - descenderOverflow) desc TINY swVJut
+			include : tagged 'footR' : VBar.r (right + descenderOverflow) desc TINY swVJut
 
 	glyph-block-export CyrDeShape
-	define [CyrDeShape fCapital top left right _sw _desc _serifType] : glyph-proc
+	define [CyrDeShape fCapital top left right _sw _desc _serifType _fLegs] : glyph-proc
 		local serifType : DeSerifTypeOf _serifType
 		local descenderOverflow : DeOverflow left right serifType
 		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
@@ -53,7 +53,7 @@ glyph-block Letter-Cyrillic-De : begin
 			VSwToH : 0.375 * (xTopRight - xTopLeft)
 		local desc : fallback _desc BottomExtension
 
-		include : CyrDeBottom left right swOuter desc serifType
+		include : CyrDeBottom left right swOuter desc serifType _fLegs
 
 		include : VBar.r xTopRight 0 top swInner
 		include : dispiro
@@ -81,17 +81,19 @@ glyph-block Letter-Cyrillic-De : begin
 
 	define A-SLAB-TOP 1
 
-	define [CyrDeDeltaFeet serifType df _sw _desc] : glyph-proc
+	define [CyrDeDeltaFeet serifType df _sw _desc _fLegs] : glyph-proc
 		local sw : fallback _sw Stroke
 		local desc : fallback _desc BottomExtension
+		local fLegs : fallback _fLegs true
 		local descenderOverflow : DeOverflow df.leftSB df.rightSB serifType
 		local swVJut : VJutStroke * (sw / Stroke)
 		include : HBar.b (df.leftSB - descenderOverflow) (df.rightSB + descenderOverflow) 0 sw
-		include : tagged 'footL' : VBar.l (df.leftSB - descenderOverflow) desc TINY swVJut
-		include : tagged 'footR' : VBar.r (df.rightSB + descenderOverflow) desc TINY swVJut
+		if fLegs : begin
+			include : tagged 'footL' : VBar.l (df.leftSB - descenderOverflow) desc TINY swVJut
+			include : tagged 'footR' : VBar.r (df.rightSB + descenderOverflow) desc TINY swVJut
 
 	glyph-block-export CyrDeDeltaLikeShape
-	define [CyrDeDeltaLikeShape fBarStraight fSquareBottom top serifType _df _sw _desc] : glyph-proc
+	define [CyrDeDeltaLikeShape fBarStraight fSquareBottom top serifType _df _sw _desc _fLegs] : glyph-proc
 		local df : fallback _df [DivFrame 1]
 		local sw : fallback _sw Stroke
 		local desc : fallback _desc BottomExtension
@@ -103,7 +105,7 @@ glyph-block Letter-Cyrillic-De : begin
 			bottom        -- 0
 			sw            -- sw
 		if (serifType !== SERIF-NONE) : include : ASerifs df top sw A-SLAB-TOP fSquareBottom
-		include : CyrDeDeltaFeet serifType df sw desc
+		include : CyrDeDeltaFeet serifType df sw desc _fLegs
 		local xTopLeft  : df.middle - [HSwToV : 0.5 * sw]
 		local xTopRight : 0 + df.rightSB
 		local swOuter   sw
@@ -157,13 +159,19 @@ glyph-block Letter-Cyrillic-De : begin
 			curly       BODY-CURLY
 			square      BODY-SQUARE
 			cursive     BODY-CURSIVE
+		function [body] : begin
+			if (body === 'cursive') : return : object
+				""    true
+			return : object
+				""        true
+				legless   false
 		object
 			serifless     SERIF-NONE
 			motionSerifed SERIF-MOTION
 			serifed       SERIF-ALL
 
 	define DeUprightSuffixes {}
-	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+	foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
 		if (bodyType !== BODY-CURSIVE) : DeUprightSuffixes.push suffix
 
 	define [DefineDeSelectorGlyph name selector df mk] : begin
@@ -174,17 +182,17 @@ glyph-block Letter-Cyrillic-De : begin
 			set-base-anchor 'cvDecompose' 0 0
 			DependentSelector.set currentGlyph selector
 
-	define [CyrDeBodyShape bodyType fCapital top serifType _sw _desc _df] : match bodyType
-		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top [if _df _df.leftSB SB] [if _df _df.rightSB RightSB] _sw _desc serifType
-		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType _df _sw _desc
-		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType _df _sw _desc
-		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType _df _sw _desc
+	define [CyrDeBodyShape bodyType fCapital top serifType _sw _desc _df _fLegs] : match bodyType
+		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top [if _df _df.leftSB SB] [if _df _df.rightSB RightSB] _sw _desc serifType _fLegs
+		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType _df _sw _desc _fLegs
+		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType _df _sw _desc _fLegs
+		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType _df _sw _desc _fLegs
 
 	define CyrSoftDeGheConfig : object
 		serifless       false
 		topRightSerifed true
 
-	define [CyrSoftDeShape vSlab] : function [fCapital df top bodyType serifType _sw _desc] : glyph-proc
+	define [CyrSoftDeShape vSlab] : function [fCapital df top bodyType serifType _sw _desc _fLegs] : glyph-proc
 		local sw : fallback _sw Stroke
 		local xm : if SLAB
 			[mix df.leftSB df.rightSB 0.625] + [HSwToV : 0.25 * sw]
@@ -192,10 +200,10 @@ glyph-block Letter-Cyrillic-De : begin
 		local deDf : df.slice 3 2
 
 		local [object xTopRight] : include : match bodyType
-			[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType deDf sw _desc
-			[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType deDf sw _desc
-			[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType deDf sw _desc
-			__                     : CyrDeShape fCapital top df.leftSB xm sw _desc serifType
+			[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType deDf sw _desc _fLegs
+			[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType deDf sw _desc _fLegs
+			[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType deDf sw _desc _fLegs
+			__                     : CyrDeShape fCapital top df.leftSB xm sw _desc serifType _fLegs
 
 		local fDeltaLike : (bodyType === BODY-TRIANGULAR) || (bodyType === BODY-CURLY) || (bodyType === BODY-SQUARE)
 		local xJoin : if fDeltaLike [deDf.middle + [HSwToV : 0.5 * sw]] xTopRight
@@ -205,36 +213,36 @@ glyph-block Letter-Cyrillic-De : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (xTopBarRightEnd - xJoin)
 			include : VSerif.dr xTopBarRightEnd top VJut swVJut
 
-	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+	foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
 		if (bodyType !== BODY-CURSIVE) : begin
 			create-glyph "cyrl/De.\(suffix)" : glyph-proc
 				include : MarkSet.capital
-				include : ExtendBelowBaseAnchors BottomExtension
-				include : CyrDeBodyShape bodyType true CAP serifType
+				if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+				include : CyrDeBodyShape bodyType true CAP serifType nothing nothing nothing fLegs
 
 			create-glyph "cyrl/de.\(suffix)" : glyph-proc
 				include : MarkSet.e
-				include : ExtendBelowBaseAnchors BottomExtension
-				include : CyrDeBodyShape bodyType false XH serifType
+				if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+				include : CyrDeBodyShape bodyType false XH serifType nothing nothing nothing fLegs
 
-			create-glyph "cyrl/deLongLeg.upright.\(suffix)" : glyph-proc
+			if fLegs : create-glyph "cyrl/deLongLeg.upright.\(suffix)" : glyph-proc
 				include : MarkSet.p
-				include : CyrDeBodyShape bodyType false XH serifType nothing Descender
+				include : CyrDeBodyShape bodyType false XH serifType nothing Descender nothing fLegs
 
 			create-glyph "cyrl/Dwe.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				local asc : CAP + LongVJut - QuarterStroke
 				include : ExtendAboveBaseAnchors asc
-				include : ExtendBelowBaseAnchors BottomExtension
-				local de : include : CyrDeBodyShape bodyType true CAP serifType
+				if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+				local de : include : CyrDeBodyShape bodyType true CAP serifType nothing nothing nothing fLegs
 				include : CyrDweTick bodyType de CAP asc
 
 			create-glyph "cyrl/dwe.upright.\(suffix)" : glyph-proc
 				include : MarkSet.e
 				local asc : XH + LongVJut - QuarterStroke
 				include : ExtendAboveBaseAnchors asc
-				include : ExtendBelowBaseAnchors BottomExtension
-				local de : include : CyrDeBodyShape bodyType false XH serifType
+				if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+				local de : include : CyrDeBodyShape bodyType false XH serifType nothing nothing nothing fLegs
 				include : CyrDweTick bodyType de XH asc
 
 			define cyrSoftDeDf : DivFrame para.advanceScaleM 3
@@ -244,13 +252,13 @@ glyph-block Letter-Cyrillic-De : begin
 				create-glyph "cyrl/DeSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
-					include : ExtendBelowBaseAnchors BottomExtension
-					include : [CyrSoftDeShape cyrSoftDeVSlab] true cyrSoftDeDf CAP bodyType serifType cyrSoftDeDf.mvs
+					if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+					include : [CyrSoftDeShape cyrSoftDeVSlab] true cyrSoftDeDf CAP bodyType serifType cyrSoftDeDf.mvs nothing fLegs
 				create-glyph "cyrl/deSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
-					include : ExtendBelowBaseAnchors BottomExtension
-					include : [CyrSoftDeShape cyrSoftDeVSlab] false cyrSoftDeDf XH bodyType serifType cyrSoftDeDf.mvs
+					if fLegs : include : ExtendBelowBaseAnchors BottomExtension
+					include : [CyrSoftDeShape cyrSoftDeVSlab] false cyrSoftDeDf XH bodyType serifType cyrSoftDeDf.mvs nothing fLegs
 			select-variant "cyrl/DeSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 			select-variant "cyrl/deSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
 
@@ -281,14 +289,14 @@ glyph-block Letter-Cyrillic-De : begin
 						set-width 0
 						set-mark-anchor 'cvDecompose' 0 0
 						include : ExtendBelowBaseAnchors BottomExtension
-						local de : include : CyrDeBodyShape bodyType true CAP serifType nothing nothing [DivFrame 1]
+						local de : include : CyrDeBodyShape bodyType true CAP serifType nothing nothing [DivFrame 1] fLegs
 						eject-contour 'footR'
 						include : DzzeDescenderShape de ArchDepthA ArchDepthB
 					create-glyph "cyrl/dzze.upright.\(suffix).\(suffixZe)" : glyph-proc
 						set-width 0
 						set-mark-anchor 'cvDecompose' 0 0
 						include : ExtendBelowBaseAnchors BottomExtension
-						local de : include : CyrDeBodyShape bodyType false XH serifType nothing nothing [DivFrame 1]
+						local de : include : CyrDeBodyShape bodyType false XH serifType nothing nothing [DivFrame 1] fLegs
 						eject-contour 'footR'
 						include : DzzeDescenderShape de SmallArchDepthA SmallArchDepthB
 			select-variant "cyrl/Dzze.\(suffix)" (follow -- 'cyrl/Dzze/Ze')
