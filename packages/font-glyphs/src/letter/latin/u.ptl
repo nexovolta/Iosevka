@@ -198,6 +198,16 @@ glyph-block Letter-Latin-U : begin
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
 
+	# Mirror the body, restore contour winding, then attach remapped serifs
+	# (inner/outer kept, not swapped by the flip).
+	define [ReversedUCompose revBody revSlabs df top sw cut] : glyph-proc
+		include : difference
+			Rect (top + df.width) (0 - df.width) (0 - df.width) (df.width * 2)
+			difference
+				Rect (top + df.width) (0 - df.width) (0 - df.width) (df.width * 2)
+				with-transform [FlipAround df.middle 0 (-1) 1] : revBody df top sw nothing nothing cut
+		include : revSlabs df top sw
+
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
 		object # body
@@ -255,10 +265,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "UReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
-			local flipped : new-glyph : glyph-proc
-				include : revBody df CAP Stroke nothing nothing cut
-				include : FlipAround df.middle 0 (-1) 1
-			include : union flipped [revSlabs df CAP Stroke]
+			include : ReversedUCompose revBody revSlabs df CAP Stroke cut
 
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
@@ -300,10 +307,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "uReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			local flipped : new-glyph : glyph-proc
-				include : revBody df XH Stroke nothing nothing cut
-				include : FlipAround df.middle 0 (-1) 1
-			include : union flipped [revSlabs df XH Stroke]
+			include : ReversedUCompose revBody revSlabs df XH Stroke cut
 
 		create-glyph "cyrl/i.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "u.\(suffix)"] AS_BASE ALSO_METRICS
@@ -350,12 +354,12 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/revtse.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : union [UBase df XH Stroke] : dispiro
-				widths.rhs [AdviceStroke 4]
-				flat df.leftSB 0               [heading Upward]
-				curl df.leftSB SmallArchDepthB [heading Upward]
-			include : Slabs df XH Stroke
-			include : CyrDescender.lSideJut df.leftSB 0
+			include : union
+				new-glyph : glyph-proc
+					include : ReversedUCompose revBody revSlabs df XH Stroke cut
+					eject-contour 'serifLB'
+				VBar.l df.leftSB ((-LongVJut) + QuarterStroke) XH Stroke
+				CyrDescender.lSideJut df.leftSB 0
 
 		create-glyph "cyrl/revtse.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "cyrl/revtse.italic.\(suffix)"] AS_BASE ALSO_METRICS
@@ -376,21 +380,21 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "uShortLeg.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : UBase  df XH Stroke false true
+			include : UBase df XH Stroke false true
 			include : Slabs df XH Stroke
 			eject-contour 'serifRT'
 
 		create-glyph "uHookLeft.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : UBase  df XH Stroke true
+			include : UBase df XH Stroke true
 			include : Slabs df XH Stroke
 			eject-contour 'serifLT'
 
 		create-glyph "uRTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : UBase  df XH Stroke
+			include : UBase df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : if xRB
@@ -427,7 +431,7 @@ glyph-block Letter-Latin-U : begin
 			local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
 			include : df.markSet.e
 			include : PointingTo Width XH Width 0 : function [] : glyph-proc
-				include : UBase  df RightSB Stroke
+				include : UBase df RightSB Stroke
 				include : Slabs df RightSB Stroke
 				include : Translate 0 (SB / 2)
 
@@ -438,7 +442,7 @@ glyph-block Letter-Latin-U : begin
 			set-width ww
 			set-base-anchor 'cvDecompose' 0 0
 			include : PointingTo ww XH ww 0 : function [] : glyph-proc
-				include : UBase  df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
+				include : UBase df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
 				include : Slabs df [Math.min RightSB : (ww - SB) - AccentHeight * 0.75 * para.advanceScaleM] Stroke
 				include : Translate 0 (SB / 2)
 
