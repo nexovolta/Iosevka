@@ -793,13 +793,16 @@ glyph-block Letter-Latin-Lower-R : begin
 	select-variant 'rFlapPalatalHook' 0x1DF16 (shapeFrom -- 'rHalfPalatalHook') (follow -- 'rFlap')
 
 	define DotlessIPigtailUprightConfig : object
-		serifless          { false false 0.0 }
-		hooky              { false true  1.0 }
-		hookyBottom        { true  false 0.0 }
-		zshaped            { true  true  1.0 }
-		zshapedAsymmetric  { true  true  0.5 }
+		serifless          { false false 0.0 false }
+		hooky              { false true  1.0 false }
+		hookyBottom        { true  false 0.0 false }
+		zshaped            { true  true  1.0 false }
+		zshapedAsymmetric  { true  true  0.5 false }
+		reverseHooky       { false true  1.0 true  }
+		sshaped            { true  true  1.0 true  }
+		sshapedAsymmetric  { true  true  0.5 true  }
 
-	foreach { suffix { doTS doBS kJut } } [pairs-of DotlessIPigtailUprightConfig] : do
+	foreach { suffix { doTS doBS kJut fRight } } [pairs-of DotlessIPigtailUprightConfig] : do
 		define mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
 
 		create-glyph "dotlessiPigtail.upright.\(suffix)" : glyph-proc
@@ -814,16 +817,22 @@ glyph-block Letter-Latin-Lower-R : begin
 				FlipAround df.middle (XH / 2)
 			if doBS : begin
 				local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
-				include : tagged 'serifLB' : HSerif.lt (rBarRightX - [HSwToV HalfStroke]) XH jut
+				if fRight
+				: then : include : tagged 'serifRT' : HSerif.rt rBarRightX XH jut
+				: else : include : tagged 'serifLB' : HSerif.lt (rBarRightX - [HSwToV HalfStroke]) XH jut
 
 	define DotlessIPigtailItalicConfig : object
-		serifless          { false false 0.0 }
-		hooky              { false true  1.0 }
-		baseSerifed        { true  false 0.0 }
-		serifed            { true  true  1.0 }
-		serifedAsymmetric  { true  true  0.5 }
+		serifless                       { false false 0.0 false }
+		hooky                           { false true  1.0 false }
+		baseSerifed                     { true  false 0.0 false }
+		serifed                         { true  true  1.0 false }
+		serifedAsymmetric               { true  true  0.5 false }
+		reverseHooky                    { false true  1.0 true  }
+		topRightSerifed                 { true  true  1.0 true  }
+		topRightBaseSerifed             { true  true  1.0 true  }
+		topRightBaseSerifedAsymmetric   { true  true  0.5 true  }
 
-	foreach { suffix { doTS doBS kJut } } [pairs-of DotlessIPigtailItalicConfig] : do
+	foreach { suffix { doTS doBS kJut fRight } } [pairs-of DotlessIPigtailItalicConfig] : do
 		define mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
 
 		create-glyph "dotlessiPigtail.italic.\(suffix)" : glyph-proc
@@ -838,7 +847,9 @@ glyph-block Letter-Latin-Lower-R : begin
 				FlipAround df.middle (XH / 2)
 			if doBS : begin
 				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
-				include : tagged 'serifRB' : HSerif.lt (rBarLeftX + [HSwToV HalfStroke]) XH jut
+				if fRight
+				: then : include : tagged 'serifRT' : HSerif.rt rBarLeftX XH jut
+				: else : include : tagged 'serifRB' : HSerif.lt (rBarLeftX + [HSwToV HalfStroke]) XH jut
 
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
 

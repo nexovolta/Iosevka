@@ -645,6 +645,35 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : ILBody.Serifed df (XH - hd.y - HalfStroke) Descender xMiddle
 			include : ILMarks.Serifed df XH Descender xMiddle
 
+		create-glyph "dotlessiStretchedHookLeft.reverseHooky" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.p
+			local xMiddle : [XMiddleT MODE-I].[if para.isQuasiProportional 'Center' 'HookyRight'] df
+			local hd {.x ([ILJut.Hooky df XH Descender xMiddle] + SerifShiftS) .y (Hook - HalfStroke)}
+			include : VerticalHook.m xMiddle (XH - hd.y - HalfStroke) (-hd.x) (-hd.y)
+			include : ILBody.Serifless df (XH - hd.y - HalfStroke) Descender xMiddle
+			include : ILSerifs.HookyRight df XH Descender xMiddle
+			include : ILMarks.Serifed df XH Descender xMiddle
+
+		create-glyph "dotlessiStretchedHookLeft.hookyBottomLeft" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.p
+			local xMiddle : [XMiddleT MODE-I].[if para.isQuasiProportional 'Center' 'Hooky'] df
+			local hd {.x ([ILJut.Hooky df XH Descender xMiddle] + SerifShiftS) .y (Hook - HalfStroke)}
+			include : VerticalHook.m xMiddle (XH - hd.y - HalfStroke) (-hd.x) (-hd.y)
+			include : ILBody.HookyBottomLeft df (XH - hd.y - HalfStroke) Descender xMiddle
+			include : ILMarks.Serifed df XH Descender xMiddle
+
+		create-glyph "dotlessiStretchedHookLeft.topRightSerifed" : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			include : df.markSet.p
+			local xMiddle : [XMiddleT MODE-I].[if para.isQuasiProportional 'Center' 'SerifedRight'] df
+			local hd {.x ([ILJut.SerifedRight df XH Descender xMiddle] + SerifShiftS) .y (Hook - HalfStroke)}
+			include : VerticalHook.m xMiddle (XH - hd.y - HalfStroke) (-hd.x) (-hd.y)
+			include : ILBody.Serifed df (XH - hd.y - HalfStroke) Descender xMiddle
+			include : ILSerifs.SerifedRight df XH Descender xMiddle
+			include : ILMarks.Serifed df XH Descender xMiddle
+
 		select-variant 'dotlessiStretchedHookLeft' 0x27F
 
 		create-glyph 'dotlessiStretchedHookLeftRTail' 0x285 : glyph-proc
