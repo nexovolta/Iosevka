@@ -356,10 +356,15 @@ glyph-block Letter-Latin-U : begin
 			include : df.markSet.e
 			include : union
 				new-glyph : glyph-proc
-					include : ReversedUCompose revBody revSlabs df XH Stroke cut
+					include [refer-glyph "cyrl/tse.italic.\(suffix)"]
+					include : FlipAround df.middle 0 (-1) 1
+					eject-contour 'serifLT'
+					eject-contour 'serifRT'
 					eject-contour 'serifLB'
-				VBar.l df.leftSB ((-LongVJut) + QuarterStroke) XH Stroke
-				CyrDescender.lSideJut df.leftSB 0
+					eject-contour 'serifRB'
+				VBar.l df.leftSB 0 XH Stroke
+			include : revSlabs df XH Stroke
+			eject-contour 'serifLB'
 
 		create-glyph "cyrl/revtse.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "cyrl/revtse.italic.\(suffix)"] AS_BASE ALSO_METRICS
