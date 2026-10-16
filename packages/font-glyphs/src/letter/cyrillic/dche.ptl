@@ -12,7 +12,7 @@ glyph-block Letter-Cyrillic-Dche : begin
 	glyph-block-import Letter-Cyrillic-De : CyrDeBottom BottomExtension CyrDeItalicShape
 	glyph-block-import Letter-Cyrillic-De : DeConfig SERIF-NONE SERIF-MOTION SERIF-ALL BODY-CURSIVE
 
-	foreach { suffix { bodyType serifType } } [Object.entries DeConfig] : do
+	foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
 		local deSerifs : if (bodyType === BODY-CURSIVE) SERIF-NONE serifType
 		local cheSlabs : match deSerifs
 			[Just SERIF-ALL]    SERIFS.TOP
@@ -21,9 +21,9 @@ glyph-block Letter-Cyrillic-Dche : begin
 
 		create-glyph "cyrl/Dche.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : ExtendBelowBaseAnchors BottomExtension
+			if fLegs : include : ExtendBelowBaseAnchors BottomExtension
 			include : CyrCheShape [DivFrame 1] CAP 0.4 BODY.STRAIGHT cheSlabs
-			include : CyrDeBottom SB RightSB nothing nothing deSerifs
+			include : CyrDeBottom SB RightSB nothing nothing deSerifs fLegs
 
 			local fine : AdviceStroke 3.5
 			include : dispiro
@@ -33,9 +33,9 @@ glyph-block Letter-Cyrillic-Dche : begin
 
 		create-glyph "cyrl/dche.upright.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : ExtendBelowBaseAnchors BottomExtension
+			if fLegs : include : ExtendBelowBaseAnchors BottomExtension
 			include : CyrCheShape [DivFrame 1] XH 0.4 BODY.STRAIGHT cheSlabs
-			include : CyrDeBottom SB RightSB nothing nothing deSerifs
+			include : CyrDeBottom SB RightSB nothing nothing deSerifs fLegs
 
 			local fine : AdviceStroke 3.5
 			include : dispiro
