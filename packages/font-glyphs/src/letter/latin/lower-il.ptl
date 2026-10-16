@@ -29,9 +29,12 @@ glyph-block Letter-Latin-Lower-I : begin
 		define [TailedImpl df doST] : mix df.leftSB df.rightSB ([StrokeWidthBlend 0.42 0.46] - [TailedDotlessIShift df])
 		export : define [Center df] : df.middle + 0
 		export : define [Serifed df] : df.middle + [IBalance df]
+		export : define [SerifedRight df] : df.middle - [IBalance df]
 		export : define [Hooky df] : HookyImpl df true false
+		export : define [HookyRight df] : HookyImpl df false true
 		export : define [HookyBottom df] : HookyImpl df false true
 		export : define [ZShaped df] : HookyImpl df true true
+		export : define [SShaped df] : HookyImpl df false false
 		export : define [Tailed df] : TailedImpl df false
 		export : define [TailedSerifed df] : TailedImpl df true
 		export : define [FlatTailed df] : FlatTailedImpl df false
@@ -64,6 +67,14 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : tagged 'serifRB' : HSerif.rb xMiddle bot jut Stroke stroke
 			set-base-anchor 'trailing'          (xMiddle + jut) bot
 			set-base-anchor 'palatalHookAttach' (xMiddle + jut) bot
+
+		export : define [HookyBottomLeft df top bot xMiddle _stroke] : glyph-proc
+			local stroke : fallback _stroke Stroke
+			include : VBar.m xMiddle bot top stroke
+			local jut : Math.max Jut : mix [HSwToV : 0.5 * stroke] LongJut df.adws
+			include : tagged 'serifLB' : HSerif.lb xMiddle bot jut Stroke stroke
+			set-base-anchor 'trailing'          (xMiddle + [HSwToV : 0.5 * stroke]) bot
+			set-base-anchor 'palatalHookAttach' (xMiddle + [HSwToV : 0.5 * stroke]) bot
 
 		export : define [Serifed df top bot xMiddle _stroke] : glyph-proc
 			local stroke : fallback _stroke Stroke
@@ -218,8 +229,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		export : define [None         df top bot xMiddle _stroke] : HSwToV : 0.5 * [fallback _stroke Stroke]
 		export : define [Hooky        df top bot xMiddle _stroke] : Math.max Jut  [mix [None df top bot xMiddle _stroke] LongJut df.adws]
 		export : define [Serifed      df top bot xMiddle _stroke] : Math.max Jut ([mix [None df top bot xMiddle _stroke] LongJut df.adws] - (xMiddle - df.middle))
-		export : define [HookyShort   df top bot xMiddle _stroke] : mix Jut [Hooky   df top bot xMiddle _stroke] 0.5
-		export : define [SerifedShort df top bot xMiddle _stroke] : mix Jut [Serifed df top bot xMiddle _stroke] 0.5
+		export : define [SerifedRight df top bot xMiddle _stroke] : Math.max Jut ([mix [None df top bot xMiddle _stroke] LongJut df.adws] - (df.middle - xMiddle))
+		export : define [HookyShort   df top bot xMiddle _stroke] : mix Jut [Hooky        df top bot xMiddle _stroke] 0.5
+		export : define [SerifedShort df top bot xMiddle _stroke] : mix Jut [Serifed      df top bot xMiddle _stroke] 0.5
+		export : define [SerifedRightShort df top bot xMiddle _stroke] : mix Jut [SerifedRight df top bot xMiddle _stroke] 0.5
 
 	define ILSerifs : namespace
 		export : define [None         df top bot xMiddle _stroke] : no-shape
@@ -227,6 +240,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		export : define [Serifed      df top bot xMiddle _stroke] : tagged 'serifLT' : HSerif.lt xMiddle top [ILJut.Serifed      df top bot xMiddle _stroke] Stroke _stroke
 		export : define [HookyShort   df top bot xMiddle _stroke] : tagged 'serifLT' : HSerif.lt xMiddle top [ILJut.HookyShort   df top bot xMiddle _stroke] Stroke _stroke
 		export : define [SerifedShort df top bot xMiddle _stroke] : tagged 'serifLT' : HSerif.lt xMiddle top [ILJut.SerifedShort df top bot xMiddle _stroke] Stroke _stroke
+		export : define [HookyRight        df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.Hooky              df top bot xMiddle _stroke] Stroke _stroke
+		export : define [SerifedRight      df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.SerifedRight      df top bot xMiddle _stroke] Stroke _stroke
+		export : define [HookyRightShort   df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.HookyShort         df top bot xMiddle _stroke] Stroke _stroke
+		export : define [SerifedRightShort df top bot xMiddle _stroke] : tagged 'serifRT' : HSerif.rt xMiddle top [ILJut.SerifedRightShort df top bot xMiddle _stroke] Stroke _stroke
 
 	define [CalcPhoneticHookPos g] : begin
 		local attach : g.gizmo.unapply (g.baseAnchors.palatalHookAttach || g.baseAnchors.overlay)
@@ -249,6 +266,13 @@ glyph-block Letter-Latin-Lower-I : begin
 		'baseSerifed'           { ILBody.Serifed       ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             para.advanceScaleI   Stroke }
 		'serifed'               { ILBody.Serifed       ILSerifs.Serifed       ILMarks.Serifed    [XMiddleT mode].Serifed            para.advanceScaleI   Stroke }
 		'serifedAsymmetric'     { ILBody.Serifed       ILSerifs.SerifedShort  ILMarks.Serifed    [XMiddleT mode].Serifed            para.advanceScaleI   Stroke }
+		'reverseHooky'          { ILBody.Serifless     ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].HookyRight         para.advanceScaleI   0      }
+		'sshaped'               { ILBody.HookyBottomLeft ILSerifs.HookyRight  ILMarks.Serifed    [XMiddleT mode].SShaped            para.advanceScaleI   Stroke }
+		'sshapedAsymmetric'     { ILBody.HookyBottomLeft ILSerifs.HookyRightShort ILMarks.Serifed [XMiddleT mode].SShaped           para.advanceScaleI   Stroke }
+		'hookyBottomLeft'       { ILBody.HookyBottomLeft ILSerifs.None        ILMarks.Serifless  [XMiddleT mode].Hooky              para.advanceScaleI   Stroke }
+		'topRightSerifed'       { ILBody.Serifed       ILSerifs.SerifedRight  ILMarks.Serifed    [XMiddleT mode].SerifedRight       para.advanceScaleI   Stroke }
+		'topRightBaseSerifed'   { ILBody.Serifed       ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].HookyRight         para.advanceScaleI   Stroke }
+		'topRightBaseSerifedAsymmetric' { ILBody.Serifed ILSerifs.SerifedRightShort ILMarks.Serifed [XMiddleT mode].SerifedRight    para.advanceScaleI   Stroke }
 		'tailed'                { ILBody.Tailed        ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             para.advanceScaleI   Stroke }
 		'tailedSerifed'         { ILBody.Tailed        ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].TailedSerifed      para.advanceScaleI   Stroke }
 		'diagonalTailed'        { ILBody.DiagTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             para.advanceScaleI   Stroke }
@@ -264,6 +288,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		# Decompressed
 		'seriflessDec'          { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             para.advanceScaleI   0      }
 		'hookyDec'              { ILBody.Serifless     ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].Hooky              para.advanceScaleI   0      }
+		'reverseHookyDec'       { ILBody.Serifless     ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].HookyRight         para.advanceScaleI   0      }
 		'tailedDec'             { ILBody.Tailed        ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             para.advanceScaleI   Stroke }
 		'diagonalTailedDec'     { ILBody.DiagTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Tailed             para.advanceScaleI   Stroke }
 		'flatTailedDec'         { ILBody.FlatTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         para.advanceScaleI   Stroke }
@@ -276,12 +301,15 @@ glyph-block Letter-Latin-Lower-I : begin
 		# R Tail
 		'seriflessRTail'        { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].HookyBottom        para.advanceScaleI   0      }
 		'hookyRTail'            { ILBody.Serifless     ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   0      }
+		'reverseHookyRTail'     { ILBody.Serifless     ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   0      }
 		# R Tail + Decompress
 		'seriflessRTailDec'     { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].HookyBottom        para.advanceScaleI   0      }
 		'hookyRTailDec'         { ILBody.Serifless     ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   0      }
+		'reverseHookyRTailDec'  { ILBody.Serifless     ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].Center             para.advanceScaleI   0      }
 		#
 		'seriflessPL'           { ILBody.PhoneticLeft  ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0      }
 		'hookyPL'               { ILBody.PhoneticLeft  ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
+		'reverseHookyPL'        { ILBody.PhoneticLeft  ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
 		'topTailedPL'           { [ILWithCasualTop 'tailed'    ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
 		'topFlatPL'             { [ILWithCasualTop 'flat'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
 		'topSemiPL'             { [ILWithCasualTop 'semi'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
@@ -687,6 +715,7 @@ glyph-block Letter-Latin-Lower-I : begin
 				curl (xMiddle - [HSwToV HalfStroke]) (0 + LongVJut)
 				CurlyTail.n [AdviceStroke 3.5] 0 (xMiddle + [HSwToV HalfStroke] + LongJut) (SB - (Middle - xMiddle)) 0
 			create-forked-glyph "lCurlyTail.hooky" : ILSerifs.Hooky df Ascender 0 xMiddle
+			create-forked-glyph "lCurlyTail.reverseHooky" : ILSerifs.HookyRight df Ascender 0 xMiddle
 
 		define LCurlyCasualTopConfig : object
 			topTailed  'tailed'
