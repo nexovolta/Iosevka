@@ -46,7 +46,8 @@ export function parse(data, argv) {
 const DEFAULT_FORCED_DOUBLE_STOREY_A = "doubleStoreySerifless";
 const DEFAULT_LIGATURE_A = "doubleStoreyToothlessRounded";
 const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a", "cyrl/aye/a"];
-const DOUBLE_STOREY_HOOKS = ["HookInwardSerifed", "HookFlat", ""];
+const DOUBLE_STOREY_HOOKS = ["HookInwardSerifed", "HookFlat"];
+const DOUBLE_STOREY_CUTS = ["BottomCut"];
 const DOUBLE_STOREY_SPURS = [
 	"FlatBottomSerifless",
 	"FlatBottomSerifed",
@@ -56,11 +57,17 @@ const DOUBLE_STOREY_SPURS = [
 	"Serifed",
 	"Tailed",
 ];
-const DOUBLE_STOREY_A_SUFFIXES = new Set(
-	DOUBLE_STOREY_HOOKS.flatMap(hook =>
-		DOUBLE_STOREY_SPURS.map(spur => `doubleStorey${hook}${spur}`),
-	),
-);
+const A_TERMINALS = [
+	"FlatBottomSerifless",
+	"FlatBottomSerifed",
+	"ToothlessCorner",
+	"ToothlessRounded",
+	"TailedSerifed",
+	"DoubleSerifed",
+	"Tailed",
+	"Serifed",
+	"Serifless",
+];
 
 function resolveSelectors(parsed, para, argv) {
 	const variantSelector = {};
@@ -77,22 +84,55 @@ function resolveSelectors(parsed, para, argv) {
 }
 
 function parseDoubleStoreyA(suffix) {
-	if (!DOUBLE_STOREY_A_SUFFIXES.has(suffix)) return null;
-	for (const hook of DOUBLE_STOREY_HOOKS) {
-		const prefix = `doubleStorey${hook}`;
-		if (!suffix.startsWith(prefix)) continue;
-		const spur = suffix.slice(prefix.length);
-		if (DOUBLE_STOREY_SPURS.includes(spur)) return { hook, spur };
+	if (typeof suffix !== "string" || !suffix.startsWith("doubleStorey")) return null;
+	let rest = suffix.slice("doubleStorey".length);
+	let hook = "";
+	for (const h of DOUBLE_STOREY_HOOKS) {
+		if (rest.startsWith(h)) {
+			hook = h;
+			rest = rest.slice(h.length);
+			break;
+		}
+	}
+	let cut = "";
+	for (const c of DOUBLE_STOREY_CUTS) {
+		if (rest.startsWith(c)) {
+			cut = c;
+			rest = rest.slice(c.length);
+			break;
+		}
+	}
+	if (!DOUBLE_STOREY_SPURS.includes(rest)) return null;
+	return { hook, cut, spur: rest };
+}
+
+function assembleDoubleStoreyA({ hook = "", cut = "", spur = "Serifless" } = {}) {
+	return `doubleStorey${hook}${cut}${spur}`;
+}
+
+function terminalFromA(suffix) {
+	if (typeof suffix !== "string") return null;
+	for (const t of A_TERMINALS) {
+		if (suffix.endsWith(t)) return t;
 	}
 	return null;
 }
 
-function pickForcedDoubleStoreyA(obliqueVs, uprightVs) {
+function mapToDoubleStoreySpur(terminal) {
+	if (terminal === "TailedSerifed") return "Tailed";
+	if (terminal === "DoubleSerifed") return "Serifed";
+	if (DOUBLE_STOREY_SPURS.includes(terminal)) return terminal;
+	return "Serifless";
+}
+
+function pickForcedDoubleStoreyA(currentVs, obliqueVs, uprightVs) {
 	for (const vs of [obliqueVs, uprightVs]) {
 		const parsed = parseDoubleStoreyA(vs.a);
-		if (parsed) return `doubleStorey${parsed.hook}${parsed.spur}`;
+		if (parsed) return assembleDoubleStoreyA(parsed);
 	}
-	return DEFAULT_FORCED_DOUBLE_STOREY_A;
+	const terminal = terminalFromA(currentVs.a) || terminalFromA(uprightVs.a) || terminalFromA(obliqueVs.a);
+	if (!terminal) return DEFAULT_FORCED_DOUBLE_STOREY_A;
+	return assembleDoubleStoreyA({ spur: mapToDoubleStoreySpur(terminal) });
 }
 
 function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantSelector) {
@@ -106,14 +146,19 @@ function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantS
 		Object.assign({}, para, { isItalic: false, isOblique: false }),
 		argv,
 	);
-	const suffix = pickForcedDoubleStoreyA(obliqueVs, uprightVs);
+	const suffix = pickForcedDoubleStoreyA(variantSelector, obliqueVs, uprightVs);
 	const parsedA = parseDoubleStoreyA(suffix);
 	const hook = parsedA ? parsedA.hook : "";
+	const cut = parsedA ? parsedA.cut : "";
 	variantSelector["a/doubleStorey"] = suffix;
-	variantSelector["aRetroflexHook/doubleStorey"] = hook
-		? `doubleStorey${hook}Serifless`
-		: DEFAULT_FORCED_DOUBLE_STOREY_A;
-	const ligature = hook ? `doubleStorey${hook}ToothlessRounded` : DEFAULT_LIGATURE_A;
+	variantSelector["aRetroflexHook/doubleStorey"] = assembleDoubleStoreyA({
+		hook,
+		cut,
+		spur: "Serifless",
+	});
+	const ligature = hook
+		? assembleDoubleStoreyA({ hook, spur: "ToothlessRounded" })
+		: DEFAULT_LIGATURE_A;
 	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = ligature;
 }
 
