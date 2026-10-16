@@ -86,51 +86,6 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			[Just TERMINAL-DIAGONAL]   : LeftwardDiagTailedBar SB Descender 0
 			__                         : no-shape
 
-	# Lower zett bowl of Sulzbacher ß — the second dispiro, unchanged.
-	glyph-block-export SulzbacherZettBowl
-	define [SulzbacherZettBowl] : glyph-proc
-		define yMiddle : mix 0 Ascender 0.5
-		define xFinal : Math.max
-			mix (SB + [HSwToV Stroke]) RightSB 0.1
-			mix SB RightSB 0.3
-		define xMiddle : Math.max xFinal
-			SB + [HSwToV : 1.2 * Stroke]
-			RightSB - (yMiddle / 2 + HalfStroke)
-		define xMiddleBot : Math.max xMiddle : (xFinal + TINY) + [Math.abs : TanSlope * Stroke]
-		define ada : ArchDepthAOf (0.75 * ArchDepth) (0.5 * Width)
-		define adb : ArchDepthBOf (0.75 * ArchDepth) (0.5 * Width)
-
-		include : dispiro
-			widths.rhs
-			g4.right.start xMiddle (yMiddle + HalfStroke) [heading Rightward]
-			archv
-			g4   (RightSB - O) [YSmoothMidR (yMiddle + HalfStroke) 0 ada adb]
-			arcvh
-			flat xMiddleBot 0 [heading Leftward]
-			curl xFinal     0 [heading Leftward]
-
-	# Capital zett bowl from U+1E9E (rounded / flat-top / corner share this).
-	glyph-block-export CapitalSulzbacherZettBowl
-	define [CapitalSulzbacherZettBowl] : glyph-proc
-		define yMiddle : mix 0 CAP 0.5
-		define yMiddleCap : mix 0 CAP 0.54
-		define xFinal : Math.max
-			mix (SB + [HSwToV Stroke]) RightSB 0.1
-			mix SB RightSB 0.3
-		define xMiddle : Math.max xFinal
-			SB + [HSwToV : 1.2 * Stroke]
-			RightSB - (yMiddle / 2 + HalfStroke)
-		define xMiddleBot : Math.max xMiddle : (xFinal + TINY) + [Math.abs : TanSlope * Stroke]
-
-		include : dispiro
-			widths.rhs
-			g4   xMiddle (yMiddleCap + HalfStroke) [heading Rightward]
-			archv
-			g4   (RightSB - O * 2) [YSmoothMidR (yMiddleCap + HalfStroke) 0 ArchDepthA ArchDepthB]
-			arcvh
-			flat xMiddleBot 0
-			curl xFinal 0 [heading Leftward]
-
 	define [Sulzbacher slab term] : glyph-proc
 		include : MarkSet.b
 
