@@ -301,24 +301,6 @@ glyph-block Letter-Latin-Upper-T : begin
 	CreateAccentedComposition 'TCedilla' 0x0162 'T' 'cedillaBelow'
 	CreateAccentedComposition 'TComma'   0x021A 'T' 'commaBelow'
 
-	create-glyph 'smcpICap' 0xA7AE : glyph-proc
-		local df : include : DivFrame [if SLAB para.advanceScaleT 1]
-		include : df.markSet.capital
-
-		local l : TLeftX  df
-		local r : TRightX df
-
-		include : VBar.m df.middle 0 CAP
-		include : HBar.t l r CAP
-		include : HBar.b l r 0
-
-		if SLAB : begin
-			local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - l)
-			include : tagged 'serifRT' : VSerif.dr r CAP VJut swVJut
-			include : tagged 'serifLT' : VSerif.dl l CAP VJut swVJut
-			include : tagged 'serifRB' : VSerif.ur r 0   VJut swVJut
-			include : tagged 'serifLB' : VSerif.ul l 0   VJut swVJut
-
 	define [SampiShape df top bottom doTopSerifs doBottomSerif] : glyph-proc
 		define kSampiDepth 0.45
 
