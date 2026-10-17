@@ -192,6 +192,7 @@ glyph-block Symbol-Letter : begin
 	glyph-block-import Letter-Latin-X : XStrand
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 	glyph-block-import Mark-Above : aboveMarkMid
+	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
 
 	alias 'eulerConst' 0x2107 'latn/Epsilon'
 	alias 'scruple'    0x2108 'cyrl/E'
@@ -201,6 +202,68 @@ glyph-block Symbol-Letter : begin
 
 	alias 'letterLike/kelvinSign'   0x212A 'K'
 	alias 'letterLike/angstromSign' 0x212B 'ARing'
+
+	do "Centre line, prescription, response, versicle, property line"
+		define xLStem : mix 0 SB 1.5
+
+		# Slash plus a short perpendicular diagonal at the top (same layout as a rotated ¬, without scaling ¬).
+		define [SlashWithHookOverlay] : new-glyph : glyph-proc
+			include [refer-glyph 'slash']
+			local xl : SB + HalfStroke
+			local xr : RightSB - HalfStroke
+			local dx : xr - xl
+			local dy : ParenTop - ParenBot
+			local len : Math.sqrt : dx * dx + dy * dy
+			local hook : 0.55 * (RightSB - SB)
+			local p 0.93
+			local x1 : mix xl xr p
+			local y1 : mix ParenBot ParenTop p
+			local px : hook * dy / len
+			local py : hook * dx / len
+			local x2 : x1 - px
+			local y2 : y1 + py
+			include : ExtLineCenter x1 y1 x2 y2 Stroke
+
+		define kOnLStem 0.78
+		define [ScaledOnLStem src] : new-glyph : glyph-proc
+			local dx : xLStem + [HSwToV HalfStroke] - Middle
+			include [refer-glyph src]
+			include : ScaleAround Middle (CAP / 2) kOnLStem
+			include : ApparentTranslate dx 0
+
+		derive-multi-part-glyphs 'letterLike/centreLineSymbol' 0x2104 { 'L' 'C' } : lambda [srcs gr] : glyph-proc
+			local { el cee } srcs
+			include [refer-glyph el] AS_BASE ALSO_METRICS
+			include : ScaledOnLStem cee
+
+		derive-glyphs 'letterLike/prescriptionTake' 0x211E 'R' : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			local k 0.5
+			local stem : SB + [HSwToV HalfStroke]
+			local target : mix stem Middle 0.2
+			local dx : target - Middle
+			local dy : 0 - (XH / 2) * (1 - k)
+			include : new-glyph : glyph-proc
+				include : XStrand true false SB 0 RightSB XH 0.1 0.4 0.28
+				include : ScaleAround Middle (XH / 2) k
+				include : ApparentTranslate dx dy
+
+		derive-glyphs 'letterLike/response' 0x211F 'R' : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			include : SlashWithHookOverlay
+			include : ExtendAboveBaseAnchors ParenTop
+			include : ExtendBelowBaseAnchors ParenBot
+
+		derive-glyphs 'letterLike/versicle' 0x2123 'V' : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			include : SlashWithHookOverlay
+			include : ExtendAboveBaseAnchors ParenTop
+			include : ExtendBelowBaseAnchors ParenBot
+
+		derive-multi-part-glyphs 'letterLike/propertyLine' 0x214A { 'L' 'P' } : lambda [srcs gr] : glyph-proc
+			local { el pee } srcs
+			include [refer-glyph el] AS_BASE ALSO_METRICS
+			include : ScaledOnLStem pee
 
 	for-width-kinds WideWidth1 : begin
 		create-glyph [MangleName 'estimated'] [MangleUnicode 0x212E] : glyph-proc
