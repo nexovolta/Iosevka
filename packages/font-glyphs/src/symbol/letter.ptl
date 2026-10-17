@@ -206,23 +206,38 @@ glyph-block Symbol-Letter : begin
 	do "Centre line, prescription, response, versicle, property line"
 		define xLStem : mix 0 SB 1.5
 
-		# Slash plus a short perpendicular diagonal at the top (same layout as a rotated ¬, without scaling ¬).
+		# Slash plus a short perpendicular hook at the top, one L-outline so the join is a clean 90° like ¬.
 		define [SlashWithHookOverlay] : new-glyph : glyph-proc
-			include [refer-glyph 'slash']
 			local xl : SB + HalfStroke
 			local xr : RightSB - HalfStroke
 			local dx : xr - xl
 			local dy : ParenTop - ParenBot
 			local len : Math.sqrt : dx * dx + dy * dy
+			local ux : dx / len
+			local uy : dy / len
+			local px : 0 - uy
+			local py : ux + 0
+			local hw : Stroke / 2
 			local hook : 0.55 * (RightSB - SB)
-			local p 0.93
-			local x1 : mix xl xr p
-			local y1 : mix ParenBot ParenTop p
-			local px : hook * dy / len
-			local py : hook * dx / len
-			local x2 : x1 - px
-			local y2 : y1 + py
-			include : ExtLineCenter x1 y1 x2 y2 Stroke
+			local xOuterBot : xl - px * hw
+			local yOuterBot : ParenBot - py * hw
+			local xInnerBot : xl + px * hw
+			local yInnerBot : ParenBot + py * hw
+			local xOuterCnr : xr - px * hw + ux * hw
+			local yOuterCnr : ParenTop - py * hw + uy * hw
+			local xHookOuter : xr + ux * hw + px * hook
+			local yHookOuter : ParenTop + uy * hw + py * hook
+			local xHookInner : xr - ux * hw + px * hook
+			local yHookInner : ParenTop - uy * hw + py * hook
+			local xInnerCnr : xr - ux * hw + px * hw
+			local yInnerCnr : ParenTop - uy * hw + py * hw
+			include : spiro-outline
+				corner xOuterBot yOuterBot
+				corner xOuterCnr yOuterCnr
+				corner xHookOuter yHookOuter
+				corner xHookInner yHookInner
+				corner xInnerCnr yInnerCnr
+				corner xInnerBot yInnerBot
 
 		define kOnLStem 0.78
 		define [ScaledOnLStem src] : new-glyph : glyph-proc
@@ -251,13 +266,13 @@ glyph-block Symbol-Letter : begin
 		derive-glyphs 'letterLike/response' 0x211F 'R' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			include : SlashWithHookOverlay
-			include : ExtendAboveBaseAnchors ParenTop
+			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
 		derive-glyphs 'letterLike/versicle' 0x2123 'V' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			include : SlashWithHookOverlay
-			include : ExtendAboveBaseAnchors ParenTop
+			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
 		derive-multi-part-glyphs 'letterLike/propertyLine' 0x214A { 'L' 'P' } : lambda [srcs gr] : glyph-proc
