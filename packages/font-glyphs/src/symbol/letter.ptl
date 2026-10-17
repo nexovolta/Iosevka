@@ -254,9 +254,8 @@ glyph-block Symbol-Letter : begin
 		derive-glyphs 'letterLike/prescriptionTake' 0x211E 'R' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			local k 0.5
-			local stem : SB + [HSwToV HalfStroke]
-			local target : mix stem Middle 0.2
-			local dx : target - Middle
+			local xLeg : mix Middle RightSB 0.62
+			local dx : xLeg - Middle
 			local dy : 0 - (XH / 2) * (1 - k)
 			include : new-glyph : glyph-proc
 				include : XStrand true false SB 0 RightSB XH 0.1 0.4 0.28
