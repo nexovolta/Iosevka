@@ -232,12 +232,12 @@ glyph-block Symbol-Letter : begin
 			local xInnerCnr : xr - ux * hw + px * hw
 			local yInnerCnr : ParenTop - uy * hw + py * hw
 			include : spiro-outline
-				corner xOuterBot yOuterBot
-				corner xOuterCnr yOuterCnr
-				corner xHookOuter yHookOuter
-				corner xHookInner yHookInner
-				corner xInnerCnr yInnerCnr
 				corner xInnerBot yInnerBot
+				corner xInnerCnr yInnerCnr
+				corner xHookInner yHookInner
+				corner xHookOuter yHookOuter
+				corner xOuterCnr yOuterCnr
+				corner xOuterBot yOuterBot
 
 		define kOnLStem 0.78
 		define [ScaledOnLStem src] : new-glyph : glyph-proc
@@ -264,13 +264,15 @@ glyph-block Symbol-Letter : begin
 
 		derive-glyphs 'letterLike/response' 0x211F 'R' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
-			include : SlashWithHookOverlay
+			currentGlyph.clearGeometry
+			include : union [refer-glyph src] [SlashWithHookOverlay]
 			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
 		derive-glyphs 'letterLike/versicle' 0x2123 'V' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
-			include : SlashWithHookOverlay
+			currentGlyph.clearGeometry
+			include : union [refer-glyph src] [SlashWithHookOverlay]
 			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
