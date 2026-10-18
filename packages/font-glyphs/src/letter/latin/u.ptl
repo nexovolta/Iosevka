@@ -30,18 +30,19 @@ glyph-block Letter-Latin-U : begin
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			local y : StemCutY 0 yTR [fallback cut '']
-			include : uBowl.shape
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- (df.rightSB - [HSwToV sw])
-				stroke  -- sw
-				fine    -- (ShoulderFine * (sw / Stroke))
-				ada     -- ada
-				adb     -- adb
-				rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
+			include : union
+				uBowl.shape
+					top     -- yTL
+					bottom  -- 0
+					left    -- df.leftSB
+					right   -- (df.rightSB - [HSwToV sw])
+					stroke  -- sw
+					fine    -- (ShoulderFine * (sw / Stroke))
+					ada     -- ada
+					adb     -- adb
+					rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
+				tagged 'strokeR' : URightBar df.rightSB 0 yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : URightBar df.rightSB 0 yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
@@ -50,52 +51,55 @@ glyph-block Letter-Latin-U : begin
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			local y : StemCutY 0 yTR [fallback cut '']
-			include : uBowl.shape
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- (df.rightSB - [HSwToV sw])
-				stroke  -- sw
-				fine    -- (ShoulderFine * (sw / Stroke))
-				ada     -- ada
-				adb     -- adb
-				rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
+			include : union
+				uBowl.shape
+					top     -- yTL
+					bottom  -- 0
+					left    -- df.leftSB
+					right   -- (df.rightSB - [HSwToV sw])
+					stroke  -- sw
+					fine    -- (ShoulderFine * (sw / Stroke))
+					ada     -- ada
+					adb     -- adb
+					rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
+				tagged 'strokeR' : RightwardTailedBar df.rightSB y.bot y.top (sw -- sw)
+				ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTR) (sw -- sw)
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : tagged 'strokeR' : RightwardTailedBar df.rightSB y.bot y.top (sw -- sw)
-			include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTR) (sw -- sw)
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [FlatBottom df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
-			include : uBowl.toothlessCorner
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- df.rightSB
-				stroke  -- sw
-				ada     -- ada
-				adb     -- adb
-				rise    -- 0
+			include : union
+				uBowl.toothlessCorner
+					top     -- yTL
+					bottom  -- 0
+					left    -- df.leftSB
+					right   -- df.rightSB
+					stroke  -- sw
+					ada     -- ada
+					adb     -- adb
+					rise    -- 0
+				tagged 'strokeR' : URightBar df.rightSB 0 yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : URightBar df.rightSB 0 yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [ToothlessCorner df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
-			include : uBowl.toothlessCorner
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- df.rightSB
-				stroke  -- sw
-				ada     -- ada
-				adb     -- adb
+			include : union
+				uBowl.toothlessCorner
+					top     -- yTL
+					bottom  -- 0
+					left    -- df.leftSB
+					right   -- df.rightSB
+					stroke  -- sw
+					ada     -- ada
+					adb     -- adb
+				tagged 'strokeR' : URightBar df.rightSB DToothlessRise yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			include : URightBar df.rightSB DToothlessRise yTR sw cut
 			set-base-anchor 'strike'  df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
@@ -198,15 +202,15 @@ glyph-block Letter-Latin-U : begin
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
 
-	# Mirror the body, restore contour winding, then attach remapped serifs
-	# (inner/outer kept, not swapped by the flip).
+	# Mirror the body, then boolean-union it with remapped serifs so overlapping
+	# stems/bowl/serifs share one fill (inner/outer serifs kept, not swapped).
 	define [ReversedUCompose revBody revSlabs df top sw cut] : glyph-proc
-		include : difference
-			Rect (top + df.width) (0 - df.width) (0 - df.width) (df.width * 2)
-			difference
-				Rect (top + df.width) (0 - df.width) (0 - df.width) (df.width * 2)
-				with-transform [FlipAround df.middle 0 (-1) 1] : revBody df top sw nothing nothing cut
-		include : revSlabs df top sw
+		include : union
+			new-glyph : glyph-proc
+				include : union
+					revBody df top sw nothing nothing cut
+				include : FlipAround df.middle 0 (-1) 1
+			revSlabs df top sw
 
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
