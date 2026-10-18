@@ -279,12 +279,14 @@ glyph-block Symbol-Letter : begin
 			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
-		derive-multi-part-glyphs 'letterLike/propertyLine' 0x214A { 'L' 'grek/Gamma' } : lambda [srcs gr] : glyph-proc
-			local { el gamma } srcs
-			include [refer-glyph el] AS_BASE ALSO_METRICS
+		derive-glyphs 'letterLike/propertyLine' 0x214A 'L' : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
 			currentGlyph.clearGeometry
 
-			local stub Stroke
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			local sw : Stroke * [mix 1 0.72 heavyT]
+			local swV : HSwToV sw
+			local stub sw
 			local xG : mix 0 SB 1.5
 			local xL : mix xG RightSB 0.40
 			local yTop : CAP - stub
@@ -297,19 +299,13 @@ glyph-block Symbol-Letter : begin
 
 			include : union
 				new-glyph : glyph-proc
-					include : VBar.l xL 0 CAP
-					include : HBar.b xLBot xLRight 0
+					include : VBar.l xL 0 CAP sw
+					include : HBar.b xLBot xLRight 0 sw
 				new-glyph : glyph-proc
-					include : intersection
-						new-glyph : glyph-proc
-							include [refer-glyph gamma]
-							eject-contour 'strokeH'
-							eject-contour 'serifRT'
-						MaskAbove yGBot
-						MaskBelow yTop
-					include : HBar.t xGBar (xL + [HSwToV Stroke]) yTop
+					include : VBar.l xG yGBot yTop sw
+					include : HBar.t xGBar (xL + swV) yTop sw
 				new-glyph : glyph-proc
-					include : PShape CAP (mul -- mulP) (withBar -- false)
+					include : PShape CAP (mul -- mulP) (withBar -- false) (sw -- sw)
 					include : ApparentTranslate 0 dyP
 
 	for-width-kinds WideWidth1 : begin
