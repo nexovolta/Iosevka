@@ -8,7 +8,7 @@ glyph-module
 glyph-block Digits-Seven : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Digits-Shared : OnumMarks ShiftDown CodeLnum CodeOnum
+	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 
 	define SevenXLeft : mix SB RightSB 0.28
 	define SevenStraightInnerX : SevenXLeft + [HSwToV : 0.75 * Stroke]
@@ -208,32 +208,11 @@ glyph-block Digits-Seven : begin
 			include : refer-glyph "seven.lnum.\(suffix)"
 			include : ShiftDown
 
-		local dot '.'
-		local bodyName : suffix.slice 0 : suffix.indexOf dot
-		create-glyph "revSeven.lnum.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			local nick Stroke
-			local [object xInner xOuter] : SevenStemEdges bodyName CAP nick
-			include : union
-				intersection [MaskAbove nick] : new-glyph : glyph-proc
-					if Body : include : Body CAP
-					if Serif : include : Serif CAP
-				spiro-outline
-					corner xInner 0
-					corner xInner (nick + HalfStroke)
-					corner xOuter (nick + HalfStroke)
-					corner xOuter 0
-			include : FlipAround Middle (CAP / 2) (-1) 1
-
-		create-glyph "revSeven.onum.\(suffix)" : glyph-proc
-			include : OnumMarks.p
-			include : refer-glyph "revSeven.lnum.\(suffix)"
-			include : ShiftDown
-
 	select-variant 'seven.lnum' [CodeLnum '7'] (follow -- 'seven')
 	select-variant 'seven.onum' [CodeOnum '7'] (follow -- 'seven')
-	select-variant 'revSeven.lnum' [CodeLnum 0x218F] (follow -- 'seven')
-	select-variant 'revSeven.onum' [CodeOnum 0x218F] (follow -- 'seven')
+
+	turned 'turnSeven.lnum' [CodeLnum 0x218F] 'seven.lnum' Middle (CAP / 2)
+	turned 'turnSeven.onum' [CodeOnum 0x218F] 'seven.onum' Middle (OnumHeight / 2)
 
 	link-reduced-variant 'seven/sansSerif.lnum' 'seven.lnum' MathSansSerif (follow -- 'seven/sansSerif')
 	link-reduced-variant 'seven/sansSerif.onum' 'seven.onum' MathSansSerif (follow -- 'seven/sansSerif')
