@@ -15,6 +15,7 @@ glyph-block Letter-Latin-Upper-I : begin
 	define [IShape df top] : glyph-proc
 		include : VBar.m df.middle 0 top
 
+	glyph-block-export ISerifs
 	define ISerifs : namespace
 		export : define [Impl df top jut] : glyph-proc
 			include : tagged 'serifMB' : HSerif.mb df.middle 0   jut
@@ -34,6 +35,7 @@ glyph-block Letter-Latin-Upper-I : begin
 			include : Impl df top jut
 			return : object jut
 
+	glyph-block-export UpperIConfig
 	define UpperIConfig : object
 		'straight'     { para.advanceScaleI  ISerifs.None  }
 		'serifless'    { para.advanceScaleII ISerifs.None  }
@@ -78,13 +80,6 @@ glyph-block Letter-Latin-Upper-I : begin
 				include : VSerif.ml xMidLeft  yBar jutMid swVJut
 				include : VSerif.mr xMidRight yBar jutMid swVJut
 
-		if (Serifs !== ISerifs.None) : begin
-			create-glyph "smcpICap.\(suffix)" : glyph-proc
-				local df : include : DivFrame adws
-				include : df.markSet.capital
-				include : IShape df CAP
-				include : Serifs df CAP
-
 	select-variant 'I' 'I'
 	link-reduced-variant 'I/sansSerif' 'I' MathSansSerif
 	select-variant 'grek/Iota' 0x399 (follow -- 'I')
@@ -98,22 +93,11 @@ glyph-block Letter-Latin-Upper-I : begin
 
 	select-variant 'AiDiphthong' 0x1DF6E (follow -- 'I')
 
-	create-glyph 'smcpICap.serifless' : glyph-proc
-		local df : include : DivFrame [if SLAB para.advanceScaleT 1]
-		include : df.markSet.capital
-		local l : df.leftSB  + 0.75 * OX
-		local r : df.rightSB - 0.75 * OX
-		include : VBar.m df.middle 0 CAP
-		include : HBar.t l r CAP
-		include : HBar.b l r 0
-		if SLAB : begin
-			local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - l)
-			include : tagged 'serifRT' : VSerif.dr r CAP VJut swVJut
-			include : tagged 'serifLT' : VSerif.dl l CAP VJut swVJut
-			include : tagged 'serifRB' : VSerif.ur r 0   VJut swVJut
-			include : tagged 'serifLB' : VSerif.ul l 0   VJut swVJut
-
-	select-variant 'smcpICap' 0xA7AE (follow -- 'I')
+	glyph-block-export IBottomSerifJut
+	define [IBottomSerifJut df Serifs] : begin
+		if (Serifs === ISerifs.Long) : return : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
+		if (Serifs === ISerifs.Short) : return : Math.max Jut : mix [HSwToV HalfStroke] MidJutCenter df.adws
+		return 0
 
 	CreateAccentedComposition 'IAcute' 0xCD 'I' 'acuteAbove'
 

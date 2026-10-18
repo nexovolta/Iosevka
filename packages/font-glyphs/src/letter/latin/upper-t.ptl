@@ -15,7 +15,9 @@ glyph-block Letter-Latin-Upper-T : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
 	glyph-block-import Letter-Shared-Shapes : CyrDescender RetroflexHook MidHook LeftHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
+	glyph-block-import Letter-Latin-Upper-I : ISerifs UpperIConfig IBottomSerifJut
 
+	glyph-block-export TLeftX TRightX
 	define [TLeftX  df] : df.leftSB  + 0.75 * OX
 	define [TRightX df] : df.rightSB - 0.75 * OX
 	glyph-block-export TShape
@@ -263,6 +265,28 @@ glyph-block Letter-Latin-Upper-T : begin
 
 	select-variant 'T' 'T'
 	link-reduced-variant 'T/sansSerif' 'T' MathSansSerif
+
+	foreach { tSuffix { adws doST doSB } } [Object.entries TConfig] : do
+		foreach { iSuffix { iAdws Serifs } } [Object.entries UpperIConfig] : do
+			if (iSuffix !== 'straight') : create-glyph "smcpICap.\(tSuffix).\(iSuffix)" : glyph-proc
+				local df : include : DivFrame adws
+				include : df.markSet.capital
+				include : TShape df CAP doST false
+				if (Serifs !== ISerifs.None) : begin
+					local iDf : DivFrame iAdws
+					include : tagged 'serifMB' : HSerif.mb df.middle 0 [IBottomSerifJut iDf Serifs]
+				: else : begin
+					local l : TLeftX df
+					local r : TRightX df
+					include : tagged 'strokeLB' : HBar.b l r 0
+					if doST : begin
+						local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - l)
+						include : tagged 'serifRB' : VSerif.ur r 0 VJut swVJut
+						include : tagged 'serifLB' : VSerif.ul l 0 VJut swVJut
+
+	select-multi-dimensional-variant 'smcpICap' 0xA7AE
+		follows -- { 'T' 'I' }
+
 	select-variant 'smcpT' 0x1D1B (follow -- 'T')
 	select-variant 'TStroke'   0x166 (follow -- 'T')
 	select-variant 'THookLeft' 0x1AC (follow -- 'T')
