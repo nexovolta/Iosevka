@@ -58,25 +58,25 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			corner dim.inside dim.bottom
 
 	do "Paren glyphs"
+		define LargeContourDp : object
+			parenOutside           (0.25 * DesignParameters.parenOutside)
+			parenInside            DesignParameters.parenInside
+			parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
+			parenInsideSwAdj       DesignParameters.parenInsideSwAdj
+			parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
+			parenOvershoot         DesignParameters.parenOvershoot
+		define FlatArcDp : object
+			parenOutside           (0.5 * DesignParameters.parenOutside)
+			parenInside            DesignParameters.parenInside
+			parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
+			parenInsideSwAdj       DesignParameters.parenInsideSwAdj
+			parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
+			parenOvershoot         DesignParameters.parenOvershoot
+
 		define [NormalShape df] : Paren.Shape df df.mvs
-		define [LargeContourShape df] : begin
-			local dp : object
-				parenOutside           (0.25 * DesignParameters.parenOutside)
-				parenInside            DesignParameters.parenInside
-				parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-				parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-				parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-				parenOvershoot         DesignParameters.parenOvershoot
-			return : Paren.Shape df df.mvs dp
+		define [LargeContourShape df] : Paren.Shape df df.mvs LargeContourDp
 		define [FlatArcShape df] : begin
-			local dp : object
-				parenOutside           (0.5 * DesignParameters.parenOutside)
-				parenInside            DesignParameters.parenInside
-				parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-				parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-				parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-				parenOvershoot         DesignParameters.parenOvershoot
-			local dim : Paren.Dim df 0 dp
+			local dim : Paren.Dim df 0 FlatArcDp
 			return : dispiro
 				widths.lhs df.mvs
 				g4.left.start dim.inside dim.top
@@ -85,6 +85,24 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				curl dim.outside [mix dim.bottom dim.top 0.35]
 				arcvh
 				g4.right.start dim.inside dim.bottom
+
+		define [ParenVariantDp suffix] : piecewise
+			(suffix === 'largeContour') LargeContourDp
+			(suffix === 'flatArc')      FlatArcDp
+			true                        DesignParameters
+
+		define [ParenMiddleRing df suffix] : begin
+			local dim : Paren.Dim df 0 (dp -- [ParenVariantDp suffix]) (sw -- df.mvs)
+			local halfStem : 0.5 * [HSwToV df.mvs]
+			local ringSw : AdviceStroke 4
+			local innerR : Math.max (halfStem + 0.35 * ringSw) (1.1 * ringSw)
+			return : object
+				cx     (dim.outside + halfStem)
+				cy     dim.mid
+				r      (innerR + ringSw)
+				innerR innerR
+				punchR (innerR + 0.5 * ringSw)
+				ringSw ringSw
 
 		define SimpleParenConfig : object
 			'normal'       NormalShape
@@ -99,8 +117,18 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				include : shape subDf
 				include : with-transform [ApparentTranslate (df.width - subDf.width) 0] : shape subDf
 
-			turned "parenRight.\(suffix)"       null "parenLeft.\(suffix)"       Middle SymbolMid
-			turned "doubleParenRight.\(suffix)" null "doubleParenLeft.\(suffix)" Middle SymbolMid
+			create-glyph "parenLeftMiddleRing.\(suffix)" : glyph-proc
+				local df : DivFrame 1
+				local ring : ParenMiddleRing df suffix
+				include : union
+					difference
+						shape df
+						RingAt ring.cx ring.cy (ring.punchR + O)
+					RingStrokeAt ring.cx ring.cy ring.r ring.ringSw
+
+			turned "parenRight.\(suffix)"            null "parenLeft.\(suffix)"            Middle SymbolMid
+			turned "doubleParenRight.\(suffix)"      null "doubleParenLeft.\(suffix)"      Middle SymbolMid
+			turned "parenRightMiddleRing.\(suffix)"  null "parenLeftMiddleRing.\(suffix)"  Middle SymbolMid
 
 			create-glyph "parenLeftUHalf.\(suffix)" : intersection
 				refer-glyph "parenLeft.\(suffix)"
@@ -116,6 +144,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		select-variant 'parenRight' ')'
 		select-variant 'doubleParenLeft'  0x2E28 (follow -- 'parenLeft')
 		select-variant 'doubleParenRight' 0x2E29 (follow -- 'parenRight')
+		select-variant 'parenLeftMiddleRing'  0x2E62 (follow -- 'parenLeft')
+		select-variant 'parenRightMiddleRing' 0x2E63 (follow -- 'parenRight')
 
 		select-variant 'parenLeftUHalf'   0x2E59 (follow -- 'parenLeft')
 		select-variant 'parenRightUHalf'  0x2E5A (follow -- 'parenRight')
