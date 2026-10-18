@@ -190,6 +190,7 @@ glyph-block Symbol-Letter : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-X : XStrand
+	glyph-block-import Letter-Latin-Upper-P : PShape
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 	glyph-block-import Mark-Above : aboveMarkMid
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
@@ -217,7 +218,7 @@ glyph-block Symbol-Letter : begin
 			local uy : dy / len
 			local px : 0 - uy
 			local py : ux + 0
-			local hw : Stroke / 2
+			local hw : OverlayStroke / 2
 			local hook : 0.55 * (RightSB - SB)
 			local xOuterBot : xl - px * hw
 			local yOuterBot : ParenBot - py * hw
@@ -239,11 +240,12 @@ glyph-block Symbol-Letter : begin
 				corner xOuterCnr yOuterCnr
 				corner xOuterBot yOuterBot
 
-		define kOnLStem 0.78
+		define kOnLStemX 0.60
+		define kOnLStemY 0.66
 		define [ScaledOnLStem src] : new-glyph : glyph-proc
 			local dx : xLStem + [HSwToV HalfStroke] - Middle
 			include [refer-glyph src]
-			include : ScaleAround Middle (CAP / 2) kOnLStem
+			include : ScaleAround Middle (CAP / 2) kOnLStemX kOnLStemY
 			include : ApparentTranslate dx 0
 
 		derive-multi-part-glyphs 'letterLike/centreLineSymbol' 0x2104 { 'L' 'C' } : lambda [srcs gr] : glyph-proc
@@ -257,8 +259,9 @@ glyph-block Symbol-Letter : begin
 			local xLeg : mix Middle RightSB 0.62
 			local dx : xLeg - Middle
 			local dy : 0 - (XH / 2) * (1 - k)
+			local swX : Stroke / k
 			include : new-glyph : glyph-proc
-				include : XStrand true false SB 0 RightSB XH 0.1 0.4 0.28
+				include : XStrand true false SB 0 RightSB XH 0.1 0.4 0.28 swX
 				include : ScaleAround Middle (XH / 2) k
 				include : ApparentTranslate dx dy
 
@@ -276,10 +279,38 @@ glyph-block Symbol-Letter : begin
 			include : ExtendAboveBaseAnchors : ParenTop + Stroke
 			include : ExtendBelowBaseAnchors ParenBot
 
-		derive-multi-part-glyphs 'letterLike/propertyLine' 0x214A { 'L' 'P' } : lambda [srcs gr] : glyph-proc
-			local { el pee } srcs
+		derive-multi-part-glyphs 'letterLike/propertyLine' 0x214A { 'L' 'grek/Gamma' } : lambda [srcs gr] : glyph-proc
+			local { el gamma } srcs
 			include [refer-glyph el] AS_BASE ALSO_METRICS
-			include : ScaledOnLStem pee
+			currentGlyph.clearGeometry
+
+			local stub Stroke
+			local xG : mix 0 SB 1.5
+			local xL : mix xG RightSB 0.40
+			local yTop : CAP - stub
+			local yGBot : mix 0 CAP 0.22
+			local mulP : xL / SB
+			local xGBar : xG - O
+			local xLBot : xL - O
+			local xLRight : RightSB - 0.75 * OX
+			local dyP : 0 - stub
+
+			include : union
+				new-glyph : glyph-proc
+					include : VBar.l xL 0 CAP
+					include : HBar.b xLBot xLRight 0
+				new-glyph : glyph-proc
+					include : intersection
+						new-glyph : glyph-proc
+							include [refer-glyph gamma]
+							eject-contour 'strokeH'
+							eject-contour 'serifRT'
+						MaskAbove yGBot
+						MaskBelow yTop
+					include : HBar.t xGBar (xL + [HSwToV Stroke]) yTop
+				new-glyph : glyph-proc
+					include : PShape CAP (mul -- mulP) (withBar -- false)
+					include : ApparentTranslate 0 dyP
 
 	for-width-kinds WideWidth1 : begin
 		create-glyph [MangleName 'estimated'] [MangleUnicode 0x212E] : glyph-proc
