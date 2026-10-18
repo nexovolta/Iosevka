@@ -10,7 +10,7 @@ glyph-block Digits-Four : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : EngHook
-	glyph-block-import Digits-Shared : OnumMarks ShiftDown CodeLnum CodeOnum
+	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 
 	define [FourStdShape] : with-params [top open crossing [fine [AdviceStroke 3]] [sw Stroke] [bbd 0] [slab SLAB]] : glyph-proc
 		define yBarBot : Math.max ([mix 0 (top - sw) 0.25] - 0.125 * sw) [mix [if (!bbd && slab) Stroke 0] (top - sw) 0.1]
@@ -108,6 +108,14 @@ glyph-block Digits-Four : begin
 
 	select-variant 'four.lnum' [CodeLnum '4'] (follow -- 'four')
 	select-variant 'four.onum' [CodeOnum '4'] (follow -- 'four')
+
+	derive-glyphs 'revFour.lnum' [CodeLnum 0x218C] 'four.lnum' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : FlipAround Middle (CAP / 2) (-1) 1
+
+	derive-glyphs 'revFour.onum' [CodeOnum 0x218C] 'four.onum' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : FlipAround Middle (OnumHeight / 2) (-1) 1
 
 	link-reduced-variant 'four/sansSerif.lnum' 'four.lnum' MathSansSerif (follow -- 'four/sansSerif')
 	link-reduced-variant 'four/sansSerif.onum' 'four.onum' MathSansSerif (follow -- 'four/sansSerif')

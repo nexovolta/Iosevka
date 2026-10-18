@@ -7,7 +7,9 @@ glyph-module
 glyph-block Digits-Six : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Digits-Shared : CodeLnum CodeOnum
+	glyph-block-import Digits-Shared : OnumMarks ShiftDown CodeLnum CodeOnum
+	glyph-block-import Letter-Latin-Lower-Y : FlipAsLambda
+	glyph-block-import Letter-Shared-Shapes : uBowl
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	glyph-block-export StraightBarSixShape
@@ -208,6 +210,28 @@ glyph-block Digits-Six : begin
 
 	select-variant 'six.lnum' [CodeLnum '6'] (follow -- 'six')
 	alias          'six.onum' [CodeOnum '6'] 'six.lnum'
+
+	# Cursive-lambda hump (Y-flipped u-bowl) at half digit height, stems to the baseline.
+	define [RevSixShape charTop] : glyph-proc
+		local hump : 0.5 * charTop
+		include : union
+			FlipAsLambda charTop hump : glyph-proc
+				include : uBowl.toothlessRounded
+					top    -- charTop
+					bottom -- hump
+					left   -- SB
+					right  -- RightSB
+			VBar.l SB 0 (hump + Stroke)
+			VBar.r RightSB 0 (hump + Stroke)
+
+	create-glyph 'revSix.lnum' [CodeLnum 0x218E] : glyph-proc
+		include : MarkSet.capital
+		include : RevSixShape CAP
+
+	create-glyph 'revSix.onum' [CodeOnum 0x218E] : glyph-proc
+		include : OnumMarks.p
+		include : RevSixShape CAP
+		include : ShiftDown
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/six' 0x1D7DE : glyph-proc

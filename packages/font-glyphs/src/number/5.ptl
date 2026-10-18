@@ -9,7 +9,7 @@ glyph-module
 glyph-block Digits-Five : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Digits-Shared : OnumMarks ShiftDown CodeLnum CodeOnum
+	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Arc-Hook : Toothed Toothless Rounded Flat
 
 	define flex-params [FiveShape] : glyph-proc
@@ -147,6 +147,9 @@ glyph-block Digits-Five : begin
 
 	select-variant 'five.lnum' [CodeLnum '5'] (follow -- 'five')
 	select-variant 'five.onum' [CodeOnum '5'] (follow -- 'five')
+
+	turned 'turnFive.lnum' [CodeLnum 0x218D] 'five.lnum' Middle (CAP / 2)
+	turned 'turnFive.onum' [CodeOnum 0x218D] 'five.onum' Middle (OnumHeight / 2)
 
 	link-reduced-variant 'five/sansSerif.lnum' 'five.lnum' MathSansSerif (follow -- 'five/sansSerif')
 	link-reduced-variant 'five/sansSerif.onum' 'five.onum' MathSansSerif (follow -- 'five/sansSerif')
