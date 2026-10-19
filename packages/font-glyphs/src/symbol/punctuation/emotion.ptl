@@ -74,6 +74,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				yAttach -- DotRadius
 
 	do "Question"
+		glyph-block-import Mark-Above : TildeShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothShape QuestionRevSmoothShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerShape QuestionRevCornerShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerFlatShape QuestionRevCornerFlatShape
@@ -138,13 +139,20 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				include : DrawAt df.middle dr (dr - overshoot)
 				local yBot : 2 * dr + [Math.max (0.7 * Stroke) (XH * 0.14)]
 				local yTop : CAP - O
-				local xRight : mix df.leftSB df.rightSB 0.78
-				local xLeft : mix df.leftSB df.rightSB 0.34
-				include : dispiro
-					widths.center Stroke
-					flat xRight yTop [heading Downward]
-					curl xRight [mix yTop yBot 0.32] [heading Downward]
-					quadControls 0 0.58 12
-					g4 xLeft yBot
+				local length : yTop - yBot
+				local yMid : mix yBot yTop 0.5
+				local wave : 0.28 * (df.rightSB - df.leftSB)
+				include : new-glyph : glyph-proc
+					include : TildeShape
+						ttop     -- wave
+						tbot     -- 0
+						leftEnd  -- 0
+						rightEnd -- length
+						hs       -- (Stroke / 2)
+					include : Ungizmo
+					include : Translate (0 - length / 2) (0 - wave / 2)
+					include : Rotate (0.5 * Math.PI)
+					include : Translate df.middle yMid
+					include : Regizmo
 
 		select-variant 'medievalQuestion' 0x2E54 (follow -- 'punctuationDot')
