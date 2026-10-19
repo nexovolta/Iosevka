@@ -191,6 +191,7 @@ glyph-block Symbol-Letter : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-X : XStrand
 	glyph-block-import Letter-Latin-Upper-P : PShape
+	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 	glyph-block-import Mark-Above : aboveMarkMid
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
@@ -206,6 +207,7 @@ glyph-block Symbol-Letter : begin
 
 	do "Centre line, prescription, response, versicle, property line"
 		define xLStem : mix 0 SB 1.5
+		define xLMiddle : mix xLStem RightSB 0.40
 
 		# Slash plus a short perpendicular hook at the top, one L-outline so the join is a clean 90° like ¬.
 		define [SlashWithHookOverlay] : new-glyph : glyph-proc
@@ -242,16 +244,27 @@ glyph-block Symbol-Letter : begin
 
 		define kOnLStemX 0.60
 		define kOnLStemY 0.66
-		define [ScaledOnLStem src] : new-glyph : glyph-proc
-			local dx : xLStem + [HSwToV HalfStroke] - Middle
-			include [refer-glyph src]
-			include : ScaleAround Middle (CAP / 2) kOnLStemX kOnLStemY
-			include : ApparentTranslate dx 0
 
-		derive-multi-part-glyphs 'letterLike/centreLineSymbol' 0x2104 { 'L' 'C' } : lambda [srcs gr] : glyph-proc
-			local { el cee } srcs
-			include [refer-glyph el] AS_BASE ALSO_METRICS
-			include : ScaledOnLStem cee
+		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+			create-glyph "letterLike/centreLineSymbol.\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				set-width Width
+				include : union
+					VBar.l xLMiddle 0 CAP
+					HBar.b (xLMiddle - O) (RightSB - 0.75 * OX) 0
+				local df : DivFrame kOnLStemX 2
+				local cHeight : kOnLStemY * XH
+				local sw : df.adviceStroke2 2 3 cHeight
+				local p kOnLStemY
+				local yMid : CAP / 2
+				local lf : CLetterForm df styTop styBot (yMid + cHeight / 2) (yMid - cHeight / 2)
+					ada -- (SmallArchDepthA * p)
+					adb -- (SmallArchDepthB * p)
+					hook -- (Hook * p)
+					sw -- sw
+				include : with-transform [ApparentTranslate (xLMiddle + [HSwToV HalfStroke] - df.middle) 0] : lf.full
+
+		select-variant 'letterLike/centreLineSymbol' 0x2104 (follow -- 'c')
 
 		derive-glyphs 'letterLike/prescriptionTake' 0x211E 'R' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
@@ -284,11 +297,11 @@ glyph-block Symbol-Letter : begin
 			currentGlyph.clearGeometry
 
 			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
-			local sw : Stroke * [mix 1 0.72 heavyT]
+			local sw : Stroke * [mix 1 0.78 heavyT]
 			local swV : HSwToV sw
 			local stub sw
-			local xG : mix 0 SB 1.5
-			local xL : mix xG RightSB 0.40
+			local xG xLStem
+			local xL xLMiddle
 			local yTop : CAP - stub
 			local yGBot : mix 0 CAP 0.22
 			local mulP : xL / SB
