@@ -51,6 +51,17 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		include : HBar.m df.leftSB df.rightSB SymbolMid
 
+	create-glyph 'obliqueHyphen' 0x2E5D : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		local half : (df.rightSB - df.leftSB) / 2
+		local angle : 22 / 180 * Math.PI
+		local dx : half * [Math.cos angle]
+		local dy : half * [Math.sin angle]
+		include : dispiro
+			widths.center
+			corner (df.middle - dx) (SymbolMid - dy)
+			corner (df.middle + dx) (SymbolMid + dy)
+
 	create-glyph 'armn/hyphen' 0x58A : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
 		include : dispiro
