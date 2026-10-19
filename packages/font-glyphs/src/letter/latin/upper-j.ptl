@@ -159,6 +159,10 @@ glyph-block Letter-Latin-Upper-J : begin
 				local attach : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.jTopSerifAttach
 				include : serif df attach.x CAP
 
+		create-glyph "latn/Iota.\(suffix)" : glyph-proc
+			include [refer-glyph "J.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2) (-1) 1
+
 	select-variant 'J' 'J'
 	select-variant 'J/noDescend' (shapeFrom -- 'J')
 	link-reduced-variant 'J/sansSerif' 'J' MathSansSerif
@@ -166,6 +170,8 @@ glyph-block Letter-Latin-Upper-J : begin
 	alias 'cyrl/Je' 0x408 'J'
 	alias 'grek/Yot' 0x37F 'J'
 	select-variant 'JCurlyTail' 0xA7B2
+	select-variant 'latn/Iota' 0x196 (follow -- 'J/noDescend')
+	alias 'cyrl/Iota' 0xA646 'latn/Iota'
 
 	CreateAccentedComposition 'JAcute' null 'J' 'acuteAbove'
 

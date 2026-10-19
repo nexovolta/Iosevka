@@ -93,12 +93,6 @@ glyph-block Letter-Latin-Upper-I : begin
 
 	select-variant 'AiDiphthong' 0x1DF6E (follow -- 'I')
 
-	glyph-block-export IBottomSerifJut
-	define [IBottomSerifJut df Serifs] : begin
-		if (Serifs === ISerifs.Long) : return : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
-		if (Serifs === ISerifs.Short) : return : Math.max Jut : mix [HSwToV HalfStroke] MidJutCenter df.adws
-		return 0
-
 	CreateAccentedComposition 'IAcute' 0xCD 'I' 'acuteAbove'
 
 	create-glyph 'smcpI' 0x26A : glyph-proc
