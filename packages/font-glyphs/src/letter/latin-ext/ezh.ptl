@@ -30,6 +30,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : fCursive      -- false
 		local-parameter : fSerifed      -- false
 		local-parameter : fOunceTop     -- false
+		local-parameter : ounceTop      -- nothing
 		local-parameter : fFlatHook     -- false
 		local-parameter : pxTopRight    -- 0.925
 		local-parameter : pxMidLeft     -- 0.200
@@ -73,10 +74,8 @@ glyph-block Letter-Latin-Ezh : begin
 			include : Zigzag top yMidLeft
 
 		define [OunceTop] : glyph-proc
-			define [object yMidLeft] : Dim
-			local ySplit : mix yMidLeft top 0.5
-			include : Zigzag top ySplit
-			include : Zigzag ySplit yMidLeft
+			include : Zigzag [fallback ounceTop Ascender] top
+			include : if fCursive [CursiveTop] [ConventionalTop]
 
 		define [CursiveTop] : glyph-proc
 			define [object xTopLeft xTopRight xMidLeft yMidLeft] : Dim
@@ -150,8 +149,9 @@ glyph-block Letter-Latin-Ezh : begin
 							g4 (df.leftSB + [if (origBar === nothing) OX : HSwToV : 0.5 * (origBar - stroke)]) (bottom + hook)
 
 			if fSerifed : begin
-				local { jutTop jutBot jutMid } : EFVJutLength top bottom pyMidLeft stroke nothing hook
-				include : VSerif.dl xTopLeft top jutTop (VJutStroke * (stroke / Stroke))
+				local serifTop : if fOunceTop [fallback ounceTop top] top
+				local { jutTop jutBot jutMid } : EFVJutLength serifTop bottom pyMidLeft stroke nothing hook
+				include : VSerif.dl xTopLeft serifTop jutTop (VJutStroke * (stroke / Stroke))
 
 	glyph-block-export RevEzh
 	define flex-params [RevEzh] : namespace
@@ -294,16 +294,17 @@ glyph-block Letter-Latin-Ezh : begin
 			include : ezh.Shape
 
 		create-glyph "ounce.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			define ezh : Ezh [DivFrame 1] CAP 0
+			include : MarkSet.bp
+			define ezh : Ezh [DivFrame 1] XH Descender
 				fCursive  -- fCursive
 				fSerifed  -- fSerifed
 				fOunceTop -- true
-				pyMidLeft -- [if fCursive 0.50 0.52]
-				stroke    -- [AdviceStroke2 2 3 (CAP - 0)]
-				hook      -- Hook
-				ada       -- ArchDepthA
-				adb       -- ArchDepthB
+				ounceTop  -- Ascender
+				pyMidLeft -- [if fCursive 0.50 0.55]
+				stroke    -- [AdviceStroke2 2 3 (XH - Descender)]
+				hook      -- SHook
+				ada       -- SmallArchDepthA
+				adb       -- SmallArchDepthB
 			include : ezh.Shape
 
 		create-glyph "smcpEzh.\(suffix)" : glyph-proc
@@ -732,9 +733,9 @@ glyph-block Letter-Latin-Ezh : begin
 	select-variant 'Ezh'     0x1B7
 	select-variant 'revEzh'  0x1B8  (follow -- 'Ezh')
 	select-variant 'smcpEzh' 0x1D23 (follow -- 'Ezh')
-	select-variant 'ounce'   0x2125 (follow -- 'Ezh')
 
 	select-variant 'ezh'            0x292
+	select-variant 'ounce'          0x2125 (follow -- 'ezh')
 	select-variant 'revezh'         0x1B9   (follow -- 'ezh')
 	select-variant 'ezhTail'        0x1BA   (follow -- 'ezh')
 	select-variant 'ezhCurlyTail'   0x293   (follow -- 'ezh')

@@ -9,7 +9,7 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendBelowBaseAnchors
-	glyph-block-import Letter-Shared : CreateAccentedComposition
+	glyph-block-import Letter-Shared : CreateAccentedComposition ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : OBarLeft TopHook
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
@@ -67,42 +67,66 @@ glyph-block Letter-Latin-Lower-B : begin
 		if (Body === ToothlessCornerBody) : return DToothlessRise
 		return 0
 
-	define [ToothedBody yTop fFlat cut] : begin
+	define [ToothedBody yTop fFlat cut _left _right _sw _ada _adb] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local ada : fallback _ada SmallArchDepthA
+		local adb : fallback _adb SmallArchDepthB
+		local fine : ShoulderFine * (sw / Stroke)
 		local y : StemCutY 0 yTop cut
 		return : union
 			if fFlat
-			: then : OBarLeft.earlessCorner (rise -- 0)
-			: else : OBarLeft.shape
-			VBar.l SB y.bot y.top
-			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- 0) (top -- yTop)
+			: then : OBarLeft.earlessCorner (rise -- 0) (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			: else : OBarLeft.shape (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			VBar.l left y.bot y.top sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- 0) (top -- yTop) (sw -- sw)
 
-	define [FlatBottomBody yTop fFlat cut] : begin
+	define [FlatBottomBody yTop fFlat cut _left _right _sw _ada _adb] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local ada : fallback _ada SmallArchDepthA
+		local adb : fallback _adb SmallArchDepthB
+		local fine : ShoulderFine * (sw / Stroke)
 		local y : StemCutY 0 yTop cut
 		return : union
 			if fFlat
-			: then : OBarLeft.flatTopAndBottom
-			: else : OBarLeft.toothlessCorner (rise -- 0)
-			VBar.l SB y.bot y.top
-			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- 0) (top -- yTop)
+			: then : OBarLeft.flatTopAndBottom (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			: else : OBarLeft.toothlessCorner (rise -- 0) (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			VBar.l left y.bot y.top sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- 0) (top -- yTop) (sw -- sw)
 
-	define [ToothlessCornerBody yTop fFlat cut] : begin
+	define [ToothlessCornerBody yTop fFlat cut _left _right _sw _ada _adb] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local ada : fallback _ada SmallArchDepthA
+		local adb : fallback _adb SmallArchDepthB
+		local fine : ShoulderFine * (sw / Stroke)
 		local y : StemCutY DToothlessRise yTop cut
 		return : union
 			if fFlat
-			: then : OBarLeft.toothlessCornerFlat
-			: else : OBarLeft.toothlessCorner
-			VBar.l SB y.bot y.top
-			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- SB) (bot -- DToothlessRise) (top -- yTop)
+			: then : OBarLeft.toothlessCornerFlat (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			: else : OBarLeft.toothlessCorner (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			VBar.l left y.bot y.top sw
+			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- DToothlessRise) (top -- yTop) (sw -- sw)
 
-	define [ToothlessRoundedBody yTop fFlat cut] : begin
+	define [ToothlessRoundedBody yTop fFlat cut _left _right _sw _ada _adb] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local sw : fallback _sw Stroke
+		local ada : fallback _ada SmallArchDepthA
+		local adb : fallback _adb SmallArchDepthB
+		local fine : ShoulderFine * (sw / Stroke)
 		local body : if fFlat
-			then : OBarLeft.toothlessRoundedFlat (yTerminal -- yTop)
-			else : OBarLeft.toothlessRounded (yTerminal -- yTop)
+			then : OBarLeft.toothlessRoundedFlat (yTerminal -- yTop) (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : OBarLeft.toothlessRounded (yTerminal -- yTop) (left -- left) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 		if (cut !== 'topCut') : return body
 		return : difference body : spiro-outline
-			corner (SB + [HSwToV Stroke]) yTop
-			corner (SB + [HSwToV Stroke]) (yTop - HalfStroke)
-			corner SB yTop
+			corner (left + [HSwToV sw]) yTop
+			corner (left + [HSwToV sw]) (yTop - 0.5 * sw)
+			corner left yTop
 
 	define [LTSerifs] : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
 	define [LBSerifs] : tagged 'serifLB' : HSerif.lb SB 0 SideJut
@@ -167,6 +191,13 @@ glyph-block Letter-Latin-Lower-B : begin
 			include : TopHook.toRight.lBarInner SB (XH / 2) Ascender
 			include : LeaningAnchor.Above.VBar.l SB
 
+		create-glyph "b/pack67.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleMM Stroke 2 1 (2 / 3)
+			include : df.markSet.b
+			include : Body Ascender fFlat cut df.leftSB df.rightSB df.mvs df.smallArchDepthA df.smallArchDepthB
+			if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt df.leftSB Ascender SideJut df.mvs
+			if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb df.leftSB 0 SideJut df.mvs
+
 		create-glyph "bFlourish.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.b
@@ -208,16 +239,18 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
+	select-variant 'b/pack67' (follow -- 'b')
 
-	derive-glyphs 'lbBar' 0x2114 'b' : function [src gr] : glyph-proc
+	derive-glyphs 'lbBar' 0x2114 'b/pack67' : function [src gr] : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.b
 		local sw Stroke
+		local bDf : ThreeQuarterDf para.advanceScaleMM sw 2 1 (2 / 3)
 		local xStem : df.width / 6
 		local xShift : df.width / 3
 		include : VBar.m xStem 0 Ascender sw
 		include : with-transform [ApparentTranslate xShift 0] [refer-glyph src]
-		include : HBar.m (xStem - [HSwToV : 0.5 * sw] - SideJut) (xShift + SB + [HSwToV sw] + SideJut) (Ascender - sw) sw
+		include : HBar.m (xStem - [HSwToV : 0.5 * sw] - SideJut) (xShift + bDf.leftSB + [HSwToV sw] + SideJut) (Ascender - sw) sw
 
 	select-variant 'bStroke' 0x180 (follow -- 'b')
 	select-variant 'bFlourish' 0xA797 (follow -- 'b')
