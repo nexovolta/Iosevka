@@ -244,6 +244,25 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				HBar.t hDim.l hDim.r               ParenTop
 				VBar.l hDim.l ParenBot ParenTop
 
+		define [BracketThroughStroke y] : begin
+			local hDim : Bracket.HDim
+			local xStem : hDim.l + [HSwToV HalfStroke]
+			local jut : hDim.r - xStem
+			return : HBar.m (xStem - jut) hDim.r y
+
+		create-glyph 'bracketStrokeLeft' 0x2E55 : glyph-proc
+			include : union
+				Bracket.Shape ParenTop ParenBot
+				BracketThroughStroke : mix ParenBot ParenTop 0.5
+
+		create-glyph 'bracketDblStrokeLeft' 0x2E57 : glyph-proc
+			local yMid : mix ParenBot ParenTop 0.5
+			local yOff : Math.max (Stroke * 0.85) ((ParenTop - ParenBot) * 0.07)
+			include : union
+				Bracket.Shape ParenTop ParenBot
+				BracketThroughStroke (yMid + yOff)
+				BracketThroughStroke (yMid - yOff)
+
 		create-glyph 'barBarLeft' 0x2E20 : glyph-proc
 			local hDim : Bracket.HDim
 			include : union
@@ -257,6 +276,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		turned 'bracketRight' ']' 'bracketLeft' Middle SymbolMid
 		turned 'bracketBarRight'       0x2046 'bracketBarLeft'       Middle SymbolMid
+		turned 'bracketStrokeRight'    0x2E56 'bracketStrokeLeft'    Middle SymbolMid
+		turned 'bracketDblStrokeRight' 0x2E58 'bracketDblStrokeLeft' Middle SymbolMid
 		turned 'bracketRightUpper'     0x23A4 'bracketLeftLower'     Middle SymbolMid
 		turned 'bracketRightExtension' 0x23A5 'bracketLeftExtension' Middle SymbolMid
 		turned 'bracketRightLower'     0x23A6 'bracketLeftUpper'     Middle SymbolMid
