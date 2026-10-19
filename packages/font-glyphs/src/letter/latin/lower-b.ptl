@@ -209,6 +209,16 @@ glyph-block Letter-Latin-Lower-B : begin
 	select-variant 'b' 'b'
 	link-reduced-variant 'b/sansSerif' 'b' MathSansSerif
 
+	derive-glyphs 'lbBar' 0x2114 'b' : function [src gr] : glyph-proc
+		local df : include : DivFrame para.advanceScaleMM 3
+		include : df.markSet.b
+		local sw Stroke
+		local xStem : df.width / 6
+		local xShift : df.width / 3
+		include : VBar.m xStem 0 Ascender sw
+		include : with-transform [ApparentTranslate xShift 0] [refer-glyph src]
+		include : HBar.m (xStem - [HSwToV : 0.5 * sw] - SideJut) (xShift + SB + [HSwToV sw] + SideJut) (Ascender - sw) sw
+
 	select-variant 'bStroke' 0x180 (follow -- 'b')
 	select-variant 'bFlourish' 0xA797 (follow -- 'b')
 	CreateAccentedComposition 'bBar' null 'b' 'hStrike'

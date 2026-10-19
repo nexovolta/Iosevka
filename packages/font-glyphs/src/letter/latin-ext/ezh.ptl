@@ -29,6 +29,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : bottom
 		local-parameter : fCursive      -- false
 		local-parameter : fSerifed      -- false
+		local-parameter : fOunceTop     -- false
 		local-parameter : fFlatHook     -- false
 		local-parameter : pxTopRight    -- 0.925
 		local-parameter : pxMidLeft     -- 0.200
@@ -62,11 +63,20 @@ glyph-block Letter-Latin-Ezh : begin
 
 			return : object xTopLeft xTopRight xMidLeft yMidLeft xArcTop yArcTop xArcMid yArcMid
 
-		define [ConventionalTop] : glyph-proc
-			define [object xTopLeft xTopRight xMidLeft yMidLeft] : Dim
+		define [Zigzag topY botY] : glyph-proc
+			define [object xTopLeft xTopRight xMidLeft] : Dim
+			include : tagged 'strokeTop' : HBar.t xTopLeft xTopRight topY stroke
+			include : tagged 'strokeMiddle' : ExtLineRhsToLhs xTopRight (topY - stroke) xMidLeft botY [VSwToH stroke]
 
-			include : tagged 'strokeTop' : HBar.t xTopLeft xTopRight top stroke
-			include : tagged 'strokeMiddle' : ExtLineRhsToLhs xTopRight (top - stroke) xMidLeft yMidLeft [VSwToH stroke]
+		define [ConventionalTop] : glyph-proc
+			define [object yMidLeft] : Dim
+			include : Zigzag top yMidLeft
+
+		define [OunceTop] : glyph-proc
+			define [object yMidLeft] : Dim
+			local ySplit : mix yMidLeft top 0.5
+			include : Zigzag top ySplit
+			include : Zigzag ySplit yMidLeft
 
 		define [CursiveTop] : glyph-proc
 			define [object xTopLeft xTopRight xMidLeft yMidLeft] : Dim
@@ -108,7 +118,7 @@ glyph-block Letter-Latin-Ezh : begin
 			local term : if (fFlatHook && terminal === TERMINAL-HOOK) TERMINAL-FLAT terminal
 
 			include : union
-				if fCursive [CursiveTop] [ConventionalTop]
+				if fOunceTop [OunceTop] : if fCursive [CursiveTop] [ConventionalTop]
 				dispiro
 					widths.rhs stroke
 					flat xMidLeft yMidLeft [heading Rightward]
@@ -276,6 +286,19 @@ glyph-block Letter-Latin-Ezh : begin
 			define ezh : Ezh [DivFrame 1] CAP 0
 				fCursive  -- fCursive
 				fSerifed  -- fSerifed
+				pyMidLeft -- [if fCursive 0.50 0.52]
+				stroke    -- [AdviceStroke2 2 3 (CAP - 0)]
+				hook      -- Hook
+				ada       -- ArchDepthA
+				adb       -- ArchDepthB
+			include : ezh.Shape
+
+		create-glyph "ounce.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			define ezh : Ezh [DivFrame 1] CAP 0
+				fCursive  -- fCursive
+				fSerifed  -- fSerifed
+				fOunceTop -- true
 				pyMidLeft -- [if fCursive 0.50 0.52]
 				stroke    -- [AdviceStroke2 2 3 (CAP - 0)]
 				hook      -- Hook
@@ -709,6 +732,7 @@ glyph-block Letter-Latin-Ezh : begin
 	select-variant 'Ezh'     0x1B7
 	select-variant 'revEzh'  0x1B8  (follow -- 'Ezh')
 	select-variant 'smcpEzh' 0x1D23 (follow -- 'Ezh')
+	select-variant 'ounce'   0x2125 (follow -- 'Ezh')
 
 	select-variant 'ezh'            0x292
 	select-variant 'revezh'         0x1B9   (follow -- 'ezh')
