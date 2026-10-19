@@ -532,6 +532,14 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greater' '>' : glyph-proc
 		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 
+	WithDotVariants 'dottedRightPointingAngle' 0x2E16 : function [DrawAt kr ov] : glyph-proc
+		include : refer-glyph 'greater'
+		local r : PeriodRadius * kr
+		local yExt : dH + 0.5 * OperatorStroke
+		local gap : yExt + r + [Math.max [AdviceStroke 5] (XH * 0.06)]
+		include : DrawAt Middle (SymbolMid + gap) (r - ov)
+		include : DrawAt Middle (SymbolMid - gap) (r - ov)
+
 	WithDotVariants 'greaterDot' 0x22D7 : function [DrawAt kr ov] : composite-proc
 		GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB [AdviceStroke 4]
 		DrawAt (SB + DotRadius) SymbolMid (DotRadius * kr * [AdviceStroke 4] / Stroke - ov)

@@ -51,16 +51,42 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		include : HBar.m df.leftSB df.rightSB SymbolMid
 
+	define ObliqueHyphenAngle : 22 / 180 * Math.PI
+	define ObliqueHyphenCos : 1 * [Math.cos ObliqueHyphenAngle]
+	define ObliqueHyphenSin : 1 * [Math.sin ObliqueHyphenAngle]
+	define [ObliqueHyphenDelta df] : begin
+		local half : (df.rightSB - df.leftSB) / 2
+		local dx : half * ObliqueHyphenCos
+		local dy : half * ObliqueHyphenSin
+		return {dx dy}
+	define [ObliqueHyphenShape df yMid] : begin
+		local {dx dy} : ObliqueHyphenDelta df
+		return : dispiro
+			widths.center
+			corner (df.middle - dx) (yMid - dy)
+			corner (df.middle + dx) (yMid + dy)
+	define [DoubleObliqueHyphenShape df] : union
+		ObliqueHyphenShape df (SymbolMid + EqualHalfSpace)
+		ObliqueHyphenShape df (SymbolMid - EqualHalfSpace)
+
 	create-glyph 'obliqueHyphen' 0x2E5D : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
-		local half : (df.rightSB - df.leftSB) / 2
-		local angle : 22 / 180 * Math.PI
-		local dx : half * [Math.cos angle]
-		local dy : half * [Math.sin angle]
-		include : dispiro
-			widths.center
-			corner (df.middle - dx) (SymbolMid - dy)
-			corner (df.middle + dx) (SymbolMid + dy)
+		include : ObliqueHyphenShape df SymbolMid
+
+	create-glyph 'doubleObliqueHyphen' 0x2E17 : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		include : DoubleObliqueHyphenShape df
+
+	WithDotVariants 'cornishVerseDivider' 0x2E4F : function [DrawAt kr ov] : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		local {dx dy} : ObliqueHyphenDelta df
+		local r : PeriodRadius * kr
+		local dist : HalfStroke + r + [Math.max OX [AdviceStroke 12]]
+		local px : 0 - ObliqueHyphenSin
+		local py : 0 + ObliqueHyphenCos
+		include : DoubleObliqueHyphenShape df
+		include : DrawAt (df.middle - dx + px * dist) (SymbolMid + EqualHalfSpace - dy + py * dist) (r - ov)
+		include : DrawAt (df.middle + dx - px * dist) (SymbolMid - EqualHalfSpace + dy - py * dist) (r - ov)
 
 	create-glyph 'armn/hyphen' 0x58A : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
