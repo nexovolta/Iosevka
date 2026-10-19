@@ -148,6 +148,27 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				adb    -- (ArchDepthB * (HBarPos ** 0.3))
 			if para.isItalic : eject-contour 'serifLB'
 
+		create-glyph "paragraphus.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : GammaShape CAP 0 slabType
+			eject-contour 'serifRT'
+			local xStemMid : xGammaBarLeft + [HSwToV HalfStroke]
+			local x1 xGammaTopRight
+			local y1 CAP
+			local x2 xStemMid
+			local y2 : CAP / 2
+			local dist : Math.hypot (x2 - x1) (y2 - y1)
+			local ux : (x2 - x1) / dist
+			local uy : (y2 - y1) / dist
+			include : intersection
+				MaskLeft xGammaTopRight
+				MaskBelow CAP
+				dispiro
+					widths.center Stroke
+					corner (x1 - ux * Stroke) (y1 - uy * Stroke)
+					corner x2 y2
+
+	select-variant 'paragraphus' 0x2E4D (follow -- 'grek/Gamma')
 	select-variant 'grek/Gamma' 0x393
 	link-reduced-variant 'grek/Gamma/sansSerif' 'grek/Gamma' MathSansSerif
 	select-variant 'grek/smcpGamma'  0x1D26 (shapeFrom -- 'cyrl/ghe.upright') (follow -- 'grek/Gamma')
