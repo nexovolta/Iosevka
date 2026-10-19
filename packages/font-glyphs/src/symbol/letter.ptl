@@ -242,7 +242,6 @@ glyph-block Symbol-Letter : begin
 				corner xOuterCnr yOuterCnr
 				corner xOuterBot yOuterBot
 
-		define kOnLStemX 0.60
 		define kOnLStemY 0.66
 
 		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
@@ -252,17 +251,18 @@ glyph-block Symbol-Letter : begin
 				include : union
 					VBar.l xLMiddle 0 CAP
 					HBar.b (xLMiddle - O) (RightSB - 0.75 * OX) 0
-				local df : DivFrame kOnLStemX 2
-				local cHeight : kOnLStemY * XH
+				local xStem : xLMiddle + [HSwToV HalfStroke]
+				local df : DivFrame 1 2
+				local cHeight : kOnLStemY * CAP
 				local sw : df.adviceStroke2 2 3 cHeight
-				local p kOnLStemY
+				local p : cHeight / XH
 				local yMid : CAP / 2
 				local lf : CLetterForm df styTop styBot (yMid + cHeight / 2) (yMid - cHeight / 2)
 					ada -- (SmallArchDepthA * p)
 					adb -- (SmallArchDepthB * p)
 					hook -- (Hook * p)
 					sw -- sw
-				include : with-transform [ApparentTranslate (xLMiddle + [HSwToV HalfStroke] - df.middle) 0] : lf.full
+				include : with-transform [ApparentTranslate (xStem - df.middle) 0] : lf.full
 
 		select-variant 'letterLike/centreLineSymbol' 0x2104 (follow -- 'c')
 
