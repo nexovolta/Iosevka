@@ -208,6 +208,8 @@ glyph-block Symbol-Letter : begin
 	do "Centre line, prescription, response, versicle, property line"
 		define xLStem : mix 0 SB 1.5
 		define xLMiddle : mix xLStem RightSB 0.40
+		define overlayHeavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+		define overlayStroke : Stroke * [mix 1 0.78 overlayHeavyT]
 
 		# Slash plus a short perpendicular hook at the top, one L-outline so the join is a clean 90° like ¬.
 		define [SlashWithHookOverlay] : new-glyph : glyph-proc
@@ -248,13 +250,13 @@ glyph-block Symbol-Letter : begin
 			create-glyph "letterLike/centreLineSymbol.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				set-width Width
+				local sw overlayStroke
 				include : union
-					VBar.l xLMiddle 0 CAP
-					HBar.b (xLMiddle - O) (RightSB - 0.75 * OX) 0
-				local xStem : xLMiddle + [HSwToV HalfStroke]
+					VBar.l xLMiddle 0 CAP sw
+					HBar.b (xLMiddle - O) (RightSB - 0.75 * OX) 0 sw
+				local xStem : xLMiddle + [HSwToV : 0.5 * sw]
 				local df : DivFrame 1 2
 				local cHeight : kOnLStemY * CAP
-				local sw : df.adviceStroke2 2 3 cHeight
 				local p : cHeight / XH
 				local yMid : CAP / 2
 				local lf : CLetterForm df styTop styBot (yMid + cHeight / 2) (yMid - cHeight / 2)
@@ -296,8 +298,7 @@ glyph-block Symbol-Letter : begin
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			currentGlyph.clearGeometry
 
-			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
-			local sw : Stroke * [mix 1 0.78 heavyT]
+			local sw overlayStroke
 			local swV : HSwToV sw
 			local stub sw
 			local xG xLStem
