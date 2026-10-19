@@ -27,6 +27,39 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		select-variant 'exclam' '!' (follow -- 'punctuationDot')
 		select-variant 'exclamDown' 0xA1 (follow -- 'punctuationDot')
 
+		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+			create-glyph "medievalExclam.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local dr : PeriodRadius * kdr
+				local slope 0.55
+				local sw Stroke
+				local gap : Math.max (0.35 * sw) [AdviceStroke 6]
+				local yTop CAP
+				local strokeLen : CAP * 0.38
+				local yStrokeBot : yTop - strokeLen
+				local yDotHi : yStrokeBot - gap - dr
+				local yDotLo dr
+				if (yDotHi < yDotLo + 2 * dr + gap) : begin
+					set yDotHi : yDotLo + 2 * dr + gap
+					set yStrokeBot : yDotHi + dr + gap
+				local yRef : mix yDotLo yTop 0.5
+				define [xAt y] : df.middle + slope * (y - yRef)
+				local pad : dr + [HSwToV : 0.5 * sw]
+				local xMin : Math.min [xAt yTop] [xAt yStrokeBot] [xAt yDotHi] [xAt yDotLo]
+				local xMax : Math.max [xAt yTop] [xAt yStrokeBot] [xAt yDotHi] [xAt yDotLo]
+				local xShift 0
+				if ((xMin - pad) < df.leftSB) : set xShift : df.leftSB - (xMin - pad)
+				if ((xMax + pad + xShift) > df.rightSB) : set xShift : df.rightSB - (xMax + pad)
+				define [xFit y] : [xAt y] + xShift
+				include : dispiro
+					widths.center sw
+					corner [xFit yTop] yTop
+					corner [xFit yStrokeBot] yStrokeBot
+				include : DrawAt [xFit yDotHi] yDotHi (dr - overshoot)
+				include : DrawAt [xFit yDotLo] yDotLo (dr - overshoot)
+
+		select-variant 'medievalExclam' 0x2E53 (follow -- 'punctuationDot')
+
 		select-variant 'alveolarClick' 0x1C3 (follow -- 'diacriticDot')
 		CreateTurnedLetter 'alveolarPercussive'          null 'alveolarClick' HalfAdvance (XH  / 2)
 		CreateTurnedLetter 'alveolarPercussive/baseline' null 'alveolarClick' HalfAdvance (CAP / 2)
@@ -97,3 +130,21 @@ glyph-block Symbol-Punctuation-Emotion : begin
 			follows -- { 'punctuationDot' 'question' }
 
 		alias 'symbolForSubstituteFormTwo' 0x2426 'revQuestion'
+
+		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+			create-glyph "medievalQuestion.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local dr : PeriodRadius * kdr
+				include : DrawAt df.middle dr (dr - overshoot)
+				local yBot : 2 * dr + [Math.max (0.7 * Stroke) (XH * 0.14)]
+				local yTop : CAP - O
+				local xRight : mix df.leftSB df.rightSB 0.78
+				local xLeft : mix df.leftSB df.rightSB 0.34
+				include : dispiro
+					widths.center Stroke
+					flat xRight yTop [heading Downward]
+					curl xRight [mix yTop yBot 0.32] [heading Downward]
+					quadControls 0 0.58 12
+					g4 xLeft yBot
+
+		select-variant 'medievalQuestion' 0x2E54 (follow -- 'punctuationDot')

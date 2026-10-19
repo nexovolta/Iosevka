@@ -41,8 +41,9 @@ glyph-block Symbol-Punctuation-Small : begin
 		local {.x mx1 .y my1} : GlobalTransform.apply {.x cx .y cy}
 		include : Translate (mx1) (my1)
 
-	define [CommaShape kdr o] : namespace
+	define [CommaShape kdr o _tailY] : namespace
 		define r : PeriodRadius * kdr
+		define tailY : fallback _tailY Descender
 		define ro : r - o
 		define sw    : Math.min [AdviceStroke 4] (r * 0.8)
 		define swEnd : Math.min [AdviceStroke 2] (r * 1.0)
@@ -58,8 +59,8 @@ glyph-block Symbol-Punctuation-Small : begin
 			g4 0 (r + ro)
 			archv
 			g4 (+ro) r [widths.rhs sw]
-			quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-			g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+			quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / tailY)) 12
+			g4 ([mix 0 tailY TanSlope] - commaOverflow) tailY [widths.rhs swEnd]
 
 		export : define [round cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
@@ -81,8 +82,8 @@ glyph-block Symbol-Punctuation-Small : begin
 				dispiro
 					flat r r [widths.rhs sw]
 					curl r 0 [widths.rhs sw]
-					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / Descender)) 12
-					g4 ([mix 0 Descender TanSlope] - commaOverflow) Descender [widths.rhs swEnd]
+					quadControls (0 + TanSlope / 2) (0.5 - TanSlope * (r / tailY)) 12
+					g4 ([mix 0 tailY TanSlope] - commaOverflow) tailY [widths.rhs swEnd]
 
 		define q : r * Math.SQRT2
 		define swDia : 0.88 * q
@@ -91,8 +92,8 @@ glyph-block Symbol-Punctuation-Small : begin
 		define [DiamondTail] : dispiro
 			flat q r [widths.rhs.heading swDia Downward]
 			curl q [mix r (r - q) 0.18] [widths.rhs.heading swDia Downward]
-			quadControls (0 + TanSlope / 2) (0.6 - TanSlope * (r / Descender)) 12
-			g4 ([mix 0 Descender TanSlope] - diamondOverflow) Descender [widths.rhs swDiaTip]
+			quadControls (0 + TanSlope / 2) (0.6 - TanSlope * (r / tailY)) 12
+			g4 ([mix 0 tailY TanSlope] - diamondOverflow) tailY [widths.rhs swDiaTip]
 
 		export : define [diamond cx cy] : CommaShapeT cx cy : glyph-proc
 			include : union
@@ -336,6 +337,58 @@ glyph-block Symbol-Punctuation-Small : begin
 	alias 'armn/fullstop' 0x589 'colon'
 
 	turned 'turnSemicolon' 0x2E35 'semicolon' [DivFrame para.advanceScaleI].middle (XH / 2)
+
+	do "Stenographic full stop, medieval comma, punctus elevatus"
+		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+			create-glyph "stenographicFullStop.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local r : PeriodRadius * kDotRadius
+				local cy r
+				local arm : r * 1.28
+				local sw : Math.min OverlayStroke (r * 0.95)
+				include : union
+					dispiro
+						widths.center sw
+						corner (df.middle - arm) (cy - arm)
+						corner (df.middle + arm) (cy + arm)
+					dispiro
+						widths.center sw
+						corner (df.middle - arm) (cy + arm)
+						corner (df.middle + arm) (cy - arm)
+
+			create-glyph "medievalComma.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local dr : PeriodRadius * kDotRadius
+				include : DrawAt df.middle dr (dr - overshoot)
+				local sw : Math.min Stroke [AdviceStroke 3]
+				local yBot : 2 * dr + 0.45 * dr
+				local yTop XH
+				local rad : (yTop - yBot) / 2
+				local cy : mix yBot yTop 0.5
+				include : dispiro
+					widths.center sw
+					g4.right.start df.middle (cy + rad) [heading Rightward]
+					archv
+					g4.down.mid (df.middle + rad) cy [heading Downward]
+					arcvh
+					g4.left.end df.middle (cy - rad) [heading Leftward]
+
+			create-glyph "punctusElevatus.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local r : PeriodRadius * kDotRadius
+				include [refer-glyph "period.\(suffix)"] AS_BASE ALSO_METRICS
+				include : new-glyph : glyph-proc
+					include : [CommaShape kDotRadius overshoot (0 - 2.05 * r)].(suffix) df.middle 0
+					include : Ungizmo
+					include : Translate (-df.middle) (-r)
+					include : Rotate (Math.PI / 2)
+					include : Scale 1 (-1)
+					include : Translate df.middle (XH - 1.2 * r)
+					include : Regizmo
+
+		select-variant 'stenographicFullStop' 0x2E5D (follow -- 'punctuationDot')
+		select-variant 'medievalComma' 0x2E4C (follow -- 'punctuationDot')
+		select-variant 'punctusElevatus' 0x2E4E (follow -- 'punctuationDot')
 
 	# Hollow (no CV)
 
