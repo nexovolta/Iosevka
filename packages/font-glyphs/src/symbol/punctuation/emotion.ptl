@@ -139,9 +139,16 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				include : DrawAt df.middle dr (dr - overshoot)
 				local yBot : 2 * dr + [Math.max (0.7 * Stroke) (XH * 0.14)]
 				local yTop : CAP - O
-				local length : yTop - yBot
-				local yMid : mix yBot yTop 0.5
-				local wave : 0.28 * (df.rightSB - df.leftSB)
+				local xLeft : df.leftSB + [HSwToV HalfStroke]
+				local xRight : df.rightSB - [HSwToV HalfStroke]
+				local span : Math.min (xRight - xLeft) (yTop - yBot)
+				local length : span * Math.SQRT2
+				local wave : 0.22 * (df.rightSB - df.leftSB)
+				local yTopBox yTop
+				local yBotBox : yTopBox - span
+				if (yBotBox < yBot) : set yBotBox yBot
+				local cx : mix xLeft (xLeft + span) 0.5
+				local cy : mix yBotBox (yBotBox + span) 0.5
 				include : new-glyph : glyph-proc
 					include : TildeShape
 						ttop     -- wave
@@ -151,8 +158,8 @@ glyph-block Symbol-Punctuation-Emotion : begin
 						hs       -- (Stroke / 2)
 					include : Ungizmo
 					include : Translate (0 - length / 2) (0 - wave / 2)
-					include : Rotate (0.5 * Math.PI)
-					include : Translate df.middle yMid
+					include : Rotate (0.25 * Math.PI)
+					include : Translate cx cy
 					include : Regizmo
 
 		select-variant 'medievalQuestion' 0x2E54 (follow -- 'punctuationDot')
