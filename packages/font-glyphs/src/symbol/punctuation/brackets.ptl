@@ -247,8 +247,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		define [BracketThroughStroke y] : begin
 			local hDim : Bracket.HDim
 			local xStem : hDim.l + [HSwToV HalfStroke]
-			local jut : hDim.r - xStem
-			return : HBar.m (xStem - jut) hDim.r y
+			local jut : 0.5 * (hDim.r - xStem)
+			return : HBar.m (xStem - jut) (xStem + jut) y
 
 		create-glyph 'bracketStrokeLeft' 0x2E55 : glyph-proc
 			include : union

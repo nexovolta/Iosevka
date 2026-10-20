@@ -81,12 +81,10 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		local {dx dy} : ObliqueHyphenDelta df
 		local r : PeriodRadius * kr
-		local dist : HalfStroke + r + [Math.max OX [AdviceStroke 12]]
-		local px : 0 - ObliqueHyphenSin
-		local py : 0 + ObliqueHyphenCos
+		local lift : HalfStroke + r
 		include : DoubleObliqueHyphenShape df
-		include : DrawAt (df.middle - dx + px * dist) (SymbolMid + EqualHalfSpace - dy + py * dist) (r - ov)
-		include : DrawAt (df.middle + dx - px * dist) (SymbolMid - EqualHalfSpace + dy - py * dist) (r - ov)
+		include : DrawAt (df.middle - dx) (SymbolMid + EqualHalfSpace - dy + lift) (r - ov)
+		include : DrawAt (df.middle + dx) (SymbolMid - EqualHalfSpace + dy - lift) (r - ov)
 
 	create-glyph 'armn/hyphen' 0x58A : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
