@@ -2,6 +2,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
 
@@ -9,6 +10,7 @@ glyph-module
 glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 
 	define [ThreeFoldShape height fSolidInner] : glyph-proc
 		local top : SymbolMid + height / 2
@@ -104,7 +106,7 @@ glyph-block Symbol-Punctuation-At : begin
 					flat   df.middle obot
 				glyph-proc
 
-	define [CompactShape] : glyph-proc
+	define [CompactShape _height fFlatHook] : glyph-proc
 		local top  CAP
 		local obot 0
 		local otop [mix obot top 0.675]
@@ -116,6 +118,7 @@ glyph-block Symbol-Punctuation-At : begin
 		local ada : ArchDepthA * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local adb : ArchDepthB * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local atTurnBot (obot - ada / 4)
+		local hd : FlatHookDepth [DivFrame 1]
 
 		local shrink 0.6
 
@@ -138,9 +141,16 @@ glyph-block Symbol-Punctuation-At : begin
 			straight.down.start (m1 - sw * [HSwToV shrink]) (atTurnBot + ada) [heading Downward]
 			Arch.lhs atTurnBot (sw -- sw) (swBefore -- (sw * shrink))
 			flat RightSB (atTurnBot + ada)
-			curl RightSB (top - ArchDepthB)
-			HookEnd top (sw -- sw)
-			g4 SB (top - Hook)
+			if fFlatHook
+			: then : list
+				curl RightSB (top - hd.y) [heading Upward]
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat (RightSB - [Math.min (0.625 * (RightSB - SB)) (1.375 * hd.x)]) top [widths.lhs sw]
+				curl SB top [heading Leftward]
+			: else : list
+				curl RightSB (top - ArchDepthB)
+				HookEnd top (sw -- sw)
+				g4 SB (top - Hook)
 
 	define NormalHeight : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.600
 	define TallHeight   : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.875
@@ -157,6 +167,7 @@ glyph-block Symbol-Punctuation-At : begin
 		fourfoldSolidInnerTall  { FourFoldShape  TallHeight   true  }
 
 		compact                 { CompactShape   CAP          false }
+		compactFlatHook         { CompactShape   CAP          true  }
 
 	foreach { suffix { body height fSolidInner } } [Object.entries AtConfig] : do
 		create-glyph "at.\(suffix)" : body height fSolidInner
