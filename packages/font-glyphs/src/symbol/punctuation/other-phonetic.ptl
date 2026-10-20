@@ -132,6 +132,33 @@ glyph-block Symbol-Other-Phonetic : begin
 			include : VBar.l toneMarkLeft (CAP * a) (CAP * b) OperatorStroke
 			include : HBar.m (toneMarkLeft + TINY) toneMarkRight [yOfToneDepart a b pos] OperatorStroke
 
+	# Cross patties: yang departing mark with serifs on all three spokes
+	define [CrossPattyShape fArmRight] : glyph-proc
+		local yBot 0
+		local yTop : CAP * 0.5
+		local yBar : yOfToneDepart 0 0.5 0.5
+		local sw OperatorStroke
+		local jutH Jut
+		local jutMid : Math.min VJut : (yTop - yBot) / 2 - sw
+		local swVJut : VJutStroke * (sw / Stroke)
+		if fArmRight : then : begin
+			include : VBar.l toneMarkLeft yBot yTop sw
+			include : HBar.m (toneMarkLeft + TINY) toneMarkRight yBar sw
+			include : HSerif.mt (toneMarkLeft + [HSwToV : 0.5 * sw]) yTop jutH sw
+			include : HSerif.mb (toneMarkLeft + [HSwToV : 0.5 * sw]) yBot jutH sw
+			include : VSerif.mr toneMarkRight yBar jutMid swVJut
+		: else : begin
+			include : VBar.r toneMarkRight yBot yTop sw
+			include : HBar.m toneMarkLeft (toneMarkRight - TINY) yBar sw
+			include : HSerif.mt (toneMarkRight - [HSwToV : 0.5 * sw]) yTop jutH sw
+			include : HSerif.mb (toneMarkRight - [HSwToV : 0.5 * sw]) yBot jutH sw
+			include : VSerif.ml toneMarkLeft yBar jutMid swVJut
+
+	create-glyph 'crossPattyWithRightCrossbar' 0x2E50 : glyph-proc
+		include : CrossPattyShape true
+	create-glyph 'crossPattyWithLeftCrossbar' 0x2E51 : glyph-proc
+		include : CrossPattyShape false
+
 	local EnteringToneConfig : list
 		list 'endHighTone'       0x2FA  0.6  1    1.0
 		list 'endLowTone'        0x2FC  0    0.4  0
