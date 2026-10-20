@@ -8,7 +8,7 @@ glyph-block Mark-Overlay : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	glyph-block-import Mark-Shared-Metrics : markExtend MarkStroke markStress markFine
+	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markStress markFine
 	glyph-block-import Mark-Shared-Metrics : markMiddle markDotsRadius
 	glyph-block-import Mark-Above : aboveMarkTop aboveMarkBot aboveMarkMid TildeShape RingShape MeasureGlyphBounds StdAnchors
 
@@ -81,19 +81,21 @@ glyph-block Mark-Overlay : begin
 			set-mark-anchor 'overlay' 0 0 0 0
 			include : InvLazySOverlay
 
-		# Same lazy S as AB37, rotated 45° clockwise so it lies horizontally.
+		# Same lazy S as AB37, rotated 90° and scaled to the tilde diacritic's box.
 		create-glyph 'urAbove' 0x1DD1 : glyph-proc
 			set-width 0
 			local giz currentGlyph.gizmo
 			include : ForceUpright
 			include : InvLazySOverlay
-			include : Rotate (Math.PI / 4)
+			include : Rotate (Math.PI / 2)
 			include : Translate markMiddle aboveMarkMid
 			local b : include : MeasureGlyphBounds
 			if b : begin
+				local w : Math.max TINY (b.xMax - b.xMin)
 				local h : Math.max TINY (b.yMax - b.yMin)
-				local s : (aboveMarkTop - aboveMarkBot) / h
-				include : ScaleAround markMiddle aboveMarkMid s s
+				local sW : (2 * markExtend * 1.5 + markStroke) / w
+				local sH : (aboveMarkTop - (aboveMarkBot + markFine / 2) + 0.5 * markStroke) / h
+				include : ScaleAround markMiddle aboveMarkMid sW sH
 			set currentGlyph.gizmo giz
 			include : Regizmo
 			include : StdAnchors.wide
