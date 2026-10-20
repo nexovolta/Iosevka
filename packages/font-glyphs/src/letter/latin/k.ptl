@@ -142,18 +142,18 @@ glyph-block Letter-Latin-K : begin
 					if fHookRight
 					: then : begin
 						define kHookRightMix 0.5
-						include : dispiro
+						include : tagged 'strokeRT' : dispiro
 							widths.rhs stroke
 							straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
 							flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yAttach1 kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
 							curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
-					: else : include : intersection
+					: else : include : tagged 'strokeRT' : intersection
 						TopMask.forStroke 0
 						dispiro
 							widths.rhs stroke
 							flat (kshRightTop - ox) top
 							curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
-					include : intersection
+					include : tagged 'strokeRB' : intersection
 						BottomMask.forStroke (-0.1)
 						spiro-outline
 							corner (kshLeft + stroke) 0
@@ -272,12 +272,39 @@ glyph-block Letter-Latin-K : begin
 						maskRB	     -- BotSerifMask
 
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
-			# Flip the straight body only. Leg serifs and slash overlays are applied
-			# afterwards so they sit on the inverted arms, not the pre-flip geometry.
+			# Flip the unhooked straight body only. Leg serifs and slash overlays are
+			# applied afterwards so they sit on the inverted arms, not the pre-flip
+			# geometry. For K with hook, flip first so the original lower lands on
+			# top, eject that arm, then reinsert a smaller hooked upper as a
+			# separate union operand (avoids mixed-winding dents).
+			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
+			local ox : KOvershootX slabLegs true top stroke
+			local kshLeft : left + [KBalance slabLT true]
+			local kshRightBot : right + [KBalanceRight slabLegs true]
+			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
+			local yAttach1 : [mix 0 top 0.42] - stroke
+			local yAttach2 : [mix 0 top 0.72] + stroke
 			include : union
 				new-glyph : glyph-proc
-					include : KLegs.Straight fHookRight left right stroke top slabLT slabLegs null true
+					include : KLegs.Straight false left right stroke top slabLT slabLegs null true
 					include : FlipAround [mix left right 0.5] (top / 2) 1 (-1)
+					if fHookRight : eject-contour 'strokeRB'
+				if fHookRight
+				: then : new-glyph : glyph-proc
+					define kHookRightMix 0.5
+					# Inverse lower runs from the bottom-right to the high stem join
+					# (flipped original upper). Keep the hooked arm only above that
+					# diagonal so it sits on the lower instead of crossing through.
+					include : intersection
+						dispiro
+							widths.rhs stroke
+							straight.left.start (kshRightBot + [if [HasRtSerif slabLegs] SideJut 0] - TanSlope * stroke) (top - stroke)
+							flat [mix (kshRightTop - ox) (kshLeft + stroke) kHookRightMix] [mix top yAttach1 kHookRightMix] [widths.rhs : mix stroke fine kHookRightMix]
+							curl (kshLeft + stroke) yAttach1 [widths.rhs fine]
+						union
+							MaskAboveLine (kshLeft + stroke) (top - yAttach1) (kshRightBot - ox) 0
+							MaskRight (kshRightBot - ox)
+				: else : no-shape
 				new-glyph : glyph-proc
 					include : KLegSlabs
 						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
@@ -287,12 +314,6 @@ glyph-block Letter-Latin-K : begin
 						swRef        -- stroke
 						fStraightBar -- true
 						attachment   -- attachment
-			local ox : KOvershootX slabLegs true top stroke
-			local kshLeft : left + [KBalance slabLT true]
-			local kshRightBot : right + [KBalanceRight slabLegs true]
-			local kshRightTop : if fHookRight (kshRightBot - HookX * 0.5 + [HSwToV : 0.5 * stroke]) kshRightBot
-			local yAttach1 : [mix 0 top 0.42] - stroke
-			local yAttach2 : [mix 0 top 0.72] + stroke
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
 			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' (kshRightBot - ox) 0
