@@ -1,6 +1,7 @@
 $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [Box] from "@iosevka/geometry/box"
 
 glyph-module
 
@@ -81,21 +82,36 @@ glyph-block Mark-Overlay : begin
 			set-mark-anchor 'overlay' 0 0 0 0
 			include : InvLazySOverlay
 
-		# Same lazy S as AB37, rotated 45° and scaled to the tilde diacritic's box.
+		# Inverted lazy S as U+223E: tall S rotated 90° into the tilde's box.
+		define [InvLazySMarkShape sw box] : glyph-proc
+			local archDepth : 0.22 * box.height
+			local ada : Math.min (0.4 * box.height) : ArchDepthAOf archDepth box.width
+			local adb : Math.min (0.4 * box.height) : ArchDepthBOf archDepth box.width
+			include : dispiro
+				g4.down.start box.right (box.bot + ada) [widths.rhs.heading sw Downward]
+				arcvh
+				Arch.rhs.centerAt.rtl.b box.xMid box.bot (sw -- sw)
+				archv
+				g4 box.left (box.bot + adb) [widths.rhs sw]
+				alsoThru.g2 0.5 0.5 [widths.center sw]
+				g4 box.right (box.top - adb) [widths.lhs sw]
+				arcvh
+				Arch.lhs.centerAt.rtl.t box.xMid box.top (sw -- sw)
+				archv
+				g4.down.end box.left (box.top - ada) [widths.lhs.heading sw Downward]
+
 		create-glyph 'urAbove' 0x1DD1 : glyph-proc
 			set-width 0
 			local giz currentGlyph.gizmo
 			include : ForceUpright
-			include : InvLazySOverlay
-			include : Rotate (Math.PI / 4)
+			local targetW : 2 * markExtend * 1.5 + markStroke
+			local targetH : aboveMarkTop - (aboveMarkBot + markFine / 2) + 0.5 * markStroke
+			local box : new Box targetW 0 0 targetH
+			local sw : Math.min markStroke : 0.28 * [Math.min targetW targetH]
+			include : InvLazySMarkShape sw box
+			include : Translate (0 - 0.5 * targetH) (0 - 0.5 * targetW)
+			include : Rotate (Math.PI / 2)
 			include : Translate markMiddle aboveMarkMid
-			local b : include : MeasureGlyphBounds
-			if b : begin
-				local w : Math.max TINY (b.xMax - b.xMin)
-				local h : Math.max TINY (b.yMax - b.yMin)
-				local sW : (2 * markExtend * 1.5 + markStroke) / w
-				local sH : (aboveMarkTop - (aboveMarkBot + markFine / 2) + 0.5 * markStroke) / h
-				include : ScaleAround markMiddle aboveMarkMid sW sH
 			set currentGlyph.gizmo giz
 			include : Regizmo
 			include : StdAnchors.wide
