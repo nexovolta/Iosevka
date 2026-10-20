@@ -81,13 +81,13 @@ glyph-block Mark-Overlay : begin
 			set-mark-anchor 'overlay' 0 0 0 0
 			include : InvLazySOverlay
 
-		# Same lazy S as AB37, rotated 90° and scaled to the tilde diacritic's box.
+		# Same lazy S as AB37, rotated 45° and scaled to the tilde diacritic's box.
 		create-glyph 'urAbove' 0x1DD1 : glyph-proc
 			set-width 0
 			local giz currentGlyph.gizmo
 			include : ForceUpright
 			include : InvLazySOverlay
-			include : Rotate (Math.PI / 2)
+			include : Rotate (Math.PI / 4)
 			include : Translate markMiddle aboveMarkMid
 			local b : include : MeasureGlyphBounds
 			if b : begin
