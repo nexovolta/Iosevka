@@ -126,6 +126,16 @@ glyph-block Symbol-Punctuation-Dashes : begin
 				flat Middle bot
 				curl (emDashWidth - SB) bot [heading Rightward]
 
+	define emUnit : if para.isQuasiProportional UPM Width
+	create-glyph 'twoEmDash' 0x2E3A : glyph-proc
+		local w : 2 * emUnit
+		set-width w
+		include : HBar.m 0 w SymbolMid
+	create-glyph 'threeEmDash' 0x2E3B : glyph-proc
+		local w : 3 * emUnit
+		set-width w
+		include : HBar.m 0 w SymbolMid
+
 	derive-multi-part-glyphs 'hyphenDieresis' 0x2E1A { 'figureDash' 'dieresisAbove'}
 		function [src sel] : composite-proc
 			refer-glyph src.0
