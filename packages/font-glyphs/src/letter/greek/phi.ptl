@@ -28,28 +28,102 @@ glyph-block Letter-Greek-Phi : begin
 			include : OShape y3 y2 df.leftSB df.rightSB df.mvs ada adb
 		return : object [swBar : Math.min Stroke : df.adviceStroke 2]
 
-	define [CyrEfSplitRing df y2 y3 ada adb] : glyph-proc
+	# Left and right split bowls are 180°-paired: a flat top on the left
+	# is a flat bottom on the right, and vice versa.
+	define [CyrEfSplitRing kind] : function [df y2 y3 ada adb] : glyph-proc
 		include : VBar.m df.middle y2 y3 df.mvs
 		local subDf : df.slice 3 2 OX
-		include : OBarRight.shape
-			top       -- y3
-			bot       -- y2
-			left      -- df.leftSB
-			right     -- (df.middle + [HSwToV : 0.5 * df.mvs])
-			sw        -- df.mvs
-			fine      -- df.shoulderFine
-			ada       -- subDf.smallArchDepthA
-			adb       -- subDf.smallArchDepthB
-		include : OBarLeft.shape
-			top       -- y3
-			bot       -- y2
-			left      -- (df.middle - [HSwToV : 0.5 * df.mvs])
-			right     -- df.rightSB
-			sw        -- df.mvs
-			fine      -- df.shoulderFine
-			ada       -- subDf.smallArchDepthA
-			adb       -- subDf.smallArchDepthB
-		return : object [swBar df.mvs]
+		local sw : df.mvs + 0
+		local fine : df.shoulderFine + 0
+		local ada1 : subDf.smallArchDepthA + 0
+		local adb1 : subDf.smallArchDepthB + 0
+		local left : df.leftSB + 0
+		local right : df.rightSB + 0
+		local xMidL : df.middle - [HSwToV : 0.5 * sw]
+		local xMidR : df.middle + [HSwToV : 0.5 * sw]
+
+		if (kind === 'flatTB') : begin
+			include : OBarRight.flatTopAndBottom
+				top -- y3
+				bot -- y2
+				left -- left
+				right -- xMidR
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+			include : OBarLeft.flatTopAndBottom
+				top -- y3
+				bot -- y2
+				left -- xMidL
+				right -- right
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+		if (kind === 'flatTop') : begin
+			include : OBarRight.earlessCorner
+				rise -- 0
+				top -- y3
+				bot -- y2
+				left -- left
+				right -- xMidR
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+			include : OBarLeft.toothlessCorner
+				rise -- 0
+				top -- y3
+				bot -- y2
+				left -- xMidL
+				right -- right
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+		if (kind === 'flatBot') : begin
+			include : OBarRight.toothlessCorner
+				rise -- 0
+				top -- y3
+				bot -- y2
+				left -- left
+				right -- xMidR
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+			include : OBarLeft.earlessCorner
+				rise -- 0
+				top -- y3
+				bot -- y2
+				left -- xMidL
+				right -- right
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+		if (kind === 'toothed') : begin
+			include : OBarRight.shape
+				top -- y3
+				bot -- y2
+				left -- left
+				right -- xMidR
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+			include : OBarLeft.shape
+				top -- y3
+				bot -- y2
+				left -- xMidL
+				right -- right
+				sw -- sw
+				fine -- fine
+				ada -- ada1
+				adb -- adb1
+
+		return : object [swBar sw]
 
 	define [LowerPhiCursiveRing df y2 y3 ada adb] : glyph-proc
 		local l : df.leftSB  + OX * 2
@@ -228,8 +302,11 @@ glyph-block Letter-Greek-Phi : begin
 
 	define CyrlLowerEfConfig : SuffixCfg.weave
 		object # bowl
-			""                    { [PhiRing true] para.advanceScaleM  }
-			splitBowl             { CyrEfSplitRing para.advanceScaleMM }
+			""                    { [PhiRing true]                  para.advanceScaleM  }
+			splitBowl             { [CyrEfSplitRing 'toothed']      para.advanceScaleMM }
+			splitBowlFlatTop      { [CyrEfSplitRing 'flatTop']      para.advanceScaleMM }
+			splitBowlFlatBottom   { [CyrEfSplitRing 'flatBot']      para.advanceScaleMM }
+			splitBowlFlat         { [CyrEfSplitRing 'flatTB']       para.advanceScaleMM }
 		object # bar
 			serifless             { StraightBar        null    null    }
 			topSerifed            { StraightBar        MtSerif null    }
