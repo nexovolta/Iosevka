@@ -6,10 +6,11 @@ glyph-block Letter-Latin-Lower-DB-QP : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared-Shapes : OBarLeft OBarRight RightwardTailedBar
-	glyph-block-import Letter-Shared-Shapes : ApplyDiagCut
-	glyph-block-import Letter-Latin-Lower-D : DConfig ToothedBody TailedBody FlatBottomBody ToothlessCornerBody ToothlessCornerRTBBody ToothlessRoundedBody TopSerif BaseSerif
-	glyph-block-import Letter-Latin-Lower-Q : QConfig QStem EaredBody FlatTopBody EarlessCornerBody EarlessRoundedBody RtSerif RbSerif RbSerifOuter
+	glyph-block-import Letter-Shared-Shapes : OBarLeft OBarRight
+	glyph-block-import Letter-Latin-Lower-D : DConfig TailedBody FlatBottomBody ToothlessCornerBody ToothlessCornerRTBBody ToothlessRoundedBody
+	glyph-block-import Letter-Latin-Lower-B : BConfig BBowlKind
+	glyph-block-import Letter-Latin-Lower-Q : QConfig QStem FlatTopBody EarlessCornerBody EarlessRoundedBody RbSerif
+	glyph-block-import Letter-Latin-Lower-P : PConfig PBowlKind
 
 	define [PairParams df] : begin
 		local subDf : df.slice 3 2 OX
@@ -30,75 +31,51 @@ glyph-block Letter-Latin-Lower-DB-QP : begin
 			mvs   : 0 + sw
 			ox    : 0 + 0
 
-	define [PairBowls df kind fFlat] : begin
+	define [BarOf side] : if (side === 'l') OBarRight OBarLeft
+
+	define [Bowl df side kind fFlat] : begin
+		local Bar : BarOf side
 		local { sw fine ada adb xMidL xMidR } : PairParams df
 		local left : df.leftSB + 0
 		local right : df.rightSB + 0
+		local x0 : if (side === 'l') left xMidL
+		local x1 : if (side === 'l') xMidR right
+		local yTerm : if (kind === 'toothlessRounded')
+			then Ascender
+			: else : if (side === 'r') Descender ada
 
 		if (kind === 'toothed') : return : if fFlat
-			then : union
-				OBarRight.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.shape (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.shape  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.shape (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'flatBottom') : return : if fFlat
-			then : union
-				OBarRight.flatTopAndBottom (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.flatTopAndBottom  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.flatTopAndBottom (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'toothlessCorner') : return : if fFlat
-			then : union
-				OBarRight.toothlessCornerFlat (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessCornerFlat  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.toothlessCorner (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessCorner  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.toothlessCornerFlat (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.toothlessCorner (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'toothlessRounded') : return : if fFlat
-			then : union
-				OBarRight.toothlessRoundedFlat (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessRoundedFlat  (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.toothlessRounded (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessRounded  (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.toothlessRoundedFlat (yTerminal -- yTerm) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.toothlessRounded (yTerminal -- yTerm) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'flatTop') : return : if fFlat
-			then : union
-				OBarRight.flatTopAndBottom (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.flatTopAndBottom  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.flatTopAndBottom (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'earlessCorner') : return : if fFlat
-			then : union
-				OBarRight.earlessCornerFlat (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessCornerFlat  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.earlessCorner (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessCorner  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.earlessCornerFlat (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.earlessCorner (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 		if (kind === 'earlessRounded') : return : if fFlat
-			then : union
-				OBarRight.earlessRoundedFlat (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessRoundedFlat  (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.earlessRounded (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.earlessRounded  (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.earlessRoundedFlat (yTerminal -- yTerm) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.earlessRounded (yTerminal -- yTerm) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
-		# eared (q) uses the same bowls as toothed (d).
+		# eared (q/p): same bowls as toothed, but a flat bowl flattens the top.
 		return : if fFlat
-			then : union
-				OBarRight.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.toothlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-			else : union
-				OBarRight.shape (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
-				OBarLeft.shape  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			then : Bar.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : Bar.shape (top -- XH) (bot -- 0) (left -- x0) (right -- x1) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
 
 	define [DbBowlKind Body] : begin
 		if (Body === TailedBody) : return 'toothed'
@@ -113,36 +90,35 @@ glyph-block Letter-Latin-Lower-DB-QP : begin
 		if (Body === EarlessRoundedBody) : return 'earlessRounded'
 		return 'eared'
 
+	define [SelectedCfg config want] : begin
+		local found nothing
+		foreach { suffix item } [Object.entries config] : do
+			if (suffix === want) : set found item
+		if [not found] : throw : new Error "Missing config for suffix '\(want)'"
+		return found
+
 	foreach { suffix { Body cut fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
 		create-glyph "db.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.b
+			local { BodyB cutB fFlatB serifsB } : SelectedCfg BConfig para.variantSelector.b
 			local stemDf : CenterStemDf df
-			include : PairBowls df [DbBowlKind Body] fFlat
-			if (Body === TailedBody)
-			: then : include : RightwardTailedBar stemDf.rightSB 0 Ascender df.mvs
-			: else : begin
-				local yBot 0
-				if (Body === ToothlessCornerBody) : set yBot DToothlessRise
-				include : VBar.m df.middle yBot Ascender df.mvs
-			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- stemDf.rightSB) (bot -- 0) (top -- Ascender) (sw -- df.mvs)
-			if topSerif    : include : topSerif    stemDf Ascender
-			if bottomSerif : include : bottomSerif stemDf Ascender
+			include : Bowl df 'l' [DbBowlKind Body] fFlat
+			include : Bowl df 'r' [BBowlKind BodyB] fFlatB
+			include : VBar.m df.middle 0 Ascender df.mvs
+			if topSerif : include : topSerif stemDf Ascender
 			include : LeaningAnchor.Above.At df.middle
 
 	foreach { suffix { Body cut fFlat terminal { sRT sRB } } } [Object.entries QConfig] : do
 		create-glyph "qp.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			local { sw fine ada adb xMidL xMidR } : PairParams df
+			local { BodyP cutP fFlatP serifsP } : SelectedCfg PConfig para.variantSelector.p
 			local stemDf : CenterStemDf df
-			include : PairBowls df [QpBowlKind Body] fFlat
-			local barTop XH
-			if (Body === EarlessCornerBody) : set barTop : XH - DToothlessRise
-			if (Body === EarlessRoundedBody) : set barTop : XH - adb
-			include : QStem terminal stemDf barTop Descender barTop Descender cut
-			if sRT : include : sRT stemDf XH
-			if sRB : include : sRB stemDf Descender
+			include : Bowl df 'l' [QpBowlKind Body] fFlat
+			include : Bowl df 'r' [PBowlKind BodyP] fFlatP
+			include : QStem terminal stemDf XH Descender XH Descender ""
+			if (sRB === RbSerif) : include : sRB stemDf Descender
 			include : LeaningAnchor.Below.At df.middle
 
 	select-variant 'db' 0x238 (follow -- 'd')

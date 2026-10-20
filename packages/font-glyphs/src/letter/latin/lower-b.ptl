@@ -153,6 +153,14 @@ glyph-block Letter-Latin-Lower-B : begin
 			bottomSerifed   { LBSerifs   false  }
 			serifed         { FullSerifs true   }
 
+	define [BBowlKind Body] : begin
+		if (Body === FlatBottomBody) : return 'flatBottom'
+		if (Body === ToothlessCornerBody) : return 'toothlessCorner'
+		if (Body === ToothlessRoundedBody) : return 'toothlessRounded'
+		return 'toothed'
+
+	glyph-block-export BConfig BBowlKind
+
 	foreach { suffix { Body cut fFlat { Serifs doST } } } [Object.entries BConfig] : do
 		local yOverlay : mix XH (Ascender - [if doST Stroke 0]) 0.5
 		create-glyph "b.\(suffix)" : glyph-proc

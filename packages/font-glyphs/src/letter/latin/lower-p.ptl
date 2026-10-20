@@ -144,6 +144,14 @@ glyph-block Letter-Latin-Lower-P : begin
 			bottomSerifed       { BottomSerif  false true  }
 			serifed             { FullSerifs   true  true  }
 
+	define [PBowlKind Body] : begin
+		if (Body === FlatTopBody) : return 'flatTop'
+		if (Body === EarlessCornerBody) : return 'earlessCorner'
+		if (Body === EarlessRoundedBody) : return 'earlessRounded'
+		return 'eared'
+
+	glyph-block-export PBowlKind
+
 	foreach { suffix { Body cut fFlat {Serifs doTS doBS} }} [Object.entries PConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
 
