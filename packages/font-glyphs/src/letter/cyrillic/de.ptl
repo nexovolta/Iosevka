@@ -376,6 +376,12 @@ glyph-block Letter-Cyrillic-De : begin
 	alias 'cyrl/de.cursiveFlatBowlSerifed' null 'cyrl/de.cursiveFlatBowlSerifless'
 	alias 'cyrl/de.cursiveFlatBowl' null 'cyrl/de.cursiveFlatBowlSerifless'
 	alias 'cyrl/de.italic' null 'cyrl/de.cursiveSerifless'
+
+	foreach hook [items-of { 'BentHook' 'FlatHook' }] : do
+		foreach bowl [items-of { '' 'FlatBowl' }] : do
+			foreach ear [items-of { 'Serifless' 'Serifed' 'TopCut' 'FlatTopSerifless' 'FlatTopSerifed' 'EarlessCorner' 'EarlessRounded' }] : do
+				alias "cyrl/de.serbian\(hook)\(bowl)\(ear)" null "g.singleStorey\(hook)\(bowl)\(ear)"
+
 	select-variant 'cyrl/de' 0x434
 
 	create-glyph 'cyrl/dwe.italic/base' : glyph-proc
