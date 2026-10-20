@@ -1,68 +1,149 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-
-
 glyph-module
 
 glyph-block Letter-Latin-Lower-DB-QP : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : OBarLeft OBarRight
+	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Letter-Shared-Shapes : OBarLeft OBarRight RightwardTailedBar
+	glyph-block-import Letter-Shared-Shapes : ApplyDiagCut
+	glyph-block-import Letter-Latin-Lower-D : DConfig ToothedBody TailedBody FlatBottomBody ToothlessCornerBody ToothlessCornerRTBBody ToothlessRoundedBody TopSerif BaseSerif
+	glyph-block-import Letter-Latin-Lower-Q : QConfig QStem EaredBody FlatTopBody EarlessCornerBody EarlessRoundedBody RtSerif RbSerif RbSerifOuter
 
-	define [DbCenterShape df] : begin
+	define [PairParams df] : begin
 		local subDf : df.slice 3 2 OX
-		return : union
-			dispiro
-				OBarRight.arcStart
-					top       -- XH
-					left      -- df.leftSB
-					right     -- (df.middle + [HSwToV : 0.5 * df.mvs])
-					sw        -- df.mvs
-					fine      -- df.shoulderFine
-					ada       -- subDf.smallArchDepthA
-					adb       -- subDf.smallArchDepthB
-				flatside.ld df.leftSB 0 XH subDf.smallArchDepthA subDf.smallArchDepthB
-				OBarRight.arcEnd
-					bot       -- 0
-					left      -- df.leftSB
-					right     -- (df.middle + [HSwToV : 0.5 * df.mvs])
-					sw        -- df.mvs
-					fine      -- (df.mvs * CThin)
-					ada       -- subDf.smallArchDepthA
-					adb       -- subDf.smallArchDepthB
-					yend      -- XH
-			dispiro
-				OBarLeft.arcStart
-					top       -- XH
-					left      -- (df.middle - [HSwToV : 0.5 * df.mvs])
-					right     -- df.rightSB
-					sw        -- df.mvs
-					fine      -- df.shoulderFine
-					ada       -- subDf.smallArchDepthA
-					adb       -- subDf.smallArchDepthB
-				flatside.rd df.rightSB 0 XH subDf.smallArchDepthA subDf.smallArchDepthB
-				OBarLeft.arcEnd
-					bot       -- 0
-					left      -- (df.middle - [HSwToV : 0.5 * df.mvs])
-					right     -- df.rightSB
-					sw        -- df.mvs
-					fine      -- (df.mvs * CThin)
-					ada       -- subDf.smallArchDepthA
-					adb       -- subDf.smallArchDepthB
-					yend      -- XH
+		local sw : df.mvs + 0
+		local fine : df.shoulderFine + 0
+		local ada : subDf.smallArchDepthA + 0
+		local adb : subDf.smallArchDepthB + 0
+		local xMidL : df.middle - [HSwToV : 0.5 * sw]
+		local xMidR : df.middle + [HSwToV : 0.5 * sw]
+		return { sw fine ada adb xMidL xMidR }
 
-	create-glyph 'db' 0x238 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.b
-		include : DbCenterShape df
-		include : VBar.m df.middle (XH / 2) Ascender df.mvs
-		if SLAB : include : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) Ascender SideJut df.mvs
+	define [CenterStemDf df] : begin
+		local { sw fine ada adb xMidL xMidR } : PairParams df
+		return : DivFrame.fromParams : object
+			width : 0 + xMidR + df.sb
+			sb    : 0 + df.sb
+			hPack : 0 + 1
+			mvs   : 0 + sw
+			ox    : 0 + 0
 
-	create-glyph 'qp' 0x239 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.p
-		include : DbCenterShape df
-		include : FlipAround df.middle (XH / 2)
-		include : VBar.m df.middle Descender (XH / 2) df.mvs
-		if SLAB : include : HSerif.mb df.middle Descender (MidJutCenter - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
+	define [PairBowls df kind fFlat] : begin
+		local { sw fine ada adb xMidL xMidR } : PairParams df
+		local left : df.leftSB + 0
+		local right : df.rightSB + 0
+
+		if (kind === 'toothed') : return : if fFlat
+			then : union
+				OBarRight.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.shape (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.shape  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'flatBottom') : return : if fFlat
+			then : union
+				OBarRight.flatTopAndBottom (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.flatTopAndBottom  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'toothlessCorner') : return : if fFlat
+			then : union
+				OBarRight.toothlessCornerFlat (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessCornerFlat  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.toothlessCorner (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessCorner  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'toothlessRounded') : return : if fFlat
+			then : union
+				OBarRight.toothlessRoundedFlat (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessRoundedFlat  (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.toothlessRounded (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessRounded  (yTerminal -- Ascender) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'flatTop') : return : if fFlat
+			then : union
+				OBarRight.flatTopAndBottom (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.flatTopAndBottom  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.earlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'earlessCorner') : return : if fFlat
+			then : union
+				OBarRight.earlessCornerFlat (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessCornerFlat  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.earlessCorner (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessCorner  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		if (kind === 'earlessRounded') : return : if fFlat
+			then : union
+				OBarRight.earlessRoundedFlat (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessRoundedFlat  (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.earlessRounded (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.earlessRounded  (yTerminal -- ada) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+		# eared (q) uses the same bowls as toothed (d).
+		return : if fFlat
+			then : union
+				OBarRight.toothlessCorner (rise -- 0) (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.toothlessCorner  (rise -- 0) (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+			else : union
+				OBarRight.shape (top -- XH) (bot -- 0) (left -- left) (right -- xMidR) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+				OBarLeft.shape  (top -- XH) (bot -- 0) (left -- xMidL) (right -- right) (sw -- sw) (fine -- fine) (ada -- ada) (adb -- adb)
+
+	define [DbBowlKind Body] : begin
+		if (Body === TailedBody) : return 'toothed'
+		if (Body === FlatBottomBody) : return 'flatBottom'
+		if (Body === ToothlessCornerBody || Body === ToothlessCornerRTBBody) : return 'toothlessCorner'
+		if (Body === ToothlessRoundedBody) : return 'toothlessRounded'
+		return 'toothed'
+
+	define [QpBowlKind Body] : begin
+		if (Body === FlatTopBody) : return 'flatTop'
+		if (Body === EarlessCornerBody) : return 'earlessCorner'
+		if (Body === EarlessRoundedBody) : return 'earlessRounded'
+		return 'eared'
+
+	foreach { suffix { Body cut fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
+		create-glyph "db.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.b
+			local stemDf : CenterStemDf df
+			include : PairBowls df [DbBowlKind Body] fFlat
+			if (Body === TailedBody)
+			: then : include : RightwardTailedBar stemDf.rightSB 0 Ascender df.mvs
+			: else : begin
+				local yBot 0
+				if (Body === ToothlessCornerBody) : set yBot DToothlessRise
+				include : VBar.m df.middle yBot Ascender df.mvs
+			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- stemDf.rightSB) (bot -- 0) (top -- Ascender) (sw -- df.mvs)
+			if topSerif    : include : topSerif    stemDf Ascender
+			if bottomSerif : include : bottomSerif stemDf Ascender
+			include : LeaningAnchor.Above.At df.middle
+
+	foreach { suffix { Body cut fFlat terminal { sRT sRB } } } [Object.entries QConfig] : do
+		create-glyph "qp.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.p
+			local { sw fine ada adb xMidL xMidR } : PairParams df
+			local stemDf : CenterStemDf df
+			include : PairBowls df [QpBowlKind Body] fFlat
+			local barTop XH
+			if (Body === EarlessCornerBody) : set barTop : XH - DToothlessRise
+			if (Body === EarlessRoundedBody) : set barTop : XH - adb
+			include : QStem terminal stemDf barTop Descender barTop Descender cut
+			if sRT : include : sRT stemDf XH
+			if sRB : include : sRB stemDf Descender
+			include : LeaningAnchor.Below.At df.middle
+
+	select-variant 'db' 0x238 (follow -- 'd')
+	select-variant 'qp' 0x239 (follow -- 'q')

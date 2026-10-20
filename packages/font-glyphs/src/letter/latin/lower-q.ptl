@@ -117,6 +117,8 @@ glyph-block Letter-Latin-Lower-Q : begin
 	define [RtSerifAuto df y] : NeedSlab SLAB : RtSerif df y
 	define [RbSerifAuto df y] : NeedSlab SLAB : RbSerif df y
 
+	glyph-block-export QStem EaredBody FlatTopBody EarlessCornerBody EarlessRoundedBody RtSerif RbSerif RbSerifOuter
+
 	define QConfig : SuffixCfg.weave
 		object # ear
 			""                    EaredBody
@@ -142,6 +144,8 @@ glyph-block Letter-Latin-Lower-Q : begin
 			bottomSerifed       { null        RbSerif      }
 			motionBottomSerifed { null        RbSerifOuter }
 			serifed             { RtSerif     RbSerif      }
+
+	glyph-block-export QConfig
 
 	foreach { suffix { Body cut fFlat terminal { sRT sRB } } } [Object.entries QConfig] : do
 		create-glyph "q.\(suffix)" : glyph-proc

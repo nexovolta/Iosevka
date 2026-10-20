@@ -136,6 +136,8 @@ glyph-block Letter-Latin-Lower-D : begin
 
 	define [BaseSerif df yTop] : tagged 'serifRB' : HSerif.rb df.rightSB 0 SideJut df.mvs
 
+	glyph-block-export ToothedBody TailedBody FlatBottomBody ToothlessCornerBody ToothlessCornerRTBBody ToothlessRoundedBody TopSerif BaseSerif
+
 	define DConfig : SuffixCfg.weave
 		object # tooth
 			toothed                   ToothedBody
@@ -161,6 +163,8 @@ glyph-block Letter-Latin-Lower-D : begin
 			topSerifed               { TopSerif null      }
 			bottomSerifed            { null     BaseSerif }
 			serifed                  { TopSerif BaseSerif }
+
+	glyph-block-export DConfig
 
 	foreach { suffix { Body cut fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
 		local yOverlay : mix XH (Ascender - [if topSerif Stroke 0]) 0.5
