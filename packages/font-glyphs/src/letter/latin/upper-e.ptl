@@ -55,10 +55,12 @@ glyph-block Letter-Latin-Upper-E : begin
 		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft barPos jutMid swVJut
 
 	define EConfig : object
-		serifless      { false false false false false }
-		topLeftSerifed { true  false false false false }
-		serifed        { true  true  true  true  false }
-		serifedCapped  { true  true  true  true  true  }
+		serifless            { false false false false false }
+		topLeftSerifed       { true  false false false false }
+		serifed              { true  true  true  true  false }
+		serifedCapped        { true  true  true  true  true  }
+		capped               { false false false false true  }
+		topLeftSerifedCapped { true  false false false true  }
 
 	foreach { suffix { lt lb rt rb rm } } [Object.entries EConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP

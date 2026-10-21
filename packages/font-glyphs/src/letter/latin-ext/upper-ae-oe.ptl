@@ -215,6 +215,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		define SLAB-MOTION  1
 		define SLAB-ALL     2
 		define SLAB-CAPPED  3
+		define SLAB-MID     4
 
 		define [AEEHalf df top slabKind] : glyph-proc
 			define sw : AEOEStroke df top
@@ -236,29 +237,31 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 					include : VSerif.dr df.rightSB top jutTop swVJut
 					include : VSerif.ur df.rightSB 0   jutBot swVJut
 			match slabKind
-				[Just SLAB-CAPPED] : begin
+				([Just SLAB-CAPPED] || [Just SLAB-MID]) : begin
 					local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.8 * (xMidBarRight - (eLeft + [HSwToV sw]))
 					include : VSerif.mr xMidBarRight yBar jutMid swVJut
 
 		define EConfig : object
-			serifless      { SLAB-NONE   }
-			topLeftSerifed { SLAB-MOTION }
-			serifed        { SLAB-ALL    }
-			serifedCapped  { SLAB-CAPPED }
+			serifless            { SLAB-NONE   }
+			topLeftSerifed       { SLAB-MOTION }
+			serifed              { SLAB-ALL    }
+			serifedCapped        { SLAB-CAPPED }
+			capped               { SLAB-MID    }
+			topLeftSerifedCapped { SLAB-MID    }
 
 		foreach { suffix { slabKind } } [Object.entries EConfig] : do
 			create-glyph "AE/E.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital
 				include : AEEHalf df CAP slabKind
-				DependentSelector.set currentGlyph : if (suffix === "serifless") 'full' 'reduced'
+				DependentSelector.set currentGlyph : if (suffix === "serifless" || suffix === "capped") 'full' 'reduced'
 			create-glyph "smcpAE/smcpE.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
 				include : AEEHalf df XH slabKind
-				DependentSelector.set currentGlyph : if (suffix === "serifless") 'full' 'reduced'
+				DependentSelector.set currentGlyph : if (suffix === "serifless" || suffix === "capped") 'full' 'reduced'
 
-			if (suffix !== "topLeftSerifed") : begin
+			if (suffix !== "topLeftSerifed" && suffix !== "topLeftSerifedCapped") : begin
 				create-glyph "OE/E.\(suffix)" : glyph-proc
 					define df : DivFrame para.advanceScaleMM 3
 					set-width 0

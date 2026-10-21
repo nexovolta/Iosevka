@@ -8,6 +8,7 @@ glyph-module
 glyph-block Symbol-Punctuation-Pilcrow : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define [BulletShape top bot left right sw] : glyph-proc
 		local vsw : HSwToV sw
@@ -51,6 +52,14 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 				include : HBar.t midbarX [mix RightSB Width 0.5] CAP sw
 				include : HBar.b midbarX RightSB bulletBot sw
 
+		create-forked-glyph 'pilcrow.flatHook' : glyph-proc
+			include : dispiro
+				widths.rhs sw
+				flat RightSB CAP [heading Downward]
+				curl RightSB (0 + SmallArchDepthA)
+				[MakeFlatHook SB RightSB CAP 0 (sw -- sw)].hookEndL
+			include : VBar.m midbarX bulletBot CAP sw
+
 	select-variant 'pilcrow' 0xB6
 
 	create-glyph : glyph-proc
@@ -62,6 +71,9 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 			include : FlipAround Middle (CAP / 2) (-1) 1
 		create-forked-glyph 'revPilcrow.curved' : glyph-proc
 			include [refer-glyph 'pilcrow.curved'] AS_BASE
+			include : FlipAround Middle (CAP / 2) (-1) 1
+		create-forked-glyph 'revPilcrow.flatHook' : glyph-proc
+			include [refer-glyph 'pilcrow.flatHook'] AS_BASE
 			include : FlipAround Middle (CAP / 2) (-1) 1
 
 	select-variant 'revPilcrow' 0x204B

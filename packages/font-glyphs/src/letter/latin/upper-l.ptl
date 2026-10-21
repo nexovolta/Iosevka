@@ -21,11 +21,13 @@ glyph-block Letter-Latin-Upper-L : begin
 		include : HBar.b ([xLBarLeft df] - O) [xLRight df] 0
 		if (sgr > 0) : begin
 			include : VSerif.ur [xLRight df] 0 VJut
-		if (sgr > 1) : begin
+		if (sgr == 2) : begin
 			include : HSerif.lb ([xLBarLeft df] + [HSwToV : 0.5 * swv]) 0 (Jut - [HSwToV : 0.5 * (Stroke - swv)])
 			include : union
 				HSerif.lt ([xLBarLeft df] + [HSwToV : 0.5 * swv]) top (Jut        - [HSwToV : 0.5 * (Stroke - swv)])
 				HSerif.rt ([xLBarLeft df] + [HSwToV : 0.5 * swv]) top (MidJutSide - [HSwToV : 0.5 * (Stroke - swv)])
+		if (sgr == 3) : begin
+			include : HSerif.lt [xLBarLeft df] top SideJut swv
 
 	define [LSlashOverlay df top sgr] : begin
 		local fine : 0.5 * OverlayStroke
@@ -36,9 +38,10 @@ glyph-block Letter-Latin-Upper-L : begin
 			curl ([mix 0 df.leftSB 0.5] + 1.6 * LongJut) (yMiddle + LongVJut * 0.4)
 
 	define LConfig : object
-		serifless     { 0 }
-		motionSerifed { 1 }
-		serifed       { 2 }
+		serifless              { 0 }
+		motionSerifed          { 1 }
+		serifed                { 2 }
+		bilateralMotionSerifed { 3 }
 
 	foreach { suffix { serifGrade } } [Object.entries LConfig] : do
 		create-glyph "L.\(suffix)" : glyph-proc
