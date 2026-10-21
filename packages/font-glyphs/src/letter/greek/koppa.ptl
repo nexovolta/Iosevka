@@ -55,14 +55,23 @@ glyph-block Letter-Greek-Qoppa : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	create-glyph 'grek/Qoppa' 0x3D8 : glyph-proc
-		include : MarkSet.capital
-		define yAttach : [if SLAB Stroke 0] + 0.2 * (XH - 0)
-		include : OShape CAP yAttach SB RightSB Stroke ArchDepthA ArchDepthB
-		include : VBar.m Middle 0 (yAttach + HalfStroke)
-		if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+	define QoppaConfig : object
+		serifless   false
+		baseSerifed true
 
-	create-glyph 'grek/qoppa' 0x3D9 : glyph-proc
-		include : MarkSet.p
-		include : OShape XH 0 SB RightSB
-		include : VBar.m Middle Descender HalfStroke
+	foreach { suffix fBaseSerif } [pairs-of QoppaConfig] : begin
+		create-glyph "grek/Qoppa.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			define yAttach : [if fBaseSerif Stroke 0] + 0.2 * (XH - 0)
+			include : OShape CAP yAttach SB RightSB Stroke ArchDepthA ArchDepthB
+			include : VBar.m Middle 0 (yAttach + HalfStroke)
+			if fBaseSerif : include : HSerif.mb Middle 0 MidJutCenter
+
+		create-glyph "grek/qoppa.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : OShape XH 0 SB RightSB
+			include : VBar.m Middle Descender HalfStroke
+			if fBaseSerif : include : HSerif.mb Middle Descender MidJutCenter
+
+	select-variant 'grek/Qoppa' 0x3D8
+	select-variant 'grek/qoppa' 0x3D9

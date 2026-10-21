@@ -10,6 +10,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-Ezh : RevEzh
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcEnd
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 
 	define SwAmpersand : AdviceStroke2 2.5 3 CAP
 	define fineAmp : AdviceStroke 3.5
@@ -90,7 +91,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				curl [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 			Rect 0 ((-CAP) * 2) xTerminal (Width * 2)
 
-	create-glyph "ampersand.upperOpen" : union
+	define [UpperOpenRest fFlatHook] : union
 		intersection
 			ClosedAmpersandLead SwAmpersand ClosedTipSw
 			ClosedAmpersandLeadMask
@@ -120,14 +121,21 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (CAP - O)
 		difference
 			dispiro
-				g4.up.start xUpperLoopRight yUpperLoopRight [widths.heading SwAmpersand 0 Upward]
-				arcvh
-				Arch.lhs.centerAt.rtl.t xUpperLoopTop CAP (sw -- SwAmpersand)
-				archv
+				if fFlatHook
+				: then : list
+					~~~ [[MakeFlatHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR]
+				: else : list
+					g4.up.start xUpperLoopRight yUpperLoopRight [widths.heading SwAmpersand 0 Upward]
+					arcvh
+					Arch.lhs.centerAt.rtl.t xUpperLoopTop CAP (sw -- SwAmpersand)
+					archv
 				g4  xUpperLoopLeft yUpperLoopLeft
 				flat [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 				curl [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 			Rect 0 ((-CAP) * 2) xTerminal (Width * 2)
+
+	create-glyph "ampersand.upperOpen" : UpperOpenRest false
+	create-glyph "ampersand.upperOpenFlatHook" : UpperOpenRest true
 
 	define xLowerOpenRight : mix xUpperLoopRight RightSB 0.5
 	define xLowerOpenBottom : mix SB xLowerOpenRight 0.5
@@ -188,9 +196,13 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define FORM-TOOTHLESS-CORNER  2
 	define FORM-TOOTHLESS-ROUNDED 3
 
-	define [EtUpperHalf] : dispiro
-		g4 xEtRight (CAP - SHook) [widths.lhs]
-		HookStart CAP
+	define [EtUpperHalf fFlatHook] : dispiro
+		if fFlatHook
+		: then : list
+			~~~ [[MakeFlatHook xEtLeft xEtRight CAP 0].hookStartR]
+		: else : list
+			g4 xEtRight (CAP - SHook) [widths.lhs]
+			HookStart CAP
 		g4 xEtLeft (CAP - adaEt)
 		arcvh
 		flat Middle (yEtMiddle - (fineEt - SwAmpersand / 2)) [widths.heading fineEt 0 Rightward]
@@ -218,28 +230,53 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			__ : list
 
 	create-glyph "ampersand.etToothed" : union
-		EtUpperHalf
+		EtUpperHalf false
 		EtLowerHalf FORM-TOOTHED
 		VBar.r xEtRight (adaEt + O) yEtRightBarTop
 		VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (Stroke - ShoulderFine / 2)]
 
 	create-glyph "ampersand.etTailed" : union
-		EtUpperHalf
+		EtUpperHalf false
 		EtLowerHalf FORM-TOOTHED
 		RightwardTailedBar xEtRight 0 yEtRightBarTop
 
 	create-glyph "ampersand.etFlatBottom" : union
-		EtUpperHalf
+		EtUpperHalf false
 		EtLowerHalf FORM-FLAT-BOTTOM
 		VBar.r xEtRight 0 yEtRightBarTop
 
 	create-glyph "ampersand.etToothlessCorner" : union
-		EtUpperHalf
+		EtUpperHalf false
 		EtLowerHalf FORM-TOOTHLESS-CORNER
 		VBar.r xEtRight DToothlessRise yEtRightBarTop
 
 	create-glyph "ampersand.etToothlessRounded" : union
-		EtUpperHalf
+		EtUpperHalf false
+		EtLowerHalf FORM-TOOTHLESS-ROUNDED
+
+	create-glyph "ampersand.etFlatHookToothed" : union
+		EtUpperHalf true
+		EtLowerHalf FORM-TOOTHED
+		VBar.r xEtRight (adaEt + O) yEtRightBarTop
+		VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (Stroke - ShoulderFine / 2)]
+
+	create-glyph "ampersand.etFlatHookTailed" : union
+		EtUpperHalf true
+		EtLowerHalf FORM-TOOTHED
+		RightwardTailedBar xEtRight 0 yEtRightBarTop
+
+	create-glyph "ampersand.etFlatHookFlatBottom" : union
+		EtUpperHalf true
+		EtLowerHalf FORM-FLAT-BOTTOM
+		VBar.r xEtRight 0 yEtRightBarTop
+
+	create-glyph "ampersand.etFlatHookToothlessCorner" : union
+		EtUpperHalf true
+		EtLowerHalf FORM-TOOTHLESS-CORNER
+		VBar.r xEtRight DToothlessRise yEtRightBarTop
+
+	create-glyph "ampersand.etFlatHookToothlessRounded" : union
+		EtUpperHalf true
 		EtLowerHalf FORM-TOOTHLESS-ROUNDED
 
 	define yEtFlatTopEnd : Math.max (0 + ArchDepthA + fineAmp) [mix 0 CAP 0.4]

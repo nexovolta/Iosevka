@@ -382,28 +382,44 @@ glyph-block Mark-Above : begin
 	define CaretCaronTerminalSw : AdviceStroke 5
 
 	glyph-block-export CaretShape
-	define [CaretLeftShape] : with-params [top bottom xMiddle width swEnd swMid] : dispiro
-		flat (xMiddle - (width / 2)) bottom [widths.center swEnd]
-		curl  xMiddle                top    [widths.center.heading swMid Upward]
-	define [CaretRightShape] : with-params [top bottom xMiddle width swEnd swMid] : dispiro
-		flat (xMiddle + (width / 2)) bottom [widths.center swEnd]
-		curl  xMiddle                top    [widths.center.heading swMid Upward]
+	define [CaretLeftShape] : with-params [top bottom xMiddle width swEnd swMid [fHorizTerm false]] : begin
+		if fHorizTerm
+		: then : return : dispiro
+			flat (xMiddle - (width / 2)) bottom [widths.center.heading swEnd Upward]
+			curl  xMiddle                top    [widths.center.heading swMid Upward]
+		: else : return : dispiro
+			flat (xMiddle - (width / 2)) bottom [widths.center swEnd]
+			curl  xMiddle                top    [widths.center.heading swMid Upward]
+	define [CaretRightShape] : with-params [top bottom xMiddle width swEnd swMid [fHorizTerm false]] : begin
+		if fHorizTerm
+		: then : return : dispiro
+			flat (xMiddle + (width / 2)) bottom [widths.center.heading swEnd Upward]
+			curl  xMiddle                top    [widths.center.heading swMid Upward]
+		: else : return : dispiro
+			flat (xMiddle + (width / 2)) bottom [widths.center swEnd]
+			curl  xMiddle                top    [widths.center.heading swMid Upward]
 	define [CaretTopBarShape] : with-params [top xMiddle width pL pR swMid swBar] : dispiro
 		widths.rhs swBar
 		flat [Math.min (xMiddle + (width / 2) * pL) (xMiddle - [HSwToV : 0.5 * swMid])] top
 		curl [Math.max (xMiddle + (width / 2) * pR) (xMiddle + [HSwToV : 0.5 * swMid])] top
-	define [CaretShape] : with-params [top bottom xMiddle width swEnd swMid] : union
-		CaretLeftShape  top bottom xMiddle width swEnd swMid
-		CaretRightShape top bottom xMiddle width swEnd swMid
+	define [CaretShape] : with-params [top bottom xMiddle width swEnd swMid [fHorizTerm false]] : union
+		CaretLeftShape  top bottom xMiddle width swEnd swMid (fHorizTerm -- fHorizTerm)
+		CaretRightShape top bottom xMiddle width swEnd swMid (fHorizTerm -- fHorizTerm)
+
+	define [AsciiCaretShape fHorizTerm] : CaretShape
+		xMiddle -- Middle
+		width   -- (2 * (markExtend * 1.5) * asciiMarkZoomX - QuarterStroke)
+		top     -- ([mix aboveMarkMid aboveMarkTop asciiMarkZoomY] + HalfStroke)
+		bottom  -- [mix aboveMarkMid aboveMarkBot asciiMarkZoomY]
+		swEnd   -- (Stroke * 1.05)
+		swMid   -- ([StrokeWidthBlend 1.25 1] * Stroke)
+		fHorizTerm -- fHorizTerm
 
 	create-glyph 'asciiCaret.high' : glyph-proc
-		include : CaretShape
-			xMiddle -- Middle
-			width   -- (2 * (markExtend * 1.5) * asciiMarkZoomX - QuarterStroke)
-			top     -- ([mix aboveMarkMid aboveMarkTop asciiMarkZoomY] + HalfStroke)
-			bottom  -- [mix aboveMarkMid aboveMarkBot asciiMarkZoomY]
-			swEnd   -- (Stroke * 1.05)
-			swMid   -- ([StrokeWidthBlend 1.25 1] * Stroke)
+		include : AsciiCaretShape false
+
+	create-glyph 'asciiCaret.highHorizontalTerminal' : glyph-proc
+		include : AsciiCaretShape true
 
 	create-glyph 'circumflexAbove' 0x302 : glyph-proc
 		set-width 0

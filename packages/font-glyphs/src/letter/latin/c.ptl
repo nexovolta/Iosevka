@@ -339,27 +339,6 @@ glyph-block Letter-Latin-C : begin
 			set-base-anchor 'cvDecompose' 0 0
 			include : CyrYeShape false true [DivFrame 1] XH SmallArchDepthA SmallArchDepthB
 
-		define [CyrKoppaShapeT base top] : union
-			VBar.r (Middle + [HSwToV Stroke]) Descender HalfStroke
-			difference base
-				Rect (top / 2) Descender (Middle + [HSwToV Stroke]) VERY-FAR
-				Rect (XH / 2) [mix Stroke Hook 0.5] Middle VERY-FAR
-			if (styTop && [not para.isItalic])
-				HSerif.mb (Middle + [HSwToV HalfStroke]) Descender MidJutCenter
-				no-shape
-
-		if (styBot == SLAB-NONE || styBot == SLAB-FLAT-HOOK) : create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
-			include : MarkSet.capDesc
-			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
-			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] CAP
-
-		if (styBot == SLAB-NONE || styBot == SLAB-FLAT-HOOK) : create-glyph "cyrl/koppa.\(suffix)" : glyph-proc
-			include : MarkSet.p
-			local lf : CLetterForm [DivFrame 1] styTop styBot XH 0
-				ada -- SmallArchDepthA
-				adb -- SmallArchDepthB
-			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] XH
-
 		create-glyph "C/descBase.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
@@ -385,6 +364,32 @@ glyph-block Letter-Latin-C : begin
 				include : union
 					HSerif.rb (RightSB - 0.5 * ink) Descender (Jut        - 0.5 * coInk)
 					HSerif.lb (RightSB - 0.5 * ink) Descender (MidJutSide - 0.5 * coInk)
+
+	define [CyrKoppaShapeT base top fBaseSerif] : union
+		VBar.r (Middle + [HSwToV Stroke]) Descender HalfStroke
+		difference base
+			Rect (top / 2) Descender (Middle + [HSwToV Stroke]) VERY-FAR
+			Rect (XH / 2) [mix Stroke Hook 0.5] Middle VERY-FAR
+		if fBaseSerif
+			HSerif.mb (Middle + [HSwToV HalfStroke]) Descender MidJutCenter
+			no-shape
+
+	define KoppaConfig : object
+		serifless   false
+		baseSerifed true
+
+	foreach { suffix fBaseSerif } [pairs-of KoppaConfig] : begin
+		create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
+			include : MarkSet.capDesc
+			local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE CAP 0
+			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] CAP fBaseSerif
+
+		create-glyph "cyrl/koppa.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE XH 0
+				ada -- SmallArchDepthA
+				adb -- SmallArchDepthB
+			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] XH fBaseSerif
 
 	select-variant 'C' 'C'
 	link-reduced-variant 'C/sansSerif' 'C' MathSansSerif
@@ -425,8 +430,8 @@ glyph-block Letter-Latin-C : begin
 	alias 'latn/EpsilonLunate' 0x1DF6C 'cyrl/YeUkrainian'
 	alias 'latn/epsilonLunate' 0x1DF6D 'cyrl/yeUkrainian'
 
-	select-variant 'cyrl/Koppa' 0x480 (follow -- 'C/topSerif')
-	select-variant 'cyrl/koppa' 0x481 (follow -- 'c/topSerif')
+	select-variant 'cyrl/Koppa' 0x480
+	select-variant 'cyrl/koppa' 0x481
 
 	select-variant 'C/descBase'
 	select-variant 'c/descBase'

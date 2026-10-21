@@ -8,16 +8,30 @@ glyph-module
 glyph-block Symbol-Punctuation-Section : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
+	glyph-block-import Letter-Latin-S : SAutoSlabStart
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+
+	define SLAB-NONE      0
+	define SLAB-CLASSICAL 1
+	define SLAB-INWARD    2
+	define SLAB-FLAT-HOOK 4
 
 	local top ParenTop
 	local bot ParenBot
 	local ada ArchDepthA
 	local sBot : [mix bot top 0.32] - QuarterStroke
-	define [s sink offset] : begin
-		return : sink
-			widths.lhs
+	define [sStart st offset] : match st
+		[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs RightSB top Stroke Hook
+		[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke Hook
+		[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot (sw -- Stroke)].hookStartR
+		__ : list
 			g4 (RightSB - offset) (top - Hook)
 			HookStart (top - offset)
+	define [s sink offset st] : begin
+		return : sink
+			widths.lhs
+			~~~ [sStart st offset]
 			g4 (SB + offset) (top - ada)
 			alsoThru 0.5 0.5 [widths.center Stroke]
 			g4 (RightSB - offset) (sBot + ada) [widths.rhs]
@@ -29,14 +43,25 @@ glyph-block Symbol-Punctuation-Section : begin
 				corner Width [mix bot top 2]
 				corner Width (top - Hook - TINY)
 				corner RightSB (top - Hook - TINY)
-	define [halfShape] : intersection [s dispiro 0] : union
-		MaskAbove SymbolMid
-		with-transform [FlipAround Middle SymbolMid] : s spiro-outline 0.1
+	define [halfShape st] : glyph-proc
+		include : intersection [s dispiro 0 st] : union
+			MaskAbove SymbolMid
+			with-transform [FlipAround Middle SymbolMid] : s spiro-outline 0.1 st
+		include : SAutoSlabStart [DivFrame 1] st top Stroke Hook
 
-	create-glyph 'section' 0xA7 : glyph-proc
-		include : union
-			halfShape
-			with-transform [FlipAround Middle SymbolMid] : halfShape
+	define SectionConfig : object
+		serifless     SLAB-NONE
+		flatHook      SLAB-FLAT-HOOK
+		serifed       SLAB-CLASSICAL
+		inwardSerifed SLAB-INWARD
+
+	foreach { suffix st } [pairs-of SectionConfig] : begin
+		create-glyph "section.\(suffix)" : glyph-proc
+			include : union
+				halfShape st
+				with-transform [FlipAround Middle SymbolMid] : halfShape st
+
+	select-variant 'section' 0xA7
 
 	create-glyph 'topHalfSection' 0x2E39 : intersection
 		refer-glyph 'section'
