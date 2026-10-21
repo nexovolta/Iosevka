@@ -185,53 +185,62 @@ glyph-block Letter-Greek-Phi : begin
 	define [yCapitalPhiBowlBot y1 y4 fSlab] : mix (y1 + [if fSlab Stroke 0]) (y4 - [if fSlab Stroke 0]) 0.125
 	define [yCapitalPhiBowlTop y1 y4 fSlab] : mix (y1 + [if fSlab Stroke 0]) (y4 - [if fSlab Stroke 0]) 0.875
 
-	define [CapitalPhiShape fFlatTB] : function [df] : glyph-proc
-		local y2 : yCapitalPhiBowlBot 0 CAP SLAB
-		local y3 : yCapitalPhiBowlTop 0 CAP SLAB
+	define [CapitalPhiShape fFlatTB] : function [df fSerif] : glyph-proc
+		local y2 : yCapitalPhiBowlBot 0 CAP fSerif
+		local y3 : yCapitalPhiBowlTop 0 CAP fSerif
 		local dim : include : [PhiRing fFlatTB] df y2 y3 df.archDepthA df.archDepthB
 		include : StraightBar df 0 y2 y3 CAP dim.swBar
 
-		if SLAB : begin
+		if fSerif : begin
 			include : tagged 'serifMT' : HSerif.mt df.middle CAP MidJutCenter dim.swBar
 			include : tagged 'serifMB' : HSerif.mb df.middle 0   MidJutCenter dim.swBar
 
-	create-glyph 'grek/Phi' 0x3A6 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.capital
-		include : [CapitalPhiShape false] df
+	define PhiCapSerifConfig : object
+		serifless false
+		serifed   true
 
-	create-glyph 'cyrl/Ef' 0x424 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.capital
-		include : [CapitalPhiShape true] df
+	foreach { suffix fSerif } [Object.entries PhiCapSerifConfig] : do
+		create-glyph "grek/Phi.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			include : [CapitalPhiShape false] df fSerif
 
-	create-glyph 'cyrl/Ef.BGR' : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
+		create-glyph "cyrl/Ef.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			include : [CapitalPhiShape true] df fSerif
 
-		local y1 : 0   - (LongVJut - QuarterStroke)
-		local y4 : CAP + (LongVJut - QuarterStroke)
+		create-glyph "cyrl/Ef.BGR.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
 
-		include : ExtendBelowBaseAnchors y1
-		include : ExtendAboveBaseAnchors y4
+			local y1 : 0   - (LongVJut - QuarterStroke)
+			local y4 : CAP + (LongVJut - QuarterStroke)
 
-		local pseudoY2 : yCapitalPhiBowlBot 0 CAP SLAB
-		local pseudoY3 : yCapitalPhiBowlTop 0 CAP SLAB
+			include : ExtendBelowBaseAnchors y1
+			include : ExtendAboveBaseAnchors y4
 
-		local y2 : Math.max 0   : y1 + (pseudoY2 - 0)
-		local y3 : Math.min CAP : y4 - (CAP - pseudoY3)
+			local pseudoY2 : yCapitalPhiBowlBot 0 CAP fSerif
+			local pseudoY3 : yCapitalPhiBowlTop 0 CAP fSerif
 
-		local pArchDepth : mix 1 ((y3 - y2) / (pseudoY3 - pseudoY2)) (2 * (df.adws - 1))
+			local y2 : Math.max 0   : y1 + (pseudoY2 - 0)
+			local y3 : Math.min CAP : y4 - (CAP - pseudoY3)
 
-		local ada : df.archDepthAOf : ArchDepth * pArchDepth
-		local adb : df.archDepthBOf : ArchDepth * pArchDepth
+			local pArchDepth : mix 1 ((y3 - y2) / (pseudoY3 - pseudoY2)) (2 * (df.adws - 1))
 
-		local dim : include : [PhiRing true] df y2 y3 ada adb
-		include : StraightBar df y1 y2 y3 y4 dim.swBar
+			local ada : df.archDepthAOf : ArchDepth * pArchDepth
+			local adb : df.archDepthBOf : ArchDepth * pArchDepth
 
-		if SLAB : begin
-			include : tagged 'serifMT' : HSerif.mt df.middle y4 MidJutCenter dim.swBar
-			include : tagged 'serifMB' : HSerif.mb df.middle y1 MidJutCenter dim.swBar
+			local dim : include : [PhiRing true] df y2 y3 ada adb
+			include : StraightBar df y1 y2 y3 y4 dim.swBar
+
+			if fSerif : begin
+				include : tagged 'serifMT' : HSerif.mt df.middle y4 MidJutCenter dim.swBar
+				include : tagged 'serifMB' : HSerif.mb df.middle y1 MidJutCenter dim.swBar
+
+	select-variant 'grek/Phi' 0x3A6
+	select-variant 'cyrl/Ef' 0x424 (follow -- 'grek/Phi')
+	select-variant 'cyrl/Ef.BGR' (follow -- 'grek/Phi')
 
 	create-glyph 'taillessphi.cursive' : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
