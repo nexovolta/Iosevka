@@ -8,17 +8,11 @@ glyph-module
 glyph-block Letter-Greek-Upper-Omega : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
+	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
+	glyph-block-import Letter-Latin-Upper-T : TLeftX TRightX
 
-	define [OmegaFootSerifs] : glyph-proc
-		local l : SB + 0.75 * OX
-		local r : RightSB - 0.75 * OX
-		local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((Middle - [HSwToV HalfStroke]) - l)
-		include : VSerif.ul l Stroke VJut swVJut
-		include : VSerif.ur r Stroke VJut swVJut
-
-	define [UpperOmegaShape top extend ada adb doSerifs] : glyph-proc
+	define [UpperOmegaShape top extend ada adb] : glyph-proc
 		local fine : Stroke * CThin
 		local x1 : mix SB RightSB 0.4
 		local x2 : Width - x1
@@ -35,22 +29,25 @@ glyph-block Letter-Greek-Upper-Omega : begin
 		include : HBar.m SB x1 HalfStroke
 		include : VBar.l x2 0 yattach fine
 		include : HBar.m x2 RightSB HalfStroke
-		if doSerifs : include : OmegaFootSerifs
 
-	define [DisjointOmegaShape top ada adb doSerifs] : glyph-proc
-		local extra : if doSerifs VJut 0
-		local yOBot : Stroke + extra + [Math.max (top * 0.12) Stroke] + O
-		local oAda : ArchDepthAClamped top yOBot ada adb
-		local oAdb : ArchDepthBClamped top yOBot ada adb
-		include : OShape top yOBot SB RightSB Stroke oAda oAdb
-		local l : SB + 0.75 * OX
-		local r : RightSB - 0.75 * OX
+	define [DisjointOmegaShape top doSerifs] : glyph-proc
+		local dfT : DivFrame para.advanceScaleT
+		local dx : 0.5 * (Width - dfT.width)
+		local l : dx + [TLeftX dfT]
+		local r : dx + [TRightX dfT]
+		local yOBot : CAP - XH
 		include : HBar.b l r 0
-		if doSerifs : include : OmegaFootSerifs
+		if doSerifs : begin
+			local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((dx + dfT.middle - [HSwToV HalfStroke]) - l)
+			local serifH : Math.min VJut yOBot
+			include : VSerif.ul l 0 serifH swVJut
+			include : VSerif.ur r 0 serifH swVJut
+		include : with-transform [ApparentTranslate 0 yOBot]
+			OShape XH 0 SB RightSB nothing nothing nothing
+		if (top < CAP) : include : ScaleAround Middle 0 (top / CAP) (top / CAP)
 
 	define OmegaConfig : object
 		serifless       { 0 false }
-		serifed         { 0 true  }
 		disjoint        { 1 false }
 		disjointSerifed { 1 true  }
 
@@ -59,25 +56,32 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			include : MarkSet.capital
 			include : SetGrekUpperTonos 0
 			if fDisjoint
-				include : DisjointOmegaShape CAP ArchDepthA ArchDepthB doSerifs
-				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+				include : DisjointOmegaShape CAP doSerifs
+				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB
 
 		create-glyph "grek/smcpOmega.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			if fDisjoint
-				include : DisjointOmegaShape XH SmallArchDepthA SmallArchDepthB doSerifs
-				include : UpperOmegaShape XH 0.08 SmallArchDepthA SmallArchDepthB doSerifs
+				include : DisjointOmegaShape XH doSerifs
+				include : UpperOmegaShape XH 0.08 SmallArchDepthA SmallArchDepthB
 
 		create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			if fDisjoint
-				include : DisjointOmegaShape CAP ArchDepthA ArchDepthB doSerifs
-				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+				include : DisjointOmegaShape CAP doSerifs
+				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB
 			include : FlipAround Middle (CAP / 2)
+
+		create-glyph "latn/upsilon.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			if fDisjoint
+				include : DisjointOmegaShape XH doSerifs
+				include : UpperOmegaShape XH 0.08 SmallArchDepthA SmallArchDepthB
+			include : FlipAround Middle (XH / 2)
 
 	select-variant 'grek/Omega' 0x3A9
 	select-variant 'grek/smcpOmega' 0xAB65 (follow -- 'grek/Omega')
-	select-variant 'latn/Upsilon' 0x1B1 (follow -- 'grek/Omega')
+	select-variant 'latn/Upsilon' 0x1B1
+	select-variant 'latn/upsilon' 0x28A
 
-	CreateTurnedLetter 'latn/upsilon' 0x28A 'grek/smcpOmega' HalfAdvance (XH / 2)
 	CreateAccentedComposition 'latn/upsilonBar' 0x1D7F 'latn/upsilon' 'hStrike'
