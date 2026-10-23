@@ -138,12 +138,12 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				yend      -- (XH - [ArchDepthAClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB] + O)
 
 	do "e subglyphs"
-		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
+		glyph-block-import Letter-Latin-Lower-E : SchwaConfig
 
 		define df : DivFrame para.advanceScaleMM 3
 		define { subDf shift } : SubDfAndShift 1 df OX
 
-		foreach { suffix { body revbody tailSlab } } [Object.entries SmallEConfig] : do
+		foreach { suffix { body revbody tailSlab } } [Object.entries SchwaConfig] : do
 			create-glyph "ae/e.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
