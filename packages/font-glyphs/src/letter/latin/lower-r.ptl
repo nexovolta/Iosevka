@@ -852,6 +852,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		hookyBottom        { true  false 0.0 false }
 		zshaped            { true  true  1.0 false }
 		zshapedAsymmetric  { true  true  0.5 false }
+		centerSerifed      { true  true  1.0 false }
 		reverseHooky       { false true  1.0 true  }
 		sshaped            { true  true  1.0 true  }
 		sshapedAsymmetric  { true  true  0.5 true  }
@@ -871,7 +872,9 @@ glyph-block Letter-Latin-Lower-R : begin
 				FlipAround df.middle (XH / 2)
 			if doBS : begin
 				local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
-				if fRight
+				if (suffix === 'centerSerifed')
+				: then : include : tagged 'serifMT' : HSerif.mt rBarRightX XH jut
+				: else if fRight
 				: then : include : tagged 'serifRT' : HSerif.rt rBarRightX XH jut
 				: else : include : tagged 'serifLB' : HSerif.lt (rBarRightX - [HSwToV HalfStroke]) XH jut
 
@@ -881,6 +884,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		baseSerifed                     { true  false 0.0 false }
 		serifed                         { true  true  1.0 false }
 		serifedAsymmetric               { true  true  0.5 false }
+		centerSerifed                   { true  true  1.0 false }
 		reverseHooky                    { false true  1.0 true  }
 		topRightSerifed                 { true  true  1.0 true  }
 		topRightBaseSerifed             { true  true  1.0 true  }
@@ -901,7 +905,9 @@ glyph-block Letter-Latin-Lower-R : begin
 				FlipAround df.middle (XH / 2)
 			if doBS : begin
 				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
-				if fRight
+				if (suffix === 'centerSerifed')
+				: then : include : tagged 'serifMT' : HSerif.mt rBarLeftX XH jut
+				: else if fRight
 				: then : include : tagged 'serifRT' : HSerif.rt rBarLeftX XH jut
 				: else : include : tagged 'serifRB' : HSerif.lt (rBarLeftX + [HSwToV HalfStroke]) XH jut
 
