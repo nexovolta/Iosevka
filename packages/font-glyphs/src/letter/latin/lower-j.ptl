@@ -38,11 +38,13 @@ glyph-block Letter-Latin-Lower-J : begin
 	define XMiddleT : namespace
 		export : define [StraightSerifless df] : df.middle + 0
 		export : define [StraightSerifed   df] : df.middle + [IBalance2 df]
+		export : define [StraightReverse   df] : df.middle - [IBalance2 df]
 		export : define [BentHook          df] : df.middle + JBalance
 		export : define [NarrowBentHook    df] : df.middle + JBalance
 		export : define [DiagonalTailed    df] : df.middle + [IBalance2 df]
 		export : define [FlatHookSerifless df] : df.middle + 0.25 * JBalance * df.adws * [mix 1 df.adws 2]
 		export : define [FlatHookSerifed   df] : df.middle + JBalance * df.adws
+		export : define [FlatHookReverse   df] : df.middle - JBalance * df.adws
 
 	define JBody : namespace
 		export : define [BentHook df top xMiddle] : glyph-proc
@@ -113,9 +115,15 @@ glyph-block Letter-Latin-Lower-J : begin
 			set-base-anchor "below" xMiddle Descender
 
 	define JSerifs : namespace
-		export : define [None  df top xMiddle] : no-shape
-		export : define [Long  df top xMiddle] : tagged 'serifLT' : HSerif.lt xMiddle top [Math.max Jut : mix [HSwToV HalfStroke] LongJut df.adws]
-		export : define [Short df top xMiddle] : tagged 'serifLT' : HSerif.lt xMiddle top Jut
+		export : define [LongJutOf  df] : Math.max Jut : mix [HSwToV HalfStroke] LongJut df.adws
+		export : define [CenterJutOf df] : Math.max MidJutCenter : mix [HSwToV HalfStroke] LongJut df.adws
+		export : define [None        df top xMiddle] : no-shape
+		export : define [Long        df top xMiddle] : tagged 'serifLT' : HSerif.lt xMiddle top [LongJutOf df]
+		export : define [Short       df top xMiddle] : tagged 'serifLT' : HSerif.lt xMiddle top Jut
+		export : define [Right       df top xMiddle] : tagged 'serifRT' : HSerif.rt xMiddle top [LongJutOf df]
+		export : define [RightShort  df top xMiddle] : tagged 'serifRT' : HSerif.rt xMiddle top Jut
+		export : define [Center      df top xMiddle] : tagged 'serifMT' : HSerif.mt xMiddle top [CenterJutOf df]
+		export : define [CenterShort df top xMiddle] : tagged 'serifMT' : HSerif.mt xMiddle top [mix Jut [CenterJutOf df] 0.5]
 
 	define JMarks : namespace
 		export : define [Serifless df top xMiddle] : glyph-proc
@@ -142,6 +150,26 @@ glyph-block Letter-Latin-Lower-J : begin
 		'flatHookSerifless'          { JBody.FlatHook        JSerifs.None   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'flatHookShortSerifed'       { JBody.FlatHook        JSerifs.Short  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'flatHookSerifed'            { JBody.FlatHook        JSerifs.Long   XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI  }
+		'bentHookReverseHooky'       { JBody.BentHook        JSerifs.Right       XMiddleT.BentHook           JMarks.Serifed    1                   }
+		'bentHookShortReverseHooky'  { JBody.BentHook        JSerifs.RightShort  XMiddleT.BentHook           JMarks.Serifless  1                   }
+		'bentHookCenterSerifed'      { JBody.BentHook        JSerifs.Center      XMiddleT.BentHook           JMarks.Serifed    1                   }
+		'bentHookCenterShortSerifed' { JBody.BentHook        JSerifs.CenterShort XMiddleT.BentHook           JMarks.Serifless  1                   }
+		'narrowBentHookReverseHooky'       { JBody.NarrowBentHook  JSerifs.Right       XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF  }
+		'narrowBentHookShortReverseHooky'  { JBody.NarrowBentHook  JSerifs.RightShort  XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'narrowBentHookCenterSerifed'      { JBody.NarrowBentHook  JSerifs.Center      XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF  }
+		'narrowBentHookCenterShortSerifed' { JBody.NarrowBentHook  JSerifs.CenterShort XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'diagonalTailedReverseHooky'       { JBody.DiagonalTailed  JSerifs.Right       XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI  }
+		'diagonalTailedShortReverseHooky'  { JBody.DiagonalTailed  JSerifs.RightShort  XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'diagonalTailedCenterSerifed'      { JBody.DiagonalTailed  JSerifs.Center      XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI  }
+		'diagonalTailedCenterShortSerifed' { JBody.DiagonalTailed  JSerifs.CenterShort XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'straightReverseHooky'       { JBody.Straight        JSerifs.Right       XMiddleT.StraightReverse      JMarks.Serifed    para.advanceScaleI  }
+		'straightShortReverseHooky'  { JBody.Straight        JSerifs.RightShort  XMiddleT.StraightSerifless    JMarks.Serifless  para.advanceScaleII }
+		'straightCenterSerifed'      { JBody.Straight        JSerifs.Center      XMiddleT.StraightSerifless    JMarks.Serifed    para.advanceScaleI  }
+		'straightCenterShortSerifed' { JBody.Straight        JSerifs.CenterShort XMiddleT.StraightSerifless    JMarks.Serifless  para.advanceScaleII }
+		'flatHookReverseHooky'       { JBody.FlatHook        JSerifs.Right       XMiddleT.FlatHookReverse      JMarks.Serifed    para.advanceScaleI  }
+		'flatHookShortReverseHooky'  { JBody.FlatHook        JSerifs.RightShort  XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
+		'flatHookCenterSerifed'      { JBody.FlatHook        JSerifs.Center      XMiddleT.FlatHookSerifless    JMarks.Serifed    para.advanceScaleI  }
+		'flatHookCenterShortSerifed' { JBody.FlatHook        JSerifs.CenterShort XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
 		'topTailedBentHook'         { [JBody.WithCasualTop 'tailed'    JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'topFlatBentHook'           { [JBody.WithCasualTop 'flat'      JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'topSemiBentHook'           { [JBody.WithCasualTop 'semi'      JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
@@ -164,12 +192,15 @@ glyph-block Letter-Latin-Lower-J : begin
 		'topDiagNarrowBentHook'     { [JBody.WithCasualTop 'diagonal'  JBody.NarrowBentHook]  JSerifs.None XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 
 	define JCurlyTailConfig : object
-		'bentHookSerifless' { JBody.CurlyTailBody                                  JSerifs.None  JMarks.Serifless }
-		'bentHookSerifed'   { JBody.CurlyTailBody                                  JSerifs.Long  JMarks.Serifless }
-		'topTailed'         { [JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
-		'topFlat'           { [JBody.WithCasualTop 'flat'      JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
-		'topSemi'           { [JBody.WithCasualTop 'semi'      JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
-		'topDiag'           { [JBody.WithCasualTop 'diagonal'  JBody.CurlyTailBody] JSerifs.None  JMarks.Serifless }
+		'bentHookSerifless' { JBody.CurlyTailBody                                  JSerifs.None        JMarks.Serifless }
+		'bentHookSerifed'   { JBody.CurlyTailBody                                  JSerifs.Long        JMarks.Serifless }
+		'reverseHooky'      { JBody.CurlyTailBody                                  JSerifs.Right       JMarks.Serifless }
+		'centerSerifed'     { JBody.CurlyTailBody                                  JSerifs.Center      JMarks.Serifless }
+		'centerShortSerifed' { JBody.CurlyTailBody                                 JSerifs.CenterShort JMarks.Serifless }
+		'topTailed'         { [JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody] JSerifs.None        JMarks.Serifless }
+		'topFlat'           { [JBody.WithCasualTop 'flat'      JBody.CurlyTailBody] JSerifs.None        JMarks.Serifless }
+		'topSemi'           { [JBody.WithCasualTop 'semi'      JBody.CurlyTailBody] JSerifs.None        JMarks.Serifless }
+		'topDiag'           { [JBody.WithCasualTop 'diagonal'  JBody.CurlyTailBody] JSerifs.None        JMarks.Serifless }
 
 	foreach { suffix { Body Serifs xMiddleT Marks adws } } [Object.entries JConfig] : do
 		local df : DivFrame adws
