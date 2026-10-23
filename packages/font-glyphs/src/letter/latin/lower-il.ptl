@@ -580,10 +580,14 @@ glyph-block Letter-Latin-Lower-I : begin
 		CreateAccentedComposition 'i/compLigRight' null 'dotlessi/compLigRight' 'tittleAbove'
 		CreateAccentedComposition 'iRetroflexHook' 0x1D96 'dotlessiRetroflexHook' 'tittleAbove'
 
-		select-variant 'dotlessaiDiphthong.upright'
-		select-variant 'dotlessaiDiphthong.italic'
+		local iSuffix : fallback para.variantSelector.dotlessi 'serifless'
+		create-glyph 'dotlessaiDiphthong.upright' : glyph-proc
+			include [refer-glyph "dotlessaiDiphthong.upright.\(iSuffix)"] AS_BASE ALSO_METRICS
+		create-glyph 'dotlessaiDiphthong.italic' : glyph-proc
+			include [refer-glyph "dotlessaiDiphthong.italic.\(iSuffix)"] AS_BASE ALSO_METRICS
 
-		select-variant 'dotlessiStretched'
+		create-glyph 'dotlessiStretched' : glyph-proc
+			include [refer-glyph "dotlessiStretched.\(iSuffix)"] AS_BASE ALSO_METRICS
 		CreateAccentedComposition 'iStretched' 0x1DF71 'dotlessiStretched' 'tittleAbove'
 
 		CreateAccentedComposition 'i.TRK' null 'dotlessi' 'i.TRK/tittleAbove'

@@ -881,36 +881,42 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : FlipAround df.middle (XH / 2)
 			include : ApparentTranslate (xStem - (df.width - xR)) 0
 
-	define DotlessIPigtailUprightConfig : object
-		serifless          { false false 0.0 false }
-		hooky              { false true  1.0 false }
-		hookyBottom        { true  false 0.0 false }
-		zshaped            { true  true  1.0 false }
-		zshapedAsymmetric  { true  true  0.5 false }
-		centerSerifed      { true  true  1.0 false }
-		reverseHooky       { false true  1.0 true  }
-		sshaped            { true  true  1.0 true  }
-		sshapedAsymmetric  { true  true  0.5 true  }
-
-	define DotlessIPigtailItalicConfig : object
+	# { doTS doBS kJut fRight } keyed by selector.dotlessi.
+	# Bottom serifs ride the flipped r stem; bottom tails yield to the pigtail hook.
+	define DotlessIPigtailConfig : object
 		serifless                       { false false 0.0 false }
 		hooky                           { false true  1.0 false }
+		hookyBottom                     { true  false 0.0 false }
+		zshaped                         { true  true  1.0 false }
+		zshapedAsymmetric               { true  true  0.5 false }
 		baseSerifed                     { true  false 0.0 false }
 		serifed                         { true  true  1.0 false }
 		serifedAsymmetric               { true  true  0.5 false }
 		centerSerifed                   { true  true  1.0 false }
+		centerShortSerifed              { true  true  0.5 false }
 		reverseHooky                    { false true  1.0 true  }
+		sshaped                         { true  true  1.0 true  }
+		sshapedAsymmetric               { true  true  0.5 true  }
+		hookyBottomLeft                 { true  false 0.0 false }
 		topRightSerifed                 { true  true  1.0 true  }
 		topRightBaseSerifed             { true  true  1.0 true  }
 		topRightBaseSerifedAsymmetric   { true  true  0.5 true  }
+		tailed                          { false false 0.0 false }
+		tailedSerifed                   { false true  1.0 false }
+		diagonalTailed                  { false false 0.0 false }
+		serifedDiagonalTailed           { false true  1.0 false }
+		flatTailed                      { false false 0.0 false }
+		serifedFlatTailed               { false true  1.0 false }
+		semiTailed                      { false false 0.0 false }
+		serifedSemiTailed               { false true  1.0 false }
 
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
 
 	define PigtailCasualTopConfig : object
-		topTailed  'tailed'
-		topFlat    'flat'
-		topSemi    'semi'
-		topDiag    'diagonal'
+		doubleTailed      'tailed'
+		doubleFlatTailed  'flat'
+		doubleSemiTailed  'semi'
+		doubleDiagTailed  'diagonal'
 
 	define [PigtailUprightStem iSuffix Body md] : glyph-proc
 		local df : include dfF
@@ -927,7 +933,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
 		: else : begin
-			local { doTS doBS kJut fRight } : fallback DotlessIPigtailUprightConfig.(iSuffix) { false false 0.0 false }
+			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
 			local mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
 			local dimSerif : RDim df mode
 			include : dimSerif.setTurnedMarks XH 0 doTS false
@@ -938,7 +944,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : PigtailAttachHook Body md false xStem doTS
 			if doBS : begin
 				local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
-				if (iSuffix === 'centerSerifed')
+				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
 				: then : include : tagged 'serifMT' : HSerif.mt rBarRightX XH jut
 				: else : begin
 					if fRight
@@ -960,7 +966,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
 		: else : begin
-			local { doTS doBS kJut fRight } : fallback DotlessIPigtailItalicConfig.(iSuffix) { false false 0.0 false }
+			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
 			local mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
 			local dimSerif : RDim df mode nothing nothing nothing (-1)
 			include : dimSerif.setInvertedMarks XH 0 doTS doBS
@@ -971,21 +977,20 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : PigtailAttachHook RevBody md true xStem doTS
 			if doBS : begin
 				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
-				if (iSuffix === 'centerSerifed')
+				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
 				: then : include : tagged 'serifMT' : HSerif.mt rBarLeftX XH jut
 				: else : begin
 					if fRight
 					: then : include : tagged 'serifRT' : HSerif.rt rBarLeftX XH jut
 					: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
 
-	local bakedIUpright : fallback para.variantSelector.('dotlessiPigtail.upright') 'serifless'
-	local bakedIItalic  : fallback para.variantSelector.('dotlessiPigtail.italic')  'serifless'
+	local bakedI : fallback para.variantSelector.dotlessi 'serifless'
 
 	foreach { rSuffix { Body RevBody md } } [Object.entries PigtailRBodies] : do
 		create-glyph "dotlessiPigtail.upright.\(rSuffix)" : glyph-proc
-			include : PigtailUprightStem bakedIUpright Body md
+			include : PigtailUprightStem bakedI Body md
 		create-glyph "dotlessiPigtail.italic.\(rSuffix)" : glyph-proc
-			include : PigtailItalicStem bakedIItalic RevBody md
+			include : PigtailItalicStem bakedI RevBody md
 
 	select-variant 'dotlessiPigtail.upright' (follow -- 'dotlessiPigtail/r')
 	select-variant 'dotlessiPigtail.italic'  (follow -- 'dotlessiPigtail/r')
