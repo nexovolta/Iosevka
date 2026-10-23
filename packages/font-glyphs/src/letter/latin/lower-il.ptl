@@ -381,7 +381,7 @@ glyph-block Letter-Latin-Lower-I : begin
 					yOverflow -- Stroke
 					maskOut   -- [MaskAbove maskY]
 
-		if (Body !== ILBody.Serifed) : create-glyph "dotlessaiDiphthong.upright.\(suffix)" : glyph-proc
+		create-glyph "dotlessaiDiphthong.upright.\(suffix)" : glyph-proc
 			local df : DivFrame adws
 			include [refer-glyph "dotlessi.\(suffix)"] AS_BASE ALSO_METRICS
 			include : HalfRingDescender ([xMiddleT df] - [HSwToV HalfStroke]) 0
@@ -580,8 +580,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		CreateAccentedComposition 'i/compLigRight' null 'dotlessi/compLigRight' 'tittleAbove'
 		CreateAccentedComposition 'iRetroflexHook' 0x1D96 'dotlessiRetroflexHook' 'tittleAbove'
 
-		select-variant 'dotlessaiDiphthong.upright' (follow -- 'dotlessiPigtail.upright')
-		select-variant 'dotlessaiDiphthong.italic'  (follow -- 'dotlessiPigtail.italic')
+		select-variant 'dotlessaiDiphthong.upright'
+		select-variant 'dotlessaiDiphthong.italic'
 
 		select-variant 'dotlessiStretched'
 		CreateAccentedComposition 'iStretched' 0x1DF71 'dotlessiStretched' 'tittleAbove'
