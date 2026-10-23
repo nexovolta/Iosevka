@@ -61,9 +61,11 @@ glyph-block Letter-Greek-Upper-Omega : begin
 
 		create-glyph "grek/smcpOmega.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			if fDisjoint
-				include : DisjointOmegaShape XH doSerifs
-				include : UpperOmegaShape XH 0.08 SmallArchDepthA SmallArchDepthB
+			include : new-glyph : glyph-proc
+				if fDisjoint
+					include : DisjointOmegaShape CAP doSerifs
+					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB
+				include : ScaleAround Middle 0 1 (XH / CAP)
 
 		create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
 			include : MarkSet.capital
