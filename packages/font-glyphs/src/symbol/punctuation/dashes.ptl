@@ -81,7 +81,7 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		local {dx dy} : ObliqueHyphenDelta df
 		local r : DotRadius * kr * OperatorStroke / Stroke
-		local lift : HalfStroke + r * 1.35
+		local lift : HalfStroke + r * 2.3
 		include : DoubleObliqueHyphenShape df
 		include : DrawAt (df.middle - dx) (SymbolMid + EqualHalfSpace - dy + lift) (r - ov)
 		include : DrawAt (df.middle + dx) (SymbolMid - EqualHalfSpace + dy - lift) (r - ov)
@@ -90,9 +90,9 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		local sw : Math.min Stroke OperatorStroke
 		local halfExtent : 0.5 * (df.rightSB - df.leftSB)
-		local cupR : 0.55 * halfExtent
-		local yBottom : SymbolMid - 0.78 * halfExtent
-		local yTop : SymbolMid + 0.78 * halfExtent
+		local cupR : 0.7 * halfExtent
+		local yBottom : SymbolMid - 1.05 * halfExtent
+		local yTop : SymbolMid + 1.05 * halfExtent
 		local yArm : yBottom + 0.5 * cupR
 		include : new-glyph : glyph-proc
 			include : dispiro
@@ -205,8 +205,12 @@ glyph-block Symbol-Punctuation-Dashes : begin
 			local ringY : yC - ringR + 0.5 * sw
 			include : difference [DotAt df.middle ringY ringR] [DotAt df.middle ringY (ringR - sw)]
 			include : with-transform [ApparentTranslate (df.middle - Middle) (yC - 405 * u)] : with-transform [ScaleAround Middle 0 0.4 0.4] : refer-glyph 'comma'
-		include : LowerHalf
-		include : with-transform [FlipAround df.middle yC] : LowerHalf
+		local sectionH : ParenTop - ParenBot
+		local kFit : sectionH / (644 * (UPM / 1000))
+		include : with-transform [ScaleAround df.middle yC kFit kFit] : glyph-proc
+			include : LowerHalf
+			include : with-transform [FlipAround df.middle yC] : LowerHalf
+		include : ApparentTranslate 0 ([mix ParenTop ParenBot 0.5] - yC)
 
 	create-glyph 'dblHyphen' 0x2E40 : glyph-proc
 		local df : include : DivFrame para.advanceScaleF

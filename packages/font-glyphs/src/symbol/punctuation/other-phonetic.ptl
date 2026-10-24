@@ -135,13 +135,13 @@ glyph-block Symbol-Other-Phonetic : begin
 	define [TaperedVBar x yBot yTop yBar sw] : union
 		dispiro
 			flat x yBot [widths.center sw]
-			curl x yBar [widths.center (0.3 * sw)]
+			curl x yBar [widths.center (0.55 * sw)]
 		dispiro
 			flat x yTop [widths.center sw]
-			curl x yBar [widths.center (0.3 * sw)]
+			curl x yBar [widths.center (0.55 * sw)]
 
 	define [TaperedHBar xStem xEnd yBar sw] : dispiro
-		flat xStem yBar [widths.center (0.3 * sw)]
+		flat xStem yBar [widths.center (0.55 * sw)]
 		curl xEnd yBar [widths.center sw]
 	# Cross patties: yang departing mark with serifs on all three spokes
 	define [CrossPattyShape fArmRight] : glyph-proc
@@ -171,31 +171,42 @@ glyph-block Symbol-Other-Phonetic : begin
 		include : CrossPattyShape false
 
 	create-glyph 'palmBranch' 0x2E19 : glyph-proc
-		local twigCount 6
-		local halfW : 0.5 * (RightSB - SB)
-		local pitch : CAP * 0.11
-		local stemW : 0.6 * Stroke
-		include : VBar.m Middle 0 CAP stemW
-		foreach i [range 0 twigCount] : do
-			local a : (12 + 8 * i) * Math.PI / 180
-			local len : (0.5 * stemW) + (halfW - 0.5 * stemW) * (1 - 0.1 * i)
-			local yBase : CAP * 0.22 + pitch * i
-			local tw : Math.min Stroke (0.55 * pitch * [Math.cos a])
-			local nx : (-[Math.sin a]) * tw / 2
-			local ny : [Math.cos a] * tw / 2
-			foreach s [items-of {(-1) 1}] : do
-				local tx : Middle + s * len * [Math.cos a]
-				local ty : yBase + len * [Math.sin a]
-				if (s < 0) : then : include : spiro-outline
-					corner Middle (yBase - ny)
-					corner (tx - s * nx) (ty - ny)
-					corner (tx + s * nx) (ty + ny)
-					corner Middle (yBase + ny)
-				: else : include : spiro-outline
-					corner Middle (yBase + ny)
-					corner (tx + s * nx) (ty + ny)
-					corner (tx - s * nx) (ty - ny)
-					corner Middle (yBase - ny)
+		local kFit : (ParenTop - ParenBot) / CAP
+		local yMidPalm : mix ParenTop ParenBot 0.5
+		include : new-glyph : glyph-proc
+			local twigCount 6
+			local halfW : 0.5 * (RightSB - SB)
+			local pitch : CAP * 0.11
+			local stemW : 0.6 * Stroke
+			include : VBar.m Middle 0 CAP stemW
+			foreach i [range 0 twigCount] : do
+				local a : (12 + 8 * i) * Math.PI / 180
+				local len : (0.5 * stemW) + (halfW - 0.5 * stemW) * (1 - 0.1 * i)
+				local yBase : CAP * 0.22 + pitch * i
+				local tw : Math.min Stroke (0.55 * pitch * [Math.cos a])
+				local nx : (-[Math.sin a]) * tw / 2
+				local ny : [Math.cos a] * tw / 2
+				foreach s [items-of {(-1) 1}] : do
+					local tx : Middle + s * len * [Math.cos a]
+					local ty : yBase + len * [Math.sin a]
+					if (s < 0) : then : include : spiro-outline
+						corner Middle (yBase - ny)
+						corner (tx - s * nx) (ty - ny)
+						corner (tx + s * nx) (ty + ny)
+						corner Middle (yBase + ny)
+					: else : include : spiro-outline
+						corner Middle (yBase + ny)
+						corner (tx + s * nx) (ty + ny)
+						corner (tx - s * nx) (ty - ny)
+						corner Middle (yBase - ny)
+			include : Ungizmo
+			include : Translate (-Middle) (-CAP / 2)
+			include : Scale kFit
+			include : Translate Middle yMidPalm
+			include : Translate (-Middle) (-yMidPalm)
+			include : Rotate (-15 * Math.PI / 180)
+			include : Translate Middle yMidPalm
+			include : Regizmo
 
 	local EnteringToneConfig : list
 		list 'endHighTone'       0x2FA  0.6  1    1.0
