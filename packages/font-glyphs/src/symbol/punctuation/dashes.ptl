@@ -80,12 +80,39 @@ glyph-block Symbol-Punctuation-Dashes : begin
 	WithDotVariants 'cornishVerseDivider' 0x2E4F : function [DrawAt kr ov] : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
 		local {dx dy} : ObliqueHyphenDelta df
-		local r : PeriodRadius * kr
+		local r : DotRadius * kr * OperatorStroke / Stroke
 		local lift : HalfStroke + r * 1.35
 		include : DoubleObliqueHyphenShape df
 		include : DrawAt (df.middle - dx) (SymbolMid + EqualHalfSpace - dy + lift) (r - ov)
 		include : DrawAt (df.middle + dx) (SymbolMid - EqualHalfSpace + dy - lift) (r - ov)
 
+	create-glyph 'ancoraDownwards' 0x2E14 : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		local sw : Math.min Stroke OperatorStroke
+		local halfExtent : 0.5 * (df.rightSB - df.leftSB)
+		local cupR : 0.55 * halfExtent
+		local yBottom : SymbolMid - 0.78 * halfExtent
+		local yTop : SymbolMid + 0.78 * halfExtent
+		local yArm : yBottom + 0.5 * cupR
+		include : new-glyph : glyph-proc
+			include : dispiro
+				widths.center sw
+				flat df.middle yTop [heading Downward]
+				curl df.middle yBottom [heading Downward]
+			include : dispiro
+				widths.center sw
+				g4.down.start (df.middle - cupR) yArm [heading Downward]
+				arcvh
+				g4.right.mid df.middle yBottom [heading Rightward]
+				archv
+				g4.up.end (df.middle + cupR) yArm [heading Upward]
+			include : Ungizmo
+			include : Translate (-df.middle) (-SymbolMid)
+			include : Rotate (-Math.PI / 4)
+			include : Translate df.middle SymbolMid
+			include : Regizmo
+
+	turned 'ancoraUpwards' 0x2E15 'ancoraDownwards' [DivFrame para.advanceScaleF].middle SymbolMid
 	create-glyph 'armn/hyphen' 0x58A : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
 		include : dispiro

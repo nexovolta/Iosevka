@@ -46,14 +46,14 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				include : tagged 'serifRT' : VSerif.dr xGammaTopRight top VJut
 
 	define GammaConfig : object
-		serifless              { SLAB-NONE             false }
-		topRightSerifed        { SLAB-TR               true  }
-		bottomSerifed          { SLAB-BOTTOM           false }
-		serifed                { SLAB-ALL              true  }
-		bilateralMotionSerifed { SLAB-BILATERAL-MOTION false }
-		capped                 { SLAB-NONE             true  }
+		serifless              { SLAB-NONE             false false }
+		topRightSerifed        { SLAB-TR               true  true  }
+		bottomSerifed          { SLAB-BOTTOM           false false }
+		serifed                { SLAB-ALL              true  true  }
+		bilateralMotionSerifed { SLAB-BILATERAL-MOTION false true  }
+		capped                 { SLAB-NONE             true  true  }
 
-	foreach { suffix { slabType doST } } [Object.entries GammaConfig] : do
+	foreach { suffix { slabType doST doRM } } [Object.entries GammaConfig] : do
 		create-glyph "grek/Gamma.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : GammaShape CAP 0 slabType
@@ -62,9 +62,9 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 			include : MarkSet.capital
 			include : GammaShape CAP 0 slabType
 			local yBar : EFMidBarPosY CAP 0
-			local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] doST
+			local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] doRM
 			include : HBar.m xGammaBarLeft xMidRight yBar
-			if doST : begin
+			if doRM : begin
 				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
 
 		create-glyph "rCap.\(suffix)" : glyph-proc
@@ -199,15 +199,38 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 
 	select-variant 'grek/Digamma' 0x3DC
 
-	create-glyph 'grek/digamma' 0x3DD : glyph-proc
-		include : MarkSet.p
-		include : GammaShape XH Descender SLAB-NONE
-		local yBar : EFMidBarPosY XH 0
-		local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] SLAB
-		include : HBar.m xGammaBarLeft xMidRight yBar
-		if SLAB : begin
-			include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
+	define LowerDigammaConfig : object
+		straight         0
+		toothlessCorner  1
+		toothlessRounded 2
 
+	foreach { suffix kind } [Object.entries LowerDigammaConfig] : do
+		create-glyph "grek/digamma.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			match kind
+				[Just 0] : begin
+					include : GammaShape XH Descender SLAB-NONE
+					local yBar : EFMidBarPosY XH 0
+					local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] SLAB
+					include : HBar.m xGammaBarLeft xMidRight yBar
+					if SLAB : begin
+						include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
+				[Just 1] : begin
+					include : GammaShape XH Descender SLAB-NONE
+				[Just 2] : begin
+					include : LeaningAnchor.Below.VBar.l xGammaBarLeft
+					local xStem : xGammaBarLeft + [HSwToV HalfStroke]
+					local yTop : XH - HalfStroke
+					local rad : Math.min (0.5 * (xGammaTopRight - xStem)) (0.45 * XH)
+					include : dispiro
+						widths.center Stroke
+						g4.left.start xGammaTopRight yTop [heading Leftward]
+						g4 (xStem + rad) yTop [heading Leftward]
+						archv
+						g4.down.mid xStem (yTop - rad) [heading Downward]
+						g4.down.end xStem Descender [heading Downward]
+
+	select-variant 'grek/digamma' 0x3DD
 	define [GhaynOverlayBar top] : LetterBarOverlay.l xGammaBarLeft (top * (1 - OverlayPos))
 
 	derive-composites 'cyrl/Ghayn'         0x492 'cyrl/Ghe'         [GhaynOverlayBar CAP]

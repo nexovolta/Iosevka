@@ -851,7 +851,20 @@ glyph-block Letter-Latin-Lower-R : begin
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 			set-base-anchor 'hooktopAttach' df.middle XH
 
+		create-glyph "rWithLeftTie.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM
+			include : df.markSet.e
+			local dfR : DivFrame (0.5 * para.advanceScaleM)
+			define [object rBarLeftX] : RDim dfR RMode.Half
+			local xStem : df.width - dfR.width + rBarLeftX + [HSwToV HalfStroke]
+			include : dispiro
+				widths.center Stroke
+				flat (df.leftSB + [HSwToV HalfStroke]) 0 [heading Upward]
+				curl xStem XH [heading Upward]
+			include : with-transform [ApparentTranslate (df.width - dfR.width) 0] : Body dfR RMode.Half XH 0 doTS doBS cut
+
 	select-variant 'rHalf' 0xAB47
+	select-variant 'rWithLeftTie' 0x1DF61 (follow -- 'rHalf')
 	select-variant 'rDouble' 0xAB48 (follow -- 'rHalf')
 	select-variant 'rDoubleCrossedTail' 0xAB4A (follow -- 'rHalf')
 	select-variant 'rMidHeightLeftHook' 0x1DF28 (follow -- 'rHalf')
