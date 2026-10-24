@@ -945,10 +945,10 @@ glyph-block Letter-Latin-Lower-R : begin
 			if doBS : begin
 				local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
 				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
-				: then : include : tagged 'serifMT' : HSerif.mt rBarRightX XH jut
+				: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
 				: else : begin
 					if fRight
-					: then : include : tagged 'serifRT' : HSerif.rt rBarRightX XH jut
+					: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
 					: else : include : tagged 'serifLB' : HSerif.lt xStem XH jut
 
 	define [PigtailItalicStem iSuffix RevBody md] : glyph-proc
@@ -978,10 +978,10 @@ glyph-block Letter-Latin-Lower-R : begin
 			if doBS : begin
 				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
 				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
-				: then : include : tagged 'serifMT' : HSerif.mt rBarLeftX XH jut
+				: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
 				: else : begin
 					if fRight
-					: then : include : tagged 'serifRT' : HSerif.rt rBarLeftX XH jut
+					: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
 					: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
 
 	local bakedI : fallback para.variantSelector.dotlessi 'serifless'
