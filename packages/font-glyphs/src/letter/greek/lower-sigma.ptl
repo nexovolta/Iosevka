@@ -9,28 +9,28 @@ glyph-block Letter-Greek-Lower-Sigma : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	define [SigmaShape flatBowl] : glyph-proc
+	define [SigmaShape verticalBowl] : glyph-proc
 		include : MarkSet.e
+		local xStemR : mix SB RightSB 0.92
 		local fine : Math.max QuarterStroke : AdviceStroke 8
 		include : dispiro
 			widths.lhs
 			flat (RightSB + SideJut + [HSwToV : 0.15 * Stroke]) XH [heading Leftward]
-			match flatBowl
-				[Just 1] : list
-					curl [mix SB Middle 0.5] (XH - O) [heading Leftward]
-					corner SB (XH - O)
-					g4.down.mid SB (XH * 0.5)
-				__ : list
-					curl Middle (XH - O) [heading Leftward]
-					archv
-					flatside.ld SB      0 XH SmallArchDepthA SmallArchDepthB
+			curl Middle (XH - O) [heading Leftward]
+			archv
+			flatside.ld SB      0 XH SmallArchDepthA SmallArchDepthB
 			Arch.lhs 0
-			flatside.ru RightSB 0 XH SmallArchDepthA SmallArchDepthB 0
-			arcvh
-			g4.left.end Middle (XH - O - (Stroke - fine)) [widths.lhs.heading fine Leftward]
+			match verticalBowl
+				[Just 1] : list
+					flatside.ru xStemR 0 XH SmallArchDepthA SmallArchDepthB 0
+					curl xStemR (XH - 0.5 * Stroke) [heading Upward]
+				__ : list
+					flatside.ru RightSB 0 XH SmallArchDepthA SmallArchDepthB 0
+					arcvh
+					g4.left.end Middle (XH - O - (Stroke - fine)) [widths.lhs.heading fine Leftward]
 
 	create-glyph 'grek/sigma.rounded' : glyph-proc
 		include : SigmaShape 0
-	create-glyph 'grek/sigma.flatBowl' : glyph-proc
+	create-glyph 'grek/sigma.verticalBowl' : glyph-proc
 		include : SigmaShape 1
 	select-variant 'grek/sigma' 0x3C3
