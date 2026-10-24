@@ -132,24 +132,35 @@ glyph-block Symbol-Other-Phonetic : begin
 			include : VBar.l toneMarkLeft (CAP * a) (CAP * b) OperatorStroke
 			include : HBar.m (toneMarkLeft + TINY) toneMarkRight [yOfToneDepart a b pos] OperatorStroke
 
+	define [TaperedVBar x yBot yTop yBar sw] : union
+		dispiro
+			flat x yBot [widths.center sw]
+			curl x yBar [widths.center (0.3 * sw)]
+		dispiro
+			flat x yTop [widths.center sw]
+			curl x yBar [widths.center (0.3 * sw)]
+
+	define [TaperedHBar xStem xEnd yBar sw] : dispiro
+		flat xStem yBar [widths.center (0.3 * sw)]
+		curl xEnd yBar [widths.center sw]
 	# Cross patties: yang departing mark with serifs on all three spokes
 	define [CrossPattyShape fArmRight] : glyph-proc
-		local yBot : CAP * 0.25
-		local yTop : CAP * 0.75
-		local yBar : yOfToneDepart 0.25 0.75 0.5
+		local yBot : CAP * 0.02
+		local yTop : CAP * 0.98
+		local yBar : yOfToneDepart 0.02 0.98 0.5
 		local sw OperatorStroke
 		local jutH Jut
 		local jutMid : Math.min VJut : (yTop - yBot) / 2 - sw
 		local swVJut : VJutStroke * (sw / Stroke)
 		if fArmRight : then : begin
-			include : VBar.l toneMarkLeft yBot yTop sw
-			include : HBar.m (toneMarkLeft + TINY) toneMarkRight yBar sw
+			include : TaperedVBar (toneMarkLeft + [HSwToV : 0.5 * sw]) yBot yTop yBar sw
+			include : TaperedHBar (toneMarkLeft + [HSwToV : 0.5 * sw]) toneMarkRight yBar sw
 			include : HSerif.mt (toneMarkLeft + [HSwToV : 0.5 * sw]) yTop jutH sw
 			include : HSerif.mb (toneMarkLeft + [HSwToV : 0.5 * sw]) yBot jutH sw
 			include : VSerif.mr toneMarkRight yBar jutMid swVJut
 		: else : begin
-			include : VBar.r toneMarkRight yBot yTop sw
-			include : HBar.m toneMarkLeft (toneMarkRight - TINY) yBar sw
+			include : TaperedVBar (toneMarkRight - [HSwToV : 0.5 * sw]) yBot yTop yBar sw
+			include : TaperedHBar (toneMarkRight - [HSwToV : 0.5 * sw]) toneMarkLeft yBar sw
 			include : HSerif.mt (toneMarkRight - [HSwToV : 0.5 * sw]) yTop jutH sw
 			include : HSerif.mb (toneMarkRight - [HSwToV : 0.5 * sw]) yBot jutH sw
 			include : VSerif.ml toneMarkLeft yBar jutMid swVJut
