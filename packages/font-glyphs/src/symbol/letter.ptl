@@ -15,6 +15,8 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Latin-C : CLetterForm CConfig
+	glyph-block-import Letter-Latin-Upper-E : EShape
 
 	create-glyph 'currency' 0xA4 : glyph-proc
 		local sw : AdviceStroke 3.5
@@ -68,19 +70,29 @@ glyph-block Symbol-Currency : begin
 	select-variant 'currency/sterlingSign'   0xA3
 	select-variant 'currency/liraSymbolSign' 0x20A4 (follow -- 'currency/sterlingSign')
 
-	create-glyph 'currency/euroCurrencySign' 0x20A0 : glyph-proc
-		set-width Width
-		include : MarkSet.capital
-		local kc 0.68
-		local ke 0.6
-		local dxE : 0.3 * Width
-		local yC : CAP * (0.52 * ke - 0.024)
-		define [eGlyph] : glyph-proc
-			include : with-transform [ApparentTranslate dxE 0] : with-transform [ScaleAround 0 0 ke ke] : refer-glyph 'E'
-		# E's stem left edge is the mask boundary: the C ends where the E begins
-		include : intersection [MaskLeft (dxE + ke * SB + [HSwToV : 0.5 * ke * Stroke])] : glyph-proc
-			include : with-transform [ApparentTranslate 0 yC] : with-transform [ScaleAround 0 0 kc kc] : refer-glyph 'C'
-		include : eGlyph
+	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+		create-glyph "currency/euroCurrencySign.\(suffix)" : glyph-proc
+			set-width Width
+			include : MarkSet.capital
+			local kc 0.68
+			local ke 0.6
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			local sw : Stroke * [mix 0.85 0.58 heavyT]
+			local dxE : 0.3 * Width
+			local yC : CAP * (0.52 * ke - 0.024)
+			local df : DivFrame kc
+			local cTop : yC + kc * CAP
+			# E's stem left edge is the mask boundary: the C ends where the E begins
+			include : intersection [MaskLeft (dxE + ke * SB + [HSwToV : 0.5 * sw])] : glyph-proc
+				local lf : CLetterForm df styTop styBot cTop yC
+					ada -- (ArchDepthA * kc)
+					adb -- (ArchDepthB * kc)
+					hook -- (Hook * kc)
+					sw -- sw
+				include : with-transform [ApparentTranslate (kc * SB - df.leftSB) 0] : lf.full
+			include : with-transform [ApparentTranslate dxE 0] : with-transform [ScaleAround 0 0 ke ke] : EShape CAP false false false false false (sw / ke)
+
+	select-variant 'currency/euroCurrencySign' 0x20A0 (follow -- 'C')
 	create-glyph 'currency/cruzeiroSign' 0x20A2 : glyph-proc
 		set-width Width
 		include : MarkSet.capital
