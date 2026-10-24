@@ -26,7 +26,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 	# crossing like the inner curl of an asymmetric 8 (clipped to the spine).
 	# Outlines are built in design space; italic is the gizmo skew of that.
 	glyph-block-export SigmoidSShape
-	define [SigmoidSShape top styTop hook _ess] : begin
+	define [SigmoidSShape top styTop hook _ess _pCurl] : begin
 		local df : DivFrame 1
 		local sw : df.adviceStroke2 2 3 top
 		local fine : df.adviceStroke2 3 4 top
@@ -36,7 +36,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 		local l : df.leftSB + OX
 		local r : df.rightSB - OX
 		local xBot : mix df.leftSB df.rightSB 0.5
-		local yCurl : 0.6 * top
+		local yCurl : [fallback _pCurl 0.6] * top
 		# Leftmost of the bowl at half the C height, vertical tangent (circular).
 		local yBowl : 0.5 * yCurl
 
@@ -85,7 +85,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 			include : SigmoidSShape CAP styTop Hook EssUpper
 		create-glyph "sigmoidS.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : SigmoidSShape XH styTop SHook EssLower
+			include : SigmoidSShape XH styTop SHook EssLower 0.72
 
 	select-variant 'SigmoidS' 0xA7D8
 	select-variant 'sigmoidS' 0xA7D9

@@ -191,6 +191,23 @@ glyph-block Symbol-Punctuation-Dashes : begin
 			refer-glyph src.1
 			clear-anchors
 
+	create-glyph 'editorialCoronis' 0x2E0E : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		local W : df.rightSB - df.leftSB
+		local u : W / 625
+		local sw : Math.min (0.6 * Stroke) (0.045 * W)
+		local yC SymbolMid
+		local ringR : 0.07 * W
+		define [LowerHalf] : glyph-proc
+			include : HBar.m (df.middle - 0.5 * W) (df.middle + 0.5 * W) yC sw
+			foreach { len off } [items-of { {0.72 88} {0.45 176} {0.18 258} }] : do
+				include : HBar.m (df.middle - 0.5 * len * W) (df.middle + 0.5 * len * W) (yC - off * u) sw
+			local ringY : yC - ringR + 0.5 * sw
+			include : difference [DotAt df.middle ringY ringR] [DotAt df.middle ringY (ringR - sw)]
+			include : with-transform [ApparentTranslate (df.middle - Middle) (yC - 405 * u)] : with-transform [ScaleAround Middle 0 0.4 0.4] : refer-glyph 'comma'
+		include : LowerHalf
+		include : with-transform [FlipAround df.middle yC] : LowerHalf
+
 	create-glyph 'dblHyphen' 0x2E40 : glyph-proc
 		local df : include : DivFrame para.advanceScaleF
 		include : HBar.m df.leftSB df.rightSB (SymbolMid + EqualHalfSpace)
