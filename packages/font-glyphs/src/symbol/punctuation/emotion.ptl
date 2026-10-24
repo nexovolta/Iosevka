@@ -29,6 +29,31 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		select-variant 'exclamDown' 0xA1 (follow -- 'punctuationDot')
 
 		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+			local dr : DotRadius * kdr
+			create-glyph "wigglyExclam.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local yBot : clamp 0 (CAP * 0.4) (emotionBottom * 1.18)
+				local amp : 0.85 * (0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke])
+				local nExt 6
+				local sw : Math.min (0.85 * Stroke) (0.4 * amp)
+				local knots {}
+				foreach k [range 0 nExt] : begin
+					local u : k / (nExt - 1)
+					local side : if (k % 2 === 0) 1 (-1)
+					local yExt : mix (CAP - 0.5 * sw) (yBot + 0.5 * sw) u
+					local xExt : df.middle + side * amp * (1 - 0.6 * u)
+					if (k === 0) : then : knots.push : g2.down.start xExt yExt [widths.center sw]
+					: else : begin
+						local yMid : mix (CAP - 0.5 * sw) (yBot + 0.5 * sw) ((k - 0.5) / (nExt - 1))
+						knots.push : if (side > 0) [g2.right.mid df.middle yMid] [g2.left.mid df.middle yMid]
+						knots.push : if (k === nExt - 1) [g2.down.end xExt yExt] [g2.down.mid xExt yExt]
+				include : dispiro knots
+				include : DrawAt df.middle dr (dr - overshoot)
+				create-forked-glyph "wigglyExclamDown.\(suffix)" : FlipAround df.middle (XH / 2)
+
+		select-variant 'wigglyExclam' 0x2E60 (follow -- 'punctuationDot')
+		select-variant 'wigglyExclamDown' 0x2E61 (follow -- 'punctuationDot')
+		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
 			create-glyph "medievalExclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
 				local dr : PeriodRadius * kdr
