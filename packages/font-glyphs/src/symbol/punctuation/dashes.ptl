@@ -141,6 +141,27 @@ glyph-block Symbol-Punctuation-Dashes : begin
 
 		alias [MangleName 'horizontalBar'] [MangleUnicode 0x2015] [MangleName 'emDash']
 
+		define paragraphosOver 2
+		define [ParagraphosBar] : HBar.m (-paragraphosOver) (emDashWidth + paragraphosOver) SymbolMid
+		define [ParagraphosFork xStart xEnd] : dispiro
+			widths.center
+			flat xStart SymbolMid
+			curl xEnd (SymbolMid - 0.184 * emDashWidth)
+
+		create-glyph [MangleName 'paragraphos'] [MangleUnicode 0x2E0F] : glyph-proc
+			set-width emDashWidth
+			include : ParagraphosBar
+
+		create-glyph [MangleName 'forkedParagraphos'] [MangleUnicode 0x2E10] : glyph-proc
+			set-width emDashWidth
+			include : ParagraphosBar
+			include : ParagraphosFork (0.375 * emDashWidth) (0.02 * emDashWidth)
+
+		create-glyph [MangleName 'reversedForkedParagraphos'] [MangleUnicode 0x2E11] : glyph-proc
+			set-width emDashWidth
+			include : ParagraphosBar
+			include : ParagraphosFork (0.625 * emDashWidth) (0.98 * emDashWidth)
+
 		create-glyph [MangleName 'spear'] [MangleUnicode 0x2E43] : glyph-proc
 			set-width emDashWidth
 			local bot : SymbolMid - HalfStroke
