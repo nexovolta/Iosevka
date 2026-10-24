@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [Vec2] from "@iosevka/geometry/point"
 
 glyph-module
 
@@ -40,6 +41,47 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		local df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		include : LowerOmegaShape df XH
+
+	# Omega with the middle masked out, plus an inverted rams horn loop in the gap.
+	define [LowerOmegaWithLoopShape df top] : glyph-proc
+		local stroke : df.adviceThinnerStroke 3
+		local fine : stroke * CThin
+		local k1 0.625
+		local k2 0.7
+		local kInt 0.15
+
+		local yCross : top * kInt
+		local loopHalf : 0.17 * df.width
+		local loopTop : top * 0.72
+		local lInner : df.middle - loopHalf
+		local rInner : df.middle + loopHalf
+		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
+		local sw : Math.min (0.85 * stroke) (0.4 * loopHalf)
+		local loopFine : Math.min sw : fine * 1.3
+		local coFine : mix sw loopFine : kInt / k2
+		local gap : -0.6 * sw
+		local xMask : [mix df.middle rInner k1] + 0.5 * sw + gap
+		local yMask : [mix 0 loopTop k2] + d
+		include : difference
+			LowerOmegaShape df top
+			spiro-outline
+				corner df.middle (yCross - 0.5 * sw)
+				g4.up.mid (df.middle + xMask - df.middle) yMask
+				g4 df.middle (loopTop + 0.5 * loopFine + gap) [heading Leftward]
+				g4.down.mid (df.middle - xMask + df.middle) yMask
+				close
+		include : dispiro
+			widths.lhs sw
+			g4 df.middle yCross [widths.lhs coFine]
+			g4.up.mid    [mix df.middle rInner k1] ([mix 0 loopTop k2] + d) [widths.lhs loopFine]
+			Arch.lhs loopTop (sw -- loopFine)
+			g4.down.mid  [mix df.middle lInner k1] ([mix 0 loopTop k2] - d)
+			g4 df.middle yCross [widths.lhs coFine]
+
+	create-glyph 'latn/omegaWithLoop' 0x1DF60 : glyph-proc
+		local df : include : DivFrame para.advanceScaleM 3
+		include : df.markSet.e
+		include : LowerOmegaWithLoopShape df XH
 
 	CreateTurnedLetter 'grek/turnomega' null 'grek/omega' HalfAdvance (XH / 2)
 
