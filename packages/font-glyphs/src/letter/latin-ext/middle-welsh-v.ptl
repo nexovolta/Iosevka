@@ -9,16 +9,18 @@ glyph-block Letter-Latin-Middle-Welsh-V : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	define [MiddleWelshVShape top pL pR _xR _xEnd] : glyph-proc
+	define [MiddleWelshVShape top pL pR _xR _xEnd _xScale] : glyph-proc
 		local xR : fallback _xR (RightSB - O)
 		local xEnd : fallback _xEnd [mix SB RightSB 0.75]
+		local xScale : fallback _xScale 1
+		define [ScaleX x] : Middle + xScale * (x - Middle)
 		include : dispiro
 			widths.lhs
 			g4 Middle (top - O / 2)
-			g4.down.mid (SB + O) [mix 0 top (pL * SmallArchDepthB / (SmallArchDepthA + SmallArchDepthB))]
+			g4.down.mid [ScaleX : SB + O] [mix 0 top (pL * SmallArchDepthB / (SmallArchDepthA + SmallArchDepthB))]
 			Arch.lhs 0
-			g4 xR [mix 0 top (pR * SmallArchDepthA / (SmallArchDepthA + SmallArchDepthB))]
-			g4 xEnd [mix 0 top pR]
+			g4 [ScaleX xR] [mix 0 top (pR * SmallArchDepthA / (SmallArchDepthA + SmallArchDepthB))]
+			g4 [ScaleX xEnd] [mix 0 top pR]
 
 	create-glyph 'VMiddleWelsh' 0x1EFC : glyph-proc
 		include : MarkSet.capital
@@ -29,7 +31,7 @@ glyph-block Letter-Latin-Middle-Welsh-V : begin
 		include : MiddleWelshVShape Ascender 0.625 0.625
 
 	define [ConShape top pR] : glyph-proc
-		include : with-transform [ScaleAround Middle 0 1.14 1] : MiddleWelshVShape top 0.75 pR [mix SB RightSB 0.86] [mix SB RightSB 0.6]
+		include : MiddleWelshVShape top 0.75 pR [mix SB RightSB 0.86] [mix SB RightSB 0.6] 1.3
 
 	create-glyph 'Con' 0xA76E : glyph-proc
 		include : MarkSet.capital
