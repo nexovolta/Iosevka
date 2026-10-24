@@ -71,11 +71,16 @@ glyph-block Symbol-Currency : begin
 	create-glyph 'currency/euroCurrencySign' 0x20A0 : glyph-proc
 		set-width Width
 		include : MarkSet.capital
-		local k 0.66
-		local shift : 0.34 * Width
-		include : with-transform [ApparentTranslate (-0.02 * Width) (CAP * (1 - k - 0.07))] : with-transform [ScaleAround 0 0 k k] : refer-glyph 'C'
-		include : with-transform [ApparentTranslate (shift + 0.02 * Width) 0] : with-transform [ScaleAround 0 0 k k] : refer-glyph 'E'
-
+		local kc 0.68
+		local ke 0.6
+		local dxE : 0.3 * Width
+		local yC : CAP * (0.52 * ke - 0.024)
+		define [eGlyph] : glyph-proc
+			include : with-transform [ApparentTranslate dxE 0] : with-transform [ScaleAround 0 0 ke ke] : refer-glyph 'E'
+		# E's stem left edge is the mask boundary: the C ends where the E begins
+		include : intersection [MaskLeft (dxE + ke * SB + [HSwToV : 0.5 * ke * Stroke])] : glyph-proc
+			include : with-transform [ApparentTranslate 0 yC] : with-transform [ScaleAround 0 0 kc kc] : refer-glyph 'C'
+		include : eGlyph
 	create-glyph 'currency/cruzeiroSign' 0x20A2 : glyph-proc
 		set-width Width
 		include : MarkSet.capital
@@ -87,6 +92,7 @@ glyph-block Symbol-Currency : begin
 		set-width Width
 		include : MarkSet.b
 		include : VBar.l (SB + [HSwToV : 0.5 * Stroke]) 0 Ascender
+		include : HBar.t (SB + [HSwToV : 0.5 * Stroke]) (0.3 * Width + Middle) XH Stroke
 		include : with-transform [ApparentTranslate (0.3 * Width) 0] : refer-glyph 't/pack75'
 
 	define TurkLiraConfig : object
