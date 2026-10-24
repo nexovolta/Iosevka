@@ -7,6 +7,7 @@ glyph-module
 glyph-block Letter-Cyrillic-Yu : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifConfig IotationSerifFromSelector
 
 	define SLAB-ALL        1
@@ -79,3 +80,11 @@ glyph-block Letter-Cyrillic-Yu : begin
 
 	select-variant 'cyrl/revYu' 0xA654
 	select-variant 'cyrl/revyu' 0xA655
+
+	create-glyph 'latn/oi/base' : glyph-proc
+		define df : include : DivFrame para.advanceScaleM 3
+		include : df.markSet.e
+		include [refer-glyph 'cyrl/revyu'] AS_BASE ALSO_METRICS
+		local sw : df.adviceThinnerStroke 2 0.75
+		set-base-anchor 'above' (df.rightSB - [HSwToV : 0.5 * sw]) XH
+	CreateAccentedComposition 'latn/oi' 0x1DF5E 'latn/oi/base' 'tittleAbove'
