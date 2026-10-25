@@ -56,7 +56,7 @@ glyph-block Digits-Three : begin
 		include : ezh.Shape
 
 	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
-	# diagonal terminal). Shared by the broken and arched flat-top bodies.
+	# diagonal terminal). Used by the broken flat-top body.
 	define [ThreeFlatTopEtGeom top _yEndIdeal] : begin
 		local kFall : Math.tan (50 * Math.PI / 180)
 		local yBarBot : top - Stroke
@@ -101,50 +101,6 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	# Barlow 7-on-C: reversed C with the top arch at 75% depth so
-	# it bends down before the et. The diagonal is long enough to
-	# clip slightly through that curve. Angle is constant.
-	define [ThreeFlatTopArchedShape top serif flatHook] : glyph-proc
-		local sw Stroke
-		local t2 : mix 0 top 0.66
-		local yEnd : mix 0 top 0.44
-		local kFall : Math.tan (62 * Math.PI / 180)
-		local yBarBot : top - sw
-		local xEnd : RightSB - (yBarBot - yEnd) / kFall
-		local hookTop : 0.75 * Hook * (top / CAP)
-		local adaTop : 0.75 * [ArchDepthAClamped t2 0 ArchDepthA ArchDepthB]
-		local adbBot : ArchDepthBClamped t2 0 ArchDepthA ArchDepthB
-		local bowlBotArcC : if flatHook Flat Rounded
-		local boxBot : new Box t2 0 SB RightSB
-		local ArcBot : bowlBotArcC boxBot
-			sw    -- sw
-			barSw -- sw
-			hook  -- (Hook * (top / CAP))
-
-		include : union
-			HBar.t SB RightSB top
-			intersection
-				Rect yBarBot (yEnd - 2 * sw) SB RightSB
-				dispiro
-					widths.rhs
-					flat RightSB yBarBot
-					curl xEnd yEnd
-			difference
-				dispiro
-					widths.rhs
-					g4 (SB + OX) (t2 - hookTop) [heading Upward]
-					HookStart t2 (sw -- sw)
-					flatside.rd (RightSB - OX) 0 t2 adaTop adbBot OX
-					if flatHook
-						ArcBot.hookEndL
-						list
-							HookEnd 0 (sw -- sw)
-							g4 (SB + OX) (Hook * (top / CAP))
-				union
-					MaskAboveLine RightSB yBarBot xEnd yEnd
-					MaskLeftLine RightSB yBarBot xEnd yEnd
-		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
-
 	create-glyph 'three.lnum.rounded' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShape CAP
@@ -160,18 +116,6 @@ glyph-block Digits-Three : begin
 	create-glyph 'three.lnum.flatTopBrokenSerifedFlatHook' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeFlatTopBrokenShape CAP true true
-	create-glyph 'three.lnum.flatTopArched' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopArchedShape CAP false false
-	create-glyph 'three.lnum.flatTopArchedSerifed' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopArchedShape CAP true false
-	create-glyph 'three.lnum.flatTopArchedFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopArchedShape CAP false true
-	create-glyph 'three.lnum.flatTopArchedSerifedFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopArchedShape CAP true true
 	create-glyph 'three.lnum.flatHooked' : glyph-proc
 		include : MarkSet.capital
 		include : ThreeShapeFlatHook CAP
@@ -206,22 +150,6 @@ glyph-block Digits-Three : begin
 	create-glyph 'three.onum.flatTopBrokenSerifedFlatHook' : glyph-proc
 		include : OnumMarks.p
 		include : ThreeFlatTopBrokenShape CAP true true
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopArched' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopArchedShape CAP false false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopArchedSerifed' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopArchedShape CAP true false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopArchedFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopArchedShape CAP false true
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopArchedSerifedFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopArchedShape CAP true true
 		include : ShiftDown
 	create-glyph 'three.onum.flatHooked' : glyph-proc
 		include : OnumMarks.p
