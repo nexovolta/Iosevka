@@ -11,8 +11,8 @@ glyph-block Letter-Cyrillic-Yu : begin
 	glyph-block-import Letter-Shared-Shapes : uBowl
 	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifConfig IotationSerifFromSelector
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
-	glyph-block-import Letter-Latin-C : CLetterForm
-	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig
+	glyph-block-import Letter-Latin-C : CLetterForm CConfig
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
 	glyph-block-import Letter-Latin-Long-S : LongSUpperHalf LongSLowerHalf
 
 	define SLAB-ALL        1
@@ -142,39 +142,50 @@ glyph-block Letter-Cyrillic-Yu : begin
 		include : union [LunateHalf] [with-transform [ApparentTranslate shift 0] : LunateHalf] : HBar.m (subDf.leftSB + [HSwToV : 0.5 * sw]) (df.rightSB - [HSwToV : 0.5 * sw]) (XH / 2) (0.8 * sw)
 
 	# Initial Teaching Alphabet -h digraphs. The h is built on its own sub-frame so only its width
-	# is squeezed; the stroke stays at the advised weight.
-	foreach { suffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+	# is squeezed; the stroke stays at the advised weight. ch follows c; the h is baked from the
+	# selected h to avoid a c x h product.
+	define [ChLayout] : begin
+		local df : DivFrame para.advanceScaleM 3
+		local hDf : DivFrame (0.55 * df.adws) 2
+		local sw : Math.min [df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.65] [df.adviceThinnerStroke 2.75 0.75] [hDf.adviceThinnerStroke 1.3]
+		local shift : df.width - hDf.width
+		return : object df hDf sw shift
+
+	local bakedH BakedHDigraphSuffix
+	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+		if (hSuffix === bakedH) : begin
+			create-glyph "latn/chStretched/h" : glyph-proc
+				local L : ChLayout
+				include : with-transform [ApparentTranslate L.shift 0] : HDigraphBody L.hDf L.sw HSerifs true fFlatHump fTailed
+
+			create-glyph 'latn/eshH' 0x1DF62 : glyph-proc
+				local df : include : DivFrame para.advanceScaleM 3
+				include : df.markSet.bp
+				include : ExtendBelowBaseAnchors Descender
+				local hDf : DivFrame (0.58 * df.adws) 2
+				local sw : Math.min Stroke [df.adviceThinnerStroke 2 0.75] [hDf.adviceThinnerStroke 1.3]
+				local hsw : HSwToV sw
+				local shift : df.width - hDf.width
+				local xHStem : hDf.leftSB + shift
+				include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw HSerifs false fFlatHump fTailed
+				local hookLow : Math.min (HookX + QuarterStroke) (0.45 * (xHStem - df.leftSB))
+				local xEsh : df.leftSB + hookLow + 0.5 * hsw
+				local yMid : mix Ascender Descender 0.5
+				include : LongSUpperHalf (+1) xEsh Ascender yMid (xHStem + 0.5 * hsw - xEsh) Hook sw
+				include : LongSLowerHalf (+1) xEsh yMid Descender hookLow Hook sw
+
+	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
 		create-glyph "latn/chStretched.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
-			include : df.markSet.b
+			local L : ChLayout
+			include : L.df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
-			local hDf : DivFrame (0.55 * df.adws) 2
-			local sw : Math.min [df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.65] [df.adviceThinnerStroke 2.75 0.75] [hDf.adviceThinnerStroke 1.3]
-			local shift : df.width - hDf.width
-			local xStem : hDf.leftSB + shift
-			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw HSerifs true
-			local cDf : DivFrame [Math.min 1 df.adws]
-			local lf : CLetterForm cDf 0 4 XH Descender
-				ada -- [cDf.archDepthAOf SmallArchDepth sw]
-				adb -- [cDf.archDepthBOf SmallArchDepth sw]
-				sw  -- sw
-			include : intersection [MaskLeft (xStem + 0.5 * [HSwToV sw])] [lf.full]
+			local xStem : L.hDf.leftSB + L.shift
+			local cDf : DivFrame [Math.min 1 L.df.adws]
+			local lf : CLetterForm cDf styTop styBot XH Descender
+				ada -- [cDf.archDepthAOf SmallArchDepth L.sw]
+				adb -- [cDf.archDepthBOf SmallArchDepth L.sw]
+				sw  -- L.sw
+			include : intersection [MaskLeft (xStem + 0.5 * [HSwToV L.sw])] [lf.full]
+			include : refer-glyph 'latn/chStretched/h'
 
-		create-glyph "latn/eshH.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
-			include : df.markSet.bp
-			include : ExtendBelowBaseAnchors Descender
-			local hDf : DivFrame (0.58 * df.adws) 2
-			local sw : Math.min Stroke [df.adviceThinnerStroke 2 0.75] [hDf.adviceThinnerStroke 1.3]
-			local hsw : HSwToV sw
-			local shift : df.width - hDf.width
-			local xHStem : hDf.leftSB + shift
-			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw HSerifs false
-			local hookLow : Math.min (HookX + QuarterStroke) (0.45 * (xHStem - df.leftSB))
-			local xEsh : df.leftSB + hookLow + 0.5 * hsw
-			local yMid : mix Ascender Descender 0.5
-			include : LongSUpperHalf (+1) xEsh Ascender yMid (xHStem + 0.5 * hsw - xEsh) Hook sw
-			include : LongSLowerHalf (+1) xEsh yMid Descender hookLow Hook sw
-
-	select-variant 'latn/chStretched' 0x1DF5B (follow -- 'h')
-	select-variant 'latn/eshH' 0x1DF62 (follow -- 'h')
+	select-variant 'latn/chStretched' 0x1DF5B (follow -- 'c')

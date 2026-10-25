@@ -14,7 +14,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape EarlessRoundedSingleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
 	glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
-	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
 
 	define FORM-CURLY                      0
 	define FORM-STRAIGHT                   1
@@ -490,10 +490,12 @@ glyph-block Letter-Latin-W : begin
 
 		if fHookRight
 		: then : begin
-			include : VerticalHook.r df.rightSB ((top - O) - TailY - 0.5 * fine) TailX (-TailY) fine
+			local fWh : fHookRight === 'wh'
+			local yStart : if fWh (top - O) ((top - O) - TailY - 0.5 * fine)
+			if [not fWh] : include : VerticalHook.r df.rightSB yStart TailX (-TailY) fine
 			include : dispiro
 				widths.rhs fine
-				flat (df.width - x1) ((top - O) - TailY - 0.5 * fine) [heading Downward]
+				flat (df.width - x1) yStart [heading Downward]
 				curl (df.width - x1) y3 [heading Downward]
 				Arch.rhs 0 (sw -- fine) (swAfter -- mfine)
 				flat (df.middle - [HSwToV : mfine - fine / 2]) y3 [widths.heading 0 mfine Upward]
@@ -624,41 +626,67 @@ glyph-block Letter-Latin-W : begin
 			include : HOverlayBar [mix df.leftSB 0 0.7] [mix df.rightSB df.width 0.7] [mix 0 CAP 0.60]
 			include : HOverlayBar [mix df.leftSB 0 0.7] [mix df.rightSB df.width 0.7] [mix 0 CAP 0.35]
 
-	# Initial Teaching Alphabet wh digraph. Always built from straight diagonals whatever w style is
-	# selected; the final diagonal runs up to the top of the h.
-	define [WhDiagonal xTop yTop xBot yBot hw] : spiro-outline
-		corner (xTop - 0.5 * hw) yTop
-		corner (xTop + 0.5 * hw) yTop
-		corner (xBot + 0.5 * hw) yBot
-		corner (xBot - 0.5 * hw) yBot
+	# Initial Teaching Alphabet wh digraph. The w part follows w with its right contour ejected;
+	# the h stem takes its place, so the last diagonal runs up to the top of the h.
+	define [WhStdShape df top bodyType slabType midHClass fReverse yRight] : glyph-proc
+		include : WShapeImpl df top bodyType slabType midHClass fReverse
+		local dim : WDim df top bodyType slabType midHClass
+		eject-contour 'strokeUp2'
+		eject-contour 'serifRT'
+		include : dispiro
+			widths.rhs dim.strokeOuter
+			straight.down.start df.rightSB yRight [heading Downward]
+			quadControls 0 0.3 6 unimportant
+			g4 (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
 
-	foreach { suffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+	define [WhSquareTopShape df top bodyType slabType midHClass fReverse yRight] : glyph-proc
+		include : WSquareTopShape df top bodyType slabType midHClass fReverse
+		local dim : WDim df top bodyType slabType midHClass
+		local hw : VSquareTopHw dim.strokeOuter
+		local yJoin : VSquareTopYJoin top
+		eject-contour 'strokeUp2'
+		eject-contour 'serifRT'
+		include : tagged 'strokeUp2' : WSquareTopOuterRight df top dim hw yJoin dim.xBot2 yRight
+
+	define [WhImpl implT hookRightImplT df top bodyType slabType midHClass] : glyph-proc
+		local yRight Ascender
+		if (hookRightImplT === WHookRightShape) : include : WhStdShape df top bodyType slabType midHClass false yRight
+		if (hookRightImplT === WHookRightReverseAsymmetricShape) : include : WhStdShape df top bodyType slabType midHClass true yRight
+		if (hookRightImplT === WSquareTopHookRightShape) : include : WhSquareTopShape df top bodyType slabType midHClass false yRight
+		if (hookRightImplT === WSquareTopHookRightReverseAsymmetricShape) : include : WhSquareTopShape df top bodyType slabType midHClass true yRight
+		if (hookRightImplT === WHookRightCursive) : include : WCursiveImplImpl 'wh' df top bodyType slabType midHClass
+		if ((hookRightImplT === WVSHookRightShape) || (hookRightImplT === WHookRightRounded) || (hookRightImplT === WHookRightRoundedSingleArch)) : begin
+			include : implT df top bodyType slabType midHClass
+			eject-contour 'serifRT'
+
+	define [WhLayout] : begin
+		local df : DivFrame 2 3
+		local hDf : DivFrame (0.5 * df.adws) 2
+		local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
+		local shift : df.width - hDf.width
+		local xHStem : shift + hDf.leftSB
+		local xR : xHStem + [HSwToV sw]
+		local wDf0 : DivFrame ((xR + df.leftSB) / Width) 3
+		local wDf : DivFrame ((xR + wDf0.leftSB) / Width) 3
+		return : object df hDf sw shift wDf
+
+	local bakedH BakedHDigraphSuffix
+	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+		if (hSuffix === bakedH) : create-glyph "latn/wh/h" : glyph-proc
+			local L : WhLayout
+			include : with-transform [ApparentTranslate L.shift 0] : HDigraphBody L.hDf L.sw HSerifs false fFlatHump fTailed
+
+	foreach { suffix { { implT hookRightImplT bodyType midHClass adwsUpper adwsLower } slabType } } [pairs-of WConfig] : do
 		create-glyph "latn/wh.\(suffix)" : glyph-proc
-			local df : include : DivFrame 2 3
-			include : df.markSet.b
-			local hDf : DivFrame (0.5 * df.adws) 2
-			local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
-			local hsw : HSwToV sw
-			local shift : df.width - hDf.width
-			local xHStem : shift + hDf.leftSB
-			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw HSerifs false
-			local midH : 0.72 * XH
-			local xL : df.leftSB + 0.5 * hsw
-			local xR : xHStem + 0.5 * hsw
-			local k : (xR - xL) / (XH + 2 * midH + Ascender)
-			local hw : sw * [Math.sqrt : 1 + k * k]
-			local xB1 : xL + k * XH
-			local xM : xB1 + k * midH
-			local xB2 : xM + k * midH
-			include : WhDiagonal xL XH xB1 0 hw
-			include : WhDiagonal xM midH xB1 0 hw
-			include : WhDiagonal xM midH xB2 0 hw
-			include : WhDiagonal xR Ascender xB2 0 hw
-			if HSerifs : include : tagged 'serifLT' : HSerif.lt (xL - 0.5 * hw) XH [Math.min Jut (0.3 * (xB1 - xL))]
-			if HSerifs : include : tagged 'serifRT' : HSerif.rt (xM + 0.5 * hw) midH [Math.min Jut (0.3 * (xB1 - xL))]
+			local L : WhLayout
+			local glyphScale : if (para.spacing == 0) 0.82 1
+			set-width L.df.width
+			include : L.df.markSet.b
+			include : with-transform [ScaleAround L.df.middle (Ascender / 2) glyphScale 1] : glyph-proc
+				include : WhImpl implT hookRightImplT L.wDf XH bodyType slabType midHClass
+				include : refer-glyph 'latn/wh/h'
 
-	select-variant 'latn/wh' 0x1DF65 (follow -- 'h')
-
+	select-variant 'latn/wh' 0x1DF65 (follow -- 'w')
 	# VY
 	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
 		if [not fSquareTop] : begin

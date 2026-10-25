@@ -59,26 +59,38 @@ glyph-block Letter-Latin-Lower-H : begin
 	define [HDigraphJut dfH] : Math.min Jut (0.3 * (dfH.rightSB - dfH.leftSB))
 	define [HDigraphLT dfH sw topLeft] : glyph-proc
 		if topLeft : include : tagged 'serifLT' : HSerif.lt dfH.leftSB Ascender [Math.min SideJut [HDigraphJut dfH]]
-	define [HDigraphSerifs dfH sw topLeft] : glyph-proc
+	define [HDigraphSerifs dfH sw topLeft fTailed] : glyph-proc
 		include : HDigraphLT dfH sw topLeft
 		include : tagged 'serifLB' : HSerif.mb (dfH.leftSB + [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
-		include : tagged 'serifRB' : HSerif.mb (dfH.rightSB - [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
-	define [HDigraphMotionSerifs dfH sw topLeft] : glyph-proc
+		if [not fTailed] : include : tagged 'serifRB' : HSerif.mb (dfH.rightSB - [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
+	define [HDigraphMotionSerifs dfH sw topLeft fTailed] : glyph-proc
 		include : HDigraphLT dfH sw topLeft
-		include : tagged 'serifRB' : HSerif.rb dfH.rightSB 0 [Math.min SideJut [HDigraphJut dfH]]
+		if [not fTailed] : include : tagged 'serifRB' : HSerif.rb dfH.rightSB 0 [Math.min SideJut [HDigraphJut dfH]]
 
 	# Plain h on a sub-frame, used by the Initial Teaching Alphabet -h digraphs
 	glyph-block-export HDigraphBody HDigraphConfig
-	define [HDigraphBody] : with-params [dfH sw [Serifs null] [topLeft true]] : glyph-proc
+	define [HDigraphBody] : with-params [dfH sw [Serifs null] [topLeft true] [fFlatHump false] [fTailed false]] : glyph-proc
 		include : VBar.l dfH.leftSB 0 Ascender sw
-		include : nShoulder.shape
+		local yBot : if fTailed (XH - dfH.smallArchDepthB + O) 0
+		if fFlatHump : include : nShoulder.earlessCorner
+			left   -- dfH.leftSB
+			right  -- dfH.rightSB
+			top    -- XH
+			bottom -- yBot
+			rise   -- 0
+			stroke -- sw
+			ada    -- dfH.smallArchDepthA
+			adb    -- dfH.smallArchDepthB
+		if [not fFlatHump] : include : nShoulder.shape
 			left   -- (dfH.leftSB + [HSwToV sw])
 			right  -- dfH.rightSB
+			bottom -- yBot
 			stroke -- sw
 			fine   -- (ShoulderFine * (sw / Stroke))
 			ada    -- dfH.smallArchDepthA
 			adb    -- dfH.smallArchDepthB
-		if Serifs : include : Serifs dfH sw topLeft
+		if fTailed : include : RightwardTailedBar dfH.rightSB 0 (XH - dfH.smallArchDepthB) sw
+		if Serifs : include : Serifs dfH sw topLeft fTailed
 
 	define HDigraphConfig : SuffixCfg.weave
 		object # hump
@@ -92,6 +104,10 @@ glyph-block Letter-Latin-Lower-H : begin
 			serifed        HDigraphSerifs
 			motionSerifed  HDigraphMotionSerifs
 			topLeftSerifed HDigraphLT
+	# The h of the -h digraphs is baked from the selected h instead of following it
+	glyph-block-export BakedHDigraphSuffix
+	define BakedHDigraphSuffix : if (para.variantSelector.h && HDigraphConfig.(para.variantSelector.h)) para.variantSelector.h 'straightSerifless'
+
 	define HConfig : SuffixCfg.weave
 		object # hump
 			""        false

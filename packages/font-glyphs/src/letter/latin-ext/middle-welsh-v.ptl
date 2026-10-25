@@ -31,15 +31,17 @@ glyph-block Letter-Latin-Middle-Welsh-V : begin
 		include : MiddleWelshVShape Ascender 0.625 0.625
 
 	define [ConShape top pR] : glyph-proc
-		include : MiddleWelshVShape top 0.75 pR [mix SB RightSB 0.86] [mix SB RightSB 0.6] 1.3
+		include : MiddleWelshVShape top 0.75 pR [mix SB RightSB 0.86] [mix SB RightSB 0.6] 1.12
 
 	create-glyph 'Con' 0xA76E : glyph-proc
 		include : MarkSet.capital
 		include : ConShape CAP 0.68
 		include : FlipAround Middle (CAP / 2)
+		include : ApparentTranslate (-0.066 * Width) 0
 
 	create-glyph 'con' 0xA76F : glyph-proc
 		include : MarkSet.p
 		include : ConShape (XH - Descender) 0.68
 		include : ApparentTranslate 0 Descender
 		include : FlipAround Middle ((XH + Descender) / 2)
+		include : ApparentTranslate (-0.066 * Width) 0
