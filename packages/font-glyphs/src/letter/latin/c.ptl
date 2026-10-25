@@ -1,4 +1,4 @@
-$$include '../../meta/macros.ptl'
+﻿$$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector MathSansSerif] from "@iosevka/glyph/relation"
@@ -346,7 +346,8 @@ glyph-block Letter-Latin-C : begin
 		define DiagCfg : object
 			DiagonalCrossbar        1
 			DiagonalCrossbarFalling (-1)
-		foreach { dsuf dval } [Object.entries DiagCfg] : do
+		foreach { dsuf dval0 } [Object.entries DiagCfg] : do
+			local dval : if (suffix == 'flatHook') dval0 (dval0 * 0.5)
 			create-glyph "cyrl/E.\(suffix)\(dsuf)" : glyph-proc
 				include : MarkSet.capital
 				include : CyrEShepe true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval
