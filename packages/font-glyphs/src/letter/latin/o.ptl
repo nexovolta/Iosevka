@@ -147,21 +147,34 @@ glyph-block Letter-Latin-O : begin
 		include [refer-glyph 'o'] AS_BASE ALSO_METRICS
 		include : OLoopAddon XH nothing nothing
 
-	create-glyph 'OBar' 0x19F : glyph-proc
-		include : MarkSet.capital
-		local stroke : AdviceStroke2 2 3 CAP
-		include : OShape CAP 0 SB RightSB stroke ArchDepthA ArchDepthB
-		include : intersection
-			OShapeOutline.NoOvershoot CAP 0 SB RightSB stroke ArchDepthA ArchDepthB
-			HBar.m (SB + OX) (RightSB - OX) (CAP * 0.5) stroke
+	define OBarConfig : object
+		standard                0
+		diagonalCrossbar        1
+		diagonalCrossbarFalling (-1)
 
-	create-glyph 'oBar' 0x275 : glyph-proc
-		include : MarkSet.e
-		local stroke : AdviceStroke2 2 3 XH
-		include : OShape XH 0 SB RightSB stroke nothing nothing
-		include : intersection
-			OShapeOutline.NoOvershoot XH 0 SB RightSB stroke nothing nothing
-			HBar.m (SB + OX) (RightSB - OX) (XH * 0.5) stroke
+	foreach { suffix diag } [Object.entries OBarConfig] : do
+		create-glyph "OBar.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			local stroke : AdviceStroke2 2 3 CAP
+			include : OShape CAP 0 SB RightSB stroke ArchDepthA ArchDepthB
+			include : intersection
+				OShapeOutline.NoOvershoot CAP 0 SB RightSB stroke ArchDepthA ArchDepthB
+				if diag
+					DiagonalHBar (SB + OX) (RightSB - OX) (CAP * 0.5) (diag * 0.16 * CAP) stroke
+					HBar.m (SB + OX) (RightSB - OX) (CAP * 0.5) stroke
+
+		create-glyph "oBar.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			local stroke : AdviceStroke2 2 3 XH
+			include : OShape XH 0 SB RightSB stroke nothing nothing
+			include : intersection
+				OShapeOutline.NoOvershoot XH 0 SB RightSB stroke nothing nothing
+				if diag
+					DiagonalHBar (SB + OX) (RightSB - OX) (XH * 0.5) (diag * 0.16 * XH) stroke
+					HBar.m (SB + OX) (RightSB - OX) (XH * 0.5) stroke
+
+	select-variant 'OBar' 0x19F
+	select-variant 'oBar' 0x275 (follow -- 'OBar')
 
 	alias 'grek/ThetaSymbol' 0x3F4 'OBar'
 

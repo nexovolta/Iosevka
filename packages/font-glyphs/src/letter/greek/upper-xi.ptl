@@ -15,8 +15,10 @@ glyph-block Letter-Greek-Upper-Xi : begin
 		motionSerifed    { true  false false true  false false }
 		topBottomSerifed { true  true  true  true  false false }
 		fullSerifed      { true  true  true  true  true  true  }
+		diagonalCrossbar        { false false false false false false 1 }
+		diagonalCrossbarFalling { false false false false false false (-1) }
 
-	foreach { suffix { serifTL serifTR serifBL serifBR serifML serifMR } } [Object.entries XiConfig] : do
+	foreach { suffix { serifTL serifTR serifBL serifBR serifML serifMR diag } } [Object.entries XiConfig] : do
 		create-glyph "grek/Xi.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local xMidLeft  : mix SB RightSB 0.125
@@ -24,7 +26,9 @@ glyph-block Letter-Greek-Upper-Xi : begin
 			local yBar : EFMidBarPosY CAP 0
 			include : HBar.t (SB + OX) (RightSB - OX) CAP
 			include : HBar.b (SB + OX) (RightSB - OX) 0
-			include : HBar.m xMidLeft xMidRight yBar
+			include : if diag
+				DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
+				HBar.m xMidLeft xMidRight yBar
 			local { jutTop jutBot jutMid } : EFVJutLength CAP 0
 			if serifTL : include : VSerif.dl (SB      + OX) CAP  jutTop
 			if serifTR : include : VSerif.dr (RightSB - OX) CAP  jutTop

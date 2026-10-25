@@ -34,12 +34,15 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : slabType
 		local-parameter : fTailed  -- false
 		local-parameter : stroke   -- df.mvs
+		local-parameter : diag     -- 0
 
 		include : tagged 'strokeL' : VBar.l df.leftSB 0 top stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar df.rightSB 0 top stroke
 			VBar.r             df.rightSB 0 top stroke
-		include : tagged 'crossbar' : HBar.m (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] stroke
+		include : tagged 'crossbar' : if diag
+			DiagonalHBar (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] (diag * 0.16 * top) stroke
+			HBar.m (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] stroke
 
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
@@ -210,6 +213,8 @@ glyph-block Letter-Latin-Upper-H : begin
 				bilateralMotionSerifed      SLAB-BILATERAL-MOTION
 		object
 			serifedExceptBottomRight { false SLAB-TAILED }
+			diagonalCrossbar        { false SLAB-NONE 1 }
+			diagonalCrossbarFalling { false SLAB-NONE (-1) }
 
 	define EnGheGheConfig : object
 		serifless       false
@@ -219,10 +224,10 @@ glyph-block Letter-Latin-Upper-H : begin
 		roundedSerifless false
 		roundedSerifed   true
 
-	foreach { suffix { fTailed slabType } } [Object.entries HConfig] : do
+	foreach { suffix { fTailed slabType diag } } [Object.entries HConfig] : do
 		create-glyph "H.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : HShape [DivFrame 1] CAP slabType fTailed
+			include : HShape [DivFrame 1] CAP slabType fTailed nothing diag
 
 		create-glyph "grek/Eta.\(suffix)" : glyph-proc
 			include [refer-glyph "H.\(suffix)"] AS_BASE ALSO_METRICS
@@ -234,7 +239,7 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		create-glyph "smcpH.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : HShape [DivFrame 1] XH slabType fTailed
+			include : HShape [DivFrame 1] XH slabType fTailed nothing diag
 
 		create-glyph "HLeftHalf.\(suffix)" : glyph-proc
 			include : MarkSet.capital

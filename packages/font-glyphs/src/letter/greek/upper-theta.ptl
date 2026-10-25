@@ -10,17 +10,21 @@ glyph-block Letter-Greek-Upper-Theta : begin
 	glyph-block-import Common-Derivatives
 
 	define ThetaConfig : object
-		serifless false
-		serifed   true
+		serifless               { false 0 }
+		serifed                 { true  0 }
+		diagonalCrossbar        { false 1 }
+		diagonalCrossbarFalling { false (-1) }
 
-	foreach { suffix fSerif } [pairs-of ThetaConfig] : begin
+	foreach { suffix { fSerif diag } } [Object.entries ThetaConfig] : begin
 		create-glyph "grek/Theta.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local xMidLeft  : SB + [HSwToV Stroke] - O * 3
 			local xMidRight : RightSB - [HSwToV Stroke] + O * 3
 			local yBar : 0.5 * CAP
 			include [refer-glyph 'O'] AS_BASE
-			include : HBar.m xMidLeft xMidRight yBar
+			include : if diag
+				DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
+				HBar.m xMidLeft xMidRight yBar
 			if fSerif : begin
 				define jutSw : Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))
 				define jut : Math.min VJut (Stroke + 2 * jutSw)

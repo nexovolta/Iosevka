@@ -52,8 +52,10 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 		serifed                { SLAB-ALL              true  true  }
 		bilateralMotionSerifed { SLAB-BILATERAL-MOTION false true  }
 		capped                 { SLAB-NONE             true  true  }
+		diagonalCrossbar        { SLAB-NONE             false false 1 }
+		diagonalCrossbarFalling { SLAB-NONE             false false (-1) }
 
-	foreach { suffix { slabType doST doRM } } [Object.entries GammaConfig] : do
+	foreach { suffix { slabType doST doRM diag } } [Object.entries GammaConfig] : do
 		create-glyph "grek/Gamma.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : GammaShape CAP 0 slabType
@@ -63,7 +65,9 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 			include : GammaShape CAP 0 slabType
 			local yBar : EFMidBarPosY CAP 0
 			local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] doRM
-			include : HBar.m xGammaBarLeft xMidRight yBar
+			include : if diag
+				DiagonalHBar xGammaBarLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
+				HBar.m xGammaBarLeft xMidRight yBar
 			if doRM : begin
 				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
 

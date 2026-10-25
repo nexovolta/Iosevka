@@ -269,7 +269,7 @@ glyph-block Letter-Latin-C : begin
 				adb -- [df.archDepthBOf SmallArchDepth Stroke]
 			include : lf.full
 
-		define [CyrEShepe fCapital fMidSerif df top ada adb] : glyph-proc
+		define [CyrEShepe fCapital fMidSerif df top ada adb _diag] : glyph-proc
 			local sw : df.adviceThinnerStroke2 2 3 top
 			local lf : CLetterForm df styTop styBot top 0
 				ada -- ada
@@ -278,7 +278,9 @@ glyph-block Letter-Latin-C : begin
 			include : lf.revFull
 
 			local xMidBarLeft : if (fMidSerif && !fCapital) df.middle : mix df.leftSB df.rightSB 0.35
-			include : HBar.m xMidBarLeft ((df.rightSB - OX) + O) (top / 2) sw
+			include : if _diag
+				DiagonalHBar xMidBarLeft ((df.rightSB - OX) + O) (top / 2) (_diag * 0.16 * top) sw
+				HBar.m xMidBarLeft ((df.rightSB - OX) + O) (top / 2) sw
 
 			if fMidSerif : begin
 				local { jutTop jutBot jutMid } : EFVJutLength top 0 0.5 sw
@@ -288,7 +290,7 @@ glyph-block Letter-Latin-C : begin
 					VSwToH : [if fCapital 0.800 0.625] * ((df.rightSB - [HSwToV sw]) - [if fCapital xMidBarLeft : df.leftSB + [HSwToV sw]])
 				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) (top / 2) jutMid swVJut
 
-		define [CyrYeShape fCapital fMidSerif df top ada adb] : glyph-proc
+		define [CyrYeShape fCapital fMidSerif df top ada adb _diag] : glyph-proc
 			local sw : df.adviceThinnerStroke2 2 3 top
 			local lf : CLetterForm df styTop styBot top 0
 				ada -- ada
@@ -297,7 +299,9 @@ glyph-block Letter-Latin-C : begin
 			include : lf.full
 
 			local xMidBarRight : if (fMidSerif && !fCapital) df.middle : mix df.rightSB df.leftSB 0.35
-			include : HBar.m ((df.leftSB + OX) - O) xMidBarRight (top / 2) sw
+			include : if _diag
+				DiagonalHBar ((df.leftSB + OX) - O) xMidBarRight (top / 2) (_diag * 0.16 * top) sw
+				HBar.m ((df.leftSB + OX) - O) xMidBarRight (top / 2) sw
 
 			if fMidSerif : begin
 				local { jutTop jutBot jutMid } : EFVJutLength top 0 0.5 sw
@@ -338,6 +342,25 @@ glyph-block Letter-Latin-C : begin
 			include : MarkSet.e
 			set-base-anchor 'cvDecompose' 0 0
 			include : CyrYeShape false true [DivFrame 1] XH SmallArchDepthA SmallArchDepthB
+
+		define DiagCfg : object
+			DiagonalCrossbar        1
+			DiagonalCrossbarFalling (-1)
+		foreach { dsuf dval } [Object.entries DiagCfg] : do
+			create-glyph "cyrl/E.\(suffix)\(dsuf)" : glyph-proc
+				include : MarkSet.capital
+				include : CyrEShepe true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval
+			create-glyph "cyrl/e.\(suffix)\(dsuf)" : glyph-proc
+				include : MarkSet.e
+				set-base-anchor 'cvDecompose' 0 0
+				include : CyrEShepe false false [DivFrame 1] XH SmallArchDepthA SmallArchDepthB dval
+			create-glyph "cyrl/YeUkrainian.\(suffix)\(dsuf)" : glyph-proc
+				include : MarkSet.capital
+				include : CyrYeShape true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval
+			create-glyph "cyrl/yeUkrainian.\(suffix)\(dsuf)" : glyph-proc
+				include : MarkSet.e
+				set-base-anchor 'cvDecompose' 0 0
+				include : CyrYeShape false false [DivFrame 1] XH SmallArchDepthA SmallArchDepthB dval
 
 		create-glyph "C/descBase.\(suffix)" : glyph-proc
 			include : MarkSet.capital

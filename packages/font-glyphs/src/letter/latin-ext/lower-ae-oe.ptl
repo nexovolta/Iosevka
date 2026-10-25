@@ -143,7 +143,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define df : DivFrame para.advanceScaleMM 3
 		define { subDf shift } : SubDfAndShift 1 df OX
 
-		foreach { suffix { body revbody tailSlab } } [Object.entries SchwaConfig] : do
+		foreach { suffix { body revbody tailSlab diag } } [Object.entries SchwaConfig] : do
 			create-glyph "ae/e.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -154,6 +154,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						ada    -- subDf.smallArchDepthA
 						adb    -- subDf.smallArchDepthB
 						styBot -- tailSlab
+						diag   -- diag
 
 			create-glyph "aInve/inve.\(suffix)" : glyph-proc
 				set-width 0
@@ -166,6 +167,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						adb    -- subDf.smallArchDepthB
 						styBot -- tailSlab
 						turned -- true
+						diag   -- diag
 
 	do "u subglyphs"
 		glyph-block-import Letter-Shared-Shapes : uBowl

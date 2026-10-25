@@ -17,14 +17,16 @@ glyph-block Letter-Latin-Upper-F : begin
 	define xFBarLeft     : [mix 0     SB      kSB] - 0
 	define xRevFBarRight : [mix Width RightSB kSB] + 0
 
-	define [FShape top serifLT serifLB serifRT serifRM _stroke _jutTop] : glyph-proc
+	define [FShape top serifLT serifLB serifRT serifRM _stroke _jutTop _diag] : glyph-proc
 		local stroke : fallback _stroke Stroke
 		local xMidBarRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] serifRT
 		local barPos : EFMidBarPosY top 0
 
 		include : VBar.l xFBarLeft 0 top stroke
 		include : HBar.t (xFBarLeft - O) RightSB top stroke
-		include : tagged 'crossBar' : HBar.m (xFBarLeft - O) xMidBarRight barPos stroke
+		include : tagged 'crossBar' : if _diag
+			DiagonalHBar (xFBarLeft - O) xMidBarRight barPos (_diag * 0.16 * top) stroke
+			HBar.m (xFBarLeft - O) xMidBarRight barPos stroke
 
 		if serifLT : include : HSerif.lt xFBarLeft top SideJut stroke
 		if serifLB : include : tagged 'serifLB' : union
@@ -43,15 +45,17 @@ glyph-block Letter-Latin-Upper-F : begin
 		serifedCapped        { true  true  true  true  }
 		capped               { false false false true  }
 		topLeftSerifedCapped { true  false false true  }
+		diagonalCrossbar        { false false false false 1 }
+		diagonalCrossbarFalling { false false false false (-1) }
 
-	foreach { suffix { lt lb rt rm } } [Object.entries FConfig] : do
+	foreach { suffix { lt lb rt rm diag } } [Object.entries FConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP
 		define swXH  : AdviceStroke2 2 3 XH
 
 		create-glyph "F.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Below.VBar.l xFBarLeft swCap
-			include : FShape CAP lt lb rt rm swCap
+			include : FShape CAP lt lb rt rm swCap nothing diag
 
 		if [not rm] : create-glyph "currency/frenchFrancSign.\(suffix)" : glyph-proc
 			include [refer-glyph "F.\(suffix)"] AS_BASE ALSO_METRICS
@@ -79,7 +83,7 @@ glyph-block Letter-Latin-Upper-F : begin
 		create-glyph "smcpF.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.l xFBarLeft swXH
-			include : FShape XH lt lb rt rm swXH
+			include : FShape XH lt lb rt rm swXH nothing diag
 
 	select-variant 'F' 'F'
 	link-reduced-variant 'F/sansSerif' 'F' MathSansSerif

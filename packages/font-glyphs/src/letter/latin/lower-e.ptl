@@ -66,17 +66,21 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : turned   -- false
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
+		local-parameter : diag     -- 0
 
 		local tailSlab : if turned styTop styBot
 		local cw : turned && (tailSlab != nothing)
 
 		local yBarBottom : [mix 0 top (DesignParameters.eBarPos + pyBarAdj)] - stroke / 2
 
-		include : HBar.b ((df.leftSB + OX) + stroke / 2 + bbd) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
+		local rr : diag * 0.08 * top
+		include : if diag
+			DiagonalHBar (df.leftSB + stroke + bbd) (df.rightSB - OX) (yBarBottom + stroke / 2) (2 * rr) stroke
+			HBar.b ((df.leftSB + OX) + stroke / 2 + bbd) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
 		local path : include : dispiro
 			widths.lhs stroke
-			flat (df.rightSB - OX) yBarBottom [heading Upward]
-			curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + TINY)]
+			flat (df.rightSB - OX) (yBarBottom + rr) [heading Upward]
+			curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + TINY)]
 			Arch.lhs top (sw -- stroke)
 			flatside.ld df.leftSB 0 top ada adb
 			SmallESerifedTerminalShape df top stroke hook tailSlab cw
@@ -99,17 +103,21 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : turned   -- false
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
+		local-parameter : diag     -- 0
 
 		local tailSlab : if turned styTop styBot
 		local ccw : turned && (tailSlab != nothing)
 
 		local yBarBottom : [mix 0 top (DesignParameters.eBarPos + pyBarAdj)] - stroke / 2
 
-		include : HBar.b ((df.leftSB + OX) + stroke / 2) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
+		local rr : diag * 0.08 * top
+		include : if diag
+			DiagonalHBar (df.leftSB + OX) (df.rightSB - stroke) (yBarBottom + stroke / 2) (2 * rr) stroke
+			HBar.b ((df.leftSB + OX) + stroke / 2) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
 		include : dispiro
 			widths.rhs stroke
-			flat (df.leftSB + OX) yBarBottom [heading Upward]
-			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom + TINY)]
+			flat (df.leftSB + OX) (yBarBottom - rr) [heading Upward]
+			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom - rr + TINY)]
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
 			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw
@@ -283,6 +291,10 @@ glyph-block Letter-Latin-Lower-E : begin
 		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
 		flatCrossbarFlatHook { SmallEShape        RevSmallEShape        SLAB-FLAT-HOOK }
 		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
+		diagonalCrossbar            { SmallEShape RevSmallEShape SLAB-NONE      1 }
+		diagonalCrossbarFalling     { SmallEShape RevSmallEShape SLAB-NONE      (-1) }
+		diagonalCrossbarFlatHook        { SmallEShape RevSmallEShape SLAB-FLAT-HOOK 1 }
+		diagonalCrossbarFallingFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK (-1) }
 
 	glyph-block-export SchwaConfig
 	define SchwaConfig : object
@@ -292,8 +304,14 @@ glyph-block Letter-Latin-Lower-E : begin
 		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
 		roundedSerifed       { SmallERoundedShape RevSmallERoundedShape SLAB-CLASSICAL }
 		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
+		diagonalCrossbar { SmallEShape RevSmallEShape SLAB-NONE 1 }
+		diagonalCrossbarFalling { SmallEShape RevSmallEShape SLAB-NONE (-1) }
+		diagonalCrossbarSerifed { SmallEShape RevSmallEShape SLAB-CLASSICAL 1 }
+		diagonalCrossbarFallingSerifed { SmallEShape RevSmallEShape SLAB-CLASSICAL (-1) }
+		diagonalCrossbarFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK 1 }
+		diagonalCrossbarFallingFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK (-1) }
 
-	foreach { suffix { Body RevBody tailSlab } } [Object.entries SmallEConfig] : do
+	foreach { suffix { Body RevBody tailSlab diag } } [Object.entries SmallEConfig] : do
 		create-glyph "e.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : Body [DivFrame 1] XH
@@ -301,6 +319,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- SmallArchDepthA
 				adb    -- SmallArchDepthB
 				styBot -- tailSlab
+				diag   -- diag
 
 		create-glyph "eNotch.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -309,6 +328,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- SmallArchDepthA
 				adb    -- SmallArchDepthB
 				styBot -- tailSlab
+				diag   -- diag
 			local sw : AdviceStroke 4
 			local ry : Math.min (lastKnot.y - sw) [mix 0 XH 0.08]
 			local rx : Math.min ry
@@ -418,7 +438,7 @@ glyph-block Letter-Latin-Lower-E : begin
 
 	define rhoticDf : DivFrame para.advanceScaleM 1
 
-	foreach { suffix { Body RevBody terminalSlab } } [Object.entries SchwaConfig] : do
+	foreach { suffix { Body RevBody terminalSlab diag } } [Object.entries SchwaConfig] : do
 
 		DefineSelectorGlyph "Schwa" suffix [DivFrame 1] 'capital'
 		DefineSelectorGlyph "schwa" suffix [DivFrame 1] 'e'
@@ -433,6 +453,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- ArchDepthA
 				adb    -- ArchDepthB
 				turned -- true
+				diag   -- diag
 				styTop -- terminalSlab
 
 		create-glyph "schwa.\(suffix)" : glyph-proc
@@ -443,6 +464,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- SmallArchDepthA
 				adb    -- SmallArchDepthB
 				turned -- true
+				diag   -- diag
 				styTop -- terminalSlab
 
 		create-glyph "schwaRhoticHook.\(suffix)" : glyph-proc
@@ -456,6 +478,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
 				adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
 				turned -- true
+				diag   -- diag
 				styTop -- terminalSlab
 			include : RhoticHookShape (subDf.rightSB - [HSwToV : 1.25 * markFine]) rhoticDf.width [mix XH 0 DesignParameters.eBarPos] [mix 0 XH 0.2]
 
@@ -470,6 +493,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				ada    -- [subDf.archDepthAOf SmallArchDepth stroke]
 				adb    -- [subDf.archDepthBOf SmallArchDepth stroke]
 				turned -- true
+				diag   -- diag
 				styTop -- terminalSlab
 			include : let [fine : Math.min stroke : rhoticDf.adviceStroke 3] : RetroflexHook.r
 				x       -- [mix [Math.max RightSB : subDf.rightSB + [HSwToV : RetroflexHook.Sw fine]] rhoticDf.width 0.5]

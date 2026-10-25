@@ -407,6 +407,16 @@ glyph-block CommonShapes : begin
 		local s : fallback _s Stroke
 		return : HCrossBar (xl + 0 * s * TanSlope) (xr + 0 * s * TanSlope) (y + 0.5 * s) s
 
+	glyph-block-export DiagonalHBar
+	define [DiagonalHBar xl xr y rise s] : begin
+		local slope : rise / (xr - xl)
+		local h : s * [Math.sqrt : 1 + slope * slope]
+		return : spiro-outline
+			corner xl (y - rise / 2 - h / 2)
+			corner xl (y - rise / 2 + h / 2)
+			corner xr (y + rise / 2 + h / 2)
+			corner xr (y + rise / 2 - h / 2)
+
 	glyph-block-export FlatSlashShape
 	define [FlatSlashShape middlex middle fine kx ky] : glyph-proc
 		include : dispiro
