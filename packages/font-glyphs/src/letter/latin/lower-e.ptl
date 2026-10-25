@@ -79,8 +79,8 @@ glyph-block Letter-Latin-Lower-E : begin
 			HBar.b ((df.leftSB + OX) + stroke / 2 + bbd) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
 		local path : include : dispiro
 			widths.lhs stroke
-			flat (df.rightSB - OX) (yBarBottom + rr) [heading Upward]
-			curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + TINY)]
+			flat (df.rightSB - OX) (yBarBottom + rr + [if diag (stroke / 2) 0]) [heading Upward]
+			curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + [if diag (stroke / 2) 0] + TINY)]
 			Arch.lhs top (sw -- stroke)
 			flatside.ld df.leftSB 0 top ada adb
 			SmallESerifedTerminalShape df top stroke hook tailSlab cw
@@ -116,8 +116,8 @@ glyph-block Letter-Latin-Lower-E : begin
 			HBar.b ((df.leftSB + OX) + stroke / 2) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
 		include : dispiro
 			widths.rhs stroke
-			flat (df.leftSB + OX) (yBarBottom - rr) [heading Upward]
-			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom - rr + TINY)]
+			flat (df.leftSB + OX) (yBarBottom - rr + [if diag (stroke / 2) 0]) [heading Upward]
+			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom - rr + [if diag (stroke / 2) 0] + TINY)]
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
 			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw
