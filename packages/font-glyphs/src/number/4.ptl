@@ -21,6 +21,9 @@ glyph-block Digits-Four : begin
 		define yVertBarTop : [mix yBarBot top : if open 0.5 1] - [if open (0.3 * sw) 0]
 		define xHBarTerminal : if crossing RightSB xVertBar
 		define xSlopeTop : xVertBar - [HSwToV : sw + [if open 0.06 0.25] * fine]
+		define diagRise : diag * 0.16 * top * (xHBarTerminal - SB - OX) / (RightSB - SB)
+		define diagSlope : diagRise / (xHBarTerminal - SB - OX)
+		define yJoin : Math.min yBarTop : yBarTop - 0.5 * diagRise + 0.5 * sw * ([Math.sqrt : 1 + diagSlope * diagSlope] - 1)
 
 		include : union
 			if open
@@ -32,15 +35,15 @@ glyph-block Digits-Four : begin
 					g2   xVertBar (@t = yVertBarTop) [widths.lhs.heading fine Upward]
 			difference
 				if diag
-					DiagonalHBar (SB + OX) xHBarTerminal (yBarTop - 0.5 * sw) (diag * 0.16 * top * (xHBarTerminal - SB - OX) / (RightSB - SB)) sw
+					DiagonalHBar (SB + OX) xHBarTerminal (yBarTop - 0.5 * sw) diagRise sw
 					HBar.t (SB + OX) xHBarTerminal yBarTop sw
 				Rect CAP 0 xVertBar (xVertBar + bbd)
 			intersection
-				Rect top yBarTop 0 [if open Width xVertBar]
+				Rect top yJoin 0 [if open Width xVertBar]
 				dispiro
 					widths.rhs fine
-					flat (SB + OX) yBarTop
-					curl [mix (SB + OX) xSlopeTop 2] [mix yBarTop top 2]
+					flat (SB + OX) yJoin
+					curl [mix (SB + OX) xSlopeTop 2] [mix yJoin top 2]
 
 		if bbd : begin
 			include : VBar.r (xVertBar + bbd) 0 yVertBarTop swVBar
@@ -64,12 +67,15 @@ glyph-block Digits-Four : begin
 		define xVertBar : mix SB RightSB : if crossing 0.825 0.9125
 		define yVertBarTop : mix yBarBot top 0.75
 		define xHBarTerminal : if crossing RightSB xVertBar
+		define diagRise : diag * 0.16 * CAP * (xHBarTerminal - SB) / (RightSB - SB)
+		define diagSlope : diagRise / (xHBarTerminal - SB)
+		define yJoin : Math.min yBarTop : yBarTop - 0.5 * diagRise + 0.5 * Stroke * ([Math.sqrt : 1 + diagSlope * diagSlope] - 1)
 
 		include : if diag
-			DiagonalHBar SB xHBarTerminal (yBarTop - 0.5 * Stroke) (diag * 0.16 * CAP * (xHBarTerminal - SB) / (RightSB - SB)) Stroke
+			DiagonalHBar SB xHBarTerminal (yBarTop - 0.5 * Stroke) diagRise Stroke
 			HBar.t SB xHBarTerminal yBarTop
 		include : VBar.r xVertBar 0 yVertBarTop swVBar
-		include : VBar.l SB yBarTop top
+		include : VBar.l SB yJoin top
 		if slab : begin
 			include : HSerif.rb (xVertBar - [HSwToV : 0.5 * swVBar]) 0 Jut
 			include : HSerif.lb (xVertBar - [HSwToV : 0.5 * swVBar]) 0 MidJutSide

@@ -47,12 +47,17 @@ glyph-block Letter-Latin-Upper-G : begin
 		local-parameter : fHookBot -- false
 
 		local yBarTop : [mix 0 top pyBar] + HalfStroke
+		# The top edge of the bar meets the top-left corner of the stem, and anything of the bar above the stem top is cut flat
 		define [DiagBar xr dir] : begin
-			local rise : dir * 0.16 * top * (xr - Middle) / (RightSB - SB)
-			local slope : rise / (xr - Middle)
+			local slope : dir * 0.16 * top / (RightSB - SB)
 			local h : Stroke * [Math.sqrt : 1 + slope * slope]
-			local yMid : yBarTop - h / 2 - slope * (RightSB - (Middle + xr) / 2)
-			return : DiagonalHBar Middle xr yMid rise Stroke
+			local xStemL : RightSB - [HSwToV Stroke]
+			local yMid : yBarTop + slope * ((Middle + xr) / 2 - xStemL) - h / 2
+			local bar : DiagonalHBar Middle xr yMid (slope * (xr - Middle)) Stroke
+			# A bar ending at the stem is cut flat above the stem corner; a crossing bar keeps its slope
+			if (xr > RightSB) : return bar
+			return : difference bar
+				Rect (yBarTop + top) yBarTop xStemL (Width + Stroke)
 		local hook : Math.min
 			Math.max AHook : Hook * (top / CAP)
 			mix Stroke (top - yBarTop) 0.554
@@ -91,7 +96,7 @@ glyph-block Letter-Latin-Upper-G : begin
 				flat RightSB [Math.min rise : yBarTop - TINY - [HSwToV : Math.abs : TanSlope * Stroke]]
 				curl RightSB yBarTop [heading Upward]
 
-		include : union
+		local body : union
 			dispiro.apply null knots
 			match slabType
 				[Just SLAB-CLASSICAL] : ArcStartSerif.R       RightSB top Stroke hook
@@ -111,6 +116,16 @@ glyph-block Letter-Latin-Upper-G : begin
 					VBar.r RightSB ([Math.min ada : yBarTop - TINY] + 0) rise coFine
 				[Just BODY-TOOTHLESS-CORNER] : VBar.r RightSB rise yBarTop
 				__ : no-shape
+
+		local xsMask : RightSB - [HSwToV Stroke]
+		local slMask : 0.16 * top / (RightSB - SB)
+		local nubMask : spiro-outline
+			corner xsMask yBarTop
+			corner (Width + Stroke) (yBarTop - slMask * (Width + Stroke - xsMask))
+			corner (Width + Stroke) (yBarTop + Stroke)
+			corner xsMask (yBarTop + Stroke)
+		# The stem corner would poke above a falling crossing bar
+		include : if (crossbarType == CROSSBAR-DIAG-CAPPED-F) [difference body nubMask] body
 
 		if fHookTop : begin
 			include : TopHook.toRight.arcStart RightSB top hook

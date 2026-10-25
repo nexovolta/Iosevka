@@ -172,16 +172,16 @@ glyph-block Symbol-Punctuation-Small : begin
 			local df : include : DivFrame para.advanceScaleSp
 			include : [RevCommaShape kDotRadius overshoot].(suffix) df.middle 0
 
-	select-variant 'comma' ',' (follow -- 'punctuationDot')
-	select-variant 'revComma' 0x2E41 (follow -- 'punctuationDot')
+	select-variant 'comma' ',' (follow -- 'punctuationComma')
+	select-variant 'revComma' 0x2E41 (follow -- 'punctuationComma')
 
-	select-variant 'comma/asDiacritic' (follow -- 'diacriticDot')
-	select-variant 'revComma/asDiacritic' (follow -- 'diacriticDot')
+	select-variant 'comma/asDiacritic' (follow -- 'diacriticComma')
+	select-variant 'revComma/asDiacritic' (follow -- 'diacriticComma')
 
 	turned "turnComma.round"  null "comma.round"  [DivFrame para.advanceScaleI].middle PeriodRadius
 	turned "turnComma.square" null "comma.square" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
 	turned "turnComma.diamond" null "comma.diamond" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
-	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationDot')
+	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationComma')
 
 	derive-composites 'raisedPeriod.round'  null 'period.round'  [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedPeriod.square' null 'period.square' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
@@ -190,7 +190,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	derive-composites 'raisedComma.square'  null 'comma.square'  [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedComma.diamond' null 'comma.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	select-variant 'raisedPeriod' 0x2E33 (follow -- 'punctuationDot')
-	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationDot')
+	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationComma')
 
 	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 		create-glyph "colon.\(suffix)" : glyph-proc
