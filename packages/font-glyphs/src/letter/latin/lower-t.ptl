@@ -15,6 +15,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook PalatalHook
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -340,6 +341,28 @@ glyph-block Letter-Latin-Lower-T : begin
 			include : df.markSet.bp
 			include : Style.Retroflex df sym top Descender
 
+		create-glyph "tHStretched.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.bp
+			local tDf : DivFrame (0.5 * df.adws) 2
+			local hDf : DivFrame (0.5 * df.adws) 2
+			local shift : df.width - hDf.width
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
+			include : Style.Retroflex tDf SYM-BALANCED top Descender
+			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
+			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
+
+		create-glyph "tHReversed.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.b
+			local tDf : DivFrame (0.5 * df.adws) 2
+			local hDf : DivFrame (0.5 * df.adws) 2
+			local shift : df.width - hDf.width
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
+			include : with-transform [FlipAround tDf.middle 0 (-1) 1] : Style.Body tDf SYM-BALANCED top 0
+			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
+			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
+
 		if (!fShortNeck) : create-glyph "tHookTopRTail.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.bp
@@ -430,6 +453,8 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tHookTop'      0x1AD
 	select-variant 'tRTail'        0x288
 	select-variant 'tHookTopRTail' 0x1DF09
+	select-variant 'tHStretched'   0x1DF63 (follow -- 't')
+	select-variant 'tHReversed'    0x1DF64 (follow -- 't')
 
 	CreateTurnedLetter 'turnt' 0x287 't' HalfAdvance (XH / 2)
 

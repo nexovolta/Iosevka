@@ -55,6 +55,18 @@ glyph-block Letter-Latin-Lower-H : begin
 			right  -- RightSB
 			bottom -- bottom
 
+	# Plain h on a sub-frame, used by the Initial Teaching Alphabet -h digraphs
+	glyph-block-export HDigraphBody
+	define [HDigraphBody] : with-params [dfH sw] : glyph-proc
+		include : VBar.l dfH.leftSB 0 Ascender sw
+		include : nShoulder.shape
+			left   -- (dfH.leftSB + [HSwToV sw])
+			right  -- dfH.rightSB
+			stroke -- sw
+			fine   -- (ShoulderFine * (sw / Stroke))
+			ada    -- dfH.smallArchDepthA
+			adb    -- dfH.smallArchDepthB
+
 	define HConfig : SuffixCfg.weave
 		object # hump
 			""        false

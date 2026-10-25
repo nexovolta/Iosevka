@@ -14,6 +14,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape EarlessRoundedSingleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
 	glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody
 
 	define FORM-CURLY                      0
 	define FORM-STRAIGHT                   1
@@ -622,6 +623,36 @@ glyph-block Letter-Latin-W : begin
 			include [refer-glyph "W.\(suffix)"] AS_BASE ALSO_METRICS
 			include : HOverlayBar [mix df.leftSB 0 0.7] [mix df.rightSB df.width 0.7] [mix 0 CAP 0.60]
 			include : HOverlayBar [mix df.leftSB 0 0.7] [mix df.rightSB df.width 0.7] [mix 0 CAP 0.35]
+
+	# Initial Teaching Alphabet wh digraph. Always built from straight diagonals whatever w style is
+	# selected; the final diagonal runs up to the top of the h.
+	define [WhDiagonal xTop yTop xBot yBot hw] : spiro-outline
+		corner (xTop - 0.5 * hw) yTop
+		corner (xTop + 0.5 * hw) yTop
+		corner (xBot + 0.5 * hw) yBot
+		corner (xBot - 0.5 * hw) yBot
+
+	create-glyph 'latn/wh' 0x1DF65 : glyph-proc
+		local df : include : DivFrame 2.5 3
+		include : df.markSet.b
+		local hDf : DivFrame 1 2
+		local sw : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
+		local hsw : HSwToV sw
+		local shift : df.width - hDf.width
+		local xHStem : shift + hDf.leftSB
+		include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw
+		local midH : 0.72 * XH
+		local xL : df.leftSB + 0.5 * hsw
+		local xR : xHStem + 0.5 * hsw
+		local k : (xR - xL) / (XH + 2 * midH + Ascender)
+		local hw : sw * [Math.sqrt : 1 + k * k]
+		local xB1 : xL + k * XH
+		local xM : xB1 + k * midH
+		local xB2 : xM + k * midH
+		include : WhDiagonal xL XH xB1 0 hw
+		include : WhDiagonal xB1 0 xM midH hw
+		include : WhDiagonal xM midH xB2 0 hw
+		include : WhDiagonal xR Ascender xB2 0 hw
 
 	# VY
 	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
