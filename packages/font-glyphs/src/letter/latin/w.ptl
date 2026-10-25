@@ -633,10 +633,10 @@ glyph-block Letter-Latin-W : begin
 		corner (xBot - 0.5 * hw) yBot
 
 	create-glyph 'latn/wh' 0x1DF65 : glyph-proc
-		local df : include : DivFrame 2.5 3
+		local df : include : DivFrame [Math.min 2.5 (2 * para.advanceScaleM)] 3
 		include : df.markSet.b
-		local hDf : DivFrame 1 2
-		local sw : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
+		local hDf : DivFrame (0.5 * df.adws) 2
+		local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.6]
 		local hsw : HSwToV sw
 		local shift : df.width - hDf.width
 		local xHStem : shift + hDf.leftSB
@@ -650,7 +650,7 @@ glyph-block Letter-Latin-W : begin
 		local xM : xB1 + k * midH
 		local xB2 : xM + k * midH
 		include : WhDiagonal xL XH xB1 0 hw
-		include : WhDiagonal xB1 0 xM midH hw
+		include : WhDiagonal xM midH xB1 0 hw
 		include : WhDiagonal xM midH xB2 0 hw
 		include : WhDiagonal xR Ascender xB2 0 hw
 

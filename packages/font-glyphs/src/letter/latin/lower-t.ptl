@@ -347,7 +347,7 @@ glyph-block Letter-Latin-Lower-T : begin
 			local tDf : DivFrame (0.5 * df.adws) 2
 			local hDf : DivFrame (0.5 * df.adws) 2
 			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.6]
 			include : Style.Retroflex tDf SYM-BALANCED top Descender
 			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
 			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
@@ -358,8 +358,10 @@ glyph-block Letter-Latin-Lower-T : begin
 			local tDf : DivFrame (0.5 * df.adws) 2
 			local hDf : DivFrame (0.5 * df.adws) 2
 			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 2.5]
-			include : with-transform [FlipAround tDf.middle 0 (-1) 1] : Style.Body tDf SYM-BALANCED top 0
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.6]
+			include : new-glyph : composite-proc
+				Style.Body tDf SYM-BALANCED top 0
+				FlipAround tDf.middle 0 (-1) 1
 			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
 			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
 
