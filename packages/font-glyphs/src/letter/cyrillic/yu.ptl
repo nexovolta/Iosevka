@@ -90,46 +90,16 @@ glyph-block Letter-Cyrillic-Yu : begin
 		local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
 		return : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
 
-	# o with a sigma-like top bar reaching the stem on the right
-	define [OShapeWithBar df subDf sw xStemR] : glyph-proc
-		include : OShape XH 0 subDf.leftSB subDf.rightSB sw (SmallArchDepthA * 0.75 * df.adws) (SmallArchDepthB * 0.75 * df.adws)
-		include : HBar.t subDf.middle xStemR XH (0.88 * sw)
-
 	create-glyph 'latn/oi/base' : glyph-proc
 		define df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		local sw : df.adviceThinnerStroke 2 0.75
 		local subDf : OiSubDf df sw
-		include : OShapeWithBar df subDf sw df.rightSB
-		include : VBar.r df.rightSB 0 XH sw
+		include : OShape XH 0 subDf.leftSB subDf.rightSB sw (SmallArchDepthA * 0.75 * df.adws) (SmallArchDepthB * 0.75 * df.adws)
+		include : refer-glyph 'oi/i'
 		set-base-anchor 'above' (df.rightSB - [HSwToV : 0.5 * sw]) XH
 	CreateAccentedComposition 'latn/oi' 0x1DF5E 'latn/oi/base' 'tittleAbove'
 
-	create-glyph 'latn/ou' 0x1DF5F : glyph-proc
-		define df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-		local span : df.rightSB - df.leftSB
-		local sw : Math.min [df.adviceThinnerStroke 2 0.75] (0.15 * span)
-		local hsw : HSwToV sw
-		local ada : SmallArchDepthA * 0.75 * df.adws
-		local adb : SmallArchDepthB * 0.75 * df.adws
-		local gap : 0.08 * span
-		local wEach : 0.5 * (df.rightSB - df.leftSB - gap)
-		local xO : df.leftSB + wEach
-		local xU : xO + gap
-		include : OShape XH 0 df.leftSB xO sw ada adb
-		include : HBar.t [mix df.leftSB xO 0.5] (xU + hsw) XH (0.88 * sw)
-		include : uBowl.shape
-			top     -- XH
-			bottom  -- 0
-			left    -- xU
-			right   -- (df.rightSB - hsw)
-			stroke  -- sw
-			fine    -- (sw * CThin)
-			ada     -- ada
-			adb     -- adb
-			rightY0 -- (XH - [ArchDepthAClamped XH 0 ada adb] + O)
-		include : VBar.r df.rightSB 0 XH sw
 	create-glyph 'latn/lunateEe' 0x1DF5C : glyph-proc
 		define df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e

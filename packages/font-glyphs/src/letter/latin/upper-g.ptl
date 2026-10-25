@@ -22,6 +22,10 @@ glyph-block Letter-Latin-Upper-G : begin
 	define CROSSBAR-NONE           0
 	define CROSSBAR-HOOKED         1
 	define CROSSBAR-CAPPED         2
+	define CROSSBAR-DIAG-HOOKED    3
+	define CROSSBAR-DIAG-HOOKED-F  4
+	define CROSSBAR-DIAG-CAPPED    5
+	define CROSSBAR-DIAG-CAPPED-F  6
 
 	define SLAB-NONE               0
 	define SLAB-CLASSICAL          1
@@ -43,6 +47,12 @@ glyph-block Letter-Latin-Upper-G : begin
 		local-parameter : fHookBot -- false
 
 		local yBarTop : [mix 0 top pyBar] + HalfStroke
+		define [DiagBar xr dir] : begin
+			local rise : dir * 0.16 * top * (xr - Middle) / (RightSB - SB)
+			local slope : rise / (xr - Middle)
+			local h : Stroke * [Math.sqrt : 1 + slope * slope]
+			local yMid : yBarTop - h / 2 - slope * (RightSB - (Middle + xr) / 2)
+			return : DiagonalHBar Middle xr yMid rise Stroke
 		local hook : Math.min
 			Math.max AHook : Hook * (top / CAP)
 			mix Stroke (top - yBarTop) 0.554
@@ -90,6 +100,10 @@ glyph-block Letter-Latin-Upper-G : begin
 			match crossbarType
 				[Just CROSSBAR-HOOKED] : HBar.t Middle      RightSB              yBarTop
 				[Just CROSSBAR-CAPPED] : HBar.t Middle [mix RightSB Width 0.625] yBarTop
+				[Just CROSSBAR-DIAG-HOOKED]   : DiagBar RightSB 1
+				[Just CROSSBAR-DIAG-HOOKED-F] : DiagBar RightSB (-1)
+				[Just CROSSBAR-DIAG-CAPPED]   : DiagBar [mix RightSB Width 0.625] 1
+				[Just CROSSBAR-DIAG-CAPPED-F] : DiagBar [mix RightSB Width 0.625] (-1)
 				__ : no-shape
 			match bodyType
 				[Just BODY-TOOTHED] : union
@@ -122,6 +136,10 @@ glyph-block Letter-Latin-Upper-G : begin
 			hookless         CROSSBAR-NONE
 			hooked           CROSSBAR-HOOKED
 			capped           CROSSBAR-CAPPED
+			diagonalCrossbar              CROSSBAR-DIAG-HOOKED
+			diagonalCrossbarFalling       CROSSBAR-DIAG-HOOKED-F
+			diagonalCrossbarCapped        CROSSBAR-DIAG-CAPPED
+			diagonalCrossbarFallingCapped CROSSBAR-DIAG-CAPPED-F
 
 	foreach { suffix { { bodyType rise } slabType crossbarType } } [Object.entries GConfig] : begin
 		create-glyph "G.\(suffix)" : glyph-proc

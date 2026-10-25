@@ -12,7 +12,7 @@ glyph-block Digits-Four : begin
 	glyph-block-import Letter-Shared-Shapes : EngHook
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 
-	define [FourStdShape] : with-params [top open crossing [fine [AdviceStroke 3]] [sw Stroke] [bbd 0] [slab SLAB]] : glyph-proc
+	define [FourStdShape] : with-params [top open crossing [fine [AdviceStroke 3]] [sw Stroke] [bbd 0] [slab SLAB] [diag 0]] : glyph-proc
 		define yBarBot : Math.max ([mix 0 (top - sw) 0.25] - 0.125 * sw) [mix [if (!bbd && slab) Stroke 0] (top - sw) 0.1]
 		define yBarTop : yBarBot + sw
 		define swVBar : [AdviceStroke : if open 2.5 2.0] * (sw / Stroke)
@@ -31,7 +31,9 @@ glyph-block Digits-Four : begin
 					curl xVertBar [mix @b @t 0.8]    [heading Upward]
 					g2   xVertBar (@t = yVertBarTop) [widths.lhs.heading fine Upward]
 			difference
-				HBar.t (SB + OX) xHBarTerminal yBarTop sw
+				if diag
+					DiagonalHBar (SB + OX) xHBarTerminal (yBarTop - 0.5 * sw) (diag * 0.16 * top * (xHBarTerminal - SB - OX) / (RightSB - SB)) sw
+					HBar.t (SB + OX) xHBarTerminal yBarTop sw
 				Rect CAP 0 xVertBar (xVertBar + bbd)
 			intersection
 				Rect top yBarTop 0 [if open Width xVertBar]
@@ -50,10 +52,11 @@ glyph-block Digits-Four : begin
 
 		return : object yBarBot yBarTop swVBar xVertBar
 
-	define [FourClosedShape   top crossing slab] : FourStdShape top false crossing (slab -- slab)
-	define [FourSemiOpenShape top crossing slab] : FourStdShape top true  crossing (slab -- slab) (fine -- [AdviceStroke 2.75])
+	define [FourClosedShape   top crossing slab diag] : FourStdShape top false crossing (slab -- slab) (diag -- [fallback diag 0])
+	define [FourSemiOpenShape top crossing slab diag] : FourStdShape top true  crossing (slab -- slab) (diag -- [fallback diag 0]) (fine -- [AdviceStroke 2.75])
 
-	define [FourOpenShape top crossing slab] : glyph-proc
+	define [FourOpenShape top crossing slab _diag] : glyph-proc
+		local diag : fallback _diag 0
 		local yBarBot : Math.max ([mix 0 (top - Stroke) 0.4] - 0.2 * Stroke) [mix [if slab Stroke 0] (top - Stroke) 0.1]
 		local yBarTop : yBarBot + Stroke
 		local swVBar : AdviceStroke 2
@@ -62,7 +65,9 @@ glyph-block Digits-Four : begin
 		define yVertBarTop : mix yBarBot top 0.75
 		define xHBarTerminal : if crossing RightSB xVertBar
 
-		include : HBar.t SB xHBarTerminal yBarTop
+		include : if diag
+			DiagonalHBar SB xHBarTerminal (yBarTop - 0.5 * Stroke) (diag * 0.16 * CAP * (xHBarTerminal - SB) / (RightSB - SB)) Stroke
+			HBar.t SB xHBarTerminal yBarTop
 		include : VBar.r xVertBar 0 yVertBarTop swVBar
 		include : VBar.l SB yBarTop top
 		if slab : begin
@@ -82,27 +87,31 @@ glyph-block Digits-Four : begin
 		object # slab
 			"serifless" false
 			"serifed"   true
+		object # diagonal bar
+			""                        0
+			"diagonalCrossbar"        1
+			"diagonalCrossbarFalling" (-1)
 
-	foreach { suffix { body crossing slab } } [pairs-of FourConfig] : do
+	foreach { suffix { body crossing slab diag } } [pairs-of FourConfig] : do
 		create-glyph "four.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : body CAP crossing slab
+			include : body CAP crossing slab diag
 
 		create-glyph "four.onum.\(suffix)" : glyph-proc
 			include : OnumMarks.p
-			include : body CAP crossing slab
+			include : body CAP crossing slab diag
 			include : ShiftDown
 
 		if (!slab) : begin
 			create-glyph "Cuatrillo.\(suffix)" : glyph-proc
 				include : MarkSet.capDesc
-				define [object swVBar xVertBar yBarBot] : include : body CAP crossing slab
+				define [object swVBar xVertBar yBarBot] : include : body CAP crossing slab diag
 				include : EngHook xVertBar 0 Descender (sw -- swVBar)
 				set-base-anchor 'bottomRight' xVertBar yBarBot
 
 			create-glyph "cuatrillo.\(suffix)" : glyph-proc
 				include : MarkSet.p
-				define [object swVBar xVertBar yBarBot] : include : body XH crossing slab
+				define [object swVBar xVertBar yBarBot] : include : body XH crossing slab diag
 				include : EngHook xVertBar 0 Descender (sw -- swVBar)
 				set-base-anchor 'bottomRight' xVertBar yBarBot
 

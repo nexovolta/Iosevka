@@ -371,6 +371,22 @@ glyph-block Letter-Latin-Lower-I : begin
 			local ieSw : df.adviceThinnerStroke2 2 3 XH 0.75
 			include : Body   subDf XH 0 xMiddle ieSw
 			include : Serifs subDf XH 0 xMiddle ieSw
+
+		# the i of the oi digraph, joined to the o by a top bar
+		if (suffix === ieSuffix) : create-glyph "oi/i" : glyph-proc
+			local df : DivFrame para.advanceScaleM 3
+			local subI : df.slice 3 1
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			local xMiddle : xMiddleT subI
+			local oiSw : df.adviceThinnerStroke 2 0.75
+			local oiGap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * oiSw] + oiSw / 16
+			local oDf : DivFrame [Math.min ((df.width - oiGap) / Width) (0.75 * df.adws)] 2
+			local shift : df.width - subI.width
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				include : Body   subI XH 0 xMiddle oiSw
+				include : Serifs subI XH 0 xMiddle oiSw
+			include : HBar.t oDf.middle (xMiddle + shift) XH (0.88 * oiSw)
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
 			local kind : CasualKindOf Body
 			if kind : begin

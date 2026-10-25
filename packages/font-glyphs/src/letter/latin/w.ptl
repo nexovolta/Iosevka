@@ -660,7 +660,7 @@ glyph-block Letter-Latin-W : begin
 			eject-contour 'serifRT'
 
 	define [WhLayout] : begin
-		local df : DivFrame 2 3
+		local df : DivFrame [if (para.spacing == 0) 1 2] 3
 		local hDf : DivFrame (0.5 * df.adws) 2
 		local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
 		local shift : df.width - hDf.width
@@ -679,10 +679,9 @@ glyph-block Letter-Latin-W : begin
 	foreach { suffix { { implT hookRightImplT bodyType midHClass adwsUpper adwsLower } slabType } } [pairs-of WConfig] : do
 		create-glyph "latn/wh.\(suffix)" : glyph-proc
 			local L : WhLayout
-			local glyphScale : if (para.spacing == 0) 0.82 1
 			set-width L.df.width
 			include : L.df.markSet.b
-			include : with-transform [ScaleAround L.df.middle (Ascender / 2) glyphScale 1] : glyph-proc
+			include : glyph-proc
 				include : WhImpl implT hookRightImplT L.wDf XH bodyType slabType midHClass
 				include : refer-glyph 'latn/wh/h'
 

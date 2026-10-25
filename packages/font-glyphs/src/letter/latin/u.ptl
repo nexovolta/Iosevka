@@ -298,6 +298,28 @@ glyph-block Letter-Latin-U : begin
 			topRightMotionSerifed      USerifs.TopRightMotion
 			bilateralMotionSerifed     USerifs.BilateralMotionInnerRt
 
+	# The u of the ou digraph follows u, drawn in a narrower frame
+	define OuU : UShapeGroup (SmallArchDepthA * 0.75 * [DivFrame para.advanceScaleM 3].adws) (SmallArchDepthB * 0.75 * [DivFrame para.advanceScaleM 3].adws)
+	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT OuU] : do
+		create-glyph "latn/ou.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			local span : df.rightSB - df.leftSB
+			local sw : Math.min [df.adviceThinnerStroke 2 0.75] (0.15 * span)
+			local hsw : HSwToV sw
+			local ada : SmallArchDepthA * 0.75 * df.adws
+			local adb : SmallArchDepthB * 0.75 * df.adws
+			local gap : 0.08 * span
+			local xO : df.leftSB + 0.5 * (span - gap)
+			local xU : xO + gap
+			local uDf : DivFrame ((df.width - xU + df.sb) / Width) 2
+			local shift : df.width - uDf.width
+			include : OShape XH 0 df.leftSB xO sw ada adb
+			include : with-transform [ApparentTranslate shift 0] : glyph-proc
+				include : Base uDf XH sw false false cut
+				include : Slabs uDf XH sw
+			include : HBar.t [mix df.leftSB xO 0.5] (uDf.leftSB + shift + hsw) XH (0.88 * sw)
+
 	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT ULower] : do
 		local revBody : ReversedUBody ULower Base suffix
 		local revSlabs : ReversedUSerifs Slabs
@@ -464,6 +486,7 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'UReversed' 0x1DF7E
 
 	select-variant 'u' 'u'
+	select-variant 'latn/ou' 0x1DF5F (follow -- 'u')
 	link-reduced-variant 'u/sansSerif' 'u' MathSansSerif
 	select-variant 'u/descBase' (shapeFrom -- 'u')
 	select-variant 'uReversed' 0x1DF7F
