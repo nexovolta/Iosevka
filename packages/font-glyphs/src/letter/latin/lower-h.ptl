@@ -55,9 +55,21 @@ glyph-block Letter-Latin-Lower-H : begin
 			right  -- RightSB
 			bottom -- bottom
 
+	# Serif kits for the h on a sub-frame, selected through the same suffixes as h itself
+	define [HDigraphJut dfH] : Math.min Jut (0.3 * (dfH.rightSB - dfH.leftSB))
+	define [HDigraphLT dfH sw topLeft] : glyph-proc
+		if topLeft : include : tagged 'serifLT' : HSerif.lt dfH.leftSB Ascender [Math.min SideJut [HDigraphJut dfH]]
+	define [HDigraphSerifs dfH sw topLeft] : glyph-proc
+		include : HDigraphLT dfH sw topLeft
+		include : tagged 'serifLB' : HSerif.mb (dfH.leftSB + [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
+		include : tagged 'serifRB' : HSerif.mb (dfH.rightSB - [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
+	define [HDigraphMotionSerifs dfH sw topLeft] : glyph-proc
+		include : HDigraphLT dfH sw topLeft
+		include : tagged 'serifRB' : HSerif.rb dfH.rightSB 0 [Math.min SideJut [HDigraphJut dfH]]
+
 	# Plain h on a sub-frame, used by the Initial Teaching Alphabet -h digraphs
-	glyph-block-export HDigraphBody
-	define [HDigraphBody] : with-params [dfH sw] : glyph-proc
+	glyph-block-export HDigraphBody HDigraphConfig
+	define [HDigraphBody] : with-params [dfH sw [Serifs null] [topLeft true]] : glyph-proc
 		include : VBar.l dfH.leftSB 0 Ascender sw
 		include : nShoulder.shape
 			left   -- (dfH.leftSB + [HSwToV sw])
@@ -66,7 +78,20 @@ glyph-block Letter-Latin-Lower-H : begin
 			fine   -- (ShoulderFine * (sw / Stroke))
 			ada    -- dfH.smallArchDepthA
 			adb    -- dfH.smallArchDepthB
+		if Serifs : include : Serifs dfH sw topLeft
 
+	define HDigraphConfig : SuffixCfg.weave
+		object # hump
+			""        false
+			flatHump  true
+		object # tail
+			straight false
+			tailed   true
+		object # serifs
+			serifless      false
+			serifed        HDigraphSerifs
+			motionSerifed  HDigraphMotionSerifs
+			topLeftSerifed HDigraphLT
 	define HConfig : SuffixCfg.weave
 		object # hump
 			""        false

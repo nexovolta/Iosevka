@@ -14,7 +14,7 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape EarlessRoundedSingleArchSmallMShape
 	glyph-block-import Letter-Latin-Upper-M : MShape
 	glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
-	glyph-block-import Letter-Latin-Lower-H : HDigraphBody
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig
 
 	define FORM-CURLY                      0
 	define FORM-STRAIGHT                   1
@@ -632,27 +632,32 @@ glyph-block Letter-Latin-W : begin
 		corner (xBot + 0.5 * hw) yBot
 		corner (xBot - 0.5 * hw) yBot
 
-	create-glyph 'latn/wh' 0x1DF65 : glyph-proc
-		local df : include : DivFrame [Math.min 2.5 (2 * para.advanceScaleM)] 3
-		include : df.markSet.b
-		local hDf : DivFrame (0.5 * df.adws) 2
-		local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
-		local hsw : HSwToV sw
-		local shift : df.width - hDf.width
-		local xHStem : shift + hDf.leftSB
-		include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw
-		local midH : 0.72 * XH
-		local xL : df.leftSB + 0.5 * hsw
-		local xR : xHStem + 0.5 * hsw
-		local k : (xR - xL) / (XH + 2 * midH + Ascender)
-		local hw : sw * [Math.sqrt : 1 + k * k]
-		local xB1 : xL + k * XH
-		local xM : xB1 + k * midH
-		local xB2 : xM + k * midH
-		include : WhDiagonal xL XH xB1 0 hw
-		include : WhDiagonal xM midH xB1 0 hw
-		include : WhDiagonal xM midH xB2 0 hw
-		include : WhDiagonal xR Ascender xB2 0 hw
+	foreach { suffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+		create-glyph "latn/wh.\(suffix)" : glyph-proc
+			local df : include : DivFrame 2 3
+			include : df.markSet.b
+			local hDf : DivFrame (0.5 * df.adws) 2
+			local sw : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
+			local hsw : HSwToV sw
+			local shift : df.width - hDf.width
+			local xHStem : shift + hDf.leftSB
+			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf sw HSerifs false
+			local midH : 0.72 * XH
+			local xL : df.leftSB + 0.5 * hsw
+			local xR : xHStem + 0.5 * hsw
+			local k : (xR - xL) / (XH + 2 * midH + Ascender)
+			local hw : sw * [Math.sqrt : 1 + k * k]
+			local xB1 : xL + k * XH
+			local xM : xB1 + k * midH
+			local xB2 : xM + k * midH
+			include : WhDiagonal xL XH xB1 0 hw
+			include : WhDiagonal xM midH xB1 0 hw
+			include : WhDiagonal xM midH xB2 0 hw
+			include : WhDiagonal xR Ascender xB2 0 hw
+			if HSerifs : include : tagged 'serifLT' : HSerif.lt (xL - 0.5 * hw) XH [Math.min Jut (0.3 * (xB1 - xL))]
+			if HSerifs : include : tagged 'serifRT' : HSerif.rt (xM + 0.5 * hw) midH [Math.min Jut (0.3 * (xB1 - xL))]
+
+	select-variant 'latn/wh' 0x1DF65 (follow -- 'h')
 
 	# VY
 	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do

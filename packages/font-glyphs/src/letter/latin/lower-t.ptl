@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook PalatalHook
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
-	glyph-block-import Letter-Latin-Lower-H : HDigraphBody
+	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -341,40 +341,6 @@ glyph-block Letter-Latin-Lower-T : begin
 			include : df.markSet.bp
 			include : Style.Retroflex df sym top Descender
 
-		create-glyph "tHStretched.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
-			include : df.markSet.bp
-			local tDf : DivFrame (0.42 * df.adws) 2
-			local hDf : DivFrame (0.58 * df.adws) 2
-			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
-			include : Style.Retroflex tDf SYM-BALANCED top Descender
-			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
-			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
-
-		create-glyph "tHReversed.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
-			include : df.markSet.b
-			local tDf : DivFrame (0.42 * df.adws) 2
-			local hDf : DivFrame (0.58 * df.adws) 2
-			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
-			local xBarR : shift + hDf.leftSB + [HSwToV swH]
-			include : union
-				new-glyph : composite-proc
-					Style.Body tDf SYM-BALANCED top 0
-					FlipAround tDf.middle 0 (-0.8) 1
-				new-glyph : glyph-proc
-					include : spiro-outline
-						corner tDf.leftSB (ySmallTBarPos - Stroke)
-						corner xBarR (ySmallTBarPos - Stroke)
-						corner xBarR (ySmallTBarPos)
-						corner tDf.leftSB (ySmallTBarPos)
-				new-glyph : glyph-proc
-					include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
-
-		
-
 		if (!fShortNeck) : create-glyph "tHookTopRTail.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.bp
@@ -428,6 +394,39 @@ glyph-block Letter-Latin-Lower-T : begin
 				CurlyTail.n fine Descender (xRight - [HSwToV Stroke] - LongJut) df.rightSB Descender ([mix 0 Descender 0.5] + fine)
 
 
+	foreach { suffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+		create-glyph "tHStretched.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.bp
+			local tDf : DivFrame (0.42 * df.adws) 2
+			local hDf : DivFrame (0.58 * df.adws) 2
+			local shift : df.width - hDf.width
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
+			include : BentHook.Retroflex tDf SYM-BALANCED Ascender Descender
+			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH HSerifs true
+			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
+
+		create-glyph "tHReversed.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.b
+			local tDf : DivFrame (0.42 * df.adws) 2
+			local hDf : DivFrame (0.58 * df.adws) 2
+			local shift : df.width - hDf.width
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
+			local xBarR : shift + hDf.leftSB + [HSwToV swH]
+			include : union
+				new-glyph : composite-proc
+					BentHook.Body tDf SYM-BALANCED Ascender 0
+					FlipAround tDf.middle 0 (-0.8) 1
+				new-glyph : glyph-proc
+					include : spiro-outline
+						corner tDf.leftSB (ySmallTBarPos - Stroke)
+						corner xBarR (ySmallTBarPos - Stroke)
+						corner xBarR (ySmallTBarPos)
+						corner tDf.leftSB (ySmallTBarPos)
+				new-glyph : glyph-proc
+					include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH HSerifs true
+
 	select-variant 't' 't'
 	select-variant 't/pack75' (follow -- 't')
 	select-variant 't/pack80' (follow -- 't')
@@ -465,8 +464,8 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tHookTop'      0x1AD
 	select-variant 'tRTail'        0x288
 	select-variant 'tHookTopRTail' 0x1DF09
-	select-variant 'tHStretched'   0x1DF63 (follow -- 't')
-	select-variant 'tHReversed'    0x1DF64 (follow -- 't')
+	select-variant 'tHStretched'   0x1DF63 (follow -- 'h')
+	select-variant 'tHReversed'    0x1DF64 (follow -- 'h')
 
 	CreateTurnedLetter 'turnt' 0x287 't' HalfAdvance (XH / 2)
 
