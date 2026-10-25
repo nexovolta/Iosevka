@@ -344,10 +344,10 @@ glyph-block Letter-Latin-Lower-T : begin
 		create-glyph "tHStretched.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.bp
-			local tDf : DivFrame (0.5 * df.adws) 2
-			local hDf : DivFrame (0.5 * df.adws) 2
+			local tDf : DivFrame (0.42 * df.adws) 2
+			local hDf : DivFrame (0.58 * df.adws) 2
 			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.6]
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
 			include : Style.Retroflex tDf SYM-BALANCED top Descender
 			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
 			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
@@ -355,15 +355,25 @@ glyph-block Letter-Latin-Lower-T : begin
 		create-glyph "tHReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.b
-			local tDf : DivFrame (0.5 * df.adws) 2
-			local hDf : DivFrame (0.5 * df.adws) 2
+			local tDf : DivFrame (0.42 * df.adws) 2
+			local hDf : DivFrame (0.58 * df.adws) 2
 			local shift : df.width - hDf.width
-			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.6]
-			include : new-glyph : composite-proc
-				Style.Body tDf SYM-BALANCED top 0
-				FlipAround tDf.middle 0 (-1) 1
-			include : HCrossBar.top tDf.middle (shift + hDf.leftSB + [HSwToV swH]) ySmallTBarPos
-			include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
+			local swH : Math.min Stroke [hDf.adviceThinnerStroke 1.3]
+			local xBarR : shift + hDf.leftSB + [HSwToV swH]
+			include : union
+				new-glyph : composite-proc
+					Style.Body tDf SYM-BALANCED top 0
+					FlipAround tDf.middle 0 (-0.8) 1
+				new-glyph : glyph-proc
+					include : spiro-outline
+						corner tDf.leftSB (ySmallTBarPos - Stroke)
+						corner xBarR (ySmallTBarPos - Stroke)
+						corner xBarR (ySmallTBarPos)
+						corner tDf.leftSB (ySmallTBarPos)
+				new-glyph : glyph-proc
+					include : with-transform [ApparentTranslate shift 0] : HDigraphBody hDf swH
+
+		
 
 		if (!fShortNeck) : create-glyph "tHookTopRTail.\(suffix)" : glyph-proc
 			set-width df.width
