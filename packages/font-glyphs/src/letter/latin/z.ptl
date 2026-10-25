@@ -149,7 +149,14 @@ glyph-block Letter-Latin-Z : begin
 		include : tagged 'strokeTop' : HBar.t SB RightSB top
 		local fTrimDiag : mode != MODE-ZSWASH && mode != MODE-ZHOOK && mode != MODE-ZDESC
 		local diag : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (top - Stroke) [VSwToH Stroke]
-		include : tagged 'strokeMiddle' : if fTrimDiag [intersection [MaskAbove yTailDepth] diag] diag
+		define [TailBelow] : spiro-outline
+			g2.left.mid (RightSB - xHookDepth) O
+			g4 [mix (RightSB - xHookDepth) SB 0.55] (0.4 * yFootHeight)
+			curl (SB + 0.5 * xDiagWidth) (0.62 * yFootHeight)
+			corner SB (0.62 * yFootHeight)
+			corner SB (-top)
+			corner (RightSB - xHookDepth) (-top)
+		include : tagged 'strokeMiddle' : if fTrimDiag [difference diag [TailBelow]] diag
 		if (mode != MODE-ZSWASH) : include : VBar.l SB 0 yFootHeight [VSwToH xDiagWidth]
 
 		include : tagged 'strokeBottom' : match mode
