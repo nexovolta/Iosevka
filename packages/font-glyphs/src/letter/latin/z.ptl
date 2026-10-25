@@ -147,7 +147,11 @@ glyph-block Letter-Latin-Z : begin
 		define yTailDepth : Hook * 0.5
 
 		include : tagged 'strokeTop' : HBar.t SB RightSB top
-		include : tagged 'strokeMiddle' : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (top - Stroke) [VSwToH Stroke]
+		local diag : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (top - Stroke) [VSwToH Stroke] 0
+		local diagExt : dispiro
+			corner SB 0 [widths.rhs [VSwToH Stroke]]
+			corner RightSB (top - Stroke) [widths.lhs [VSwToH Stroke]]
+		include : tagged 'strokeMiddle' : if (mode == MODE-ZSWASH) diag [intersection [MaskAbove 0] diagExt]
 
 		include : tagged 'strokeBottom' : match mode
 			[Just MODE-ZDESC] : intersection
@@ -167,18 +171,18 @@ glyph-block Letter-Latin-Z : begin
 			([Just MODE-ZHOOK] || [Just MODE-ZSWASH]) : no-shape
 			__ : intersection
 				spiro-outline
-					corner (SB + 0.5 * xDiagWidth) 0
-					corner (SB + 0.5 * xDiagWidth) (-top)
+					corner SB 0
+					corner SB (-top)
 					corner (2 * Width) (-top)
 					corner (2 * Width) (+top)
-					corner RightSB top
+					corner RightSB (top - Stroke)
 				dispiro
 					flat (RightSB - OX) yHookDepth [widths.rhs.heading hookTerminalWidth Downward]
 					curl (RightSB - OX) (yHookDepth - yHookStraightDepth) [heading Downward]
 					arcvh
 					g2.left.mid (RightSB - xHookDepth) O [widths.rhs.heading Stroke Leftward]
 					g4 [mix (RightSB - xHookDepth) SB 0.55] (0.4 * yFootHeight)
-					curl (SB + 0.5 * xDiagWidth) (0.62 * yFootHeight)
+					curl (SB + 0.62 * yFootHeight * (RightSB - SB) / (top - Stroke)) (0.62 * yFootHeight)
 
 		if (mode != MODE-ZDESC) : begin
 			set-base-anchor "trailing" (RightSB - 0.55 * xHookDepth) 0
