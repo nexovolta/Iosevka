@@ -288,7 +288,7 @@ glyph-block Letter-Latin-C : begin
 					if fCapital Hook nothing
 				local swVJut : Math.min (VJutStroke * (sw / Stroke))
 					VSwToH : [if fCapital 0.800 0.625] * ((df.rightSB - [HSwToV sw]) - [if fCapital xMidBarLeft : df.leftSB + [HSwToV sw]])
-				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) (top / 2) jutMid swVJut
+				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) ((top / 2) - [if _diag (_diag * 0.08 * top) 0]) jutMid swVJut
 
 		define [CyrYeShape fCapital fMidSerif df top ada adb _diag] : glyph-proc
 			local sw : df.adviceThinnerStroke2 2 3 top
@@ -309,7 +309,7 @@ glyph-block Letter-Latin-C : begin
 					if fCapital Hook nothing
 				local swVJut : Math.min (VJutStroke * (sw / Stroke))
 					VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : df.rightSB - [HSwToV sw]] - (df.leftSB + [HSwToV sw]))
-				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) (top / 2) jutMid swVJut
+				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) ((top / 2) + [if _diag (_diag * 0.08 * top) 0]) jutMid swVJut
 
 		create-glyph "cyrl/E.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -358,6 +358,14 @@ glyph-block Letter-Latin-C : begin
 				include : MarkSet.e
 				set-base-anchor 'cvDecompose' 0 0
 				include : CyrEShepe false false [DivFrame 1] XH SmallArchDepthA SmallArchDepthB dval
+			create-glyph "cyrl/e.\(suffix)Capped\(dsuf)" : glyph-proc
+				include : MarkSet.e
+				set-base-anchor 'cvDecompose' 0 0
+				include : CyrEShepe false true [DivFrame 1] XH SmallArchDepthA SmallArchDepthB dval
+			create-glyph "cyrl/yeUkrainian.\(suffix)Capped\(dsuf)" : glyph-proc
+				include : MarkSet.e
+				set-base-anchor 'cvDecompose' 0 0
+				include : CyrYeShape false true [DivFrame 1] XH SmallArchDepthA SmallArchDepthB dval
 			create-glyph "cyrl/YeUkrainian.\(suffix)\(dsuf)" : glyph-proc
 				include : MarkSet.capital
 				include : CyrYeShape true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval

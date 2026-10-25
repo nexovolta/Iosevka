@@ -36,7 +36,8 @@ glyph-block Letter-Latin-Upper-F : begin
 		local { jutTop jutBot jutMid } : EFVJutLength top 0 nothing stroke _jutTop
 		local swVJut : VJutStroke * (stroke / Stroke)
 		if serifRT : include : VSerif.dr RightSB      top    jutTop swVJut
-		if serifRM : include : VSerif.mr xMidBarRight barPos jutMid swVJut
+		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0]
+		if serifRM : include : VSerif.mr xMidBarRight yMidEnd jutMid swVJut
 
 	define FConfig : object
 		serifless            { false false false false }
@@ -45,9 +46,18 @@ glyph-block Letter-Latin-Upper-F : begin
 		serifedCapped        { true  true  true  true  }
 		capped               { false false false true  }
 		topLeftSerifedCapped { true  false false true  }
-		diagonalCrossbar        { false false false false 1 }
+		diagonalCrossbar { false false false false 1 }
+		diagonalCrossbarTopLeftSerifed { true  false false false 1 }
+		diagonalCrossbarSerifed { true  true  true  false 1 }
+		diagonalCrossbarSerifedCapped { true  true  true  true 1 }
+		diagonalCrossbarCapped { false false false true 1 }
+		diagonalCrossbarTopLeftSerifedCapped { true  false false true 1 }
 		diagonalCrossbarFalling { false false false false (-1) }
-		diagonalCrossbarTopLeftSerifedCapped { true false false true 1 }
+		diagonalCrossbarFallingTopLeftSerifed { true  false false false (-1) }
+		diagonalCrossbarFallingSerifed { true  true  true  false (-1) }
+		diagonalCrossbarFallingSerifedCapped { true  true  true  true (-1) }
+		diagonalCrossbarFallingCapped { false false false true (-1) }
+		diagonalCrossbarFallingTopLeftSerifedCapped { true  false false true (-1) }
 
 	foreach { suffix { lt lb rt rm diag } } [Object.entries FConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP

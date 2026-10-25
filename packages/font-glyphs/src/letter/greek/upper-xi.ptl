@@ -15,9 +15,16 @@ glyph-block Letter-Greek-Upper-Xi : begin
 		motionSerifed    { true  false false true  false false }
 		topBottomSerifed { true  true  true  true  false false }
 		fullSerifed      { true  true  true  true  true  true  }
-		diagonalCrossbar        { false false false false false false 1 }
+		diagonalCrossbar { false false false false false false 1 }
+		diagonalCrossbarMiddleSerifed { false false false false true  true 1 }
+		diagonalCrossbarMotionSerifed { true  false false true  false false 1 }
+		diagonalCrossbarTopBottomSerifed { true  true  true  true  false false 1 }
+		diagonalCrossbarFullSerifed { true  true  true  true  true  true 1 }
 		diagonalCrossbarFalling { false false false false false false (-1) }
-		diagonalCrossbarMotionSerifed { true false false true false false 1 }
+		diagonalCrossbarFallingMiddleSerifed { false false false false true  true (-1) }
+		diagonalCrossbarFallingMotionSerifed { true  false false true  false false (-1) }
+		diagonalCrossbarFallingTopBottomSerifed { true  true  true  true  false false (-1) }
+		diagonalCrossbarFallingFullSerifed { true  true  true  true  true  true (-1) }
 
 	foreach { suffix { serifTL serifTR serifBL serifBR serifML serifMR diag } } [Object.entries XiConfig] : do
 		create-glyph "grek/Xi.\(suffix)" : glyph-proc
@@ -35,7 +42,8 @@ glyph-block Letter-Greek-Upper-Xi : begin
 			if serifTR : include : VSerif.dr (RightSB - OX) CAP  jutTop
 			if serifBL : include : VSerif.ul (SB      + OX) 0    jutBot
 			if serifBR : include : VSerif.ur (RightSB - OX) 0    jutBot
-			if serifML : include : VSerif.ml xMidLeft       yBar jutMid
-			if serifMR : include : VSerif.mr xMidRight      yBar jutMid
+			local yRise : if diag (diag * 0.08 * CAP) 0
+			if serifML : include : VSerif.ml xMidLeft       (yBar - yRise) jutMid
+			if serifMR : include : VSerif.mr xMidRight      (yBar + yRise) jutMid
 
 	select-variant 'grek/Xi' 0x39E

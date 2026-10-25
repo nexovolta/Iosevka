@@ -52,9 +52,18 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 		serifed                { SLAB-ALL              true  true  }
 		bilateralMotionSerifed { SLAB-BILATERAL-MOTION false true  }
 		capped                 { SLAB-NONE             true  true  }
-		diagonalCrossbar        { SLAB-NONE             false false 1 }
-		diagonalCrossbarFalling { SLAB-NONE             false false (-1) }
+		diagonalCrossbar { SLAB-NONE             false false 1 }
+		diagonalCrossbarTopRightSerifed { SLAB-TR               true  true 1 }
+		diagonalCrossbarBottomSerifed { SLAB-BOTTOM           false false 1 }
+		diagonalCrossbarSerifed { SLAB-ALL              true  true 1 }
 		diagonalCrossbarBilateralMotionSerifed { SLAB-BILATERAL-MOTION false true 1 }
+		diagonalCrossbarCapped { SLAB-NONE             true  true 1 }
+		diagonalCrossbarFalling { SLAB-NONE             false false (-1) }
+		diagonalCrossbarFallingTopRightSerifed { SLAB-TR               true  true (-1) }
+		diagonalCrossbarFallingBottomSerifed { SLAB-BOTTOM           false false (-1) }
+		diagonalCrossbarFallingSerifed { SLAB-ALL              true  true (-1) }
+		diagonalCrossbarFallingBilateralMotionSerifed { SLAB-BILATERAL-MOTION false true (-1) }
+		diagonalCrossbarFallingCapped { SLAB-NONE             true  true (-1) }
 
 	foreach { suffix { slabType doST doRM diag } } [Object.entries GammaConfig] : do
 		create-glyph "grek/Gamma.\(suffix)" : glyph-proc
@@ -70,7 +79,7 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				DiagonalHBar xGammaBarLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
 				HBar.m xGammaBarLeft xMidRight yBar
 			if doRM : begin
-				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
+				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke + [if diag (diag * 0.08 * CAP) 0]) [mix Stroke VJut 0.5]
 
 		create-glyph "rCap.\(suffix)" : glyph-proc
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS
