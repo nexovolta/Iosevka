@@ -147,7 +147,9 @@ glyph-block Letter-Latin-Z : begin
 		define yTailDepth : Hook * 0.5
 
 		include : tagged 'strokeTop' : HBar.t SB RightSB top
-		include : tagged 'strokeMiddle' : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (top - Stroke) [VSwToH Stroke]
+		local fTrimDiag : mode != MODE-ZSWASH && mode != MODE-ZHOOK && mode != MODE-ZDESC
+		local diag : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (top - Stroke) [VSwToH Stroke]
+		include : tagged 'strokeMiddle' : if fTrimDiag [intersection [MaskAbove yTailDepth] diag] diag
 		if (mode != MODE-ZSWASH) : include : VBar.l SB 0 yFootHeight [VSwToH xDiagWidth]
 
 		include : tagged 'strokeBottom' : match mode
