@@ -508,7 +508,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
 	CreateTurnedLetter 'turnoe' 0x1D14 'oe' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
 
-	select-variant "aInve/inve"
+	select-variant "aInve/inve" (follow -- 'schwa')
 	derive-composites 'aInve' 0xAB31 'ae/a' 'aInve/inve'
 	derive-composites 'oInve' 0xAB40 'oe/o' 'aInve/inve'
 
@@ -516,7 +516,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'turnoeBar'   0xAB42 'turnoe' 'turnoeBar/oBar/overlay'
 
 	select-variant "oeOpen/oOpen" (follow -- 'oOpen')
-	derive-composites 'oeOpen' 0xAB62 'oeOpen/oOpen' 'ae/e'
+	select-variant "oeOpen/e" (shapeFrom -- 'ae/e') (follow -- 'e')
+	derive-composites 'oeOpen' 0xAB62 'oeOpen/oOpen' 'oeOpen/e'
 
 	select-variant "cyrl/este.upright/es" (follow -- 'c/bottomSerif')
 	select-variant "cyrl/este.upright/te" (follow -- 'T')

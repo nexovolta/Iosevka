@@ -361,6 +361,15 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : Marks  df XH 0 xMiddle
 			include : Serifs df XH 0 xMiddle
 
+		local ieSuffix : fallback para.variantSelector.dotlessi 'serifless'
+		if (suffix === ieSuffix) : create-glyph "ie/i" : glyph-proc
+			local df : DivFrame para.advanceScaleM 3
+			local subDf : df.slice 3 1
+			set-width 0
+			set-mark-anchor 'cvDecompose' 0 0
+			local xMiddle : xMiddleT subDf
+			include : Body   subDf XH 0 xMiddle
+			include : Serifs subDf XH 0 xMiddle
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
 			local kind : CasualKindOf Body
 			if kind : begin
