@@ -105,31 +105,26 @@ glyph-block Letter-Cyrillic-Yu : begin
 		define df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		local sw : df.adviceThinnerStroke 2 0.75
-		local subDf0 : DivFrame (0.5 * (df.width + [HSwToV sw]) / Width) 2
-		local subDf : DivFrame (0.5 * (df.width + 2 * subDf0.leftSB + [HSwToV sw]) / Width) 2
+		local hsw : HSwToV sw
 		local ada : SmallArchDepthA * 0.75 * df.adws
 		local adb : SmallArchDepthB * 0.75 * df.adws
-		local shift : subDf.rightSB - [HSwToV sw] - subDf.leftSB
-		local xEdge subDf.rightSB
-		define [OPart] : new-glyph : glyph-proc
-			include : OShape XH 0 subDf.leftSB subDf.rightSB sw ada adb
-		define [FilledO] : new-glyph : glyph-proc
-			include : OPart
-			include : OShapeOutline XH 0 subDf.leftSB subDf.rightSB sw ada adb
-		define [UPart] : new-glyph : with-transform [ApparentTranslate shift 0] : glyph-proc
-			include : uBowl.shape
-				top     -- XH
-				bottom  -- 0
-				left    -- subDf.leftSB
-				right   -- (subDf.rightSB - [HSwToV sw])
-				stroke  -- sw
-				fine    -- (sw * CThin)
-				ada     -- ada
-				adb     -- adb
-				rightY0 -- (XH - [ArchDepthAClamped XH 0 ada adb] + O)
-			include : VBar.r subDf.rightSB 0 XH sw
-		include : OPart
-		include : difference [UPart] [FilledO]
+		local gap : 0.5 * hsw
+		local wEach : 0.5 * (df.rightSB - df.leftSB - gap)
+		local xO : df.leftSB + wEach
+		local xU : xO + gap
+		include : OShape XH 0 df.leftSB xO sw ada adb
+		include : HBar.t [mix df.leftSB xO 0.5] (xU + hsw) XH (0.88 * sw)
+		include : uBowl.shape
+			top     -- XH
+			bottom  -- 0
+			left    -- xU
+			right   -- (df.rightSB - hsw)
+			stroke  -- sw
+			fine    -- (sw * CThin)
+			ada     -- ada
+			adb     -- adb
+			rightY0 -- (XH - [ArchDepthAClamped XH 0 ada adb] + O)
+		include : VBar.r df.rightSB 0 XH sw
 	create-glyph 'latn/lunateEe' 0x1DF5C : glyph-proc
 		define df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
@@ -138,10 +133,5 @@ glyph-block Letter-Cyrillic-Yu : begin
 		local shift : df.width - subDf.width
 		local ada : SmallArchDepthA * 0.75 * df.adws
 		local adb : SmallArchDepthB * 0.75 * df.adws
-		define [LunateHalf] : union
-			intersection [MaskLeft subDf.middle] : OShape XH 0 subDf.leftSB subDf.rightSB sw ada adb
-			HBar.t subDf.middle (subDf.rightSB - OX) XH sw
-			HBar.b subDf.middle (subDf.rightSB - OX) 0 sw
-		include : LunateHalf
-		include : with-transform [ApparentTranslate shift 0] : LunateHalf
-		include : HBar.m (subDf.leftSB + [HSwToV : 0.5 * sw]) (df.rightSB - [HSwToV : 0.5 * sw]) (XH / 2) (0.8 * sw)
+		define [LunateHalf] : intersection [MaskLeft subDf.rightSB] : OShape XH 0 subDf.leftSB [mix subDf.leftSB subDf.rightSB 2] sw ada adb
+		include : union [LunateHalf] [with-transform [ApparentTranslate shift 0] : LunateHalf] : HBar.m (subDf.leftSB + [HSwToV : 0.5 * sw]) (df.rightSB - [HSwToV : 0.5 * sw]) (XH / 2) (0.8 * sw)

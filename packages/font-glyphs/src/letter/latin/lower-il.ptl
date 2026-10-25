@@ -368,8 +368,9 @@ glyph-block Letter-Latin-Lower-I : begin
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
 			local xMiddle : xMiddleT subDf
-			include : Body   subDf XH 0 xMiddle
-			include : Serifs subDf XH 0 xMiddle
+			local ieSw : df.adviceThinnerStroke2 2 3 XH 0.75
+			include : Body   subDf XH 0 xMiddle ieSw
+			include : Serifs subDf XH 0 xMiddle ieSw
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
 			local kind : CasualKindOf Body
 			if kind : begin
