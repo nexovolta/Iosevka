@@ -24,6 +24,7 @@ glyph-block Digits-Five : begin
 		local-parameter : bowlBotArcC -- Rounded
 		local-parameter : pXLeft      -- 0.025
 		local-parameter : slab        -- SLAB
+		local-parameter : broken      -- false
 
 		local t1 : mix 0 ([mix 0 top bp] + sw * pBarPosSwAdj) 0.8
 		local t2 : mix 0 ([mix 0 top bp] + sw * pBarPosSwAdj) 1.0
@@ -68,6 +69,10 @@ glyph-block Digits-Five : begin
 							widths.rhs (oblCor * sw)
 							flat  xVBar                firstKnot.y [heading Upward]
 							flat (xVBar + xVBarOffset) top         [heading Upward]
+				if broken : include : dispiro
+					widths.rhs (oblCor * sw)
+					flat (xVBar - obl * 1.9 * sw) (firstKnot.y - 1.4 * sw) [heading Upward]
+					flat  xVBar                 (firstKnot.y + 0.5 * sw) [heading Upward]
 				if bbd : begin
 					local boxTop2 : boxTop.pad TINY
 					local boxBot2 : boxBot.pad TINY
@@ -104,11 +109,16 @@ glyph-block Digits-Five : begin
 			"arched"    { Rounded Rounded (1.000 * DesignParameters.fiveBarPos) 0     0.025 }
 			"flat"      { Flat    Rounded (0.875 * DesignParameters.fiveBarPos) (1/3) 0.050 }
 			"flatHook"  { Flat    Flat    (0.875 * DesignParameters.fiveBarPos) (1/3) 0.050 }
+		object # bowl
+			""        { false 0 }
+			"broken"  { true  1 }
 		object # serifs
 			"serifless" false
 			"serifed"   true
 
-	foreach { suffix { obl { bowlTopArcC bowlBotArcC pBarPos pBarPosSwAdj pXLeft } slab } } [pairs-of FiveConfig] : do
+	foreach { suffix { obl { bowlTopArcC bowlBotArcC pBarPos0 pBarPosSwAdj0 pXLeft } { broken fBroken } slab } } [pairs-of FiveConfig] : do
+		local pBarPos : if broken 0.72 pBarPos0
+		local pBarPosSwAdj : if broken 0 pBarPosSwAdj0
 		create-glyph "five.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : FiveShape CAP pBarPos pBarPosSwAdj
@@ -117,6 +127,7 @@ glyph-block Digits-Five : begin
 				obl         -- obl
 				pXLeft      -- pXLeft
 				slab        -- slab
+				broken      -- broken
 
 		create-glyph "five.onum.\(suffix)" : glyph-proc
 			include : OnumMarks.p
@@ -126,6 +137,7 @@ glyph-block Digits-Five : begin
 				obl         -- obl
 				pXLeft      -- pXLeft
 				slab        -- slab
+				broken      -- broken
 			include : ShiftDown
 
 		create-glyph "zhuangToneFive.\(suffix)" : glyph-proc
