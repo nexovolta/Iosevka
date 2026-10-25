@@ -104,11 +104,12 @@ glyph-block Letter-Cyrillic-Yu : begin
 	create-glyph 'latn/ou' 0x1DF5F : glyph-proc
 		define df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
-		local sw : df.adviceThinnerStroke 2 0.75
+		local span : df.rightSB - df.leftSB
+		local sw : Math.min [df.adviceThinnerStroke 2 0.75] (0.15 * span)
 		local hsw : HSwToV sw
 		local ada : SmallArchDepthA * 0.75 * df.adws
 		local adb : SmallArchDepthB * 0.75 * df.adws
-		local gap : 0.5 * hsw
+		local gap : 0.08 * span
 		local wEach : 0.5 * (df.rightSB - df.leftSB - gap)
 		local xO : df.leftSB + wEach
 		local xU : xO + gap
