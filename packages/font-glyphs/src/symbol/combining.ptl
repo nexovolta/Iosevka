@@ -119,3 +119,149 @@ glyph-block Symbols-Combining-Cyrillic-Numeric : begin
 		local cut : 0.625 * RingRadius
 
 		include : RingStrokeAt cx cy r Sw
+
+glyph-block Symbols-Combining-Mathematical : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Shared-Metrics : markMiddle markExtend markFine
+	glyph-block-import Mark-Above : StdAnchors aboveMarkTop aboveMarkBot
+	glyph-block-import Symbol-Arrow-Shared : ArrowDims ArrowT
+
+	define cx markMiddle
+	define cy : XH / 2
+	define radius : ([mix XH Ascender 1.5] - [mix 0 Descender 1.5]) / 2
+	define sw : AdviceStroke 7
+	define l : cx - radius
+	define r : cx + radius
+	define top : cy + radius
+	define bot : cy - radius
+	define arrow : ArrowT : ArrowDims
+		arrowSw -- sw
+		fine -- sw
+		terminal -- sw
+
+	define [OverlayAnchors enclosing] : glyph-proc
+		set-width 0
+		set-mark-anchor [if enclosing 'slash' 'overlay'] cx cy cx cy
+
+	define [RotationArrowAbove ccw] : glyph-proc
+		local rx : markExtend * 2.25
+		local ry : aboveMarkTop - aboveMarkBot
+		local midY : aboveMarkBot - ry * 0.1
+		local endX : rx * [Math.sqrt 0.75]
+		local endY : midY + ry / 2
+		local rise : ry / 2
+		local arcRadius : (endX * endX + rise * rise) / (2 * rise)
+		local arcCenterY : midY + ry - arcRadius
+		local head : Math.min (rx * 0.45) (ry * 0.5)
+		local dir : if ccw (-1) 1
+		local tipX : cx + dir * endX
+		local dx : dir * (endY - arcCenterY)
+		local dy : 0 - endX
+		local mag : Math.hypot dx dy
+		local ux : dx / mag
+		local uy : dy / mag
+		include : union
+			intersection
+				difference
+					RingAt cx arcCenterY (arcRadius + markFine / 2)
+					RingAt cx arcCenterY (arcRadius - markFine / 2)
+				spiro-outline
+					corner cx arcCenterY
+					corner (cx + 2 * endX) (arcCenterY + 2 * (endY - arcCenterY))
+					corner (cx + 2 * endX) (midY + 3 * ry)
+					corner (cx - 2 * endX) (midY + 3 * ry)
+					corner (cx - 2 * endX) (arcCenterY + 2 * (endY - arcCenterY))
+					close
+			spiro-outline
+				corner (tipX + ux * head / 2) (endY + uy * head / 2)
+				corner (tipX - ux * head - uy * head) (endY - uy * head + ux * head)
+				corner (tipX - ux * head + uy * head) (endY - uy * head - ux * head)
+				close
+
+	foreach { gn unicode ccw } {
+		{ 'combSymbol/anticlockwiseArrowAbove' 0x20D4 true }
+		{ 'combSymbol/clockwiseArrowAbove' 0x20D5 false }
+	} : do
+		create-glyph gn unicode : glyph-proc
+			set-width 0
+			include : StdAnchors.extraWide
+			include : RotationArrowAbove ccw
+
+	foreach { gn unicode ccw } {
+		{ 'combSymbol/clockwiseRingOverlay' 0x20D9 false }
+		{ 'combSymbol/anticlockwiseRingOverlay' 0x20DA true }
+	} : do
+		create-glyph gn unicode : glyph-proc
+			include : OverlayAnchors true
+			local head : radius * 0.2
+			local dir : if ccw (-1) 1
+			include : union
+				refer-glyph 'combSymbol/enclosingCircle'
+				arrow.Head.trigShape (cx - dir * head) (top - sw / 2) (cx + dir * head) (top - sw / 2) head
+
+	define [Diamond inset] : spiro-outline
+		corner cx (top - inset)
+		corner (r - inset) cy
+		corner cx (bot + inset)
+		corner (l + inset) cy
+		close
+
+	define [Triangle inset] : spiro-outline
+		corner cx (top + radius * 0.65 - inset * Math.SQRT2)
+		corner (r + radius * 0.25 - inset) (bot + inset)
+		corner (l - radius * 0.25 + inset) (bot + inset)
+		close
+
+	define [Screen inset] : spiro-outline
+		corner (l + inset) (top - inset)
+		g4 cx (top + radius * 0.1 - inset)
+		corner (r - inset) (top - inset)
+		g4 (r + radius * 0.1 - inset) cy
+		corner (r - inset) (bot + inset)
+		g4 cx (bot - radius * 0.1 + inset)
+		corner (l + inset) (bot + inset)
+		g4 (l - radius * 0.1 + inset) cy
+		close
+
+	define [Keycap inset] : begin
+		local cr : radius * 0.25 - inset
+		return : union
+			Rect (top - inset) (bot + inset) (l + radius * 0.25) (r - radius * 0.25)
+			Rect (top - radius * 0.25) (bot + radius * 0.25) (l + inset) (r - inset)
+			RingAt (l + radius * 0.25) (top - radius * 0.25) cr
+			RingAt (r - radius * 0.25) (top - radius * 0.25) cr
+			RingAt (l + radius * 0.25) (bot + radius * 0.25) cr
+			RingAt (r - radius * 0.25) (bot + radius * 0.25) cr
+
+	foreach { gn unicode Shape innerInset } {
+		{ 'combSymbol/enclosingDiamond' 0x20DF Diamond (sw * Math.SQRT2) }
+		{ 'combSymbol/enclosingScreen' 0x20E2 Screen sw }
+		{ 'combSymbol/enclosingKeycap' 0x20E3 Keycap sw }
+		{ 'combSymbol/enclosingTriangle' 0x20E4 Triangle (sw * 1.6) }
+	} : do
+		create-glyph gn unicode : glyph-proc
+			include : OverlayAnchors true
+			include : difference [Shape 0] [Shape innerInset]
+
+	create-glyph 'combSymbol/enclosingSquare' 0x20DE : glyph-proc
+		include : OverlayAnchors true
+		include : difference [Rect top bot l r] [Rect (top - sw) (bot + sw) (l + sw) (r - sw)]
+
+	create-glyph 'combSymbol/enclosingCircleBackslash' 0x20E0 : glyph-proc
+		include : OverlayAnchors true
+		include : union
+			RingStrokeAt cx cy radius sw
+			intersection
+				RingAt cx cy radius
+				ExtLineCenter (cx - radius * Math.SQRT1_2) (cy + radius * Math.SQRT1_2) (cx + radius * Math.SQRT1_2) (cy - radius * Math.SQRT1_2) sw
+
+	create-glyph 'combSymbol/annuity' 0x20E7 : glyph-proc
+		include : OverlayAnchors true
+		include : union
+			HBar.t l r top sw
+			VBar.r r bot top sw
+
+	create-glyph 'combSymbol/leftArrowOverlay' 0x20EA : glyph-proc
+		include : OverlayAnchors false
+		include : arrow.shape (cx + Width * 0.7) cy (cx - Width * 0.7) cy (markExtend * 0.65)
