@@ -337,13 +337,12 @@ glyph-block Letter-Latin-Lower-Y : begin
 				include : with-transform [ApparentTranslate 0 yVertex]
 					VSquareTopShape df (top - yVertex) Stroke
 				include : difference
-					dispiro
-						widths.center Stroke
-						flat Middle yVertex [heading Downward]
-						curl Middle (yHook + [Math.max Stroke : 0.35 * (yVertex - yHook)]) [heading Downward]
-						arcvh
-						flat (Middle - [Math.max LongJut : 0.45 * (Middle - SB)]) yHook [heading Leftward]
-						curl (SB + OX) yHook [heading Leftward]
+					union
+						dispiro
+							widths.center Stroke
+							flat Middle yVertex [heading Downward]
+							flat Middle yHook [heading Downward]
+						HSerif.lb Middle yHook [Math.max LongJut : 0.45 * (Middle - SB)] Stroke Stroke
 					MaskAbove yVertex
 			[Just BS-LOOP] : begin
 				include : with-transform [ApparentTranslate 0 yVertex]
@@ -406,7 +405,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				if doSlabBottom : include : HSerif.mb [mix df.leftSB xPathBot 0.5] bot MidJutCenter
 		if doSlabTop : include : VSerifs df false top
 		if doSlabMotion : include : VMotionSerifs df false top
-		if doSlabTopRightMotion : include : VTopRightMotionSerifs df false top
+		if doSlabTopRightMotion : include : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] sf.rt.inner
 
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
