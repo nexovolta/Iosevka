@@ -40,19 +40,30 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				local thMax : Math.PI * nHalf
 				local sw Stroke
 				local ampTop : 0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke]
-				local N 96
-				local knots {}
+				local N 256
+				local lhsKnots {}
+				local rhsKnots {}
 				foreach i [range 0 till (N + 1)] : begin
 					local u : i / N
 					local th : thMax * u
-					local a : ampTop * (1 - 0.35 * u)
-					local yy : yTop - height * (th + 0.35 * [Math.sin (2 * th)]) / thMax
-					local dy : height * (1 + 0.7 * [Math.cos (2 * th)]) / thMax
-					local dx : a * [Math.sin th]
-					# full weight where the stroke is vertical, thinner as it turns horizontal
-					local w : Math.min (0.13 * CAP) (sw * (0.6 + 0.3 * dy / [Math.sqrt (dx * dx + dy * dy)]))
-					knots.push : g2 (df.middle + a * [Math.cos th]) yy [widths.center w]
-				include : dispiro knots
+					local taper : Math.sin (0.5 * Math.PI * u)
+					local a : ampTop * (1 - 0.35 * taper * taper)
+					local da : -0.35 * ampTop * 0.5 * Math.PI * [Math.sin (Math.PI * u)]
+					local dx : da * [Math.cos th] - a * thMax * [Math.sin th]
+					local dy : -height * (1 + 0.7 * [Math.cos (2 * th)])
+					local tangent : Math.hypot dx dy
+					local nx : -dy / tangent
+					local ny : dx / tangent
+					local x : df.middle + a * [Math.cos th]
+					local y : yTop - height * (th + 0.35 * [Math.sin (2 * th)]) / thMax
+					local verticality : [Math.abs dy] / tangent
+					# Offset the two contours directly to preserve the meander at heavier weights.
+					local w : Math.min (0.15 * CAP) (sw * (0.7 + 0.3 * verticality))
+					local r : w / 2
+					lhsKnots.push : corner (x + nx * r) (y + ny * r)
+					rhsKnots.push : corner (x - nx * r) (y - ny * r)
+				local outlineKnots : lhsKnots.concat : rhsKnots.reverse
+				include : spiro-outline outlineKnots [close]
 				include : DrawAt df.middle dr (dr - overshoot)
 				create-forked-glyph "wigglyExclamDown.\(suffix)" : FlipAround df.middle (XH / 2)
 
