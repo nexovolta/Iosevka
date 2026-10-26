@@ -38,25 +38,21 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				# constant wavelength; only the amplitude changes along the stroke
 				local period : 0.3 * CAP
 				local omega : 2 * Math.PI / period
-				local ampTop : 0.6 * (0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke])
-				local ampDecay 0.6
-				local N 140
-				# The horizontal thickness is constant, so the stroke is full weight where it runs vertically and thinner as it turns horizontal
-				local halfW : HSwToV : 0.5 * Stroke
-				local leftKnots {}
-				local rightKnots {}
+				local sw Stroke
+				# limit amplitude so the turn radius at the full-weight extremes stays above half the stroke
+				local ampTop : Math.min (0.6 * (0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke])) (1.6 / (omega * omega * sw))
+				local ampDecay 0.5
+				local N 64
+				local knots {}
 				foreach i [range 0 till (N + 1)] : begin
 					local u : i / N
-					local y : mix yTop yBot u
-					local cx : df.middle + ampTop * (1 - ampDecay * u) * [Math.cos (omega * height * u)]
-					if (i == 0 || i == N) : begin
-						leftKnots.push : corner (cx - halfW) y
-						rightKnots.push : corner (cx + halfW) y
-					else : begin
-						leftKnots.push : corner (cx - halfW) y
-						rightKnots.push : corner (cx + halfW) y
-				local outlineKnots : leftKnots.concat : rightKnots.reverse
-				include : spiro-outline outlineKnots [close]
+					local th : omega * height * u
+					local a : ampTop * (1 - ampDecay * u)
+					local slope : a * omega * [Math.sin th]
+					# full weight where the stroke is vertical, thinner as it turns horizontal
+					local w : sw * (0.4 + 0.6 / [Math.sqrt (1 + slope * slope)])
+					knots.push : g2 (df.middle + a * [Math.cos th]) [mix yTop yBot u] [widths.center w]
+				include : dispiro knots
 				include : DrawAt df.middle dr (dr - overshoot)
 				create-forked-glyph "wigglyExclamDown.\(suffix)" : FlipAround df.middle (XH / 2)
 
