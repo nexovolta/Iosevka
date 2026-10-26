@@ -345,16 +345,27 @@ glyph-block Letter-Latin-Lower-F : begin
 		local xN : xEngPart + dfEng.leftSB
 		local xEng : xEngPart + dfEng.rightSB
 
-		# Measured width of the f arch (proportional, regular weight): [symmetric asymmetric] per f width.
-		local wEach : if fNarrow
-			if (sym === SYM-LEFT) 317.1 276.7
-			if (sym === SYM-LEFT) 348.5 313.3
-		local x1 : tipX - [HSwToV : 0.5 * sw]
-		local x2 : x1 + wEach
-		local x3 : x2 + wEach
-		local compress : Math.min 1 (df.width / [Math.max (xEngPart + dfEng.width) x3])
+		# All three arches (f hook and two copies) share one width so the last one ends at the eng's right edge.
+		local vsw : HSwToV sw
+		local wArch : (xEng - barLeft + 0.5 * vsw) / 3
+		local xc : barLeft + vsw
+		local kx : (barLeft + wArch - xc) / (tipX - xc)
+		local x1 : barLeft + wArch - 0.5 * vsw
+		local x2 : x1 + wArch
+		local x3 : x2 + wArch
+		local compress : Math.min 1 (df.width / (xEngPart + dfEng.width))
+		local yBot : Ascender - Hook * 0.75
+		local bodyG : new-glyph : glyph-proc
+			include : Body dfLeft pBar yBar ch sym
+		define [HookZone] : spiro-outline
+			corner xc (Ascender + 200)
+			corner (2 * Width) (Ascender + 200)
+			corner (2 * Width) (yBot - 4)
+			corner xc (yBot - 4)
 
-		include : with-transform [Scale compress 1] : Body dfLeft pBar yBar ch sym
+		include : with-transform [Scale compress 1] : glyph-proc
+			include : difference bodyG [HookZone]
+			include : with-transform [ScaleAround xc 0 kx 1] : intersection bodyG [HookZone]
 		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
 			with-transform [Scale compress 1] : glyph-proc
 				include : VBar.l dfEng.leftSB 0 XH Stroke
@@ -369,7 +380,6 @@ glyph-block Letter-Latin-Lower-F : begin
 				include : EngHook dfEng.rightSB 0 Descender
 
 		local yTop Ascender
-		local yBot : Ascender - Hook * 0.75
 		local hArc : yTop - yBot
 		# Visible hanging spurs, same weight and width as each other and the
 		# f-hook; only the left join tapers (n/m shoulder fine).
