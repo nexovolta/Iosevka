@@ -794,8 +794,36 @@ glyph-block Mark-Above : begin
 
 		return { z1 z2 z3 z4 }
 
+	# Compact tilde: vertical stems at both ends joined by a small S wave.
+	define tildeCompactDefault : [fallback para.variantSelector.asciiTilde ''] === 'compact'
+
+	define [CompactTildeShape] : with-params [ttop tbot leftEnd rightEnd hs] : glyph-proc
+		local hsV : HSwToV hs
+		local xl : leftEnd + hsV
+		local xr : rightEnd - hsV
+		local yPeak : ttop - hs
+		local yTrough : tbot + hs
+		local stub : 0.14 * (ttop - tbot)
+		local x1 : mix xl xr 0.3
+		local x2 : mix xl xr 0.7
+		include : dispiro
+			widths.center (2 * hs)
+			flat xl tbot [heading Upward]
+			curl xl (tbot + stub) [heading Upward]
+			arcvh
+			g4 x1 yPeak [heading Rightward]
+			g4 x2 yTrough [heading Rightward]
+			archv
+			flat xr (ttop - stub) [heading Upward]
+			curl xr ttop [heading Upward]
+
 	glyph-block-export TildeShape
-	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
+	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft compact] : glyph-proc
+		if [fallback compact tildeCompactDefault]
+		: then : include : CompactTildeShape ttop tbot leftEnd rightEnd hs
+		: else : include : TildeShapeBezier ttop tbot leftEnd rightEnd hs hsLeft
+
+	define [TildeShapeBezier] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
 		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
 		define bone : new Arcs.Bez3 z1 z2 z3 z4
 		local hs0 : fallback hsLeft hs
@@ -986,6 +1014,16 @@ glyph-block Mark-Above : begin
 			leftEnd  -- SB
 			rightEnd -- RightSB
 			hs       -- (OperatorStroke / 2)
+			compact  -- false
+
+	create-glyph 'asciiTilde.compact' : glyph-proc
+		include : TildeShape
+			ttop     -- [mix aboveMarkMid aboveMarkTop asciiMarkZoomY]
+			tbot     -- [mix aboveMarkMid (aboveMarkBot + markFine / 2) asciiMarkZoomY]
+			leftEnd  -- SB
+			rightEnd -- RightSB
+			hs       -- (OperatorStroke / 2)
+			compact  -- true
 
 	for-width-kinds WideWidth1
 		define emDashWidth : if (para.isQuasiProportional && MosaicWidthScalar > 1) UPM MosaicWidth
