@@ -335,7 +335,24 @@ glyph-block Letter-Latin-Lower-F : begin
 		local dfEng : DivFrame 1 2
 		local kern : (dfLeft.width - dfLeft.rightSB) + dfEng.leftSB
 		local xEngPart : dfLeft.width - kern
-		local compress : Math.min 1 (df.width / (xEngPart + dfEng.width))
+
+		local { barLeft0 barLeft00 hookExtra tipX0 } : if fNarrow
+			FengTrillNarrowHook dfLeft pBar ch sym
+			FengTrillStdHook dfLeft pBar ch sym
+		local barLeft barLeft0
+		local tipX tipX0
+		local sw Stroke
+		local xN : xEngPart + dfEng.leftSB
+		local xEng : xEngPart + dfEng.rightSB
+
+		# Measured width of the f arch (proportional, regular weight): [symmetric asymmetric] per f width.
+		local wEach : if fNarrow
+			if (sym === SYM-LEFT) 317.1 276.7
+			if (sym === SYM-LEFT) 348.5 313.3
+		local x1 : tipX - [HSwToV : 0.5 * sw]
+		local x2 : x1 + wEach
+		local x3 : x2 + wEach
+		local compress : Math.min 1 (df.width / [Math.max (xEngPart + dfEng.width) x3])
 
 		include : with-transform [Scale compress 1] : Body dfLeft pBar yBar ch sym
 		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
@@ -351,15 +368,6 @@ glyph-block Letter-Latin-Lower-F : begin
 					adb    -- dfEng.smallArchDepthB
 				include : EngHook dfEng.rightSB 0 Descender
 
-		local { barLeft0 barLeft00 hookExtra tipX0 } : if fNarrow
-			FengTrillNarrowHook dfLeft pBar ch sym
-			FengTrillStdHook dfLeft pBar ch sym
-		local barLeft barLeft0
-		local tipX tipX0
-		local sw Stroke
-		local xN : xEngPart + dfEng.leftSB
-		local xEng : xEngPart + dfEng.rightSB
-
 		local yTop Ascender
 		local yBot : Ascender - Hook * 0.75
 		local hArc : yTop - yBot
@@ -369,12 +377,6 @@ glyph-block Letter-Latin-Lower-F : begin
 		local adb : Math.min dfEng.smallArchDepthB (0.9 * hArc)
 		local fine ShoulderFine
 		local join : HSwToV fine
-		local wHook : tipX - barLeft
-		local x3max : mix xN xEng 0.82
-		local wEach : 0.2 * (xEng - xN)
-		local x1 : Math.min (tipX - [HSwToV : 0.5 * sw]) (x3max - 2 * wEach)
-		local x2 : x1 + wEach
-		local x3 : x2 + wEach
 
 		# Arches are laid out at full (proportional) width and condensed together with f and eng.
 		include : with-transform [Scale compress 1] : glyph-proc
