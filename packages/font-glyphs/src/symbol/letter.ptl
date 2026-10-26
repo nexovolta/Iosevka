@@ -17,7 +17,6 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-E : EShape
-	glyph-block-import Letter-Latin-Lower-R : SmallRConfig
 	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
 
 	create-glyph 'currency' 0xA4 : glyph-proc
@@ -104,16 +103,6 @@ glyph-block Symbol-Currency : begin
 			include : union [difference cShape eShape] eShape
 
 	select-variant 'currency/euroCurrencySign' 0x20A0 (follow -- 'C')
-	foreach { suffix _ } [Object.entries SmallRConfig] : do
-		create-glyph "currency/cruzeiroSign.\(suffix)" : glyph-proc
-			set-width Width
-			include : MarkSet.capital
-			include : refer-glyph 'C'
-			include : with-transform [ApparentTranslate (0.16 * Width) 0] : with-transform [ScaleAround 0 0 0.8 0.8] : glyph-proc
-				include : refer-glyph "r.\(suffix)"
-				eject-contour 'serifRB'
-
-	select-variant 'currency/cruzeiroSign' 0x20A2 (follow -- 'r')
 
 	create-glyph 'currency/saudiRiyalSign' 0x20C1 : glyph-proc
 		set-width Width
