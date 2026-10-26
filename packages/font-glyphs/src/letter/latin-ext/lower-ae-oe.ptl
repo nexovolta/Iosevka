@@ -25,15 +25,15 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		return { subDf shift }
 
 	do "a subglyphs"
-		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyConfig
+		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyDiagConfig
 
-		foreach { suffix { hookStyle cut { body revBody xTrailing } } } [Object.entries DoubleStoreyConfig] : do
+		foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
 			create-glyph "ae/a.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.e
 				set-base-anchor 'cvDecompose' 0 0
 				local subDf : df.slice 3 2
-				include : body subDf hookStyle df.mvs cut
+				include : body subDf hookStyle df.mvs cut diag
 				if xTrailing : set-base-anchor 'trailing' xTrailing 0
 
 			if (body === DoubleStorey.ToothlessRounded) : begin
@@ -45,7 +45,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					local rise : ArchDepthBClamped XH 0 aoSubDf.smallArchDepthA aoSubDf.smallArchDepthB
 					include : union
 						DoubleStorey.HookAndBar aoSubDf hookStyle rise aoDf.mvs (aoDf.mvs * CThin)
-						DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin)
+						DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin) diag
 				create-glyph "au/a.\(suffix)" : glyph-proc
 					local auDf : include : DivFrame para.advanceScaleMM 3
 					include : auDf.markSet.e
@@ -54,7 +54,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					local rise : ArchDepthBClamped XH 0 auSubDf.smallArchDepthA auSubDf.smallArchDepthB
 					include : union
 						DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
-						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB)
+						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB) diag
 				create-glyph "av/a.\(suffix)" : glyph-proc
 					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "ay/a.\(suffix)" : glyph-proc
@@ -70,9 +70,9 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				local rise : YSmoothMidL barTop 0 ada2 adb2
 				define [left] : union
 					DoubleStorey.HookAndBar subDf hookStyle rise df.mvs
-					DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThinB)
+					DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThinB) diag
 				define [right] : with-transform [ApparentTranslate shift 0]
-					body subDf hookStyle df.mvs cut
+					body subDf hookStyle df.mvs cut diag
 				include : difference [right] : intersection
 					MaskAbove barTop
 					union

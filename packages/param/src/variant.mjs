@@ -44,10 +44,10 @@ export function parse(data, argv) {
 }
 
 const DEFAULT_FORCED_DOUBLE_STOREY_A = "doubleStoreySerifless";
-const DEFAULT_LIGATURE_A = "doubleStoreyToothlessRounded";
 const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a", "cyrl/aye/a"];
 const DOUBLE_STOREY_HOOKS = ["HookInwardSerifed", "HookFlat"];
 const DOUBLE_STOREY_CUTS = ["BottomCut"];
+const DOUBLE_STOREY_DIAGS = ["DiagonalBarFalling", "DiagonalBar"];
 const DOUBLE_STOREY_SPURS = [
 	"FlatBottomSerifless",
 	"FlatBottomSerifed",
@@ -86,6 +86,14 @@ function resolveSelectors(parsed, para, argv) {
 function parseDoubleStoreyA(suffix) {
 	if (typeof suffix !== "string" || !suffix.startsWith("doubleStorey")) return null;
 	let rest = suffix.slice("doubleStorey".length);
+	let diag = "";
+	for (const d of DOUBLE_STOREY_DIAGS) {
+		if (rest.endsWith(d)) {
+			diag = d;
+			rest = rest.slice(0, -d.length);
+			break;
+		}
+	}
 	let hook = "";
 	for (const h of DOUBLE_STOREY_HOOKS) {
 		if (rest.startsWith(h)) {
@@ -103,11 +111,11 @@ function parseDoubleStoreyA(suffix) {
 		}
 	}
 	if (!DOUBLE_STOREY_SPURS.includes(rest)) return null;
-	return { hook, cut, spur: rest };
+	return { hook, cut, diag, spur: rest };
 }
 
-function assembleDoubleStoreyA({ hook = "", cut = "", spur = "Serifless" } = {}) {
-	return `doubleStorey${hook}${cut}${spur}`;
+function assembleDoubleStoreyA({ hook = "", cut = "", diag = "", spur = "Serifless" } = {}) {
+	return `doubleStorey${hook}${cut}${spur}${diag}`;
 }
 
 function terminalFromA(suffix) {
@@ -130,7 +138,8 @@ function pickForcedDoubleStoreyA(currentVs, obliqueVs, uprightVs) {
 		const parsed = parseDoubleStoreyA(vs.a);
 		if (parsed) return assembleDoubleStoreyA(parsed);
 	}
-	const terminal = terminalFromA(currentVs.a) || terminalFromA(uprightVs.a) || terminalFromA(obliqueVs.a);
+	const terminal =
+		terminalFromA(currentVs.a) || terminalFromA(uprightVs.a) || terminalFromA(obliqueVs.a);
 	if (!terminal) return DEFAULT_FORCED_DOUBLE_STOREY_A;
 	return assembleDoubleStoreyA({ spur: mapToDoubleStoreySpur(terminal) });
 }
@@ -150,15 +159,17 @@ function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantS
 	const parsedA = parseDoubleStoreyA(suffix);
 	const hook = parsedA ? parsedA.hook : "";
 	const cut = parsedA ? parsedA.cut : "";
+	const diag = parsedA ? parsedA.diag : "";
 	variantSelector["a/doubleStorey"] = suffix;
 	variantSelector["aRetroflexHook/doubleStorey"] = assembleDoubleStoreyA({
 		hook,
 		cut,
+		diag,
 		spur: "Serifless",
 	});
 	const ligature = hook
-		? assembleDoubleStoreyA({ hook, spur: "ToothlessRounded" })
-		: DEFAULT_LIGATURE_A;
+		? assembleDoubleStoreyA({ hook, diag, spur: "ToothlessRounded" })
+		: assembleDoubleStoreyA({ diag, spur: "ToothlessRounded" });
 	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = ligature;
 }
 
