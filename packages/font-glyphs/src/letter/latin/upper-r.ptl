@@ -185,12 +185,23 @@ glyph-block Letter-Latin-Upper-R : begin
 		local fStraightLeg : legShape !== RLegShape.Curly
 		local legTop : RLegTop top sw bp
 		local right : df.rightSB - O - [if slab 0.125 0] * Jut
+		local fBroken : legShape === RLegShape.StraightBroken
 		local cor : DiagCor legTop (right - df.middle) 0 sw
 		local endX : df.middle - [if fStraightLeg ([HSwToV : 0.5 * sw] * cor) (sw / 2)] + [if fStraightLeg [RSlabExtraShift SLAB sw] 0]
-		include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
-		include : difference
-			legShape legTop 0 df.middle right top [mix 0 df.leftSB mul] legSlab sw
-			MaskLeft endX
+		if fBroken : begin
+			# Broken leg: a diagonal starting flat at the bowl's lower edge and reaching past the hook's left edge.
+			local hsw : HSwToV : 0.5 * sw
+			local xLeftTop : mix 0 df.leftSB mul
+			local xRightBottom : [RLegTerminalX true right sw] + [RSlabExtraShift legSlab sw]
+			local bowlBottom : PBarPosY top sw bp
+			local xLhsAtBowl : xLeftTop + (xRightBottom - 2 * hsw - xLeftTop) * (legTop - bowlBottom) / legTop
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + hsw)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
+			include : RLegShape.Straight legTop 0 (xLeftTop + hsw) right top (xLeftTop - 2 * hsw) legSlab sw
+		: else : begin
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
+			include : difference
+				legShape legTop 0 df.middle right top [mix 0 df.leftSB mul] legSlab sw
+				MaskLeft endX
 
 	glyph-block-export RevRShape
 	define flex-params [RevRShape] : glyph-proc
