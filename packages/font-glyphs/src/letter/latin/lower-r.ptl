@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
@@ -862,6 +863,7 @@ glyph-block Letter-Latin-Lower-R : begin
 				flat (df.leftSB + [HSwToV HalfStroke]) 0 [heading Upward]
 				curl xStem XH [heading Upward]
 			include : with-transform [ApparentTranslate (df.width - dfR.width) 0] : Body dfR RMode.Half XH 0 doTS doBS cut
+			include : CenterInkInFrame df
 
 	select-variant 'rHalf' 0xAB47
 	select-variant 'rWithLeftTie' 0x1DF61 (follow -- 'rHalf')

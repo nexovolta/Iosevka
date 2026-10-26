@@ -72,6 +72,13 @@ glyph-block Mark-Above : begin
 			xMin : 0 + xMin
 			xMax : 0 + xMax
 
+	glyph-block-export CenterInkInFrame
+	define [CenterInkInFrame df] : glyph-proc
+		local b : include : MeasureGlyphBounds
+		if [not b] : return nothing
+		local xShift : df.middle - [mix b.xMin b.xMax 0.5]
+		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
+
 	define [CenterMarkHorizontally] : glyph-proc
 		local b : include : MeasureGlyphBounds
 		if [not b] : return nothing

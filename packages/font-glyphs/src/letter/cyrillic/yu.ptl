@@ -7,6 +7,7 @@ glyph-module
 glyph-block Letter-Cyrillic-Yu : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : uBowl
 	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifConfig IotationSerifFromSelector
@@ -98,6 +99,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 		include : OShape XH 0 subDf.leftSB subDf.rightSB sw (SmallArchDepthA * 0.75 * df.adws) (SmallArchDepthB * 0.75 * df.adws)
 		include : refer-glyph 'oi/i'
 		set-base-anchor 'above' (df.rightSB - [HSwToV : 0.5 * sw]) XH
+		include : CenterInkInFrame df
 	CreateAccentedComposition 'latn/oi' 0x1DF5E 'latn/oi/base' 'tittleAbove'
 
 	create-glyph 'latn/lunateEe' 0x1DF5C : glyph-proc
@@ -143,12 +145,14 @@ glyph-block Letter-Cyrillic-Yu : begin
 				local yMid : mix Ascender Descender 0.5
 				include : LongSUpperHalf (+1) xEsh Ascender yMid (xHStem + 0.5 * hsw - xEsh) Hook sw
 				include : LongSLowerHalf (+1) xEsh yMid Descender hookLow Hook sw
+				include : CenterInkInFrame df
 
 	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
 		create-glyph "latn/chStretched.\(suffix)" : glyph-proc
 			local L : ChLayout
 			include : L.df.markSet.b
 			include : ExtendBelowBaseAnchors Descender
+			set-width L.df.width
 			local xStem : L.hDf.leftSB + L.shift
 			local cDf : DivFrame [Math.min 1 L.df.adws]
 			local lf : CLetterForm cDf styTop styBot XH Descender
@@ -157,5 +161,6 @@ glyph-block Letter-Cyrillic-Yu : begin
 				sw  -- L.sw
 			include : intersection [MaskLeft (xStem + 0.5 * [HSwToV L.sw])] [lf.full]
 			include : refer-glyph 'latn/chStretched/h'
+			include : CenterInkInFrame L.df
 
 	select-variant 'latn/chStretched' 0x1DF5B (follow -- 'c')

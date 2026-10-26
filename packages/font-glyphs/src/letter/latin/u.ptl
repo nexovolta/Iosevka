@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Latin-U : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Mark-Shared-Metrics : markMiddle
 	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendBelowBaseAnchors
 	glyph-block-import Letter-Shared : CreateAccentedComposition SetGrekUpperTonos
@@ -302,13 +303,13 @@ glyph-block Letter-Latin-U : begin
 	define OuU : UShapeGroup (SmallArchDepthA * 0.75 * [DivFrame para.advanceScaleM 3].adws) (SmallArchDepthB * 0.75 * [DivFrame para.advanceScaleM 3].adws)
 	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT OuU] : do
 		create-glyph "latn/ou.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
+			local df : include : DivFrame [if (para.spacing == 0) 1 2] 3
 			include : df.markSet.e
 			local span : df.rightSB - df.leftSB
-			local sw : Math.min [df.adviceThinnerStroke 2 0.75] (0.15 * span)
+			local sw : Math.min Stroke [df.adviceThinnerStroke 2 0.75] (0.15 * span)
 			local hsw : HSwToV sw
-			local ada : SmallArchDepthA * 0.75 * df.adws
-			local adb : SmallArchDepthB * 0.75 * df.adws
+			local ada : SmallArchDepthA * 0.75 * [DivFrame para.advanceScaleM 3].adws
+			local adb : SmallArchDepthB * 0.75 * [DivFrame para.advanceScaleM 3].adws
 			local gap : 0.08 * span
 			local xO : df.leftSB + 0.5 * (span - gap)
 			local xU : xO + gap

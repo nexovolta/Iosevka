@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition
 	glyph-block-import Letter-Shared : CreateDependentComposite CreateTurnedLetter ThreeQuarterDf
@@ -413,13 +414,16 @@ glyph-block Letter-Latin-Lower-T : begin
 		create-glyph "tHStretched.\(suffix)" : glyph-proc
 			local L : THLayout
 			include : L.df.markSet.bp
+			set-width L.df.width
 			include : (Style.Retroflex || Style.Body) L.tDf sym top Descender
 			include : HCrossBar.top L.tDf.middle (L.shift + L.hDf.leftSB + [HSwToV L.swH]) ySmallTBarPos
 			include : refer-glyph 'tH/h'
+			include : CenterInkInFrame L.df
 
 		create-glyph "tHReversed.\(suffix)" : glyph-proc
 			local L : THLayout
 			include : L.df.markSet.b
+			set-width L.df.width
 			local xBarR : L.shift + L.hDf.leftSB + [HSwToV L.swH]
 			include : union
 				new-glyph : composite-proc
@@ -432,6 +436,7 @@ glyph-block Letter-Latin-Lower-T : begin
 						corner xBarR (ySmallTBarPos)
 						corner L.tDf.leftSB (ySmallTBarPos)
 			include : refer-glyph 'tH/h'
+			include : CenterInkInFrame L.df
 
 	select-variant 'tHStretched' 0x1DF63 (follow -- 't')
 	select-variant 'tHReversed'  0x1DF64 (follow -- 't')
