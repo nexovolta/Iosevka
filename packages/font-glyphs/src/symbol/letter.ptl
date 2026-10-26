@@ -17,6 +17,8 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-E : EShape
+	glyph-block-import Letter-Latin-Lower-R : SmallRConfig
+	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
 
 	create-glyph 'currency' 0xA4 : glyph-proc
 		local sw : AdviceStroke 3.5
@@ -74,31 +76,44 @@ glyph-block Symbol-Currency : begin
 		create-glyph "currency/euroCurrencySign.\(suffix)" : glyph-proc
 			set-width Width
 			include : MarkSet.capital
-			local kc 0.68
-			local ke 0.6
 			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 			local sw : Stroke * [mix 0.85 0.58 heavyT]
-			local dxE : 0.3 * Width
-			local yC : CAP * (0.52 * ke - 0.024)
-			local df : DivFrame kc
-			local cTop : yC + kc * CAP
-			# E's stem left edge is the mask boundary: the C ends where the E begins
-			include : intersection [MaskLeft (dxE + ke * SB + [HSwToV : 0.5 * sw])] : glyph-proc
-				local lf : CLetterForm df styTop styBot cTop yC
+			local inkW : RightSB - SB
+			# E: bottom-right, ~62% of cap height
+			local eTop : 0.62 * CAP
+			local eXbarY : EFMidBarPosY eTop 0
+			local eL : SB + 0.45 * inkW
+			local eR RightSB
+			local eShape : union
+				VBar.l eL 0 eTop sw
+				HBar.t eL eR eTop sw
+				HBar.m eL [mix eL eR 0.93] eXbarY sw
+				HBar.b eL eR 0 sw
+			# C: top-left, its bottom arc centred on the E's crossbar
+			local cTop CAP
+			local cBot : eXbarY - sw / 2
+			local kc : (cTop - cBot) / CAP
+			local df : DivFrame 0.74
+			local cShape : glyph-proc
+				local lf : CLetterForm df styTop styBot cTop cBot
 					ada -- (ArchDepthA * kc)
 					adb -- (ArchDepthB * kc)
 					hook -- (Hook * kc)
 					sw -- sw
-				include : with-transform [ApparentTranslate (kc * SB - df.leftSB) 0] : lf.full
-			include : with-transform [ApparentTranslate dxE 0] : with-transform [ScaleAround 0 0 ke ke] : EShape CAP false false false false false (sw / ke)
+				include : with-transform [ApparentTranslate (SB - df.leftSB) 0] : lf.full
+			include : intersection [Rect CAP 0 0 Width] [union [difference cShape eShape] eShape]
 
 	select-variant 'currency/euroCurrencySign' 0x20A0 (follow -- 'C')
-	create-glyph 'currency/cruzeiroSign' 0x20A2 : glyph-proc
-		set-width Width
-		include : MarkSet.capital
-		include : refer-glyph 'C'
-		local k 0.9
-		include : with-transform [ApparentTranslate (0.16 * Width) 0] : with-transform [ScaleAround 0 0 k k] : refer-glyph 'r'
+	foreach { suffix _ } [Object.entries SmallRConfig] : do
+		create-glyph "currency/cruzeiroSign.\(suffix)" : glyph-proc
+			set-width Width
+			include : MarkSet.capital
+			include : refer-glyph 'C'
+			include : with-transform [ApparentTranslate (0.16 * Width) 0] : with-transform [ScaleAround 0 0 0.9 0.9] : glyph-proc
+				include : refer-glyph "r.\(suffix)"
+				eject-contour 'serifRB'
+
+	select-variant 'currency/cruzeiroSign' 0x20A2 (follow -- 'r')
 
 	create-glyph 'currency/saudiRiyalSign' 0x20C1 : glyph-proc
 		set-width Width
