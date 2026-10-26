@@ -33,22 +33,30 @@ glyph-block Symbol-Punctuation-Emotion : begin
 			create-glyph "wigglyExclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
 				local yBot : clamp 0 (CAP * 0.4) (emotionBottom * 1.18)
-				local amp : 0.6 * (0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke])
-				local sw : 0.7 * Stroke
-				local yTopC : CAP - 0.5 * sw
-				local yBotC : yBot + 0.5 * sw
-				local height : yTopC - yBotC
-				# keep the turn radius of the sine above half the stroke so inner edges never fold over
-				local period : Math.max (height / 2) (1.05 * 2 * Math.PI * [Math.sqrt (amp * sw / 2)])
-				local nWaves : height / period
-				local N 72
-				local knots {}
+				local yTop CAP
+				local height : yTop - yBot
+				# constant wavelength; only the amplitude changes along the stroke
+				local period : 0.3 * CAP
+				local omega : 2 * Math.PI / period
+				local ampTop : 0.6 * (0.5 * (df.rightSB - df.leftSB) - [HSwToV : 0.5 * Stroke])
+				local ampDecay 0.6
+				local N 140
+				# The horizontal thickness is constant, so the stroke is full weight where it runs vertically and thinner as it turns horizontal
+				local halfW : HSwToV : 0.5 * Stroke
+				local leftKnots {}
+				local rightKnots {}
 				foreach i [range 0 till (N + 1)] : begin
 					local u : i / N
-					knots.push : g2
-						df.middle + amp * (1 - 0.6 * u) * [Math.cos (2 * Math.PI * nWaves * u)]
-						mix yTopC yBotC u
-				include : dispiro [widths.center sw] knots
+					local y : mix yTop yBot u
+					local cx : df.middle + ampTop * (1 - ampDecay * u) * [Math.cos (omega * height * u)]
+					if (i == 0 || i == N) : begin
+						leftKnots.push : corner (cx - halfW) y
+						rightKnots.push : corner (cx + halfW) y
+					else : begin
+						leftKnots.push : corner (cx - halfW) y
+						rightKnots.push : corner (cx + halfW) y
+				local outlineKnots : leftKnots.concat : rightKnots.reverse
+				include : spiro-outline outlineKnots [close]
 				include : DrawAt df.middle dr (dr - overshoot)
 				create-forked-glyph "wigglyExclamDown.\(suffix)" : FlipAround df.middle (XH / 2)
 
