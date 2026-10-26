@@ -56,6 +56,46 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 
 		include : Translate (-(RightSB - SB) * 0.05) 0
 
+	# Arms are extended and clipped so the ends are cut vertically (straight) or horizontally (curly).
+	define [GuillemetTerminalShape fCurly fVertical] : glyph-proc
+		local sw : AdviceStroke 3
+		local fine : AdviceStroke 4
+		local t 1.4
+		local xEnd : mix guilLeft guilRight t
+		local yTopEnd : mix SymbolMid guilTop t
+		local yBotEnd : mix SymbolMid guilBot t
+		local yOff : if fCurly (sw * 0.25) 0
+		local clip : if fVertical
+			Rect guilBot guilTop (-VERY-FAR) guilRight
+			Rect guilBot guilTop (-VERY-FAR) (+VERY-FAR)
+
+		include : intersection clip
+			MaskAboveLine guilLeft SymbolMid guilRight [mix SymbolMid guilBot 0.5] 2
+			if fCurly
+			: then : dispiro
+				g4 guilLeft (SymbolMid + yOff) [widths.rhs sw]
+				quadControls 0.6 0.3
+				g4 xEnd yTopEnd [widths.center fine]
+			: else : dispiro
+				flat guilLeft SymbolMid [widths.rhs sw]
+				curl xEnd yTopEnd [widths.center fine]
+		include : intersection clip
+			MaskBelowLine guilLeft SymbolMid guilRight [mix SymbolMid guilTop 0.5] 2
+			if fCurly
+			: then : dispiro
+				g4 guilLeft (SymbolMid - yOff) [widths.lhs sw]
+				quadControls 0.6 0.3
+				g4 xEnd yBotEnd [widths.center fine]
+			: else : dispiro
+				flat guilLeft SymbolMid [widths.lhs sw]
+				curl xEnd yBotEnd [widths.center fine]
+		if fCurly : include : VBar.l guilLeft (SymbolMid - yOff) (SymbolMid + yOff) sw
+
+		include : Translate (-(RightSB - SB) * 0.05) 0
+
+	create-glyph 'singleGuillemetLeft.straightVerticalTerminal' : GuillemetTerminalShape false true
+	create-glyph 'singleGuillemetLeft.curlyHorizontalTerminal'  : GuillemetTerminalShape true false
+
 	select-variant 'singleGuillemetLeft' 0x2039 (follow -- 'guillemet')
 
 	derive-glyphs 'guillemetLeft' 0xAB 'singleGuillemetLeft' : function [src sel] : glyph-proc
