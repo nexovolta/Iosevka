@@ -189,14 +189,18 @@ glyph-block Letter-Latin-Upper-R : begin
 		local cor : DiagCor legTop (right - df.middle) 0 sw
 		local endX : df.middle - [if fStraightLeg ([HSwToV : 0.5 * sw] * cor) (sw / 2)] + [if fStraightLeg [RSlabExtraShift SLAB sw] 0]
 		if fBroken : begin
-			# Broken leg: a diagonal starting flat at the bowl's lower edge and reaching past the hook's left edge.
-			local hsw : HSwToV : 0.5 * sw
-			local xLeftTop : mix 0 df.leftSB mul
-			local xRightBottom : [RLegTerminalX true right sw] + [RSlabExtraShift legSlab sw]
-			local bowlBottom : PBarPosY top sw bp
-			local xLhsAtBowl : xLeftTop + (xRightBottom - 2 * hsw - xLeftTop) * (legTop - bowlBottom) / legTop
-			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + hsw)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
-			include : RLegShape.Straight legTop 0 (xLeftTop + hsw) right top (xLeftTop - 2 * hsw) legSlab sw
+			# Broken leg: one long diagonal, flat-topped below the bowl, running from the left edge past the bowl's right side.
+			local yTop : mix legTop top 0.3
+			local xRightBottom : right + 0.05 * top
+			local xLeftTop : [mix 0 df.leftSB mul] + 0.02 * top
+			local legW : sw * [Math.hypot (xRightBottom - xLeftTop) yTop] / yTop
+			local xLhsAtBowl : mix xLeftTop (xRightBottom - legW) ((yTop - legTop + sw / 2) / yTop)
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
+			include : spiro-outline
+				corner xLeftTop yTop
+				corner (xLeftTop + legW) yTop
+				corner xRightBottom 0
+				corner (xRightBottom - legW) 0
 		: else : begin
 			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
 			include : difference
