@@ -103,33 +103,34 @@ glyph-block Symbol-Currency : begin
 	create-glyph 'currency/saudiRiyalSign' 0x20C1 : glyph-proc
 		set-width Width
 		include : MarkSet.capital
-		local sw : Stroke * 0.8
+		local sw Stroke
+		local vsw : HSwToV sw
 		local tilt 0.08
-		local xl : SB + 0.04 * Width
-		local xr : RightSB - 0.04 * Width
+		local xl SB
+		local xr RightSB
 		local x1 : mix xl xr 0.36
 		local x2 : mix xl xr 0.62
-		local top : CAP * 0.96
-		local top2 : CAP * 0.92
-		local cham : 1.2 * sw
-		local hh : 0.9 * sw
+		local top CAP
+		local top2 : CAP * 0.96
+		local cham : 1.2 * vsw
+		local hh sw
 		local yThru : CAP * 0.56
 		local yMid2 : CAP * 0.34
-		local yLow : CAP * 0.04
+		local yLow 0
 		local yBase : CAP * 0.2
-		local x2b : x2 + 0.7 * sw
+		local x2b : x2 + 0.9 * vsw
 		# upright shapes sheared along y around the glyph centre
 		define [Pt x y] : corner x (y + tilt * (x - Middle))
 
 		include : spiro-outline
-			Pt (x1 - sw) (top - cham)
-			Pt (x1 - 0.5 * sw) top
+			Pt (x1 - vsw) (top - cham)
+			Pt (x1 - 0.5 * vsw) top
 			Pt x1 top
 			Pt x1 (yBase + hh + 0.4 * cham)
 			Pt (x1 - 0.6 * cham) yBase
 			Pt xl yBase
 			Pt xl (yBase + hh)
-			Pt (x1 - sw) (yBase + hh)
+			Pt (x1 - vsw) (yBase + hh)
 		include : spiro-outline
 			Pt x2 (top2 - cham)
 			Pt (x2 + 0.5 * (x2b - x2)) top2
