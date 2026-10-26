@@ -1,4 +1,4 @@
-﻿$$include '../../meta/macros.ptl'
+$$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector MathSansSerif] from "@iosevka/glyph/relation"
@@ -253,6 +253,27 @@ glyph-block Letter-Latin-C : begin
 				adb -- SmallArchDepthB
 			include : lf.full
 
+		# Same forward slash as rum rotunda (number/2.ptl), cutting through the bottom of the c.
+		create-glyph "cLowSlash.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			local df : DivFrame 1
+			local lf : CLetterForm df styTop styBot XH 0
+				ada -- SmallArchDepthA
+				adb -- SmallArchDepthB
+			include : lf.full
+			include : ExtendBelowBaseAnchors Descender
+			local yTop : 0.34 * XH
+			local yBot : 0.70 * Descender
+			local xRight : mix df.leftSB df.rightSB 0.82
+			local xLeft : xRight - 0.20 * 0.78 * (df.rightSB - df.leftSB)
+			local cor : [Math.hypot (xRight - xLeft) (yTop - yBot)] / (yTop - yBot)
+			local hsw : HSwToV : 0.5 * cor * OverlayStroke
+			include : spiro-outline
+				corner (xRight - hsw) yTop
+				corner (xRight + hsw) yTop
+				corner (xLeft  + hsw) yBot
+				corner (xLeft  - hsw) yBot
+
 		create-glyph "cStretchedCurlyTail.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : union
@@ -455,6 +476,7 @@ glyph-block Letter-Latin-C : begin
 	select-variant 'cHookTop' 0x188
 	select-variant 'cStretched' 0x297 (follow -- 'c')
 	select-variant 'cStretchedCurlyTail' 0x1DF0F (follow -- 'cCurlyTail')
+	select-variant 'cLowSlash' 0x1DF90 (follow -- 'c')
 
 	alias 'cyrl/Es' 0x421 'C'
 	alias 'cyrl/es' 0x441 'c'
