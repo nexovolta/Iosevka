@@ -78,22 +78,17 @@ glyph-block Symbol-Currency : begin
 			include : MarkSet.capital
 			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 			local sw : Stroke * [mix 0.85 0.58 heavyT]
-			local inkW : RightSB - SB
 			# E: bottom-right, ~62% of cap height
 			local eTop : 0.62 * CAP
 			local eXbarY : EFMidBarPosY eTop 0
-			local eL : SB + 0.45 * inkW
-			local eR RightSB
-			local eShape : union
-				VBar.l eL 0 eTop sw
-				HBar.t eL eR eTop sw
-				HBar.m eL [mix eL eR 0.93] eXbarY sw
-				HBar.b eL eR 0 sw
+			local dxE : 0.3 * Width
+			local eShape : glyph-proc
+				include : with-transform [ApparentTranslate dxE 0] : EShape eTop false false false false false sw
 			# C: top-left, its bottom arc centred on the E's crossbar
 			local cTop CAP
 			local cBot : eXbarY - sw / 2
 			local kc : (cTop - cBot) / CAP
-			local df : DivFrame 0.74
+			local df : DivFrame 1
 			local cShape : glyph-proc
 				local lf : CLetterForm df styTop styBot cTop cBot
 					ada -- (ArchDepthA * kc)
