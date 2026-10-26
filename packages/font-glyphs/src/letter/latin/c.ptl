@@ -262,17 +262,17 @@ glyph-block Letter-Latin-C : begin
 				adb -- SmallArchDepthB
 			include : lf.full
 			include : ExtendBelowBaseAnchors Descender
-			local yTop : 0.34 * XH
-			local yBot : 0.70 * Descender
-			local xRight : mix df.leftSB df.rightSB 0.82
-			local xLeft : xRight - 0.20 * 0.78 * (df.rightSB - df.leftSB)
-			local cor : [Math.hypot (xRight - xLeft) (yTop - yBot)] / (yTop - yBot)
-			local hsw : HSwToV : 0.5 * cor * OverlayStroke
+			local yTop : 0.44 * XH
+			local yBot : (-0.07) * XH
+			local cw : df.rightSB - df.leftSB
+			local xRightTop : mix df.leftSB df.rightSB 0.62
+			local xRightBot : mix df.leftSB df.rightSB 0.22
+			local w : OverlayStroke * [Math.hypot (xRightTop - xRightBot) (yTop - yBot)] / (yTop - yBot)
 			include : spiro-outline
-				corner (xRight - hsw) yTop
-				corner (xRight + hsw) yTop
-				corner (xLeft  + hsw) yBot
-				corner (xLeft  - hsw) yBot
+				corner (xRightTop - w) yTop
+				corner xRightTop yTop
+				corner xRightBot yBot
+				corner (xRightBot - w) yBot
 
 		create-glyph "cStretchedCurlyTail.\(suffix)" : glyph-proc
 			include : MarkSet.p
@@ -489,6 +489,8 @@ glyph-block Letter-Latin-C : begin
 
 	alias 'latn/EpsilonLunate' 0x1DF6C 'cyrl/YeUkrainian'
 	alias 'latn/epsilonLunate' 0x1DF6D 'cyrl/yeUkrainian'
+	alias 'grek/epsilonLunate' 0x3F5 'cyrl/yeUkrainian'
+	alias 'grek/revepsilonLunate' 0x3F6 'cyrl/e'
 
 	select-variant 'cyrl/Koppa' 0x480
 	select-variant 'cyrl/koppa' 0x481
