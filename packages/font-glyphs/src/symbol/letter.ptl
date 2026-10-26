@@ -108,17 +108,20 @@ glyph-block Symbol-Currency : begin
 		local tilt 0.08
 		local xl SB
 		local xr RightSB
-		local x1 : mix xl xr 0.36
-		local x2 : mix xl xr 0.62
+		local W : xr - xl
+		local footLen : 0.2 * W
+		local x1 : xl + footLen + vsw
+		local x2 : x1 + 0.5 * vsw + 0.1 * (xr - x1)
 		local top CAP
 		local top2 : CAP * 0.96
-		local cham : 1.2 * vsw
+		local cham : 0.8 * vsw
 		local hh sw
-		local yThru : CAP * 0.56
-		local yMid2 : CAP * 0.34
 		local yLow 0
-		local yBase : CAP * 0.2
-		local x2b : x2 + 0.9 * vsw
+		local gapY : (0.74 * CAP - 3 * sw) / 2
+		local yMid2 : yLow + sw + gapY
+		local yThru : yMid2 + sw + gapY
+		local yBase yMid2
+		local x2b : Math.min (x2 + 0.75 * vsw) (xr - 0.4 * vsw)
 		# upright shapes sheared along y around the glyph centre
 		define [Pt x y] : corner x (y + tilt * (x - Middle))
 
