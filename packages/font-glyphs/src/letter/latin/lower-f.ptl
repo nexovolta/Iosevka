@@ -354,11 +354,11 @@ glyph-block Letter-Latin-Lower-F : begin
 		local { barLeft0 barLeft00 hookExtra tipX0 } : if fNarrow
 			FengTrillNarrowHook dfLeft pBar ch sym
 			FengTrillStdHook dfLeft pBar ch sym
-		local barLeft : barLeft0 * compress
-		local tipX : tipX0 * compress
+		local barLeft barLeft0
+		local tipX tipX0
 		local sw Stroke
-		local xN : (xEngPart + dfEng.leftSB) * compress
-		local xEng : (xEngPart + dfEng.rightSB) * compress
+		local xN : xEngPart + dfEng.leftSB
+		local xEng : xEngPart + dfEng.rightSB
 
 		local yTop Ascender
 		local yBot : Ascender - Hook * 0.75
@@ -376,12 +376,14 @@ glyph-block Letter-Latin-Lower-F : begin
 		local x2 : x1 + wEach
 		local x3 : x2 + wEach
 
-		include : FengTrillCopy x1 x2 yBot yTop sw fine ada adb
-		include : FengTrillCopy (x2 - join) x3 yBot yTop sw fine ada adb
+		# Arches are laid out at full (proportional) width and condensed together with f and eng.
+		include : with-transform [Scale compress 1] : glyph-proc
+			include : FengTrillCopy x1 x2 yBot yTop sw fine ada adb
+			include : FengTrillCopy (x2 - join) x3 yBot yTop sw fine ada adb
 
-		include : LeaningAnchor.Above.Hook barLeft x3
-		include : LeaningAnchor.Below.VBar.r xEng sw
-		set-base-anchor 'overlay' [mix barLeft xEng 0.5] [mix 0 XH 0.5]
+		include : LeaningAnchor.Above.Hook (barLeft * compress) (x3 * compress)
+		include : LeaningAnchor.Below.VBar.r (xEng * compress) (sw * compress)
+		set-base-anchor 'overlay' [mix (barLeft * compress) (xEng * compress) 0.5] [mix 0 XH 0.5]
 
 	# LATIN SMALL LETTER FENG DIGRAPH WITH TRILL (U+1DF00).
 	# Rounded f-hook (forced; never flat), then two packed inverted-breve copies
