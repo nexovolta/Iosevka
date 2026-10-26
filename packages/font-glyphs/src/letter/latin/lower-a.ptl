@@ -89,7 +89,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local xEnd : mix df.leftSB df.rightSB 0.42
 			include : sink
 				widths.lhs stroke
-				[if isMask corner flat] [if rr xStart (df.rightSB + O)] (barTop + rr) [heading : if rr [new Vec2 (-2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Leftward]
+				[if isMask corner flat] [if (rr && !isMask) xStart (df.rightSB + O)] (barTop + rr) [heading : if rr [new Vec2 (-2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Leftward]
 				curl xEnd (barTop - rr)
 				archv
 				g4 (df.leftSB + OX) ([YSmoothMidL (barTop - rr) 0 ada2 adb2] - [HSwToV leftSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (+leftSlope)}]
@@ -228,7 +228,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local xEnd : mix df.rightSB df.leftSB 0.42
 			include : sink
 				widths.rhs stroke
-				[if isMask corner flat] [if rr xStart (df.leftSB - O)] (barTop - rr) [heading : if rr [new Vec2 (2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Rightward]
+				[if isMask corner flat] [if (rr && !isMask) xStart (df.leftSB - O)] (barTop - rr) [heading : if rr [new Vec2 (2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Rightward]
 				curl xEnd (barTop + rr)
 				archv
 				g4 (df.rightSB - OX) ([YSmoothMidR (barTop + rr) 0 ada2 adb2] - [HSwToV rightSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (-rightSlope)}]
@@ -298,7 +298,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			[Just ToothlessRounded]    : ArcMask df 2 [SmoothB df]   _sw nothing diag
 			__                         : ArcMask df 0 0              _sw nothing diag
 
-	glyph-block-export DoubleStoreyConfig
+	glyph-block-export DoubleStoreyConfig DoubleStoreyDiagConfig
 	define DoubleStoreyConfig : SuffixCfg.weave
 		object # Hook style
 			doubleStorey                  HOOK-SLAB-NONE
@@ -625,7 +625,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	link-reduced-variant 'a/doubleStorey' 'a'
 	select-variant 'aHalf' 0x1DF5A
 
-	select-variant 'cyrl/a' 0x430 (shapeFrom -- 'a')
+	select-variant 'cyrl/a' 0x430 (shapeFrom -- 'a') (follow -- 'a')
 
 	CreateTurnedLetter 'turna' 0x250 'a/doubleStorey' HalfAdvance (XH / 2)
 

@@ -183,9 +183,9 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						AShape.Mask subDf bodyShape CAP sw
 
 	do "Iotated a"
-		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyConfig SingleStorey SingleStoreyConfig
+		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyDiagConfig SingleStorey SingleStoreyConfig
 
-		foreach { suffix { hookStyle cut { body revBody xTrailing } } } [Object.entries DoubleStoreyConfig] : do
+		foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
 			create-glyph "cyrl/aIotated.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
@@ -196,12 +196,12 @@ glyph-block Letter-Cyrillic-Iotated : begin
 
 				local shift : df.width - subDf.width
 				include : with-transform [ApparentTranslate shift 0]
-					body subDf hookStyle sw cut
+					body subDf hookStyle sw cut diag
 
 				include : difference
 					Iotation.full df XH [mix df.leftSB df.rightSB 0.75] (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 					with-transform [ApparentTranslate shift 0]
-						DoubleStorey.Mask body df sw
+						DoubleStorey.Mask body df sw diag
 
 		foreach { suffix { { body revBody } cut { bar revBar } } } [Object.entries SingleStoreyConfig] : do
 			create-glyph "cyrl/aIotated.\(suffix)" : glyph-proc
@@ -302,7 +302,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
 	select-variant 'cyrl/AIotated' 0xA656 (follow -- 'A')
-	select-variant 'cyrl/aIotated' 0xA657 (follow -- 'cyrl/a')
+	select-variant 'cyrl/aIotated' 0xA657 (follow -- 'a')
 	select-variant 'cyrl/EIotated' 0x464  (follow -- 'cyrl/YeUkrainian')
 	select-variant 'cyrl/eIotated' 0x465  (follow -- 'cyrl/yeUkrainian')
 	select-variant 'latn/eIotated' 0xAB61 (follow -- 'e')
