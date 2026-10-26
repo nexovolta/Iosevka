@@ -806,7 +806,9 @@ glyph-block Mark-Above : begin
 		return { z1 z2 z3 z4 }
 
 	# Compact tilde: vertical stems at both ends joined by a small S wave.
-	define tildeCompactDefault : [fallback para.variantSelector.asciiTilde ''] === 'compact'
+	define tildeSelectorValue ([fallback para.variantSelector.asciiTilde ''] + '')
+	define tildeCompactDefault [tildeSelectorValue.startsWith 'compact']
+	define tildeStretchDefault [if [tildeSelectorValue.endsWith 'Narrow'] 0.75 [if [tildeSelectorValue.endsWith 'Wide'] 1.2 1]]
 
 	define [CompactTildeShape] : with-params [ttop tbot leftEnd rightEnd hs] : glyph-proc
 		local hsV : HSwToV hs
@@ -829,10 +831,15 @@ glyph-block Mark-Above : begin
 			curl xr ttop [heading Upward]
 
 	glyph-block-export TildeShape
-	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft compact] : glyph-proc
+	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft compact stretch] : glyph-proc
+		local kStretch : fallback stretch tildeStretchDefault
+		local xMid : (leftEnd + rightEnd) / 2
+		local xHalf : kStretch * (rightEnd - leftEnd) / 2
+		local lEnd : xMid - xHalf
+		local rEnd : xMid + xHalf
 		if [fallback compact tildeCompactDefault]
-		: then : include : CompactTildeShape ttop tbot leftEnd rightEnd hs
-		: else : include : TildeShapeBezier ttop tbot leftEnd rightEnd hs hsLeft
+		: then : include : CompactTildeShape ttop tbot lEnd rEnd hs
+		: else : include : TildeShapeBezier ttop tbot lEnd rEnd hs hsLeft
 
 	define [TildeShapeBezier] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
 		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
@@ -1018,24 +1025,23 @@ glyph-block Mark-Above : begin
 			rightEnd -- (markMiddle + markExtend * 1.5)
 			hs       -- markHalfStroke
 
-	create-glyph 'asciiTilde.high' : glyph-proc
-		include : TildeShape
-			ttop     -- [mix aboveMarkMid aboveMarkTop asciiMarkZoomY]
-			tbot     -- [mix aboveMarkMid (aboveMarkBot + markFine / 2) asciiMarkZoomY]
-			leftEnd  -- SB
-			rightEnd -- RightSB
-			hs       -- (OperatorStroke / 2)
-			compact  -- false
+	define TildeStretchList : list { '' 1 } { 'Narrow' 0.75 } { 'Wide' 1.2 }
+	define TildePositionList : list { 'high' 'High' 0 } { 'mid' 'Mid' ((SymbolMid - XH - AccentStackOffset) / 2) } { 'low' 'Low' (SymbolMid - XH - AccentStackOffset) }
 
-	create-glyph 'asciiTilde.compact' : glyph-proc
-		include : TildeShape
-			ttop     -- [mix aboveMarkMid aboveMarkTop asciiMarkZoomY]
-			tbot     -- [mix aboveMarkMid (aboveMarkBot + markFine / 2) asciiMarkZoomY]
-			leftEnd  -- SB
-			rightEnd -- RightSB
-			hs       -- (OperatorStroke / 2)
-			compact  -- true
-
+	foreach { stretchName kStretch } [items-of TildeStretchList] : do
+		foreach { posName posCap dyPos } [items-of TildePositionList] : do
+			foreach isCompact { false true } : do
+				local posAffix : if (isCompact && posName === 'high') '' posCap
+				local suffix : if isCompact ('compact' + posAffix + stretchName) (posName + stretchName)
+				if [not (suffix === 'low')] : create-glyph ('asciiTilde.' + suffix) : glyph-proc
+					include : TildeShape
+						ttop     -- ([mix aboveMarkMid aboveMarkTop asciiMarkZoomY] + dyPos)
+						tbot     -- ([mix aboveMarkMid (aboveMarkBot + markFine / 2) asciiMarkZoomY] + dyPos)
+						leftEnd  -- SB
+						rightEnd -- RightSB
+						hs       -- (OperatorStroke / 2)
+						compact  -- isCompact
+						stretch  -- kStretch
 	for-width-kinds WideWidth1
 		define emDashWidth : if (para.isQuasiProportional && MosaicWidthScalar > 1) UPM MosaicWidth
 		create-glyph [MangleName 'swungDash.high'] : glyph-proc

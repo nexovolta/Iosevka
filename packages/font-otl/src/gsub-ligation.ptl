@@ -101,7 +101,9 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 	define hyphen {'hyphen'}
 	define equal {'equal'}
 	define anyStraightRod { 'hyphen' 'equal' }
-	define anyWave {'asciiTilde' 'asciiTilde.low' 'asciiTilde.high' 'asciiTilde.compact'}
+	define anyWave {'asciiTilde' 'asciiTilde.high' 'asciiTilde.mid' 'asciiTilde.low' 'asciiTilde.compact' 'asciiTilde.compactMid' 'asciiTilde.compactLow' 'asciiTilde.highNarrow' 'asciiTilde.midNarrow' 'asciiTilde.lowNarrow' 'asciiTilde.compactNarrow' 'asciiTilde.compactMidNarrow' 'asciiTilde.compactLowNarrow' 'asciiTilde.highWide' 'asciiTilde.midWide' 'asciiTilde.lowWide' 'asciiTilde.compactWide' 'asciiTilde.compactMidWide' 'asciiTilde.compactLowWide'}
+	define tildeSelValue ([if para.variantSelector.asciiTilde para.variantSelector.asciiTilde ''] + '')
+	define tildeCenteredGlyph ('asciiTilde.' + [if [tildeSelValue.startsWith 'compact'] 'compactLow' 'low'] + [if [tildeSelValue.endsWith 'Narrow'] 'Narrow' [if [tildeSelValue.endsWith 'Wide'] 'Wide' '']])
 
 	define bar {'bar'}
 	define slash {'slash'}
@@ -162,7 +164,7 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 
 		define opcGroups : list
 			{'asterisk'}    ~>  {'asterisk/sMid'}
-			{'asciiTilde'}  ~>  {'asciiTilde.low'}
+			{'asciiTilde'}  ~>  {tildeCenteredGlyph}
 
 		if [hasLG 'center-op-influence-dot']   : opcGroups.push : {'period'} ~> {'period/mid'}
 		if [hasLG 'center-op-influence-colon'] : opcGroups.push : {'colon'}  ~> {'colon/mid'}
