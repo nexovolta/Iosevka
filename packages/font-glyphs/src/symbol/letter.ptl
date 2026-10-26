@@ -77,18 +77,23 @@ glyph-block Symbol-Currency : begin
 			set-width Width
 			include : MarkSet.capital
 			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
-			local sw : Stroke * [mix 0.85 0.58 heavyT]
+			local sw : Stroke * [mix 1.05 0.72 heavyT]
+			local inkW : RightSB - SB
 			# E: bottom-right, ~62% of cap height
 			local eTop : 0.62 * CAP
 			local eXbarY : EFMidBarPosY eTop 0
-			local dxE : 0.3 * Width
-			local eShape : glyph-proc
-				include : with-transform [ApparentTranslate dxE 0] : EShape eTop false false false false false sw
+			local eL : SB + 0.45 * inkW
+			local eR RightSB
+			local eShape : union
+				VBar.l eL 0 eTop sw
+				HBar.t eL eR eTop sw
+				HBar.m eL [mix eL eR 0.93] eXbarY sw
+				HBar.b eL eR 0 sw
 			# C: top-left, its bottom arc centred on the E's crossbar
 			local cTop CAP
 			local cBot : eXbarY - sw / 2
 			local kc : (cTop - cBot) / CAP
-			local df : DivFrame 1
+			local df : DivFrame 0.74
 			local cShape : glyph-proc
 				local lf : CLetterForm df styTop styBot cTop cBot
 					ada -- (ArchDepthA * kc)
@@ -96,7 +101,7 @@ glyph-block Symbol-Currency : begin
 					hook -- (Hook * kc)
 					sw -- sw
 				include : with-transform [ApparentTranslate (SB - df.leftSB) 0] : lf.full
-			include : intersection [Rect CAP 0 0 Width] [union [difference cShape eShape] eShape]
+			include : union [difference cShape eShape] eShape
 
 	select-variant 'currency/euroCurrencySign' 0x20A0 (follow -- 'C')
 	foreach { suffix _ } [Object.entries SmallRConfig] : do
@@ -104,7 +109,7 @@ glyph-block Symbol-Currency : begin
 			set-width Width
 			include : MarkSet.capital
 			include : refer-glyph 'C'
-			include : with-transform [ApparentTranslate (0.16 * Width) 0] : with-transform [ScaleAround 0 0 0.9 0.9] : glyph-proc
+			include : with-transform [ApparentTranslate (0.16 * Width) 0] : with-transform [ScaleAround 0 0 0.8 0.8] : glyph-proc
 				include : refer-glyph "r.\(suffix)"
 				eject-contour 'serifRB'
 
