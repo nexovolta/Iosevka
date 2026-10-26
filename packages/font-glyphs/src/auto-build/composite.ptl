@@ -1903,6 +1903,7 @@ glyph-block Autobuild-Currency-Cruzeiro : begin
 
 	define rScaleX 0.65
 	define rScaleY 0.8
+	define rWeightT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 	define rSuffixes : Object.keys SmallRConfig
 
 	# The inner r is rebuilt with a lighter advice stroke rather than just scaled down.
@@ -1918,9 +1919,10 @@ glyph-block Autobuild-Currency-Cruzeiro : begin
 			include : MarkSet.capital
 			include : refer-glyph 'C'
 			local rThin : thinFont.queryByNameEnsured "r.\(suffix)"
+			local rOffsetX : Width * (0.224 + 0.035 * rWeightT)
 			include : intersection
 				OShapeOutline CAP 0 SB RightSB Stroke ArchDepthA ArchDepthB
-				with-transform [ApparentTranslate (0.224 * Width) 0] : with-transform [ScaleAround 0 0 rScaleX rScaleY] : glyph-proc
+				with-transform [ApparentTranslate rOffsetX 0] : with-transform [ScaleAround 0 0 rScaleX rScaleY] : glyph-proc
 					include rThin
 					eject-contour 'serifRB'
 
