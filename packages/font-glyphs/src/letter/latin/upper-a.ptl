@@ -53,13 +53,16 @@ glyph-block Letter-Latin-Upper-A : begin
 				__                         : VShape df bodyShape top sw
 			include : FlipAround df.middle (top / 2)
 
-		define [CrossBar df bodyShape top sw] : begin
+		define [CrossBar df bodyShape top sw diag] : begin
 			local yBar : BarPos bodyShape slabKind top
-			return : tagged 'crossBar' : intersection [HBar.t 0 df.width yBar sw] [Mask df bodyShape top sw]
+			local bar : if diag
+				DiagonalHBar 0 df.width (yBar - sw / 2) (0.16 * diag * top) sw
+				HBar.t 0 df.width yBar sw
+			return : tagged 'crossBar' : intersection bar [Mask df bodyShape top sw]
 
-		export : define [Letter df bodyShape slabKind top sw] : new-glyph : glyph-proc
+		export : define [Letter df bodyShape slabKind top sw diag] : new-glyph : glyph-proc
 			include : Outer df bodyShape top sw
-			include : CrossBar df bodyShape top sw
+			include : CrossBar df bodyShape top sw diag
 			include : ASerifs df top sw slabKind (bodyShape === BODY-SQUARE-BOTTOM)
 
 		define [CuspBottomRightRemovedImpl df bodyShape slabKind top sw] : new-glyph : glyph-proc
@@ -146,8 +149,12 @@ glyph-block Letter-Latin-Upper-A : begin
 			topSerifed   SLAB-TOP
 			baseSerifed  [bitOr SLAB-LEFT SLAB-RIGHT]
 			triSerifed   [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
+		object
+			""                 0
+			diagonalBar        0.5
+			diagonalBarFalling (-0.5)
 
-	foreach { suffix { bodyShape slabKind } } [Object.entries AConfig] : do
+	foreach { suffix { bodyShape slabKind diag } } [Object.entries AConfig] : do
 		local fBarStraight : (bodyShape === BODY-STRAIGHT) || (bodyShape === BODY-SQUARE-BOTTOM)
 		local fSlabTop : maskBits slabKind SLAB-TOP
 		local fSlabBot : maskBits slabKind [bitOr SLAB-LEFT SLAB-RIGHT]
@@ -159,7 +166,7 @@ glyph-block Letter-Latin-Upper-A : begin
 				[Just BODY-ROUND-TOP] : begin 0
 				__                    : if fSlabTop 0 : (RightSB - SB) * 0.2
 
-			include : AShape.Letter [DivFrame 1] bodyShape slabKind top Stroke
+			include : AShape.Letter [DivFrame 1] bodyShape slabKind top Stroke diag
 
 			if nOverlays : begin
 				local yBar : AShape.BarPos bodyShape slabKind top

@@ -158,7 +158,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 	do "Iotated A"
 		glyph-block-import Letter-Latin-Upper-A : AShape AConfig
 
-		foreach { suffix { bodyShape slabKind } } [Object.entries AConfig] : do
+		foreach { suffix { bodyShape slabKind diag } } [Object.entries AConfig] : do
 			create-glyph "cyrl/AIotated.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3.5
 				include : df.markSet.capital
@@ -172,7 +172,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				local botGap : Math.max (0.08 * (df.rightSB - df.leftSB)) : AdviceStroke 6
 				include : difference
 					with-transform [ApparentTranslate shift 0]
-						AShape.Letter subDf bodyShape slabKind CAP sw
+						AShape.Letter subDf bodyShape slabKind CAP sw diag
 					intersection
 						MaskBelow sw
 						MaskLeft [mix xIotifiedBarRight [Math.min (subDf.leftSB + shift) (xIotifiedBarRight + botGap)] 0.5]

@@ -2,6 +2,7 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
+import [Vec2] from "@iosevka/geometry/point"
 
 glyph-module
 
@@ -74,7 +75,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local sw : fallback stroke : Sw df
 			return : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
 
-		define [ArcT sink] : function [df kind rise stroke fine bbd] : glyph-proc
+		define [ArcT sink] : function [df kind rise stroke fine bbd diag] : glyph-proc
 			local isMask : sink == spiro-outline
 			local barTop : [mix 0 XH DesignParameters.aBarPos] + stroke * (0.5 + DesignParameters.aBarStrokeAdj)
 			local ada  : df.archDepthAOf (SmallArchDepth * 0.9) stroke
@@ -83,17 +84,19 @@ glyph-block Letter-Latin-Lower-A : begin
 			local adb2 :    ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
 			local leftSlopeS : 0.1 * (df.width / HalfUPM)
 			local leftSlope  : clamp (-1) (+1) (leftSlopeS - TanSlope)
+			local rr : [fallback diag 0] * 0.07 * XH
+			local xEnd : mix df.rightSB df.middle 0.9
 			include : sink
 				widths.lhs stroke
-				[if isMask corner flat] (df.rightSB + O) barTop [heading Leftward]
-				curl [mix df.rightSB df.middle 0.9] barTop
+				[if isMask corner flat] (df.rightSB + O) (barTop + rr) [heading : if rr [new Vec2 (-2 * rr / [Math.hypot (xEnd - df.rightSB) (2 * rr)]) ((xEnd - df.rightSB) / [Math.hypot (xEnd - df.rightSB) (2 * rr)])] Leftward]
+				curl xEnd (barTop - rr)
 				archv
 				g4 (df.leftSB + OX) ([YSmoothMidL barTop 0 ada2 adb2] - [HSwToV leftSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (+leftSlope)}]
 				match kind
 					0 : list
 						Arch.lhs 0 (sw -- stroke) (swAfter -- fine)
 						flat (df.rightSB - bbd - [HSwToV : stroke - fine]) [Math.min (barTop - TINY - [HSwToV : Math.abs : fine * TanSlope]) (0 + ada)] [widths.lhs fine]
-						[if isMask corner curl] (df.rightSB - bbd - [HSwToV : stroke - fine]) barTop [heading Upward]
+						[if isMask corner curl] (df.rightSB - bbd - [HSwToV : stroke - fine]) (barTop + rr) [heading Upward]
 					1 : if rise
 						list
 							Arch.lhs 0 (sw -- stroke) (blendPost -- {})
@@ -107,53 +110,55 @@ glyph-block Letter-Latin-Lower-A : begin
 						flat df.rightSB [Math.min rise : YSmoothMidR barTop 0 ada2 adb2]
 						curl df.rightSB (rise + TINY + [HSwToV : Math.abs : stroke * TanSlope]) [heading Upward]
 
-		export : define [Arc df kind rise _sw _fine _bbd] : [ArcT dispiro] df kind rise
+		export : define [Arc df kind rise _sw _fine _bbd _diag] : [ArcT dispiro] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
 			fallback _bbd  0
+			fallback _diag 0
 
-		export : define [ArcMask df kind rise _sw _fine _bbd] : [ArcT spiro-outline] df kind rise
+		export : define [ArcMask df kind rise _sw _fine _bbd _diag] : [ArcT spiro-outline] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
 			fallback _bbd  0
+			fallback _diag 0
 
-		export : define [Serifless df hookStyle _sw cut] : union
+		export : define [Serifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 0         0 _sw
+			Arc        df 0         0 _sw nothing nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [Serifed df hookStyle _sw cut] : union
-			Serifless  df hookStyle _sw cut
+		export : define [Serifed df hookStyle _sw cut diag] : union
+			Serifless  df hookStyle _sw cut diag
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
-		export : define [Tailed df hookStyle _sw cut] : union
+		export : define [Tailed df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
-			Arc        df 0         0            _sw
+			Arc        df 0         0            _sw nothing nothing diag
 			RightwardTailedBar df.rightSB 0 (XH - [SmoothB df]) [fallback _sw : Sw df]
 
-		export : define [FlatBottomSerifless df hookStyle _sw cut] : union
+		export : define [FlatBottomSerifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 1         0 _sw
+			Arc        df 1         0 _sw nothing nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [FlatBottomSerifed df hookStyle _sw cut] : union
-			FlatBottomSerifless df hookStyle _sw cut
+		export : define [FlatBottomSerifed df hookStyle _sw cut diag] : union
+			FlatBottomSerifless df hookStyle _sw cut diag
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
-		export : define [ToothlessCorner df hookStyle _sw cut] : union
+		export : define [ToothlessCorner df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle DToothlessRise _sw
-			Arc        df 1         DToothlessRise _sw
+			Arc        df 1         DToothlessRise _sw nothing nothing diag
 
-		export : define [ToothlessRounded df hookStyle _sw cut] : union
+		export : define [ToothlessRounded df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
-			Arc        df 2         [SmoothA df] _sw
+			Arc        df 2         [SmoothA df] _sw nothing nothing diag
 
-		export : define [Mask shapeFn df _sw] : match shapeFn
-			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw
-			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw
-			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw
-			[Just ToothlessRounded]    : ArcMask df 2 [SmoothA df]   _sw
-			__                         : ArcMask df 0 0              _sw
+		export : define [Mask shapeFn df _sw diag] : match shapeFn
+			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw nothing nothing diag
+			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw nothing nothing diag
+			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw nothing nothing diag
+			[Just ToothlessRounded]    : ArcMask df 2 [SmoothA df]   _sw nothing nothing diag
+			__                         : ArcMask df 0 0              _sw nothing nothing diag
 
 	define RevDoubleStorey : namespace
 		export : define [Sw df] : df.adviceStroke2 2 3 XH
@@ -208,7 +213,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local sw : fallback stroke : Sw df
 			return : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
 
-		define [ArcT sink] : function [df kind rise stroke fine] : glyph-proc
+		define [ArcT sink] : function [df kind rise stroke fine diag] : glyph-proc
 			local isMask : sink == spiro-outline
 			local barTop : [mix 0 XH DesignParameters.aBarPos] + stroke * (0.5 + DesignParameters.aBarStrokeAdj)
 			local ada  : df.archDepthAOf (SmallArchDepth * 0.9) stroke
@@ -217,17 +222,19 @@ glyph-block Letter-Latin-Lower-A : begin
 			local adb2 :    ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
 			local rightSlopeS : 0.1 * (df.width / HalfUPM)
 			local rightSlope  : clamp (-1) (+1) (rightSlopeS + TanSlope)
+			local rr : [fallback diag 0] * 0.07 * XH
+			local xEnd : mix df.leftSB df.middle 0.9
 			include : sink
 				widths.rhs stroke
-				[if isMask corner flat] (df.leftSB - O) barTop [heading Rightward]
-				curl [mix df.leftSB df.middle 0.9] barTop
+				[if isMask corner flat] (df.leftSB - O) (barTop - rr) [heading : if rr [new Vec2 (2 * rr / [Math.hypot (xEnd - df.leftSB) (2 * rr)]) ((xEnd - df.leftSB) / [Math.hypot (xEnd - df.leftSB) (2 * rr)])] Rightward]
+				curl xEnd (barTop + rr)
 				archv
 				g4 (df.rightSB - OX) ([YSmoothMidR barTop 0 ada2 adb2] - [HSwToV rightSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (-rightSlope)}]
 				match kind
 					0 : list
 						Arch.rhs 0 (sw -- stroke) (swAfter -- fine)
 						flat (df.leftSB + [HSwToV : stroke - fine]) [Math.min (barTop - TINY - [HSwToV : Math.abs : fine * TanSlope]) (0 + adb)] [widths.rhs fine]
-						[if isMask corner curl] (df.leftSB + [HSwToV : stroke - fine]) barTop [heading Upward]
+						[if isMask corner curl] (df.leftSB + [HSwToV : stroke - fine]) (barTop - rr) [heading Upward]
 					1 : if rise
 						list
 							Arch.rhs 0 (sw -- stroke) (blendPost -- {})
@@ -241,51 +248,53 @@ glyph-block Letter-Latin-Lower-A : begin
 						flat df.leftSB [Math.min rise : YSmoothMidL barTop 0 ada2 adb2]
 						curl df.leftSB (rise + TINY + [HSwToV : Math.abs : stroke * TanSlope]) [heading Upward]
 
-		export : define [Arc df kind rise _sw _fine] : [ArcT dispiro] df kind rise
+		export : define [Arc df kind rise _sw _fine _diag] : [ArcT dispiro] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
+			fallback _diag 0
 
-		export : define [ArcMask df kind rise _sw _fine] : [ArcT spiro-outline] df kind rise
+		export : define [ArcMask df kind rise _sw _fine _diag] : [ArcT spiro-outline] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
+			fallback _diag 0
 
-		export : define [Serifless df hookStyle _sw cut] : union
+		export : define [Serifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 0         0 _sw
+			Arc        df 0         0 _sw nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [Serifed df hookStyle _sw cut] : union
-			Serifless  df hookStyle _sw cut
+		export : define [Serifed df hookStyle _sw cut diag] : union
+			Serifless  df hookStyle _sw cut diag
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].lb.outer
 
-		export : define [Tailed df hookStyle _sw cut] : union
+		export : define [Tailed df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
-			Arc        df 0         0            _sw
+			Arc        df 0         0            _sw nothing diag
 			LeftwardTailedBar df.leftSB 0 (XH - [SmoothA df]) [fallback _sw : Sw df]
 
-		export : define [FlatBottomSerifless df hookStyle _sw cut] : union
+		export : define [FlatBottomSerifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 1         0 _sw
+			Arc        df 1         0 _sw nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
-		export : define [FlatBottomSerifed df hookStyle _sw cut] : union
-			FlatBottomSerifless df hookStyle _sw cut
+		export : define [FlatBottomSerifed df hookStyle _sw cut diag] : union
+			FlatBottomSerifless df hookStyle _sw cut diag
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].lb.outer
 
-		export : define [ToothlessCorner df hookStyle _sw cut] : union
+		export : define [ToothlessCorner df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle DToothlessRise _sw
-			Arc        df 1         DToothlessRise _sw
+			Arc        df 1         DToothlessRise _sw nothing diag
 
-		export : define [ToothlessRounded df hookStyle _sw cut] : union
+		export : define [ToothlessRounded df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
-			Arc        df 2         [SmoothB df] _sw
+			Arc        df 2         [SmoothB df] _sw nothing diag
 
-		export : define [Mask shapeFn df _sw] : match shapeFn
-			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw
-			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw
-			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw
-			[Just ToothlessRounded]    : ArcMask df 2 [SmoothB df]   _sw
-			__                         : ArcMask df 0 0              _sw
+		export : define [Mask shapeFn df _sw diag] : match shapeFn
+			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw nothing diag
+			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw nothing diag
+			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw nothing diag
+			[Just ToothlessRounded]    : ArcMask df 2 [SmoothB df]   _sw nothing diag
+			__                         : ArcMask df 0 0              _sw nothing diag
 
 	glyph-block-export DoubleStoreyConfig
 	define DoubleStoreyConfig : SuffixCfg.weave
@@ -308,10 +317,15 @@ glyph-block Letter-Latin-Lower-A : begin
 				toothlessCorner     { DoubleStorey.ToothlessCorner     RevDoubleStorey.ToothlessCorner     null               }
 				toothlessRounded    { DoubleStorey.ToothlessRounded    RevDoubleStorey.ToothlessRounded    null               }
 
-	foreach { suffix { hookStyle cut { body revBody xTrailing } } } [Object.entries DoubleStoreyConfig] : do
+	define DoubleStoreyDiagConfig : SuffixCfg.weave DoubleStoreyConfig : object
+		""         0
+		diagonalBar        0.5
+		diagonalBarFalling (-0.5)
+
+	foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
 		do
 			create-glyph "a.\(suffix)" : make [DivFrame 1]
-			if (!hookStyle) : begin
+			if (!hookStyle && !diag) : begin
 				create-glyph "aHalf.\(suffix)" : make [DivFrame 1] HOOK-HALF
 		: where : [make df _hookStyle] : glyph-proc
 			set-width df.width
@@ -321,7 +335,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
 			set-base-anchor 'strike'  df.middle bp
 			if xTrailing : set-base-anchor 'trailing' xTrailing 0
-			include : body df [fallback _hookStyle hookStyle] nothing cut
+			include : body df [fallback _hookStyle hookStyle] nothing cut diag
 
 		create-glyph "aSwash.\(suffix)" : glyph-proc
 			include [refer-glyph "a.\(suffix)"] AS_BASE ALSO_METRICS
@@ -337,7 +351,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local bp : [mix 0 XH DesignParameters.aBarPos] + sw * DesignParameters.aBarStrokeAdj
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
 			set-base-anchor 'strike'  df.middle bp
-			include : revBody df hookStyle nothing cut
+			include : revBody df hookStyle nothing cut diag
 
 		if (body === DoubleStorey.Serifless) : begin
 			create-glyph "aRetroflexHook.\(suffix)" : glyph-proc
