@@ -808,7 +808,7 @@ glyph-block Mark-Above : begin
 	# Compact tilde: vertical stems at both ends joined by a small S wave.
 	define tildeSelectorValue ([fallback para.variantSelector.asciiTilde ''] + '')
 	define tildeCompactDefault [tildeSelectorValue.startsWith 'compact']
-	define tildeStretchDefault [if [tildeSelectorValue.endsWith 'Narrow'] 0.75 [if [tildeSelectorValue.endsWith 'Wide'] 1.2 1]]
+	define tildeStretchDefault [if [tildeSelectorValue.endsWith 'Short'] 0.7 [if [tildeSelectorValue.endsWith 'Tall'] 1.3 1]]
 
 	define [CompactTildeShape] : with-params [ttop tbot leftEnd rightEnd hs] : glyph-proc
 		local hsV : HSwToV hs
@@ -833,13 +833,13 @@ glyph-block Mark-Above : begin
 	glyph-block-export TildeShape
 	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft compact stretch] : glyph-proc
 		local kStretch : fallback stretch tildeStretchDefault
-		local xMid : (leftEnd + rightEnd) / 2
-		local xHalf : kStretch * (rightEnd - leftEnd) / 2
-		local lEnd : xMid - xHalf
-		local rEnd : xMid + xHalf
+		local yMid : (ttop + tbot) / 2
+		local yHalf : kStretch * (ttop - tbot) / 2
+		local tt : yMid + yHalf
+		local tb : yMid - yHalf
 		if [fallback compact tildeCompactDefault]
-		: then : include : CompactTildeShape ttop tbot lEnd rEnd hs
-		: else : include : TildeShapeBezier ttop tbot lEnd rEnd hs hsLeft
+		: then : include : CompactTildeShape tt tb leftEnd rightEnd hs
+		: else : include : TildeShapeBezier tt tb leftEnd rightEnd hs hsLeft
 
 	define [TildeShapeBezier] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
 		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
@@ -1025,7 +1025,7 @@ glyph-block Mark-Above : begin
 			rightEnd -- (markMiddle + markExtend * 1.5)
 			hs       -- markHalfStroke
 
-	define TildeStretchList : list { '' 1 } { 'Narrow' 0.75 } { 'Wide' 1.2 }
+	define TildeStretchList : list { '' 1 } { 'Short' 0.7 } { 'Tall' 1.3 }
 	define TildePositionList : list { 'high' 'High' 0 } { 'mid' 'Mid' ((SymbolMid - XH - AccentStackOffset) / 2) } { 'low' 'Low' (SymbolMid - XH - AccentStackOffset) }
 
 	foreach { stretchName kStretch } [items-of TildeStretchList] : do
