@@ -282,7 +282,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 	do "Latin iotated e"
 		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
 
-		foreach { suffix { body revbody } } [Object.entries SmallEConfig] : do
+		foreach { suffix { body revbody tailSlab diag } } [Object.entries SmallEConfig] : do
 			create-glyph "latn/eIotated.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
@@ -298,6 +298,8 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						hook   -- AHook
 						ada    -- (SmallArchDepthA * 0.75 * df.adws)
 						adb    -- (SmallArchDepthB * 0.75 * df.adws)
+						styBot -- tailSlab
+						diag   -- diag
 
 				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
@@ -311,7 +313,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
 		glyph-block-import Letter-Latin-Lower-I
 
-		foreach { suffix { body revbody } } [Object.entries SmallEConfig] : do
+		foreach { suffix { body revbody tailSlab diag } } [Object.entries SmallEConfig] : do
 			create-glyph "latn/ie/base.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
@@ -326,6 +328,8 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						hook   -- AHook
 						ada    -- (SmallArchDepthA * 0.75 * df.adws)
 						adb    -- (SmallArchDepthB * 0.75 * df.adws)
+						styBot -- tailSlab
+						diag   -- diag
 				include : refer-glyph 'ie/i'
 				include : HBar.m subI.middle (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) sw
 				set-base-anchor 'above' subI.middle XH
