@@ -18,7 +18,7 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook RetroflexHook TopHook
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerifWidth ArcStartSerifDepth
 	glyph-block-import Letter-Blackboard : BBS BBD
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
@@ -38,7 +38,7 @@ glyph-block Letter-Latin-C : begin
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
 			__ : list
 				g4   (df.rightSB - offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -51,7 +51,7 @@ glyph-block Letter-Latin-C : begin
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (df.width - offset) (bot + offset)
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
@@ -66,7 +66,7 @@ glyph-block Letter-Latin-C : begin
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
 			__ : list
 				g4   (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -79,7 +79,7 @@ glyph-block Letter-Latin-C : begin
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (0 + offset) (bot + offset)
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.leftSB + offset) (bot + [fallback hook Hook])
@@ -87,21 +87,25 @@ glyph-block Letter-Latin-C : begin
 	define [AutoStartSerifR df sty y hook sw] : match sty
 		[Just SLAB-CLASSICAL] : ArcStartSerif.R       df.rightSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-INWARD]    : ArcStartSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xRHook (y - [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) y [fallback sw Stroke]
 		__                    : no-shape
 
 	define [AutoStartSerifL df sty y hook sw] : match sty
 		[Just SLAB-CLASSICAL] : ArcStartSerif.L       df.leftSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-INWARD]    : ArcStartSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xLHook (y - [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) y [fallback sw Stroke]
 		__                    : no-shape
 
 	define [AutoEndSerifR df sty y hook sw] : match sty
 		[Just SLAB-CLASSICAL] : ArcEndSerif.R       df.rightSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-INWARD]    : ArcEndSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xRHook y (y + [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) [fallback sw Stroke]
 		__                    : no-shape
 
 	define [AutoEndSerifL df sty y hook sw] : match sty
 		[Just SLAB-CLASSICAL] : ArcEndSerif.L       df.leftSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-INWARD]    : ArcEndSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xLHook y (y + [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) [fallback sw Stroke]
 		__                    : no-shape
 
 	define [CCurlyTailShape df styTop top bot] : glyph-proc
@@ -114,7 +118,7 @@ glyph-block Letter-Latin-C : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
 				__ : list [g4 df.rightSB (top - Hook) [widths.lhs sw]] [HookStart top (sw -- sw)]
 			flatside.ld df.leftSB bot top SmallArchDepthA SmallArchDepthB
 			CurlyTail.n fine bot df.rightSB 0 bot (yLoopTop -- loopTop)
@@ -143,6 +147,10 @@ glyph-block Letter-Latin-C : begin
 		serifless                  { SLAB-NONE      SLAB-NONE      }
 		flatHook                   { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
 		cornerHook                 { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
+		topFlatHook                { SLAB-FLAT-HOOK SLAB-NONE }
+		topCornerHook              { SLAB-CORNER-HOOK SLAB-NONE }
+		bottomFlatHook             { SLAB-NONE SLAB-FLAT-HOOK }
+		bottomCornerHook           { SLAB-NONE SLAB-CORNER-HOOK }
 		bottomSerifed              { SLAB-NONE      SLAB-CLASSICAL }
 		bottomInwardSerifed        { SLAB-NONE      SLAB-INWARD    }
 		unilateralSerifed          { SLAB-CLASSICAL SLAB-NONE      }

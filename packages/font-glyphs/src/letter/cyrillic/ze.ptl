@@ -18,7 +18,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
 	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 
 	define SLAB-NONE       0
@@ -94,7 +94,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						curl (left + [HSwToV : stroke - shoulderFine]) [Math.max (top - ada) (midy + TINY)]
 						Arch.rhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartL
-					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookStartL
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookStartL
 					__ : list
 						g4   (left - xo) (top - hook) [widths.rhs stroke]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -131,7 +131,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						flat (left + [HSwToV : stroke - shoulderFine]) [Math.min (bot + adb) (midy - TINY)] [widths.rhs shoulderFine]
 						curl (left + [HSwToV : stroke - shoulderFine]) midy
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndL
-					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookEndL
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookEndL
 					__ : list
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (left + xo) (bot + hookBot)
@@ -212,6 +212,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			return : match slabTop
 				[Just SLAB-CLASSICAL] : ArcStartSerif.L       left top stroke hook
 				[Just SLAB-INWARD]    : ArcStartSerif.InwardL left top stroke hook
+				[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase left right top bot (sw -- stroke)].xLHook (top - [CornerHookDepth hook stroke]) top stroke
 				__ : glyph-proc
 
 		export : define [AutoEndSerifL] : begin
@@ -219,6 +220,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			return : match slabBot
 				[Just SLAB-CLASSICAL] : ArcEndSerif.L         left bot stroke hookBot
 				[Just SLAB-INWARD]    : ArcEndSerif.InwardL   left bot stroke hookBot
+				[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase left right top bot (sw -- stroke)].xLHook bot (bot + [CornerHookDepth hookBot stroke]) stroke
 				__ : glyph-proc
 
 	define flex-params [CyrRevZe] : namespace
@@ -267,7 +269,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						curl (right - [HSwToV : stroke - shoulderFine]) [Math.max (top - adb) (midy + TINY)]
 						Arch.lhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartR
-					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookStartR
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookStartR
 					__ : list
 						g4   (right + xo) (top - hook) [widths.lhs]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -301,7 +303,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						flat (right - [HSwToV : stroke - shoulderFine]) [Math.min (bot + ada) (midy - TINY)] [widths.lhs shoulderFine]
 						curl (right - [HSwToV : stroke - shoulderFine]) midy
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndR
-					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookEndR
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookEndR
 					__ : list
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (right - xo) (bot + hookBot)
@@ -347,6 +349,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			return : match slabTop
 				[Just SLAB-CLASSICAL] : ArcStartSerif.R       right top stroke hook
 				[Just SLAB-INWARD]    : ArcStartSerif.InwardR right top stroke hook
+				[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase left right top bot (sw -- stroke)].xRHook (top - [CornerHookDepth hook stroke]) top stroke
 				__ : glyph-proc
 
 		export : define [AutoEndSerifR] : begin
@@ -354,6 +357,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			return : match slabBot
 				[Just SLAB-CLASSICAL] : ArcEndSerif.R         right bot stroke hookBot
 				[Just SLAB-INWARD]    : ArcEndSerif.InwardR   right bot stroke hookBot
+				[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase left right top bot (sw -- stroke)].xRHook bot (bot + [CornerHookDepth hookBot stroke]) stroke
 				__ : glyph-proc
 
 	glyph-block-export ZeConfig
@@ -371,11 +375,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 			bilateralInwardSerifed  { SLAB-INWARD    SLAB-INWARD    }
 			hybridSerifed1          { SLAB-INWARD    SLAB-CLASSICAL }
 			flatHook                        { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
+			topFlatHook                    { SLAB-FLAT-HOOK SLAB-NONE }
 			bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
 			bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
 			unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
 			unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
 			cornerHook                        { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
+			topCornerHook                    { SLAB-CORNER-HOOK SLAB-NONE }
 			bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
 			bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
 			unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }

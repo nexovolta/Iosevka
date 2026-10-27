@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook nShoulder EngHook
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset
 
 	define CH-NONE          0
 	define CH-SERIF         1
@@ -85,15 +85,17 @@ glyph-block Letter-Latin-Lower-F : begin
 
 	define [SmallFDownExtension barLeft] : VBar.l barLeft [mix 0 Descender 0.9] TINY
 
-	define [SmallFDownHook df barRight counterHookLeft] : begin
+	define [SmallFDownHook df barRight counterHookLeft fCorner] : glyph-proc
 		local hd : FlatHookDepth df
-		return : dispiro
+		local xTip : counterHookLeft - [if fCorner [CornerHookOffset Stroke] 0]
+		include : dispiro
 			widths.lhs
-			flat counterHookLeft Descender
+			flat xTip Descender
 			curl [Math.max (barRight - hd.x) (counterHookLeft + TINY)] Descender
 			archv.superness DesignParameters.tightHookSuperness
 			flat barRight [Math.min 0 (Descender + hd.y)] [heading Upward]
 			curl barRight TINY [heading Upward]
+		if fCorner : include : VBar.l xTip Descender (Descender + [CornerHookDepth Hook Stroke])
 
 	glyph-block-export SmallFDiagonalTail
 	define [SmallFDiagonalTail df barLeft] : begin
@@ -210,20 +212,19 @@ glyph-block Letter-Latin-Lower-F : begin
 		local hd : FlatHookDepth df
 		local { xCrossLeft xCrossRight } : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
 		local topHookRight : if (sym === SYM-LEFT) xCrossRight (crossRight + topHookExt)
+		local xTip : topHookRight + [if fCorner [CornerHookOffset Stroke] 0]
 
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 		include : LeaningAnchor.Above.Hook barLeft topHookRight
 
 		include : dispiro
 			widths.lhs
-			if fCorner
-				CornerHookStart topHookRight Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
-				list
-					flat topHookRight Ascender
-			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (topHookRight - TINY - [if fCorner [HSwToV Stroke] 0])] Ascender
+			flat xTip Ascender
+			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (topHookRight - TINY)] Ascender
 			archv.superness DesignParameters.tightHookSuperness
 			flat barLeft [Math.max XH (Ascender - hd.y)]
 			curl barLeft 0 [heading Downward]
+		if fCorner : include : VBar.r xTip (Ascender - [CornerHookDepth Hook Stroke]) Ascender
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
 		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
@@ -232,7 +233,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-NONE]          : SetPalatalHookPos barLeft
 			[Just CH-SERIF]         : NarrowBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
-			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
+			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] fCorner
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define SmallFConfig : SuffixCfg.weave

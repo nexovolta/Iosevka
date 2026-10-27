@@ -10,7 +10,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-Ezh : RevEzh
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcEnd
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook MakeCornerHookBase
 
 	define SwAmpersand : AdviceStroke2 2.5 3 CAP
 	define fineAmp : AdviceStroke 3.5
@@ -125,12 +125,12 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					corner [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 					corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (-yMockUpperLoopLeftBottom)
 					corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (CAP - O)
-		if (hookType === HOOK-CORNER) [VBar.r xUpperLoopRight CAP (CAP - Hook) SwAmpersand] [no-shape]
+		if (hookType === HOOK-CORNER) [VBar.r [MakeCornerHookBase xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].xRHook CAP (CAP - Hook) SwAmpersand] [no-shape]
 		difference
 			dispiro
 				match hookType
 					[Just HOOK-FLAT] : [MakeFlatHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
-					[Just HOOK-CORNER] : [MakeFlatHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
+					[Just HOOK-CORNER] : [MakeCornerHookBase xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
 					__ : list
 						g4.up.start xUpperLoopRight yUpperLoopRight [widths.heading SwAmpersand 0 Upward]
 						arcvh
@@ -211,7 +211,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define [EtUpperHalfStroke hookType] : dispiro
 		match hookType
 			[Just HOOK-FLAT] : [MakeFlatHook xEtLeft xEtRight CAP 0].hookStartR
-			[Just HOOK-CORNER] : [MakeFlatHook xEtLeft xEtRight CAP 0].hookStartR
+			[Just HOOK-CORNER] : [MakeCornerHookBase xEtLeft xEtRight CAP 0].hookStartR
 			__ : list
 				g4 xEtRight (CAP - SHook) [widths.lhs]
 				HookStart CAP
@@ -222,7 +222,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 
 	define [EtUpperHalf hookType] : glyph-proc
 		include : EtUpperHalfStroke hookType
-		if (hookType === HOOK-CORNER) : include : VBar.r xEtRight CAP (CAP - Hook) SwAmpersand
+		if (hookType === HOOK-CORNER) : include : VBar.r [MakeCornerHookBase xEtLeft xEtRight CAP 0].xRHook CAP (CAP - Hook) SwAmpersand
 
 	define [EtLowerHalf form] : dispiro
 		flat xEtCenterBarRight (yEtMiddle + (fineEt - SwAmpersand / 2)) [widths.heading fineEt 0 Leftward]

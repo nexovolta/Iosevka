@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset
 
 	define SLAB_SERIFLESS       0
 	define SLAB_BOTTOM          1
@@ -28,33 +28,31 @@ glyph-block Letter-Latin-Long-S : begin
 	define SLAB_DOUBLE_HALF_ASC : SLAB_BOTTOM + SLAB_MIDDLE_HALF_ASC
 
 	glyph-block-export LongSUpperHalf LongSLowerHalf
-	define [LongSUpperHalf sign x top bottom hookX hookY _sw fCorner] : begin
+	define [LongSUpperHalf sign x top bottom hookX hookY _sw fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
-		return : dispiro
+		local xTip : x + sign * (hookX + [if fCorner [CornerHookOffset sw] 0])
+		include : dispiro
 			widths.center sw
-			if fCorner
-				CornerHookStart (x + sign * hookX) top [CornerHookDepth Hook sw] sw (-sign) 1
-				list
-					flat (x + sign * hookX) (top - sw / 2)
-			curl (x + sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner [HSwToV sw] 0])]) (top - sw / 2) [widths.center sw]
+			flat (xTip - sign * [if fCorner [HSwToV : sw / 2] 0]) (top - sw / 2)
+			curl (x + sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner ([HSwToV sw] - [CornerHookOffset sw]) 0])]) (top - sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (top - sw / 2 - [Math.min hd.y hookY])
 			curl x bottom [heading Downward]
+		if fCorner : include : [if (sign > 0) VBar.r VBar.l] xTip (top - [CornerHookDepth Hook sw]) top sw
 
-	define [LongSLowerHalf sign x top bottom hookX hookY _sw fCorner] : begin
+	define [LongSLowerHalf sign x top bottom hookX hookY _sw fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
-		return : dispiro
+		local xTip : x - sign * (hookX + [if fCorner [CornerHookOffset sw] 0])
+		include : dispiro
 			widths.center sw
-			if fCorner
-				CornerHookStart (x - sign * hookX) bottom [CornerHookDepth Hook sw] sw sign (-1)
-				list
-					flat (x - sign * hookX) (bottom + sw / 2)
-			curl (x - sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner [HSwToV sw] 0])]) (bottom + sw / 2) [widths.center sw]
+			flat (xTip + sign * [if fCorner [HSwToV : sw / 2] 0]) (bottom + sw / 2)
+			curl (x - sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner ([HSwToV sw] - [CornerHookOffset sw]) 0])]) (bottom + sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (bottom + sw / 2 + [Math.min hd.y hookY])
 			curl x top [heading Upward]
+		if fCorner : include : [if (sign > 0) VBar.l VBar.r] xTip bottom (bottom + [CornerHookDepth Hook sw]) sw
 
 	glyph-block-export LongSShape
 	define [LongSShape top bottom hookx hooky fine fCorner] : union
@@ -102,16 +100,15 @@ glyph-block Letter-Latin-Long-S : begin
 
 	define [LongSFlatHookNoTailShape m yBot fSlab _kSerif fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
+		local xTip : RightSB + [if fCorner [CornerHookOffset Stroke] 0]
 		include : dispiro
 			widths.lhs
-			if fCorner
-				CornerHookStart RightSB Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
-				list
-					flat RightSB Ascender
-			curl [Math.min (RightSB - TINY - [if fCorner [HSwToV Stroke] 0]) (m + hd.x)] Ascender
+			flat xTip Ascender
+			curl [Math.min (RightSB - TINY) (m + hd.x)] Ascender
 			archv
 			flat m (Ascender - hd.y)
 			curl m yBot [heading Downward]
+		if fCorner : include : VBar.r xTip (Ascender - [CornerHookDepth Hook Stroke]) Ascender
 		include : LeaningAnchor.Above.Hook m RightSB
 		set-base-anchor "overlay" (m + [HSwToV : 0.65 * Stroke]) [mix 0 Ascender OverlayPos]
 		include : StandardSerifs m fSlab _kSerif

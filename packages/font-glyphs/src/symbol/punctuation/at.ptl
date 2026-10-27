@@ -11,7 +11,7 @@ glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
-	glyph-block-import Letter-Arc-Hook : MakeCornerHook CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook CornerHookDepth CornerHookEnd
 
 	define [ThreeFoldShape height fSolidInner] : glyph-proc
 		local top : SymbolMid + height / 2
@@ -120,7 +120,7 @@ glyph-block Symbol-Punctuation-At : begin
 		local adb : ArchDepthB * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local atTurnBot (obot - ada / 4)
 		local hd : FlatHookDepth [DivFrame 1]
-		local ch : MakeCornerHook SB RightSB top 0 (sw -- sw)
+		local fh : MakeFlatHook SB RightSB top 0 (sw -- sw)
 
 		local shrink 0.6
 
@@ -148,7 +148,7 @@ glyph-block Symbol-Punctuation-At : begin
 				curl RightSB (top - hd.y) [heading Upward]
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat (RightSB - [Math.min (0.625 * (RightSB - SB)) (1.375 * hd.x)]) top [widths.lhs sw]
-				~~~ [if fCornerHook [CornerHookEnd ch.xLHook top [CornerHookDepth Hook sw] sw (-1) (-1)] [list [curl SB top [heading Leftward]]]]
+				~~~ [if fCornerHook [CornerHookEnd fh.xLHook top [CornerHookDepth Hook sw] sw (-1) (-1)] [list [curl SB top [heading Leftward]]]]
 			: else : list
 				curl RightSB (top - ArchDepthB)
 				HookEnd top (sw -- sw)

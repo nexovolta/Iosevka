@@ -16,7 +16,7 @@ glyph-block Letter-Latin-S : begin
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook CyrDescender CurlyTail
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
@@ -54,7 +54,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				__ : list
 					g4 ((df.rightSB + 0) - SOTop) (top - Hook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -67,7 +67,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB bot stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4 ((df.leftSB - 0) + SOBot) (bot + Hook)
@@ -80,7 +80,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				__ : list
 					g4   ((df.leftSB - 0) + SOTop) (top - Hook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -91,7 +91,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB bot stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				__ : list
 					HookEnd 0 (sw -- stroke)
 					g4   ((df.rightSB + 0) - SOBot) (bot + Hook)
@@ -104,7 +104,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				__ : list
 					g4   ((df.rightSB + OX) - SOTop) (top - SHook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -129,7 +129,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB bot stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.leftSB - OX) + SOBot) (bot + SHook)
@@ -142,7 +142,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				__ : list
 					g4   ((df.leftSB - OX) + SOTop) (top - SHook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -153,7 +153,7 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB bot stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
-				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.rightSB + OX) - SOBot) (bot + SHook)
@@ -180,22 +180,26 @@ glyph-block Letter-Latin-S : begin
 	define [SAutoSlabStart df st top sw hook] : match st
 		[Just SLAB-CLASSICAL] : ArcStartSerif.R       df.rightSB top sw hook
 		[Just SLAB-INWARD]    : ArcStartSerif.InwardR df.rightSB top sw hook
+		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB top 0 (sw -- sw)].xRHook (top - [CornerHookDepth hook sw]) top sw
 		__                    : glyph-proc
 
 	glyph-block-export SAutoSlabEnd
 	define [SAutoSlabEnd df st bot sw hook] : match st
 		[Just SLAB-CLASSICAL] : ArcEndSerif.L       df.leftSB bot sw hook
 		[Just SLAB-INWARD]    : ArcEndSerif.InwardL df.leftSB bot sw hook
+		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB 0 bot (sw -- sw)].xLHook bot (bot + [CornerHookDepth hook sw]) sw
 		__                    : glyph-proc
 
 	define [RevSAutoSlabStart df st top sw hook] : match st
 		[Just SLAB-CLASSICAL] : ArcStartSerif.L       df.leftSB top sw hook
 		[Just SLAB-INWARD]    : ArcStartSerif.InwardL df.leftSB top sw hook
+		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB top 0 (sw -- sw)].xLHook (top - [CornerHookDepth hook sw]) top sw
 		__                    : glyph-proc
 
 	define [RevSAutoSlabEnd df st bot sw hook] : match st
 		[Just SLAB-CLASSICAL] : ArcEndSerif.R       df.rightSB bot sw hook
 		[Just SLAB-INWARD]    : ArcEndSerif.InwardR df.rightSB bot sw hook
+		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB 0 bot (sw -- sw)].xRHook bot (bot + [CornerHookDepth hook sw]) sw
 		__                    : glyph-proc
 
 	define SConfig : object

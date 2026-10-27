@@ -9,10 +9,13 @@ glyph-block Letter-Latin-Yogh : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
 	define SLAB-INWARD     2
+	define SLAB-FLAT-HOOK  4
+	define SLAB-CORNER-HOOK 5
 
 	define [PhantomBotYOfUpperHalf top bot kSplit] : [mix bot top kSplit] - QuarterStroke
 	define [TopYOfLowerHalf top bot kSplit] : [mix bot top kSplit] + 0.06 * Stroke
@@ -28,6 +31,8 @@ glyph-block Letter-Latin-Yogh : begin
 			match slab
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs SB (top - offset) Stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs SB (top - offset) Stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook (SB + offset) (RightSB - offset) (top - offset) (bot + offset)].hookStartL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (SB + offset) (RightSB - offset) (top - offset) (bot + offset)].hookStartL
 				__ : list [g4 SB (top - Hook) [widths.rhs]] [HookStart (top - offset)]
 		return : sink
 			~~~ startKnots
@@ -70,6 +75,7 @@ glyph-block Letter-Latin-Yogh : begin
 		include : match slab
 			[Just SLAB-CLASSICAL] : ArcStartSerif.L SB top Stroke Hook
 			[Just SLAB-INWARD] : ArcStartSerif.InwardL SB top Stroke Hook
+			[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase SB RightSB top bot].xLHook (top - [CornerHookDepth Hook Stroke]) top Stroke
 			__ : no-shape
 
 	# Et: Cyrillic ze upper (hook + waist bar) joined to a yogh lower bowl.
@@ -98,6 +104,8 @@ glyph-block Letter-Latin-Yogh : begin
 
 	define Config : object
 		serifless               { SLAB-NONE      }
+		topFlatHook             { SLAB-FLAT-HOOK }
+		topCornerHook           { SLAB-CORNER-HOOK }
 		unilateralSerifed       { SLAB-CLASSICAL }
 		unilateralInwardSerifed { SLAB-INWARD    }
 

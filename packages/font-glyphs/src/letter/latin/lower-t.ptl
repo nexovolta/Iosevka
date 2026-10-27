@@ -17,7 +17,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart MakeFlatHook MakeCornerHookBase
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -527,6 +527,8 @@ glyph-block Letter-Latin-Lower-T : begin
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
 	define SLAB-INWARD      2
+	define SLAB-FLAT-HOOK   4
+	define SLAB-CORNER-HOOK 5
 	define [TsLigStrokeShape df stroke top sb] : begin
 		define archDepth : AdviceSArchDepth (XH + 0.5 * ArchDepth) (-1) stroke
 		return : dispiro
@@ -538,6 +540,8 @@ glyph-block Letter-Latin-Lower-T : begin
 			match sb
 				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB 0 stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke SHook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookEndL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB XH 0 (sw -- stroke)].hookEndL
 				__ : list
 					HookEnd 0 (sw -- stroke)
 					g4   df.leftSB (0 + SHook)
@@ -558,6 +562,8 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	define TSLowerConfig : object
 		serifless               { SLAB-NONE      }
+		flatHook                { SLAB-FLAT-HOOK }
+		cornerHook              { SLAB-CORNER-HOOK }
 		bilateralSerifed        { SLAB-CLASSICAL }
 		bilateralInwardSerifed  { SLAB-INWARD    }
 
