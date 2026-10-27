@@ -10,6 +10,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay CurlyTail PalatalHook
+	glyph-block-import Letter-Arc-Hook : MakeCornerHook
 
 	glyph-block-export AdviceGlottalStopArchDepth
 	define [AdviceGlottalStopArchDepth top sign] : begin
@@ -23,6 +24,8 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-export QuestionCornerShape QuestionRevCornerShape
 	glyph-block-export QuestionCornerFlatShape QuestionRevCornerFlatShape
 	glyph-block-export QuestionSmoothFlatHookedShape QuestionRevSmoothFlatHookedShape
+	glyph-block-export QuestionCornerCornerHookedShape QuestionRevCornerCornerHookedShape
+	glyph-block-export QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape
 
 	define [QuestionSmoothShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
@@ -124,6 +127,47 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
 			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
 
+
+	define [QuestionCornerCornerHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		include : dispiro
+			[MakeCornerHook left right top 0 (hook -- hook)].hookStartL
+			g4 (right - OX) [YSmoothMidR top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.left.end [mix left right 0.5] (yConnect - Stroke) [heading Leftward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
+
+	define [QuestionRevCornerCornerHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		include : dispiro
+			[MakeCornerHook left right top 0 (hook -- hook)].hookStartR
+			g4 (left + OX) [YSmoothMidL top (yConnect - Stroke) ArchDepthA ArchDepthB]
+			arcvh
+			straight.right.end [mix left right 0.5] (yConnect - Stroke) [heading Rightward]
+		include : VBar.m [mix left right 0.5] stemBot yConnect
+
+	define [QuestionSmoothCornerHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local strokeEndCor : Math.hypot 1 TanSlope
+		include : dispiro
+			[MakeCornerHook left right top 0 (hook -- hook)].hookStartL
+			g4 right (top - ArchDepthB * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
+
+	define [QuestionRevSmoothCornerHookedShape top stemBot left right _hook] : glyph-proc
+		local hook : fallback _hook Hook
+		local strokeEndCor : Math.hypot 1 TanSlope
+		include : dispiro
+			[MakeCornerHook left right top 0 (hook -- hook)].hookStartR
+			g4 left (top - ArchDepthA * 0.9)
+			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
+
 	# Existing letter ʔ construction — default `smooth` so the current shape is unchanged.
 	define [SmoothLetterShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
@@ -158,11 +202,15 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		corner           QuestionCornerShape
 		cornerFlatHooked QuestionCornerFlatShape
 		smoothFlatHooked QuestionSmoothFlatHookedShape
+		cornerCornerHooked QuestionCornerCornerHookedShape
+		smoothCornerHooked QuestionSmoothCornerHookedShape
 	define ReverseBodies : object
 		smooth           RevSmoothLetterShape
 		corner           QuestionRevCornerShape
 		cornerFlatHooked QuestionRevCornerFlatShape
 		smoothFlatHooked QuestionRevSmoothFlatHookedShape
+		cornerCornerHooked QuestionRevCornerCornerHookedShape
+		smoothCornerHooked QuestionRevSmoothCornerHookedShape
 
 	define [CreateGlottalFamily gn marks top hook Bodies] : begin
 		foreach { suffix Impl } [Object.entries Bodies] : do

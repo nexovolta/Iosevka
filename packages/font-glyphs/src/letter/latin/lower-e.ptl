@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-E : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd ArcEndSerif
 	glyph-block-import Mark-Shared-Metrics : markFine
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
 	define [SmallEHook top stroke hook doSwash] : Math.min hook : if doSwash VERY-FAR
 		mix stroke ([mix 0 top DesignParameters.eBarPos] - stroke / 2) 0.554
@@ -22,6 +22,7 @@ glyph-block Letter-Latin-Lower-E : begin
 	define SLAB-CLASSICAL  1
 	define SLAB-INWARD     2
 	define SLAB-FLAT-HOOK  4
+	define SLAB-CORNER-HOOK 5
 
 	define [SmallESerifedTerminalShape df top stroke hook tailSlab isClockwise] : begin
 		local doSwash : !isClockwise && para.isItalic && (para.slopeAngle > 0)
@@ -29,6 +30,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isClockwise)
 				g4 (df.rightSB - [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -44,6 +46,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isCounterClockwise)
 				g4 (df.leftSB + [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -290,26 +293,34 @@ glyph-block Letter-Latin-Lower-E : begin
 		flatCrossbar         { SmallEShape        RevSmallEShape        SLAB-NONE      }
 		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
 		flatCrossbarFlatHook { SmallEShape        RevSmallEShape        SLAB-FLAT-HOOK }
+		flatCrossbarCornerHook { SmallEShape        RevSmallEShape        SLAB-CORNER-HOOK }
 		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
+		roundedCornerHook      { SmallERoundedShape RevSmallERoundedShape SLAB-CORNER-HOOK }
 		diagonalCrossbar            { SmallEShape RevSmallEShape SLAB-NONE      0.5 }
 		diagonalCrossbarFalling     { SmallEShape RevSmallEShape SLAB-NONE      (-0.5) }
 		diagonalCrossbarFlatHook        { SmallEShape RevSmallEShape SLAB-FLAT-HOOK 1 }
+		diagonalCrossbarCornerHook        { SmallEShape RevSmallEShape SLAB-CORNER-HOOK 1 }
 		diagonalCrossbarFallingFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK (-1) }
+		diagonalCrossbarFallingCornerHook { SmallEShape RevSmallEShape SLAB-CORNER-HOOK (-1) }
 
 	glyph-block-export SchwaConfig
 	define SchwaConfig : object
 		flatCrossbar         { SmallEShape        RevSmallEShape        SLAB-NONE      }
 		flatCrossbarSerifed  { SmallEShape        RevSmallEShape        SLAB-CLASSICAL }
 		flatCrossbarFlatHook { SmallEShape        RevSmallEShape        SLAB-FLAT-HOOK }
+		flatCrossbarCornerHook { SmallEShape        RevSmallEShape        SLAB-CORNER-HOOK }
 		rounded              { SmallERoundedShape RevSmallERoundedShape SLAB-NONE      }
 		roundedSerifed       { SmallERoundedShape RevSmallERoundedShape SLAB-CLASSICAL }
 		roundedFlatHook      { SmallERoundedShape RevSmallERoundedShape SLAB-FLAT-HOOK }
+		roundedCornerHook      { SmallERoundedShape RevSmallERoundedShape SLAB-CORNER-HOOK }
 		diagonalCrossbar { SmallEShape RevSmallEShape SLAB-NONE 0.5 }
 		diagonalCrossbarFalling { SmallEShape RevSmallEShape SLAB-NONE (-0.5) }
 		diagonalCrossbarSerifed { SmallEShape RevSmallEShape SLAB-CLASSICAL 0.5 }
 		diagonalCrossbarFallingSerifed { SmallEShape RevSmallEShape SLAB-CLASSICAL (-0.5) }
 		diagonalCrossbarFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK 1 }
+		diagonalCrossbarCornerHook { SmallEShape RevSmallEShape SLAB-CORNER-HOOK 1 }
 		diagonalCrossbarFallingFlatHook { SmallEShape RevSmallEShape SLAB-FLAT-HOOK (-1) }
+		diagonalCrossbarFallingCornerHook { SmallEShape RevSmallEShape SLAB-CORNER-HOOK (-1) }
 
 	foreach { suffix { Body RevBody tailSlab diag } } [Object.entries SmallEConfig] : do
 		create-glyph "e.\(suffix)" : glyph-proc

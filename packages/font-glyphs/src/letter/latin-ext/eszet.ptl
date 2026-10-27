@@ -15,6 +15,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth PalatalHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-F : ySmallFBarPos
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
 
 	define TERMINAL-BASELINE   0
 	define TERMINAL-DESCENDING 1
@@ -44,15 +45,18 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			local sfHalfAsc : SerifFrame.fromDf df ([mix 0 Ascender 0.5] + HalfStroke) 0
 			include sfHalfAsc.lt.outer
 
-	define [Traditional fFlathook] : function [slab term] : glyph-proc
+	define [Traditional fFlathook fCorner] : function [slab term] : glyph-proc
 		include : MarkSet.bp
 		local xHook : [mix SB RightSB 0.75] + [HSwToV HalfStroke]
 		local hd : FlatHookDepth [DivFrame 1]
 		include : if fFlathook
 			dispiro
 				widths.lhs
-				flat xHook Ascender
-				curl (SB + hd.x) Ascender
+				if fCorner
+					CornerHookStart xHook Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
+					list
+						flat xHook Ascender
+				curl [Math.min (SB + hd.x) (xHook - TINY - [if fCorner [HSwToV Stroke] 0])] Ascender
 				archv
 				flat SB (Ascender - hd.y)
 				curl SB 0 [heading Downward]
@@ -167,6 +171,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 		object # body
 			traditionalBentHook      [Traditional false]
 			traditionalFlatHook      [Traditional true]
+			traditionalCornerHook    [Traditional true true]
 			sulzbacher                Sulzbacher
 			longSSLig                 LongSSLig
 		object # terminal
@@ -255,6 +260,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 		object # body
 			traditionalBentHook      FlatTopScotsS
 			traditionalFlatHook      FlatTopScotsS
+			traditionalCornerHook    FlatTopScotsS
 			sulzbacher                FlatTopScotsS
 			longSSLig                 FlatTopScotsS
 		object # terminal

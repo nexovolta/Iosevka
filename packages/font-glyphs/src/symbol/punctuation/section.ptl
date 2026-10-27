@@ -10,12 +10,13 @@ glyph-block Symbol-Punctuation-Section : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Latin-S : SAutoSlabStart
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
 	define SLAB-NONE      0
 	define SLAB-CLASSICAL 1
 	define SLAB-INWARD    2
 	define SLAB-FLAT-HOOK 4
+	define SLAB-CORNER-HOOK 5
 
 	local top ParenTop
 	local bot ParenBot
@@ -25,6 +26,7 @@ glyph-block Symbol-Punctuation-Section : begin
 		[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs RightSB top Stroke Hook
 		[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke Hook
 		[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot (sw -- Stroke)].hookStartR
+		[Just SLAB-CORNER-HOOK] : [MakeCornerHook SB RightSB top bot (sw -- Stroke)].hookStartR
 		__ : list
 			g4 (RightSB - offset) (top - Hook)
 			HookStart (top - offset)
@@ -52,6 +54,7 @@ glyph-block Symbol-Punctuation-Section : begin
 	define SectionConfig : object
 		serifless     SLAB-NONE
 		flatHook      SLAB-FLAT-HOOK
+		cornerHook    SLAB-CORNER-HOOK
 		serifed       SLAB-CLASSICAL
 		inwardSerifed SLAB-INWARD
 

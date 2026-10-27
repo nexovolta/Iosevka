@@ -14,19 +14,23 @@ glyph-block Letter-Latin-Lower-J : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
 
 	glyph-block-export FlatHookDotlessJShape
-	define [FlatHookDotlessJShape] : with-params [df dfHook top crossLeft barCenter serif] : glyph-proc
+	define [FlatHookDotlessJShape] : with-params [df dfHook top crossLeft barCenter serif [fCorner false]] : glyph-proc
 		local bar : barCenter + [HSwToV HalfStroke]
 		local hd : FlatHookDepth dfHook
 		local terminal : Math.min
-			bar - hd.x - [Math.max (Stroke / 3) (df.width / 6)]
+			bar - hd.x - [Math.max (Stroke / 3) (df.width / 6)] - [if fCorner [HSwToV Stroke] 0]
 			crossLeft - OX * 2
 
 		if serif : include : HSerif.lt barCenter top [Math.max Jut : mix [HSwToV HalfStroke] LongJut df.adws]
 		include : dispiro
 			widths.lhs
-			flat terminal Descender
+			if fCorner
+				CornerHookStart terminal Descender [CornerHookDepth Hook Stroke] Stroke 1 (-1)
+				list
+					flat terminal Descender
 			curl (bar - hd.x) Descender
 			archv.superness DesignParameters.tightHookSuperness
 			flat bar (Descender + hd.y)
@@ -83,6 +87,15 @@ glyph-block Letter-Latin-Lower-J : begin
 				crossLeft -- crossLeft
 				barCenter -- xMiddle
 				serif     -- false
+
+		export : define [CornerHook df top xMiddle] : glyph-proc
+			local dfHook : DivFrame para.advanceScaleI
+			local crossLeft : df.middle - (dfHook.middle - [mix 0 dfHook.leftSB : mix 1 dfHook.adws 2])
+			include : FlatHookDotlessJShape df dfHook top
+				crossLeft -- crossLeft
+				barCenter -- xMiddle
+				serif     -- false
+				fCorner   -- true
 
 		export : define [DiagonalTailed df top xMiddle] : glyph-proc
 			include : dispiro
@@ -148,8 +161,11 @@ glyph-block Letter-Latin-Lower-J : begin
 		'straightShortSerifed'       { JBody.Straight        JSerifs.Short  XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
 		'straightSerifed'            { JBody.Straight        JSerifs.Long   XMiddleT.StraightSerifed    JMarks.Serifed    para.advanceScaleI  }
 		'flatHookSerifless'          { JBody.FlatHook        JSerifs.None   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'cornerHookSerifless'          { JBody.CornerHook        JSerifs.None   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'flatHookShortSerifed'       { JBody.FlatHook        JSerifs.Short  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'cornerHookShortSerifed'       { JBody.CornerHook        JSerifs.Short  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'flatHookSerifed'            { JBody.FlatHook        JSerifs.Long   XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookSerifed'            { JBody.CornerHook        JSerifs.Long   XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI  }
 		'bentHookReverseHooky'       { JBody.BentHook        JSerifs.Right       XMiddleT.BentHook           JMarks.Serifed    1                   }
 		'bentHookShortReverseHooky'  { JBody.BentHook        JSerifs.RightShort  XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'bentHookCenterSerifed'      { JBody.BentHook        JSerifs.Center      XMiddleT.BentHook           JMarks.Serifed    1                   }
@@ -167,9 +183,13 @@ glyph-block Letter-Latin-Lower-J : begin
 		'straightCenterSerifed'      { JBody.Straight        JSerifs.Center      XMiddleT.StraightSerifless    JMarks.Serifed    para.advanceScaleI  }
 		'straightCenterShortSerifed' { JBody.Straight        JSerifs.CenterShort XMiddleT.StraightSerifless    JMarks.Serifless  para.advanceScaleII }
 		'flatHookReverseHooky'       { JBody.FlatHook        JSerifs.Right       XMiddleT.FlatHookReverse      JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookReverseHooky'       { JBody.CornerHook        JSerifs.Right       XMiddleT.FlatHookReverse      JMarks.Serifed    para.advanceScaleI  }
 		'flatHookShortReverseHooky'  { JBody.FlatHook        JSerifs.RightShort  XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
+		'cornerHookShortReverseHooky'  { JBody.CornerHook        JSerifs.RightShort  XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
 		'flatHookCenterSerifed'      { JBody.FlatHook        JSerifs.Center      XMiddleT.FlatHookSerifless    JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookCenterSerifed'      { JBody.CornerHook        JSerifs.Center      XMiddleT.FlatHookSerifless    JMarks.Serifed    para.advanceScaleI  }
 		'flatHookCenterShortSerifed' { JBody.FlatHook        JSerifs.CenterShort XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
+		'cornerHookCenterShortSerifed' { JBody.CornerHook        JSerifs.CenterShort XMiddleT.FlatHookSerifless    JMarks.Serifless  para.advanceScaleII }
 		'topTailedBentHook'         { [JBody.WithCasualTop 'tailed'    JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'topFlatBentHook'           { [JBody.WithCasualTop 'flat'      JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'topSemiBentHook'           { [JBody.WithCasualTop 'semi'      JBody.BentHook]        JSerifs.None XMiddleT.BentHook           JMarks.Serifless  1                   }
@@ -179,9 +199,13 @@ glyph-block Letter-Latin-Lower-J : begin
 		'topSemiStraight'           { [JBody.WithCasualTop 'semi'      JBody.Straight]        JSerifs.None XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topDiagStraight'           { [JBody.WithCasualTop 'diagonal'  JBody.Straight]        JSerifs.None XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topTailedFlatHook'         { [JBody.WithCasualTop 'tailed'    JBody.FlatHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'topTailedCornerHook'         { [JBody.WithCasualTop 'tailed'    JBody.CornerHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topFlatFlatHook'           { [JBody.WithCasualTop 'flat'      JBody.FlatHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'topFlatCornerHook'           { [JBody.WithCasualTop 'flat'      JBody.CornerHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topSemiFlatHook'           { [JBody.WithCasualTop 'semi'      JBody.FlatHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'topSemiCornerHook'           { [JBody.WithCasualTop 'semi'      JBody.CornerHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topDiagFlatHook'           { [JBody.WithCasualTop 'diagonal'  JBody.FlatHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
+		'topDiagCornerHook'           { [JBody.WithCasualTop 'diagonal'  JBody.CornerHook]        JSerifs.None XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
 		'topTailedDiagonalTailed'   { [JBody.WithCasualTop 'tailed'    JBody.DiagonalTailed]  JSerifs.None XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
 		'topFlatDiagonalTailed'     { [JBody.WithCasualTop 'flat'      JBody.DiagonalTailed]  JSerifs.None XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
 		'topSemiDiagonalTailed'     { [JBody.WithCasualTop 'semi'      JBody.DiagonalTailed]  JSerifs.None XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }

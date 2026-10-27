@@ -11,7 +11,7 @@ glyph-block Letter-Arc-Hook : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 
-	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook
+	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook CornerHookDepth CornerHookEnd CornerHookStart
 
 	glyph-block-export ArcStartSerifWidth
 	define [ArcStartSerifWidth sw] : clamp (sw * 0.875) sw VJutStroke
@@ -283,3 +283,90 @@ glyph-block Letter-Arc-Hook : begin
 				glyph-proc
 
 	define [MakeFlatHook] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r] (sw -- sw)
+
+	# Flat hook whose terminal turns 90 degrees into the counter, like an inward serif
+	define [CornerHookDepth hook sw] : Math.max (hook * 15 / 16) (sw * 1.5)
+
+	# Square 90-degree turns for hand-built corner hooks. dispiro offsets every knot along a single
+	# normal, so the outer edge, inner edge and stub each need their own knot and heading.
+	# CornerHookEnd:   a bar heading dirBar (-1 left, +1 right) ends at x, then a stub runs dirStub (+1 up, -1 down).
+	# CornerHookStart: a stub runs dirStub up to y, then the bar continues heading dirBar.
+	define [CornerHookEnd x y depth sw dirBar dirStub] : begin
+		local w : HSwToV sw
+		local bar : if (dirBar < 0) Leftward Rightward
+		local stub : if (dirStub > 0) Upward Downward
+		local rhs : (dirBar * dirStub) < 0
+		local wBar  : if rhs [widths.rhs.heading sw bar]  [widths.lhs.heading sw bar]
+		local wStub : if rhs [widths.rhs.heading sw stub] [widths.lhs.heading sw stub]
+		return : list
+			corner (x - dirBar * w) y wBar
+			corner x y wStub
+			corner x (y + dirStub * depth) wStub
+
+	define [CornerHookStart x y depth sw dirBar dirStub] : begin
+		local w : HSwToV sw
+		local bar : if (dirBar < 0) Leftward Rightward
+		local stub : if (dirStub > 0) Upward Downward
+		local rhs : (dirBar * dirStub) > 0
+		local wBar  : if rhs [widths.rhs.heading sw bar]  [widths.lhs.heading sw bar]
+		local wStub : if rhs [widths.rhs.heading sw stub] [widths.lhs.heading sw stub]
+		return : list
+			corner x (y - dirStub * depth) wStub
+			corner x y wStub
+			corner (x + dirBar * w) y wBar
+
+	define [MakeCornerHook] : with-params [l r t b [sw Stroke] [hook Hook]] : namespace
+		local box : new Box t b l r
+		local fh : Flat box (sw -- sw)
+		local depth : CornerHookDepth hook sw
+
+		export : define yLT fh.yLT
+		export : define yRT fh.yRT
+		export : define yLB fh.yLB
+		export : define yRB fh.yRB
+		export : define xLArc fh.xLArc
+		export : define xRArc fh.xRArc
+		export : define xLHook fh.xLHook
+		export : define xRHook fh.xRHook
+		export : define arcStartL fh.arcStartL
+		export : define arcStartR fh.arcStartR
+		export : define arcEndL fh.arcEndL
+		export : define arcEndR fh.arcEndR
+		export : define serifStartL fh.serifStartL
+		export : define serifStartR fh.serifStartR
+		export : define serifEndL fh.serifEndL
+		export : define serifEndR fh.serifEndR
+
+		local midX : mix box.l box.r 0.5
+		local midShift : (box.r - box.l) * (-0.05)
+
+		local w : HSwToV sw
+
+		export : define [hookStartL] : begin
+			return : list
+				corner fh.xLHook (box.t - depth) [widths.rhs.heading sw Upward]
+				corner fh.xLHook box.t [widths.rhs.heading sw Upward]
+				corner (fh.xLHook + w) box.t [widths.rhs.heading sw Rightward]
+				curl [Math.max (fh.xLHook + w + 0.5 * sw + TanSlope * sw) : Arch.adjust-x.top (midX + midShift) sw] box.t [heading Rightward]
+				archv.superness DesignParameters.tightHookSuperness
+		export : define [hookStartR] : begin
+			return : list
+				corner fh.xRHook (box.t - depth) [widths.lhs.heading sw Upward]
+				corner fh.xRHook box.t [widths.lhs.heading sw Upward]
+				corner (fh.xRHook - w) box.t [widths.lhs.heading sw Leftward]
+				curl [Math.min (fh.xRHook - w - 0.5 * sw - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
+				archv.superness DesignParameters.tightHookSuperness
+		export : define [hookEndL] : begin
+			return : list
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.max (fh.xLHook + w + 0.5 * sw + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw] box.b [widths.rhs.heading sw Leftward]
+				corner (fh.xLHook + w) box.b [widths.rhs.heading sw Leftward]
+				corner fh.xLHook box.b [widths.rhs.heading sw Upward]
+				corner fh.xLHook (box.b + depth) [widths.rhs.heading sw Upward]
+		export : define [hookEndR] : begin
+			return : list
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.min (fh.xRHook - w - 0.5 * sw - TanSlope * sw) : Arch.adjust-x.bot (midX - midShift) sw] box.b [widths.lhs.heading sw Rightward]
+				corner (fh.xRHook - w) box.b [widths.lhs.heading sw Rightward]
+				corner fh.xRHook box.b [widths.lhs.heading sw Upward]
+				corner fh.xRHook (box.b + depth) [widths.lhs.heading sw Upward]

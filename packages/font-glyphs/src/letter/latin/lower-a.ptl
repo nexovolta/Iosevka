@@ -13,13 +13,14 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight OBarLeft ArcStartSerif
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar LeftwardTailedBar RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart StemCutY ApplyDiagCut
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
 	define HOOK-SLAB-NONE      0
 	define HOOK-SLAB-CLASSICAL 1 # TODO
 	define HOOK-SLAB-INWARD    2
 	define HOOK-HALF           3
 	define HOOK-FLAT           4
+	define HOOK-CORNER         5
 
 	glyph-block-export DoubleStorey
 	define DoubleStorey : namespace
@@ -53,6 +54,7 @@ glyph-block Letter-Latin-Lower-A : begin
 						g4.right.start hookLeftX (XH - O)
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
+					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
 					__ : if fine
 						list
 							g4.up.start hookLeftX (XH - AHook) [heading Upward]
@@ -192,6 +194,7 @@ glyph-block Letter-Latin-Lower-A : begin
 						g4.left.start hookRightX (XH - O)
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
+					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
 					__ : if fine
 						list
 							g4.up.start hookRightX (XH - AHook) [heading Upward]
@@ -304,6 +307,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			doubleStorey                  HOOK-SLAB-NONE
 			doubleStoreyHookInwardSerifed HOOK-SLAB-INWARD
 			doubleStoreyHookFlat          HOOK-FLAT
+			doubleStoreyHookCorner        HOOK-CORNER
 		function [hook] : object # cut
 			""         ""
 			bottomCut  "bottomCut"

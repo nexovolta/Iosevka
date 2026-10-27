@@ -10,11 +10,17 @@ glyph-block Digits-Two : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart ArcStartSerif
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 	glyph-block-import Letter-Shared : PackSrc
 
-	define [TwoStraightNeckArcT sink offset sw top flatHook _left _right _hook] : begin
+	define HOOK-ROUND  0
+	define HOOK-FLAT   1
+	define HOOK-CORNER 2
+	define HOOK-INWARD 3
+
+	define [TwoStraightNeckArcT sink offset sw top hookStyle _left _right _hook] : begin
 		local left : fallback _left SB
 		local right : fallback _right RightSB
 		local hook : fallback _hook Hook
@@ -25,16 +31,18 @@ glyph-block Digits-Two : begin
 		define pStraightBarStart 0.75
 		return : sink
 			widths.rhs sw
-			if flatHook
-				[MakeFlatHook left right top 0 (sw -- sw)].hookStartL
-				list
+			match hookStyle
+				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
+				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
+				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs left top sw hook
+				__ : list
 					g4 left (top - hook)
 					HookStart top (sw -- sw)
 			g4.down.mid xR (top - archDepth)
 			flat [mix xLB xR pStraightBarStart] [mix sw yPhRight pStraightBarStart]
 			curl xLB sw [widths.lhs sw]
 
-	define [TwoArcShapeT sink offsetU offsetD sw top flatHook _left _right _hook _width] : begin
+	define [TwoArcShapeT sink offsetU offsetD sw top hookStyle _left _right _hook _width] : begin
 		local left : fallback _left SB
 		local right : fallback _right RightSB
 		local hook : fallback _hook Hook
@@ -42,9 +50,11 @@ glyph-block Digits-Two : begin
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
 		return : sink
 			widths.rhs sw
-			if flatHook
-				[MakeFlatHook left right top 0 (sw -- sw)].hookStartL
-				list
+			match hookStyle
+				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
+				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
+				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (left - offsetU) top sw hook
+				__ : list
 					g4 (left - offsetU) (top - hook)
 					HookStart top (sw -- sw)
 			g4.down.mid (right - offsetU - OX / 2) (top - archDepth)
@@ -53,26 +63,30 @@ glyph-block Digits-Two : begin
 			[if (sink == spiro-outline) corner curl] (left + offsetD) 0 [heading Downward]
 			if (sink == spiro-outline) { [corner (left - offsetU) 0] } {}
 
-	define [TwoShape top slab flatHook _left _right _sw _hook _width] : glyph-proc
+	define [TwoShape top slab hookStyle _left _right _sw _hook _width] : glyph-proc
 		local left : fallback _left SB
 		local right : fallback _right RightSB
 		local sw : fallback _sw Stroke
 		local hook : fallback _hook Hook
 		local width : fallback _width Width
-		include : TwoArcShapeT dispiro 0 0 sw top flatHook left right hook width
+		include : TwoArcShapeT dispiro 0 0 sw top hookStyle left right hook width
 		include : HBar.b (left + sw / 2) right 0 sw
 		if slab : begin
 			include : VSerif.ur right 0 VJut
+		if (hookStyle === HOOK-INWARD) : begin
+			include : ArcStartSerif.InwardL left top sw hook
 
-	define [TwoStraightNeckShape top slab flatHook _left _right _sw _hook] : glyph-proc
+	define [TwoStraightNeckShape top slab hookStyle _left _right _sw _hook] : glyph-proc
 		local left : fallback _left SB
 		local right : fallback _right RightSB
 		local sw : fallback _sw Stroke
 		local hook : fallback _hook Hook
-		include : TwoStraightNeckArcT dispiro 0 sw top flatHook left right hook
+		include : TwoStraightNeckArcT dispiro 0 sw top hookStyle left right hook
 		include : HBar.b left right 0 sw
 		if slab : begin
 			include : VSerif.ur right 0 VJut
+		if (hookStyle === HOOK-INWARD) : begin
+			include : ArcStartSerif.InwardL left top sw hook
 
 	create-glyph 'two.lnum.straightNeckSerifless' : glyph-proc
 		include : MarkSet.capital
@@ -106,37 +120,26 @@ glyph-block Digits-Two : begin
 		include : OnumMarks.e
 		include : TwoShape OnumHeight true
 
-	create-glyph 'two.lnum.straightNeckFlatHookSerifless' : glyph-proc
-		include : MarkSet.capital
-		include : TwoStraightNeckShape CAP false true
+	define TwoHookedConfig : SuffixCfg.weave
+		object
+			straightNeck { true }
+			curlyNeck    { false }
+		object
+			flatHook      { HOOK-FLAT }
+			cornerHook    { HOOK-CORNER }
+			inwardSerifed { HOOK-INWARD }
+		object
+			serifless { false }
+			serifed   { true }
 
-	create-glyph 'two.onum.straightNeckFlatHookSerifless' : glyph-proc
-		include : OnumMarks.e
-		include : TwoStraightNeckShape OnumHeight false true
-
-	create-glyph 'two.lnum.straightNeckFlatHookSerifed' : glyph-proc
-		include : MarkSet.capital
-		include : TwoStraightNeckShape CAP true true
-
-	create-glyph 'two.onum.straightNeckFlatHookSerifed' : glyph-proc
-		include : OnumMarks.e
-		include : TwoStraightNeckShape OnumHeight true true
-
-	create-glyph 'two.lnum.curlyNeckFlatHookSerifless' : glyph-proc
-		include : MarkSet.capital
-		include : TwoShape CAP false true
-
-	create-glyph 'two.onum.curlyNeckFlatHookSerifless' : glyph-proc
-		include : OnumMarks.e
-		include : TwoShape OnumHeight false true
-
-	create-glyph 'two.lnum.curlyNeckFlatHookSerifed' : glyph-proc
-		include : MarkSet.capital
-		include : TwoShape CAP true true
-
-	create-glyph 'two.onum.curlyNeckFlatHookSerifed' : glyph-proc
-		include : OnumMarks.e
-		include : TwoShape OnumHeight true true
+	foreach { suffix { fStraight hookStyle fSlab } } [pairs-of TwoHookedConfig] : do
+		local Shape : if fStraight TwoStraightNeckShape TwoShape
+		create-glyph "two.lnum.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : Shape CAP fSlab hookStyle
+		create-glyph "two.onum.\(suffix)" : glyph-proc
+			include : OnumMarks.e
+			include : Shape OnumHeight fSlab hookStyle
 
 	select-variant 'two.lnum' [CodeLnum '2'] (follow -- 'two')
 	select-variant 'two.onum' [CodeOnum '2'] (follow -- 'two')
@@ -166,14 +169,16 @@ glyph-block Digits-Two : begin
 			local xLeft : xRight - 0.20 * (xBarRight - xSlashRefLeft)
 			include : RumRotundaSlash xLeft xRight rumSlashYTop rumSlashYBot OverlayStroke
 
-		define [RumRotundaShape top fStraight fSlab fFlat] : glyph-proc
+		define [RumRotundaShape top fStraight fSlab hookStyle] : glyph-proc
 			local df : DivFrame rumAdws
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
 			local xBarLeft : if fStraight df.leftSB (df.leftSB + df.mvs / 2)
 			# 2 body without its foot serif; compressed left to leave room for the slash.
 			if fStraight
-				include : TwoStraightNeckArcT dispiro 0 df.mvs top fFlat df.leftSB df.rightSB hook
-				include : TwoArcShapeT dispiro 0 0 df.mvs top fFlat df.leftSB df.rightSB hook df.width
+				include : TwoStraightNeckArcT dispiro 0 df.mvs top hookStyle df.leftSB df.rightSB hook
+				include : TwoArcShapeT dispiro 0 0 df.mvs top hookStyle df.leftSB df.rightSB hook df.width
+			if (hookStyle === HOOK-INWARD) : begin
+				include : ArcStartSerif.InwardL df.leftSB top df.mvs hook
 			include : TwoBaseWithSlash xBarLeft RightSB df.leftSB df.mvs
 
 		define RumTwoConfig : SuffixCfg.weave
@@ -181,19 +186,21 @@ glyph-block Digits-Two : begin
 				straightNeck { true }
 				curlyNeck    { false }
 			object
-				""       { false }
-				flatHook { true }
+				""            { HOOK-ROUND }
+				flatHook      { HOOK-FLAT }
+				cornerHook    { HOOK-CORNER }
+				inwardSerifed { HOOK-INWARD }
 			object
 				serifless { false }
 				serifed   { true }
 
-		foreach { suffix { fStraight fFlat fSlab } } [pairs-of RumTwoConfig] : do
+		foreach { suffix { fStraight hookStyle fSlab } } [pairs-of RumTwoConfig] : do
 			create-glyph "RumRotunda.\(suffix)" : glyph-proc
 				include : MarkSet.capDesc
-				include : RumRotundaShape CAP fStraight fSlab fFlat
+				include : RumRotundaShape CAP fStraight fSlab hookStyle
 			create-glyph "rumRotunda.\(suffix)" : glyph-proc
 				include : MarkSet.p
-				include : RumRotundaShape XH fStraight fSlab fFlat
+				include : RumRotundaShape XH fStraight fSlab hookStyle
 
 		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
 		select-variant 'rumRotunda' 0xA75D (follow -- 'two')

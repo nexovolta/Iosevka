@@ -17,6 +17,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -191,8 +192,9 @@ glyph-block Letter-Latin-Lower-T : begin
 		export : define [Body        df sym top bot _sw] : Impl NORMAL    df sym top bot 0 _sw
 		export : define [Retroflex   df sym top bot _sw] : Impl RETROFLEX df sym top bot 0 _sw
 		export : define [CrossRTBody df sym top bot _sw] : Impl RETROFLEX df sym top bot 0 _sw
+		export : define [CornerBody df sym top bot _sw] : Impl NORMAL df sym top bot 0 _sw true
 
-		define [Impl shape df sym top bot ext _sw] : glyph-proc
+		define [Impl shape df sym top bot ext _sw fCorner] : glyph-proc
 			local sw : fallback _sw Stroke
 			local xBarLeft : BarLeftPos df sym
 			local {xCrossLeft xCrossRight} : xCrossBarPos df sym
@@ -209,8 +211,11 @@ glyph-block Letter-Latin-Lower-T : begin
 					if (shape === RETROFLEX)
 						then : straight.left.start xTailEnd bot
 						else : list
-							flat xCrossRight bot
-							curl [Math.min (xBarLeft + hd.x) (xCrossRight - 1)] bot
+							if fCorner
+								CornerHookStart xCrossRight bot [CornerHookDepth Hook sw] sw (-1) (-1)
+								list
+									flat xCrossRight bot
+							curl [Math.min (xBarLeft + hd.x) (xCrossRight - 1 - [if fCorner [HSwToV sw] 0])] bot
 					archv.superness DesignParameters.tightHookSuperness
 					flat xBarLeft [if (shape === RETROFLEX) (bot + Hook + 0.5 * sw) hd.y]
 					curl xBarLeft top [heading Upward]
@@ -222,6 +227,11 @@ glyph-block Letter-Latin-Lower-T : begin
 			set-base-anchor 'overlay' (xBarLeft + [HSwToV : 0.625 * sw]) [mix 0 XH 0.58]
 			set-base-anchor 'bottomRight' xTailEnd bot
 			set-base-anchor 'palatalHookAttach' xTailEnd (bot + sw)
+
+	define CornerHook : namespace
+		export : define BarLeftPos FlatHook.BarLeftPos
+		export : define [Body df sym top bot _sw] : FlatHook.CornerBody df sym top bot _sw
+		export : define [Retroflex df sym top bot _sw] : FlatHook.Retroflex df sym top bot _sw
 
 	define UprightTailed : namespace
 		export : define BarLeftPos FlatHook.BarLeftPos
@@ -277,6 +287,7 @@ glyph-block Letter-Latin-Lower-T : begin
 			narrowBentHook                 { dfF NarrowBentHook }
 			diagonalTailed                 { dfF DiagonalTailed }
 			flatHook                       { dfF FlatHook       }
+			cornerHook                     { dfF CornerHook     }
 			hookless                       { dfF Hookless       }
 		object # symmetry
 			""                             SYM-BALANCED

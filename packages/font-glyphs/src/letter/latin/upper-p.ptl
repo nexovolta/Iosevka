@@ -13,12 +13,12 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook FlatHookDepth
 	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
 	glyph-block-export PBarPosY
 	define [PBarPosY top sw bp] : [mix 0 (top - sw) bp] - sw * PShape.SwBelowBar
 
-	define [PRotundaOutlineKnots top df mul bp overshoot sw offset endX hook flatHook] : begin
+	define [PRotundaOutlineKnots top df mul bp overshoot sw offset endX hook flatHook cornerHook] : begin
 		local bowlTop : top - offset
 		local bowlBottom : [PBarPosY top sw bp] + offset
 		local turnRadius : BowlXDepth bowlTop bowlBottom df.leftSB df.rightSB sw
@@ -27,8 +27,9 @@ glyph-block Letter-Latin-Upper-P : begin
 		local left : mix 0 df.leftSB mul
 		local right : df.rightSB - offset
 		local turn : YSmoothMidR bowlTop bowlBottom ada adb
+		local hk : if cornerHook [MakeCornerHook left df.rightSB bowlTop bowlBottom (sw -- sw)] [MakeFlatHook left df.rightSB bowlTop bowlBottom (sw -- sw)]
 		return : list
-			if flatHook : then : [MakeFlatHook left df.rightSB bowlTop bowlBottom (sw -- sw)].hookStartL
+			if (flatHook || cornerHook) : then : hk.hookStartL
 			: else : list
 				g4 (left - O) (bowlTop - hook)
 				HookStart bowlTop
@@ -115,10 +116,11 @@ glyph-block Letter-Latin-Upper-P : begin
 		local-parameter : endX      -- SB
 		local-parameter : hook      -- Hook
 		local-parameter : flatHook  -- false
+		local-parameter : cornerHook -- false
 
 		include : tagged 'bowl' : dispiro
 			widths.rhs sw
-			PRotundaOutlineKnots top df mul bp overshoot sw 0 endX hook flatHook
+			PRotundaOutlineKnots top df mul bp overshoot sw 0 endX hook flatHook cornerHook
 
 	glyph-block-export RevPShape
 	define flex-params [RevPShape] : glyph-proc

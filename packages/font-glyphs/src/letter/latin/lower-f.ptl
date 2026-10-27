@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook nShoulder EngHook
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
 
 	define CH-NONE          0
 	define CH-SERIF         1
@@ -182,7 +183,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
-	define [NarrowFShape clcStyle] : function [df m bh counterHook sym] : glyph-proc
+	define [NarrowFShape clcStyle fCorner] : function [df m bh counterHook sym] : glyph-proc
 		local topHookExt : match clcStyle
 			[Just 1] Width
 			[Just 2] Jut
@@ -215,8 +216,11 @@ glyph-block Letter-Latin-Lower-F : begin
 
 		include : dispiro
 			widths.lhs
-			flat topHookRight Ascender
-			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (topHookRight - TINY)] Ascender
+			if fCorner
+				CornerHookStart topHookRight Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
+				list
+					flat topHookRight Ascender
+			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (topHookRight - TINY - [if fCorner [HSwToV Stroke] 0])] Ascender
 			archv.superness DesignParameters.tightHookSuperness
 			flat barLeft [Math.max XH (Ascender - hd.y)]
 			curl barLeft 0 [heading Downward]
@@ -240,6 +244,11 @@ glyph-block Letter-Latin-Lower-F : begin
 			flatHookCLC2                      { [NarrowFShape 2]    dfF }
 			flatHookCLC3                      { [NarrowFShape 3]    dfF }
 			flatHookCLC4                      { [NarrowFShape 4]    dfF }
+			cornerHook                        { [NarrowFShape 0 true] dfF }
+			cornerHookCLC1                    { [NarrowFShape 1 true] dfF }
+			cornerHookCLC2                    { [NarrowFShape 2 true] dfF }
+			cornerHookCLC3                    { [NarrowFShape 3 true] dfF }
+			cornerHookCLC4                    { [NarrowFShape 4 true] dfF }
 		function [body] : object # hooks
 			serifless                         { [if body pNarrowFSide 0.95]    CH-NONE          'b'  }
 			serifed                           { [if body pNarrowFSide 0.95]    CH-SERIF         'b'  }

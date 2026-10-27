@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Ezh : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : CurlyTail SerifedArcEnd PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
 
 	define TERMINAL-NONE 0
@@ -21,6 +21,7 @@ glyph-block Letter-Latin-Ezh : begin
 	define TERMINAL-CURL 3
 	define TERMINAL-TAIL 4
 	define TERMINAL-FLAT 5
+	define TERMINAL-CORNER 6
 
 	glyph-block-export Ezh
 	define flex-params [Ezh] : namespace
@@ -32,6 +33,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : fOunceTop     -- false
 		local-parameter : ounceTop      -- nothing
 		local-parameter : fFlatHook     -- false
+		local-parameter : fCornerHook   -- false
 		local-parameter : pxTopRight    -- 0.925
 		local-parameter : pxMidLeft     -- 0.200
 		local-parameter : pyMidLeft     -- 0.550
@@ -114,7 +116,7 @@ glyph-block Letter-Latin-Ezh : begin
 
 		export : define [Shape] : glyph-proc
 			define [object xTopLeft xTopRight xMidLeft yMidLeft xArcTop yArcTop xArcMid yArcMid] : Dim
-			local term : if (fFlatHook && terminal === TERMINAL-HOOK) TERMINAL-FLAT terminal
+			local term : if (terminal !== TERMINAL-HOOK) terminal : if fCornerHook TERMINAL-CORNER : if fFlatHook TERMINAL-FLAT terminal
 
 			include : union
 				if fOunceTop [OunceTop] : if fCursive [CursiveTop] [ConventionalTop]
@@ -143,6 +145,9 @@ glyph-block Letter-Latin-Ezh : begin
 						[Just TERMINAL-FLAT] : list
 							g4 xArcMid yArcMid
 							~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
+						[Just TERMINAL-CORNER] : list
+							g4 xArcMid yArcMid
+							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
 						__ : list
 							g4 xArcMid yArcMid
 							HookEnd bottom (sw -- stroke)

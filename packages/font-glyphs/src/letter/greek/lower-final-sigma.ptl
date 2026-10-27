@@ -8,7 +8,7 @@ glyph-module
 glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
@@ -20,6 +20,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 
 	define TOP-ROUNDED    0
 	define TOP-FLAT-HOOK  1
+	define TOP-CORNER-HOOK 2
 
 	define [FinalSigmaEndingKnots] : begin
 		local yCurlMid : mix Descender Stroke : StrokeWidthBlend 0.5 0.49
@@ -40,6 +41,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 		include : dispiro
 			match top
 				[Just TOP-FLAT-HOOK] : [MakeFlatHook SB RightSB XH 0].hookStartR
+				[Just TOP-CORNER-HOOK] : [MakeCornerHook SB RightSB XH 0].hookStartR
 				__ : list
 					widths.lhs
 					g4 RightSB (XH - Hook)
@@ -80,21 +82,41 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 		include : MarkSet.p
 		include : FinalSigmaShape TAIL-CURLY TOP-FLAT-HOOK
 
+	create-glyph "grek/sigmaFinal.cornerHookCurlyTail" : glyph-proc
+		include : MarkSet.p
+		include : FinalSigmaShape TAIL-CURLY TOP-CORNER-HOOK
+
 	create-glyph "grek/sigmaFinal.flatHookStraightTail" : glyph-proc
 		include : MarkSet.e
 		include : FinalSigmaShape TAIL-STRAIGHT TOP-FLAT-HOOK
+
+	create-glyph "grek/sigmaFinal.cornerHookStraightTail" : glyph-proc
+		include : MarkSet.e
+		include : FinalSigmaShape TAIL-STRAIGHT TOP-CORNER-HOOK
 
 	create-glyph "grek/sigmaFinal.flatHookDiagonalTail" : glyph-proc
 		include : MarkSet.e
 		include : FinalSigmaShape TAIL-DIAGONAL TOP-FLAT-HOOK
 
+	create-glyph "grek/sigmaFinal.cornerHookDiagonalTail" : glyph-proc
+		include : MarkSet.e
+		include : FinalSigmaShape TAIL-DIAGONAL TOP-CORNER-HOOK
+
 	create-glyph "grek/sigmaFinal.flatHookStraightTailSharpCorner" : glyph-proc
 		include : MarkSet.e
 		include : FinalSigmaShape TAIL-STRAIGHT-SHARP-CORNER TOP-FLAT-HOOK
 
+	create-glyph "grek/sigmaFinal.cornerHookStraightTailSharpCorner" : glyph-proc
+		include : MarkSet.e
+		include : FinalSigmaShape TAIL-STRAIGHT-SHARP-CORNER TOP-CORNER-HOOK
+
 	create-glyph "grek/sigmaFinal.flatHookDiagonalTailSharpCorner" : glyph-proc
 		include : MarkSet.e
 		include : FinalSigmaShape TAIL-DIAGONAL-SHARP-CORNER TOP-FLAT-HOOK
+
+	create-glyph "grek/sigmaFinal.cornerHookDiagonalTailSharpCorner" : glyph-proc
+		include : MarkSet.e
+		include : FinalSigmaShape TAIL-DIAGONAL-SHARP-CORNER TOP-CORNER-HOOK
 
 	select-variant 'grek/sigmaFinal' 0x3C2
 
@@ -141,10 +163,15 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 		include : StigmaShape TAIL-DIAGONAL-SHARP-CORNER
 
 	alias 'grek/stigma.flatHookCurlyTail' null 'grek/stigma.curlyTail'
+	alias 'grek/stigma.cornerHookCurlyTail' null 'grek/stigma.curlyTail'
 	alias 'grek/stigma.flatHookStraightTail' null 'grek/stigma.straightTail'
+	alias 'grek/stigma.cornerHookStraightTail' null 'grek/stigma.straightTail'
 	alias 'grek/stigma.flatHookDiagonalTail' null 'grek/stigma.diagonalTail'
+	alias 'grek/stigma.cornerHookDiagonalTail' null 'grek/stigma.diagonalTail'
 	alias 'grek/stigma.flatHookStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
+	alias 'grek/stigma.cornerHookStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
 	alias 'grek/stigma.flatHookDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
+	alias 'grek/stigma.cornerHookDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
 
 	select-variant 'grek/stigma' 0x3DB (follow -- 'grek/sigmaFinal')
 

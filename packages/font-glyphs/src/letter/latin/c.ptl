@@ -18,13 +18,14 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook RetroflexHook TopHook
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerifWidth ArcStartSerifDepth
 	glyph-block-import Letter-Blackboard : BBS BBD
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
-	define SLAB-NONE       0
-	define SLAB-CLASSICAL  1
-	define SLAB-INWARD     2
-	define FLAT-CONNECTION 3
-	define SLAB-FLAT-HOOK  4
+	define SLAB-NONE        0
+	define SLAB-CLASSICAL   1
+	define SLAB-INWARD      2
+	define FLAT-CONNECTION  3
+	define SLAB-FLAT-HOOK   4
+	define SLAB-CORNER-HOOK 5
 
 	glyph-block-export CShapeT
 	define [CShapeT sink offset df st sb top bot ada adb hook sw ob ox oy] : sink
@@ -37,6 +38,7 @@ glyph-block Letter-Latin-C : begin
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
 			__ : list
 				g4   (df.rightSB - offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -49,6 +51,7 @@ glyph-block Letter-Latin-C : begin
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (df.width - offset) (bot + offset)
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
@@ -63,6 +66,7 @@ glyph-block Letter-Latin-C : begin
 				curl [Arch.adjust-x.top df.middle (sw -- sw)] (top - offset)
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
 			__ : list
 				g4   (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -75,6 +79,7 @@ glyph-block Letter-Latin-C : begin
 				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
 				curl (0 + offset) (bot + offset)
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.leftSB + offset) (bot + [fallback hook Hook])
@@ -109,6 +114,7 @@ glyph-block Letter-Latin-C : begin
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
 				__ : list [g4 df.rightSB (top - Hook) [widths.lhs sw]] [HookStart top (sw -- sw)]
 			flatside.ld df.leftSB bot top SmallArchDepthA SmallArchDepthB
 			CurlyTail.n fine bot df.rightSB 0 bot (yLoopTop -- loopTop)
@@ -136,6 +142,7 @@ glyph-block Letter-Latin-C : begin
 	define CConfig : object
 		serifless                  { SLAB-NONE      SLAB-NONE      }
 		flatHook                   { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
+		cornerHook                 { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
 		bottomSerifed              { SLAB-NONE      SLAB-CLASSICAL }
 		bottomInwardSerifed        { SLAB-NONE      SLAB-INWARD    }
 		unilateralSerifed          { SLAB-CLASSICAL SLAB-NONE      }
@@ -147,6 +154,10 @@ glyph-block Letter-Latin-C : begin
 		unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
 		bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
 		bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
+		unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }
+		unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
+		bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
 
 	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
 		create-glyph "C.\(suffix)" : glyph-proc
@@ -368,7 +379,7 @@ glyph-block Letter-Latin-C : begin
 			DiagonalCrossbar        1
 			DiagonalCrossbarFalling (-1)
 		foreach { dsuf dval0 } [Object.entries DiagCfg] : do
-			local dval : if (suffix == 'flatHook') dval0 (dval0 * 0.5)
+			local dval : if (suffix == 'flatHook' || suffix == 'cornerHook') dval0 (dval0 * 0.5)
 			create-glyph "cyrl/E.\(suffix)\(dsuf)" : glyph-proc
 				include : MarkSet.capital
 				include : CyrEShepe true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval

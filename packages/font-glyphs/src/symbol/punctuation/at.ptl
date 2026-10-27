@@ -11,6 +11,7 @@ glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeCornerHook CornerHookDepth CornerHookEnd
 
 	define [ThreeFoldShape height fSolidInner] : glyph-proc
 		local top : SymbolMid + height / 2
@@ -106,7 +107,7 @@ glyph-block Symbol-Punctuation-At : begin
 					flat   df.middle obot
 				glyph-proc
 
-	define [CompactShape _height fFlatHook] : glyph-proc
+	define [CompactShape _height fFlatHook fCornerHook] : glyph-proc
 		local top  CAP
 		local obot 0
 		local otop [mix obot top 0.675]
@@ -119,6 +120,7 @@ glyph-block Symbol-Punctuation-At : begin
 		local adb : ArchDepthB * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local atTurnBot (obot - ada / 4)
 		local hd : FlatHookDepth [DivFrame 1]
+		local ch : MakeCornerHook SB RightSB top 0 (sw -- sw)
 
 		local shrink 0.6
 
@@ -141,12 +143,12 @@ glyph-block Symbol-Punctuation-At : begin
 			straight.down.start (m1 - sw * [HSwToV shrink]) (atTurnBot + ada) [heading Downward]
 			Arch.lhs atTurnBot (sw -- sw) (swBefore -- (sw * shrink))
 			flat RightSB (atTurnBot + ada)
-			if fFlatHook
+			if (fFlatHook || fCornerHook)
 			: then : list
 				curl RightSB (top - hd.y) [heading Upward]
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat (RightSB - [Math.min (0.625 * (RightSB - SB)) (1.375 * hd.x)]) top [widths.lhs sw]
-				curl SB top [heading Leftward]
+				~~~ [if fCornerHook [CornerHookEnd ch.xLHook top [CornerHookDepth Hook sw] sw (-1) (-1)] [list [curl SB top [heading Leftward]]]]
 			: else : list
 				curl RightSB (top - ArchDepthB)
 				HookEnd top (sw -- sw)
@@ -167,9 +169,10 @@ glyph-block Symbol-Punctuation-At : begin
 		fourfoldSolidInnerTall  { FourFoldShape  TallHeight   true  }
 
 		compact                 { CompactShape   CAP          false }
-		compactFlatHook         { CompactShape   CAP          true  }
+		compactFlatHook         { CompactShape   CAP          true  false }
+		compactCornerHook       { CompactShape   CAP          false true  }
 
-	foreach { suffix { body height fSolidInner } } [Object.entries AtConfig] : do
-		create-glyph "at.\(suffix)" : body height fSolidInner
+	foreach { suffix { body height fSolidInner fCornerHook } } [Object.entries AtConfig] : do
+		create-glyph "at.\(suffix)" : body height fSolidInner fCornerHook
 
 	select-variant 'at' '@'

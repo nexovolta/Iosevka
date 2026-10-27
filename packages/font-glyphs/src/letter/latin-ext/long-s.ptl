@@ -15,6 +15,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
 
 	define SLAB_SERIFLESS       0
 	define SLAB_BOTTOM          1
@@ -27,32 +28,38 @@ glyph-block Letter-Latin-Long-S : begin
 	define SLAB_DOUBLE_HALF_ASC : SLAB_BOTTOM + SLAB_MIDDLE_HALF_ASC
 
 	glyph-block-export LongSUpperHalf LongSLowerHalf
-	define [LongSUpperHalf sign x top bottom hookX hookY _sw] : begin
+	define [LongSUpperHalf sign x top bottom hookX hookY _sw fCorner] : begin
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
 		return : dispiro
 			widths.center sw
-			flat (x + sign * hookX) (top - sw / 2)
-			curl (x + sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY)]) (top - sw / 2)
+			if fCorner
+				CornerHookStart (x + sign * hookX) top [CornerHookDepth Hook sw] sw (-sign) 1
+				list
+					flat (x + sign * hookX) (top - sw / 2)
+			curl (x + sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner [HSwToV sw] 0])]) (top - sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (top - sw / 2 - [Math.min hd.y hookY])
 			curl x bottom [heading Downward]
 
-	define [LongSLowerHalf sign x top bottom hookX hookY _sw] : begin
+	define [LongSLowerHalf sign x top bottom hookX hookY _sw fCorner] : begin
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
 		return : dispiro
 			widths.center sw
-			flat (x - sign * hookX) (bottom + sw / 2)
-			curl (x - sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY)]) (bottom + sw / 2)
+			if fCorner
+				CornerHookStart (x - sign * hookX) bottom [CornerHookDepth Hook sw] sw sign (-1)
+				list
+					flat (x - sign * hookX) (bottom + sw / 2)
+			curl (x - sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner [HSwToV sw] 0])]) (bottom + sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (bottom + sw / 2 + [Math.min hd.y hookY])
 			curl x top [heading Upward]
 
 	glyph-block-export LongSShape
-	define [LongSShape top bottom hookx hooky fine] : union
-		LongSUpperHalf (+1) Middle top [mix top bottom 0.5] hookx hooky fine
-		LongSLowerHalf (+1) Middle [mix top bottom 0.5] bottom hookx hooky fine
+	define [LongSShape top bottom hookx hooky fine fCorner] : union
+		LongSUpperHalf (+1) Middle top [mix top bottom 0.5] hookx hooky fine fCorner
+		LongSLowerHalf (+1) Middle [mix top bottom 0.5] bottom hookx hooky fine fCorner
 
 	define [StandardSerifs m0 fSlab _kSerif] : glyph-proc
 		local m : m0 + [HSwToV HalfStroke]
@@ -93,12 +100,15 @@ glyph-block Letter-Latin-Long-S : begin
 		top -- (Ascender - Stroke)
 		py  -- OverlayPos
 
-	define [LongSFlatHookNoTailShape m yBot fSlab _kSerif] : glyph-proc
+	define [LongSFlatHookNoTailShape m yBot fSlab _kSerif fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
 		include : dispiro
 			widths.lhs
-			flat RightSB Ascender
-			curl [Math.min (RightSB - TINY) (m + hd.x)] Ascender
+			if fCorner
+				CornerHookStart RightSB Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
+				list
+					flat RightSB Ascender
+			curl [Math.min (RightSB - TINY - [if fCorner [HSwToV Stroke] 0]) (m + hd.x)] Ascender
 			archv
 			flat m (Ascender - hd.y)
 			curl m yBot [heading Downward]
@@ -132,6 +142,16 @@ glyph-block Letter-Latin-Long-S : begin
 
 		create-glyph "longs.flatHookExt\(suffix)" : glyph-proc
 			include [refer-glyph "longs.flatHook\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.t RightSB [mix 0 Width 2] Ascender
+
+		create-glyph "longs.cornerHook\(suffix)" : glyph-proc
+			include : MarkSet.b
+			local m : Middle - pShift * (JBalance + [HSwToV HalfStroke])
+			include : LongSFlatHookNoTailShape m 0 serifStyle nothing true
+			create-forked-glyph "longsBar.cornerHook\(suffix)" : LongSBentHookOverlayBar m
+
+		create-glyph "longs.cornerHookExt\(suffix)" : glyph-proc
+			include [refer-glyph "longs.cornerHook\(suffix)"] AS_BASE ALSO_METRICS
 			include : HBar.t RightSB [mix 0 Width 2] Ascender
 
 	# Descending and Tailed variants
@@ -176,6 +196,42 @@ glyph-block Letter-Latin-Long-S : begin
 
 		create-glyph "longs.flatHookExtDiagonalTailed\(suffix)" : glyph-proc
 			include [refer-glyph "longs.flatHookDiagonalTailed\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.t (Middle + HookX + (0.25 - TanSlope) * Stroke) [mix 0 Width 2] Ascender
+
+		create-glyph "longs.cornerHookDescending\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			local m : Middle - pShift * (JBalance + [HSwToV HalfStroke])
+			include : LongSFlatHookNoTailShape m Descender false nothing true
+			include : StandardSerifs m serifStyle
+			create-forked-glyph "longsBar.cornerHookDescending\(suffix)" : LongSBentHookOverlayBar m
+
+		create-glyph "longs.cornerHookExtDescending\(suffix)" : glyph-proc
+			include [refer-glyph "longs.cornerHookDescending\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.t RightSB [mix 0 Width 2] Ascender
+
+		create-glyph "longs.cornerHookTailed\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			include : LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true
+			include : StandardSerifs (Middle - [HSwToV HalfStroke]) serifStyle
+			create-forked-glyph "longsBar.cornerHookTailed\(suffix)" : LongSSymmetricOverlayBar Middle
+
+		create-glyph "longs.cornerHookExtTailed\(suffix)" : glyph-proc
+			include [refer-glyph "longs.cornerHookTailed\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.t (Middle + HookX + (0.25 - TanSlope) * Stroke) [mix 0 Width 2] Ascender
+
+		create-glyph "longs.cornerHookDiagonalTailed\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			include : union
+				intersection [MaskAbove 0]
+					LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true
+				SmallFDiagonalTail [DivFrame 1] (Middle - [HSwToV HalfStroke])
+				StandardSerifs (Middle - [HSwToV HalfStroke]) serifStyle
+			create-forked-glyph "longsBar.cornerHookDiagonalTailed\(suffix)" : LongSSymmetricOverlayBar Middle
+
+		create-glyph "longs.cornerHookExtDiagonalTailed\(suffix)" : glyph-proc
+			include [refer-glyph "longs.cornerHookDiagonalTailed\(suffix)"] AS_BASE ALSO_METRICS
 			include : HBar.t (Middle + HookX + (0.25 - TanSlope) * Stroke) [mix 0 Width 2] Ascender
 
 		create-glyph "longs.bentHookDescending\(suffix)" : glyph-proc

@@ -190,6 +190,7 @@ glyph-block Letter-Latin-Upper-R : begin
 		local-parameter : sw      -- Stroke
 		local-parameter : hook    -- Hook
 		local-parameter : flatHook -- false
+		local-parameter : cornerHook -- false
 
 		local fStraightLeg : legShape !== RLegShape.Curly
 		local legTop : RLegTop top sw bp
@@ -201,10 +202,10 @@ glyph-block Letter-Latin-Upper-R : begin
 			local [object xStem yJoin xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
 			local legW : [HSwToV sw] * [DiagCor yJoin (xEnd - xStem) 0 sw]
 			local xLhsAtBowl : mix xEnd xStem (legTop / yJoin)
-			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (cornerHook -- cornerHook) (sw -- sw)
 			include : RRotundaBrokenLeg top bp df mul legSlab sw
 		: else : begin
-			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (cornerHook -- cornerHook) (sw -- sw)
 			include : difference
 				legShape legTop 0 df.middle right top [mix 0 df.leftSB mul] legSlab sw
 				MaskLeft endX
@@ -273,6 +274,7 @@ glyph-block Letter-Latin-Upper-R : begin
 	# The rotunda hook follows the Cyrillic Ze hook.
 	define zeSel : fallback para.variantSelector.('cyrl/ze') ''
 	define zeFlatHook : (([zeSel.indexOf 'FlatHook'] >= 0) || (zeSel === 'flatHook')) && ([zeSel.indexOf 'nilateral'] < 0)
+	define zeCornerHook : (([zeSel.indexOf 'CornerHook'] >= 0) || (zeSel === 'cornerHook')) && ([zeSel.indexOf 'nilateral'] < 0)
 
 	foreach { suffix { legShape fGap { slabs doLegSlab } } } [Object.entries RConfig] : do
 		define fStraightLeg : (legShape === RLegShape.Straight) || (legShape === RLegShape.StraightBroken)
@@ -350,25 +352,29 @@ glyph-block Letter-Latin-Upper-R : begin
 				include : MarkSet.capital
 				local bp : 0.9 * PShape.BarPos
 				include : StrikeAnchor CAP swCap bp
-				include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (flatHook -- zeFlatHook)
+				include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (flatHook -- zeFlatHook) (cornerHook -- zeCornerHook)
 
 			create-glyph "rRotunda.\(suffix)" : glyph-proc
 				include : MarkSet.e
 				local bp : 0.9 * PShape.BarPos
 				include : StrikeAnchor XH swXH bp
-				include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (flatHook -- zeFlatHook)
+				include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (flatHook -- zeFlatHook) (cornerHook -- zeCornerHook)
 
 			create-glyph "currency/indianRupeeSign.\(suffix)" : glyph-proc
 				local shift : (-0.125) * (Width - 0)
 				local right : RightSB - O - [if (legShape !== RLegShape.Curly) 0 0.0625] * (Width - 0)
 				local bowlLeft SB
+				local bowlBp PShape.BarPos
+				local bowlShift shift
 				if (legShape === RLegShape.StraightBroken) : begin
-					local legTop : RLegTop CAP swCap PShape.BarPos
-					local [object xStem yJoin xEnd] : RLegShape.BrokenJoin legTop 0 Middle right SB doLegSlab swCap
+					set bowlBp : 0.9 * PShape.BarPos
+					set bowlShift 0
+					local legTop : RLegTop CAP swCap bowlBp
+					local [object xStem yJoin xEnd] : RLegShape.BrokenJoin [RLegTop CAP swCap PShape.BarPos] 0 Middle right SB doLegSlab swCap
 					local legW : [HSwToV swCap] * [DiagCor yJoin (xEnd - xStem) 0 swCap]
 					set bowlLeft : [mix xEnd xStem (legTop / yJoin)] + 0.5 * legW
-				include : intersection [Rect CAP 0 bowlLeft Width] : with-transform [Translate shift 0]
-					PShape CAP (mul -- 1.0) (sw -- swCap) (withBar -- false)
+				include : intersection [Rect CAP 0 bowlLeft Width] : with-transform [Translate bowlShift 0]
+					PShape CAP (mul -- 1.0) (bp -- bowlBp) (sw -- swCap) (withBar -- false)
 				if (legShape === RLegShape.StraightBroken) : begin
 					include : RRotundaBrokenLeg CAP (0.9 * PShape.BarPos) [DivFrame 1] 1 doLegSlab swCap
 				: else : begin

@@ -8,13 +8,14 @@ glyph-module
 glyph-block Letter-Greek-Lower-Xi : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
 	define SHAPE-ROUNDED    0
 	define SHAPE-FLAT-TOP   1
 	define SHAPE-FLAT-HOOK  2
+	define SHAPE-CORNER-HOOK 3
 
 	define TAIL-CURLY                 0
 	define TAIL-STRAIGHT              1
@@ -72,6 +73,7 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		include : dispiro
 			match shape
 				[Just SHAPE-FLAT-HOOK] : [MakeFlatHook SB RightSB Ascender 0].hookStartR
+				[Just SHAPE-CORNER-HOOK] : [MakeCornerHook SB RightSB Ascender 0].hookStartR
 				[Just SHAPE-FLAT-TOP] : list
 					flat                    xBarEnd    ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
 					curl [Arch.adjust-x.top xBarStart] ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
@@ -104,20 +106,25 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		create-forked-glyph "grek/xi.flatTop" : LowerXiShape SHAPE-FLAT-TOP TAIL-CURLY
 		create-forked-glyph "grek/xi.rounded" : LowerXiShape SHAPE-ROUNDED TAIL-CURLY
 		create-forked-glyph "grek/xi.flatHook" : LowerXiShape SHAPE-FLAT-HOOK TAIL-CURLY
+		create-forked-glyph "grek/xi.cornerHook" : LowerXiShape SHAPE-CORNER-HOOK TAIL-CURLY
 
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		create-forked-glyph "grek/xi.roundedStraightTail" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT
 		create-forked-glyph "grek/xi.flatTopStraightTail" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT
 		create-forked-glyph "grek/xi.flatHookStraightTail" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT
+		create-forked-glyph "grek/xi.cornerHookStraightTail" : LowerXiShape SHAPE-CORNER-HOOK TAIL-STRAIGHT
 		create-forked-glyph "grek/xi.roundedDiagonalTail" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.flatTopDiagonalTail" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.flatHookDiagonalTail" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL
+		create-forked-glyph "grek/xi.cornerHookDiagonalTail" : LowerXiShape SHAPE-CORNER-HOOK TAIL-DIAGONAL
 		create-forked-glyph "grek/xi.roundedStraightTailSharpCorner" : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph "grek/xi.flatTopStraightTailSharpCorner" : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph "grek/xi.flatHookStraightTailSharpCorner" : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT-SHARP-CORNER
+		create-forked-glyph "grek/xi.cornerHookStraightTailSharpCorner" : LowerXiShape SHAPE-CORNER-HOOK TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph "grek/xi.roundedDiagonalTailSharpCorner" : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL-SHARP-CORNER
 		create-forked-glyph "grek/xi.flatTopDiagonalTailSharpCorner" : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL-SHARP-CORNER
 		create-forked-glyph "grek/xi.flatHookDiagonalTailSharpCorner" : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL-SHARP-CORNER
+		create-forked-glyph "grek/xi.cornerHookDiagonalTailSharpCorner" : LowerXiShape SHAPE-CORNER-HOOK TAIL-DIAGONAL-SHARP-CORNER
 
 	select-variant 'grek/xi' 0x3BE

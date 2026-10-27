@@ -11,7 +11,7 @@ glyph-block Letter-Cyrillic-De : begin
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateSelectorVariants
 	glyph-block-import Letter-Shared-Shapes : OBarRight
-	glyph-block-import Letter-Cyrillic-Ze : CyrZe ZeConfig SLAB-FLAT-HOOK
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe ZeConfig SLAB-FLAT-HOOK SLAB-CORNER-HOOK
 
 	glyph-block-export BottomExtension
 	local BottomExtension : (-LongVJut) + QuarterStroke
@@ -284,7 +284,7 @@ glyph-block Letter-Cyrillic-De : begin
 						adb    -- (adb * p)
 					return : union [ze.Shape] [ze.AutoEndSerifL]
 
-				if (!desc && (!styTop || styTop == SLAB-FLAT-HOOK)) : begin
+				if (!desc && (!styTop || styTop == SLAB-FLAT-HOOK || styTop == SLAB-CORNER-HOOK)) : begin
 					create-glyph "cyrl/Dzze.\(suffix).\(suffixZe)" : glyph-proc
 						set-width 0
 						set-mark-anchor 'cvDecompose' 0 0
@@ -377,7 +377,7 @@ glyph-block Letter-Cyrillic-De : begin
 	alias 'cyrl/de.cursiveFlatBowl' null 'cyrl/de.cursiveFlatBowlSerifless'
 	alias 'cyrl/de.italic' null 'cyrl/de.cursiveSerifless'
 
-	foreach hook [items-of { 'BentHook' 'FlatHook' }] : do
+	foreach hook [items-of { 'BentHook' 'FlatHook' 'CornerHook' }] : do
 		foreach bowl [items-of { '' 'FlatBowl' }] : do
 			foreach ear [items-of { 'Serifless' 'Serifed' 'TopCut' 'FlatTopSerifless' 'FlatTopSerifed' 'EarlessCorner' 'EarlessRounded' }] : do
 				alias "cyrl/de.serbian\(hook)\(bowl)\(ear)" null "g.singleStorey\(hook)\(bowl)\(ear)"
@@ -392,7 +392,7 @@ glyph-block Letter-Cyrillic-De : begin
 	CreateAccentedComposition 'cyrl/dwe.italic' null 'cyrl/dwe.italic/base' 'commaTR'
 
 	foreach { suffix { { desc } { styTop styBot } } } [Object.entries ZeConfig] : do
-		if (desc && (!styTop || styTop == SLAB-FLAT-HOOK)) : begin
+		if (desc && (!styTop || styTop == SLAB-FLAT-HOOK || styTop == SLAB-CORNER-HOOK)) : begin
 			create-glyph "cyrl/dzze.italic.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.bp

@@ -1,6 +1,6 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 import [Box] from "@iosevka/geometry/box"
 
@@ -12,22 +12,31 @@ glyph-block Digits-Three : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
 	glyph-block-import Letter-Latin-C : CLetterForm
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook Rounded Flat
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook Rounded Flat
+	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd ArcStartSerif ArcEndSerif
 
-	define SLAB-NONE       0
-	define FLAT-CONNECTION 3
-	define SLAB-FLAT-HOOK  4
+	define SLAB-NONE        0
+	define FLAT-CONNECTION  3
+	define SLAB-FLAT-HOOK   4
+	define SLAB-CORNER-HOOK 5
 
-	define [ThreeShapeT sink offset sw top flatHook] : glyph-proc
+	define HOOK-ROUND  0
+	define HOOK-FLAT   1
+	define HOOK-CORNER 2
+	define HOOK-INWARD 3
+
+	define [ThreeShapeT sink offset sw top hookStyle] : glyph-proc
 		local barcenter : mix 0 top HBarPos
 		local xMid : mix SB RightSB 0.4
 		local fine : sw * CThin
 
 		include : sink
 			widths.rhs sw
-			if flatHook
-				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
-				list
+			match hookStyle
+				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookStartL
+				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
+				__ : list
 					g4 (SB + offset - O) (top - Hook)
 					HookStart (top - offset) (sw -- sw)
 			g4 (RightSB - offset) [YSmoothMidR (top - offset - O) (barcenter - sw / 2) ArchDepthA ArchDepthB]
@@ -38,21 +47,27 @@ glyph-block Digits-Three : begin
 			flat xMid (barcenter + (fine - sw / 2)) [heading Rightward]
 			curl (xMid + TINY) (barcenter + (fine - sw / 2)) [heading Rightward]
 			g4 (RightSB - offset - O * 2) [YSmoothMidR (barcenter + sw / 2) (offset + O) ArchDepthA ArchDepthB] [widths.rhs sw]
-			if flatHook
-				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
-				list
+			match hookStyle
+				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
+				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookEndL
+				[Just HOOK-INWARD] : InwardSlabArcEnd.RtlRhs (SB + offset) offset sw Hook
+				__ : list
 					HookEnd offset (sw -- sw)
 					g4 (SB + offset + O) Hook
+		if (hookStyle === HOOK-INWARD) : begin
+			include : ArcStartSerif.InwardL (SB + offset) (top - offset) sw Hook
+			include : ArcEndSerif.InwardL (SB + offset) offset sw Hook
 
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
-	define [ThreeShapeFlatHook top] : ThreeShapeT dispiro 0 Stroke top true
+	define [ThreeShapeHooked top hookStyle] : ThreeShapeT dispiro 0 Stroke top hookStyle
 
-	define [ThreeFlatTopShape top serif flatHook] : glyph-proc
+	define [ThreeFlatTopShape top serif hookStyle] : glyph-proc
 		define ezh : Ezh [DivFrame 1] top 0
-			pxMidLeft  -- 0.25
-			pxTopRight -- 0.975
-			fSerifed   -- serif
-			fFlatHook  -- flatHook
+			pxMidLeft    -- 0.25
+			pxTopRight   -- 0.975
+			fSerifed     -- serif
+			fFlatHook    -- (hookStyle === HOOK-FLAT)
+			fCornerHook  -- (hookStyle === HOOK-CORNER)
 		include : ezh.Shape
 
 	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
@@ -80,10 +95,13 @@ glyph-block Digits-Three : begin
 
 	# Reversed-c bowl clipped against the et stem so the arch continues
 	# past it. The leftover mask follows the et and stops at the terminal.
-	define [ThreeFlatTopBrokenShape top serif flatHook] : glyph-proc
+	define [ThreeFlatTopBrokenShape top serif hookStyle] : glyph-proc
 		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top
 		local yBowl : mix 0 top 0.72
-		local styBot : if flatHook SLAB-FLAT-HOOK SLAB-NONE
+		local styBot : match hookStyle
+			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
+			[Just HOOK-CORNER] SLAB-CORNER-HOOK
+			__                 SLAB-NONE
 
 		define [etTop] : ThreeFlatTopEtTop top
 
@@ -101,76 +119,41 @@ glyph-block Digits-Three : begin
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
-	create-glyph 'three.lnum.rounded' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeShape CAP
-	create-glyph 'three.lnum.flatTopBroken' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopBrokenShape CAP false false
-	create-glyph 'three.lnum.flatTopBrokenSerifed' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopBrokenShape CAP true false
-	create-glyph 'three.lnum.flatTopBrokenFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopBrokenShape CAP false true
-	create-glyph 'three.lnum.flatTopBrokenSerifedFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopBrokenShape CAP true true
-	create-glyph 'three.lnum.flatHooked' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeShapeFlatHook CAP
-	create-glyph 'three.lnum.flatTop' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopShape CAP false false
-	create-glyph 'three.lnum.flatTopSerifed' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopShape CAP true false
-	create-glyph 'three.lnum.flatTopFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopShape CAP false true
-	create-glyph 'three.lnum.flatTopSerifedFlatHook' : glyph-proc
-		include : MarkSet.capital
-		include : ThreeFlatTopShape CAP true true
-	create-glyph 'three.onum.rounded' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeShape CAP
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopBroken' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopBrokenShape CAP false false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopBrokenSerifed' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopBrokenShape CAP true false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopBrokenFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopBrokenShape CAP false true
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopBrokenSerifedFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopBrokenShape CAP true true
-		include : ShiftDown
-	create-glyph 'three.onum.flatHooked' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeShapeFlatHook CAP
-		include : ShiftDown
-	create-glyph 'three.onum.flatTop' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopShape CAP false false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopSerifed' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopShape CAP true false
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopShape CAP false true
-		include : ShiftDown
-	create-glyph 'three.onum.flatTopSerifedFlatHook' : glyph-proc
-		include : OnumMarks.p
-		include : ThreeFlatTopShape CAP true true
-		include : ShiftDown
+	define ThreeBodyConfig : object
+		rounded       HOOK-ROUND
+		flatHooked    HOOK-FLAT
+		cornerHooked  HOOK-CORNER
+		inwardSerifed HOOK-INWARD
+
+	foreach { suffix hookStyle } [pairs-of ThreeBodyConfig] : do
+		create-glyph "three.lnum.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : ThreeShapeHooked CAP hookStyle
+		create-glyph "three.onum.\(suffix)" : glyph-proc
+			include : OnumMarks.p
+			include : ThreeShapeHooked CAP hookStyle
+			include : ShiftDown
+
+	define ThreeFlatTopConfig : SuffixCfg.weave
+		object
+			flatTop       { ThreeFlatTopShape }
+			flatTopBroken { ThreeFlatTopBrokenShape }
+		object
+			""      { false }
+			serifed { true }
+		object
+			""         { HOOK-ROUND }
+			flatHook   { HOOK-FLAT }
+			cornerHook { HOOK-CORNER }
+
+	foreach { suffix { { Shape } { fSerif } { hookStyle } } } [pairs-of ThreeFlatTopConfig] : do
+		create-glyph "three.lnum.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : Shape CAP fSerif hookStyle
+		create-glyph "three.onum.\(suffix)" : glyph-proc
+			include : OnumMarks.p
+			include : Shape CAP fSerif hookStyle
+			include : ShiftDown
 
 	select-variant 'three.lnum' [CodeLnum '3'] (follow -- 'three')
 	select-variant 'three.onum' [CodeOnum '3'] (follow -- 'three')

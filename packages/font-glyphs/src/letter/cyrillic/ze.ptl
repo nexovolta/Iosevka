@@ -18,7 +18,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
 	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 
 	define SLAB-NONE       0
@@ -31,10 +31,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define CLOSED-ROUND    7
 	define CLOSED-STEM     8
 	define SLAB-FLAT-HOOK  9
+	define SLAB-CORNER-HOOK 10
 
 	define KSI-SHAPE-ROUNDED    0
 	define KSI-SHAPE-FLAT-TOP   1
 	define KSI-SHAPE-FLAT-HOOK  2
+	define KSI-SHAPE-CORNER-HOOK 3
 
 	define KSI-TAIL-CURLY                 0
 	define KSI-TAIL-STRAIGHT              1
@@ -45,7 +47,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define StdBlend 0.65
 	define VolBlend 0.56
 
-	glyph-block-export CyrZe ZeConfig SLAB-FLAT-HOOK CLOSED-CIRCLE CLOSED-STEM FLAT-CONNECTION
+	glyph-block-export CyrZe ZeConfig SLAB-FLAT-HOOK SLAB-CORNER-HOOK CLOSED-CIRCLE CLOSED-STEM FLAT-CONNECTION
 	define flex-params [CyrZe] : namespace
 		local-parameter : slabTop
 		local-parameter : slabBot
@@ -92,6 +94,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						curl (left + [HSwToV : stroke - shoulderFine]) [Math.max (top - ada) (midy + TINY)]
 						Arch.rhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartL
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookStartL
 					__ : list
 						g4   (left - xo) (top - hook) [widths.rhs stroke]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -128,6 +131,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						flat (left + [HSwToV : stroke - shoulderFine]) [Math.min (bot + adb) (midy - TINY)] [widths.rhs shoulderFine]
 						curl (left + [HSwToV : stroke - shoulderFine]) midy
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndL
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookEndL
 					__ : list
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (left + xo) (bot + hookBot)
@@ -263,6 +267,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						curl (right - [HSwToV : stroke - shoulderFine]) [Math.max (top - adb) (midy + TINY)]
 						Arch.lhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartR
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookStartR
 					__ : list
 						g4   (right + xo) (top - hook) [widths.lhs]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -296,6 +301,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 						flat (right - [HSwToV : stroke - shoulderFine]) [Math.min (bot + ada) (midy - TINY)] [widths.lhs shoulderFine]
 						curl (right - [HSwToV : stroke - shoulderFine]) midy
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndR
+					[Just SLAB-CORNER-HOOK] : [MakeCornerHook left right top bot (sw -- stroke)].hookEndR
 					__ : list
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (right - xo) (bot + hookBot)
@@ -369,6 +375,11 @@ glyph-block Letter-Cyrillic-Ze : begin
 			bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
 			unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
 			unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
+			cornerHook                        { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
+			bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
+			bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
+			unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }
+			unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
 
 	foreach { suffix { { bottom mkCap mkXH } { slabTop slabBot } } } [Object.entries ZeConfig] : do
 		create-glyph "cyrl/Ze.\(suffix)" : glyph-proc
@@ -623,6 +634,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			flatTop    KSI-SHAPE-FLAT-TOP
 			rounded    KSI-SHAPE-ROUNDED
 			flatHook   KSI-SHAPE-FLAT-HOOK
+			cornerHook KSI-SHAPE-CORNER-HOOK
 		object # tail
 			""                         { KSI-TAIL-CURLY                 }
 			straightTail               { KSI-TAIL-STRAIGHT              }
@@ -631,7 +643,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			diagonalTailSharpCorner    { KSI-TAIL-DIAGONAL-SHARP-CORNER }
 
 	foreach { suffix { shape { tail } } } [Object.entries KsiConfig] : do
-		local slabTop : if (shape === KSI-SHAPE-FLAT-HOOK) SLAB-FLAT-HOOK SLAB-NONE
+		local slabTop : if (shape === KSI-SHAPE-FLAT-HOOK) SLAB-FLAT-HOOK : if (shape === KSI-SHAPE-CORNER-HOOK) SLAB-CORNER-HOOK SLAB-NONE
 		create-glyph "cyrl/Ksi/base.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			local ze : CyrZe slabTop SLAB-NONE CAP 0

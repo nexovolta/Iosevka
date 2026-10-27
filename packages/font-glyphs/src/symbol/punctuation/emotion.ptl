@@ -121,12 +121,16 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerShape QuestionRevCornerShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerFlatShape QuestionRevCornerFlatShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothFlatHookedShape QuestionRevSmoothFlatHookedShape
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerCornerHookedShape QuestionRevCornerCornerHookedShape
+		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape
 
 		define HookConfig : object
 			smooth              { QuestionSmoothShape            QuestionRevSmoothShape }
 			corner              { QuestionCornerShape            QuestionRevCornerShape }
 			cornerFlatHooked    { QuestionCornerFlatShape        QuestionRevCornerFlatShape }
 			smoothFlatHooked    { QuestionSmoothFlatHookedShape  QuestionRevSmoothFlatHookedShape }
+			cornerCornerHooked  { QuestionCornerCornerHookedShape QuestionRevCornerCornerHookedShape }
+			smoothCornerHooked  { QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape }
 
 		define Config : SuffixCfg.dotWeave DotVariants HookConfig
 		foreach { suffix { { DrawAt kdr overshoot } { Body RevBody } } } [Object.entries Config] : do

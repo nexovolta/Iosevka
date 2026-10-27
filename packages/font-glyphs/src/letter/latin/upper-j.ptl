@@ -9,7 +9,8 @@ glyph-block Letter-Latin-Upper-J : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateAccentedComposition
-	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth
+	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth ArcStartSerifWidth
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart CornerHookEnd
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-Lower-J : FlatHookDotlessJShape
 
@@ -53,6 +54,28 @@ glyph-block Letter-Latin-Upper-J : begin
 			arcvh.superness DesignParameters.tightHookSuperness
 			flat (xBarRight - [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) 0 [widths.rhs Stroke]
 			curl df.leftSB 0
+
+	define [JCornerHookBase df dfHook top] : glyph-proc
+		set-width df.width
+		include : df.markSet.[if (top > XH) 'capital' 'e']
+
+		local xBarRight : df.rightSB - JBalance2
+
+		set-base-anchor 'above'   (xBarRight - [HSwToV : 0.75 * Stroke])  top
+		set-base-anchor 'overlay' (xBarRight - [HSwToV : 0.75 * Stroke]) (top * OverlayPos)
+		set-base-anchor 'jTopSerifAttach' (xBarRight - [HSwToV HalfStroke]) top
+
+		local sw : Math.min Stroke : 0.4 * (xBarRight - df.leftSB)
+		local hd : FlatHookDepth dfHook
+		local depth : CornerHookDepth Hook Stroke
+		local xTerminal : df.leftSB + [HSwToV : 0.25 * [ArcStartSerifWidth Stroke]]
+
+		include : dispiro
+			flat xBarRight top [widths.rhs.heading sw Downward]
+			curl xBarRight (HalfStroke + 1.375 * hd.y)
+			arcvh.superness DesignParameters.tightHookSuperness
+			flat [Math.max (xBarRight - [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) (xTerminal + [HSwToV Stroke] + 1)] 0 [widths.rhs Stroke]
+			CornerHookEnd xTerminal 0 depth Stroke (-1) 1
 
 	define [JDescendingBentHookBase df dfHook top] : glyph-proc
 		set-width df.width
@@ -122,12 +145,38 @@ glyph-block Letter-Latin-Upper-J : begin
 			serif     -- false
 		set-base-anchor 'jTopSerifAttach' xBar top
 
+	define [JDescendingCornerHookBase df dfHook top] : glyph-proc
+		set-width df.width
+		include : df.markSet.[if (top > XH) 'capDesc' 'p']
+		local barCenter : df.middle + JBalance * df.adws
+		local crossLeft : mix 0 SB : mix 1 df.adws 2
+		local bar : barCenter + [HSwToV HalfStroke]
+		local hd : FlatHookDepth dfHook
+		local depth : CornerHookDepth Hook Stroke
+		local terminal : Math.min
+			bar - hd.x - [Math.max (Stroke / 3) (df.width / 6)] - [HSwToV Stroke]
+			crossLeft - OX * 2
+		local xTerminal : terminal + [HSwToV : 0.25 * [ArcStartSerifWidth Stroke]]
+
+		include : dispiro
+			CornerHookStart xTerminal Descender depth Stroke 1 (-1)
+			curl (bar - hd.x) Descender [heading Rightward]
+			archv.superness DesignParameters.tightHookSuperness
+			flat bar (Descender + hd.y)
+			curl bar top [heading Upward]
+		set-base-anchor 'above' barCenter top
+		set-base-anchor 'trailing' (bar - hd.x) Descender
+		set-base-anchor 'overlay' barCenter (top / 2)
+		set-base-anchor 'jTopSerifAttach' barCenter top
+
 	define JConfig : SuffixCfg.weave
 		object # height and hook
 			bentHook                    { JBentHookBase                    [DivFrame 1]                  [DivFrame 1]                  }
 			flatHook                    { JFlatHookBase                    [DivFrame para.advanceScaleF] [DivFrame para.advanceScaleF] }
+			cornerHook                  { JCornerHookBase                  [DivFrame para.advanceScaleF] [DivFrame para.advanceScaleF] }
 			descendingBentHook          { JDescendingBentHookBase          [DivFrame 1]                  [DivFrame 1]                  }
 			descendingFlatHook          { JDescendingFlatHookBase          [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
+			descendingCornerHook        { JDescendingCornerHookBase        [DivFrame para.advanceScaleI] [DivFrame para.advanceScaleI] }
 		object # top bar
 			fullTopbar             JFullTopbar
 			longTopbar             JLongTopbar

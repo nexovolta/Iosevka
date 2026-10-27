@@ -14,7 +14,7 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-E : EShape
 	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
@@ -31,19 +31,21 @@ glyph-block Symbol-Currency : begin
 				curl (Middle + radius * Math.SQRT2 * [Math.cos angle]) (SymbolMid + radius * Math.SQRT2 * [Math.sin angle])
 
 	define SterlingConfig : object
-		serifless     { 0 false }
-		motionSerifed { 1 false }
-		flatHook      { 0 true  }
+		serifless     { 0 false false }
+		motionSerifed { 1 false false }
+		flatHook      { 0 true  false }
+		cornerHook    { 0 false true  }
 
-	foreach { suffix { serifGrade fFlatHook } } [Object.entries SterlingConfig] : do
+	foreach { suffix { serifGrade fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
 		define xBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 		define [BaseShape] : glyph-proc
 			local hookEndX : Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]
+			local hk : if fCornerHook [MakeCornerHook xBarLeft hookEndX CAP 0] [MakeFlatHook xBarLeft hookEndX CAP 0]
 			include : union
-				if fFlatHook
+				if (fFlatHook || fCornerHook)
 					dispiro
 						widths.lhs
-						[MakeFlatHook xBarLeft hookEndX CAP 0].hookStartR
+						hk.hookStartR
 						flat xBarLeft [CAP - ArchDepthA * 0.75]
 						curl xBarLeft [mix Stroke CAP 0.3]
 						g4   SB Stroke
