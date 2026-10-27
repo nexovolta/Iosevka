@@ -123,11 +123,12 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					corner [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 					corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (-yMockUpperLoopLeftBottom)
 					corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (CAP - O)
+		if (hookType === HOOK-CORNER) [VBar.r xUpperLoopRight CAP (CAP - Hook) SwAmpersand] [no-shape]
 		difference
 			dispiro
 				match hookType
 					[Just HOOK-FLAT] : [MakeFlatHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
-					[Just HOOK-CORNER] : [MakeCornerHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
+					[Just HOOK-CORNER] : [MakeFlatHook xUpperLoopLeft xUpperLoopRight CAP 0 (sw -- SwAmpersand)].hookStartR
 					__ : list
 						g4.up.start xUpperLoopRight yUpperLoopRight [widths.heading SwAmpersand 0 Upward]
 						arcvh
@@ -188,6 +189,8 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				Arch.lhs.centerAt.rtl.t (knot-ty -- corner) xUpperLoopTop (CAP * 2) (sw -- SwAmpersand)
 				corner (Width * 2) (CAP * 2)
 				corner (Width * 2) O
+
+
 
 	define yEtMiddle : CAP * OverlayPos
 	define adaEt : CAP - [mix (yEtMiddle + SwAmpersand / 2) (CAP - O - SwAmpersand) (ArchDepthB / (ArchDepthA + ArchDepthB))] - [HSwToV TanSlope] * SwAmpersand
@@ -345,5 +348,31 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			if (hookStyle === HOOK-CORNER) : begin
 				include : VBar.l xTopLeft CAP yFlatTopHookBot Stroke
 				include : HBar.m xTopLeft (xTopLeft + 0.18 * Width) (yFlatTopHookBot - Stroke / 2) Stroke
+
+	define FlatTopAndBottomConfig : object
+		'flatTopAndBottomSerifless'                 { FORM-FLAT-BOTTOM false }
+		'flatTopAndBottomSerifed'                   { FORM-FLAT-BOTTOM true }
+		'flatTopAndBottomToothedSerifless'          { FORM-TOOTHED false }
+		'flatTopAndBottomToothedSerifed'            { FORM-TOOTHED true }
+		'flatTopAndBottomToothlessCornerSerifless'  { FORM-TOOTHLESS-CORNER false }
+		'flatTopAndBottomToothlessCornerSerifed'    { FORM-TOOTHLESS-CORNER true }
+		'flatTopAndBottomToothlessRoundedSerifless' { FORM-TOOTHLESS-ROUNDED false }
+		'flatTopAndBottomToothlessRoundedSerifed'   { FORM-TOOTHLESS-ROUNDED true }
+
+	foreach { suffix { form fSerifed } } [pairs-of FlatTopAndBottomConfig] : do
+		create-glyph "ampersand.\(suffix)" : glyph-proc
+			define et : RevEzh CAP 0
+				fSerifed   -- fSerifed
+				terminal   -- 0
+				ada        -- adaEt
+				adb        -- adbEt
+				pyMidRight -- pyEtFlatTopBarPos
+			include : union
+				et.Shape
+				EtLowerHalf form
+			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yEtRightBarTop
+			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yEtRightBarTop
+			if (form === FORM-TOOTHED) : include : VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (Stroke - ShoulderFine / 2)]
+			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yEtRightBarTop
 
 	select-variant 'ampersand' '&'
