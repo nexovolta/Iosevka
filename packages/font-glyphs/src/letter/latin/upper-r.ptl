@@ -189,18 +189,15 @@ glyph-block Letter-Latin-Upper-R : begin
 		local cor : DiagCor legTop (right - df.middle) 0 sw
 		local endX : df.middle - [if fStraightLeg ([HSwToV : 0.5 * sw] * cor) (sw / 2)] + [if fStraightLeg [RSlabExtraShift SLAB sw] 0]
 		if fBroken : begin
-			# Broken leg: one long diagonal, flat-topped below the bowl, running from the left edge past the bowl's right side.
 			local yTop : mix legTop top 0.3
-			local xRightBottom : right + 0.05 * top
-			local xLeftTop : [mix 0 df.leftSB mul] + 0.02 * top
-			local legW : sw * [Math.hypot (xRightBottom - xLeftTop) yTop] / yTop
-			local xLhsAtBowl : mix xLeftTop (xRightBottom - legW) ((yTop - legTop + sw / 2) / yTop)
+			local [object xStem yJoin xRightBottomSerifStart xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
+			local legW : [HSwToV sw] * [DiagCor yJoin (xEnd - xStem) 0 sw]
+			local xLhsAtBowl : mix xEnd xStem ((legTop - sw / 2) / yJoin)
 			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
-			include : spiro-outline
-				corner xLeftTop yTop
-				corner (xLeftTop + legW) yTop
-				corner xRightBottom 0
-				corner (xRightBottom - legW) 0
+			include : intersection
+				Rect yTop 0 (-VERY-FAR) [if legSlab xRightBottomSerifStart (+VERY-FAR)]
+				ExtLineLhs xStem yJoin xEnd 0 sw 1
+			if legSlab : include : tagged 'serifRB' : HSerif.rb xRightBottomSerifStart 0 (SideJut + Jut / 8) sw
 		: else : begin
 			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
 			include : difference
