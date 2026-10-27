@@ -169,6 +169,15 @@ glyph-block Letter-Latin-Upper-R : begin
 				PShape.OpenGap (df -- df) (mul -- mul) (bp -- bp) (top -- top) (bot -- 0) (sw -- sw)
 				no-shape
 
+	define [RRotundaBrokenLeg top bp df mul legSlab sw] : glyph-proc
+		local yTop : mix [RLegTop top sw bp] top 0.3
+		local right : df.rightSB - O
+		local [object xStem yJoin xRightBottomSerifStart xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
+		include : intersection
+			Rect yTop 0 (-VERY-FAR) [if legSlab xRightBottomSerifStart (+VERY-FAR)]
+			ExtLineLhs xStem yJoin xEnd 0 sw 1
+		if legSlab : include : tagged 'serifRB' : HSerif.rb xRightBottomSerifStart 0 (SideJut + Jut / 8) sw
+
 	define flex-params [RRotundaShape] : glyph-proc
 		local-parameter : legShape
 		local-parameter : top
@@ -189,15 +198,11 @@ glyph-block Letter-Latin-Upper-R : begin
 		local cor : DiagCor legTop (right - df.middle) 0 sw
 		local endX : df.middle - [if fStraightLeg ([HSwToV : 0.5 * sw] * cor) (sw / 2)] + [if fStraightLeg [RSlabExtraShift SLAB sw] 0]
 		if fBroken : begin
-			local yTop : mix legTop top 0.3
-			local [object xStem yJoin xRightBottomSerifStart xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
+			local [object xStem yJoin xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
 			local legW : [HSwToV sw] * [DiagCor yJoin (xEnd - xStem) 0 sw]
-			local xLhsAtBowl : mix xEnd xStem ((legTop - sw / 2) / yJoin)
+			local xLhsAtBowl : mix xEnd xStem (legTop / yJoin)
 			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
-			include : intersection
-				Rect yTop 0 (-VERY-FAR) [if legSlab xRightBottomSerifStart (+VERY-FAR)]
-				ExtLineLhs xStem yJoin xEnd 0 sw 1
-			if legSlab : include : tagged 'serifRB' : HSerif.rb xRightBottomSerifStart 0 (SideJut + Jut / 8) sw
+			include : RRotundaBrokenLeg top bp df mul legSlab sw
 		: else : begin
 			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (sw -- sw)
 			include : difference
@@ -355,10 +360,19 @@ glyph-block Letter-Latin-Upper-R : begin
 
 			create-glyph "currency/indianRupeeSign.\(suffix)" : glyph-proc
 				local shift : (-0.125) * (Width - 0)
-				include : intersection [Rect CAP 0 SB Width] : with-transform [Translate shift 0]
-					PShape CAP (mul -- 1.0) (sw -- swCap) (withBar -- false)
 				local right : RightSB - O - [if (legShape !== RLegShape.Curly) 0 0.0625] * (Width - 0)
-				include : legShape [RLegTop CAP swCap PShape.BarPos] 0 (Middle + shift) right CAP (SB + shift) doLegSlab swCap
+				local bowlLeft SB
+				if (legShape === RLegShape.StraightBroken) : begin
+					local legTop : RLegTop CAP swCap PShape.BarPos
+					local [object xStem yJoin xEnd] : RLegShape.BrokenJoin legTop 0 Middle right SB doLegSlab swCap
+					local legW : [HSwToV swCap] * [DiagCor yJoin (xEnd - xStem) 0 swCap]
+					set bowlLeft : [mix xEnd xStem (legTop / yJoin)] + 0.5 * legW
+				include : intersection [Rect CAP 0 bowlLeft Width] : with-transform [Translate shift 0]
+					PShape CAP (mul -- 1.0) (sw -- swCap) (withBar -- false)
+				if (legShape === RLegShape.StraightBroken) : begin
+					include : RRotundaBrokenLeg CAP (0.9 * PShape.BarPos) [DivFrame 1] 1 doLegSlab swCap
+				: else : begin
+					include : legShape [RLegTop CAP swCap PShape.BarPos] 0 (Middle + shift) right CAP (SB + shift) doLegSlab swCap
 
 				define sw : AdviceStroke2 2 4 CAP
 				include : HBar.t SB RightSB      CAP                                         sw
