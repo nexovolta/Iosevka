@@ -329,6 +329,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				adb        -- adbEt
 				pyMidRight -- pyEtFlatTopBarPos
 			define [object xTopLeft xTopRight xMidRight yMidRight xArcTop yArcTop xArcMid yArcMid] : et.Dim
+			define yFlatTopHookBot : (CAP - Stroke) - Stroke * ((CAP - Stroke) - yMidRight) / (xMidRight - xTopLeft)
 			include : union
 				LowerOpenCrossbar yEtFlatTopEnd
 				et.Shape
@@ -338,9 +339,9 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					Arch.lhs 0 (swAfter -- fineAmp)
 					flat (xLowerOpenRight - OX) adaEt [widths.lhs fineAmp]
 					curl (xLowerOpenRight - OX) yEtFlatTopEnd [heading Upward]
-			if (hookStyle === HOOK-FLAT) : include : VBar.l xTopLeft CAP (CAP - Hook) SwAmpersand
+			if (hookStyle === HOOK-FLAT) : include : VBar.l xTopLeft CAP yFlatTopHookBot Stroke
 			if (hookStyle === HOOK-CORNER) : begin
-				include : VBar.l xTopLeft CAP (CAP - Hook) SwAmpersand
-				include : HBar.m xTopLeft (xTopLeft + 0.3 * Width) (CAP - Hook) SwAmpersand
+				include : VBar.l xTopLeft CAP yFlatTopHookBot Stroke
+				include : HBar.m xTopLeft (xTopLeft + 0.18 * Width) (yFlatTopHookBot - Stroke / 2) Stroke
 
 	select-variant 'ampersand' '&'
