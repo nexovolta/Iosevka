@@ -340,33 +340,27 @@ glyph-block Letter-Arc-Hook : begin
 		local midX : mix box.l box.r 0.5
 		local midShift : (box.r - box.l) * (-0.05)
 
-		local w : HSwToV sw
-
 		export : define [hookStartL] : begin
 			return : list
 				corner fh.xLHook (box.t - depth) [widths.rhs.heading sw Upward]
-				corner fh.xLHook box.t [widths.rhs.heading sw Upward]
-				corner (fh.xLHook + w) box.t [widths.rhs.heading sw Rightward]
-				curl [Math.max (fh.xLHook + w + 0.5 * sw + TanSlope * sw) : Arch.adjust-x.top (midX + midShift) sw] box.t [heading Rightward]
+				corner fh.xLHook box.t [widths.rhs sw]
+				curl [Math.max (fh.xLHook + sw + TanSlope * sw) : Arch.adjust-x.top (midX + midShift) sw] box.t [heading Rightward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookStartR] : begin
 			return : list
 				corner fh.xRHook (box.t - depth) [widths.lhs.heading sw Upward]
-				corner fh.xRHook box.t [widths.lhs.heading sw Upward]
-				corner (fh.xRHook - w) box.t [widths.lhs.heading sw Leftward]
-				curl [Math.min (fh.xRHook - w - 0.5 * sw - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
+				corner fh.xRHook box.t [widths.lhs sw]
+				curl [Math.min (fh.xRHook - sw - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookEndL] : begin
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
-				flat [Math.max (fh.xLHook + w + 0.5 * sw + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw] box.b [widths.rhs.heading sw Leftward]
-				corner (fh.xLHook + w) box.b [widths.rhs.heading sw Leftward]
-				corner fh.xLHook box.b [widths.rhs.heading sw Upward]
+				flat [Math.max (fh.xLHook + sw + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw] box.b [widths.rhs.heading sw Leftward]
+				corner fh.xLHook box.b [widths.rhs sw]
 				corner fh.xLHook (box.b + depth) [widths.rhs.heading sw Upward]
 		export : define [hookEndR] : begin
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
-				flat [Math.min (fh.xRHook - w - 0.5 * sw - TanSlope * sw) : Arch.adjust-x.bot (midX - midShift) sw] box.b [widths.lhs.heading sw Rightward]
-				corner (fh.xRHook - w) box.b [widths.lhs.heading sw Rightward]
-				corner fh.xRHook box.b [widths.lhs.heading sw Upward]
+				flat [Math.min (fh.xRHook - sw - TanSlope * sw) : Arch.adjust-x.bot (midX - midShift) sw] box.b [widths.lhs.heading sw Rightward]
+				corner fh.xRHook box.b [widths.lhs sw]
 				corner fh.xRHook (box.b + depth) [widths.lhs.heading sw Upward]
