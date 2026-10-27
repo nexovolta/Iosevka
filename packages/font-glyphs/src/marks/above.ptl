@@ -817,18 +817,53 @@ glyph-block Mark-Above : begin
 		local yPeak : ttop - hs
 		local yTrough : tbot + hs
 		local stub : 0.14 * (ttop - tbot)
-		local x1 : mix xl xr 0.3
-		local x2 : mix xl xr 0.7
-		include : dispiro
-			widths.center (2 * hs)
-			flat xl tbot [heading Upward]
-			curl xl (tbot + stub) [heading Upward]
-			arcvh
-			g4 x1 yPeak [heading Rightward]
-			g4 x2 yTrough [heading Rightward]
-			archv
-			flat xr (ttop - stub) [heading Upward]
-			curl xr ttop [heading Upward]
+		local yB : tbot + stub
+		local yE : ttop - stub
+		local x1 : mix xl xr 0.25
+		local x2 : mix xl xr 0.75
+		local hsMid : 0.94 * hs
+		local kQ 0.5523
+		local xSpan : (x2 - x1) / 2
+		define [framePt x y] : currentGlyph.gizmo.apply : object
+			x : 0 + x
+			y : 0 + y
+		local zA : framePt xl tbot
+		local zA1 : framePt xl (tbot + stub / 3)
+		local zA2 : framePt xl (tbot + 2 * stub / 3)
+		local zB : framePt xl yB
+		local zB1 : framePt xl (yB + kQ * (yPeak - yB))
+		local zC1 : framePt (x1 - kQ * (x1 - xl)) yPeak
+		local zC : framePt x1 yPeak
+		local zC2 : framePt (x1 + xSpan) yPeak
+		local zD1 : framePt (x2 - xSpan) yTrough
+		local zD : framePt x2 yTrough
+		local zD2 : framePt (x2 + kQ * (xr - x2)) yTrough
+		local zE1 : framePt xr (yE - kQ * (yE - yTrough))
+		local zE : framePt xr yE
+		local zF1 : framePt xr (yE + (ttop - yE) / 3)
+		local zF2 : framePt xr (yE + 2 * (ttop - yE) / 3)
+		local zF : framePt xr ttop
+
+		define bStemLow : new Arcs.Bez3 zA zA1 zA2 zB
+		define bTurnLow : new Arcs.Bez3 zB zB1 zC1 zC
+		define bMid : new Arcs.Bez3 zC zC2 zD1 zD
+		define bTurnHi : new Arcs.Bez3 zD zD2 zE1 zE
+		define bStemHi : new Arcs.Bez3 zE zF1 zF2 zF
+
+		define iStemLow : new TaperedOffsetCurve bStemLow (+hs) (+hs) HVContrast
+		define iTurnLow : new TaperedOffsetCurve bTurnLow (+hs) (+hsMid) HVContrast
+		define iMid : new TaperedOffsetCurve bMid (+hsMid) (+hsMid) HVContrast
+		define iTurnHi : new TaperedOffsetCurve bTurnHi (+hsMid) (+hs) HVContrast
+		define iStemHi : new TaperedOffsetCurve bStemHi (+hs) (+hs) HVContrast
+		define oStemLow : new TaperedOffsetCurve bStemLow (0 - hs) (0 - hs) HVContrast
+		define oTurnLow : new TaperedOffsetCurve bTurnLow (0 - hs) (0 - hsMid) HVContrast
+		define oMid : new TaperedOffsetCurve bMid (0 - hsMid) (0 - hsMid) HVContrast
+		define oTurnHi : new TaperedOffsetCurve bTurnHi (0 - hsMid) (0 - hs) HVContrast
+		define oStemHi : new TaperedOffsetCurve bStemHi (0 - hs) (0 - hs) HVContrast
+
+		define cs : new BezToContoursSink
+		ShapeConv.transferGenericShapeAsBezier {{iStemLow iTurnLow iMid iTurnHi iStemHi [new Arcs.Reverted oStemHi] [new Arcs.Reverted oTurnHi] [new Arcs.Reverted oMid] [new Arcs.Reverted oTurnLow] [new Arcs.Reverted oStemLow]}} cs GEOMETRY_PRECISION
+		currentGlyph.includeContours cs.contours
 
 	glyph-block-export TildeShape
 	define [TildeShape] : with-params [ttop tbot leftEnd rightEnd hs hsLeft compact stretch] : glyph-proc
