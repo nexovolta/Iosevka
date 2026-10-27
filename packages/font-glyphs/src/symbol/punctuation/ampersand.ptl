@@ -313,10 +313,14 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define pyEtFlatTopBarPos : ([mix 0 CAP OverlayPos] + Stroke * 0.125) / (CAP - 0)
 
 	define EtFlatTopConfig : object
-		'flatTopSerifless'  false
-		'flatTopSerifed'    true
+		'flatTopSerifless'           { HOOK-ROUND false }
+		'flatTopSerifed'             { HOOK-ROUND true  }
+		'flatTopFlatHookSerifless'   { HOOK-FLAT false }
+		'flatTopFlatHookSerifed'     { HOOK-FLAT true  }
+		'flatTopCornerHookSerifless' { HOOK-CORNER false }
+		'flatTopCornerHookSerifed'   { HOOK-CORNER true  }
 
-	foreach { suffix fSerifed } [pairs-of EtFlatTopConfig] : do
+	foreach { suffix { hookStyle fSerifed } } [pairs-of EtFlatTopConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed
@@ -324,7 +328,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				ada        -- adaEt
 				adb        -- adbEt
 				pyMidRight -- pyEtFlatTopBarPos
-			define [object xArcMid yArcMid] : et.Dim
+			define [object xTopLeft xTopRight xMidRight yMidRight xArcTop yArcTop xArcMid yArcMid] : et.Dim
 			include : union
 				LowerOpenCrossbar yEtFlatTopEnd
 				et.Shape
@@ -334,5 +338,9 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					Arch.lhs 0 (swAfter -- fineAmp)
 					flat (xLowerOpenRight - OX) adaEt [widths.lhs fineAmp]
 					curl (xLowerOpenRight - OX) yEtFlatTopEnd [heading Upward]
+			if (hookStyle === HOOK-FLAT) : include : VBar.l xTopLeft CAP (CAP - Hook) SwAmpersand
+			if (hookStyle === HOOK-CORNER) : begin
+				include : VBar.l xTopLeft CAP (CAP - Hook) SwAmpersand
+				include : HBar.m xTopLeft (xTopLeft + 0.3 * Width) (CAP - Hook) SwAmpersand
 
 	select-variant 'ampersand' '&'

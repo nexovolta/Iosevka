@@ -363,22 +363,10 @@ glyph-block Letter-Latin-Upper-R : begin
 			create-glyph "currency/indianRupeeSign.\(suffix)" : glyph-proc
 				local shift : (-0.125) * (Width - 0)
 				local right : RightSB - O - [if (legShape !== RLegShape.Curly) 0 0.0625] * (Width - 0)
-				local bowlLeft SB
-				local bowlBp PShape.BarPos
-				local bowlShift shift
-				if (legShape === RLegShape.StraightBroken) : begin
-					set bowlBp : 0.9 * PShape.BarPos
-					set bowlShift 0
-					local legTop : RLegTop CAP swCap bowlBp
-					local [object xStem yJoin xEnd] : RLegShape.BrokenJoin [RLegTop CAP swCap PShape.BarPos] 0 Middle right SB doLegSlab swCap
-					local legW : [HSwToV swCap] * [DiagCor yJoin (xEnd - xStem) 0 swCap]
-					set bowlLeft : [mix xEnd xStem (legTop / yJoin)] + 0.5 * legW
-				include : intersection [Rect CAP 0 bowlLeft Width] : with-transform [Translate bowlShift 0]
-					PShape CAP (mul -- 1.0) (bp -- bowlBp) (sw -- swCap) (withBar -- false)
-				if (legShape === RLegShape.StraightBroken) : begin
-					include : RRotundaBrokenLeg CAP (0.9 * PShape.BarPos) [DivFrame 1] 1 doLegSlab swCap
-				: else : begin
-					include : legShape [RLegTop CAP swCap PShape.BarPos] 0 (Middle + shift) right CAP (SB + shift) doLegSlab swCap
+				local rupeeLeg : if (legShape === RLegShape.StraightBroken) RLegShape.Straight legShape
+				include : intersection [Rect CAP 0 SB Width] : with-transform [Translate shift 0]
+					PShape CAP (mul -- 1.0) (sw -- swCap) (withBar -- false)
+				include : rupeeLeg [RLegTop CAP swCap PShape.BarPos] 0 (Middle + shift) right CAP (SB + shift) doLegSlab swCap
 
 				define sw : AdviceStroke2 2 4 CAP
 				include : HBar.t SB RightSB      CAP                                         sw
