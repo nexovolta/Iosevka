@@ -218,14 +218,6 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : DrawAt df.middle (CAP - [mix dr (XH - dr) (0 + k)]) (dr - overshoot)
 			include : DrawAt df.middle (CAP - [mix dr (XH - dr) (1 - k)]) (dr - overshoot)
 
-		create-glyph "semicolon.\(suffix)" : glyph-proc
-			include [refer-glyph "comma.\(suffix)"] AS_BASE ALSO_METRICS
-			include [refer-glyph "xhPeriod.\(suffix)"]
-
-		create-glyph "revSemicolon.\(suffix)" : glyph-proc
-			include [refer-glyph "revComma.\(suffix)"] AS_BASE ALSO_METRICS
-			include [refer-glyph "xhPeriod.\(suffix)"]
-
 		create-glyph "doubleStackedComma.\(suffix)" : glyph-proc
 			include [refer-glyph "comma.\(suffix)"] AS_BASE ALSO_METRICS
 			include : with-transform [ApparentTranslate 0 (XH - 2 * PeriodRadius * kDotRadius)] : composite-proc
@@ -310,13 +302,26 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : DrawAt (RightSB - radius) (XH * 0.75) (kDotRadius * radius - overshoot)
 			include : DrawAt (RightSB - radius) (XH * 0.25) (kDotRadius * radius - overshoot)
 
+	# Glyphs that draw both a dot and a comma follow both selectors at once.
+	foreach dotSuffix [Object.keys DotVariants] : do
+		foreach commaSuffix [Object.keys DotVariants] : do
+			create-glyph "semicolon.\(dotSuffix).\(commaSuffix)" : glyph-proc
+				include [refer-glyph "comma.\(commaSuffix)"] AS_BASE ALSO_METRICS
+				include [refer-glyph "xhPeriod.\(dotSuffix)"]
+
+			create-glyph "revSemicolon.\(dotSuffix).\(commaSuffix)" : glyph-proc
+				include [refer-glyph "revComma.\(commaSuffix)"] AS_BASE ALSO_METRICS
+				include [refer-glyph "xhPeriod.\(dotSuffix)"]
+
 	select-variant 'colon' ':' (follow -- 'punctuationDot')
 	select-variant 'colon/mid' (follow -- 'punctuationDot')
 	select-variant 'mdfColon' 0xA789 (follow -- 'diacriticDot')
 	select-variant 'mdfRaisedColon' 0x2F8 (follow -- 'diacriticDot')
-	select-variant 'semicolon' ';' (follow -- 'punctuationDot')
-	select-variant 'revSemicolon' 0x204F (follow -- 'punctuationDot')
-	select-variant 'doubleStackedComma' 0x2E49 (follow -- 'punctuationDot')
+	select-multi-dimensional-variant 'semicolon' ';'
+		follows -- { 'punctuationDot' 'punctuationComma' }
+	select-multi-dimensional-variant 'revSemicolon' 0x204F
+		follows -- { 'punctuationDot' 'punctuationComma' }
+	select-variant 'doubleStackedComma' 0x2E49 (follow -- 'punctuationComma')
 
 	select-variant 'threeDotPunct' 0x2056 (follow -- 'punctuationDot')
 	select-variant 'geor/paragraphSeparator' 0x10FB (follow -- 'punctuationDot')
@@ -372,22 +377,26 @@ glyph-block Symbol-Punctuation-Small : begin
 					arcvh
 					g4.left.end df.middle (cy - rad) [heading Leftward]
 
-			create-glyph "punctusElevatus.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleI
-				local r : PeriodRadius * kDotRadius
-				include [refer-glyph "period.\(suffix)"] AS_BASE ALSO_METRICS
-				include : new-glyph : glyph-proc
-					include : [CommaShape kDotRadius overshoot (0 - 2.05 * r)].(suffix) df.middle 0
-					include : Ungizmo
-					include : Translate (-df.middle) (-r)
-					include : Rotate (Math.PI / 2)
-					include : Scale 1 (-1)
-					include : Translate df.middle (XH - 1.2 * r)
-					include : Regizmo
-
 		select-variant 'stenographicFullStop' 0x2E3C (follow -- 'punctuationDot')
 		select-variant 'medievalComma' 0x2E4C (follow -- 'punctuationDot')
-		select-variant 'punctusElevatus' 0x2E4E (follow -- 'punctuationDot')
+
+		foreach { dotSuffix { DrawAtDot kDotRadiusDot overshootDot } } [Object.entries DotVariants] : do
+			foreach { commaSuffix { DrawAtComma kCommaRadius overshootComma } } [Object.entries DotVariants] : do
+				create-glyph "punctusElevatus.\(dotSuffix).\(commaSuffix)" : glyph-proc
+					local df : include : DivFrame para.advanceScaleI
+					local r : PeriodRadius * kCommaRadius
+					include [refer-glyph "period.\(dotSuffix)"] AS_BASE ALSO_METRICS
+					include : new-glyph : glyph-proc
+						include : [CommaShape kCommaRadius overshootComma (0 - 2.05 * r)].(commaSuffix) df.middle 0
+						include : Ungizmo
+						include : Translate (-df.middle) (-r)
+						include : Rotate (Math.PI / 2)
+						include : Scale 1 (-1)
+						include : Translate df.middle (XH - 1.2 * r)
+						include : Regizmo
+
+		select-multi-dimensional-variant 'punctusElevatus' 0x2E4E
+			follows -- { 'punctuationDot' 'punctuationComma' }
 
 	# Hollow (no CV)
 
