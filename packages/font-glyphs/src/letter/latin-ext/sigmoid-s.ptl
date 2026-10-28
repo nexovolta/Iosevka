@@ -9,20 +9,13 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
-	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck SAutoSlabStart
+	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck SAutoSlabStart SConfig
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
 	define SLAB-INWARD      2
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
-
-	define SigmoidSConfig : object
-		serifless               SLAB-NONE
-		unilateralSerifed       SLAB-CLASSICAL
-		unilateralInwardSerifed SLAB-INWARD
-		flatHook                SLAB-FLAT-HOOK
-		cornerHook              SLAB-CORNER-HOOK
 
 	# Full Latin S as the spine. The lower terminal is extended to the S
 	# crossing like the inner curl of an asymmetric 8 (clipped to the spine).
@@ -82,7 +75,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 					g4.left.mid xBot O
 			include : SAutoSlabStart df styTop top sw hook
 
-	foreach { suffix styTop } [Object.entries SigmoidSConfig] : do
+	foreach { suffix { styTop _ } } [Object.entries SConfig] : do
 		create-glyph "SigmoidS.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : SigmoidSShape CAP styTop Hook EssUpper
@@ -90,5 +83,5 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 			include : MarkSet.e
 			include : SigmoidSShape XH styTop SHook EssLower 0.72
 
-	select-variant 'SigmoidS' 0xA7D8
-	select-variant 'sigmoidS' 0xA7D9
+	select-variant 'SigmoidS' 0xA7D8 (follow -- 'S')
+	select-variant 'sigmoidS' 0xA7D9 (follow -- 's')

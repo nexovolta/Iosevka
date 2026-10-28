@@ -7,8 +7,16 @@ glyph-module
 glyph-block Letter-Latin-Insular-T : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Latin-C : CConfig CLetterForm
+	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
 
-	define [InsularTShape top bot ada adb] : glyph-proc
+	define SLAB-CLASSICAL   1
+	define SLAB-INWARD      2
+	define SLAB-FLAT-HOOK   4
+	define SLAB-CORNER-HOOK 5
+
+	define [InsularTShape top bot ada adb styBot] : glyph-proc
 		include : HBar.t SB RightSB top
 
 		local fine : Stroke * CThinB
@@ -16,12 +24,23 @@ glyph-block Letter-Latin-Insular-T : begin
 			straight.left.start Middle (top - Stroke + fine) [widths.lhs.heading fine Leftward]
 			archv
 			flatside.ld SB bot (top - Stroke + fine) ada adb nothing [widths.lhs]
-			HookEnd bot
-			g4 RightSB (bot + Hook)
+			match styBot
+				[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs RightSB bot Stroke Hook
+				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs RightSB bot Stroke Hook
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot].hookEndR
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase SB RightSB top bot].hookEndR
+				__ : list
+					HookEnd bot
+					g4 RightSB (bot + Hook)
+		include : [CLetterForm [DivFrame 1] 0 styBot top bot].botSerif
 
-	create-glyph 'TInsular' 0xA786 : glyph-proc
-		include : MarkSet.capital
-		include : InsularTShape CAP 0 ArchDepthA ArchDepthB
-	create-glyph 'tInsular' 0xA787 : glyph-proc
-		include : MarkSet.e
-		include : InsularTShape XH 0 SmallArchDepthA SmallArchDepthB
+	foreach { suffix { _ styBot } } [Object.entries CConfig] : do
+		create-glyph "TInsular.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : InsularTShape CAP 0 ArchDepthA ArchDepthB styBot
+		create-glyph "tInsular.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : InsularTShape XH 0 SmallArchDepthA SmallArchDepthB styBot
+
+	select-variant 'TInsular' 0xA786 (follow -- 'C')
+	select-variant 'tInsular' 0xA787 (follow -- 'c')
