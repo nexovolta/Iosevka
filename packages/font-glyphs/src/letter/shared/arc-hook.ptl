@@ -285,7 +285,7 @@ glyph-block Letter-Arc-Hook : begin
 
 	define [MakeFlatHook] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r] (sw -- sw)
 
-	define [CornerHookOffset sw] : HSwToV : 0.25 * sw
+	define [CornerHookOffset sw] : if para.isItalic [HSwToV : 0.5 * sw] [HSwToV : 0.25 * sw]
 
 	# Keep the flat arc's body, extending only the terminal before adding its inward stub.
 	define [MakeCornerHookBase] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r]
