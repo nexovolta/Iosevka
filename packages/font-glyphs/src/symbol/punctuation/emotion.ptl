@@ -8,9 +8,16 @@ glyph-module
 glyph-block Symbol-Punctuation-Emotion : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : MeasureGlyphBounds CenterInkInFrame AsciiTildeSuffixes
 
 	define emotionBottom : Math.max (CAP * 0.3) (DotSize * 1.5)
 	define medievalSlashSlope 0.55
+
+	define [CenterMedievalInk df] : glyph-proc
+		local originalGizmo currentGlyph.gizmo
+		include : ForceUpright
+		include : CenterInkInFrame df
+		set currentGlyph.gizmo originalGizmo
 
 	do "Exclamation"
 		glyph-block-import Letter-Shared : CreateTurnedLetter
@@ -72,7 +79,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
 			create-glyph "medievalExclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
-				local dr : PeriodRadius * kdr
+				local dr : DotRadius * kdr
 				local slope medievalSlashSlope
 				local sw Stroke
 				local gap : Math.max (0.35 * sw) [AdviceStroke 6]
@@ -86,19 +93,13 @@ glyph-block Symbol-Punctuation-Emotion : begin
 					set yStrokeBot : yDotHi + dr + gap
 				local yRef : mix yDotLo yTop 0.5
 				define [xAt y] : df.middle + slope * (y - yRef)
-				local pad : dr + [HSwToV : 0.5 * sw]
-				local xMin : Math.min [xAt yTop] [xAt yStrokeBot] [xAt yDotHi] [xAt yDotLo]
-				local xMax : Math.max [xAt yTop] [xAt yStrokeBot] [xAt yDotHi] [xAt yDotLo]
-				local xShift 0
-				if ((xMin - pad) < df.leftSB) : set xShift : df.leftSB - (xMin - pad)
-				if ((xMax + pad + xShift) > df.rightSB) : set xShift : df.rightSB - (xMax + pad)
-				define [xFit y] : [xAt y] + xShift
 				include : dispiro
 					widths.center sw
-					corner [xFit yTop] yTop
-					corner [xFit yStrokeBot] yStrokeBot
-				include : DrawAt [xFit yDotHi] yDotHi (dr - overshoot)
-				include : DrawAt [xFit yDotLo] yDotLo (dr - overshoot)
+					corner [xAt yTop] yTop
+					corner [xAt yStrokeBot] yStrokeBot
+				include : DrawAt [xAt yDotHi] yDotHi (dr - overshoot)
+				include : DrawAt [xAt yDotLo] yDotLo (dr - overshoot)
+				include : CenterMedievalInk df
 
 		select-variant 'medievalExclam' 0x2E53 (follow -- 'punctuationDot')
 
@@ -116,7 +117,6 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				yAttach -- DotRadius
 
 	do "Question"
-		glyph-block-import Mark-Above : TildeShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothShape QuestionRevSmoothShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerShape QuestionRevCornerShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerFlatShape QuestionRevCornerFlatShape
@@ -178,41 +178,38 @@ glyph-block Symbol-Punctuation-Emotion : begin
 
 		alias 'symbolForSubstituteFormTwo' 0x2426 'revQuestion'
 
-		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
-			create-glyph "medievalQuestion.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleI
-				local dr : PeriodRadius * kdr
-				local slope medievalSlashSlope
-				local angle : Math.atan2 1 slope
-				local yDot dr
-				local yTop CAP
-				local gap : Math.max (0.7 * Stroke) (XH * 0.12)
-				local yTildeBot : 2 * dr + gap
-				local yTildeTop : yTop - O
-				local yRef : mix yDot yTop 0.5
-				define [xAt y] : df.middle + slope * (y - yRef)
-				local pad : dr + [HSwToV HalfStroke]
-				local xMin : Math.min [xAt yDot] [xAt yTildeBot] [xAt yTildeTop]
-				local xMax : Math.max [xAt yDot] [xAt yTildeBot] [xAt yTildeTop]
-				local xShift 0
-				if ((xMin - pad) < df.leftSB) : set xShift : df.leftSB - (xMin - pad)
-				if ((xMax + pad + xShift) > df.rightSB) : set xShift : df.rightSB - (xMax + pad)
-				define [xFit y] : [xAt y] + xShift
-				include : DrawAt [xFit yDot] yDot (dr - overshoot)
-				local yMid : mix yTildeBot yTildeTop 0.5
-				local length : (yTildeTop - yTildeBot) * [Math.hypot slope 1]
-				local wave : 0.24 * (df.rightSB - df.leftSB)
-				include : new-glyph : glyph-proc
-					include : TildeShape
-						ttop     -- wave
-						tbot     -- 0
-						leftEnd  -- 0
-						rightEnd -- length
-						hs       -- (Stroke / 2)
-					include : Ungizmo
-					include : Translate (0 - length / 2) (0 - wave / 2)
-					include : Rotate angle
-					include : Translate [xFit yMid] yMid
-					include : Regizmo
+		foreach { dotSuffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+			foreach tildeSuffix [items-of AsciiTildeSuffixes] : do
+				create-glyph "medievalQuestion.\(dotSuffix).\(tildeSuffix)" : glyph-proc
+					local df : include : DivFrame para.advanceScaleI
+					local dr : DotRadius * kdr
+					local slope medievalSlashSlope
+					local angle : Math.atan2 1 slope
+					local yDot dr
+					local yTop CAP
+					local gap : Math.max (0.7 * Stroke) (XH * 0.12)
+					local yTildeBot : 2 * dr + gap
+					local yTildeTop : yTop - O
+					local yRef : mix yDot yTop 0.5
+					define [xAt y] : df.middle + slope * (y - yRef)
+					include : DrawAt [xAt yDot] yDot (dr - overshoot)
+					local yMid : mix yTildeBot yTildeTop 0.5
+					local tildeBounds nothing
+					local tilde : new-glyph : glyph-proc
+						include : refer-glyph "asciiTilde.\(tildeSuffix)"
+						set tildeBounds : include : MeasureGlyphBounds
+					local w : tildeBounds.xMax - tildeBounds.xMin
+					local h : tildeBounds.yMax - tildeBounds.yMin
+					local scale : (yTildeTop - yTildeBot) / (w * [Math.sin angle] + h * [Math.cos angle])
+					include : remove-holes : new-glyph : glyph-proc
+						include tilde
+						include : Ungizmo
+						include : Translate (-[mix tildeBounds.xMin tildeBounds.xMax 0.5]) (-[mix tildeBounds.yMin tildeBounds.yMax 0.5])
+						include : Scale scale
+						include : Rotate angle
+						include : Translate [xAt yMid] yMid
+						include : Regizmo
+					include : CenterMedievalInk df
 
-		select-variant 'medievalQuestion' 0x2E54 (follow -- 'punctuationDot')
+		select-multi-dimensional-variant 'medievalQuestion' 0x2E54
+			follows -- { 'punctuationDot' 'asciiTilde' }
