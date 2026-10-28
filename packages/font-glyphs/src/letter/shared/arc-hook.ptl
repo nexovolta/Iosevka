@@ -285,12 +285,13 @@ glyph-block Letter-Arc-Hook : begin
 
 	define [MakeFlatHook] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r] (sw -- sw)
 
-	define [CornerHookOffset sw] : if para.isItalic [HSwToV : 0.5 * sw] [HSwToV : 0.25 * sw]
+	define [CornerHookOffset sw] : HSwToV : 0.25 * sw
 
 	# Keep the flat arc's body, extending only the terminal before adding its inward stub.
 	define [MakeCornerHookBase] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r]
+		local hookShift : [CornerHookOffset sw] * [if para.isItalic 1 (-1)]
 		sw -- sw
-		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] - [CornerHookOffset sw])
+		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] + hookShift)
 
 	# Flat hook whose terminal turns 90 degrees into the counter, like an inward serif
 	define [CornerHookDepth hook sw] : Math.max (hook * 15 / 16) (sw * 1.5)
@@ -299,7 +300,8 @@ glyph-block Letter-Arc-Hook : begin
 	# CornerHookEnd:   a bar heading dirBar (-1 left, +1 right) ends at x, then a stub runs dirStub (+1 up, -1 down).
 	# CornerHookStart: a stub runs dirStub up to y, then the bar continues heading dirBar.
 	define [CornerHookEnd x y depth sw dirBar dirStub] : begin
-		local xOut : x + dirBar * [CornerHookOffset sw]
+		local miterDirection : if para.isItalic (-1) 1
+		local xOut : x + miterDirection * dirBar * [CornerHookOffset sw]
 		local stub : if (dirStub > 0) Upward Downward
 		local rhs : (dirBar * dirStub) < 0
 		local wStub : if rhs [widths.rhs.heading sw stub] [widths.lhs.heading sw stub]
@@ -310,7 +312,8 @@ glyph-block Letter-Arc-Hook : begin
 			corner xOut (y + dirStub * depth) wStub
 
 	define [CornerHookStart x y depth sw dirBar dirStub] : begin
-		local xOut : x - dirBar * [CornerHookOffset sw]
+		local miterDirection : if para.isItalic 1 (-1)
+		local xOut : x + miterDirection * dirBar * [CornerHookOffset sw]
 		local stub : if (dirStub > 0) Upward Downward
 		local rhs : (dirBar * dirStub) > 0
 		local wStub : if rhs [widths.rhs.heading sw stub] [widths.lhs.heading sw stub]
