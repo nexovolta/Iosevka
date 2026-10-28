@@ -8,7 +8,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck SAutoSlabStart SConfig
 
 	define SLAB-NONE        0
@@ -64,7 +64,7 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 						[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw hook
 						[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw hook
 						[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- sw)].hookStartR
-						[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- sw)].hookStartR
+						[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top 0 (sw -- sw)].hookStartR
 						__ : list
 							g4 (df.rightSB) (top - hook) [widths.lhs sw]
 							HookStart top (sw -- sw)
