@@ -289,9 +289,8 @@ glyph-block Letter-Arc-Hook : begin
 
 	# Keep the flat arc's body, extending only the terminal before adding its inward stub.
 	define [MakeCornerHookBase] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r]
-		local hookShift : [CornerHookOffset sw] * [if para.isItalic 1 (-1)]
 		sw -- sw
-		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] + hookShift)
+		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] - [if para.isItalic 0 [CornerHookOffset sw]])
 
 	# Flat hook whose terminal turns 90 degrees into the counter, like an inward serif
 	define [CornerHookDepth hook sw] : Math.max (hook * 15 / 16) (sw * 1.5)
