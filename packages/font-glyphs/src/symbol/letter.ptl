@@ -164,8 +164,9 @@ glyph-block Symbol-Currency : begin
 	create-glyph 'currency/livreTournoisSign' 0x20B6 : glyph-proc
 		set-width Width
 		include : MarkSet.b
-		include : VBar.l (SB + [HSwToV : 0.5 * Stroke]) 0 Ascender
-		include : HBar.t (SB + [HSwToV : 0.5 * Stroke]) (0.3 * Width + Middle) XH Stroke
+		local xLeft SB
+		include : VBar.l xLeft 0 Ascender
+		include : HBar.t xLeft (0.3 * Width + Middle) XH Stroke
 		include : with-transform [ApparentTranslate (0.3 * Width) 0] : refer-glyph 't/pack75'
 
 	define TurkLiraConfig : object

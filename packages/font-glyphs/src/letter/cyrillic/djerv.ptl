@@ -8,6 +8,7 @@ glyph-block Letter-Cyrillic-Djerv : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame
+	glyph-block-import Letter-Latin-Lower-R : SmallRConfig
 
 	define [RStirrupShape df top py ada adb] : glyph-proc
 		local uBot : mix top 0 py
@@ -39,7 +40,15 @@ glyph-block Letter-Cyrillic-Djerv : begin
 		include : df.markSet.e
 		include : DjervShape df XH 0.6 SmallArchDepthA SmallArchDepthB
 
-	create-glyph 'rStirrup' 0xAB45 : glyph-proc
-		define df : include : DivFrame 1
-		include : df.markSet.e
-		include : RStirrupShape df XH 0.6 ArchDepthA ArchDepthB
+	foreach { suffix { ear body cut { doTS doBS } } } [pairs-of SmallRConfig] : do
+		create-glyph "rStirrup.\(suffix)" : glyph-proc
+			define df : include : DivFrame 1
+			include : df.markSet.e
+			include : RStirrupShape df XH 0.6 ArchDepthA ArchDepthB
+			local sf : SerifFrame.fromDf df XH 0
+			if doTS : include sf.mt.left
+			if doBS : begin
+				include sf.lb.full
+				include sf.rb.full
+
+	select-variant 'rStirrup' 0xAB45 (follow -- 'r')
