@@ -11,7 +11,7 @@ glyph-block Digits-Two : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
-	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart ArcStartSerif
+	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 	glyph-block-import Letter-Shared : PackSrc
 
@@ -19,6 +19,7 @@ glyph-block Digits-Two : begin
 	define HOOK-FLAT   1
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
+	define HOOK-SLAB   4
 
 	define [TwoStraightNeckArcT sink offset sw top hookStyle _left _right _hook] : begin
 		local left : fallback _left SB
@@ -35,6 +36,7 @@ glyph-block Digits-Two : begin
 				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs left top sw hook
+				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs left top sw hook
 				__ : list
 					g4 left (top - hook)
 					HookStart top (sw -- sw)
@@ -54,6 +56,7 @@ glyph-block Digits-Two : begin
 				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (left - offsetU) top sw hook
+				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (left - offsetU) top sw hook
 				__ : list
 					g4 (left - offsetU) (top - hook)
 					HookStart top (sw -- sw)
@@ -75,6 +78,7 @@ glyph-block Digits-Two : begin
 			include : VSerif.ur right 0 VJut
 		if (hookStyle === HOOK-INWARD) : begin
 			include : ArcStartSerif.InwardL left top sw hook
+		if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L left top sw hook
 
 	define [TwoStraightNeckShape top slab hookStyle _left _right _sw _hook] : glyph-proc
 		local left : fallback _left SB
@@ -87,6 +91,7 @@ glyph-block Digits-Two : begin
 			include : VSerif.ur right 0 VJut
 		if (hookStyle === HOOK-INWARD) : begin
 			include : ArcStartSerif.InwardL left top sw hook
+		if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L left top sw hook
 
 	create-glyph 'two.lnum.straightNeckSerifless' : glyph-proc
 		include : MarkSet.capital
@@ -128,6 +133,7 @@ glyph-block Digits-Two : begin
 			flatHook      HOOK-FLAT
 			cornerHook    HOOK-CORNER
 			inwardSerifed HOOK-INWARD
+			serifedHook   HOOK-SLAB
 		object
 			serifless false
 			serifed   true
@@ -179,6 +185,7 @@ glyph-block Digits-Two : begin
 				include : TwoArcShapeT dispiro 0 0 df.mvs top hookStyle df.leftSB df.rightSB hook df.width
 			if (hookStyle === HOOK-INWARD) : begin
 				include : ArcStartSerif.InwardL df.leftSB top df.mvs hook
+			if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L df.leftSB top df.mvs hook
 			include : TwoBaseWithSlash xBarLeft RightSB df.leftSB df.mvs
 
 		define RumTwoConfig : SuffixCfg.weave
@@ -190,6 +197,7 @@ glyph-block Digits-Two : begin
 				flatHook      HOOK-FLAT
 				cornerHook    HOOK-CORNER
 				inwardSerifed HOOK-INWARD
+				serifedHook   HOOK-SLAB
 			object
 				serifless false
 				serifed   true

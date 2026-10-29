@@ -13,9 +13,10 @@ glyph-block Digits-Three : begin
 	glyph-block-import Letter-Latin-Ezh : Ezh
 	glyph-block-import Letter-Latin-C : CLetterForm
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook Rounded Flat
-	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd ArcStartSerif ArcEndSerif
+	glyph-block-import Letter-Shared-Shapes : SerifedArcStart SerifedArcEnd InwardSlabArcStart InwardSlabArcEnd ArcStartSerif ArcEndSerif
 
 	define SLAB-NONE        0
+	define SLAB-CLASSICAL   1
 	define FLAT-CONNECTION  3
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
@@ -24,6 +25,7 @@ glyph-block Digits-Three : begin
 	define HOOK-FLAT   1
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
+	define HOOK-SLAB   4
 
 	define [ThreeShapeT sink offset sw top hookStyle] : glyph-proc
 		local barcenter : mix 0 top HBarPos
@@ -36,6 +38,7 @@ glyph-block Digits-Three : begin
 				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
+				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
 				__ : list
 					g4 (SB + offset - O) (top - Hook)
 					HookStart (top - offset) (sw -- sw)
@@ -51,12 +54,16 @@ glyph-block Digits-Three : begin
 				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-INWARD] : InwardSlabArcEnd.RtlRhs (SB + offset) offset sw Hook
+				[Just HOOK-SLAB]   : SerifedArcEnd.RtlRhs (SB + offset) offset sw Hook
 				__ : list
 					HookEnd offset (sw -- sw)
 					g4 (SB + offset + O) Hook
 		if (hookStyle === HOOK-INWARD) : begin
 			include : ArcStartSerif.InwardL (SB + offset) (top - offset) sw Hook
 			include : ArcEndSerif.InwardL (SB + offset) offset sw Hook
+		if (hookStyle === HOOK-SLAB) : begin
+			include : ArcStartSerif.L (SB + offset) (top - offset) sw Hook
+			include : ArcEndSerif.L (SB + offset) offset sw Hook
 
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
 	define [ThreeShapeHooked top hookStyle] : ThreeShapeT dispiro 0 Stroke top hookStyle
@@ -68,7 +75,9 @@ glyph-block Digits-Three : begin
 			fSerifed     -- serif
 			fFlatHook    -- (hookStyle === HOOK-FLAT)
 			fCornerHook  -- (hookStyle === HOOK-CORNER)
+			terminal     -- [if (hookStyle === HOOK-SLAB) 2 1]
 		include : ezh.Shape
+		if (hookStyle === HOOK-SLAB) : include : ArcEndSerif.L SB 0 Stroke Hook
 
 	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
 	# diagonal terminal). Used by the broken flat-top body.
@@ -101,6 +110,7 @@ glyph-block Digits-Three : begin
 		local styBot : match hookStyle
 			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
 			[Just HOOK-CORNER] SLAB-CORNER-HOOK
+			[Just HOOK-SLAB]   SLAB-CLASSICAL
 			__                 SLAB-NONE
 
 		define [etTop] : ThreeFlatTopEtTop top
@@ -123,6 +133,7 @@ glyph-block Digits-Three : begin
 		flatHooked    HOOK-FLAT
 		cornerHooked  HOOK-CORNER
 		inwardSerifed HOOK-INWARD
+		serifedHooked HOOK-SLAB
 
 	foreach { suffix hookStyle } [pairs-of ThreeBodyConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc
@@ -144,6 +155,7 @@ glyph-block Digits-Three : begin
 			""         { HOOK-ROUND }
 			flatHook   { HOOK-FLAT }
 			cornerHook { HOOK-CORNER }
+			serifedHook { HOOK-SLAB }
 
 	foreach { suffix { { Shape } { fSerif } { hookStyle } } } [pairs-of ThreeFlatTopConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc

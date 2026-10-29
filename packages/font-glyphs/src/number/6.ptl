@@ -9,7 +9,7 @@ glyph-block Digits-Six : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : CodeLnum CodeOnum
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook CornerHookDepth CornerHookEnd
-	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
+	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd ArcStartSerif
 
 	glyph-block-export StraightBarSixShape
 
@@ -68,16 +68,18 @@ glyph-block Digits-Six : begin
 			curl (left + TINY) oTop [heading Leftward]
 
 	# Rounded top-right terminal of a closed 6, or the same with an inward serif.
-	define [SixHookTerminal top inward] : if inward
-		list
-			Arch.rhs top (blendPost -- {})
-			g2 (RightSB - OX) (top - DToothlessRise)
-		list
-			HookEnd top
-			g4 (RightSB - OX) (top - Hook)
+	define [SixHookTerminal top inward slabHook] : if slabHook
+		SerifedArcEnd.LtrLhs (RightSB - OX) top Stroke Hook
+		if inward
+			list
+				Arch.rhs top (blendPost -- {})
+				g2 (RightSB - OX) (top - DToothlessRise)
+			list
+				HookEnd top
+				g4 (RightSB - OX) (top - Hook)
 
 	# Original closed-6 stem/hook, starting at the top of the bowl.
-	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false]] : glyph-proc
+	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false] [slabHook false]] : glyph-proc
 		include : dispiro
 			widths.rhs
 			flat SB oTop [heading Upward]
@@ -85,8 +87,9 @@ glyph-block Digits-Six : begin
 				curl SB top [heading Upward]
 				list
 					curl SB (top - SmallArchDepthA) [heading Upward]
-					SixHookTerminal top inward
+					SixHookTerminal top inward slabHook
 		if inward : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
+		if slabHook : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
 
 	glyph-block-export OpenContourSixShape
 	define [OpenContourSixShape] : with-params [charTop [flatBowl false]] : glyph-proc
@@ -111,12 +114,12 @@ glyph-block Digits-Six : begin
 			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O) [widths.rhs]
 
 	glyph-block-export ClosedContourSixShape
-	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false]] : glyph-proc
+	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [slabHook false]] : glyph-proc
 		local oTop : SixBowlOTop top
 		local arches : SixBowlArches oTop
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
-			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward)
+			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward) (slabHook -- slabHook)
 		if [not flatBowl] : include : dispiro
 			widths.rhs ShoulderFine
 			g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
@@ -129,8 +132,9 @@ glyph-block Digits-Six : begin
 				curl (SB + OX) top [heading Upward]
 				list
 					curl (SB + OX) (top - SmallArchDepthA)
-					SixHookTerminal top inward
+					SixHookTerminal top inward slabHook
 		if (inward && [not flatBowl]) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
+		if (slabHook && [not flatBowl]) : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
 
 	# Horizontal-ended parallelogram; italic shear keeps constant width.
 	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
@@ -200,6 +204,8 @@ glyph-block Digits-Six : begin
 	define [SixBodyClosedCornerHook fFlatBowl] : SixBodyClosedHooked fFlatBowl true
 	define [SixBodyClosedInwardSerifed fFlatBowl] : glyph-proc
 		include : ClosedContourSixShape CAP (flatBowl -- fFlatBowl) (inward -- true)
+	define [SixBodyClosedSerifedHook fFlatBowl] : glyph-proc
+		include : ClosedContourSixShape CAP (flatBowl -- fFlatBowl) (slabHook -- true)
 	define [SixBodySteepBar fFlatBowl] : glyph-proc
 		include : StraightBarSixShape CAP (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl)
 	define [SixBodyVerticalBar fFlatBowl] : glyph-proc
@@ -214,6 +220,7 @@ glyph-block Digits-Six : begin
 			closedFlatHook     SixBodyClosedFlatHook
 			closedCornerHook   SixBodyClosedCornerHook
 			closedInwardSerifed SixBodyClosedInwardSerifed
+			closedSerifedHook  SixBodyClosedSerifedHook
 			steepBar           SixBodySteepBar
 			verticalBar        SixBodyVerticalBar
 		object # bowl
