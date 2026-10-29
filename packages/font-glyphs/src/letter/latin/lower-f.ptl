@@ -376,6 +376,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		include : with-transform [Scale compress 1] : glyph-proc
 			include : difference bodyG [HookZone]
 			include : with-transform [ScaleAround xc 0 kx 1] : intersection bodyG [HookZone]
+			include : HCrossBar.top barLeft (xN + [HSwToV Stroke]) yBar
 		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
 			with-transform [Scale compress 1] : glyph-proc
 				include : VBar.l dfEng.leftSB 0 XH Stroke
@@ -411,6 +412,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	# Rounded f-hook (forced; never flat), then two packed inverted-breve copies
 	# of that hook with the left tapered and cut onto the previous hang.
 	# Tail/descender and crossbar follow regular f.
+	glyph-block-export FengTrillConfig
 	define FengTrillConfig : SuffixCfg.weave
 		object # body : rounded only
 			""                                { StandardFShape  false }
@@ -430,10 +432,8 @@ glyph-block Letter-Latin-Lower-F : begin
 			crossbarAtHalfAscenderHeight      ([mix 0 Ascender 0.5] + HalfStroke)
 
 	foreach { suffix { { Body fNarrow } { pBar ch } sym yBar } } [Object.entries FengTrillConfig] : do
-		create-glyph "fengTrill.\(suffix)" : glyph-proc
+		create-glyph "fengTrillDesign.\(suffix)" : glyph-proc
 			include : FengTrillShape Body fNarrow pBar ch yBar sym
-
-	select-variant 'fengTrill' 0x1DF00
 
 	CreateAccentedComposition 'fTildeOver' 0x1D6E 'f' 'tildeOver'
 	CreateAccentedComposition 'fDot'       0x1E1F 'f' 'dotAbove'

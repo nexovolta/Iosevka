@@ -1667,17 +1667,22 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 	glyph-block-import Recursive-Build : Thinner
 	glyph-block-import Autobuild-Enclosure-Shared : CollectJobs CreateDerivedFontFromJobs EnsureComponentGlyphT applyRelations
 	glyph-block-import Autobuild-Transformed-Shared : ToSuperscript ToSubscript
+	glyph-block-import Letter-Latin-Lower-F : FengTrillConfig
 
-	define [createPhoneticLigatures tfm prefix adws mockNParts _shrink kKern demands] : begin
+	define [PhoneticDimensions tfm adws mockNParts _shrink kKern] : begin
 		local ww0 : Width * adws
 		local wwM : ww0 / [fallback tfm.crowdAdjScale 1]
-		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix "" demands
 		local shrink : clamp 0 1 _shrink
 		local kern 0
 		foreach [cycle : range 0 8] : begin
 			set kern : kKern * (2 * SB * shrink + (HalfStroke * [HSwToV shrink] - OX * 2))
 			local tmpShrink : (wwM + kern * (mockNParts - 1)) / (mockNParts * Width)
 			set shrink : Math.max _shrink : clamp 0 1 tmpShrink
+		return : list ww0 wwM shrink kern
+
+	define [createPhoneticLigatures tfm prefix adws mockNParts _shrink kKern demands] : begin
+		local { ww0 wwM shrink kern } : PhoneticDimensions tfm adws mockNParts _shrink kKern
+		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix "" demands
 
 		local thinFont : CreateDerivedFontFromJobs jobs {} : function [gs]
 			Thinner gs shrink true tfm.crowd tfm.crowdAdjScale
@@ -1757,6 +1762,21 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 	define [ToLetter] : glyph-proc
 
 	define stdShrink : clamp 0.625 0.9 : StrokeWidthBlend 0.625 0.9
+	local { _ww0 _wwM trillShrink _kern } : PhoneticDimensions ToLetter para.advanceScaleMM 2 stdShrink 1
+	local trillDesigns {}
+	foreach [suffix : Object.keys FengTrillConfig] : begin
+		if [glyph-is-needed "fengTrill.\(suffix)"] : trillDesigns.push "fengTrillDesign.\(suffix)"
+	if trillDesigns.length : begin
+		local trillFont : Thinner trillDesigns trillShrink true
+		foreach [suffix : Object.keys FengTrillConfig] : do
+			create-glyph "fengTrill.\(suffix)" : glyph-proc
+				include [trillFont.queryByNameEnsured "fengTrillDesign.\(suffix)"] AS_BASE
+				include : Ungizmo
+				include : Scale (1 / trillShrink) 1
+				include : Regizmo
+				set-width : Width * para.advanceScaleMM
+	select-variant 'fengTrill' 0x1DF00
+
 	createPhoneticLigatures ToLetter 'phonetic1' para.advanceScaleM 2 stdShrink 1 : list
 		list 0xFB00  { 'f'               'f'                     } null
 		list 0xFB01  { 'f/compLigLeft1'  'dotlessi/compLigRight' } null
