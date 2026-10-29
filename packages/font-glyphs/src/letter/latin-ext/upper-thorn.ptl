@@ -58,12 +58,12 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 	define [ThornShape top slabTop slabBot fOpen] : ThornShapeImpl top slabTop slabBot
 		yThornBowlBot top slabBot
 		yThornBowlTop top slabBot
-		fOpen
+		begin fOpen
 
 	define [ThornAsymmetricShape top slabTop slabBot fOpen] : ThornShapeImpl top slabTop slabBot
 		yThornBowlAsymmetricBot top slabBot
 		yThornBowlAsymmetricTop top slabBot
-		fOpen
+		begin fOpen
 
 	define ThornConfig : SuffixCfg.weave
 		object # symmetry
@@ -89,7 +89,7 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 				include : ThornShapeImpl CAP doST doSB
 					CAP - [yThornBowlAsymmetricTop CAP doSB]
 					CAP - [yThornBowlAsymmetricBot CAP doST]
-					fOpen
+					begin fOpen
 				include : LetterBarOverlay.l.in
 					x   -- xThornBarLeft
 					top -- (CAP - [if doST Stroke 0])

@@ -290,7 +290,7 @@ export function getGrMesh(gidList, grq, fnGidToGlyph) {
 	const ret = [];
 	for (const gr of allGrList) {
 		const col = [];
-		collectGidLists(gidList, gidList, allGrList, gr, fnGidToGlyph, col);
+		collectGidLists(gidList, allGrList, new Set([gr.tag]), fnGidToGlyph, col);
 		if (!col.length) continue;
 		for (const from of col) {
 			const to = gidListMap(from, gr, fnGidToGlyph);
@@ -320,18 +320,21 @@ function gidListMap(gidList, gr, fnGidToGlyph) {
 	if (effective) return gidList1;
 	else return null;
 }
-function collectGidLists(gidListOrig, gidList, grl, excluded, fnGidToGlyph, sink) {
+function collectGidLists(gidList, grl, usedTags, fnGidToGlyph, sink) {
 	if (!grl.length) {
 		sink.push(gidList);
 		return;
 	} else {
 		const gr = grl[0],
 			grlRest = grl.slice(1);
-		collectGidLists(gidListOrig, gidList, grlRest, excluded, fnGidToGlyph, sink);
-		if (gr !== excluded) {
+		collectGidLists(gidList, grlRest, usedTags, fnGidToGlyph, sink);
+		if (!usedTags.has(gr.tag)) {
 			const gidList1 = gidListMap(gidList, gr, fnGidToGlyph);
-			if (gidList1 && !gidListSame(gidList, gidList1))
-				collectGidLists(gidListOrig, gidList1, grlRest, excluded, fnGidToGlyph, sink);
+			if (gidList1 && !gidListSame(gidList, gidList1)) {
+				usedTags.add(gr.tag);
+				collectGidLists(gidList1, grlRest, usedTags, fnGidToGlyph, sink);
+				usedTags.delete(gr.tag);
+			}
 		}
 	}
 }
