@@ -500,7 +500,8 @@ class VariantBuilder {
 		let itemRank = 0;
 		for (const item of globalState.sink) {
 			const cfg = item.createPrimeVariant();
-			cfg.rank = ++itemRank;
+			const defaultRank = ++itemRank;
+			cfg.rank = item.variantRank ?? defaultRank;
 			if (!cfg.key) throw new Error("Invalid variant key");
 			if (ans[cfg.key]) throw new Error(`Duplicate variant : ${cfg.key}`);
 			ans[cfg.key] = cfg;
@@ -545,6 +546,7 @@ class VbStageAlternative {
 		this.mode = raw.mode;
 		this.enableIf = raw.enableIf;
 		this.disableIf = raw.disableIf;
+		this.variantRank = raw.variantRank;
 		if (key !== "*") this.keyAffix = raw.keyAffix ?? key;
 		this.descriptionAffix = raw.descriptionAffix;
 		this.descriptionJoiner = raw.descriptionJoiner || "with";
@@ -567,6 +569,9 @@ class VbStageAlternative {
 		const ans = localState.clone();
 		ans.stage = this.next;
 		ans.assignments.set(this.stage, this.key);
+		if (this.variantRank != null) {
+			ans.variantRank = this.evalVariantRank(this.variantRank, localState);
+		}
 
 		// RankGroup
 		if (this.groupRank) ans.groupRank += this.evalValue(this.groupRank, localState);
@@ -614,6 +619,24 @@ class VbStageAlternative {
 		throw new Error(`Invalid value expression: ${expr}`);
 	}
 
+	evalVariantRank(expr, localState) {
+		if (Number.isInteger(expr)) return expr;
+		if (!expr || typeof expr !== "object") {
+			throw new Error(`Invalid variant rank expression: ${expr}`);
+		}
+		const entries = Object.entries(expr);
+		if (entries.length !== 1) {
+			throw new Error(`Invalid variant rank expression: ${expr}`);
+		}
+		const [stage, ranks] = entries[0];
+		const choice = localState.assignments.get(stage);
+		const rank = ranks?.[choice];
+		if (!Number.isInteger(rank) || rank < 1) {
+			throw new Error(`Missing variant rank for ${stage}.${choice}`);
+		}
+		return rank;
+	}
+
 	evalCondition(expr, localState) {
 		if (!expr) return false;
 
@@ -653,6 +676,7 @@ class VbLocalState {
 	constructor() {
 		this.stage = ".start";
 		this.rank = 0;
+		this.variantRank = null;
 		this.groupRank = 0;
 		this.nonBreakingVariantAdditionPriority = 0;
 		this.descriptionLeader = "";
@@ -667,6 +691,7 @@ class VbLocalState {
 		const ans = new VbLocalState();
 		ans.stage = this.stage;
 		ans.rank = this.rank;
+		ans.variantRank = this.variantRank;
 		ans.groupRank = this.groupRank;
 		ans.nonBreakingVariantAdditionPriority = this.nonBreakingVariantAdditionPriority;
 		ans.descriptionLeader = this.descriptionLeader;
@@ -746,6 +771,7 @@ class VbLocalState {
 		return {
 			key: this.produceKey(),
 			rank: this.rank,
+			variantRank: this.variantRank,
 			groupRank: this.groupRank,
 			description: this.produceDescription(),
 			selector: Object.fromEntries(this.selector),
