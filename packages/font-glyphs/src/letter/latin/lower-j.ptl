@@ -9,6 +9,7 @@ glyph-block Letter-Latin-Lower-J : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor ExtendAboveBaseAnchors
+	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook
@@ -284,14 +285,17 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : Body   df XH xMiddle
 			include : Serifs df XH xMiddle
 			include : Marks  df XH xMiddle
+			include : CenterInkInFrame df
 
 		create-glyph "dotlessjBar.\(suffix)" : glyph-proc
 			include [refer-glyph "dotlessj.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.m xMiddle (XH / 2) (space -- {0  df.width})
+			include : CenterInkInFrame df
 
 		create-glyph "dotlessjBarHookTop.\(suffix)" : glyph-proc
 			include [refer-glyph "dotlessjBar.\(suffix)"] AS_BASE ALSO_METRICS
 			include : TopHook.toRight.mBarOuter xMiddle (XH + O) XH
+			include : CenterInkInFrame df
 
 	select-variant 'dotlessj' 0x237
 
@@ -316,6 +320,7 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : Body   df XH xMiddle
 			include : Serifs df XH xMiddle
 			include : Marks  df XH xMiddle
+			include : CenterInkInFrame df
 
 	select-variant 'dotlessjCurlyTail'
 	CreateAccentedComposition 'jCurlyTail' 0x29D 'dotlessjCurlyTail' 'tittleAbove'
