@@ -147,7 +147,7 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : Serifless df top xMiddle
 			include : LeaningAnchor.Above.At [mix df.middle xMiddle (7/8)]
 
-	define JConfig : object
+	define JBaseConfig : object
 		'bentHookSerifless'          { JBody.BentHook        JSerifs.None   XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'bentHookShortSerifed'       { JBody.BentHook        JSerifs.Short  XMiddleT.BentHook           JMarks.Serifless  1                   }
 		'bentHookSerifed'            { JBody.BentHook        JSerifs.Long   XMiddleT.BentHook           JMarks.Serifed    1                   }
@@ -215,10 +215,58 @@ glyph-block Letter-Latin-Lower-J : begin
 		'topSemiNarrowBentHook'     { [JBody.WithCasualTop 'semi'      JBody.NarrowBentHook]  JSerifs.None XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 		'topDiagNarrowBentHook'     { [JBody.WithCasualTop 'diagonal'  JBody.NarrowBentHook]  JSerifs.None XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 
+	define JTopStageConfig : object
+		'topSerifless'             { JSerifs.None        nothing      'none'   false }
+		'topHooky'                 { JSerifs.Long        nothing      'left'   true  }
+		'topHookyShort'            { JSerifs.Short       nothing      'left'   false }
+		'topReverseHooky'          { JSerifs.Right       nothing      'right'  true  }
+		'topReverseHookyShort'     { JSerifs.RightShort  nothing      'right'  false }
+		'topCenterSerifed'         { JSerifs.Center      nothing      'center' true  }
+		'topCenterShortSerifed'    { JSerifs.CenterShort nothing      'center' false }
+		'topTailed'                { JSerifs.None        'tailed'     'none'   false }
+		'topFlatTailed'            { JSerifs.None        'flat'       'none'   false }
+		'topSemiTailed'            { JSerifs.None        'semi'       'none'   false }
+		'topDiagonalTailed'        { JSerifs.None        'diagonal'   'none'   false }
+
+	define JBottomStageConfig : object
+		'BottomBentHook'       { JBody.BentHook       XMiddleT.BentHook          1 }
+		'BottomStraight'       { JBody.Straight       XMiddleT.StraightSerifless para.advanceScaleII }
+		'BottomFlatHook'       { JBody.FlatHook       XMiddleT.FlatHookSerifless para.advanceScaleII }
+		'BottomCornerHook'     { JBody.CornerHook     XMiddleT.FlatHookSerifless para.advanceScaleII }
+		'BottomDiagonalTailed' { JBody.DiagonalTailed XMiddleT.DiagonalTailed    para.advanceScaleI }
+		'BottomNarrowBentHook' { JBody.NarrowBentHook XMiddleT.NarrowBentHook    para.advanceScaleF }
+
+	define [JStageXMiddle bottomName defaultXMiddleT topPosition topHasLongSerif] : begin
+		if (bottomName === 'BottomStraight') : begin
+			if (topPosition === 'left' && topHasLongSerif) : return XMiddleT.StraightSerifed
+			if (topPosition === 'right' && topHasLongSerif) : return XMiddleT.StraightReverse
+		if (bottomName === 'BottomFlatHook' || bottomName === 'BottomCornerHook') : begin
+			if (topPosition === 'left' && topHasLongSerif) : return XMiddleT.FlatHookSerifed
+			if (topPosition === 'right' && topHasLongSerif) : return XMiddleT.FlatHookReverse
+		return defaultXMiddleT
+
+	define [JStageVariantConfig top bottomName bottom] : begin
+		local { topSerifs topTail topPosition topHasLongSerif } top
+		local { bottomBody defaultXMiddleT adws } bottom
+		local Body : if topTail [JBody.WithCasualTop topTail bottomBody] bottomBody
+		local Marks : if topHasLongSerif JMarks.Serifed JMarks.Serifless
+		local xMiddleT : JStageXMiddle bottomName defaultXMiddleT topPosition topHasLongSerif
+		local wideSerif : topHasLongSerif && (bottomName === 'BottomStraight' || bottomName === 'BottomFlatHook' || bottomName === 'BottomCornerHook')
+		local advanceScale : if wideSerif para.advanceScaleI adws
+		return { Body topSerifs xMiddleT Marks advanceScale }
+
+	define [JStageConfig] : Object.fromEntries : [Object.entries JTopStageConfig].flatMap : lambda [top]
+		[Object.entries JBottomStageConfig].map : lambda [bottom] : begin
+			return { "\(top.0)\(bottom.0)" [JStageVariantConfig top.1 bottom.0 bottom.1] }
+
+	define JConfig : Object.assign JBaseConfig [JStageConfig]
+
 	define JCurlyTailConfig : object
 		'bentHookSerifless' { JBody.CurlyTailBody                                  JSerifs.None        JMarks.Serifless }
 		'bentHookSerifed'   { JBody.CurlyTailBody                                  JSerifs.Long        JMarks.Serifless }
+		'bentHookShortSerifed' { JBody.CurlyTailBody                               JSerifs.Short       JMarks.Serifless }
 		'reverseHooky'      { JBody.CurlyTailBody                                  JSerifs.Right       JMarks.Serifless }
+		'reverseHookyShort' { JBody.CurlyTailBody                                  JSerifs.RightShort  JMarks.Serifless }
 		'centerSerifed'     { JBody.CurlyTailBody                                  JSerifs.Center      JMarks.Serifless }
 		'centerShortSerifed' { JBody.CurlyTailBody                                 JSerifs.CenterShort JMarks.Serifless }
 		'topTailed'         { [JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody] JSerifs.None        JMarks.Serifless }

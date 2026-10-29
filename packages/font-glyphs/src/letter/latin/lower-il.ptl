@@ -28,6 +28,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		define [FlatTailedImpl df doST] : HookyImpl df (doST && mode !== MODE-L) true
 		define [TailedImpl df doST] : mix df.leftSB df.rightSB ([StrokeWidthBlend 0.42 0.46] - [TailedDotlessIShift df])
 		export : define [Center df] : df.middle + 0
+		export : define [TerminalPair df topShift bottomShift] : df.middle + (topShift + bottomShift) * [IBalance2 df]
+		export : define [FlatTailedPair df topShift] : df.middle + ([if (mode !== MODE-L) topShift 0] - 1) * [IBalance2 df]
 		export : define [Serifed df] : df.middle + [IBalance df]
 		export : define [SerifedRight df] : df.middle - [IBalance df]
 		export : define [Hooky df] : HookyImpl df true false
@@ -215,10 +217,12 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : [CasualTailBody botKind] df yJoin bot xMiddle stroke
 			include : CasualFlippedHalf df yJoin bot xMiddle topKind stroke
 
-		export : define [CasualTop df top xMiddle kind _stroke] : glyph-proc
+		export : define [CasualTopBetween df top bot xMiddle kind _stroke] : glyph-proc
 			local stroke : fallback _stroke Stroke
-			local yJoin : mix 0 top 0.5
-			include : CasualFlippedHalf df yJoin 0 xMiddle kind stroke
+			local yJoin : mix bot top 0.5
+			include : CasualFlippedHalf df yJoin bot xMiddle kind stroke
+
+		export : define [CasualTop df top xMiddle kind _stroke] : CasualTopBetween df top 0 xMiddle kind _stroke
 
 		export : define [DoubleTailed    df top bot xMiddle _stroke] : Casual df top bot xMiddle 'tailed'    'tailed'    _stroke
 		export : define [DoubleFlat      df top bot xMiddle _stroke] : Casual df top bot xMiddle 'flat'      'flat'      _stroke
@@ -260,7 +264,7 @@ glyph-block Letter-Latin-Lower-I : begin
 
 		return { attach posX maskY }
 
-	define [SmallILConfig mode] : object
+	define [SmallILBaseConfig mode] : object
 		# Normal
 		'serifless'             { ILBody.Serifless     ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             para.advanceScaleII  0      }
 		'hooky'                 { ILBody.Serifless     ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].Hooky              para.advanceScaleI   0      }
@@ -316,6 +320,10 @@ glyph-block Letter-Latin-Lower-I : begin
 		'seriflessPL'           { ILBody.PhoneticLeft  ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0      }
 		'hookyPL'               { ILBody.PhoneticLeft  ILSerifs.Hooky         ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
 		'reverseHookyPL'        { ILBody.PhoneticLeft  ILSerifs.HookyRight    ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
+		'hookyShortPL'          { ILBody.PhoneticLeft  ILSerifs.HookyShort    ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
+		'reverseHookyShortPL'   { ILBody.PhoneticLeft  ILSerifs.HookyRightShort ILMarks.Serifed  [XMiddleT mode].PhoneticLeft       1                    0      }
+		'centerSerifedPL'       { ILBody.PhoneticLeft  ILSerifs.Center        ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
+		'centerShortSerifedPL'  { ILBody.PhoneticLeft  ILSerifs.CenterShort   ILMarks.Serifed    [XMiddleT mode].PhoneticLeft       1                    0      }
 		'topTailedPL'           { [ILWithCasualTop 'tailed'    ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
 		'topFlatPL'             { [ILWithCasualTop 'flat'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
 		'topSemiPL'             { [ILWithCasualTop 'semi'      ILBody.PhoneticLeft] ILSerifs.None ILMarks.Serifless [XMiddleT mode].PhoneticLeft 1 0 }
@@ -327,6 +335,70 @@ glyph-block Letter-Latin-Lower-I : begin
 		'tau/flatTailed'        { ILBody.FlatTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         1                    Stroke }
 		'tau/semiTailed'        { ILBody.SemiTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         1                    Stroke }
 		'tau/shortTailed'       { ILBody.ShortTailed   ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             1                    Stroke }
+
+	define ILTopStageConfig : object
+		'topSerifless'             { ILSerifs.None          nothing     0  false }
+		'topHooky'                 { ILSerifs.Hooky         nothing     1  true  }
+		'topHookyShort'            { ILSerifs.HookyShort    nothing     1  true  }
+		'topSerifed'               { ILSerifs.Serifed       nothing     1  true  }
+		'topSerifedShort'          { ILSerifs.SerifedShort  nothing     1  true  }
+		'topReverseHooky'          { ILSerifs.HookyRight    nothing   (-1) true  }
+		'topReverseHookyShort'     { ILSerifs.HookyRightShort nothing (-1) true  }
+		'topRightSerifed'          { ILSerifs.SerifedRight  nothing   (-1) true  }
+		'topRightSerifedShort'     { ILSerifs.SerifedRightShort nothing (-1) true }
+		'topCenterSerifed'         { ILSerifs.Center        nothing     0  true  }
+		'topCenterShortSerifed'    { ILSerifs.CenterShort   nothing     0  true  }
+		'topTailed'                { ILSerifs.None          'tailed'    0  false }
+		'topFlatTailed'            { ILSerifs.None          'flat'      0  false }
+		'topSemiTailed'            { ILSerifs.None          'semi'      0  false }
+		'topDiagonalTailed'        { ILSerifs.None          'diagonal'  0  false }
+
+	define ILBottomStageConfig : object
+		'BottomSerifless'          { ILBody.Serifless       nothing     0  }
+		'BottomBaseSerifed'        { ILBody.Serifed         nothing     0  }
+		'BottomHooky'              { ILBody.HookyBottom     nothing   (-1) }
+		'BottomHookyLeft'          { ILBody.HookyBottomLeft nothing     1  }
+		'BottomTailed'             { ILBody.Tailed          'tailed'    0  }
+		'BottomFlatTailed'         { ILBody.FlatTailed      'flat'      0  }
+		'BottomSemiTailed'         { ILBody.SemiTailed      'semi'      0  }
+		'BottomDiagonalTailed'     { ILBody.DiagTailed      'diagonal'  0  }
+
+	define [ILStageVariantConfig mode top bottom] : begin
+		local { topSerifs topTail topShift topHasSerif } top
+		local { bottomBody bottomTail bottomShift } bottom
+		local Body : lambda [df top bot xMiddle stroke] : glyph-proc
+			if (topTail && bottomTail) : include : ILBody.Casual df top bot xMiddle topTail bottomTail stroke
+			: else : begin
+				if topTail : begin
+					local yJoin : mix bot top 0.5
+					include : difference
+						new-glyph : glyph-proc
+							include : bottomBody df top bot xMiddle stroke
+						MaskAbove (yJoin + HalfStroke)
+					include : ILBody.CasualTopBetween df top bot xMiddle topTail stroke
+				: else : include : bottomBody df top bot xMiddle stroke
+		local xMiddleT : lambda [df] : begin
+			if (topTail && bottomTail) : return : [XMiddleT mode].Casual df
+			if bottomTail : begin
+				if (bottomTail === 'flat' || bottomTail === 'semi')
+					return : [XMiddleT mode].FlatTailedPair df topShift
+				return : [XMiddleT mode].Tailed df
+			if topTail : return : [XMiddleT mode].Center df
+			if (bottomBody === ILBody.Serifed && (top === ILTopStageConfig.topSerifed || top === ILTopStageConfig.topSerifedShort))
+				return : [XMiddleT mode].Serifed df
+			if (bottomBody === ILBody.Serifed && (top === ILTopStageConfig.topRightSerifed || top === ILTopStageConfig.topRightSerifedShort))
+				return : [XMiddleT mode].SerifedRight df
+			return : [XMiddleT mode].TerminalPair df topShift bottomShift
+		local Marks : if topHasSerif ILMarks.Serifed ILMarks.Serifless
+		local adws : if (top === ILTopStageConfig.topSerifless && bottom === ILBottomStageConfig.BottomSerifless) para.advanceScaleII para.advanceScaleI
+		local y0R : if (bottomBody === ILBody.Serifless && !bottomTail) 0 Stroke
+		return { Body topSerifs Marks xMiddleT adws y0R topTail bottomTail }
+
+	define [SmallILStageConfig mode] : Object.fromEntries : [Object.entries ILTopStageConfig].flatMap : lambda [top]
+		[Object.entries ILBottomStageConfig].map : lambda [bottom] : begin
+			return { "\(top.0)\(bottom.0)" [ILStageVariantConfig mode top.1 bottom.1] }
+
+	define [SmallILConfig mode] : Object.assign [SmallILBaseConfig mode] [SmallILStageConfig mode]
 
 	glyph-block-export Casual CasualTop
 	define [Casual df top bot xMiddle topKind botKind _stroke] : ILBody.Casual df top bot xMiddle topKind botKind _stroke
@@ -349,7 +421,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		__                            nothing
 
 	# `i`-like letters
-	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-I]] : begin
+	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R stageTopTail stageBottomTail } } [Object.entries [SmallILConfig MODE-I]] : begin
 		define xMiddleTCenter [XMiddleT MODE-I].Center
 		define xMiddleT : if (para.isQuasiProportional && Body !== ILBody.PhoneticLeft) xMiddleTCenter xMiddleTMono
 
@@ -389,7 +461,7 @@ glyph-block Letter-Latin-Lower-I : begin
 				eject-contour 'serifLT'
 			include : HBar.t oDf.middle (xMiddle + shift) XH (0.88 * oiSw)
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
-			local kind : CasualKindOf Body
+			local kind : fallback stageTopTail : CasualKindOf Body
 			if kind : begin
 				local df : include : DivFrame adws
 				include : df.markSet.p
@@ -499,7 +571,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : IStemWithCasualTop df XH Descender xMiddle kind
 
 	# `l`-like letters
-	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R } } [Object.entries [SmallILConfig MODE-L]] : begin
+	do : foreach { suffix { Body Serifs Marks xMiddleTMono adws y0R stageTopTail stageBottomTail } } [Object.entries [SmallILConfig MODE-L]] : begin
 		define xMiddleTCenter [XMiddleT MODE-L].Center
 		define xMiddleT : if (para.isQuasiProportional && Body !== ILBody.PhoneticLeft) xMiddleTCenter xMiddleTMono
 
@@ -518,7 +590,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			set-base-anchor 'cvDecompose' [Math.max ([xMiddleTCenter df] + HalfStroke + DotRadius) (df.rightSB - DotRadius)] [mix y0R Ascender 0.5]
 
 		create-glyph "lRTail.\(suffix)" : glyph-proc
-			local kind : CasualKindOf Body
+			local kind : fallback stageTopTail : CasualKindOf Body
 			if kind : begin
 				local df : include : DivFrame adws
 				include : df.markSet.p
@@ -574,7 +646,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			local df : DivFrame adws
 			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
 			local yJoin : mix 0 Ascender 0.5
-			local fCasualDouble : Body === ILBody.DoubleTailed || Body === ILBody.DoubleFlat || Body === ILBody.DoubleSemi || Body === ILBody.DoubleDiagonal
+			local fCasualDouble : (stageTopTail && stageBottomTail) || Body === ILBody.DoubleTailed || Body === ILBody.DoubleFlat || Body === ILBody.DoubleSemi || Body === ILBody.DoubleDiagonal
 			local yBarBot : if fCasualDouble (yJoin - HalfStroke) XH
 			local yBarTop : if fCasualDouble (yJoin + HalfStroke) (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
 			include : LetterBarOverlay.m.in [xMiddleT df] yBarBot yBarTop
@@ -592,7 +664,6 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : intersection [MaskBelow yMid] [lShape]
 			include : intersection [MaskAbove yMid]
 				with-transform [ApparentTranslate (-shift) 0] [lShape]
-
 
 
 	do "i glyphs"
@@ -770,7 +841,11 @@ glyph-block Letter-Latin-Lower-I : begin
 				curl (xMiddle - [HSwToV HalfStroke]) (0 + LongVJut)
 				CurlyTail.n [AdviceStroke 3.5] 0 (xMiddle + [HSwToV HalfStroke] + LongJut) (SB - (Middle - xMiddle)) 0
 			create-forked-glyph "lCurlyTail.hooky" : ILSerifs.Hooky df Ascender 0 xMiddle
+			create-forked-glyph "lCurlyTail.hookyShort" : ILSerifs.HookyShort df Ascender 0 xMiddle
 			create-forked-glyph "lCurlyTail.reverseHooky" : ILSerifs.HookyRight df Ascender 0 xMiddle
+			create-forked-glyph "lCurlyTail.reverseHookyShort" : ILSerifs.HookyRightShort df Ascender 0 xMiddle
+			create-forked-glyph "lCurlyTail.centerSerifed" : ILSerifs.Center df Ascender 0 xMiddle
+			create-forked-glyph "lCurlyTail.centerShortSerifed" : ILSerifs.CenterShort df Ascender 0 xMiddle
 			create-forked-glyph "lCurlyTail.sshaped" : ILSerifs.HookyRight df Ascender 0 xMiddle
 			create-forked-glyph "lCurlyTail.topRightSerifed" : ILSerifs.HookyRight df Ascender 0 xMiddle
 			create-forked-glyph "lCurlyTail.topRightBaseSerifed" : ILSerifs.HookyRight df Ascender 0 xMiddle
