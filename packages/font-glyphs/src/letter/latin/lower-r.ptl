@@ -409,10 +409,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			earlessCornerHTB "earlessCornerHTB"
 			earlessRounded   "earlessRounded"
 			diagonalTailed   "diagonal"
+			flatTailed       "flat"
 			semiTailed       "semi"
 			tailed           "tailed"
 		function [ear] : begin
-			if (!ear || ear === 'diagonalTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
+			if (!ear || ear === 'diagonalTailed' || ear === 'flatTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
 				""            { SmallRShape.Standard         dfN RMode.Standard   RMode.StandardSerifed   }
 				hookless      { SmallRShape.Hookless         dfN RMode.Hookless   RMode.HooklessSerifed   }
 				cornerHooked  { SmallRShape.CornerHook       dfN RMode.CornerHook RMode.CornerHookSerifed }
@@ -447,7 +448,7 @@ glyph-block Letter-Latin-Lower-R : begin
 
 	foreach { suffix { ear { BaseBody df modeSans modeSerifed } cut { doTS doBS } } } [pairs-of SmallRConfig] : do
 		define mode : if (doTS || doBS) modeSerifed modeSans
-		define Body : if (ear === 'diagonal' || ear === 'semi' || ear === 'tailed') [RTailedEar ear BaseBody] BaseBody
+		define Body : if (ear === 'diagonal' || ear === 'flat' || ear === 'semi' || ear === 'tailed') [RTailedEar ear BaseBody] BaseBody
 
 		create-glyph "r.\(suffix)" : glyph-proc
 			set-width df.width
@@ -727,6 +728,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			earlessCorner    HalfRShape.EarlessCorner
 			earlessRounded   HalfRShape.EarlessRounded
 			diagonalTailed   [RTailedEar 'diagonal' HalfRShape.Standard]
+			flatTailed       [RTailedEar 'flat' HalfRShape.Standard]
 			semiTailed       [RTailedEar 'semi' HalfRShape.Standard]
 			tailed           [RTailedEar 'tailed' HalfRShape.Standard]
 		function [body] : begin
