@@ -729,10 +729,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		alias 'cyrl/iUkrainian' 0x456 'i'
 		CreateAccentedComposition 'cyrl/yi' 0x457 'dotlessi' 'dieresisAbove'
 
-		derive-glyphs 'grek/iota' 0x3B9 'dotlessi' : lambda [src gr] : glyph-proc
-			include [refer-glyph src] AS_BASE ALSO_METRICS
-			include : CenterInkInFrame [DivFrame (currentGlyph.advanceWidth / Width)]
-		link-reduced-variant 'grek/iota/sansSerif' 'grek/iota' MathSansSerif
+		select-variant 'grek/iota' 0x3B9 (shapeFrom -- 'dotlessi')
+		link-reduced-variant 'grek/iota/sansSerif' 'grek/iota' MathSansSerif (shapeFrom -- 'dotlessi')
 
 		select-variant 'latn/iota' 0x269 (shapeFrom -- 'dotlessi') (follow -- 'grek/iota')
 		alias 'cyrl/iota' 0xA647 'latn/iota'
