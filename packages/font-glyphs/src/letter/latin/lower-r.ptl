@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
+	glyph-block-import Letter-Latin-Lower-I : CasualTop ILTopStageConfig
 	glyph-block-import Letter-Latin-Upper-T : TShape
 
 	local dfN : DivFrame 1
@@ -391,6 +392,14 @@ glyph-block Letter-Latin-Lower-R : begin
 		export : define [HooklessFlap   df md top bottom ts bs] : [HooklessFlapImpl false] df md top bottom ts bs
 		export : define [CornerHookFlap df md top bottom ts bs] : [HooklessFlapImpl true]  df md top bottom ts bs
 
+	define [RTailedEar kind Body] : function [df md top bottom doTopSerif doBottomSerif cut] : glyph-proc
+		define [object rBarLeftX] : RDim df md
+		local xStem : rBarLeftX + [HSwToV HalfStroke]
+		include : Body df md top bottom false doBottomSerif cut
+		eject-contour 'strokeL'
+		include : RLeftBar rBarLeftX bottom ([mix 0 top 0.5] + HalfStroke) cut
+		include : tagged 'earTail' : CasualTop df top xStem kind
+
 	glyph-block-export SmallRConfig
 	define SmallRConfig : SuffixCfg.weave
 		object # ear
@@ -399,8 +408,11 @@ glyph-block Letter-Latin-Lower-R : begin
 			earlessCorner    "earlessCorner"
 			earlessCornerHTB "earlessCornerHTB"
 			earlessRounded   "earlessRounded"
+			diagonalTailed   "diagonal"
+			semiTailed       "semi"
+			tailed           "tailed"
 		function [ear] : begin
-			if (!ear) : return : object
+			if (!ear || ear === 'diagonalTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
 				""            { SmallRShape.Standard         dfN RMode.Standard   RMode.StandardSerifed   }
 				hookless      { SmallRShape.Hookless         dfN RMode.Hookless   RMode.HooklessSerifed   }
 				cornerHooked  { SmallRShape.CornerHook       dfN RMode.CornerHook RMode.CornerHookSerifed }
@@ -433,8 +445,9 @@ glyph-block Letter-Latin-Lower-R : begin
 			baseSerifed      { false true  }
 			serifed          { true  true  }
 
-	foreach { suffix { ear { Body df modeSans modeSerifed } cut { doTS doBS } } } [pairs-of SmallRConfig] : do
+	foreach { suffix { ear { BaseBody df modeSans modeSerifed } cut { doTS doBS } } } [pairs-of SmallRConfig] : do
 		define mode : if (doTS || doBS) modeSerifed modeSans
+		define Body : if (ear === 'diagonal' || ear === 'semi' || ear === 'tailed') [RTailedEar ear BaseBody] BaseBody
 
 		create-glyph "r.\(suffix)" : glyph-proc
 			set-width df.width
@@ -713,6 +726,9 @@ glyph-block Letter-Latin-Lower-R : begin
 			flatTop          HalfRShape.FlatTop
 			earlessCorner    HalfRShape.EarlessCorner
 			earlessRounded   HalfRShape.EarlessRounded
+			diagonalTailed   [RTailedEar 'diagonal' HalfRShape.Standard]
+			semiTailed       [RTailedEar 'semi' HalfRShape.Standard]
+			tailed           [RTailedEar 'tailed' HalfRShape.Standard]
 		function [body] : begin
 			if (body === HalfRShape.EarlessCorner || body === HalfRShape.EarlessRounded) : return : object
 				""         ""
@@ -729,6 +745,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		local md : fallback _mode RMode.Half
 		include : [if (Body === HalfRShape.EarlessRounded) HalfRShape.Standard Body] df md XH 0 false false
 		eject-contour 'strokeL'
+		eject-contour 'earTail'
 
 	# Flat-top extra hook: same TR arc as the body, no stem. Curl into the first
 	# hook's flat top so the join is a clip, not a vertical cap / T-junction.
@@ -925,8 +942,6 @@ glyph-block Letter-Latin-Lower-R : begin
 		serifedFlatTailed               { false true  1.0 false }
 		semiTailed                      { false false 0.0 false }
 		serifedSemiTailed               { false true  1.0 false }
-
-	glyph-block-import Letter-Latin-Lower-I : CasualTop ILTopStageConfig
 
 	define PigtailCasualTopConfig : object
 		doubleTailed      'tailed'

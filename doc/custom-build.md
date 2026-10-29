@@ -2029,6 +2029,8 @@ Subsection `variants` is used to configure character variants in the font. Prope
     <tr><td><code>q</code> with flat top, straight terminal, and motion serifs at terminal (bottom-right)</td></tr>
     </table></details>
   - Styles for `r`
+    - Tailed ear styles include `diagonal-tailed-serifless`, `semi-tailed-serifless`,
+      and `tailed-serifless`, with corresponding `base-serifed` and body variants.
     <details><summary>28 variants</summary>
     <table>
     <tr><td rowspan="2" width="60"><img src="../images/cv-r-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-r-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>r = 'serifless'</code>, <code>cv52 = 1</code></td></tr>
