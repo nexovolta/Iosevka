@@ -980,32 +980,33 @@ glyph-block Letter-Latin-Lower-R : begin
 				MaskAbove (XH / 2 + HalfStroke)
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-		: else : if stage : begin
-			local { topSerifs topTail doBottomSerif } stage
-			local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook]
-			include : dimSerif.setTurnedMarks XH 0 doBottomSerif false
-			local xStem : [fallback dimSerif.rBarRightX 0] - [HSwToV HalfStroke]
-			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-			include : PigtailAttachHook Body md false xStem doBottomSerif
-			include : topSerifs df XH 0 xStem
 		: else : begin
-			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
-			local mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
-			local dimSerif : RDim df mode
-			include : dimSerif.setTurnedMarks XH 0 doTS false
-			local rBarRightX : fallback dimSerif.rBarRightX 0
-			local rTopSerifJut : fallback dimSerif.rTopSerifJut 0
-			local xStem : rBarRightX - [HSwToV HalfStroke]
-			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-			include : PigtailAttachHook Body md false xStem doTS
-			if doBS : begin
-				local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
-				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
-				: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
-				: else : begin
-					if fRight
-					: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
-					: else : include : tagged 'serifLB' : HSerif.lt xStem XH jut
+			if stage : begin
+				local { topSerifs topTail doBottomSerif } stage
+				local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook]
+				include : dimSerif.setTurnedMarks XH 0 doBottomSerif false
+				local xStem : [fallback dimSerif.rBarRightX 0] - [HSwToV HalfStroke]
+				set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+				include : PigtailAttachHook Body md false xStem doBottomSerif
+				include : topSerifs df XH 0 xStem
+			: else : begin
+				local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
+				local mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
+				local dimSerif : RDim df mode
+				include : dimSerif.setTurnedMarks XH 0 doTS false
+				local rBarRightX : fallback dimSerif.rBarRightX 0
+				local rTopSerifJut : fallback dimSerif.rTopSerifJut 0
+				local xStem : rBarRightX - [HSwToV HalfStroke]
+				set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+				include : PigtailAttachHook Body md false xStem doTS
+				if doBS : begin
+					local jut : Math.max Jut : mix [HSwToV HalfStroke] rTopSerifJut kJut
+					if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
+					: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
+					: else : begin
+						if fRight
+						: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
+						: else : include : tagged 'serifLB' : HSerif.lt xStem XH jut
 
 	define [PigtailItalicStem iSuffix RevBody md] : glyph-proc
 		local df : include dfF
@@ -1023,32 +1024,33 @@ glyph-block Letter-Latin-Lower-R : begin
 				MaskAbove (XH / 2 + HalfStroke)
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-		: else : if stage : begin
-			local { topSerifs topTail doBottomSerif } stage
-			local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook] nothing nothing nothing (-1)
-			include : dimSerif.setInvertedMarks XH 0 doBottomSerif false
-			local xStem : [fallback dimSerif.rBarLeftX 0] + [HSwToV HalfStroke]
-			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-			include : PigtailAttachHook RevBody md true xStem doBottomSerif
-			include : topSerifs df XH 0 xStem
 		: else : begin
-			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
-			local mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
-			local dimSerif : RDim df mode nothing nothing nothing (-1)
-			include : dimSerif.setInvertedMarks XH 0 doTS doBS
-			local rBarLeftX : fallback dimSerif.rBarLeftX 0
-			local rTopSerifJut : fallback dimSerif.rTopSerifJut 0
-			local xStem : rBarLeftX + [HSwToV HalfStroke]
-			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
-			include : PigtailAttachHook RevBody md true xStem doTS
-			if doBS : begin
-				local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
-				if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
-				: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
-				: else : begin
-					if fRight
-					: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
-					: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
+			if stage : begin
+				local { topSerifs topTail doBottomSerif } stage
+				local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook] nothing nothing nothing (-1)
+				include : dimSerif.setInvertedMarks XH 0 doBottomSerif false
+				local xStem : [fallback dimSerif.rBarLeftX 0] + [HSwToV HalfStroke]
+				set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+				include : PigtailAttachHook RevBody md true xStem doBottomSerif
+				include : topSerifs df XH 0 xStem
+			: else : begin
+				local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
+				local mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
+				local dimSerif : RDim df mode nothing nothing nothing (-1)
+				include : dimSerif.setInvertedMarks XH 0 doTS doBS
+				local rBarLeftX : fallback dimSerif.rBarLeftX 0
+				local rTopSerifJut : fallback dimSerif.rTopSerifJut 0
+				local xStem : rBarLeftX + [HSwToV HalfStroke]
+				set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+				include : PigtailAttachHook RevBody md true xStem doTS
+				if doBS : begin
+					local jut : Math.max Jut : [mix [HSwToV HalfStroke] rTopSerifJut kJut] - [if doTS [IBalance df] 0]
+					if (iSuffix === 'centerSerifed' || iSuffix === 'centerShortSerifed')
+					: then : include : tagged 'serifMT' : HSerif.mt xStem XH jut
+					: else : begin
+						if fRight
+						: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
+						: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
 
 	foreach { rSuffix { Body RevBody md } } [Object.entries PigtailRBodies] : do
 		foreach iSuffix [items-of : Object.keys : Object.assign {.} DotlessIPigtailConfig PigtailCasualTopConfig PigtailStageConfig] : do
