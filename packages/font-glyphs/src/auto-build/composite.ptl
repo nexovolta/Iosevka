@@ -1728,7 +1728,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 
 			local refW      : sumChildrenWidth - kern * (effectiveGlyphCount - 1)
 			local compRefWw   wwM
-			local compress  : if (unicode === 0x02A9) (compRefWw / refW) : clamp 0 1 (compRefWw / refW)
+			local compress  : clamp 0 1 (compRefWw / refW)
 
 			if [not : query-glyph gn] : create-glyph gn unicode : glyph-proc
 				local decomposition   { }
