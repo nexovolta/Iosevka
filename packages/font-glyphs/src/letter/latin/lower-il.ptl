@@ -337,6 +337,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		'tau/semiTailed'        { ILBody.SemiTailed    ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].FlatTailed         1                    Stroke }
 		'tau/shortTailed'       { ILBody.ShortTailed   ILSerifs.None          ILMarks.Serifless  [XMiddleT mode].Center             1                    Stroke }
 
+	glyph-block-export ILTopStageConfig
 	define ILTopStageConfig : object
 		'topSerifless'             { ILSerifs.None          nothing     0  false }
 		'topHooky'                 { ILSerifs.Hooky         nothing     1  true  }
@@ -681,10 +682,8 @@ glyph-block Letter-Latin-Lower-I : begin
 		CreateAccentedComposition 'iRetroflexHook' 0x1D96 'dotlessiRetroflexHook' 'tittleAbove'
 
 		local iSuffix : fallback para.variantSelector.dotlessi 'serifless'
-		create-glyph 'dotlessaiDiphthong.upright' : glyph-proc
-			include [refer-glyph "dotlessaiDiphthong.upright.\(iSuffix)"] AS_BASE ALSO_METRICS
-		create-glyph 'dotlessaiDiphthong.italic' : glyph-proc
-			include [refer-glyph "dotlessaiDiphthong.italic.\(iSuffix)"] AS_BASE ALSO_METRICS
+		select-variant 'dotlessaiDiphthong.upright' (follow -- 'dotlessi')
+		select-variant 'dotlessaiDiphthong.italic' (follow -- 'dotlessi')
 
 		create-glyph 'dotlessiStretched' : glyph-proc
 			include [refer-glyph "dotlessiStretched.\(iSuffix)"] AS_BASE ALSO_METRICS

@@ -2689,6 +2689,9 @@ Subsection `variants` is used to configure character variants in the font. Prope
     <tr><td>Lowercase Eth (<code>ð</code>) with a curly bar (default)</td></tr>
     </table></details>
   - Styles for `Þ` (Capital Thorn)
+    - Open bowl variants: `open-serifless`, `open-motion-serifed`, `open-serifed`,
+      `asymmetric-open-serifless`, `asymmetric-open-motion-serifed`, and
+      `asymmetric-open-serifed`.
     <details><summary>6 variants</summary>
     <table>
     <tr><td rowspan="2" width="60"><img src="../images/cv-capital-thorn-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-thorn-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-thorn = 'serifless'</code>, <code>cv65 = 1</code></td></tr>

@@ -926,7 +926,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		semiTailed                      { false false 0.0 false }
 		serifedSemiTailed               { false true  1.0 false }
 
-	glyph-block-import Letter-Latin-Lower-I : CasualTop
+	glyph-block-import Letter-Latin-Lower-I : CasualTop ILTopStageConfig
 
 	define PigtailCasualTopConfig : object
 		doubleTailed      'tailed'
@@ -934,20 +934,45 @@ glyph-block Letter-Latin-Lower-R : begin
 		doubleSemiTailed  'semi'
 		doubleDiagTailed  'diagonal'
 
+	define PigtailStageBottomSerif : object
+		BottomSerifless      false
+		BottomBaseSerifed    true
+		BottomHooky          true
+		BottomHookyLeft      true
+		BottomTailed         false
+		BottomFlatTailed     false
+		BottomSemiTailed     false
+		BottomDiagonalTailed false
+
+	define PigtailStageConfig : object
+	foreach { topSuffix { topSerifs topTail } } [Object.entries ILTopStageConfig] : do
+		foreach { bottomSuffix doBottomSerif } [Object.entries PigtailStageBottomSerif] : do
+			set PigtailStageConfig.("\(topSuffix)\(bottomSuffix)") { topSerifs topTail doBottomSerif }
+
 	define [PigtailUprightStem iSuffix Body md] : glyph-proc
 		local df : include dfF
 		include : df.markSet.e
-		local casualKind : fallback PigtailCasualTopConfig.(iSuffix) nothing
+		local stage : PigtailStageConfig.(iSuffix)
+		local casualKind : if stage stage.1 : fallback PigtailCasualTopConfig.(iSuffix) nothing
 		if casualKind : begin
-			local dimCasual : RDim df RMode.NarrowHook
-			include : dimCasual.setTurnedMarks XH 0 false false
+			local doBottomSerif : if stage stage.2 false
+			local dimCasual : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook]
+			include : dimCasual.setTurnedMarks XH 0 doBottomSerif false
 			local rBarRightX : fallback dimCasual.rBarRightX 0
 			local xStem : rBarRightX - [HSwToV HalfStroke]
 			include : difference
-				PigtailAttachHook Body md false xStem
+				PigtailAttachHook Body md false xStem doBottomSerif
 				MaskAbove (XH / 2 + HalfStroke)
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+		: else : if stage : begin
+			local { topSerifs topTail doBottomSerif } stage
+			local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook]
+			include : dimSerif.setTurnedMarks XH 0 doBottomSerif false
+			local xStem : [fallback dimSerif.rBarRightX 0] - [HSwToV HalfStroke]
+			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+			include : PigtailAttachHook Body md false xStem doBottomSerif
+			include : topSerifs df XH 0 xStem
 		: else : begin
 			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
 			local mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
@@ -970,17 +995,27 @@ glyph-block Letter-Latin-Lower-R : begin
 	define [PigtailItalicStem iSuffix RevBody md] : glyph-proc
 		local df : include dfF
 		include : df.markSet.e
-		local casualKind : fallback PigtailCasualTopConfig.(iSuffix) nothing
+		local stage : PigtailStageConfig.(iSuffix)
+		local casualKind : if stage stage.1 : fallback PigtailCasualTopConfig.(iSuffix) nothing
 		if casualKind : begin
-			local dimCasual : RDim df RMode.NarrowHook nothing nothing nothing (-1)
-			include : dimCasual.setInvertedMarks XH 0 false false
+			local doBottomSerif : if stage stage.2 false
+			local dimCasual : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook] nothing nothing nothing (-1)
+			include : dimCasual.setInvertedMarks XH 0 doBottomSerif false
 			local rBarLeftX : fallback dimCasual.rBarLeftX 0
 			local xStem : rBarLeftX + [HSwToV HalfStroke]
 			include : difference
-				PigtailAttachHook RevBody md true xStem
+				PigtailAttachHook RevBody md true xStem doBottomSerif
 				MaskAbove (XH / 2 + HalfStroke)
 			include : CasualTop df XH xStem casualKind
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+		: else : if stage : begin
+			local { topSerifs topTail doBottomSerif } stage
+			local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook] nothing nothing nothing (-1)
+			include : dimSerif.setInvertedMarks XH 0 doBottomSerif false
+			local xStem : [fallback dimSerif.rBarLeftX 0] + [HSwToV HalfStroke]
+			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
+			include : PigtailAttachHook RevBody md true xStem doBottomSerif
+			include : topSerifs df XH 0 xStem
 		: else : begin
 			local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
 			local mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
@@ -1000,16 +1035,15 @@ glyph-block Letter-Latin-Lower-R : begin
 					: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
 					: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
 
-	local bakedI : fallback para.variantSelector.dotlessi 'serifless'
-
 	foreach { rSuffix { Body RevBody md } } [Object.entries PigtailRBodies] : do
-		create-glyph "dotlessiPigtail.upright.\(rSuffix)" : glyph-proc
-			include : PigtailUprightStem bakedI Body md
-		create-glyph "dotlessiPigtail.italic.\(rSuffix)" : glyph-proc
-			include : PigtailItalicStem bakedI RevBody md
+		foreach iSuffix [items-of : Object.keys : Object.assign {.} DotlessIPigtailConfig PigtailCasualTopConfig PigtailStageConfig] : do
+			create-glyph "dotlessiPigtail.upright.\(rSuffix).\(iSuffix)" : glyph-proc
+				include : PigtailUprightStem iSuffix Body md
+			create-glyph "dotlessiPigtail.italic.\(rSuffix).\(iSuffix)" : glyph-proc
+				include : PigtailItalicStem iSuffix RevBody md
 
-	select-variant 'dotlessiPigtail.upright' (follow -- 'dotlessiPigtail/r')
-	select-variant 'dotlessiPigtail.italic'  (follow -- 'dotlessiPigtail/r')
+	select-multi-dimensional-variant 'dotlessiPigtail.upright' (follows -- { 'dotlessiPigtail/r' 'dotlessi' })
+	select-multi-dimensional-variant 'dotlessiPigtail.italic'  (follows -- { 'dotlessiPigtail/r' 'dotlessi' })
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarRight
 	define [BBRShape df md] : glyph-proc
