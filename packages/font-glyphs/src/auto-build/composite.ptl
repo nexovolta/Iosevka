@@ -1772,7 +1772,8 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 			create-glyph "fengTrill.\(suffix)" : glyph-proc
 				include [trillFont.queryByNameEnsured "fengTrillDesign.\(suffix)"] AS_BASE
 				include : Ungizmo
-				include : Scale (1 / trillShrink) 1
+				# Thinner resets advanceScaleMM to 1 in the derived font.
+				include : Scale (para.advanceScaleMM / trillShrink) 1
 				include : Regizmo
 				set-width : Width * para.advanceScaleMM
 	select-variant 'fengTrill' 0x1DF00
