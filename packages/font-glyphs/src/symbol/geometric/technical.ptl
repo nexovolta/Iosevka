@@ -71,23 +71,26 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : HBar.t (leftStem + hookX) (rightStem + hookX) CAP stroke
 			include : HBar.b (leftStem - hookX) (rightStem - hookX) 0 stroke
 
-		define [MetricalSeme poles] : glyph-proc
+		define [MetricalSeme poleCount] : glyph-proc
 			set-width Geom.Width
 			local stroke GeometryStroke
 			local barY : Geom.MidY - Geom.Size / 2
 			local poleTop : Geom.MidY + Geom.Size / 2
 			include : HBar.m Geom.Left Geom.Right barY stroke
-			foreach [position : poles] : do
-				include : VBar.m [mix Geom.Left Geom.Right position] barY poleTop stroke
+			if (poleCount === 1) : include : VBar.m Geom.Right barY poleTop stroke
+			: else : begin
+				include : VBar.m Geom.Left barY poleTop stroke
+				include : VBar.m Geom.Right barY poleTop stroke
+				if (poleCount === 3) : include : VBar.m Geom.MidX barY poleTop stroke
 
 		create-glyph [MangleName 'metricalTriseme'] [MangleUnicode 0x23D7] : glyph-proc
-			include : MetricalSeme [1]
+			include : MetricalSeme 1
 
 		create-glyph [MangleName 'metricalTetraseme'] [MangleUnicode 0x23D8] : glyph-proc
-			include : MetricalSeme [0 1]
+			include : MetricalSeme 2
 
 		create-glyph [MangleName 'metricalPentaseme'] [MangleUnicode 0x23D9] : glyph-proc
-			include : MetricalSeme [0 0.5 1]
+			include : MetricalSeme 3
 
 	do "Dimensions"
 		create-glyph [MangleName 'straightness'] [MangleUnicode 0x23E4] : glyph-proc
