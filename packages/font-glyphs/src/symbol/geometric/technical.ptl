@@ -109,41 +109,53 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 
 		create-glyph [MangleName 'metricalBreve'] [MangleUnicode 0x23D1] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			include : MetricalBreve 0 MetricalMidY
+			include : Italify (-para.slopeAngle)
 
 		create-glyph [MangleName 'metricalLongOverShort'] [MangleUnicode 0x23D2] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			local breveY : MetricalMidY - (markStroke + MetricalStackGap) / 2
 			local macronY : MetricalMidY + (MetricalBreveHeight + MetricalStackGap) / 2
 			include : MetricalBreve 0 breveY
 			include : MetricalMacron 0 macronY 1
+			include : Italify (-para.slopeAngle)
 
 		create-glyph [MangleName 'metricalShortOverLong'] [MangleUnicode 0x23D3] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			local breveY : MetricalMidY + (markStroke + MetricalStackGap) / 2
 			local macronY : MetricalMidY - (MetricalBreveHeight + MetricalStackGap) / 2
 			include : MetricalBreve 0 breveY
 			include : MetricalMacron 0 macronY 1
+			include : Italify (-para.slopeAngle)
 
 		create-glyph [MangleName 'metricalLongOverTwoShorts'] [MangleUnicode 0x23D4] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			local breveY : MetricalMidY - (markStroke + MetricalStackGap) / 2
 			local macronY : MetricalMidY + (MetricalBreveHeight + MetricalStackGap) / 2
 			local macronScaleX : 4 * MetricalShortHalfSpan / (3 * markExtend)
 			include : MetricalShorts breveY
 			include : MetricalMacron 0 macronY macronScaleX
+			include : Italify (-para.slopeAngle)
 
 		create-glyph [MangleName 'metricalTwoShortsOverLong'] [MangleUnicode 0x23D5] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			local breveY : MetricalMidY + (markStroke + MetricalStackGap) / 2
 			local macronY : MetricalMidY - (MetricalBreveHeight + MetricalStackGap) / 2
 			local macronScaleX : 4 * MetricalShortHalfSpan / (3 * markExtend)
 			include : MetricalShorts breveY
 			include : MetricalMacron 0 macronY macronScaleX
+			include : Italify (-para.slopeAngle)
 
 		create-glyph [MangleName 'metricalTwoShortsJoined'] [MangleUnicode 0x23D6] : glyph-proc
 			set-width Geom.Width
+			set currentGlyph.gizmo : Italify para.slopeAngle
 			include : MetricalShorts MetricalMidY
+			include : Italify (-para.slopeAngle)
 
 	do "Dimensions"
 		create-glyph [MangleName 'straightness'] [MangleUnicode 0x23E4] : glyph-proc
