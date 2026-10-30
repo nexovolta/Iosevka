@@ -10,6 +10,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Above : WideBridgeShape aboveMarkTop aboveMarkBot aboveMarkMid
 	glyph-block-import Mark-Shared-Metrics : markExtend markFine markMiddle markStroke
+	glyph-block-import Symbol-Punctuation-Brackets : Paren Bracket Brace TortoiseShellBracket
 	glyph-block-import Letter-Latin-Long-S : LongSShape
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape Polyline
@@ -341,59 +342,38 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 		local bracketHeight : aboveMarkTop - aboveMarkBot
 		local bracketWidth : Width * para.advanceScaleMM
 		local bracketStroke : 2 * markFine
-		local left : bracketStroke / 2
-		local right : bracketWidth - bracketStroke / 2
 		local middle : bracketWidth / 2
 		local edgeY : Ascender - bracketHeight + bracketStroke / 2
 		local peakY : Ascender - bracketStroke / 2
-		local waistY : mix edgeY peakY 0.55
+		local topMidY : (edgeY + peakY) / 2
+		local parenthesisDf : DivFrame 1
+		local parenthesisDim : Paren.Dim parenthesisDf
+		local braceLeft : mix SB RightSB DesignParameters.braceOutside
+		local braceRight : mix SB RightSB DesignParameters.braceInside
+		local bracketDim : Bracket.HDim
+		local tortoiseDim : Paren.Dim parenthesisDf
 
-		define [TopParenShape] : dispiro
-			widths.center bracketStroke
-			g4 left edgeY
-			quadControls 0.5 1
-			g4.right.mid middle peakY [heading Rightward]
-			quadControls 0.5 0
-			g4 right edgeY
+		define [TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop] : glyph-proc
+			local sourceMidX : (sourceLeft + sourceRight) / 2
+			local sourceMidY : (sourceBottom + sourceTop) / 2
+			local sourceWidth : sourceRight - sourceLeft
+			local scaleX : bracketWidth / (sourceTop - sourceBottom)
+			local scaleY : bracketHeight / sourceWidth
+			include : with-transform [Translate middle topMidY] : with-transform [Scale scaleX scaleY] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-sourceMidX) (-sourceMidY)] : refer-glyph baseName
 
-		define [TopCurlyBracketShape] : dispiro
-			widths.center bracketStroke
-			g4 left edgeY
-			g4 (bracketWidth * 0.15) waistY
-			g4 (bracketWidth * 0.35) waistY [heading Rightward]
-			corner middle peakY
-			g4 (bracketWidth * 0.65) waistY [heading Rightward]
-			g4 (bracketWidth * 0.85) waistY
-			g4 right edgeY
-
-		define [TopTortoiseShellBracketShape] : dispiro
-			Polyline [widths.center bracketStroke]
-				points -- {
-					{ left edgeY }
-					{ (bracketWidth * 0.2) peakY }
-					{ (bracketWidth * 0.8) peakY }
-					{ right edgeY }
-				}
-
-		define [BracketPair topName topUnicode bottomName bottomUnicode Shape] : begin
+		define [BracketPair topName topUnicode bottomName bottomUnicode baseName sourceLeft sourceRight sourceBottom sourceTop] : begin
 			create-glyph [MangleName topName] [MangleUnicode topUnicode] : glyph-proc
 				set-width bracketWidth
-				include : Shape
+				include : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 			create-glyph [MangleName bottomName] [MangleUnicode bottomUnicode] : glyph-proc
 				set-width bracketWidth
-				include : with-transform [ScaleAround middle ((Ascender - bracketHeight) / 2) 1 (-1)] : Shape
+				include : with-transform [ScaleAround middle topMidY 1 (-1)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 
-		BracketPair 'topParenthesis' 0x23DC 'bottomParenthesis' 0x23DD TopParenShape
-		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF TopCurlyBracketShape
-		BracketPair 'topTortoiseShellBracket' 0x23E0 'bottomTortoiseShellBracket' 0x23E1 TopTortoiseShellBracketShape
+		BracketPair 'topParenthesis' 0x23DC 'bottomParenthesis' 0x23DD 'parenLeft' parenthesisDim.outside parenthesisDim.inside parenthesisDim.bottom parenthesisDim.top
+		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF 'braceLeft' braceLeft braceRight ParenBot ParenTop
+		BracketPair 'topTortoiseShellBracket' 0x23E0 'bottomTortoiseShellBracket' 0x23E1 'tortoiseShellBracketLeft' tortoiseDim.outside tortoiseDim.inside tortoiseDim.bottom tortoiseDim.top
 
-		create-glyph [MangleName 'topSquareBracket'] [MangleUnicode 0x23B4] : glyph-proc
-			set-width bracketWidth
-			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender false
-
-		create-glyph [MangleName 'bottomSquareBracket'] [MangleUnicode 0x23B5] : glyph-proc
-			set-width bracketWidth
-			include : WideBridgeShape 0 bracketWidth (-bracketHeight) 0 true
+		BracketPair 'topSquareBracket' 0x23B4 'bottomSquareBracket' 0x23B5 'bracketLeft' bracketDim.l bracketDim.r ParenBot ParenTop
 
 		create-glyph [MangleName 'bottomSquareBracketOverTopSquareBracket'] [MangleUnicode 0x23B6] : glyph-proc
 			set-width bracketWidth

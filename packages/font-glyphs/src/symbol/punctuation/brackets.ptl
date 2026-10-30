@@ -15,6 +15,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	define MosaicBottom fontMetrics.os2.sTypoDescender
 	define MosaicHeight : MosaicTop - MosaicBottom
 
+	glyph-block-export Paren
 	define Paren : namespace
 		export : define [Dim] : with-params [df [delta 0] [dp DesignParameters] [sw Stroke]] : object
 			outside : [mix df.leftSB df.rightSB dp.parenOutside] - delta - [HSwToV dp.parenOutsideSwAdj] * sw + O
@@ -56,6 +57,16 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			g4 dim.outside dim.mid
 			quadControls 0 (0 + DesignParameters.parenCurliness)
 			corner dim.inside dim.bottom
+
+	glyph-block-export TortoiseShellBracket
+	define TortoiseShellBracket : namespace
+		export : define [Shape df sw] : begin
+			local dim : Paren.Dim df 0 (sw -- sw)
+			local terminal : 0.65 * (dim.inside - dim.outside)
+			return : union
+				Paren.Shape df sw
+				HBar.t dim.inside (dim.inside + terminal) dim.top sw
+				HBar.b dim.inside (dim.inside + terminal) dim.bottom sw
 
 	do "Paren glyphs"
 		define LargeContourDp : object
@@ -152,6 +163,12 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		select-variant 'parenLeftLHalf'   0x2E5B (follow -- 'parenLeft')
 		select-variant 'parenRightLHalf'  0x2E5C (follow -- 'parenRight')
 
+		create-glyph 'tortoiseShellBracketLeft' 0x3014 : glyph-proc
+			local df : DivFrame 1
+			set-width df.width
+			include : TortoiseShellBracket.Shape df Stroke
+		turned 'tortoiseShellBracketRight' 0x3015 'tortoiseShellBracketLeft' Middle SymbolMid
+
 		alias 'flattenedParenLeft'  0x27EE 'parenLeft.flatArc'
 		alias 'flattenedParenRight' 0x27EF 'parenRight.flatArc'
 
@@ -185,6 +202,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		turned 'zNotationParenRight' 0x2988 'zNotationParenLeft' Middle SymbolMid
 
+	glyph-block-export Bracket
 	define Bracket : namespace
 		export : define [HDim barLeft ext] : namespace
 			export : define l : fallback barLeft : [mix SB RightSB DesignParameters.bracketOutside] - [HSwToV : DesignParameters.bracketOutsideSwAdj * Stroke]
@@ -391,6 +409,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				flat (xOus + flatLengthOut) (SymbolMid - (sw - fine) / 2) [widths.center.heading fine Leftward]
 				curl  xOus                  (SymbolMid - (sw - fine) / 2) [heading Leftward]
 
+	glyph-block-export Brace
 	define Brace : BraceT
 	define BraceLarge : BraceT {
 		.braceInside  [mix DesignParameters.braceInside  (1 - DesignParameters.braceOutside) 0.5]
