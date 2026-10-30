@@ -153,6 +153,7 @@ glyph-block Symbols-Combining-Mathematical : begin
 		local rise : ry / 2
 		local arcRadius : (endX * endX + rise * rise) / (2 * rise)
 		local arcCenterY : midY + ry - arcRadius
+		local arcStroke : markFine * 1.15
 		local head : Math.min (rx * 0.45) (ry * 0.5)
 		local dir : if ccw (-1) 1
 		local tipX : cx + dir * endX
@@ -164,8 +165,8 @@ glyph-block Symbols-Combining-Mathematical : begin
 		include : union
 			intersection
 				difference
-					RingAt cx arcCenterY (arcRadius + markFine / 2)
-					RingAt cx arcCenterY (arcRadius - markFine / 2)
+					RingAt cx arcCenterY (arcRadius + arcStroke / 2)
+					RingAt cx arcCenterY (arcRadius - arcStroke / 2)
 				spiro-outline
 					corner cx arcCenterY
 					corner (cx + 2 * endX) (arcCenterY + 2 * (endY - arcCenterY))
