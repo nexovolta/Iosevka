@@ -8,6 +8,7 @@ glyph-module
 glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : WideBridgeShape aboveMarkTop aboveMarkBot
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape Polyline
 	glyph-block-import Symbol-Arrow-Shared : ArrowShape ArrowHead TrigArrowShape
@@ -128,7 +129,9 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 				set-width Geom.Width
 				include : ConvexPolygonOutline [new-glyph : DiamondShape Geom.MidX Geom.MidY Geom.Size] GeometryStroke
 				if topBar : include : HBar.m Geom.Left Geom.Right (Geom.Top - GeometryStroke / 2) GeometryStroke
-				if middleBar : include : HBar.m Geom.Left Geom.Right Geom.MidY GeometryStroke
+				if middleBar : include : intersection
+					DiamondShape Geom.MidX Geom.MidY Geom.Size
+					HBar.m Geom.Left Geom.Right Geom.MidY GeometryStroke
 				if bottomBar : include : HBar.m Geom.Left Geom.Right (Geom.Bot + GeometryStroke / 2) GeometryStroke
 
 		OpenCircuitOutput 'openCircuitOutputH' 0x238F true false false
@@ -140,6 +143,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			set-width Geom.Width
 			local radius : Geom.Size * 0.96
 			local halfWidth : radius * [Math.sqrt 0.75]
+			local outerStroke : Math.min GeometryStroke (0.6 * halfWidth)
 			local hexagon : new-glyph : spiro-outline
 					corner Geom.MidX (Geom.MidY + radius)
 					corner (Geom.MidX + halfWidth) (Geom.MidY + radius / 2)
@@ -148,37 +152,32 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 					corner (Geom.MidX - halfWidth) (Geom.MidY - radius / 2)
 					corner (Geom.MidX - halfWidth) (Geom.MidY + radius / 2)
 					close
-			include : ConvexPolygonOutline hexagon GeometryStroke
-			include : VBar.m (Geom.MidX - 0.42 * radius) (Geom.MidY - 0.35 * radius) (Geom.MidY + 0.35 * radius) GeometryStroke
-			local innerLeft : Geom.MidX - 0.05 * radius
-			local innerRight : Geom.MidX + 0.49 * radius
-			local innerHalfRise : 0.27 * radius
-			include : DiagonalHBar innerLeft innerRight (Geom.MidY + 0.395 * radius) (-innerHalfRise) GeometryStroke
-			include : DiagonalHBar innerLeft innerRight (Geom.MidY - 0.395 * radius) innerHalfRise GeometryStroke
+			include : ConvexPolygonOutline hexagon outerStroke
+			local innerRadius : halfWidth - outerStroke
+			local innerStroke : Math.min (0.65 * outerStroke) (0.28 * innerRadius)
+			include : VBar.m (Geom.MidX - 0.65 * innerRadius) (Geom.MidY - 0.5 * innerRadius) (Geom.MidY + 0.5 * innerRadius) innerStroke
+			local innerLeft Geom.MidX
+			local innerRight : Geom.MidX + 0.7 * innerRadius
+			local innerRise : 0.38 * innerRadius
+			include : DiagonalHBar innerLeft innerRight (Geom.MidY + 0.49 * innerRadius) (-innerRise) innerStroke
+			include : DiagonalHBar innerLeft innerRight (Geom.MidY - 0.49 * innerRadius) innerRise innerStroke
 
 	do "Wide Square Brackets"
-		define [WideBridgeShape yBar yEnds] : glyph-proc
-			local xLeft : GeometryStroke / 2
-			local xRight : Geom.Width - GeometryStroke / 2
-			include : VBar.m xLeft yBar yEnds GeometryStroke
-			include : VBar.m xRight yBar yEnds GeometryStroke
-			include : HBar.m xLeft xRight yBar GeometryStroke
-
-		local bracketOffset : Geom.Size * 0.38
-		local bracketStub : Geom.Size * 0.38
+		local bracketHeight : aboveMarkTop - aboveMarkBot
+		local bracketWidth : Width * para.advanceScaleMM
 
 		create-glyph [MangleName 'topSquareBracket'] [MangleUnicode 0x23B4] : glyph-proc
-			set-width Geom.Width
-			include : WideBridgeShape (Geom.MidY + bracketOffset) (Geom.MidY + bracketOffset - bracketStub)
+			set-width bracketWidth
+			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender false
 
 		create-glyph [MangleName 'bottomSquareBracket'] [MangleUnicode 0x23B5] : glyph-proc
-			set-width Geom.Width
-			include : WideBridgeShape (Geom.MidY - bracketOffset) (Geom.MidY - bracketOffset + bracketStub)
+			set-width bracketWidth
+			include : WideBridgeShape 0 bracketWidth (-bracketHeight) 0 true
 
 		create-glyph [MangleName 'bottomSquareBracketOverTopSquareBracket'] [MangleUnicode 0x23B6] : glyph-proc
-			set-width Geom.Width
-			include : WideBridgeShape (Geom.MidY + bracketOffset) (Geom.MidY + bracketOffset + bracketStub)
-			include : WideBridgeShape (Geom.MidY - bracketOffset) (Geom.MidY - bracketOffset - bracketStub)
+			set-width bracketWidth
+			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender true
+			include : WideBridgeShape 0 bracketWidth 0 bracketHeight false
 
 	do "Keyboard Symbols"
 		define topLine : Geom.MidY + Geom.Size / 1.5

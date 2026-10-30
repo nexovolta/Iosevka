@@ -1684,13 +1684,18 @@ glyph-block Mark-Above : begin
 		include : HBar.b leftEnd rightEnd aboveMarkBot boxhs
 		include : HBar.t leftEnd rightEnd aboveMarkTop boxhs
 
+	glyph-block-export WideBridgeShape
+	define [WideBridgeShape left right bot top inverted] : glyph-proc
+		include : VBar.l left  bot top (markFine * 2)
+		include : VBar.r right bot top (markFine * 2)
+		if inverted
+			include : HBar.b left right bot (markFine * 2)
+			include : HBar.t left right top (markFine * 2)
+
 	create-glyph 'wideBridgeAbove' 0x20E9 : glyph-proc
 		set-width 0
 		include : StdAnchors.impl 'above' 0 2
-
-		include : VBar.l (0 - Width) aboveMarkBot aboveMarkTop (markFine * 2)
-		include : VBar.r  0          aboveMarkBot aboveMarkTop (markFine * 2)
-		include : HBar.t (0 - Width) 0 aboveMarkTop (markFine * 2)
+		include : WideBridgeShape (0 - Width) 0 aboveMarkBot aboveMarkTop false
 
 	create-glyph 'seagullAbove' 0x1AE5 : glyph-proc
 		set-width 0
