@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [MathSansSerif] from "@iosevka/glyph/relation"
 import [Vec2] from "@iosevka/geometry/point"
 
 glyph-module
@@ -27,37 +28,77 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 		return : object fine d
 
-	create-glyph 'latn/Gamma' 0x194 : glyph-proc
-		local df : include : DivFrame 1
-		include : df.markSet.capDesc
-		include : LatinGammaShape df CAP Descender
-		if SLAB : begin
-			local sf : SerifFrame.fromDf df CAP Descender
-			include : composite-proc sf.lt.full sf.rt.full
+	define [GammaFullSerifs df top bottom] : begin
+		local sf : SerifFrame.fromDf df top bottom
+		return : composite-proc sf.lt.full sf.rt.full
 
-	create-glyph 'latn/gamma' 0x263 : glyph-proc
-		local df : include : DivFrame 1
-		include : df.markSet.p
-		include : LatinGammaShape df XH Descender
-		if SLAB : begin
-			local sf : SerifFrame.fromDf df XH Descender
-			include : if para.isItalic sf.lt.outer : composite-proc sf.lt.full sf.rt.full
+	define [GammaMotionSerifs df top bottom] : begin
+		local sf : SerifFrame.fromDf df top bottom
+		return sf.lt.outer
 
-	create-glyph 'latn/gammaPalatalHook' 0x1DF31 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 1
-		include : df.markSet.p
-		local subDf : DivFrame (0.75 * para.advanceScaleM) 2
-		local [object fine d] : include : LatinGammaShape subDf XH Descender
-		if SLAB : begin
-			local sf : SerifFrame.fromDf subDf XH Descender
-			include : if para.isItalic sf.lt.outer : composite-proc sf.lt.full sf.rt.full
-		local tinyGap : Math.max (Width / 32) : AdviceStroke 24
-		include : difference
-			PalatalHook.r df.rightSB 0
-				xLink   -- subDf.middle
-				refSw   -- [mix subDf.mvs fine 0.5]
-				maskOut -- [intersection [MaskBelow 0] [MaskLeft : subDf.middle + d + tinyGap]]
-			LatinGammaShape subDf XH Descender true
+	define [GammaTopRightMotionSerifs df top bottom] : begin
+		local sf : SerifFrame.fromDf df top bottom
+		return sf.rt.inner
+
+	define [GammaBilateralMotionSerifs df top bottom] : begin
+		local sf : SerifFrame.fromDf df top bottom
+		return : composite-proc sf.lt.outer sf.rt.inner
+
+	define [GammaUpperAutoSerifs df top bottom] : NeedSlab SLAB : GammaFullSerifs df top bottom
+
+	define [GammaLowerAutoSerifs df top bottom] : NeedSlab SLAB : begin
+		local sf : SerifFrame.fromDf df top bottom
+		return : if para.isItalic sf.lt.outer : composite-proc sf.lt.full sf.rt.full
+
+	define GammaUpperSerifConfig : object
+		""                    GammaUpperAutoSerifs
+		serifless             no-shape
+		motionSerifed         GammaMotionSerifs
+		topRightMotionSerifed GammaTopRightMotionSerifs
+		bilateralMotionSerifed GammaBilateralMotionSerifs
+		serifed               GammaFullSerifs
+
+	define GammaLowerSerifConfig : object
+		""                    GammaLowerAutoSerifs
+		serifless             no-shape
+		motionSerifed         GammaMotionSerifs
+		topRightMotionSerifed GammaTopRightMotionSerifs
+		bilateralMotionSerifed GammaBilateralMotionSerifs
+		serifed               GammaFullSerifs
+
+	foreach { suffix Serifs } [Object.entries GammaUpperSerifConfig] : do
+		create-glyph "latn/Gamma.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capDesc
+			include : LatinGammaShape df CAP Descender
+			include : Serifs df CAP Descender
+
+	foreach { suffix Serifs } [Object.entries GammaLowerSerifConfig] : do
+		create-glyph "latn/gamma.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.p
+			include : LatinGammaShape df XH Descender
+			include : Serifs df XH Descender
+
+		create-glyph "latn/gammaPalatalHook.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 1
+			include : df.markSet.p
+			local subDf : DivFrame (0.75 * para.advanceScaleM) 2
+			local [object fine d] : include : LatinGammaShape subDf XH Descender
+			include : Serifs subDf XH Descender
+			local tinyGap : Math.max (Width / 32) : AdviceStroke 24
+			include : difference
+				PalatalHook.r df.rightSB 0
+					xLink   -- subDf.middle
+					refSw   -- [mix subDf.mvs fine 0.5]
+					maskOut -- [intersection [MaskBelow 0] [MaskLeft : subDf.middle + d + tinyGap]]
+				LatinGammaShape subDf XH Descender true
+
+	select-variant 'latn/Gamma' 0x194
+	link-reduced-variant 'latn/Gamma/sansSerif' 'latn/Gamma' MathSansSerif
+	select-variant 'latn/gamma' 0x263
+	link-reduced-variant 'latn/gamma/sansSerif' 'latn/gamma' MathSansSerif
+	select-variant 'latn/gammaPalatalHook' 0x1DF31 (follow -- 'latn/gamma')
 
 	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt] : glyph-proc
 		local k1 0.625
