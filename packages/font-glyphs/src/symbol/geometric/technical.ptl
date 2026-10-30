@@ -10,6 +10,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Above : WideBridgeShape aboveMarkTop aboveMarkBot
 	glyph-block-import Mark-Shared-Metrics : markFine
+	glyph-block-import Letter-Latin-Long-S : LongSShape
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape Polyline
 	glyph-block-import Symbol-Arrow-Shared : ArrowShape ArrowHead TrigArrowShape
@@ -18,6 +19,75 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	define Size : GeometricSizes Geom
 
 	define fineGeometryStroke : AdviceStroke2 4 4 Geom.Size
+
+	do "Technical Symbols"
+		create-glyph [MangleName 'squareFoot'] [MangleUnicode 0x23CD] : glyph-proc
+			set-width Geom.Width
+			local left Geom.Left
+			local right Geom.Right
+			local top : right - left
+			local stroke : Math.min GeometryStroke ((right - left) * 0.2)
+			local primeWidth : stroke * 0.8
+			local gap : stroke * 0.3
+			local primeTopX : Geom.MidX + (right - left) * 0.08
+			local primeBotX : Geom.MidX - (right - left) * 0.08
+			local primeTop : top + (right - left) * 0.25
+			local primeBot : top - (right - left) * 0.27
+			define [PrimeShape extra] : spiro-outline
+				corner (primeTopX - primeWidth / 2 - extra) primeTop
+				corner (primeTopX + primeWidth / 2 + extra) primeTop
+				corner (primeBotX + primeWidth / 2 + extra) primeBot
+				corner (primeBotX - primeWidth / 2 - extra) primeBot
+				close
+			include : difference
+				difference
+					Rect top 0 left right
+					Rect (top - stroke) stroke (left + stroke) (right - stroke)
+				PrimeShape gap
+			include : PrimeShape 0
+
+		create-glyph [MangleName 'acCurrent'] [MangleUnicode 0x23E6] : glyph-proc
+			set-width Geom.Width
+			local stroke : Math.min GeometryStroke (Geom.Size * 0.32)
+			local amplitude : Geom.Size * 0.65
+			local knots {}
+			foreach [i : range 0 till 32] : begin
+				local t : i / 32
+				knots.push : g2
+					mix (Geom.Left + Geom.Size * 0.12) (Geom.Right - Geom.Size * 0.12) t
+					Geom.MidY + amplitude * [Math.sin (2 * Math.PI * t)]
+			include : dispiro [widths.center stroke] knots
+			include : HBar.m Geom.Left Geom.Right Geom.MidY stroke
+
+		create-glyph [MangleName 'hysteresisSymbol'] [MangleUnicode 0x238E] : glyph-proc
+			set-width Geom.Width
+			local span : Geom.Right - Geom.Left
+			local stroke : Math.min GeometryStroke (span * 0.18)
+			local hookX : span * 0.16
+			local leftStem : Geom.Left + hookX
+			local rightStem : Geom.Right - hookX
+			include : with-transform [Translate (leftStem - Middle) 0] : LongSShape CAP 0 hookX (CAP * 0.2) stroke false
+			include : with-transform [Translate (rightStem - Middle) 0] : LongSShape CAP 0 hookX (CAP * 0.2) stroke false
+			include : HBar.t (leftStem + hookX) (rightStem + hookX) CAP stroke
+			include : HBar.b (leftStem - hookX) (rightStem - hookX) 0 stroke
+
+		define [MetricalSeme poles] : glyph-proc
+			set-width Geom.Width
+			local stroke GeometryStroke
+			local barY : Geom.MidY - Geom.Size / 2
+			local poleTop : Geom.MidY + Geom.Size / 2
+			include : HBar.m Geom.Left Geom.Right barY stroke
+			foreach [position : poles] : do
+				include : VBar.m [mix Geom.Left Geom.Right position] barY poleTop stroke
+
+		create-glyph [MangleName 'metricalTriseme'] [MangleUnicode 0x23D7] : glyph-proc
+			include : MetricalSeme [1]
+
+		create-glyph [MangleName 'metricalTetraseme'] [MangleUnicode 0x23D8] : glyph-proc
+			include : MetricalSeme [0 1]
+
+		create-glyph [MangleName 'metricalPentaseme'] [MangleUnicode 0x23D9] : glyph-proc
+			include : MetricalSeme [0 0.5 1]
 
 	do "Dimensions"
 		create-glyph [MangleName 'straightness'] [MangleUnicode 0x23E4] : glyph-proc
@@ -229,11 +299,13 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			g4 right edgeY
 
 		define [TopTortoiseShellBracketShape] : dispiro
-			widths.center bracketStroke
-			flat left edgeY
-			sharp-corner (bracketWidth * 0.2) peakY
-			sharp-corner (bracketWidth * 0.8) peakY
-			curl right edgeY
+			Polyline [widths.center bracketStroke]
+				points -- {
+					{ left edgeY }
+					{ (bracketWidth * 0.2) peakY }
+					{ (bracketWidth * 0.8) peakY }
+					{ right edgeY }
+				}
 
 		define [BracketPair topName topUnicode bottomName bottomUnicode Shape] : begin
 			create-glyph [MangleName topName] [MangleUnicode topUnicode] : glyph-proc
