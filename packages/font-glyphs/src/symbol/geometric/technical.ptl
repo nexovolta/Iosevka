@@ -76,13 +76,57 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			set-width Geom.Width
 			local stroke GeometryStroke
 			local barY : Geom.MidY - Geom.Size / 2
+			local barBottom : barY - stroke / 2
+			local barTop : barY + stroke / 2
 			local poleTop : Geom.MidY + Geom.Size / 2
-			include : HBar.m Geom.Left Geom.Right barY stroke
-			if (poleCount === 1) : include : VBar.m Geom.Right barY poleTop stroke
+			local italicRise : poleTop - SymbolMid
+			local italicFall : SymbolMid - barBottom
+			local italicInset : Math.abs (TanSlope * [Math.max italicRise italicFall])
+			local left : Math.max (Geom.Width * 0.1 + italicInset) Geom.Left
+			local right : Math.min (Geom.Width * 0.9 - italicInset) Geom.Right
+			local middle Geom.MidX
+			local innerLeft : left + stroke
+			local innerRight : right - stroke
+			local poleMiddleLeft : middle - stroke / 2
+			local poleMiddleRight : middle + stroke / 2
+			if (poleCount === 1)
+			: then : begin
+				include : spiro-outline
+					corner left barBottom
+					corner right barBottom
+					corner right poleTop
+					corner innerRight poleTop
+					corner innerRight barTop
+					corner left barTop
+					close
 			: else : begin
-				include : VBar.m Geom.Left barY poleTop stroke
-				include : VBar.m Geom.Right barY poleTop stroke
-				if (poleCount === 3) : include : VBar.m Geom.MidX barY poleTop stroke
+				if (poleCount === 2)
+				: then : begin
+					include : spiro-outline
+						corner left barBottom
+						corner right barBottom
+						corner right poleTop
+						corner innerRight poleTop
+						corner innerRight barTop
+						corner innerLeft barTop
+						corner innerLeft poleTop
+						corner left poleTop
+						close
+				: else : begin
+					include : spiro-outline
+						corner left barBottom
+						corner right barBottom
+						corner right poleTop
+						corner innerRight poleTop
+						corner innerRight barTop
+						corner poleMiddleRight barTop
+						corner poleMiddleRight poleTop
+						corner poleMiddleLeft poleTop
+						corner poleMiddleLeft barTop
+						corner innerLeft barTop
+						corner innerLeft poleTop
+						corner left poleTop
+						close
 
 		create-glyph [MangleName 'metricalTriseme'] [MangleUnicode 0x23D7] : glyph-proc
 			include : MetricalSeme 1
@@ -359,15 +403,15 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			local sourceWidth : sourceRight - sourceLeft
 			local scaleX : bracketWidth / (sourceTop - sourceBottom)
 			local scaleY : bracketHeight / sourceWidth
-			include : with-transform [Translate middle topMidY] : with-transform [Scale scaleX scaleY] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-sourceMidX) (-sourceMidY)] : refer-glyph baseName
+			include : with-transform [Translate middle topMidY] : with-transform [Scale scaleX scaleY] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-sourceMidX) (-sourceMidY)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph baseName
 
 		define [BracketPair topName topUnicode bottomName bottomUnicode baseName sourceLeft sourceRight sourceBottom sourceTop] : begin
 			create-glyph [MangleName topName] [MangleUnicode topUnicode] : glyph-proc
 				set-width bracketWidth
-				include : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
+				include : with-transform [Italify para.slopeAngle] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 			create-glyph [MangleName bottomName] [MangleUnicode bottomUnicode] : glyph-proc
 				set-width bracketWidth
-				include : with-transform [ScaleAround middle topMidY 1 (-1)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
+				include : with-transform [Italify para.slopeAngle] : with-transform [Translate middle topMidY] : with-transform [Scale 1 (-1)] : with-transform [Translate (-middle) (-topMidY)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 
 		BracketPair 'topParenthesis' 0x23DC 'bottomParenthesis' 0x23DD 'parenLeft' parenthesisDim.outside parenthesisDim.inside parenthesisDim.bottom parenthesisDim.top
 		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF 'braceLeft' braceLeft braceRight ParenBot ParenTop

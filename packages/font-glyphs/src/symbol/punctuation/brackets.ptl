@@ -10,6 +10,7 @@ glyph-module
 glyph-block Symbol-Punctuation-Brackets : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Shared-Symbol-Shapes : Polyline
 
 	define MosaicTop    fontMetrics.os2.sTypoAscender
 	define MosaicBottom fontMetrics.os2.sTypoDescender
@@ -62,11 +63,14 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	define TortoiseShellBracket : namespace
 		export : define [Shape df sw] : begin
 			local dim : Paren.Dim df 0 (sw -- sw)
-			local terminal : 0.65 * (dim.inside - dim.outside)
-			return : union
-				Paren.Shape df sw
-				HBar.t dim.inside (dim.inside + terminal) dim.top sw
-				HBar.b dim.inside (dim.inside + terminal) dim.bottom sw
+			return : dispiro
+				Polyline [widths.center sw]
+					points -- {
+						{ dim.inside dim.top }
+						{ dim.outside [mix dim.top dim.mid 0.25] }
+						{ dim.outside [mix dim.bottom dim.mid 0.25] }
+						{ dim.inside dim.bottom }
+					}
 
 	do "Paren glyphs"
 		define LargeContourDp : object
@@ -166,7 +170,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		create-glyph 'tortoiseShellBracketLeft' 0x3014 : glyph-proc
 			local df : DivFrame 1
 			set-width df.width
-			include : TortoiseShellBracket.Shape df Stroke
+			include : TortoiseShellBracket.Shape df df.mvs
 		turned 'tortoiseShellBracketRight' 0x3015 'tortoiseShellBracketLeft' Middle SymbolMid
 
 		alias 'flattenedParenLeft'  0x27EE 'parenLeft.flatArc'
