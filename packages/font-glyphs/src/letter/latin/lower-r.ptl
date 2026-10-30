@@ -36,12 +36,14 @@ glyph-block Letter-Latin-Lower-R : begin
 		HalfStretch       11
 
 	define [RDim df mode _stroke _strokeBar _fine _sign] : namespace
+		local shapeMode : fallback mode.shapeMode mode
+		local narrowHookWidth : mode.narrowHookWidth || shapeMode === RMode.NarrowHook || shapeMode === RMode.NarrowHookSerifed
 		local stroke    : fallback _stroke    Stroke
 		local strokeBar : fallback _strokeBar stroke
 		local strokeA   : mix strokeBar stroke 0.5
 		local fine      : fallback _fine : ShoulderFine * (strokeA / Stroke)
 		local sign      : Math.sign : fallback _sign (+1)
-		local { rBalanceMultiplier rHookMultiplier rHookSwMultiplier rSerifLeftExtender } : match mode
+		local { rBalanceMultiplier rHookMultiplier rHookSwMultiplier rSerifLeftExtender } : match shapeMode
 			[Just RMode.Standard]          {  1                 1       (1 / 2)  (1 / 3) }
 			[Just RMode.StandardSerifed]   { (4 / 3)           (2 / 3)  (3 / 4)  (2 / 3) }
 			[Just RMode.NarrowHook]        {  1                 1       (1 / 2)  (1 / 3) }
@@ -55,7 +57,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			[Just RMode.Half]              {  1                 0        0        0      }
 			[Just RMode.HalfStretch]       {  1                 1       (1 / 2)   0      }
 
-		export : local rBarLeftX : match mode
+		export : local rBarLeftX : match shapeMode
 			[Just RMode.Half] : mix df.leftSB (df.middle - [HSwToV : 0.5 * strokeBar] - [IBalance2 df]) rBalanceMultiplier
 			[Just RMode.HalfStretch] : df.middle - [HSwToV : 0.5 * strokeBar]
 			__                : df.leftSB + RBalance * rBalanceMultiplier
@@ -63,20 +65,20 @@ glyph-block Letter-Latin-Lower-R : begin
 
 		local rTopLeftSerifX : rBarLeftX + [HSwToV : 0.5 * strokeBar]
 		local rTopRightSerifX : df.width - rTopLeftSerifX
-		export : local rTopSerifJut : match mode
+		export : local rTopSerifJut : match shapeMode
 			([Just RMode.Half] || [Just RMode.HalfStretch]) : Math.max ([HSwToV : 0.5 * strokeBar] + SideJut) : mix (MidJutCenter - [IBalance df]) (rTopLeftSerifX - df.leftSB) rSerifLeftExtender
 			__                : [HSwToV : 0.5 * strokeBar] + SideJut + RBalance * rSerifLeftExtender
 		export : local [rTopLeftSerif  y] : tagged 'serifLT' : HSerif.lt rTopLeftSerifX  y rTopSerifJut strokeA
 		export : local [rTopRightSerif y] : tagged 'serifRT' : HSerif.rt rTopRightSerifX y rTopSerifJut strokeA
 
-		local rBottomLeftSerifX : match mode
+		local rBottomLeftSerifX : match shapeMode
 			([Just RMode.Half] || [Just RMode.HalfStretch]) : rTopLeftSerifX + [IBalance df]
 			__                : begin rTopLeftSerifX
 		local rBottomRightSerifX : df.width - rBottomLeftSerifX
-		export : local rBottomSerifJutOut : match mode
+		export : local rBottomSerifJutOut : match shapeMode
 			([Just RMode.Half] || [Just RMode.HalfStretch]) : rTopSerifJut + [IBalance df]
 			__                : begin rTopSerifJut
-		export : local rBottomSerifJutIn : mix [HSwToV : 0.5 * strokeBar] rBottomSerifJutOut : match mode
+		export : local rBottomSerifJutIn : mix [HSwToV : 0.5 * strokeBar] rBottomSerifJutOut : match shapeMode
 			([Just RMode.Half] || [Just RMode.HalfStretch]) : begin 1.0
 			__                : begin 1.2
 		export : local [rBottomLeftSerif y] : tagged 'serifLB' : union
@@ -86,43 +88,44 @@ glyph-block Letter-Latin-Lower-R : begin
 			HSerif.lb rBottomRightSerifX y rBottomSerifJutIn  strokeA
 			HSerif.rb rBottomRightSerifX y rBottomSerifJutOut strokeA
 
-		local rHookRightXFull : match mode
-			([Just RMode.NarrowHook] || [Just RMode.NarrowHookSerifed]) : mix
+		local rHookRightXFull : match narrowHookWidth
+			[Just true] : mix
 				rBarLeftX + [HSwToV strokeBar]
 				df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
 				mix 0.85 1.15 : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
-			[Just RMode.Half] : Math.max
-				rBarLeftX + [HSwToV : strokeBar + 0.125 * stroke] + TINY + [Math.abs : TanSlope * stroke]
-				[Arch.adjust-x.top (rBarLeftX + [HSwToV : 0.5 * strokeBar] + HookX) (sw -- strokeA)] - OXHook
-			[Just RMode.HalfStretch] : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
-			__ : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
-		export : local rArchMiddleX : match mode
+			__ : match shapeMode
+				[Just RMode.Half] : Math.max
+					rBarLeftX + [HSwToV : strokeBar + 0.125 * stroke] + TINY + [Math.abs : TanSlope * stroke]
+					[Arch.adjust-x.top (rBarLeftX + [HSwToV : 0.5 * strokeBar] + HookX) (sw -- strokeA)] - OXHook
+				[Just RMode.HalfStretch] : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
+				__ : df.rightSB + RBalance2 * rBalanceMultiplier - (OX - O)
+		export : local rArchMiddleX : match shapeMode
 			([Just RMode.Standard]        || [Just RMode.NarrowHook])        : mix (rBarLeftX + [HSwToV : strokeBar - fine]) rHookRightXFull (0.54 + sign * 2 * TanSlope * strokeBar / Width)
 			([Just RMode.StandardSerifed] || [Just RMode.NarrowHookSerifed]) : mix (rBarLeftX + [HSwToV : strokeBar - fine]) rHookRightXFull (0.59 + sign * 2 * TanSlope * strokeBar / Width)
 			([Just RMode.Hookless]        || [Just RMode.HooklessSerifed])   : mix df.width rHookRightXFull : Math.max 1.01 (1.25 * [mix 1 para.advanceScaleF 2])
 			([Just RMode.CornerHook]      || [Just RMode.CornerHookSerifed]) : rHookRightXFull - [HSwToV : 0.5 * strokeBar]
 			__                                                               : mix rBarLeftX rHookRightXFull 0.5
 		export : local rArchCoMiddleX : df.width - rArchMiddleX
-		local pMixIn : match mode
+		local pMixIn : match shapeMode
 			([Just RMode.StandardSerifed] || [Just RMode.NarrowHookSerifed] || [Just RMode.CornerHook] || [Just RMode.CornerHookSerifed]) : begin
 				0.65 + sign * 4 * TanSlope * strokeA / Width + 0.25 * strokeA / Width
 			__ : begin
 				0.65 + sign * 4 * TanSlope * strokeA / Width
 		local rMiddleIn : [mix (rBarLeftX + [HSwToV strokeBar]) (rHookRightXFull - [HSwToV : 1.05 * strokeA]) pMixIn] - sign * CorrectionOMidS
 		export : local rSkew : clamp 0 HVContrast ((rArchMiddleX - rMiddleIn) / stroke - sign * TanSlope)
-		export : local rHookRightX : match mode
+		export : local rHookRightX : match shapeMode
 			[Just RMode.Hookless]        : rArchMiddleX + TINY
 			[Just RMode.HooklessSerifed] : mix df.width rHookRightXFull df.adws
 			__                           : begin rHookRightXFull
 		export : local rHookLeftX : df.width - rHookRightX
 		export : local rHookDepthY : RHook * rHookMultiplier + stroke * rHookSwMultiplier
-		export : local rCorX : match mode
+		export : local rCorX : match shapeMode
 			([Just RMode.CornerHook] || [Just RMode.CornerHookSerifed]) : begin 0
 			__ : CorrectionOMidS * [linreg 72 0.75 108 1 stroke]
-		export : local rArchTopShiftY : match mode
+		export : local rArchTopShiftY : match shapeMode
 			([Just RMode.Hookless] || [Just RMode.HooklessSerifed]) : O * [clamp 0 1 : StrokeWidthBlend 0 16]
 			__ : begin 0
-		local rArchDepth : match mode
+		local rArchDepth : match shapeMode
 			([Just RMode.Earless] || [Just RMode.EarlessSerifed]) : begin SmallArchDepth
 			[Just RMode.Half]                                     : begin Hook
 			[Just RMode.HalfStretch]                              : begin Hook
@@ -892,12 +895,16 @@ glyph-block Letter-Latin-Lower-R : begin
 	select-variant 'rMidHeightLeftHook' 0x1DF28 (follow -- 'rHalf')
 	CreateTurnedLetter 'turnrMidHeightLeftHook' 0x1DF57 'rMidHeightLeftHook' HalfAdvance (XH / 2)
 
+	define [PigtailNarrowHookMode shapeMode] : object
+		shapeMode shapeMode
+		narrowHookWidth true
+
 	define PigtailRBodies : object
-		standard     { SmallRShape.Standard   SmallRevRShape.Standard   RMode.NarrowHook }
-		hookless     { SmallRShape.Hookless   SmallRevRShape.Hookless   RMode.Hookless   }
-		cornerHooked { SmallRShape.CornerHook SmallRevRShape.CornerHook RMode.CornerHook }
-		narrowHook   { SmallRShape.Standard   SmallRevRShape.Standard   RMode.NarrowHook }
-		half         { HalfRShape.Standard    SmallRevRShape.Half       RMode.Half       }
+		standard     { SmallRShape.Standard   SmallRevRShape.Standard   [PigtailNarrowHookMode RMode.Standard]   }
+		hookless     { SmallRShape.Hookless   SmallRevRShape.Hookless   [PigtailNarrowHookMode RMode.Hookless]   }
+		cornerHooked { SmallRShape.CornerHook SmallRevRShape.CornerHook [PigtailNarrowHookMode RMode.CornerHook] }
+		narrowHook   { SmallRShape.Standard   SmallRevRShape.Standard   [PigtailNarrowHookMode RMode.Standard]   }
+		half         { HalfRShape.Standard    SmallRevRShape.Half       [PigtailNarrowHookMode RMode.Half]       }
 
 	define [PigtailAttachHook Body md fRev xStem _doTS] : glyph-proc
 		local doTS : fallback _doTS false
