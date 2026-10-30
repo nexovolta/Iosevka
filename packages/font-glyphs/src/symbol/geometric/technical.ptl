@@ -9,6 +9,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Above : WideBridgeShape aboveMarkTop aboveMarkBot
+	glyph-block-import Mark-Shared-Metrics : markFine
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape Polyline
 	glyph-block-import Symbol-Arrow-Shared : ArrowShape ArrowHead TrigArrowShape
@@ -134,11 +135,12 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 					HBar.m Geom.Left Geom.Right Geom.MidY GeometryStroke
 				if bottomBar : include : HBar.m Geom.Left Geom.Right (Geom.Bot + GeometryStroke / 2) GeometryStroke
 
-		OpenCircuitOutput 'openCircuitOutputH' 0x238F true false false
-		OpenCircuitOutput 'openCircuitOutputL' 0x2390 false false true
-		OpenCircuitOutput 'openCircuitOutputHWithTopAndMiddleBars' 0x2391 true true false
+		OpenCircuitOutput 'openCircuitOutputHType' 0x238F true false false
+		OpenCircuitOutput 'openCircuitOutputLType' 0x2390 false false true
+		OpenCircuitOutput 'passivePullDownOutput' 0x2391 true true false
+		OpenCircuitOutput 'passivePullUpOutput' 0x2392 false true true
 
-		create-glyph [MangleName 'apl/iBeam'] [MangleUnicode 0x2396] : glyph-proc
+		create-glyph [MangleName 'decimalSeparatorKey'] [MangleUnicode 0x2396] : glyph-proc
 			set-width Geom.Width
 			local halfSize : Geom.Size / 2
 			include : spiro-outline
@@ -147,7 +149,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 				corner (Geom.MidX - halfSize) (Geom.MidY - halfSize)
 				close
 
-		create-glyph [MangleName 'apl/quadEqual'] [MangleUnicode 0x2392] : glyph-proc
+		create-glyph [MangleName 'directCurrentFormTwo'] [MangleUnicode 0x2393] : glyph-proc
 			set-width Geom.Width
 			local span : Geom.Right - Geom.Left
 			local dashWidth : span * 0.27
@@ -157,16 +159,19 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			local lowerWidth : 3 * dashWidth + 2 * dashGap
 			local lowerLeft : Geom.MidX - lowerWidth / 2
 			include : HBar.m Geom.Left Geom.Right mainY GeometryStroke
-			foreach i [range 0 3] : include : HBar.m
-				(lowerLeft + i * (dashWidth + dashGap))
-				(lowerLeft + i * (dashWidth + dashGap) + dashWidth)
-				lowerY GeometryStroke
+			foreach i [range 0 3] : do
+				local dashLeft : lowerLeft + i * (dashWidth + dashGap)
+				include : HBar.m dashLeft (dashLeft + dashWidth) lowerY GeometryStroke
 
-		create-glyph [MangleName 'benzeneRing'] [MangleUnicode 0x232C] : glyph-proc
-			set-width Geom.Width
-			local radius : Geom.Size * 0.96
-			local halfWidth : radius * [Math.sqrt 0.75]
-			local outerStroke : Math.min GeometryStroke (0.6 * halfWidth)
+		define benzeneRadius : Geom.Size * 0.96
+		define benzeneHalfWidth : benzeneRadius * [Math.sqrt 0.75]
+		define benzeneStroke : Math.min GeometryStroke (0.6 * benzeneHalfWidth)
+		define benzeneInnerRadius : benzeneHalfWidth - benzeneStroke
+		define benzeneInnerStroke : Math.min (0.65 * benzeneStroke) (0.28 * benzeneInnerRadius)
+
+		define [BenzeneOutline] : glyph-proc
+			local radius benzeneRadius
+			local halfWidth benzeneHalfWidth
 			local hexagon : new-glyph : spiro-outline
 					corner Geom.MidX (Geom.MidY + radius)
 					corner (Geom.MidX + halfWidth) (Geom.MidY + radius / 2)
@@ -175,9 +180,13 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 					corner (Geom.MidX - halfWidth) (Geom.MidY - radius / 2)
 					corner (Geom.MidX - halfWidth) (Geom.MidY + radius / 2)
 					close
-			include : ConvexPolygonOutline hexagon outerStroke
-			local innerRadius : halfWidth - outerStroke
-			local innerStroke : Math.min (0.65 * outerStroke) (0.28 * innerRadius)
+			include : ConvexPolygonOutline hexagon benzeneStroke
+
+		create-glyph [MangleName 'benzeneRing'] [MangleUnicode 0x232C] : glyph-proc
+			set-width Geom.Width
+			include : BenzeneOutline
+			local innerRadius benzeneInnerRadius
+			local innerStroke benzeneInnerStroke
 			include : VBar.m (Geom.MidX - 0.65 * innerRadius) (Geom.MidY - 0.5 * innerRadius) (Geom.MidY + 0.5 * innerRadius) innerStroke
 			local innerLeft Geom.MidX
 			local innerRight : Geom.MidX + 0.7 * innerRadius
@@ -185,9 +194,58 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : DiagonalHBar innerLeft innerRight (Geom.MidY + 0.49 * innerRadius) (-innerRise) innerStroke
 			include : DiagonalHBar innerLeft innerRight (Geom.MidY - 0.49 * innerRadius) innerRise innerStroke
 
+		create-glyph [MangleName 'benzeneRingWithCircle'] [MangleUnicode 0x23E3] : glyph-proc
+			set-width Geom.Width
+			include : BenzeneOutline
+			include : RingStrokeAt Geom.MidX Geom.MidY (0.65 * benzeneInnerRadius) benzeneInnerStroke
+
 	do "Wide Square Brackets"
 		local bracketHeight : aboveMarkTop - aboveMarkBot
 		local bracketWidth : Width * para.advanceScaleMM
+		local bracketStroke : 2 * markFine
+		local left : bracketStroke / 2
+		local right : bracketWidth - bracketStroke / 2
+		local middle : bracketWidth / 2
+		local edgeY : Ascender - bracketHeight + bracketStroke / 2
+		local peakY : Ascender - bracketStroke / 2
+		local waistY : mix edgeY peakY 0.55
+
+		define [TopParenShape] : dispiro
+			widths.center bracketStroke
+			g4 left edgeY
+			quadControls 0.5 1
+			g4.right.mid middle peakY [heading Rightward]
+			quadControls 0.5 0
+			g4 right edgeY
+
+		define [TopCurlyBracketShape] : dispiro
+			widths.center bracketStroke
+			g4 left edgeY
+			g4 (bracketWidth * 0.15) waistY
+			g4 (bracketWidth * 0.35) waistY [heading Rightward]
+			corner middle peakY
+			g4 (bracketWidth * 0.65) waistY [heading Rightward]
+			g4 (bracketWidth * 0.85) waistY
+			g4 right edgeY
+
+		define [TopTortoiseShellBracketShape] : dispiro
+			widths.center bracketStroke
+			flat left edgeY
+			sharp-corner (bracketWidth * 0.2) peakY
+			sharp-corner (bracketWidth * 0.8) peakY
+			curl right edgeY
+
+		define [BracketPair topName topUnicode bottomName bottomUnicode Shape] : begin
+			create-glyph [MangleName topName] [MangleUnicode topUnicode] : glyph-proc
+				set-width bracketWidth
+				include : Shape
+			create-glyph [MangleName bottomName] [MangleUnicode bottomUnicode] : glyph-proc
+				set-width bracketWidth
+				include : with-transform [ScaleAround middle ((Ascender - bracketHeight) / 2) 1 (-1)] : Shape
+
+		BracketPair 'topParenthesis' 0x23DC 'bottomParenthesis' 0x23DD TopParenShape
+		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF TopCurlyBracketShape
+		BracketPair 'topTortoiseShellBracket' 0x23E0 'bottomTortoiseShellBracket' 0x23E1 TopTortoiseShellBracketShape
 
 		create-glyph [MangleName 'topSquareBracket'] [MangleUnicode 0x23B4] : glyph-proc
 			set-width bracketWidth
