@@ -137,7 +137,30 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 		OpenCircuitOutput 'openCircuitOutputH' 0x238F true false false
 		OpenCircuitOutput 'openCircuitOutputL' 0x2390 false false true
 		OpenCircuitOutput 'openCircuitOutputHWithTopAndMiddleBars' 0x2391 true true false
-		OpenCircuitOutput 'openCircuitOutputHWithMiddleAndBottomBars' 0x2392 false true true
+
+		create-glyph [MangleName 'apl/iBeam'] [MangleUnicode 0x2396] : glyph-proc
+			set-width Geom.Width
+			local halfSize : Geom.Size / 2
+			include : spiro-outline
+				corner (Geom.MidX - halfSize) (Geom.MidY + halfSize)
+				corner (Geom.MidX + halfSize) (Geom.MidY + halfSize)
+				corner (Geom.MidX - halfSize) (Geom.MidY - halfSize)
+				close
+
+		create-glyph [MangleName 'apl/quadEqual'] [MangleUnicode 0x2392] : glyph-proc
+			set-width Geom.Width
+			local span : Geom.Right - Geom.Left
+			local dashWidth : span * 0.27
+			local dashGap : span * 0.08
+			local mainY : Geom.MidY + Geom.Size * 0.36
+			local lowerY : mainY - GeometryStroke * 1.5
+			local lowerWidth : 3 * dashWidth + 2 * dashGap
+			local lowerLeft : Geom.MidX - lowerWidth / 2
+			include : HBar.m Geom.Left Geom.Right mainY GeometryStroke
+			foreach i [range 0 3] : include : HBar.m
+				(lowerLeft + i * (dashWidth + dashGap))
+				(lowerLeft + i * (dashWidth + dashGap) + dashWidth)
+				lowerY GeometryStroke
 
 		create-glyph [MangleName 'benzeneRing'] [MangleUnicode 0x232C] : glyph-proc
 			set-width Geom.Width
