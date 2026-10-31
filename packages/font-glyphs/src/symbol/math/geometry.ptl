@@ -82,12 +82,14 @@ glyph-block Symbol-Math-Geometry : begin
 		local triangleHalfHeight : radiusBox * 0.95
 		local triangleStroke : Math.min [AdviceStroke 5] (GeometryStroke * 0.75)
 		local outerStroke : Math.min (triangleStroke * 1.25) (radiusBox * 0.14)
-		local innerStroke : Math.min (triangleStroke * 0.8) (radiusBox * 0.09)
-		local innerScale 0.46
-		local innerCenterY : SymbolMid + triangleHalfHeight * ((1 - innerScale) / 3 - 0.08)
+		local innerInset 0.54
+		local innerHalfWidth : triangleHalfWidth * (1 - innerInset)
+		local innerHalfHeight : triangleHalfHeight * (1 - innerInset)
+		local triangleCentroidY : SymbolMid - triangleHalfHeight / 3
+		local innerCenterY : triangleCentroidY + innerHalfHeight / 3
 		include : union
 			UpTriangleOutline Middle SymbolMid triangleHalfWidth triangleHalfHeight outerStroke
-			UpTriangleOutline Middle innerCenterY (triangleHalfWidth * innerScale) (triangleHalfHeight * innerScale) innerStroke
+			UpTriangle Middle innerCenterY innerHalfWidth innerHalfHeight
 
 	create-glyph 'measuredAngle' 0x2221 : glyph-proc
 		include [refer-glyph 'angle'] AS_BASE ALSO_METRICS
