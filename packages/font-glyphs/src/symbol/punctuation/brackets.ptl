@@ -664,3 +664,49 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		turned 'floorRight'   0x230B 'ceilingLeft' Middle SymbolMid
 		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
+
+	do "Postal Marks"
+		define [PostalShape df shapeWidth shapeHeight] : glyph-proc
+			local center : mix df.leftSB df.rightSB 0.5
+			local top : SymbolMid + shapeHeight / 2
+			local bottom : SymbolMid - shapeHeight / 2
+			local barSw : Math.max (Stroke * 0.7) (shapeHeight * 0.12)
+			local stemSw : HSwToV barSw
+			local second : top - shapeHeight * 0.32
+			local left : center - shapeWidth / 2
+			local right : center + shapeWidth / 2
+			include : union
+				Rect top (top - barSw) left right
+				Rect (second + barSw / 2) (second - barSw / 2) left right
+				Rect second bottom (center - stemSw / 2) (center + stemSw / 2)
+
+		create-glyph 'postalMark' 0x3012 : glyph-proc
+			local df : DivFrame 1
+			local shapeWidth : 0.60 * (df.rightSB - df.leftSB)
+			local shapeHeight : 0.34 * (ParenTop - ParenBot)
+			include : PostalShape df shapeWidth shapeHeight
+
+		create-glyph 'getaMark' 0x3013 : glyph-proc
+			local df : DivFrame 1
+			local center : mix df.leftSB df.rightSB 0.5
+			local shapeWidth : 0.72 * (df.rightSB - df.leftSB)
+			local shapeHeight : 0.38 * (ParenTop - ParenBot)
+			local barHeight : shapeHeight * 0.36
+			local gap : shapeHeight * 0.28
+			local left : center - shapeWidth / 2
+			local right : center + shapeWidth / 2
+			local barOffset : (barHeight + gap) / 2
+			include : union
+				Rect (SymbolMid + barOffset + barHeight / 2) (SymbolMid + barOffset - barHeight / 2) left right
+				Rect (SymbolMid - barOffset + barHeight / 2) (SymbolMid - barOffset - barHeight / 2) left right
+
+		create-glyph 'circledPostalMark' 0x3036 : glyph-proc
+			local df : DivFrame 1
+			local center : mix df.leftSB df.rightSB 0.5
+			local radius : 0.42 * (df.rightSB - df.leftSB)
+			local shapeWidth : radius * 1.24
+			local shapeHeight : radius * 1.12
+			local ringSw : Math.min (Stroke * 0.32) [AdviceStroke 4]
+			include : union
+				RingStrokeAt center SymbolMid radius ringSw
+				PostalShape df shapeWidth shapeHeight
