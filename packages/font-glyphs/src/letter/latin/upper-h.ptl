@@ -62,13 +62,26 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : slabType
 		local-parameter : fTailed  -- false
 		local-parameter : stroke   -- df.mvs
+		local-parameter : diag     -- 0
 
 		include : LeaningAnchor.Below.VBar.r df.rightSB stroke
-		include : tagged 'strokeL' : VBar.l df.leftSB ([mix 0 top HBarPos] - stroke / 2) top stroke
+		local barPos : mix 0 top HBarPos
+		local rise : diag * 0.16 * top
+		include : tagged 'strokeL' : if diag
+			intersection
+				VBar.l df.leftSB 0 top stroke
+				spiro-outline
+					corner (df.leftSB - O) (barPos - rise / 2)
+					corner (df.rightSB + O) (barPos + rise / 2)
+					corner (df.rightSB + O) top
+					corner (df.leftSB - O) top
+			VBar.l df.leftSB (barPos - stroke / 2) top stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar df.rightSB 0 top stroke
 			VBar.r             df.rightSB 0 top stroke
-		include : tagged 'crossbar' : HBar.m (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] stroke
+		include : tagged 'crossbar' : if diag
+			DiagonalHBar (df.leftSB - O) (df.rightSB + O) barPos rise stroke
+			HBar.m (df.leftSB - O) (df.rightSB + O) barPos stroke
 
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
@@ -86,17 +99,22 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : slabType
 		local-parameter : fTailed  -- false
 		local-parameter : stroke   -- df.mvs
+		local-parameter : diag     -- 0
 
 		local xMockLeft   : mix 0 df.leftSB 1.5
 		local xMockRight  : mix df.width df.rightSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
 		local xMockMiddle : mix (xMockLeft - [if (slabType === SLAB-NONE) 0 SideJut]) xMockRight 0.5
 		local xLeft  : xMockLeft  + (df.middle - xMockMiddle)
 		local xRight : xMockRight + (df.middle - xMockMiddle)
+		local barPos : mix 0 top HBarPos
+		local rise : diag * 0.16 * top * (xRight - xLeft + O) / (df.rightSB - df.leftSB + 2 * O)
 
 		include : LeaningAnchor.Above.VBar.l xLeft stroke
 		include : LeaningAnchor.Below.VBar.l xLeft stroke
 		include : tagged 'strokeL' : VBar.l xLeft 0 top stroke
-		include : tagged 'crossbar' : HBar.m (xLeft - O) xRight [mix 0 top HBarPos] stroke
+		include : tagged 'crossbar' : if diag
+			DiagonalHBar (xLeft - O) xRight barPos rise stroke
+			HBar.m (xLeft - O) xRight barPos stroke
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
@@ -107,7 +125,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-ALL]        : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
 				local { jutTop jutBot jutMid } : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
-				include : VSerif.mr xRight [mix 0 top HBarPos] jutMid swVJut
+				include : VSerif.mr xRight (barPos + rise / 2) jutMid swVJut
 			__                     : glyph-proc
 
 	define flex-params [RightHalfHShape] : glyph-proc
@@ -116,19 +134,24 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : slabType
 		local-parameter : fTailed  -- false
 		local-parameter : stroke   -- df.mvs
+		local-parameter : diag     -- 0
 
 		local xMockLeft   : mix 0 df.leftSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
 		local xMockRight  : mix df.width df.rightSB 1.5
 		local xMockMiddle : mix xMockLeft (xMockRight + [if (slabType === SLAB-NONE) 0 SideJut]) 0.5
 		local xLeft  : xMockLeft  + (df.middle - xMockMiddle)
 		local xRight : xMockRight + (df.middle - xMockMiddle)
+		local barPos : mix 0 top HBarPos
+		local rise : diag * 0.16 * top * (xRight - xLeft + O) / (df.rightSB - df.leftSB + 2 * O)
 
 		include : LeaningAnchor.Above.VBar.r xRight stroke
 		include : LeaningAnchor.Below.VBar.r xRight stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar xRight 0 top stroke
 			VBar.r             xRight 0 top stroke
-		include : tagged 'crossbar' : HBar.m xLeft (xRight + O) [mix 0 top HBarPos] stroke
+		include : tagged 'crossbar' : if diag
+			DiagonalHBar xLeft (xRight + O) barPos rise stroke
+			HBar.m xLeft (xRight + O) barPos stroke
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
@@ -139,7 +162,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
 				local { jutTop jutBot jutMid } : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
-				include : VSerif.ml xLeft [mix 0 top HBarPos] jutMid swVJut
+				include : VSerif.ml xLeft (barPos - rise / 2) jutMid swVJut
 			__                     : glyph-proc
 
 	define flex-params [EnGheShape] : glyph-proc
@@ -248,7 +271,7 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		create-glyph "turnhCap.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : TurnedHShape [DivFrame 1] CAP slabType fTailed
+			include : TurnedHShape [DivFrame 1] CAP slabType fTailed nothing diag
 
 		create-glyph "smcpH.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -256,19 +279,19 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		create-glyph "HLeftHalf.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : LeftHalfHShape [DivFrame 1] CAP slabType fTailed
+			include : LeftHalfHShape [DivFrame 1] CAP slabType fTailed nothing diag
 
 		create-glyph "HRightHalf.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : RightHalfHShape [DivFrame 1] CAP slabType fTailed
+			include : RightHalfHShape [DivFrame 1] CAP slabType fTailed nothing diag
 
 		create-glyph "smcpHLeftHalf.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : LeftHalfHShape [DivFrame 1] XH slabType fTailed
+			include : LeftHalfHShape [DivFrame 1] XH slabType fTailed nothing diag
 
 		create-glyph "smcpHRightHalf.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : RightHalfHShape [DivFrame 1] XH slabType fTailed
+			include : RightHalfHShape [DivFrame 1] XH slabType fTailed nothing diag
 
 		define enGheDf : DivFrame para.advanceScaleM 3
 
