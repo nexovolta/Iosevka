@@ -199,9 +199,9 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local hd : FlatHookDepth df
 			local hookBottom : yBarTop - sw
 			local scaleY : (BgOpTop - BgOpBot) / (CAP - hookBottom)
-			include : with-transform [ApparentTranslate (-Width * 0.04) (BgOpBot - hookBottom)] : with-transform [ScaleAround Middle hookBottom 1 scaleY] : union
-				SquirrelTailHook xTip CAP hookDrop xHook adaHook yBarTop hd.y xTurn xEnd sw
-				HBar.b xTurn xEnd (yBarTop - sw) sw
+			include : with-transform [ApparentTranslate (-Width * 0.04) 0] : union
+				SquirrelTailHook xTip CAP hookDrop xHook adaHook yBarTop hd.y xTurn xEnd sw scaleY hookBottom BgOpBot
+				HBar.b xTurn xEnd (BgOpBot + scaleY * (yBarTop - sw - hookBottom)) sw
 		create-glyph 'rightBagDelimiter' 0x27C6 : glyph-proc
 			include [refer-glyph 'leftBagDelimiter'] AS_BASE ALSO_METRICS
 			include : Ungizmo
