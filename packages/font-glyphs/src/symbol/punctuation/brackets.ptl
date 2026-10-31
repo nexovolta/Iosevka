@@ -275,7 +275,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					with-transform [ApparentTranslate (-fineV) 0] : LenticularMask df fine
 		turned 'whiteLenticularBracketRight' 0x3017 'whiteLenticularBracketLeft' Middle SymbolMid
 
-		create-glyph 'whiteTortoiseShellBracketLeft' 0x3018 : glyph-proc
+		create-glyph 'whiteTortoiseShellBracketLeft' 0x27EC : glyph-proc
 			local df : DivFrame 1
 			local fine : AdviceStroke 3
 			local dim : Paren.Dim df 0 (sw -- fine)
@@ -290,17 +290,12 @@ glyph-block Symbol-Punctuation-Brackets : begin
 						corner dim.outside [mix dim.bottom dim.mid 0.25]
 						corner dim.inside dim.bottom
 						close
-		turned 'whiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketLeft' Middle SymbolMid
+		turned 'whiteTortoiseShellBracketRight' 0x27ED 'whiteTortoiseShellBracketLeft' Middle SymbolMid
+		alias 'cjkWhiteTortoiseShellBracketLeft'  0x3018 'whiteTortoiseShellBracketLeft'
+		alias 'cjkWhiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketRight'
 
-		create-glyph 'whiteSquareBracketLeft' 0x301A : glyph-proc
-			local hDim : Bracket.HDim
-			local fine : Math.min [AdviceStroke 3] ((hDim.r - hDim.l) / (5 * HVContrast))
-			include : union
-				HBar.b hDim.l hDim.r ParenBot fine
-				HBar.t hDim.l hDim.r ParenTop fine
-				VBar.l hDim.l ParenBot ParenTop fine
-				VBar.m [mix hDim.l hDim.r 0.7] ParenBot ParenTop fine
-		turned 'whiteSquareBracketRight' 0x301B 'whiteSquareBracketLeft' Middle SymbolMid
+		alias 'whiteSquareBracketLeft'  0x301A 'dblBracketLeft'
+		alias 'whiteSquareBracketRight' 0x301B 'dblBracketRight'
 
 		create-glyph 'bracketLeftUHalf' 0x2E22 : intersection
 			refer-glyph 'bracketLeft'
