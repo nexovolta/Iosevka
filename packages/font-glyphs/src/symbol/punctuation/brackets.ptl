@@ -223,6 +223,85 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 	do "Bracket Glyphs"
 		create-glyph 'bracketLeft' '[' : Bracket.Shape ParenTop ParenBot
+
+		create-glyph 'cornerBracketLeft' 0x300C : glyph-proc
+			local hDim : Bracket.HDim
+			include : union
+				HBar.t hDim.l hDim.r ParenTop
+				VBar.l hDim.l ParenBot ParenTop
+		turned 'cornerBracketRight' 0x300D 'cornerBracketLeft' Middle SymbolMid
+
+		create-glyph 'whiteCornerBracketLeft' 0x300E : glyph-proc
+			local hDim : Bracket.HDim
+			local fine : Math.min [AdviceStroke 3] ((hDim.r - hDim.l) / (6 * HVContrast))
+			local fineV : HSwToV fine
+			include : difference
+				union
+					HBar.t hDim.l hDim.r ParenTop (3 * fine)
+					VBar.l hDim.l ParenBot ParenTop (3 * fine)
+				union
+					Rect (ParenTop - fine) (ParenBot + fine) (hDim.l + fineV) (hDim.l + 2 * fineV)
+					Rect (ParenTop - fine) (ParenTop - 2 * fine) (hDim.l + fineV) (hDim.r - fineV)
+		turned 'whiteCornerBracketRight' 0x300F 'whiteCornerBracketLeft' Middle SymbolMid
+
+		define [LenticularMask df fine] : begin
+			local dim : Paren.Dim df 0 (sw -- fine)
+			local hDim : Bracket.HDim
+			local outside : mix hDim.l hDim.r 0.55
+			local scaleX : (hDim.r - outside) / (dim.inside - dim.outside)
+			local scaleY : (ParenTop - ParenBot) / (dim.top - dim.bottom)
+			return : with-transform [Italify para.slopeAngle] : with-transform [Translate hDim.r SymbolMid] : with-transform [Scale scaleX scaleY] : with-transform [Translate (-dim.inside) (-dim.mid)] : with-transform [Italify (-para.slopeAngle)] : Paren.ShapeMask df fine 0
+
+		define [BlackLenticularShape df fine] : begin
+			local hDim : Bracket.HDim
+			return : difference
+				Rect ParenTop ParenBot hDim.l hDim.r
+				LenticularMask df fine
+
+		create-glyph 'blackLenticularBracketLeft' 0x3010 : glyph-proc
+			local df : DivFrame 1
+			include : BlackLenticularShape df df.mvs
+		turned 'blackLenticularBracketRight' 0x3011 'blackLenticularBracketLeft' Middle SymbolMid
+
+		create-glyph 'whiteLenticularBracketLeft' 0x3016 : glyph-proc
+			local df : DivFrame 1
+			local hDim : Bracket.HDim
+			local fine : Math.min [AdviceStroke 3] ((hDim.r - hDim.l) / (6 * HVContrast))
+			local fineV : HSwToV fine
+			include : difference
+				BlackLenticularShape df fine
+				difference
+					Rect (ParenTop - fine) (ParenBot + fine) (hDim.l + fineV) hDim.r
+					with-transform [ApparentTranslate (-fineV) 0] : LenticularMask df fine
+		turned 'whiteLenticularBracketRight' 0x3017 'whiteLenticularBracketLeft' Middle SymbolMid
+
+		create-glyph 'whiteTortoiseShellBracketLeft' 0x3018 : glyph-proc
+			local df : DivFrame 1
+			local fine : AdviceStroke 3
+			local dim : Paren.Dim df 0 (sw -- fine)
+			local innerStem : mix dim.outside dim.inside 0.7
+			include : union
+				TortoiseShellBracket.Shape df fine
+				intersection
+					VBar.m innerStem dim.bottom dim.top fine
+					spiro-outline
+						corner dim.inside dim.top
+						corner dim.outside [mix dim.top dim.mid 0.25]
+						corner dim.outside [mix dim.bottom dim.mid 0.25]
+						corner dim.inside dim.bottom
+						close
+		turned 'whiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketLeft' Middle SymbolMid
+
+		create-glyph 'whiteSquareBracketLeft' 0x301A : glyph-proc
+			local hDim : Bracket.HDim
+			local fine : Math.min [AdviceStroke 3] ((hDim.r - hDim.l) / (5 * HVContrast))
+			include : union
+				HBar.b hDim.l hDim.r ParenBot fine
+				HBar.t hDim.l hDim.r ParenTop fine
+				VBar.l hDim.l ParenBot ParenTop fine
+				VBar.m [mix hDim.l hDim.r 0.7] ParenBot ParenTop fine
+		turned 'whiteSquareBracketRight' 0x301B 'whiteSquareBracketLeft' Middle SymbolMid
+
 		create-glyph 'bracketLeftUHalf' 0x2E22 : intersection
 			refer-glyph 'bracketLeft'
 			MaskAbove SymbolMid
@@ -559,6 +638,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'dblAngleRight'       0x27EB 'dblAngleLeft'       Middle SymbolMid
 		alias 'mathAngleLeft'  0x27E8 'angleLeft'
 		alias 'mathAngleRight' 0x27E9 'angleRight'
+		alias 'cjkAngleBracketLeft'       0x3008 'angleLeft'
+		alias 'cjkAngleBracketRight'      0x3009 'angleRight'
+		alias 'cjkDoubleAngleBracketLeft'  0x300A 'dblAngleLeft'
+		alias 'cjkDoubleAngleBracketRight' 0x300B 'dblAngleRight'
 
 	do "Sideways U Bracket"
 		create-glyph 'uSidewaysBracketLeft' 0x2E26 : with-transform [ApparentTranslate 0 (SymbolMid - XH / 2)]
