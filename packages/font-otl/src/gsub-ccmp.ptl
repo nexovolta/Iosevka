@@ -1,7 +1,7 @@
 $$include './meta/macros.ptl'
 
 import [UkMapToLookup UkLigatureToLookup] from "./table-util.mjs"
-import [Dotless TieMark TieGlyph OgonekTrY IsSuperscript IsSubscript LeaningMark LeaningMarkSpacer NLDAcuteVariant HBSCaronVariant] from "@iosevka/glyph/relation"
+import [Dotless TieMark TieGlyph OgonekTrY IsSuperscript IsSubscript LeaningMark LeaningMarkSpacer NLDAcuteVariant HBSCaronVariant Nwid Wwid] from "@iosevka/glyph/relation"
 import as UnicodeKnowledge from "@iosevka/font-glyphs/unicode-knowledge"
 
 extern Map
@@ -35,10 +35,21 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 		gsub.endBlock rec
 
 	Ccmp-Group "Combining of overlay/hoked letters" : begin
+		local substitutions : UkLigatureToLookup UnicodeKnowledge.ccmpCombinations
+			function u : glyphStore.queryNameByUnicode u
+		local infinity : glyphStore.queryByUnicode 0x221E
+		local verticalOverlay : glyphStore.queryNameByUnicode 0x20D2
+		local negatedInfinity : glyphStore.queryByUnicode 0x29DE
+		if (infinity && verticalOverlay && negatedInfinity) : begin
+			foreach gr [items-of { Nwid Wwid }] : begin
+				local from : gr.get infinity
+				local to : gr.get negatedInfinity
+				if (from && to && [glyphStore.queryByName from] && [glyphStore.queryByName to]) : begin
+					substitutions.push {.from {from verticalOverlay} .to to}
+
 		define combineLookup : gsub.createLookup : object
 			.type 'gsub_ligature'
-			.substitutions : UkLigatureToLookup UnicodeKnowledge.ccmpCombinations
-				function u : glyphStore.queryNameByUnicode u
+			.substitutions substitutions
 
 		export-lookup combineLookup
 

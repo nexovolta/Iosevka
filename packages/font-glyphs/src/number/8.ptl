@@ -200,6 +200,43 @@ glyph-block Digits-Eight : begin
 				include : Italify (-para.slopeAngle)
 			include : ScaleAround (MosaicUnitWidth / 2) SymbolMid xSF xSF
 
+		define symbolInfinityScale : if FMosaicWide 1 0.75
+		define [InfinityForSymbols] : with-transform [ScaleAround (MosaicWidth / 2) SymbolMid 1 symbolInfinityScale] : refer-glyph [MangleName 'infty']
+
+		create-glyph [MangleName 'incompleteInfinity'] [MangleUnicode 0x29DC] : glyph-proc
+			set-width MosaicWidth
+			local mid : MosaicWidth / 2
+			local sw : OperatorStroke * xSF / xSS
+			local cutHeight : sw * 0.9 + (MosaicWidth - 2 * MosaicWidthScalar * SB) * 0.032
+			include : with-transform [ScaleAround mid SymbolMid 1 symbolInfinityScale] : difference
+				refer-glyph [MangleName 'infty']
+				spiro-outline
+					corner mid VERY-FAR
+					corner VERY-FAR VERY-FAR
+					corner VERY-FAR SymbolMid
+					corner (mid + sw * 0.56 + 1) SymbolMid
+					corner mid (SymbolMid + cutHeight)
+
+		create-glyph [MangleName 'tieOverInfinity'] [MangleUnicode 0x29DD] : glyph-proc
+			set-width MosaicWidth
+			local mid : MosaicWidth / 2
+			local tieRadius : (mid - MosaicWidthScalar * SB) / 2
+			local tieBase : SymbolMid + (yt - yb) * xSF * 0.40 * symbolInfinityScale
+			local tieStroke : AdviceStrokeInSpace (tieRadius * 2) 3.2
+			local infinity : InfinityForSymbols
+			include infinity
+			include : difference
+				intersection
+					Rect VERY-FAR tieBase 0 MosaicWidth
+					RingStrokeAt mid tieBase tieRadius tieStroke
+				difference [remove-holes infinity] infinity
+
+		create-glyph [MangleName 'infinityNegatedWithVerticalBar'] [MangleUnicode 0x29DE] : glyph-proc
+			set-width MosaicWidth
+			local halfHeight : (yt - yb) * xSF * symbolInfinityScale
+			include : InfinityForSymbols
+			include : VBar.m (MosaicWidth / 2) (SymbolMid - halfHeight) (SymbolMid + halfHeight) [AdviceStrokeInSpace (yt - yb) 6]
+
 		create-glyph [MangleName 'propto'] [MangleUnicode 0x221D] : glyph-proc
 			set-width MosaicWidth
 			include : PointingTo xr yt xr yb : function [] : glyph-proc

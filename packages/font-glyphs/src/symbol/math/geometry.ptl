@@ -318,6 +318,25 @@ glyph-block Symbol-Math-Geometry : begin
 		include : VBar.m (rightBox - circleStroke / 2) (SymbolMid - h) (SymbolMid + h) circleStroke
 	turned 'verticalBarBesideRightTriangle' 0x29D0 'leftTriangleBesideVerticalBar' Middle SymbolMid
 
+	create-glyph 'squareWithContouredOutline' 0x29E0 : glyph-proc
+		local r : radiusBox * 0.9
+		local fine : AdviceStrokeInSpace (r * 2) 5
+		local bold : fine * 1.7
+		local bevel : bold - fine
+		local left : Middle - r
+		local right : Middle + r
+		local top : SymbolMid + r
+		local bottom : SymbolMid - r
+		include : difference
+			spiro-outline
+				corner left top
+				corner (right - bevel) top
+				corner right (top - bevel)
+				corner right bottom
+				corner (left + bevel) bottom
+				corner left (bottom + bevel)
+			Rect (top - bold) (bottom + fine) (left + bold) (right - fine)
+
 	define [SmallDiamond cx cy r] : spiro-outline
 		corner cx (cy + r)
 		corner (cx + r) cy
