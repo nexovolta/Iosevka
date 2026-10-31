@@ -18,6 +18,17 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export PBarPosY
 	define [PBarPosY top sw bp] : [mix 0 (top - sw) bp] - sw * PShape.SwBelowBar
 
+	glyph-block-export SquirrelTailHook
+	define [SquirrelTailHook xTip top hookDrop xHook adaHook yBarTop hookDepth xTurn xEnd sw] : dispiro
+		widths.rhs sw
+		g4 xTip (top - hookDrop)
+		HookStart top (sw -- sw)
+		flat xHook (top - adaHook)
+		curl xHook (yBarTop + hookDepth) [heading Downward]
+		arcvh
+		flat [Math.max (xHook + TINY) (xTurn - TINY)] yBarTop [heading Rightward]
+		curl xEnd yBarTop [heading Rightward]
+
 	define [PRotundaOutlineKnots top df mul bp overshoot sw offset endX hook flatHook cornerHook] : begin
 		local bowlTop : top - offset
 		local bowlBottom : [PBarPosY top sw bp] + offset
@@ -289,15 +300,7 @@ glyph-block Letter-Latin-Upper-P : begin
 			local adaHook : Math.min (ArchDepthA * 0.55) [Math.max (hookDrop + 0.35 * sw) (0.28 * (CAP - yBarTop))]
 			# Flat bar collinear with the P bowl; tail curls up and hooks outward.
 			include : HBar.b xTurn (xStem + ink) yBowl sw
-			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
-				widths.rhs sw
-				g4 xTip (CAP - hookDrop)
-				HookStart CAP (sw -- sw)
-				flat xHookL (CAP - adaHook)
-				curl xHookL (yBarTop + hd.y) [heading Downward]
-				arcvh
-				flat [Math.max (xHookL + TINY) (xTurn - TINY)] yBarTop [heading Rightward]
-				curl (xStem + [HSwToV : 0.5 * sw]) yBarTop [heading Rightward]
+			include : intersection [MaskLeft (xStem + 0.5 * ink)] : SquirrelTailHook xTip CAP hookDrop xHookL adaHook yBarTop hd.y xTurn (xStem + [HSwToV : 0.5 * sw]) sw
 
 		if (!fGap) : create-glyph "currency/rubleSign.\(suffix)" : glyph-proc
 			include [refer-glyph "P.\(suffix)"] AS_BASE ALSO_METRICS

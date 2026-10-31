@@ -11,6 +11,7 @@ glyph-block Symbol-Math-VAndCup : begin
 	glyph-block-import Letter-Cyrillic-Sha : CyrShaShape
 	glyph-block-import Symbol-Arrow-Shared : ArrowShape
 	glyph-block-import Symbol-Math-Relation-Common : EqualHalfSpace
+	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
 	glyph-block-import NotGlyphFn : NotGlyphSw
 
 	define [VeeShape top bot sw] : union
@@ -29,6 +30,36 @@ glyph-block Symbol-Math-VAndCup : begin
 
 	create-glyph 'wedge' 0x2227 : WedgeShape OperTop OperBot
 	create-glyph 'vee' 0x2228 : VeeShape OperTop OperBot
+
+	local logicDotStroke : Math.min [AdviceStroke 4] (OperatorStroke * 0.65)
+	local logicDotRadius : Math.min (DotRadius * OperatorStroke / Stroke * 0.5) (logicDotStroke * 0.55)
+	local veeRun : (RightSB - SB) / 2
+	local veeHeight : OperTop - OperBot
+	local logicDotClearance : logicDotRadius + logicDotStroke / 2 + veeRun * 0.08
+	local logicDotOffset : Math.max (veeHeight * 0.5) (logicDotClearance * [Math.hypot veeRun veeHeight] / veeRun)
+	create-glyph 'veeDotInside' 0x27C7 : glyph-proc
+		include : VeeShape OperTop OperBot logicDotStroke
+		include : DotAt Middle (OperBot + logicDotOffset) logicDotRadius
+
+	turned 'wedgeDotInside' 0x27D1 'veeDotInside' Middle SymbolMid
+
+	create-glyph 'squaredLogicalAnd' 0x27CE : glyph-proc
+		local boxLeft : mix 0 SB (2 / 3)
+		local boxRight : mix Width RightSB (2 / 3)
+		local boxHalfHeight : (boxRight - boxLeft) / 2
+		local boxTop : SymbolMid + boxHalfHeight
+		local boxBot : SymbolMid - boxHalfHeight
+		local wedgeHalfHeight : boxHalfHeight * 0.65
+		local wedgeStroke : Math.min OperatorStroke MathEnclosureSw
+		include : union
+			HBar.t boxLeft boxRight boxTop MathEnclosureSw
+			HBar.b boxLeft boxRight boxBot MathEnclosureSw
+			VBar.l boxLeft boxBot boxTop MathEnclosureSw
+			VBar.r boxRight boxBot boxTop MathEnclosureSw
+			with-transform [ScaleAround Middle SymbolMid 0.85 1]
+				WedgeShape (SymbolMid + wedgeHalfHeight) (SymbolMid - wedgeHalfHeight) wedgeStroke
+
+	turned 'squaredLogicalOr' 0x27CF 'squaredLogicalAnd' Middle SymbolMid
 
 	create-glyph 'wedge/aplThin' : WedgeShape OperTop OperBot [AdviceStroke 4]
 	create-glyph 'vee/aplThin' : VeeShape OperTop OperBot [AdviceStroke 4]

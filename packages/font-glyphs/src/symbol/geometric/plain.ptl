@@ -12,6 +12,9 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 	define Size : GeometricSizes Geom
+	define TickPrimitiveScale 0.65
+	define TickPrimitiveSize : Geom.Size * TickPrimitiveScale
+	define TickPrimitiveLength : Geom.Size * (1 - TickPrimitiveScale)
 
 	define [StdBlackShape fn name unicode props] : begin
 		local pp : fallback props {.}
@@ -135,6 +138,20 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 
 		StdBlackShape SquareShape 'blackSquare' 0x25A0
 		StdWhiteShape SquareShape 'whiteSquare' 0x25A1
+
+		create-glyph [MangleName 'whiteSquareWithLeftwardsTick'] [MangleUnicode 0x27E4] : glyph-proc
+			set-width Geom.Width
+			local left : Geom.MidX - TickPrimitiveSize
+			include : union
+				StdWhiteShapeImpl SquareShape 1 0 1 {.size TickPrimitiveScale .sw GeometryStroke}
+				HBar.m (left - TickPrimitiveLength) (left + GeometryStroke / 2) Geom.MidY GeometryStroke
+
+		create-glyph [MangleName 'whiteSquareWithRightwardsTick'] [MangleUnicode 0x27E5] : glyph-proc
+			set-width Geom.Width
+			local right : Geom.MidX + TickPrimitiveSize
+			include : union
+				StdWhiteShapeImpl SquareShape 1 0 1 {.size TickPrimitiveScale .sw GeometryStroke}
+				HBar.m (right - GeometryStroke / 2) (right + TickPrimitiveLength) Geom.MidY GeometryStroke
 
 		StdWhiteShape SquareShape 'lightWhiteSquare'     0x1F78E {.sw [UnicodeWeightGrade 300  Geom.Scalar GeometryStroke]}
 		StdWhiteShape SquareShape 'mediumWhiteSquare'    0x1F78F {.sw [UnicodeWeightGrade 500  Geom.Scalar GeometryStroke]}
@@ -447,7 +464,25 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 				g4     [mix cx [mix cx (cx - size) 0.5] p] [mix cy [mix (cy + size) cy 0.5] p]
 				close
 
-		StdWhiteShape DiamondLazongeShape 'whiteConcaveSidedDiamond'  0x27E1 [Object.assign {.} Size.Oblique {.sw (Math.SQRT2 * [UnicodeWeightGrade 600 Geom.Scalar GeometryStroke])}]
+		local concaveDiamondStroke : Math.SQRT2 * [UnicodeWeightGrade 700 Geom.Scalar GeometryStroke]
+		local concaveDiamondProps : Object.assign {.} Size.Oblique {.sw concaveDiamondStroke}
+		local concaveDiamondTickProps : Object.assign {.} concaveDiamondProps {.size TickPrimitiveScale .sw (concaveDiamondStroke * TickPrimitiveScale)}
+		StdWhiteShape DiamondLazongeShape 'whiteConcaveSidedDiamond' 0x27E1 concaveDiamondProps
+
+		create-glyph [MangleName 'whiteConcaveSidedDiamondWithLeftwardsTick'] [MangleUnicode 0x27E2] : glyph-proc
+			set-width Geom.Width
+			local left : Geom.MidX - TickPrimitiveSize
+			include : union
+				StdWhiteShapeImpl DiamondLazongeShape 1 0 1 concaveDiamondTickProps
+				HBar.m (left - TickPrimitiveLength) (left + GeometryStroke / 2) Geom.MidY GeometryStroke
+
+		create-glyph [MangleName 'whiteConcaveSidedDiamondWithRightwardsTick'] [MangleUnicode 0x27E3] : glyph-proc
+			set-width Geom.Width
+			local right : Geom.MidX + TickPrimitiveSize
+			include : union
+				StdWhiteShapeImpl DiamondLazongeShape 1 0 1 concaveDiamondTickProps
+				HBar.m (right - GeometryStroke / 2) (right + TickPrimitiveLength) Geom.MidY GeometryStroke
+
 		StdBlackShape DiamondLazongeShape 'lightFourPointedBlackCusp' 0x2BCC Size.Oblique
 		StdWhiteShape DiamondLazongeShape 'whiteFourPointedBlackCusp' 0x2BCE Size.ObliqueSA
 

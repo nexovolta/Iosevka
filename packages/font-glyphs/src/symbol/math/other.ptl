@@ -13,6 +13,11 @@ glyph-block Symbol-Math-Other : begin
 	alias 'whiteDiamondOperator' 0x22C4 'whiteDiamondOperatorImpl.NWID'
 	alias 'mathstar' 0x22C6 'blackStar.NWID'
 
+	create-glyph 'whiteDiamondWithCenteredDot' 0x27D0 : glyph-proc
+		include : refer-glyph 'whiteDiamondOperator'
+		local dotRadius : Math.min (DotRadius * OperatorStroke / Stroke * 0.55) (OperatorStroke * 0.45)
+		include : DotAt Middle SymbolMid dotRadius
+
 	create-glyph 'notdivides' 0x2224 : glyph-proc
 		include : refer-glyph 'stile'
 		include : dispiro

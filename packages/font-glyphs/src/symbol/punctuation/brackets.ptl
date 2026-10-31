@@ -3,6 +3,7 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
 import [Joining] from "@iosevka/glyph/relation"
+import [Transform] from "@iosevka/geometry/transform"
 import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
@@ -11,6 +12,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Shared-Symbol-Shapes : Polyline
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+	glyph-block-import Letter-Latin-Upper-P : SquirrelTailHook
 
 	define MosaicTop    fontMetrics.os2.sTypoAscender
 	define MosaicBottom fontMetrics.os2.sTypoDescender
@@ -161,6 +164,51 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		select-variant 'doubleParenRight' 0x2E29 (follow -- 'parenRight')
 		select-variant 'parenLeftMiddleRing'  0x2E62 (follow -- 'parenLeft')
 		select-variant 'parenRightMiddleRing' 0x2E63 (follow -- 'parenRight')
+
+		create-glyph 'longDivision' 0x27CC : glyph-proc
+			local df : DivFrame 1
+			local dim : Paren.Dim df 0 (sw -- df.mvs)
+			local parenShift : Math.max 0 ((RightSB - SB) * 0.1 - [Math.abs TanSlope] * (dim.top - SymbolMid))
+			local leftTop : 2 * Middle - dim.inside - parenShift
+			local rightMid : leftTop + (dim.inside - dim.outside) * 0.62
+			local overbarEnd : Width * 1.1 - TanSlope * (dim.top - SymbolMid + df.mvs / 2)
+			include : intersection [MaskBelow (dim.top + df.mvs / 2)] : union
+				dispiro
+					widths.lhs df.mvs
+					g4 leftTop dim.top
+					quadControls 1 (1 - DesignParameters.parenCurliness)
+					g4 rightMid dim.mid
+					quadControls 0 DesignParameters.parenCurliness
+					g4 leftTop dim.bottom
+				HBar.m leftTop overbarEnd dim.top df.mvs
+
+		create-glyph 'leftBagDelimiter' 0x27C5 : glyph-proc
+			local df : DivFrame 1
+			local sw : AdviceStroke 4
+			local ink : HSwToV sw
+			local hookWidth : Math.max Hook (2.1 * ink)
+			local turnNeed : Math.max (1.15 * sw) (1.25 * ink)
+			local endLength : hookWidth * 0.25
+			local xHook : Middle - (turnNeed + endLength - hookWidth) / 2
+			local xTip : xHook - hookWidth
+			local xTurn : xHook + turnNeed
+			local xEnd : xTurn + endLength
+			local yBarTop : CAP * 0.5
+			local hookDrop : Math.max (Hook * 0.75) (1.05 * sw)
+			local adaHook : Math.min (ArchDepthA * 0.55) [Math.max (hookDrop + 0.35 * sw) (0.28 * (CAP - yBarTop))]
+			local hd : FlatHookDepth df
+			local hookBottom : yBarTop - sw
+			local scaleY : (BgOpTop - BgOpBot) / (CAP - hookBottom)
+			include : with-transform [ApparentTranslate (-Width * 0.04) (BgOpBot - hookBottom)] : with-transform [ScaleAround Middle hookBottom 1 scaleY] : union
+				SquirrelTailHook xTip CAP hookDrop xHook adaHook yBarTop hd.y xTurn xEnd sw
+				HBar.b xTurn xEnd (yBarTop - sw) sw
+		create-glyph 'rightBagDelimiter' 0x27C6 : glyph-proc
+			include [refer-glyph 'leftBagDelimiter'] AS_BASE ALSO_METRICS
+			include : Ungizmo
+			set currentGlyph.gizmo [Transform.Id]
+			include : ScaleAround Middle 0 (-1) 1
+			set currentGlyph.gizmo GlobalTransform
+			include GlobalTransform
 
 		select-variant 'parenLeftUHalf'   0x2E59 (follow -- 'parenLeft')
 		select-variant 'parenRightUHalf'  0x2E5A (follow -- 'parenRight')

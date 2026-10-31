@@ -814,6 +814,16 @@ glyph-block Symbol-Math-Relation-Subset : begin
 		flat (SB + [Math.max (sw * 1.5) : mix xShift (top - bot) 0.5]) (bot + offset)
 		curl RightSB (bot + offset) [heading Rightward]
 
+	define [CompactSubsetShape top bot l r sw] : dispiro
+		widths.lhs sw
+		flat r top [heading Leftward]
+		curl (l + [Math.max (sw * 1.5) : (top - bot) * 0.5]) top
+		archv
+		g4 (l + O) [mix top bot 0.5]
+		arcvh
+		flat (l + [Math.max (sw * 1.5) : (top - bot) * 0.5]) bot
+		curl r bot [heading Rightward]
+
 	define [SupsetShape top bot sw] : glyph-proc
 		include : SubsetShape top bot sw
 		include : FlipAround Middle [mix top bot 0.5]
@@ -841,6 +851,38 @@ glyph-block Symbol-Math-Relation-Subset : begin
 	turned 'supst'       0x2283 'subst'       Middle SymbolMid
 	turned 'doubleSupst' 0x22D1 'doubleSubst' Middle SymbolMid
 	turned 'supstClosed' 0x2AD0 'substClosed' Middle SymbolMid
+
+	create-glyph 'openSubset' 0x27C3 : glyph-proc
+		local subsetTop : SymbolMid + dHSubstSimple
+		local subsetBot : SymbolMid - dHSubstSimple
+		local circleRadius : Math.min (DotRadius * OperatorStroke / Stroke * 0.62) (dHSubstSimple / 5)
+		local ringSw : Math.min [AdviceStroke 5] (circleRadius * 0.6)
+		local circleX : mix SB RightSB 0.58
+		include : union
+			difference
+				SubsetShape subsetTop subsetBot OperatorStroke
+				RingAt circleX SymbolMid (circleRadius + ringSw / 2)
+			RingStrokeAt circleX SymbolMid circleRadius ringSw
+
+	turned 'openSuperset' 0x27C4 'openSubset' Middle SymbolMid
+
+	create-glyph 'reverseSolidusPrecedingSubset' 0x27C8 : glyph-proc
+		local available : RightSB - SB
+		local miniHalfHeight : dHSubstSimple * 0.65
+		local miniTop : SymbolMid + miniHalfHeight
+		local miniBot : SymbolMid - miniHalfHeight
+		local miniStroke : OperatorStroke * 0.78
+		local subsetLeft : SB + available * 0.31
+		local subsetRight : RightSB - available * 0.03
+		local slashTop : SB + available * 0.08
+		local slashBottom : SB + available * 0.23
+		include : CompactSubsetShape miniTop miniBot subsetLeft subsetRight miniStroke
+		include : dispiro
+			widths.center miniStroke
+			corner slashTop miniTop
+			corner slashBottom miniBot
+
+	turned 'supersetPrecedingSolidus' 0x27C9 'reverseSolidusPrecedingSubset' Middle SymbolMid
 
 	create-glyph 'substBarUpper'
 		SubsetShape (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist)

@@ -8,6 +8,7 @@ glyph-block Symbol-Math-Geometry : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Shared-Symbol-Shapes : VZigzag
+	glyph-block-import Symbol-Geometric-Shared : ConvexPolygonOutline
 
 	local kBox : 2 / 3
 	local leftBox : SB * kBox
@@ -15,6 +16,13 @@ glyph-block Symbol-Math-Geometry : begin
 	local radiusBox : (rightBox - leftBox) / 2
 	local topBox : SymbolMid + radiusBox
 	local bottomBox : SymbolMid - radiusBox
+
+	define [UpTriangle cx cy halfWidth halfHeight] : spiro-outline
+		corner cx (cy + halfHeight)
+		corner (cx + halfWidth) (cy - halfHeight)
+		corner (cx - halfWidth) (cy - halfHeight)
+
+	define [UpTriangleOutline cx cy halfWidth halfHeight stroke] : ConvexPolygonOutline [new-glyph : UpTriangle cx cy halfWidth halfHeight] stroke
 
 	create-glyph 'mathRightTriangle' 0x22BF : glyph-proc
 		include : intersection
@@ -48,6 +56,38 @@ glyph-block Symbol-Math-Geometry : begin
 			union
 				dispiro [widths.lhs GeometryStroke] [flat leftBox bottomBox] [curl rightBox bottomBox]
 				dispiro [widths.rhs GeometryStroke] [flat leftBox topBox] [curl rightBox bottomBox]
+
+	create-glyph 'threeDimensionalAngle' 0x27C0 : glyph-proc
+		local halfStroke : GeometryStroke / 2
+		local left : leftBox + TanSlope * radiusBox + halfStroke
+		local rightBottom : rightBox + TanSlope * radiusBox - halfStroke
+		local rightTop : rightBox - TanSlope * radiusBox - halfStroke
+		include : union
+			dispiro
+				widths.center GeometryStroke
+				corner left bottomBox
+				corner left topBox
+			dispiro
+				widths.center GeometryStroke
+				corner left bottomBox
+				corner rightBottom bottomBox
+			dispiro
+				widths.center GeometryStroke
+				corner left bottomBox
+				corner rightTop topBox
+			Rect (bottomBox + halfStroke) (bottomBox - halfStroke) (left - halfStroke) (left + halfStroke)
+
+	create-glyph 'whiteTriangleContainingWhiteTriangle' 0x27C1 : glyph-proc
+		local triangleHalfWidth : radiusBox * 0.97
+		local triangleHalfHeight : radiusBox * 0.95
+		local triangleStroke : Math.min [AdviceStroke 5] (GeometryStroke * 0.75)
+		local outerStroke : Math.min (triangleStroke * 1.25) (radiusBox * 0.14)
+		local innerStroke : Math.min (triangleStroke * 0.8) (radiusBox * 0.09)
+		local innerScale 0.46
+		local innerCenterY : SymbolMid + triangleHalfHeight * ((1 - innerScale) / 3 - 0.08)
+		include : union
+			UpTriangleOutline Middle SymbolMid triangleHalfWidth triangleHalfHeight outerStroke
+			UpTriangleOutline Middle innerCenterY (triangleHalfWidth * innerScale) (triangleHalfHeight * innerScale) innerStroke
 
 	create-glyph 'measuredAngle' 0x2221 : glyph-proc
 		include [refer-glyph 'angle'] AS_BASE ALSO_METRICS
