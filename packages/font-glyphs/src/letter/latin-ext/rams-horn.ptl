@@ -36,13 +36,18 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local sf : SerifFrame.fromDf df top bottom
 		return sf.lt.outer
 
+	define [GammaExtendedRtInnerSerif sf] : begin
+		local innerJut : Math.max sf.sideJutIn : 0.5 * (Jut + [StrokeWidthBlend SideJut Jut sf.swRef])
+		return : tagged 'serifRT' : HSerif.mtAsymmetric
+			(sf.right - [HSwToV sf.swRef]) sf.top innerJut [HSwToV : 0.5 * sf.swRef] sf.swSerif
+
 	define [GammaTopRightMotionSerifs df top bottom] : begin
 		local sf : SerifFrame.fromDf df top bottom
-		return sf.rt.inner
+		return : GammaExtendedRtInnerSerif sf
 
 	define [GammaBilateralMotionSerifs df top bottom] : begin
 		local sf : SerifFrame.fromDf df top bottom
-		return : composite-proc sf.lt.outer sf.rt.inner
+		return : composite-proc sf.lt.outer [GammaExtendedRtInnerSerif sf]
 
 	define [GammaUpperAutoSerifs df top bottom] : NeedSlab SLAB : GammaFullSerifs df top bottom
 
