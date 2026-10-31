@@ -7,8 +7,9 @@ glyph-module
 glyph-block Symbol-Math-Geometry : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Shared-Symbol-Shapes : VZigzag
+	glyph-block-import Shared-Symbol-Shapes : VZigzag Polyline
 	glyph-block-import Symbol-Geometric-Shared : ConvexPolygonOutline
+	glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
 
 	local kBox : 2 / 3
 	local leftBox : SB * kBox
@@ -137,6 +138,217 @@ glyph-block Symbol-Math-Geometry : begin
 				corner rightBox topBox
 				corner leftBox topBox
 			RingStrokeAt leftBox bottomBox (1.2 * radiusBox + GeometryStroke) GeometryStroke
+
+	define symbolFine : AdviceStrokeInSpace (radiusBox * 2) 8
+	define arrowStroke : AdviceStrokeInSpace (radiusBox * 2) 6.5
+	define tallStroke : AdviceStrokeInSpace (radiusBox * 2) 4.5
+	define [AcuteAngleShape l r b t sw] : intersection
+		spiro-outline
+			corner l b
+			corner r b
+			corner r t
+		union
+			dispiro [widths.lhs sw] [flat l b] [curl r b]
+			dispiro [widths.lhs sw] [flat r t] [curl l b]
+
+	create-glyph 'rightAngleWithSquare' 0x299C : glyph-proc
+		local l : leftBox + symbolFine * 0.6
+		local r : rightBox - symbolFine * 0.6
+		local side : radiusBox * 0.85
+		include : VBar.m (l + symbolFine / 2) bottomBox topBox symbolFine
+		include : HBar.m l r (bottomBox + symbolFine / 2) symbolFine
+		include : VBar.m (l + side) bottomBox (bottomBox + side) symbolFine
+		include : HBar.m l (l + side) (bottomBox + side) symbolFine
+
+	create-glyph 'measuredRightAngleWithDot' 0x299D : glyph-proc
+		local l : leftBox + symbolFine * 0.6
+		local r : rightBox - symbolFine * 0.6
+		include : VBar.m (l + symbolFine / 2) bottomBox topBox symbolFine
+		include : HBar.m l r (bottomBox + symbolFine / 2) symbolFine
+		include : intersection
+			Rect topBox bottomBox l r
+			RingStrokeAt l bottomBox (radiusBox * 1.25) symbolFine
+		local dotRadius : AdviceStrokeInSpace (radiusBox * 0.6) 4
+		include : DotAt (l + radiusBox * 0.5) (bottomBox + radiusBox * 0.5) dotRadius
+
+	create-glyph 'angleWithS' 0x299E : glyph-proc
+		local l : leftBox + symbolFine * 1.5
+		local r : rightBox - symbolFine * 1.5
+		include : AcuteAngleShape l r bottomBox topBox symbolFine
+		include : with-transform [ApparentTranslate (radiusBox * 0.48) (bottomBox + radiusBox * 0.25)] : with-transform [ScaleAround Middle 0 0.22 0.22] : refer-glyph 's'
+
+	create-glyph 'acuteAngle' 0x299F : glyph-proc
+		local y : SymbolMid - radiusBox * 0.35
+		include : AcuteAngleShape leftBox rightBox y (SymbolMid + radiusBox * 0.35) symbolFine
+
+	create-glyph 'sphericalAngleFine' : glyph-proc
+		include : intersection
+			spiro-outline
+				corner leftBox SymbolMid
+				corner rightBox bottomBox
+				corner rightBox topBox
+			union
+				dispiro [widths.lhs symbolFine] [flat leftBox SymbolMid] [curl rightBox bottomBox]
+				dispiro [widths.lhs symbolFine] [flat rightBox topBox] [curl leftBox SymbolMid]
+		include : intersection
+			Rect (SymbolMid + radiusBox * 0.72) (SymbolMid - radiusBox * 0.72) (leftBox + radiusBox * 0.75) (leftBox + radiusBox * 1.3)
+			RingStrokeAt leftBox SymbolMid (radiusBox * 1.2) symbolFine
+	turned 'sphericalAngleOpeningLeft' 0x29A0 'sphericalAngleFine' Middle SymbolMid
+	create-glyph 'sphericalAngleOpeningUp' 0x29A1 : glyph-proc
+		include : with-transform [Italify para.slopeAngle] : with-transform [Translate Middle SymbolMid] : with-transform [Rotate (Math.PI / 2)] : with-transform [Translate (-Middle) (-SymbolMid)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph 'sphericalAngleFine'
+
+	create-glyph 'angleWithUnderbar' 0x29A4 : glyph-proc
+		local y : SymbolMid - radiusBox * 0.4
+		local l : leftBox + symbolFine * 1.5
+		local r : rightBox - symbolFine * 1.5
+		include : AcuteAngleShape l r y topBox symbolFine
+		include : HBar.m l r (bottomBox + symbolFine / 2) symbolFine
+	create-glyph 'reversedAngleWithUnderbar' 0x29A5 : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid (-1) 1] : refer-glyph 'angleWithUnderbar'
+
+	create-glyph 'obliqueAngleOpeningUp' 0x29A6 : glyph-proc
+		local l : leftBox + symbolFine
+		local y : SymbolMid - radiusBox * 0.65
+		local x : l + radiusBox * 0.5
+		include : dispiro : Polyline [widths.center symbolFine]
+			points -- { { l (SymbolMid + radiusBox * 0.65) } { x y } { (rightBox - symbolFine) y } }
+	create-glyph 'obliqueAngleOpeningDown' 0x29A7 : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid 1 (-1)] : refer-glyph 'obliqueAngleOpeningUp'
+
+	define [MeasuredArrowAngle arrow] : glyph-proc
+		local sw : if arrow arrowStroke symbolFine
+		local l : leftBox + sw * 0.8
+		local r : rightBox - sw * 0.8
+		local b : bottomBox + sw * 0.5
+		local t : topBox - sw * 0.5
+		local angleBody : union
+			AcuteAngleShape l r b t sw
+			intersection
+				spiro-outline
+					corner l b
+					corner r b
+					corner r t
+				RingStrokeAt l b (radiusBox * 1.25) symbolFine
+		if arrow : begin
+			local a : radiusBox * 0.6
+			include : union angleBody : dispiro : Polyline [widths.center sw]
+				points -- { { (r - a) t } { r t } { r (t - a) } }
+		: else : include angleBody
+
+	create-glyph 'measuredAngleOpeningLeft' 0x299B : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid (-1) 1] : MeasuredArrowAngle false
+	create-glyph 'measuredAngleArrowUpRight' 0x29A8 : MeasuredArrowAngle true
+	create-glyph 'measuredAngleArrowUpLeft' 0x29A9 : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid (-1) 1] : refer-glyph 'measuredAngleArrowUpRight'
+	create-glyph 'measuredAngleArrowDownRight' 0x29AA : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid 1 (-1)] : refer-glyph 'measuredAngleArrowUpRight'
+	turned 'measuredAngleArrowDownLeft' 0x29AB 'measuredAngleArrowUpRight' Middle SymbolMid
+
+	create-glyph 'measuredAngleArrowRightUp' 0x29AC : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid (-1) 1] : with-transform [Italify para.slopeAngle] : with-transform [Translate Middle SymbolMid] : with-transform [Rotate (Math.PI / 2)] : with-transform [Translate (-Middle) (-SymbolMid)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph 'measuredAngleArrowUpRight'
+	create-glyph 'measuredAngleArrowLeftUp' 0x29AD : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid (-1) 1] : refer-glyph 'measuredAngleArrowRightUp'
+	create-glyph 'measuredAngleArrowRightDown' 0x29AE : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid 1 (-1)] : refer-glyph 'measuredAngleArrowRightUp'
+	turned 'measuredAngleArrowLeftDown' 0x29AF 'measuredAngleArrowRightUp' Middle SymbolMid
+
+	define circleStroke symbolFine
+	define [CircleRelationShape less] : glyph-proc
+		local r : radiusBox * 0.95
+		local w : r * 0.5
+		local h : r * 0.5
+		include : RingStrokeAt Middle SymbolMid r circleStroke
+		if less : include : LessShape (SymbolMid + h) (SymbolMid - h) (Middle - w) (Middle + w) circleStroke
+		: else : include : GreaterShape (SymbolMid + h) (SymbolMid - h) (Middle - w) (Middle + w) circleStroke
+	create-glyph 'circledLessThan' 0x29C0 : CircleRelationShape true
+	create-glyph 'circledGreaterThan' 0x29C1 : CircleRelationShape false
+
+	create-glyph 'circleWithSmallCircleRight' 0x29C2 : glyph-proc
+		local r : radiusBox * 0.68
+		local x : Middle - radiusBox * 0.2
+		include : RingStrokeAt x SymbolMid r circleStroke
+		include : RingStrokeAt (x + r * 1.35) SymbolMid (r * 0.25) [AdviceStrokeInSpace (r * 0.5) 4]
+	create-glyph 'circleWithTwoStrokesRight' 0x29C3 : glyph-proc
+		local r : radiusBox * 0.68
+		local x : Middle - radiusBox * 0.2
+		include : RingStrokeAt x SymbolMid r circleStroke
+		include : HBar.m (x + r * 0.9) rightBox (SymbolMid + r * 0.22) circleStroke
+		include : HBar.m (x + r * 0.9) rightBox (SymbolMid - r * 0.22) circleStroke
+
+	create-glyph 'sInTriangle' 0x29CC : glyph-proc
+		include : UpTriangleOutline Middle SymbolMid (radiusBox * 0.97) (radiusBox * 0.95) [AdviceStrokeInSpace (radiusBox * 2) 10]
+		include : with-transform [ApparentTranslate 0 (bottomBox + radiusBox * 0.28)] : with-transform [ScaleAround Middle 0 0.27 0.27] : refer-glyph 'S'
+
+	define [LeftTriangleShape l r h] : spiro-outline
+		corner l SymbolMid
+		corner r (SymbolMid + h)
+		corner r (SymbolMid - h)
+	create-glyph 'leftTriangleBesideVerticalBar' 0x29CF : glyph-proc
+		local l : leftBox + radiusBox * 0.12
+		local r : rightBox - radiusBox * 0.32
+		local h : radiusBox * 0.67
+		include : ConvexPolygonOutline [new-glyph : LeftTriangleShape l r h] circleStroke
+		include : VBar.m (rightBox - circleStroke / 2) (SymbolMid - h) (SymbolMid + h) circleStroke
+	turned 'verticalBarBesideRightTriangle' 0x29D0 'leftTriangleBesideVerticalBar' Middle SymbolMid
+
+	define [SmallDiamond cx cy r] : spiro-outline
+		corner cx (cy + r)
+		corner (cx + r) cy
+		corner cx (cy - r)
+		corner (cx - r) cy
+
+	define [DownArrowBelowShape top] : glyph-proc
+		local bottom : Descender + tallStroke / 2
+		local a : radiusBox * 0.42
+		include : union
+			VBar.m Middle bottom top tallStroke
+			dispiro : Polyline [widths.center tallStroke]
+				points -- { { (Middle - a) (bottom + a) } { Middle bottom } { (Middle + a) (bottom + a) } }
+
+	create-glyph 'blackDiamondWithDownArrow' 0x29EA : glyph-proc
+		local r : radiusBox * 0.76 + tallStroke * 0.2
+		local cy : Ascender - r - tallStroke / 2
+		include : SmallDiamond Middle cy r
+		include : DownArrowBelowShape (cy - r + tallStroke)
+	create-glyph 'whiteCircleWithDownArrow' 0x29EC : glyph-proc
+		local r : radiusBox * 0.76 + tallStroke * 0.2
+		local cy : Ascender - r - tallStroke / 2
+		include : RingStrokeAt Middle cy r tallStroke
+		include : DownArrowBelowShape (cy - r + tallStroke)
+	create-glyph 'blackCircleWithDownArrow' 0x29ED : glyph-proc
+		local r : radiusBox * 0.76 + tallStroke * 0.2
+		local cy : Ascender - r - tallStroke / 2
+		include : RingAt Middle cy r
+		include : DownArrowBelowShape (cy - r + tallStroke)
+
+	define [ErrorBarredShape shape filled] : glyph-proc
+		local r : radiusBox * 0.77 + tallStroke * 0.2
+		local sw tallStroke
+		local capTop : Ascender - sw / 2
+		local capBottom : Descender + sw / 2
+		local mid : mix Ascender Descender 0.5
+		local capWidth : radiusBox * 0.52
+		include : VBar.m Middle (mid + r - sw) capTop sw
+		include : VBar.m Middle capBottom (mid - r + sw) sw
+		include : HBar.m (Middle - capWidth) (Middle + capWidth) capTop sw
+		include : HBar.m (Middle - capWidth) (Middle + capWidth) capBottom sw
+		if (shape === 'square') : begin
+			if filled : include : Rect (mid + r) (mid - r) (Middle - r) (Middle + r)
+			: else : include : difference
+				Rect (mid + r) (mid - r) (Middle - r) (Middle + r)
+				Rect (mid + r - sw) (mid - r + sw) (Middle - r + sw) (Middle + r - sw)
+		if (shape === 'diamond') : begin
+			if filled : include : SmallDiamond Middle mid r
+			: else : include : ConvexPolygonOutline [new-glyph : SmallDiamond Middle mid r] sw
+		if (shape === 'circle') : begin
+			if filled : include : RingAt Middle mid r
+			: else : include : RingStrokeAt Middle mid r sw
+	create-glyph 'errorBarredWhiteSquare' 0x29EE : ErrorBarredShape 'square' false
+	create-glyph 'errorBarredBlackSquare' 0x29EF : ErrorBarredShape 'square' true
+	create-glyph 'errorBarredWhiteDiamond' 0x29F0 : ErrorBarredShape 'diamond' false
+	create-glyph 'errorBarredBlackDiamond' 0x29F1 : ErrorBarredShape 'diamond' true
+	create-glyph 'errorBarredWhiteCircle' 0x29F2 : ErrorBarredShape 'circle' false
+	create-glyph 'errorBarredBlackCircle' 0x29F3 : ErrorBarredShape 'circle' true
 
 	create-glyph 'revRightAngle' 0x2BFE : glyph-proc
 		include : intersection

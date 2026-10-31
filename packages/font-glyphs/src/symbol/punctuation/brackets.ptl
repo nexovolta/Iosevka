@@ -339,7 +339,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					with-transform [ApparentTranslate (-fineV) 0] : LenticularMask df fine
 		turned 'whiteLenticularBracketRight' 0x3017 'whiteLenticularBracketLeft' Middle SymbolMid
 
-		create-glyph 'whiteTortoiseShellBracketLeft' 0x27EC : glyph-proc
+		define [WhiteTortoiseShellShape] : glyph-proc
 			local df : DivFrame 1
 			local fine : AdviceStroke 3
 			local dim : Paren.Dim df 0 (sw -- fine)
@@ -354,21 +354,13 @@ glyph-block Symbol-Punctuation-Brackets : begin
 						corner dim.outside [mix dim.bottom dim.mid 0.25]
 						corner dim.inside dim.bottom
 						close
+		create-glyph 'whiteTortoiseShellBracketLeft' 0x27EC : WhiteTortoiseShellShape
 		turned 'whiteTortoiseShellBracketRight' 0x27ED 'whiteTortoiseShellBracketLeft' Middle SymbolMid
 		alias 'cjkWhiteTortoiseShellBracketLeft'  0x3018 'whiteTortoiseShellBracketLeft'
 		alias 'cjkWhiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketRight'
 
 		create-glyph 'blackTortoiseShellBracketLeft' 0x2997 : glyph-proc
-			local df : DivFrame 1
-			local dim : Paren.Dim df 0 (sw -- df.mvs)
-			local inner : mix dim.outside dim.inside 0.62
-			include : spiro-outline
-				corner dim.inside dim.top
-				corner dim.outside [mix dim.top dim.mid 0.55]
-				corner dim.outside [mix dim.bottom dim.mid 0.55]
-				corner dim.inside dim.bottom
-				corner inner [mix dim.bottom dim.mid 0.36]
-				corner inner [mix dim.top dim.mid 0.36]
+			include : remove-holes : WhiteTortoiseShellShape
 		turned 'blackTortoiseShellBracketRight' 0x2998 'blackTortoiseShellBracketLeft' Middle SymbolMid
 
 		create-glyph 'bracketLeftUHalf' 0x2E22 : intersection
@@ -483,18 +475,18 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				Bracket.Shape [mix SymbolMid ParenTop p] [mix SymbolMid ParenBot p]
 
 		turned 'bracketRight' ']' 'bracketLeft' Middle SymbolMid
-		turned 'bracketBarRight'       0x2046 'bracketBarLeft'       Middle SymbolMid
-		turned 'bracketStrokeRight'    0x2E56 'bracketStrokeLeft'    Middle SymbolMid
-		turned 'bracketDblStrokeRight' 0x2E58 'bracketDblStrokeLeft' Middle SymbolMid
-		turned 'bracketRightUpper'     0x23A4 'bracketLeftLower'     Middle SymbolMid
-		turned 'bracketRightExtension' 0x23A5 'bracketLeftExtension' Middle SymbolMid
-		turned 'bracketRightLower'     0x23A6 'bracketLeftUpper'     Middle SymbolMid
-		turned 'dblBracketRight'       0x27E7 'dblBracketLeft'       Middle SymbolMid
+		turned 'bracketBarRight'        0x2046 'bracketBarLeft'       Middle SymbolMid
+		turned 'bracketStrokeRight'     0x2E56 'bracketStrokeLeft'    Middle SymbolMid
+		turned 'bracketDblStrokeRight'  0x2E58 'bracketDblStrokeLeft' Middle SymbolMid
+		turned 'bracketRightUpper'      0x23A4 'bracketLeftLower'     Middle SymbolMid
+		turned 'bracketRightExtension'  0x23A5 'bracketLeftExtension' Middle SymbolMid
+		turned 'bracketRightLower'      0x23A6 'bracketLeftUpper'     Middle SymbolMid
+		turned 'dblBracketRight'        0x27E7 'dblBracketLeft'       Middle SymbolMid
 		alias 'whiteSquareBracketLeft'  0x301A 'dblBracketLeft'
 		alias 'whiteSquareBracketRight' 0x301B 'dblBracketRight'
-		turned 'barBarRight'           0x2E21 'barBarLeft'           Middle SymbolMid
-		turned 'bracketRightUHalf'     0x2E23 'bracketLeftLHalf'     Middle SymbolMid
-		turned 'bracketRightLHalf'     0x2E25 'bracketLeftUHalf'     Middle SymbolMid
+		turned 'barBarRight'            0x2E21 'barBarLeft'           Middle SymbolMid
+		turned 'bracketRightUHalf'      0x2E23 'bracketLeftLHalf'     Middle SymbolMid
+		turned 'bracketRightLHalf'      0x2E25 'bracketLeftUHalf'     Middle SymbolMid
 
 		create-glyph 'ligExtBracketRight' : glyph-proc
 			include [refer-glyph 'ligExtBracketLeft'] AS_BASE ALSO_METRICS
