@@ -41,6 +41,11 @@ glyph-block Symbol-Punctuation-Small : begin
 		local {.x mx1 .y my1} : GlobalTransform.apply {.x cx .y cy}
 		include : Translate (mx1) (my1)
 
+	glyph-block-export PrimeShape
+	define [PrimeShape cx top bottom wide fine] : dispiro
+		flat (cx + wide) top [widths.heading (fine * 1.2) (fine * 1.2) Downward]
+		curl (cx - wide) bottom [widths.heading fine fine Downward]
+
 	define [CommaShape kdr o _tailY] : namespace
 		define r : PeriodRadius * kdr
 		define tailY : fallback _tailY Descender
@@ -100,6 +105,11 @@ glyph-block Symbol-Punctuation-Small : begin
 				DiamondAt 0 r r
 				DiamondTail
 
+		export : define [prime cx cy] : CommaShapeT cx cy : glyph-proc
+			local fine : 0.5 * [AdviceStroke 2]
+			local stress : 1.2 * fine
+			include : PrimeShape 0 (2 * rFill - stress / 2) tailY r fine
+
 	define [RevCommaShape kdr o] : namespace
 		define r : PeriodRadius * kdr
 		define ro : r - o
@@ -158,6 +168,11 @@ glyph-block Symbol-Punctuation-Small : begin
 				DiamondAt 0 r r
 				DiamondTail
 
+		export : define [prime cx cy] : CommaShapeT cx cy : glyph-proc
+			local fine : 0.5 * [AdviceStroke 2]
+			local stress : 1.2 * fine
+			include : with-transform [ScaleAround 0 0 (-1) 1] : PrimeShape 0 (2 * rFill - stress / 2) Descender r fine
+
 	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 		create-glyph "comma.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
@@ -172,6 +187,19 @@ glyph-block Symbol-Punctuation-Small : begin
 			local df : include : DivFrame para.advanceScaleSp
 			include : [RevCommaShape kDotRadius overshoot].(suffix) df.middle 0
 
+	create-glyph 'comma.prime' : glyph-proc
+		local df : include : DivFrame para.advanceScaleI
+		include : [CommaShape 1 O].prime df.middle 0
+	create-glyph 'revComma.prime' : glyph-proc
+		local df : include : DivFrame para.advanceScaleI
+		include : [RevCommaShape 1 O].prime df.middle 0
+	create-glyph 'comma/asDiacritic.prime' : glyph-proc
+		local df : include : DivFrame para.advanceScaleSp
+		include : [CommaShape 1 O].prime df.middle 0
+	create-glyph 'revComma/asDiacritic.prime' : glyph-proc
+		local df : include : DivFrame para.advanceScaleSp
+		include : [RevCommaShape 1 O].prime df.middle 0
+
 	select-variant 'comma' ',' (follow -- 'punctuationComma')
 	select-variant 'revComma' 0x2E41 (follow -- 'punctuationComma')
 
@@ -181,6 +209,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	turned "turnComma.round"  null "comma.round"  [DivFrame para.advanceScaleI].middle PeriodRadius
 	turned "turnComma.square" null "comma.square" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
 	turned "turnComma.diamond" null "comma.diamond" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
+	turned "turnComma.prime"  null "comma.prime"  [DivFrame para.advanceScaleI].middle PeriodRadius
 	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationComma')
 
 	derive-composites 'raisedPeriod.round'  null 'period.round'  [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
@@ -189,6 +218,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	derive-composites 'raisedComma.round'   null 'comma.round'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedComma.square'  null 'comma.square'  [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedComma.diamond' null 'comma.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
+	derive-composites 'raisedComma.prime'   null 'comma.prime'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	select-variant 'raisedPeriod' 0x2E33 (follow -- 'punctuationDot')
 	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationComma')
 
@@ -302,6 +332,11 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : DrawAt (RightSB - radius) (XH * 0.75) (kDotRadius * radius - overshoot)
 			include : DrawAt (RightSB - radius) (XH * 0.25) (kDotRadius * radius - overshoot)
 
+	create-glyph 'doubleStackedComma.prime' : glyph-proc
+		include [refer-glyph "comma.prime"] AS_BASE ALSO_METRICS
+		include : with-transform [ApparentTranslate 0 (XH - 2 * PeriodRadius)] : composite-proc
+			refer-glyph "comma.prime"
+
 	# Glyphs that draw both a dot and a comma follow both selectors at once.
 	foreach dotSuffix [Object.keys DotVariants] : do
 		foreach commaSuffix [Object.keys DotVariants] : do
@@ -312,6 +347,14 @@ glyph-block Symbol-Punctuation-Small : begin
 			create-glyph "revSemicolon.\(dotSuffix).\(commaSuffix)" : glyph-proc
 				include [refer-glyph "revComma.\(commaSuffix)"] AS_BASE ALSO_METRICS
 				include [refer-glyph "xhPeriod.\(dotSuffix)"]
+
+		create-glyph "semicolon.\(dotSuffix).prime" : glyph-proc
+			include [refer-glyph "comma.prime"] AS_BASE ALSO_METRICS
+			include [refer-glyph "xhPeriod.\(dotSuffix)"]
+
+		create-glyph "revSemicolon.\(dotSuffix).prime" : glyph-proc
+			include [refer-glyph "revComma.prime"] AS_BASE ALSO_METRICS
+			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
 	select-variant 'colon' ':' (follow -- 'punctuationDot')
 	select-variant 'colon/mid' (follow -- 'punctuationDot')
@@ -394,6 +437,19 @@ glyph-block Symbol-Punctuation-Small : begin
 						include : Scale 1 (-1)
 						include : Translate df.middle (XH - 1.2 * r)
 						include : Regizmo
+
+			create-glyph "punctusElevatus.\(dotSuffix).prime" : glyph-proc
+				local df : include : DivFrame para.advanceScaleI
+				local r : PeriodRadius * 1
+				include [refer-glyph "period.\(dotSuffix)"] AS_BASE ALSO_METRICS
+				include : new-glyph : glyph-proc
+					include : [CommaShape 1 O (0 - 2.05 * r)].prime df.middle 0
+					include : Ungizmo
+					include : Translate (-df.middle) (-r)
+					include : Rotate (Math.PI / 2)
+					include : Scale 1 (-1)
+					include : Translate df.middle (XH - 1.2 * r)
+					include : Regizmo
 
 		select-multi-dimensional-variant 'punctusElevatus' 0x2E4E
 			follows -- { 'punctuationDot' 'punctuationComma' }
