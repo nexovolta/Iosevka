@@ -34,7 +34,7 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 
 		include : Translate (-(RightSB - SB) * 0.05) 0
 
-	create-glyph 'singleGuillemetLeft.curly' : glyph-proc
+	define [CurlyGuillemetLeftShape guilTop guilBot] : glyph-proc
 		local extension 0.55
 
 		local sw : AdviceStroke 3
@@ -55,6 +55,10 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 		include : VBar.l guilLeft (SymbolMid - sw * 0.25) (SymbolMid + sw * 0.25) sw
 
 		include : Translate (-(RightSB - SB) * 0.05) 0
+
+	create-glyph 'singleGuillemetLeft.curly' : CurlyGuillemetLeftShape guilTop guilBot
+	create-glyph 'curvedAngleLeft' 0x29FC : CurlyGuillemetLeftShape ParenTop ParenBot
+	turned 'curvedAngleRight' 0x29FD 'curvedAngleLeft' Middle SymbolMid
 
 	# Arms are extended and clipped so the ends are cut vertically (straight) or horizontally (curly).
 	define [GuillemetTerminalShape fCurly fVertical] : glyph-proc

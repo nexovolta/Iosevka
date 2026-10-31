@@ -238,6 +238,24 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'parenRightExtension' 0x239F 'parenLeftExtension' Middle SymbolMid
 		turned 'parenRightLower'     0x23A0 'parenLeftUpper'     Middle SymbolMid
 
+		create-glyph 'whiteParenLeft' 0x2985 : glyph-proc
+			local df : DivFrame 1
+			local rawDim : Paren.Dim df 0 (sw -- df.mvs)
+			local fine : Math.min [AdviceStroke 4] ((rawDim.inside - rawDim.outside) * 0.2)
+			local dim : Paren.Dim df 0 (sw -- fine)
+			local inner : mix dim.outside dim.inside 0.6
+			include : union
+				Paren.Shape df fine
+				dispiro
+					widths.lhs fine
+					g4 dim.inside dim.top
+					quadControls 1 (1 - DesignParameters.parenCurliness)
+					g4 inner dim.mid
+					quadControls 0 DesignParameters.parenCurliness
+					g4 dim.inside dim.bottom
+			include : Translate (0 - TanSlope * (dim.top - SymbolMid) * 0.25) 0
+		turned 'whiteParenRight' 0x2986 'whiteParenLeft' Middle SymbolMid
+
 		create-glyph 'zNotationParenLeft' 0x2987 : glyph-proc
 			local df : DivFrame 1
 			local fine : AdviceStroke 4
@@ -340,6 +358,19 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		alias 'cjkWhiteTortoiseShellBracketLeft'  0x3018 'whiteTortoiseShellBracketLeft'
 		alias 'cjkWhiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketRight'
 
+		create-glyph 'blackTortoiseShellBracketLeft' 0x2997 : glyph-proc
+			local df : DivFrame 1
+			local dim : Paren.Dim df 0 (sw -- df.mvs)
+			local inner : mix dim.outside dim.inside 0.62
+			include : spiro-outline
+				corner dim.inside dim.top
+				corner dim.outside [mix dim.top dim.mid 0.55]
+				corner dim.outside [mix dim.bottom dim.mid 0.55]
+				corner dim.inside dim.bottom
+				corner inner [mix dim.bottom dim.mid 0.36]
+				corner inner [mix dim.top dim.mid 0.36]
+		turned 'blackTortoiseShellBracketRight' 0x2998 'blackTortoiseShellBracketLeft' Middle SymbolMid
+
 		create-glyph 'bracketLeftUHalf' 0x2E22 : intersection
 			refer-glyph 'bracketLeft'
 			MaskAbove SymbolMid
@@ -382,6 +413,44 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				HBar.m hDim.l hDim.r [mix ParenBot ParenTop 0.5]
 				HBar.t hDim.l hDim.r               ParenTop
 				VBar.l hDim.l ParenBot ParenTop
+
+		create-glyph 'bracketUnderbarLeft' 0x298B : glyph-proc
+			local hDim : Bracket.HDim
+			local gap : Math.max Stroke ((ParenTop - ParenBot) * 0.04)
+			include : union
+				Bracket.Shape ParenTop (ParenBot + Stroke + gap)
+				HBar.b hDim.l hDim.r ParenBot
+
+		create-glyph 'bracketUnderbarRight' 0x298C : glyph-proc
+			local hDim : Bracket.HDim
+			local left : Width - hDim.r
+			local right : Width - hDim.l
+			local gap : Math.max Stroke ((ParenTop - ParenBot) * 0.04)
+			local bottom : ParenBot + Stroke + gap
+			include : union
+				HBar.t left right ParenTop
+				HBar.b left right bottom
+				VBar.r right bottom ParenTop
+				HBar.b left right ParenBot
+
+		define [BracketTickLeft fTop] : glyph-proc
+			local hDim : Bracket.HDim
+			local tickSw : AdviceStroke 4
+			local xStart : hDim.l + [HSwToV : Stroke * 0.85]
+			local tickLength : Math.min ((hDim.r - hDim.l) * 0.6) ((ParenTop - ParenBot) * 0.12)
+			local yStart : if fTop (ParenTop - Stroke * 0.85) (ParenBot + Stroke * 0.85)
+			local yEnd : if fTop (yStart - tickLength) (yStart + tickLength)
+			include : union
+				Bracket.Shape ParenTop ParenBot
+				dispiro
+					widths.center tickSw
+					corner xStart yStart
+					corner (xStart + tickLength) yEnd
+
+		create-glyph 'bracketTopTickLeft' 0x298D : BracketTickLeft true
+		turned 'bracketBottomTickRight' 0x298E 'bracketTopTickLeft' Middle SymbolMid
+		create-glyph 'bracketBottomTickLeft' 0x298F : BracketTickLeft false
+		turned 'bracketTopTickRight' 0x2990 'bracketBottomTickLeft' Middle SymbolMid
 
 		define [BracketThroughStroke y] : begin
 			local hDim : Bracket.HDim
@@ -672,6 +741,15 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					intersection
 						VBar.r dim.inside dim.bottom dim.top fine
 						AngleLeftShapeMask dim.outside dim.inside fine
+
+		create-glyph 'angleDotLeft' 0x2991 : glyph-proc
+			local dim : Paren.Dim [DivFrame 1] (delta -- 0) (sw -- OperatorStroke)
+			local inside : Math.min dim.inside (Width - [Math.abs TanSlope] * (ParenTop - SymbolMid) - [HSwToV OperatorStroke])
+			local dotRadius : Math.min (DotRadius * 0.75) ((inside - dim.outside) * 0.18)
+			include : union
+				AngleLeftShape dim.outside inside OperatorStroke
+				DotAt [mix dim.outside inside 0.9] SymbolMid dotRadius
+		turned 'angleDotRight' 0x2992 'angleDotLeft' Middle SymbolMid
 
 		turned 'zNotationAngleRight' 0x298A 'zNotationAngleLeft' Middle SymbolMid
 		turned 'angleRight'          0x232A 'angleLeft'          Middle SymbolMid

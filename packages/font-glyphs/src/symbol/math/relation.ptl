@@ -532,6 +532,17 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greater' '>' : glyph-proc
 		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 
+	create-glyph 'arcLessBracketLeft' 0x2993 : union
+		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'parenLeft'
+		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'less'
+	turned 'arcGreaterBracketRight' 0x2994 'arcLessBracketLeft' Middle SymbolMid
+
+	create-glyph 'doubleArcGreaterBracketLeft' 0x2995 : union
+		with-transform [ApparentTranslate (0 - Width * 0.14) 0] : with-transform [ScaleAround Middle SymbolMid 0.6 1] : refer-glyph 'parenLeft'
+		with-transform [ApparentTranslate (Width * 0.14) 0] : with-transform [ScaleAround Middle SymbolMid 0.6 1] : refer-glyph 'parenLeft'
+		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'greater'
+	turned 'doubleArcLessBracketRight' 0x2996 'doubleArcGreaterBracketLeft' Middle SymbolMid
+
 	WithDotVariants 'dottedRightPointingAngle' 0x2E16 : function [DrawAt kr ov] : glyph-proc
 		include : refer-glyph 'greater'
 		local r : DotRadius * kr * OperatorStroke / Stroke

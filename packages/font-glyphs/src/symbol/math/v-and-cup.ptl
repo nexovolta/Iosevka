@@ -14,15 +14,17 @@ glyph-block Symbol-Math-VAndCup : begin
 	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
 	glyph-block-import NotGlyphFn : NotGlyphSw
 
-	define [VeeShape top bot sw] : union
+	define [VeeShapeInBox left right top bot sw] : union
 		dispiro
 			widths.lhs [fallback sw OperatorStroke]
-			flat SB top [heading Downward]
+			flat left top [heading Downward]
 			curl (Middle - [HSwToV HalfStroke]) bot [heading Downward]
 		dispiro
 			widths.rhs [fallback sw OperatorStroke]
-			flat RightSB top [heading Downward]
+			flat right top [heading Downward]
 			curl (Middle + [HSwToV HalfStroke]) bot [heading Downward]
+
+	define [VeeShape top bot sw] : VeeShapeInBox SB RightSB top bot sw
 
 	define [WedgeShape top bot sw] : new-glyph : glyph-proc
 		include : VeeShape top bot sw
@@ -31,15 +33,18 @@ glyph-block Symbol-Math-VAndCup : begin
 	create-glyph 'wedge' 0x2227 : WedgeShape OperTop OperBot
 	create-glyph 'vee' 0x2228 : VeeShape OperTop OperBot
 
-	local logicDotStroke : Math.min [AdviceStroke 4] (OperatorStroke * 0.65)
-	local logicDotRadius : Math.min (DotRadius * OperatorStroke / Stroke * 0.5) (logicDotStroke * 0.55)
-	local veeRun : (RightSB - SB) / 2
-	local veeHeight : OperTop - OperBot
-	local logicDotClearance : logicDotRadius + logicDotStroke / 2 + veeRun * 0.08
-	local logicDotOffset : Math.max (veeHeight * 0.5) (logicDotClearance * [Math.hypot veeRun veeHeight] / veeRun)
+	local logicDotStroke : Math.min [AdviceStroke 3] (OperatorStroke * [if TanSlope 0.74 0.82])
+	local logicDotRadius : Math.min (DotRadius * OperatorStroke / Stroke * 0.7) (logicDotStroke * [if TanSlope 0.68 0.82])
+	local logicTop : mix SymbolMid OperTop 0.92
+	local logicBot : mix SymbolMid OperBot 0.92
+	local logicSideInset : [Math.abs TanSlope] * (logicTop - SymbolMid) + [HSwToV : logicDotStroke * 0.12]
+	local logicLeft : Math.max [mix SB 0 0.5] logicSideInset
+	local logicRight : Math.min [mix RightSB Width 0.5] (Width - logicSideInset)
+	local veeHeight : logicTop - logicBot
+	local logicDotOffset : veeHeight * 0.76
 	create-glyph 'veeDotInside' 0x27C7 : glyph-proc
-		include : VeeShape OperTop OperBot logicDotStroke
-		include : DotAt Middle (OperBot + logicDotOffset) logicDotRadius
+		include : VeeShapeInBox logicLeft logicRight logicTop logicBot logicDotStroke
+		include : DotAt Middle (logicBot + logicDotOffset) logicDotRadius
 
 	turned 'wedgeDotInside' 0x27D1 'veeDotInside' Middle SymbolMid
 
