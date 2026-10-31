@@ -666,13 +666,13 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
 
 	do "Postal Marks"
-		define [PostalShape df shapeWidth shapeHeight] : glyph-proc
+		define [PostalShape df shapeWidth shapeHeight strokeScale] : glyph-proc
 			local center : mix df.leftSB df.rightSB 0.5
 			local top : SymbolMid + shapeHeight / 2
 			local bottom : SymbolMid - shapeHeight / 2
-			local barSw : Math.max (Stroke * 0.7) (shapeHeight * 0.12)
+			local barSw : [Math.max (Stroke * 0.7) (shapeHeight * 0.12)] * strokeScale
 			local stemSw : HSwToV barSw
-			local second : top - shapeHeight * 0.32
+			local second : top - shapeHeight * 0.42
 			local left : center - shapeWidth / 2
 			local right : center + shapeWidth / 2
 			include : union
@@ -684,7 +684,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local df : DivFrame 1
 			local shapeWidth : 0.60 * (df.rightSB - df.leftSB)
 			local shapeHeight : 0.34 * (ParenTop - ParenBot)
-			include : PostalShape df shapeWidth shapeHeight
+			include : PostalShape df shapeWidth shapeHeight 1
 
 		create-glyph 'getaMark' 0x3013 : glyph-proc
 			local df : DivFrame 1
@@ -709,4 +709,4 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local ringSw : Math.min (Stroke * 0.32) [AdviceStroke 4]
 			include : union
 				RingStrokeAt center SymbolMid radius ringSw
-				PostalShape df shapeWidth shapeHeight
+				PostalShape df shapeWidth shapeHeight 0.75
