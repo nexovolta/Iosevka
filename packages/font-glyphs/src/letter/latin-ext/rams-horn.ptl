@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [MathSansSerif] from "@iosevka/glyph/relation"
 import [Vec2] from "@iosevka/geometry/point"
 
@@ -10,6 +10,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifFrame PalatalHook
+	glyph-block-import Letter-Latin-X : XStrand
 
 	define [LatinGammaShape df top bottom fMask] : glyph-proc
 		local fine : df.adviceStroke 4
@@ -27,6 +28,16 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			if fMask { [close] } {}
 
 		return : object fine d
+
+	define [LatinGammaTriangleShape df top bottom] : glyph-proc
+		local legBottom : Math.max bottom (-0.04 * top)
+		local atBarMiddle : (top - df.mvs / 2) / (top - legBottom)
+		local leftBase : mix df.rightSB df.leftSB atBarMiddle
+		local rightBase : mix df.leftSB df.rightSB atBarMiddle
+		include : intersection [MaskAbove 0] : union
+			XStrand true false df.leftSB legBottom df.rightSB top 0.1 0.4 0.28 df.mvs
+			XStrand true false df.leftSB top df.rightSB legBottom 0.1 0.4 0.28 df.mvs
+			HBar.b leftBase rightBase 0 df.mvs
 
 	define [GammaFullSerifs df top bottom] : begin
 		local sf : SerifFrame.fromDf df top bottom
@@ -70,11 +81,16 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		bilateralMotionSerifed GammaBilateralMotionSerifs
 		serifed               GammaFullSerifs
 
-	foreach { suffix Serifs } [Object.entries GammaUpperSerifConfig] : do
+	define GammaUpperBodyConfig : object
+		""             false
+		triangleBottom true
+	define GammaUpperConfig : SuffixCfg.weave GammaUpperBodyConfig GammaUpperSerifConfig
+
+	foreach { suffix { triangleBottom Serifs } } [Object.entries GammaUpperConfig] : do
 		create-glyph "latn/Gamma.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
-			include : df.markSet.capDesc
-			include : LatinGammaShape df CAP Descender
+			include : if triangleBottom [df.markSet.capital] [df.markSet.capDesc]
+			include : if triangleBottom [LatinGammaTriangleShape df CAP Descender] [LatinGammaShape df CAP Descender]
 			include : Serifs df CAP Descender
 
 	foreach { suffix Serifs } [Object.entries GammaLowerSerifConfig] : do
