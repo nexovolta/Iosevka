@@ -207,6 +207,55 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 			intersection [MaskRight arrowMidX]
 				with-transform [ApparentTranslate (-branchInset) 0] : refer-glyph : MangleName 'arrowRight'
 
+	do "Supplemental arrows"
+		local width : MathOperatorWidth MosaicWidth FMosaicWide
+		local d : ArrowDims width
+		local a : ArrowT d
+		local left d.arrowSB
+		local right d.arrowRSB
+		local middle d.arrowMidX
+		local sw : AdviceStroke 4
+		create-glyph [MangleName 'doubleArrowUpFromCircle'] [MangleUnicode 0x2949] : glyph-proc
+			local radius : Math.max (sw * 0.9) ((d.arrowTop - d.arrowBot) * 0.1)
+			local cy : d.arrowBot + radius
+			set-width width
+			include : RingStrokeAt middle cy radius [Math.min sw (radius * 0.45)]
+			include : a.dblShape middle (cy + radius) middle d.arrowTop d.compactHeadSize (sw / 2)
+
+		create-glyph [MangleName 'roundedDoubleArrowRight'] [MangleUnicode 0x2970] : glyph-proc
+			local half : Math.max (sw * 1.4) (d.compactHeadSize * 0.6)
+			local x : right - half
+			set-width width
+			include : union
+				HBar.m left x (SymbolMid + half) sw
+				HBar.m left x (SymbolMid - half) sw
+				intersection
+					OShape.NoOvershoot (SymbolMid + half) (SymbolMid - half) (x - half) (x + half) sw
+					MaskRight x
+
+		define [FishTail] : glyph-proc
+			local x : mix left right 0.28
+			local y : Math.max (sw * 1.5) (d.compactHeadSize * 0.75)
+			set-width width
+			include : union
+				HBar.m x right SymbolMid sw
+				dispiro
+					widths.center sw
+					flat x SymbolMid [heading Leftward]
+					g4 (left + (x - left) * 0.2) (SymbolMid + y * 0.5)
+					curl x (SymbolMid + y) [heading Rightward]
+				dispiro
+					widths.center sw
+					flat x SymbolMid [heading Leftward]
+					g4 (left + (x - left) * 0.2) (SymbolMid - y * 0.5)
+					curl x (SymbolMid - y) [heading Rightward]
+		create-glyph [MangleName 'leftFishTail'] [MangleUnicode 0x297C] : FishTail
+		turned [MangleName 'rightFishTail'] [MangleUnicode 0x297D] [MangleName 'leftFishTail'] middle SymbolMid
+		create-glyph [MangleName 'upFishTail'] [MangleUnicode 0x297E] : glyph-proc
+			set-width width
+			include : with-transform [Italify para.slopeAngle] : with-transform [Translate middle SymbolMid] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-middle) (-SymbolMid)] : with-transform [Italify (-para.slopeAngle)] : FishTail
+		turned [MangleName 'downFishTail'] [MangleUnicode 0x297F] [MangleName 'upFishTail'] middle SymbolMid
+
 	# These arrows are always wide. In force-monospace variants they will be deleted
 	if (MosaicWidthScalar > 1 && !para.forceMonospace) : do
 		create-glyph 'uni1F8D6' 0x1F8D6 : composite-proc

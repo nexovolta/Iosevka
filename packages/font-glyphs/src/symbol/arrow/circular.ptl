@@ -117,6 +117,95 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 	create-glyph [MangleName 'ccwOpenCircleArrowTriangle'] [MangleUnicode 0x2B6F] : glyph-proc
 		include : OpenCircleArrow Arrow.Head.trigShape true  false
 
+	do "Curving and semicircular arrows"
+		local sw : AdviceStroke 4
+		local sz : Math.max (headSize * 0.9) (sw * 2)
+		local left : mix arrowMidX arrowSB 0.85
+		local right : mix arrowMidX arrowRSB 0.85
+		local top : mix SymbolMid arrowTop 0.85
+		local bot : mix SymbolMid arrowBot 0.85
+		define [CurvingArrow startHorizontal endPositive] : glyph-proc
+			set-width MosaicWidth
+			if startHorizontal
+			: then : begin
+				local y0 : if endPositive bot top
+				local ye : if endPositive top bot
+				local x : Math.min right (MosaicWidth - sz - sw / 2)
+				include : dispiro
+					widths.center sw
+					flat left y0 [heading Rightward]
+					g4 [mix left x 0.52] y0 [heading Rightward]
+					g4 x SymbolMid [heading [if endPositive Upward Downward]]
+					curl x ye [heading [if endPositive Upward Downward]]
+				include : Arrow.Head.shape x SymbolMid x ye sz
+			: else : begin
+				local x0 : if endPositive left right
+				local xe : if endPositive right left
+				include : dispiro
+					widths.center sw
+					flat x0 top [heading Downward]
+					g4 x0 [mix top bot 0.52] [heading Downward]
+					g4 arrowMidX bot [heading [if endPositive Rightward Leftward]]
+					curl xe bot [heading [if endPositive Rightward Leftward]]
+				include : Arrow.Head.shape arrowMidX bot xe bot sz
+		create-glyph [MangleName 'arrowRightCurveUp'] [MangleUnicode 0x2934] : CurvingArrow true true
+		create-glyph [MangleName 'arrowRightCurveDown'] [MangleUnicode 0x2935] : CurvingArrow true false
+		create-glyph [MangleName 'arrowDownCurveLeft'] [MangleUnicode 0x2936] : CurvingArrow false false
+		create-glyph [MangleName 'arrowDownCurveRight'] [MangleUnicode 0x2937] : CurvingArrow false true
+
+		local hw : right - arrowMidX
+		local hh : top - SymbolMid
+		local radius : Math.max (sw * 4) [Math.min hw hh]
+		local centerRadius : radius - sw / 2
+		define [ArcHead x y dx dy] : Arrow.Head.trigShape (x - dx * sz) (y - dy * sz) x y (sz * 0.7)
+		define [SideArc side] : glyph-proc
+			local x : arrowMidX + side * centerRadius * 0.6
+			local y : SymbolMid - centerRadius * 0.8
+			set-width MosaicWidth
+			include : union
+				intersection
+					RingStrokeAt arrowMidX SymbolMid radius sw
+					[if (side > 0) MaskRight MaskLeft] arrowMidX
+					MaskAbove y
+				ArcHead x y (-side * 0.8) (-0.6)
+		define [HorizontalArc dir vertical] : glyph-proc
+			local x : arrowMidX - dir * centerRadius * 0.8
+			local y : SymbolMid + vertical * centerRadius * 0.6
+			set-width MosaicWidth
+			include : union
+				intersection
+					RingStrokeAt arrowMidX SymbolMid radius sw
+					[if (vertical > 0) MaskAbove MaskBelow] SymbolMid
+					[if (dir > 0) MaskRight MaskLeft] x
+				ArcHead x y (-dir * 0.6) (-vertical * 0.8)
+		define [LowerCircleArc dir] : glyph-proc
+			local x : arrowMidX - dir * centerRadius * 0.8
+			local y : SymbolMid + centerRadius * 0.6
+			local tipX : x - dir * sz * 0.45
+			local tipY : y + sz * 0.6
+			set-width MosaicWidth
+			include : union
+				intersection
+					RingStrokeAt arrowMidX SymbolMid radius sw
+					MaskBelow y
+				Arrow.Bar.shape x y tipX tipY (sw / 2) 0 0
+				ArcHead tipX tipY (-dir * 0.6) 0.8
+		define [ArcWithMark dir mark] : glyph-proc
+			set-width MosaicWidth
+			include : HorizontalArc dir 1
+			local markSize : Math.max (sz * 0.55) (sw * 1.25)
+			local y : SymbolMid - markSize * 0.35
+			include : HBar.m (arrowMidX - markSize) (arrowMidX + markSize) y sw
+			if (mark == 2) : include : VBar.m arrowMidX (y - markSize) (y + markSize) sw
+		create-glyph [MangleName 'rightArcClockwise'] [MangleUnicode 0x2938] : SideArc 1
+		create-glyph [MangleName 'leftArcAnticlockwise'] [MangleUnicode 0x2939] : SideArc (-1)
+		create-glyph [MangleName 'topArcAnticlockwise'] [MangleUnicode 0x293A] : HorizontalArc 1 1
+		create-glyph [MangleName 'bottomArcAnticlockwise'] [MangleUnicode 0x293B] : HorizontalArc (-1) (-1)
+		create-glyph [MangleName 'topArcClockwiseMinus'] [MangleUnicode 0x293C] : ArcWithMark (-1) 1
+		create-glyph [MangleName 'topArcAnticlockwisePlus'] [MangleUnicode 0x293D] : ArcWithMark 1 2
+		create-glyph [MangleName 'lowerRightSemicircleClockwise'] [MangleUnicode 0x293E] : LowerCircleArc 1
+		create-glyph [MangleName 'lowerLeftSemicircleAnticlockwise'] [MangleUnicode 0x293F] : LowerCircleArc (-1)
+
 	if (MosaicWidthScalar == 1) : do
 		create-glyph 'ccCcwArrow' : glyph-proc
 			include : ShareAlikeArrow Arrow.Head.trigShape

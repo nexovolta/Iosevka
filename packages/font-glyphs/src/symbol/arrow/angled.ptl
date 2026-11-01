@@ -200,3 +200,42 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 			flat xLeft (arrowTop - hcDist / 2)
 			curl xLeft [Math.min SymbolMid : arrowTop - hcDist / 2 - TINY] [heading {.x 1 .y 0}]
 		include : Arrow.trigShape xLeft SymbolMid xLeft arrowBot arrowHeadSize
+
+	do "Crossing diagonal arrows"
+		local l : mix arrowMidX arrowSB 0.9
+		local r : mix arrowMidX arrowRSB 0.9
+		local t : mix SymbolMid arrowTop 0.9
+		local b : mix SymbolMid arrowBot 0.9
+		local fine : AdviceStroke 4
+		local gap : Math.max (fine * 1.5) ((r - l) * 0.08)
+		define [Diagonal x1 y1 x2 y2 head] : glyph-proc
+			if head
+			: then : include : Arrow.shape x1 y1 x2 y2 (compactHeadSize * 0.85) (fine / 2)
+			: else : include : dispiro
+				widths.center fine
+				flat x1 y1
+				curl x2 y2
+		define [CrossDiagonals rising falling under] : glyph-proc
+			local rise : new-glyph : if (rising < 0)
+				Diagonal r t l b true
+				Diagonal l b r t (rising > 0)
+			local fall : new-glyph : if (falling < 0)
+				Diagonal r b l t true
+				Diagonal l t r b (falling > 0)
+			set-width MosaicWidth
+			include : union
+				if (under == 1) [difference rise : RingAt arrowMidX SymbolMid gap] rise
+				if (under == 2) [difference fall : RingAt arrowMidX SymbolMid gap] fall
+
+		create-glyph [MangleName 'crossArrowNWNE'] [MangleUnicode 0x2927] : CrossDiagonals 1 (-1) 0
+		create-glyph [MangleName 'crossArrowNESE'] [MangleUnicode 0x2928] : CrossDiagonals 1 1 0
+		create-glyph [MangleName 'crossArrowSESW'] [MangleUnicode 0x2929] : CrossDiagonals (-1) 1 0
+		create-glyph [MangleName 'crossArrowSWNW'] [MangleUnicode 0x292A] : CrossDiagonals (-1) (-1) 0
+		create-glyph [MangleName 'risingCrossFalling'] [MangleUnicode 0x292B] : CrossDiagonals 0 0 2
+		create-glyph [MangleName 'fallingCrossRising'] [MangleUnicode 0x292C] : CrossDiagonals 0 0 1
+		create-glyph [MangleName 'arrowSECrossNE'] [MangleUnicode 0x292D] : CrossDiagonals 1 1 1
+		create-glyph [MangleName 'arrowNECrossSE'] [MangleUnicode 0x292E] : CrossDiagonals 1 1 2
+		create-glyph [MangleName 'fallingCrossArrowNE'] [MangleUnicode 0x292F] : CrossDiagonals 1 0 1
+		create-glyph [MangleName 'risingCrossArrowSE'] [MangleUnicode 0x2930] : CrossDiagonals 0 1 2
+		create-glyph [MangleName 'arrowNECrossNW'] [MangleUnicode 0x2931] : CrossDiagonals 1 (-1) 2
+		create-glyph [MangleName 'arrowNWCrossNE'] [MangleUnicode 0x2932] : CrossDiagonals 1 (-1) 1
