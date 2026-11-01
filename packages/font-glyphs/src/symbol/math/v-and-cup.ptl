@@ -13,6 +13,7 @@ glyph-block Symbol-Math-VAndCup : begin
 	glyph-block-import Symbol-Math-Relation-Common : EqualHalfSpace
 	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
 	glyph-block-import NotGlyphFn : NotGlyphSw
+	glyph-block-import Symbol-Math-Large-Operators : TwoWedgeShape TwoVeeShape
 
 	define [VeeShapeInBox left right top bot sw] : union
 		dispiro
@@ -151,12 +152,12 @@ glyph-block Symbol-Math-VAndCup : begin
 		include : DrawAt Middle (OperTop - dr) (dr - ov)
 
 	create-glyph 'intersectingWedges' 0x2A55 : glyph-proc
-		local shift : (RightSB - SB) * 0.16
-		local sw : AdviceStroke 6
-		include : with-transform [ApparentTranslate (-shift) 0] : with-transform [ScaleAround Middle SymbolMid 0.68 1] : WedgeShape OperTop OperBot sw
-		include : with-transform [ApparentTranslate (+shift) 0] : with-transform [ScaleAround Middle SymbolMid 0.68 1] : WedgeShape OperTop OperBot sw
+		local frame : DivFrame 1
+		include : with-transform [ScaleAround Middle SymbolMid 1 0.68] : TwoWedgeShape frame BgOpTop BgOpBot
 
-	turned 'intersectingVees' 0x2A56 'intersectingWedges' Middle SymbolMid
+	create-glyph 'intersectingVees' 0x2A56 : glyph-proc
+		local frame : DivFrame 1
+		include : with-transform [ScaleAround Middle SymbolMid 1 0.68] : TwoVeeShape frame BgOpTop BgOpBot
 
 	create-glyph 'veeOverlappingWedge' 0x2A59 : glyph-proc
 		local sw : AdviceStroke 5

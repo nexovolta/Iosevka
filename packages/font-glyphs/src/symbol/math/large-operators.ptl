@@ -20,6 +20,8 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 	define advanceScaleLargeOperators : if (FMosaicWide && para.isQuasiProportional) para.advanceScaleMM : Math.max para.advanceScaleM (MosaicWidth / Width)
 	define df : DivFrame advanceScaleLargeOperators 0 [if FMosaicWide advanceScaleLargeOperators 1]
 
+	glyph-block-export TwoWedgeShape TwoVeeShape
+
 	create-glyph [MangleName 'sum'] [MangleUnicode 0x2211] : glyph-proc
 		set-width df.width
 		include : SigmaShape df BgOpTop BgOpBot OperatorStroke
@@ -92,22 +94,27 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 		include : HBar.m (df.middle - size) (df.middle + size) y sw
 		include : VBar.m df.middle (y - size) (y + size) sw
 
-	create-glyph [MangleName 'twoWedge'] [MangleUnicode 0x2A07] : glyph-proc
-		local usable : df.rightSB - df.leftSB
+	define [TwoWedgeShape frame top bot] : glyph-proc
+		local usable : frame.rightSB - frame.leftSB
 		local shift : usable * 0.15
 		local sw : Math.min [AdviceStroke 4] (usable * 0.1)
-		local outerSw : Math.min [AdviceStroke2 2.5 3 (BgOpTop - BgOpBot)] (usable * 0.16)
-		set-width df.width
+		local outerSw : Math.min [AdviceStroke2 2.5 3 (top - bot)] (usable * 0.16)
+		set-width frame.width
 		foreach j [range 0 2] : begin
-			local x : df.middle + (j * 2 - 1) * shift
+			local x : frame.middle + (j * 2 - 1) * shift
 			include : dispiro
 				widths.center [if (j == 0) outerSw sw]
-				flat (x - usable * 0.35) BgOpBot
-				curl x BgOpTop
+				flat (x - usable * 0.35) bot
+				curl x top
 			include : dispiro
 				widths.center [if (j == 1) outerSw sw]
-				flat x BgOpTop
-				curl (x + usable * 0.35) BgOpBot
+				flat x top
+				curl (x + usable * 0.35) bot
+
+	create-glyph [MangleName 'twoWedge'] [MangleUnicode 0x2A07] : TwoWedgeShape df BgOpTop BgOpBot
+
+	define [TwoVeeShape frame top bot] : glyph-proc
+		include : with-transform [FlipAround frame.middle SymbolMid] : TwoWedgeShape frame top bot
 
 	turned [MangleName 'twoVee'] [MangleUnicode 0x2A08] [MangleName 'twoWedge'] df.middle SymbolMid
 

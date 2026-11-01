@@ -92,7 +92,7 @@ glyph-block Symbol-Math-Circled : begin
 				dispiro [widths.center sw] [flat (middle - arm) (SymbolMid - arm)] [curl (middle + arm) (SymbolMid + arm)]
 				dispiro [widths.center sw] [flat (middle - arm) (SymbolMid + arm)] [curl (middle + arm) (SymbolMid - arm)]
 
-	for-width-kinds WideWidth1
+	for-width-kinds [if para.isQuasiProportional WideWidth0 Width]
 		define [MakeMathBigCircled u inner] : begin
 			derive-glyphs [MangleName "mathBigCircled{\(inner)}"] [MangleUnicode u] [MangleName inner] : function [src gr] : composite-proc
 				refer-glyph [MangleName 'mathOBig']
