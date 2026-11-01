@@ -166,7 +166,7 @@ glyph-block Symbol-Math-Relation-Equal : begin
 		include : refer-glyph 'ident'
 		foreach j [range 0 4] : include : DrawAt [mix SB RightSB ((j + 0.5) / 4)] y (dr - ov)
 
-	for-width-kinds WideWidth0
+	for-width-kinds [if para.isQuasiProportional WideWidth0 Width]
 		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		local l : mathWidth * 0.08
 		local r : mathWidth * 0.92
@@ -1299,7 +1299,7 @@ glyph-block Symbol-Math-Relation-Subset : begin
 			begin leftShape
 			with-transform [ScaleAround middle SymbolMid (-1) 1] leftShape
 
-	for-width-kinds WideWidth0
+	for-width-kinds [if para.isQuasiProportional WideWidth0 Width]
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
 		create-glyph [MangleName 'supstBesideSubst'] [MangleUnicode 0x2AD7] : SideBySideSubsets false width
 		create-glyph [MangleName 'supstJoinedSubst'] [MangleUnicode 0x2AD8] : SideBySideSubsets true width
