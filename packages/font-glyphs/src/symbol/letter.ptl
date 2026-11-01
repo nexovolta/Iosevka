@@ -13,7 +13,7 @@ glyph-module
 glyph-block Symbol-Currency : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay ArcStartSerif
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-E : EShape
@@ -30,13 +30,23 @@ glyph-block Symbol-Currency : begin
 				flat (Middle + radius * 0.87       * [Math.cos angle]) (SymbolMid + radius * 0.87       * [Math.sin angle])
 				curl (Middle + radius * Math.SQRT2 * [Math.cos angle]) (SymbolMid + radius * Math.SQRT2 * [Math.sin angle])
 
-	define SterlingConfig : object
-		serifless     { 0 false false }
-		motionSerifed { 1 false false }
-		flatHook      { 0 true  false }
-		cornerHook    { 0 false true  }
+	define TOP-SERIFLESS       0
+	define TOP-SERIFED         1
+	define TOP-INWARD-SERIFED  2
 
-	foreach { suffix { serifGrade fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
+	define SterlingConfig : object
+		serifless                 { 0 TOP-SERIFLESS      false false }
+		serifed                   { 1 TOP-SERIFLESS      false false }
+		seriflessSerifed          { 0 TOP-SERIFED        false false }
+		serifedSerifed            { 1 TOP-SERIFED        false false }
+		seriflessInwardSerifed    { 0 TOP-INWARD-SERIFED  false false }
+		serifedInwardSerifed      { 1 TOP-INWARD-SERIFED  false false }
+		seriflessFlatHook         { 0 TOP-SERIFLESS      true  false }
+		serifedFlatHook           { 1 TOP-SERIFLESS      true  false }
+		seriflessCornerHook       { 0 TOP-SERIFLESS      false true  }
+		serifedCornerHook         { 1 TOP-SERIFLESS      false true  }
+
+	foreach { suffix { serifGrade topSerif fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
 		define xBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 		define [BaseShape] : glyph-proc
 			local hookEndX : Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]
@@ -58,6 +68,8 @@ glyph-block Symbol-Currency : begin
 						g4   SB Stroke
 				HBar.b SB RightSB 0
 			if serifGrade : include : VSerif.ur RightSB 0 VJut
+			if (topSerif === TOP-SERIFED) : include : ArcStartSerif.R hookEndX CAP Stroke Hook
+			if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR hookEndX CAP Stroke Hook
 
 		create-glyph "currency/sterlingSign.\(suffix)" : glyph-proc
 			set-width Width
