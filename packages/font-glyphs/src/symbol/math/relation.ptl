@@ -928,48 +928,34 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		local inset : HSwToV : sw * 0.75
 		local outer : if less (RightSB - inset) (SB + inset)
 		local x : if less (outer - rx) (outer + rx)
+		local center : mix bot top 0.5
+		local sectorEnd : if less (x + rx) (x - rx)
 		if less
 		: then : begin
 			include : LessShape top bot SB x sw
-			include : intersection [MaskRight x] : RingStroke top bot (x - rx) (x + rx) sw
+			include : intersection
+				LessMaskShape top bot SB sectorEnd
+				RingStrokeAt x center rx sw
 		: else : begin
 			include : GreaterShape top bot x RightSB sw
-			include : intersection [MaskLeft x] : RingStroke top bot (x - rx) (x + rx) sw
+			include : intersection
+				GreaterMaskShape top bot sectorEnd RightSB
+				RingStrokeAt x center rx sw
 
 	create-glyph 'lessCurveClosed' 0x2AA6 : CurvedClosedInequality true (SymbolMid + dH) (SymbolMid - dH)
 	create-glyph 'greaterCurveClosed' 0x2AA7 : CurvedClosedInequality false (SymbolMid + dH) (SymbolMid - dH)
-	define [CircularSectorSlant less width] : glyph-proc
-		local left : width * 0.08
-		local right : width * 0.92
-		local radius : right - left
-		local h : radius * [Math.sin (Math.PI / 12)]
-		local arcX : radius * [Math.cos (Math.PI / 12)]
-		local center : SymbolMid + lessEqDist * 0.7
-		local sw : Math.min [AdviceStroke2 2.5 4 (h * 2)] (h * 0.25)
-		local shift : Math.max (lessEqDist * 1.6) (sw * 2.5)
-		set-width width
+	define [CircularSectorSlant less] : glyph-proc
+		local upperTop : SymbolMid + dSH + lessEqDist
+		local upperBot : SymbolMid - dSH + lessEqDist
+		local lowerTop : SymbolMid + dH - lessEqDist
+		local lowerBot : SymbolMid - dH - lessEqDist
+		include : CurvedClosedInequality less upperTop upperBot
 		if less
-		: then : begin
-			local end : left + arcX
-			local maskEnd : right + [HSwToV sw]
-			local maskH : h * (maskEnd - left) / arcX
-			include : union
-				LessShape (center + h) (center - h) left end sw
-				intersection [LessMaskShape (center + maskH) (center - maskH) left maskEnd]
-					RingStrokeAt left center radius sw
-			include : LessShapeHalf 0 (center + h - shift) (center - h - shift) left end sw
-		: else : begin
-			local end : right - arcX
-			local maskEnd : left - [HSwToV sw]
-			local maskH : h * (right - maskEnd) / arcX
-			include : union
-				GreaterShape (center + h) (center - h) end right sw
-				intersection [GreaterMaskShape (center + maskH) (center - maskH) maskEnd right]
-					RingStrokeAt right center radius sw
-			include : GreaterShapeHalf 0 (center + h - shift) (center - h - shift) end right sw
+		: then : include : LessShapeHalf 0 lowerTop lowerBot SB RightSB OperatorStroke
+		: else : include : GreaterShapeHalf 0 lowerTop lowerBot SB RightSB OperatorStroke
 
-	create-glyph 'lessCurveClosedSlant' 0x2AA8 : CircularSectorSlant true Width
-	create-glyph 'greaterCurveClosedSlant' 0x2AA9 : CircularSectorSlant false Width
+	create-glyph 'lessCurveClosedSlant' 0x2AA8 : CircularSectorSlant true
+	create-glyph 'greaterCurveClosedSlant' 0x2AA9 : CircularSectorSlant false
 
 	alias 'zNotationSchemaPiping' 0x2A20 'greatergreater'
 
