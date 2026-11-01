@@ -65,9 +65,10 @@ glyph-block Symbol-Math-Circled : begin
 	define [HalfCircledMultiply left] : glyph-proc
 		local radius : Width * 0.56
 		local sw : Math.min MathEnclosureSw (radius * 0.2)
-		local mask : if left [MaskLeft Middle] [MaskRight Middle]
-		include : HalfCircledArc left radius sw
-		include : intersection mask : refer-glyph 'innerMultiply'
+		include : union
+			HalfCircledArc left radius sw
+			refer-glyph 'innerMultiply/stroke1'
+			refer-glyph 'innerMultiply/stroke2'
 
 	create-glyph 'mathLeftHalfCircled{innerPlus}' 0x2A2D : HalfCircledPlus true
 	create-glyph 'mathRightHalfCircled{innerPlus}' 0x2A2E : HalfCircledPlus false
