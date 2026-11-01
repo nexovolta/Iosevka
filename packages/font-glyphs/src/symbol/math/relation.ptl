@@ -166,17 +166,17 @@ glyph-block Symbol-Math-Relation-Equal : begin
 		include : refer-glyph 'ident'
 		foreach j [range 0 4] : include : DrawAt [mix SB RightSB ((j + 0.5) / 4)] y (dr - ov)
 
-	for-width-kinds WideWidth1
+	for-width-kinds WideWidth0
 		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		local l : mathWidth * 0.08
 		local r : mathWidth * 0.92
-		local sw : AdviceStrokeInSpace ((r - l) / 3) 3
+		local sw : begin OperatorStroke
 
 		WithDotVariants [MangleName 'doubleColonEqual'] [MangleUnicode 0x2A74] : function [DrawAt kr ov] : glyph-proc
-			local dr : Math.min (DotRadius * kr * OperatorStroke / Stroke) ((r - l) / 22)
-			local x1 : mix l r 0.06
-			local x2 : mix l r 0.23
-			local equalLeft : mix l r 0.36
+			local dr : DotRadius * kr * OperatorStroke / Stroke
+			local x1 : l + dr
+			local x2 : x1 + dr * 2 + (r - l) * 0.04
+			local equalLeft : x2 + dr + (r - l) * 0.04
 			set-width mathWidth
 			include : HBar.m equalLeft r (SymbolMid + EqualHalfSpace) sw
 			include : HBar.m equalLeft r (SymbolMid - EqualHalfSpace) sw
@@ -617,7 +617,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	define [InequalityWithQuestion less] : glyph-proc
 		local h : dH * 0.57
 		local y : SymbolMid - dH * 0.22
-		local scale : dH * 0.6 / CAP
+		local scale : dH * 1.0 / CAP
 		if less
 		: then : include : LessShape (y + h) (y - h) SB RightSB [AdviceStroke 4]
 		: else : include : GreaterShape (y + h) (y - h) SB RightSB [AdviceStroke 4]
@@ -788,8 +788,8 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greaterLessEqEq' 0x2A92 : TwoInequalitiesOverEqual false
 
 	define [InequalitiesWithSlants lessFirst] : glyph-proc
-		local half : Math.max (llggHeight * 0.44) (OperatorStroke * 2.75)
-		local band : half * 0.18
+		local half : Math.max (llggHeight * 0.65) (OperatorStroke * 4)
+		local band : half * 0.22
 		local sw : Math.min [AdviceStrokeInSpace (half * 2) 8] (half * 0.15)
 		local upper : SymbolMid + half * 0.68
 		local lower : SymbolMid - half * 0.08
@@ -877,17 +877,18 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		local right : width * 0.92
 		local halfHeight : (top - bot) / 2
 		local sw : Math.min [AdviceStroke2 2.5 4 (top - bot)] (halfHeight * 0.2)
-		local scaleStep 0.25
-		local tip : if less left right
+		local pitch : halfHeight * 0.36
 		foreach j [range 0 count] : begin
-			local scale : 1 - j * scaleStep
+			local t : top - j * pitch
+			local b : bot + j * pitch
+			local tipShift : (right - left) * j * pitch / halfHeight
 			if less
-			: then : include : with-transform [ScaleAround tip SymbolMid scale scale] : LessShape top bot left right sw
-			: else : include : with-transform [ScaleAround tip SymbolMid scale scale] : GreaterShape top bot left right sw
+			: then : include : LessShape t b (left + tipShift) right sw
+			: else : include : GreaterShape t b left (right - tipShift) sw
 
 	for-width-kinds WideWidth1
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
-		local height : Math.max (dH * 1.35) (OperatorStroke * 2.7)
+		local height : Math.max (dH * 1.8) (OperatorStroke * 4.5)
 		create-glyph [MangleName 'doubleNestedLess'] [MangleUnicode 0x2AA1] : glyph-proc
 			set-width width
 			include : NestedInequalities 2 true (SymbolMid + height) (SymbolMid - height) width
@@ -896,8 +897,13 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 			include : NestedInequalities 2 false (SymbolMid + height) (SymbolMid - height) width
 		create-glyph [MangleName 'doubleNestedLessUnderbar'] [MangleUnicode 0x2AA3] : glyph-proc
 			set-width width
-			include : NestedInequalities 2 true (SymbolMid + height) (SymbolMid - height * 0.45) width
-			include : HBar.m (width * 0.08) (width * 0.92) (SymbolMid - height) [AdviceStroke 5]
+			local oldHeight : Math.max (dH * 1.35) (OperatorStroke * 2.7)
+			local t : SymbolMid + oldHeight
+			local b : SymbolMid - oldHeight * 0.45
+			local sw : Math.min [AdviceStroke2 2.5 4 (t - b)] ((t - b) * 0.1)
+			foreach j [range 0 2] : include : with-transform [ScaleAround (width * 0.08) SymbolMid (1 - j * 0.25) (1 - j * 0.25)]
+				LessShape t b (width * 0.08) (width * 0.92) sw
+			include : HBar.m (width * 0.08) (width * 0.92) (SymbolMid - oldHeight) [AdviceStroke 5]
 		create-glyph [MangleName 'tripleNestedLess'] [MangleUnicode 0x2AF7] : glyph-proc
 			set-width width
 			include : NestedInequalities 3 true (SymbolMid + height) (SymbolMid - height) width
@@ -930,12 +936,40 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 
 	create-glyph 'lessCurveClosed' 0x2AA6 : CurvedClosedInequality true (SymbolMid + dH) (SymbolMid - dH)
 	create-glyph 'greaterCurveClosed' 0x2AA7 : CurvedClosedInequality false (SymbolMid + dH) (SymbolMid - dH)
-	create-glyph 'lessCurveClosedSlant' 0x2AA8 : glyph-proc
-		include : CurvedClosedInequality true (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist)
-		include : LessShapeHalf 0 (SymbolMid + dH - lessEqDist) (SymbolMid - dH - lessEqDist) SB RightSB OperatorStroke
-	create-glyph 'greaterCurveClosedSlant' 0x2AA9 : glyph-proc
-		include : CurvedClosedInequality false (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist)
-		include : GreaterShapeHalf 0 (SymbolMid + dH - lessEqDist) (SymbolMid - dH - lessEqDist) SB RightSB OperatorStroke
+	define [CircularSectorSlant less width] : glyph-proc
+		local left : width * 0.08
+		local right : width * 0.92
+		local radius : right - left
+		local h : radius * [Math.sin (Math.PI / 12)]
+		local arcX : radius * [Math.cos (Math.PI / 12)]
+		local center : SymbolMid + lessEqDist * 0.7
+		local sw : Math.min [AdviceStroke2 2.5 4 (h * 2)] (h * 0.25)
+		local shift : Math.max (lessEqDist * 1.6) (sw * 2.5)
+		set-width width
+		if less
+		: then : begin
+			local end : left + arcX
+			local maskEnd : right + [HSwToV sw]
+			local maskH : h * (maskEnd - left) / arcX
+			include : union
+				LessShape (center + h) (center - h) left end sw
+				intersection [LessMaskShape (center + maskH) (center - maskH) left maskEnd]
+					RingStrokeAt left center radius sw
+			include : LessShapeHalf 0 (center + h - shift) (center - h - shift) left end sw
+		: else : begin
+			local end : right - arcX
+			local maskEnd : left - [HSwToV sw]
+			local maskH : h * (right - maskEnd) / arcX
+			include : union
+				GreaterShape (center + h) (center - h) end right sw
+				intersection [GreaterMaskShape (center + maskH) (center - maskH) maskEnd right]
+					RingStrokeAt right center radius sw
+			include : GreaterShapeHalf 0 (center + h - shift) (center - h - shift) end right sw
+
+	for-width-kinds WideWidth0
+		local width : MathOperatorWidth MosaicWidth FMosaicWide
+		create-glyph [MangleName 'lessCurveClosedSlant'] [MangleUnicode 0x2AA8] : CircularSectorSlant true width
+		create-glyph [MangleName 'greaterCurveClosedSlant'] [MangleUnicode 0x2AA9] : CircularSectorSlant false width
 
 	alias 'zNotationSchemaPiping' 0x2A20 'greatergreater'
 
@@ -992,13 +1026,13 @@ glyph-block Symbol-Math-Relation-Precedes-Succeeds : begin
 	create-glyph 'precedes' 0x227a   : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 	create-glyph 'succeeds' 0x227b   : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 	create-glyph 'doublePrecedes' 0x2ABB : glyph-proc
-		local sw : Math.min [AdviceStroke2 2.75 4 (dH * 2)] ((RightSB - SB) * 0.11)
-		local gap : (RightSB - SB) * 0.04
+		local sw : Math.min [AdviceStroke2 2 3 (dH * 2)] ((RightSB - SB) * 0.15)
+		local gap : (SB - RightSB) * 0.03
 		include : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) SB (Middle + gap) sw
 		include : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) (Middle - gap) RightSB sw
 	create-glyph 'doubleSucceeds' 0x2ABC : glyph-proc
-		local sw : Math.min [AdviceStroke2 2.75 4 (dH * 2)] ((RightSB - SB) * 0.11)
-		local gap : (RightSB - SB) * 0.04
+		local sw : Math.min [AdviceStroke2 2 3 (dH * 2)] ((RightSB - SB) * 0.15)
+		local gap : (SB - RightSB) * 0.03
 		include : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) SB (Middle + gap) sw
 		include : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) (Middle - gap) RightSB sw
 	create-glyph 'precedesEqUpper'   : PrecedesShape (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist) SB RightSB
@@ -1016,8 +1050,8 @@ glyph-block Symbol-Math-Relation-Precedes-Succeeds : begin
 
 	derive-composites 'precedesEqEq'             0x2AB3 'precedesEqEqUpper' 'eqEqLower'
 	derive-composites 'precedesEqEqBarNegated'   0x2AB5 'precedesEqEqUpper' 'eqEqBarNegatedLower'
-	derive-composites 'precedesSymSym'           0x2AB7 'precedesEqEqUpper' 'symSymLower'
-	derive-composites 'precedesSymSymBarNegated' 0x2AB9 'precedesEqEqUpper' 'symSymBarNegatedLower'
+	derive-composites 'precedesSymSym'           0x2AB7 'precedesEqEqUpper' 'wideSymSymLower'
+	derive-composites 'precedesSymSymBarNegated' 0x2AB9 'precedesEqEqUpper' 'wideSymSymBarNegatedLower'
 
 
 	derive-composites 'succeeds.narrow'         null 'succeedsEqUpper' [ApparentTranslate 0 (-lessEqDist)]
@@ -1030,8 +1064,8 @@ glyph-block Symbol-Math-Relation-Precedes-Succeeds : begin
 
 	derive-composites 'succeedsEqEq'             0x2AB4 'succeedsEqEqUpper' 'eqEqLower'
 	derive-composites 'succeedsEqEqBarNegated'   0x2AB6 'succeedsEqEqUpper' 'eqEqBarNegatedLower'
-	derive-composites 'succeedsSymSym'           0x2AB8 'succeedsEqEqUpper' 'symSymLower'
-	derive-composites 'succeedsSymSymBarNegated' 0x2ABA 'succeedsEqEqUpper' 'symSymBarNegatedLower'
+	derive-composites 'succeedsSymSym'           0x2AB8 'succeedsEqEqUpper' 'wideSymSymLower'
+	derive-composites 'succeedsSymSymBarNegated' 0x2ABA 'succeedsEqEqUpper' 'wideSymSymBarNegatedLower'
 
 	turned 'turnSucceedsEqSlant' 0x22DE 'succeedsEqSlant' Middle SymbolMid
 	turned 'turnPrecedesEqSlant' 0x22DF 'precedesEqSlant' Middle SymbolMid
@@ -1210,8 +1244,8 @@ glyph-block Symbol-Math-Relation-Subset : begin
 	derive-composites 'supstEqEq'        0x2AC6 'supstEqEqUpper' 'eqEqLower'
 	derive-composites 'substSym'         0x2AC7 'substBarUpper' 'symLower'
 	derive-composites 'supstSym'         0x2AC8 'supstBarUpper' 'symLower'
-	derive-composites 'substSymSym'      0x2AC9 'substEqEqUpper' 'symSymLower'
-	derive-composites 'supstSymSym'      0x2ACA 'supstEqEqUpper' 'symSymLower'
+	derive-composites 'substSymSym'      0x2AC9 'substEqEqUpper' 'wideSymSymLower'
+	derive-composites 'supstSymSym'      0x2ACA 'supstEqEqUpper' 'wideSymSymLower'
 	derive-composites 'substEqEqNegated' 0x2ACB 'substEqEqUpper' 'eqEqBarNegatedLower'
 	derive-composites 'supstEqEqNegated' 0x2ACC 'supstEqEqUpper' 'eqEqBarNegatedLower'
 
@@ -1238,7 +1272,7 @@ glyph-block Symbol-Math-Relation-Subset : begin
 	define [StackedSubsets upperSup lowerSup] : glyph-proc
 		local h : dHSubstSimple * 0.55
 		local offset : dHSubstSimple * 0.72
-		local sw : Math.min [AdviceStroke 5] (dHSubstSimple * 0.18)
+		local sw : Math.min [AdviceStroke2 2.5 4 (h * 2)] (dHSubstSimple * 0.27)
 		if upperSup
 		: then : include : with-transform [FlipAround Middle (SymbolMid + offset)] : SubsetShape (SymbolMid + offset + h) (SymbolMid + offset - h) (sw -- sw)
 		: else : include : SubsetShape (SymbolMid + offset + h) (SymbolMid + offset - h) (sw -- sw)
@@ -1251,15 +1285,38 @@ glyph-block Symbol-Math-Relation-Subset : begin
 	create-glyph 'substAboveSubst' 0x2AD5 : StackedSubsets false false
 	create-glyph 'supstAboveSupst' 0x2AD6 : StackedSubsets true true
 
-	define [SideBySideSubsets joined] : glyph-proc
-		local scaleX 0.45
-		local shift : Width * 0.23
-		include : with-transform [ApparentTranslate (-shift) 0] : with-transform [ScaleAround Middle SymbolMid scaleX 0.82] : refer-glyph 'supst'
-		include : with-transform [ApparentTranslate (+shift) 0] : with-transform [ScaleAround Middle SymbolMid scaleX 0.82] : refer-glyph 'subst'
-		if joined : include : HBar.m (Middle - shift * 0.35) (Middle + shift * 0.35) SymbolMid [AdviceStroke 5]
+	define [SideBySideSubsets joined width] : glyph-proc
+		local middle : width / 2
+		local l : width * 0.08
+		local h : dHSubstSimple * 0.72
+		local sw : AdviceStroke2 2.5 3 (h * 2)
+		local gap : if joined 0 : Math.max (width * 0.035) [HSwToV sw]
+		local end : middle - gap
+		local curve : Math.min (h * 0.85) ((end - l) * 0.65)
+		local halfShape : dispiro
+			widths.lhs sw
+			flat end (SymbolMid + h) [heading Leftward]
+			curl (l + curve) (SymbolMid + h)
+			archv
+			g4 l SymbolMid
+			arcvh
+			flat (l + curve) (SymbolMid - h)
+			curl end (SymbolMid - h) [heading Rightward]
+		local leftShape : with-transform [FlipAround [mix l end 0.5] SymbolMid] halfShape
+		set-width width
+		if joined
+		: then : include : union
+			begin leftShape
+			with-transform [ScaleAround middle SymbolMid (-1) 1] leftShape
+			HBar.m (middle - curve) (middle + curve) SymbolMid sw
+		: else : include : union
+			begin leftShape
+			with-transform [ScaleAround middle SymbolMid (-1) 1] leftShape
 
-	create-glyph 'supstBesideSubst' 0x2AD7 : SideBySideSubsets false
-	create-glyph 'supstJoinedSubst' 0x2AD8 : SideBySideSubsets true
+	for-width-kinds WideWidth0
+		local width : MathOperatorWidth MosaicWidth FMosaicWide
+		create-glyph [MangleName 'supstBesideSubst'] [MangleUnicode 0x2AD7] : SideBySideSubsets false width
+		create-glyph [MangleName 'supstJoinedSubst'] [MangleUnicode 0x2AD8] : SideBySideSubsets true width
 
 	create-glyph 'substClosedBar' 0x2AD1 : composite-proc
 		SubsetClosedShape (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist) OperatorStroke
@@ -1443,8 +1500,12 @@ glyph-block Symbol-Math-Relation-Addon-Glyphs : begin
 	create-glyph 'symSymLower' : union
 		symWave (SymbolMid - dSH + lessEqDist * (1 / 4)) 0.65 [Math.min lesslessSW (lessEqDist * 0.55)]
 		symWave (SymbolMid - dSH - lessEqDist * (17 / 12)) 0.65 [Math.min lesslessSW (lessEqDist * 0.55)]
+	create-glyph 'wideSymSymLower' : union
+		symWave (SymbolMid - dSH + lessEqDist * (1 / 4)) 1 [Math.min lesslessSW (lessEqDist * 0.55)]
+		symWave (SymbolMid - dSH - lessEqDist * (17 / 12)) 1 [Math.min lesslessSW (lessEqDist * 0.55)]
 	create-glyph 'symEqLower' : union
 		symWave (SymbolMid - dSH + lessEqDist * (2 / 3)) 1 lesslessSW
 		HBar.m SB RightSB (SymbolMid - dSH - lessEqDist * (7 / 6)) lesslessSW
 	create-glyph 'eqEqBarNegatedLower'   : union [refer-glyph 'eqEqLower']   [EqEqBarNegation]
 	create-glyph 'symSymBarNegatedLower' : union [refer-glyph 'symSymLower'] [EqEqBarNegation]
+	create-glyph 'wideSymSymBarNegatedLower' : union [refer-glyph 'wideSymSymLower'] [EqEqBarNegation]

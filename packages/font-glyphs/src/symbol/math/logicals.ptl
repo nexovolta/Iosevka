@@ -199,8 +199,8 @@ glyph-block Symbol-Math-Logicals : begin
 				corner (center + (j - 1) * pitch + slant) OperTop
 
 	define [WhiteVerticalBar topY botY] : glyph-proc
-		local halfWidth : Width * 0.1
-		local sw : Math.min OperatorStroke (halfWidth * 0.5)
+		local halfWidth : Math.max (Width * 0.13) ([HSwToV OperatorStroke] * 1.1)
+		local sw : Math.min OperatorStroke (halfWidth * 0.75)
 		include : HBar.t (Middle - halfWidth) (Middle + halfWidth) topY sw
 		include : HBar.b (Middle - halfWidth) (Middle + halfWidth) botY sw
 		include : VBar.l (Middle - halfWidth) botY topY sw

@@ -330,13 +330,12 @@ glyph-block Symbol-Math-VAndCup : begin
 
 	define [JoinedCupCup] : glyph-proc
 		local sw : Math.min [AdviceStroke2 3 4 (OperTop - OperBot)] ((RightSB - SB) * 0.1)
-		local stemLeft : Middle - [HSwToV : sw / 2]
-		local stemRight : Middle + [HSwToV : sw / 2]
-		local arch : (RightSB - SB) * 0.2
+		local arch : (RightSB - SB) * 0.24
+		local stemEdge : Middle + [HSwToV : sw / 2]
 		include : union
-			UShape OperTop OperBot SB stemLeft sw arch arch
-			UShape OperTop OperBot stemRight RightSB sw arch arch
-			VBar.m Middle OperBot OperTop sw
+			UShape OperTop OperBot SB stemEdge sw arch arch
+			with-transform [ScaleAround Middle SymbolMid (-1) 1]
+				UShape OperTop OperBot SB stemEdge sw arch arch
 
 	create-glyph 'cupJoinedCup' 0x2A4A : JoinedCupCup
 
