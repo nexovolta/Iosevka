@@ -179,6 +179,36 @@ glyph-block Symbol-Math-Logicals : begin
 
 	turned 'shortBot' 0x2AE0 'shortTop' Middle SymbolMid
 
+	create-glyph 'perpendicularWithS' 0x2AE1 : glyph-proc
+		local scale 0.26
+		include : refer-glyph 'perpendicular'
+		include : with-transform [ApparentTranslate (Width * 0.2) (OperatorStroke * 1.15)]
+			with-transform [ScaleAround Middle 0 scale scale] : refer-glyph 'S'
+
+	for-width-kinds WideWidth1
+		create-glyph [MangleName 'tripleSolidus'] [MangleUnicode 0x2AFB] : glyph-proc
+			local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+			local sw : AdviceStrokeInSpace (mathWidth * 0.2) 3
+			local center : mathWidth / 2
+			local pitch : mathWidth * 0.2
+			local slant : mathWidth * 0.14
+			set-width mathWidth
+			foreach j [range 0 3] : include : dispiro
+				widths.center sw
+				corner (center + (j - 1) * pitch - slant) OperBot
+				corner (center + (j - 1) * pitch + slant) OperTop
+
+	define [WhiteVerticalBar topY botY] : glyph-proc
+		local halfWidth : Width * 0.1
+		local sw : Math.min OperatorStroke (halfWidth * 0.5)
+		include : HBar.t (Middle - halfWidth) (Middle + halfWidth) topY sw
+		include : HBar.b (Middle - halfWidth) (Middle + halfWidth) botY sw
+		include : VBar.l (Middle - halfWidth) botY topY sw
+		include : VBar.r (Middle + halfWidth) botY topY sw
+
+	create-glyph 'whiteVerticalBar' 0x2AFE : WhiteVerticalBar TackTop TackBot
+	create-glyph 'naryWhiteVerticalBar' 0x2AFF : WhiteVerticalBar BgOpTop BgOpBot
+
 	create-glyph 'ordinarilySatisfies' 0x2AE2 : glyph-proc
 		local l : mix Middle SB      1
 		local r : mix Middle RightSB 1

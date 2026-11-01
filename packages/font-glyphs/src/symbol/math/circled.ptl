@@ -57,6 +57,16 @@ glyph-block Symbol-Math-Circled : begin
 
 	create-glyph 0x2A36 : composite-proc [refer-glyph "mathCircled{innerMultiply}"] [MarkSet.plus] [refer-glyph 'circumflexAbove'] [clear-anchors]
 
+	create-glyph 'multiplyInDoubleCircle' 0x2A37 : glyph-proc
+		local radius : (RightSB - SB) * 0.55
+		local sw : Math.min [AdviceStroke 5] (radius * 0.12)
+		local inner : radius * 0.67
+		local arm : inner * 0.52
+		include : RingStrokeAt Middle SymbolMid radius sw
+		include : RingStrokeAt Middle SymbolMid inner sw
+		include : dispiro [widths.center sw] [flat (Middle - arm) (SymbolMid - arm)] [curl (Middle + arm) (SymbolMid + arm)]
+		include : dispiro [widths.center sw] [flat (Middle - arm) (SymbolMid + arm)] [curl (Middle + arm) (SymbolMid - arm)]
+
 	for-width-kinds WideWidth1
 		define [MakeMathBigCircled u inner] : begin
 			derive-glyphs [MangleName "mathBigCircled{\(inner)}"] [MangleUnicode u] [MangleName inner] : function [src gr] : composite-proc

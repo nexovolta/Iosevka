@@ -47,10 +47,45 @@ glyph-block Symbol-Math-Integrals : begin
 		include [shape]
 		include : Translate (Width * 0.275) 0
 
+	for-width-kinds WideWidth1
+		create-glyph [MangleName 'quadrupleIntegrate'] [MangleUnicode 0x2A0C] : glyph-proc
+			local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+			local scaleX : mathWidth / (Width * 1.6)
+			local centerShift : (mathWidth - Width * scaleX) / 2
+			set-width mathWidth
+			foreach j [range 0 4] : begin
+				local x : centerShift + (j - 1.5) * mathWidth * 0.19
+				include : with-transform [ApparentTranslate x 0] : with-transform [ApparentScaleX scaleX]
+					LongSShape BgOpTop BgOpBot (Hook * 0.55) (IntHookY * 0.55) [AdviceStroke 6]
+
+	create-glyph 'finitePartIntegrate' 0x2A0D : glyph-proc
+		include : refer-glyph 'integrate'
+		include : HBar.m SB RightSB SymbolMid OperatorStroke
+
+	create-glyph 'doubleStrokeIntegrate' 0x2A0E : glyph-proc
+		local sw : AdviceStroke 4
+		local d : Math.max sw ((BgOpTop - BgOpBot) * 0.055)
+		include : refer-glyph 'integrate'
+		include : HBar.m SB RightSB (SymbolMid + d) sw
+		include : HBar.m SB RightSB (SymbolMid - d) sw
+
+	create-glyph 'integralAverage' 0x2A0F : glyph-proc
+		include : refer-glyph 'integrate'
+		include : dispiro
+			widths.center OperatorStroke
+			corner SB (SymbolMid - (RightSB - SB) * 0.18)
+			corner RightSB (SymbolMid + (RightSB - SB) * 0.18)
+
 	define [IntegrateRingMask kx] : OShapeOutline.NoOvershoot (SymbolMid + (RightSB - SB) / 2) (SymbolMid - (RightSB - SB) / 2) [mix 0 SB kx] [mix Width RightSB kx]
 	define [IntegrateRing kx sw] : OShape (SymbolMid + (RightSB - SB) / 2) (SymbolMid - (RightSB - SB) / 2) [mix 0 SB kx] [mix Width RightSB kx] sw
 
 	define RingIntFine : AdviceStroke 4
+
+	create-glyph 'circulationFunction' 0x2A10 : glyph-proc
+		include : refer-glyph 'integrate'
+		include : intersection
+			IntegrateRing 1 RingIntFine
+			MaskLeft Middle
 
 	create-glyph 'ringIntegrate' 0x222E : union
 		difference
@@ -150,6 +185,38 @@ glyph-block Symbol-Math-Integrals : begin
 		difference
 			IntegrateBox 1 0
 			IntegrateBox 1 RingIntFine
+
+	create-glyph 'integralWithHookArrow' 0x2A17 : glyph-proc
+		include : refer-glyph 'integrate'
+		include : with-transform [ScaleAround Middle SymbolMid 0.9 0.65] : refer-glyph 'hookArrowLeft.NWID'
+
+	create-glyph 'integralWithMultiply' 0x2A18 : glyph-proc
+		include : refer-glyph 'integrate'
+		include : with-transform [ScaleAround Middle SymbolMid 0.7 0.7] : refer-glyph 'multiply'
+
+	define [IntegralWithCup cap] : glyph-proc
+		local halfWidth : Math.max ((RightSB - SB) * 0.43) [HSwToV (OperatorStroke * 1.8)]
+		local halfHeight : (BgOpTop - BgOpBot) * 0.24
+		local sw : AdviceStroke 5
+		local cup : new-glyph : glyph-proc
+			if cap
+			: then : include : with-transform [FlipAround Middle SymbolMid]
+				UShape (SymbolMid + halfHeight) (SymbolMid - halfHeight) (Middle - halfWidth) (Middle + halfWidth) sw
+			: else : include : UShape (SymbolMid + halfHeight) (SymbolMid - halfHeight) (Middle - halfWidth) (Middle + halfWidth) sw
+		include : union
+			LongSShape BgOpTop BgOpBot Hook IntHookY [AdviceStroke 4]
+			begin cup
+
+	create-glyph 'integralWithCap' 0x2A19 : IntegralWithCup true
+	create-glyph 'integralWithCup' 0x2A1A : IntegralWithCup false
+
+	create-glyph 'integralOverbar' 0x2A1B : glyph-proc
+		include : refer-glyph 'integrate'
+		include : HBar.m SB RightSB (BgOpTop + OperatorStroke) OperatorStroke
+
+	create-glyph 'integralUnderbar' 0x2A1C : glyph-proc
+		include : refer-glyph 'integrate'
+		include : HBar.m SB RightSB (BgOpBot - OperatorStroke) OperatorStroke
 
 	WithDotVariants 'rightHalfBoxDotIntegral' 0x2A12 : function [DrawAt kdr ov] : union
 		difference

@@ -69,6 +69,65 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 
 	turned [MangleName 'Cap'] [MangleUnicode 0x22C2] [MangleName 'Cup'] df.middle SymbolMid
 
+	WithDotVariants [MangleName 'CupDot'] [MangleUnicode 0x2A03] : function [DrawAt kr ov] : glyph-proc
+		local sw : AdviceStroke 4
+		local span : Math.max (df.rightSB - df.leftSB) [HSwToV (sw * 5)]
+		local radius : Math.min (DotRadius * kr * OperatorStroke / Stroke) ((span - [HSwToV (2 * sw)]) * 0.18)
+		set-width df.width
+		include : UShape BgOpTop BgOpBot (df.middle - span / 2) (df.middle + span / 2) sw
+			df.archDepthAOf (ArchDepth / [Math.sqrt df.adws]) sw
+			df.archDepthBOf (ArchDepth / [Math.sqrt df.adws]) sw
+		include : DrawAt df.middle (SymbolMid + (BgOpTop - BgOpBot) * 0.05) (radius - ov)
+
+	create-glyph [MangleName 'CupPlus'] [MangleUnicode 0x2A04] : glyph-proc
+		local outerSw : AdviceStroke 4
+		local span : Math.max (df.rightSB - df.leftSB) [HSwToV (outerSw * 5)]
+		local size : Math.min ((span - [HSwToV (2 * outerSw)]) * 0.3) ((BgOpTop - BgOpBot) * 0.15)
+		local sw : Math.min [AdviceStrokeInSpace (size * 2) 3] (size * 0.45)
+		local y : SymbolMid + (BgOpTop - BgOpBot) * 0.04
+		set-width df.width
+		include : UShape BgOpTop BgOpBot (df.middle - span / 2) (df.middle + span / 2) outerSw
+			df.archDepthAOf (ArchDepth / [Math.sqrt df.adws]) outerSw
+			df.archDepthBOf (ArchDepth / [Math.sqrt df.adws]) outerSw
+		include : HBar.m (df.middle - size) (df.middle + size) y sw
+		include : VBar.m df.middle (y - size) (y + size) sw
+
+	create-glyph [MangleName 'twoWedge'] [MangleUnicode 0x2A07] : glyph-proc
+		local usable : df.rightSB - df.leftSB
+		local shift : usable * 0.15
+		local sw : Math.min [AdviceStroke 4] (usable * 0.1)
+		set-width df.width
+		foreach j [range 0 2] : begin
+			local x : df.middle + (j * 2 - 1) * shift
+			include : dispiro
+				widths.center sw
+				flat (x - usable * 0.35) BgOpBot
+				curl x BgOpTop
+			include : dispiro
+				widths.center sw
+				flat x BgOpTop
+				curl (x + usable * 0.35) BgOpBot
+
+	turned [MangleName 'twoVee'] [MangleUnicode 0x2A08] [MangleName 'twoWedge'] df.middle SymbolMid
+
+	create-glyph [MangleName 'moduloTwoSum'] [MangleUnicode 0x2A0A] : glyph-proc
+		local ringRadius : Math.min [Math.max ((df.rightSB - df.leftSB) * 0.24) [HSwToV (OperatorStroke * 1.15)]] ((BgOpTop - BgOpBot) * 0.3)
+		local ringStroke : Math.min [AdviceStrokeInSpace (ringRadius * 2) 4] (ringRadius * 0.3)
+		local sigma : new-glyph : SigmaShape df BgOpTop BgOpBot [AdviceStroke 4]
+		local ringMask : OShapeOutline.NoOvershoot (SymbolMid + ringRadius) (SymbolMid - ringRadius) (df.middle - ringRadius) (df.middle + ringRadius)
+		set-width df.width
+		include : union
+			difference sigma ringMask
+			intersection ringMask : SigmaShape df BgOpTop BgOpBot ringStroke
+			RingStrokeAt df.middle SymbolMid ringRadius ringStroke
+
+	create-glyph [MangleName 'sumIntegral'] [MangleUnicode 0x2A0B] : glyph-proc
+		local halfHeight : (BgOpTop - BgOpBot) * 0.31
+		set-width df.width
+		include : SigmaShape df (SymbolMid + halfHeight) (SymbolMid - halfHeight) [AdviceStroke 4]
+		include : with-transform [ApparentTranslate (df.middle - Middle) 0]
+			LongSShape BgOpTop BgOpBot Hook (Hook * 0.75) [AdviceStroke 4]
+
 	create-glyph [MangleName 'Top'] [MangleUnicode 0x27D9] : glyph-proc
 		set-width df.width
 		include : HBar.t df.leftSB df.rightSB BgTkTop OperatorStroke

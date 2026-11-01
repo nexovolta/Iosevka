@@ -76,6 +76,26 @@ glyph-block Symbol-Math-Arith : begin
 			refer-glyph 'circumflexAbove'
 			clear-anchors
 
+		create-glyph 'plusSubscriptTwo' 0x2A27 : glyph-proc
+			include : with-transform [ApparentTranslate (-Width * 0.1) (Width * 0.08)] : with-transform [ScaleAround Middle SymbolMid 0.72 0.72] : refer-glyph 'plus'
+			include : with-transform [ApparentTranslate (Width * 0.18) (PlusBot - CAP * 0.12)]
+				with-transform [ScaleAround Middle 0 0.32 0.32] : refer-glyph 'two.lnum'
+
+		create-glyph 'plusBlackTriangle' 0x2A28 : glyph-proc
+			local halfWidth : Math.max ((RightSB - SB) * 0.25) [HSwToV OperatorStroke]
+			local bottom : Math.min (PlusBot - (PlusTop - PlusBot) * 0.15) (PlusBot - OperatorStroke * 0.65)
+			include : union
+				refer-glyph 'plus'
+				spiro-outline
+					corner Middle SymbolMid
+					corner (Middle - halfWidth) bottom
+					corner (Middle + halfWidth) bottom
+
+		create-glyph 'minusCommaAbove' 0x2A29 : glyph-proc
+			include : refer-glyph 'minus'
+			include : with-transform [ApparentTranslate 0 (SymbolMid + OperatorStroke * 1.5)]
+				with-transform [ScaleAround Middle 0 0.38 0.38] : refer-glyph 'comma'
+
 		create-glyph 'doublePlus' 0x29FA : glyph-proc
 			include : HBar.m SB RightSB SymbolMid OperatorStroke
 			include : VBar.m ([mix SB RightSB (1/3)] - (1/6) * [HSwToV OperatorStroke]) PlusTop PlusBot OperatorStroke
@@ -121,6 +141,14 @@ glyph-block Symbol-Math-Arith : begin
 		create-glyph 'multiply' 0xD7 : glyph-proc
 			include : MultiplyStroke1Shape OperatorStroke 1 1 1
 			include : MultiplyStroke2Shape OperatorStroke 1 1 1
+
+		create-glyph 'smashProduct' 0x2A33 : glyph-proc
+			local sw : AdviceStroke 6
+			local shift : Size * 0.23
+			include : with-transform [ApparentTranslate (-shift) 0] : MultiplyStroke1Shape sw 1 0.76 0.76
+			include : with-transform [ApparentTranslate (+shift) 0] : MultiplyStroke1Shape sw 1 0.76 0.76
+			include : with-transform [ApparentTranslate (-shift) 0] : MultiplyStroke2Shape sw 1 0.76 0.76
+			include : with-transform [ApparentTranslate (+shift) 0] : MultiplyStroke2Shape sw 1 0.76 0.76
 
 		create-glyph 'multiplyUnderbar' 0x2A31 : glyph-proc
 			include : refer-glyph "multiply"

@@ -104,6 +104,17 @@ glyph-block Symbol-Math-Geometry : begin
 				refer-glyph : MangleName 'whiteTriangleUp'
 				with-transform [ApparentTranslate (MosaicMiddle - Middle) sY] : with-transform [ScaleAround Middle 0 scale scale] : refer-glyph 'S'
 
+		define [OperatorInTriangle base] : glyph-proc
+			local scale : Math.min ((triangleHalfWidth * 0.65) / (RightSB - SB)) ((triangleHalfHeight * 0.6) / (PlusTop - PlusBot))
+			include : MathWidthShape MosaicWidth FMosaicWide : union
+				refer-glyph : MangleName 'whiteTriangleUp'
+				with-transform [ApparentTranslate (MosaicMiddle - Middle) (-triangleHalfHeight / 3)]
+					with-transform [ScaleAround Middle SymbolMid scale scale] : refer-glyph base
+
+		create-glyph [MangleName 'trianglePlus'] [MangleUnicode 0x2A39] : OperatorInTriangle 'plus'
+		create-glyph [MangleName 'triangleMinus'] [MangleUnicode 0x2A3A] : OperatorInTriangle 'minus'
+		create-glyph [MangleName 'triangleMultiply'] [MangleUnicode 0x2A3B] : OperatorInTriangle 'multiply'
+
 	create-glyph 'measuredAngle' 0x2221 : glyph-proc
 		include [refer-glyph 'angle'] AS_BASE ALSO_METRICS
 		include : intersection

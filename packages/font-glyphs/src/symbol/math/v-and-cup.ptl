@@ -140,6 +140,29 @@ glyph-block Symbol-Math-VAndCup : begin
 
 	turned 'doubleWedge' 0x2A53 'doubleVee' Middle SymbolMid
 
+	WithDotVariants 'wedgeDotAbove' 0x2A51 : function [DrawAt kr ov] : glyph-proc
+		local dr : Math.min (DotRadius * kr * OperatorStroke / Stroke) ((OperTop - OperBot) / 12)
+		include : WedgeShape (OperTop - dr * 3) OperBot [AdviceStroke 4]
+		include : DrawAt Middle (OperTop - dr) (dr - ov)
+
+	WithDotVariants 'veeDotAbove' 0x2A52 : function [DrawAt kr ov] : glyph-proc
+		local dr : Math.min (DotRadius * kr * OperatorStroke / Stroke) ((OperTop - OperBot) / 12)
+		include : VeeShape (OperTop - dr * 3) OperBot [AdviceStroke 4]
+		include : DrawAt Middle (OperTop - dr) (dr - ov)
+
+	create-glyph 'intersectingWedges' 0x2A55 : glyph-proc
+		local shift : (RightSB - SB) * 0.16
+		local sw : AdviceStroke 6
+		include : with-transform [ApparentTranslate (-shift) 0] : with-transform [ScaleAround Middle SymbolMid 0.68 1] : WedgeShape OperTop OperBot sw
+		include : with-transform [ApparentTranslate (+shift) 0] : with-transform [ScaleAround Middle SymbolMid 0.68 1] : WedgeShape OperTop OperBot sw
+
+	turned 'intersectingVees' 0x2A56 'intersectingWedges' Middle SymbolMid
+
+	create-glyph 'veeOverlappingWedge' 0x2A59 : glyph-proc
+		local sw : AdviceStroke 5
+		include : VeeShape OperTop OperBot sw
+		include : WedgeShape OperTop OperBot sw
+
 	create-glyph 'math/logic/equalAnd' 0x2A5E : let [gap : WedgeBarGap] : union
 		HBar.t SB RightSB (OperTop + EqualHalfSpace * 0.75) OperatorStroke
 		HBar.t SB RightSB (OperTop - EqualHalfSpace * 0.75) OperatorStroke
@@ -274,6 +297,46 @@ glyph-block Symbol-Math-VAndCup : begin
 		include : FlipAround Middle SymbolMid
 		include : HBar.t SB RightSB OperTop OperatorStroke
 
+	create-glyph 'capWedge' 0x2A44 : glyph-proc
+		include : refer-glyph 'cap'
+		include : with-transform [ApparentTranslate 0 ((OperBot - SymbolMid) * 0.24)]
+			with-transform [ScaleAround Middle SymbolMid 0.42 0.42] : refer-glyph 'wedge'
+
+	turned 'cupVee' 0x2A45 'capWedge' Middle SymbolMid
+
+	define [StackedCupCap upperCup withBar] : glyph-proc
+		local height : Math.max (OperTop - OperBot) (OperatorStroke * 8)
+		local shift : height * 0.29
+		local halfHeight : height * [if withBar 0.18 0.21]
+		local left : mix Middle SB 0.85
+		local right : mix Middle RightSB 0.85
+		local sw : Math.min [AdviceStroke 5] (height * 0.075)
+		local arch : Math.min ((right - left) * 0.3) (halfHeight * 1.4)
+		if upperCup
+		: then : begin
+			include : UShape (SymbolMid + shift + halfHeight) (SymbolMid + shift - halfHeight) left right sw arch arch
+			include : with-transform [FlipAround Middle (SymbolMid - shift)]
+				UShape (SymbolMid - shift + halfHeight) (SymbolMid - shift - halfHeight) left right sw arch arch
+		: else : begin
+			include : with-transform [FlipAround Middle (SymbolMid + shift)]
+				UShape (SymbolMid + shift + halfHeight) (SymbolMid + shift - halfHeight) left right sw arch arch
+			include : UShape (SymbolMid - shift + halfHeight) (SymbolMid - shift - halfHeight) left right sw arch arch
+		if withBar : include : HBar.m left right SymbolMid sw
+
+	create-glyph 'cupAboveCap' 0x2A46 : StackedCupCap true false
+	create-glyph 'capAboveCup' 0x2A47 : StackedCupCap false false
+	create-glyph 'cupBarCap' 0x2A48 : StackedCupCap true true
+	create-glyph 'capBarCup' 0x2A49 : StackedCupCap false true
+
+	create-glyph 'cupJoinedCup' 0x2A4A : glyph-proc
+		local sw : Math.min [AdviceStroke 5] ((RightSB - SB) * 0.08)
+		local arch : (RightSB - SB) * 0.2
+		include : union
+			UShape OperTop OperBot SB Middle sw arch arch
+			UShape OperTop OperBot Middle RightSB sw arch arch
+
+	turned 'capJoinedCap' 0x2A4B 'cupJoinedCup' Middle SymbolMid
+
 	turned 'elementDown' 0x2AD9 'elementUp' Middle SymbolMid
 
 	create-glyph 'transversalIntersection' 0x2ADB : composite-proc
@@ -301,6 +364,36 @@ glyph-block Symbol-Math-VAndCup : begin
 		include : HBar.t SB RightSB OperTop OperatorStroke
 		include : HSerif.lt SB      OperTop SideJut OperatorStroke
 		include : HSerif.rt RightSB OperTop SideJut OperatorStroke
+
+	create-glyph 'cupClosedSmash' 0x2A50 : glyph-proc
+		local mathWidth : if para.isQuasiProportional (Width * para.advanceScaleM) Width
+		local outerSw : AdviceStroke 4
+		local halfWidth : Math.max ((RightSB - SB) / 2) [HSwToV (outerSw * 2.8)]
+		local halfHeight : Math.max ((OperTop - OperBot) / 2) (outerSw * 2.8)
+		local left : Middle - halfWidth
+		local right : Middle + halfWidth
+		local top : SymbolMid + halfHeight
+		local bottom : SymbolMid - halfHeight
+		local xSize : halfWidth * 0.38
+		local ySize : halfHeight * 0.3
+		local shift : xSize * 0.4
+		local sw : Math.min [AdviceStroke 5] (xSize * 0.25)
+		set-width mathWidth
+		include : UShape top bottom left right outerSw
+		include : HBar.t left right top outerSw
+		include : HSerif.lt left top SideJut outerSw
+		include : HSerif.rt right top SideJut outerSw
+		foreach j [range 0 2] : begin
+			local dx : (2 * j - 1) * shift
+			include : dispiro
+				widths.center sw
+				flat (Middle + dx - xSize) (SymbolMid - ySize)
+				curl (Middle + dx + xSize) (SymbolMid + ySize)
+			include : dispiro
+				widths.center sw
+				flat (Middle + dx - xSize) (SymbolMid + ySize)
+				curl (Middle + dx + xSize) (SymbolMid - ySize)
+		include : ApparentTranslate ((mathWidth - Width) / 2) 0
 
 	turned 'capClosedSerifed' 0x2A4D 'cupClosedSerifed' Middle SymbolMid
 
