@@ -727,7 +727,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	derive-composites 'lessEqEqBarNegated'      0x2268 'lessEqEqUpper'    'eqEqBarNegatedLower'
 	derive-composites 'greaterEqEqBarNegated'   0x2269 'greaterEqEqUpper' 'eqEqBarNegatedLower'
 	define [InequalityApprox less negated] : glyph-proc
-		local lowerScale 0.62
+		local lowerScale 1
 		local lowerY : SymbolMid - dSH - lessEqDist * 0.6
 		include : refer-glyph [if less 'lessEqEqUpper' 'greaterEqEqUpper']
 		include : with-transform [ApparentTranslate 0 (lowerY - SymbolMid)]
@@ -916,9 +916,11 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB lesslessSW
 
 	create-glyph 'greaterBesideLess' 0x2AA5 : glyph-proc
-		local gap : (RightSB - SB) * 0.12
-		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB (Middle - gap) lesslessSW
-		include : LessShape (SymbolMid + dH) (SymbolMid - dH) (Middle + gap) RightSB lesslessSW
+		local width WideWidth0
+		local gap : width * 0.12
+		set-width width
+		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) 0 (width / 2 - gap) lesslessSW
+		include : LessShape (SymbolMid + dH) (SymbolMid - dH) (width / 2 + gap) width lesslessSW
 
 	define [CurvedClosedInequality less top bot] : glyph-proc
 		local sw : Math.min [AdviceStroke2 2.5 4 (top - bot)] ((top - bot) * 0.17)
@@ -966,10 +968,8 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 					RingStrokeAt right center radius sw
 			include : GreaterShapeHalf 0 (center + h - shift) (center - h - shift) end right sw
 
-	for-width-kinds WideWidth0
-		local width : MathOperatorWidth MosaicWidth FMosaicWide
-		create-glyph [MangleName 'lessCurveClosedSlant'] [MangleUnicode 0x2AA8] : CircularSectorSlant true width
-		create-glyph [MangleName 'greaterCurveClosedSlant'] [MangleUnicode 0x2AA9] : CircularSectorSlant false width
+	create-glyph 'lessCurveClosedSlant' 0x2AA8 : CircularSectorSlant true Width
+	create-glyph 'greaterCurveClosedSlant' 0x2AA9 : CircularSectorSlant false Width
 
 	alias 'zNotationSchemaPiping' 0x2A20 'greatergreater'
 

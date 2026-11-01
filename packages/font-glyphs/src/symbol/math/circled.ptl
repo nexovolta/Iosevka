@@ -59,10 +59,17 @@ glyph-block Symbol-Math-Circled : begin
 			HBar.m (Middle - radius * 0.62) (Middle + radius * 0.62) SymbolMid sw
 			VBar.m Middle (SymbolMid - radius * 0.62) (SymbolMid + radius * 0.62) sw
 
+	define [HalfCircledMultiply left] : glyph-proc
+		local radius : Width * 0.56
+		local sw : Math.min MathEnclosureSw (radius * 0.2)
+		local mask : if left [MaskLeft Middle] [MaskRight Middle]
+		include : intersection mask : RingStrokeAt Middle SymbolMid radius sw
+		include : intersection mask : refer-glyph 'innerMultiply'
+
 	create-glyph 'mathLeftHalfCircled{innerPlus}' 0x2A2D : HalfCircledPlus true
 	create-glyph 'mathRightHalfCircled{innerPlus}' 0x2A2E : HalfCircledPlus false
-	MakeMathLeftHalfCircled  0x2A34 'innerMultiply'
-	MakeMathRightHalfCircled 0x2A35 'innerMultiply'
+	create-glyph 'mathLeftHalfCircled{innerMultiply}' 0x2A34 : HalfCircledMultiply true
+	create-glyph 'mathRightHalfCircled{innerMultiply}' 0x2A35 : HalfCircledMultiply false
 
 	create-glyph 0x2A36 : composite-proc [refer-glyph "mathCircled{innerMultiply}"] [MarkSet.plus] [refer-glyph 'circumflexAbove'] [clear-anchors]
 
