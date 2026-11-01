@@ -9,6 +9,7 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
 
 	define [BulletShape top bot left right sw] : glyph-proc
 		local vsw : HSwToV sw
@@ -47,6 +48,24 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 				HookEnd 0 (sw -- sw)
 				g4 SB (0 + SHook)
 			include : VBar.m midbarX bulletBot CAP sw
+		create-forked-glyph 'pilcrow.serifed' : glyph-proc
+			include : dispiro
+				widths.rhs sw
+				flat RightSB CAP [heading Downward]
+				curl RightSB (0 + SmallArchDepthA)
+				HookEnd 0 (sw -- sw)
+				g4 SB (0 + SHook)
+			include : VBar.m midbarX bulletBot CAP sw
+			include : ArcStartSerif.R RightSB CAP sw Hook
+		create-forked-glyph 'pilcrow.inwardSerifed' : glyph-proc
+			include : dispiro
+				widths.rhs sw
+				flat RightSB CAP [heading Downward]
+				curl RightSB (0 + SmallArchDepthA)
+				HookEnd 0 (sw -- sw)
+				g4 SB (0 + SHook)
+			include : VBar.m midbarX bulletBot CAP sw
+			include : ArcStartSerif.InwardR RightSB CAP sw Hook
 
 			create-forked-glyph 'curvedPilcrow' 0x2761 : glyph-proc
 				include : HBar.t midbarX [mix RightSB Width 0.5] CAP sw
@@ -79,6 +98,12 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 			include : FlipAround Middle (CAP / 2) (-1) 1
 		create-forked-glyph 'revPilcrow.curved' : glyph-proc
 			include [refer-glyph 'pilcrow.curved'] AS_BASE
+			include : FlipAround Middle (CAP / 2) (-1) 1
+		create-forked-glyph 'revPilcrow.serifed' : glyph-proc
+			include [refer-glyph 'pilcrow.serifed'] AS_BASE
+			include : FlipAround Middle (CAP / 2) (-1) 1
+		create-forked-glyph 'revPilcrow.inwardSerifed' : glyph-proc
+			include [refer-glyph 'pilcrow.inwardSerifed'] AS_BASE
 			include : FlipAround Middle (CAP / 2) (-1) 1
 		create-forked-glyph 'revPilcrow.flatHook' : glyph-proc
 			include [refer-glyph 'pilcrow.flatHook'] AS_BASE
