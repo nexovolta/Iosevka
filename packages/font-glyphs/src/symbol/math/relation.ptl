@@ -726,10 +726,22 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	derive-composites 'greaterEqEq'             0x2267 'greaterEqEqUpper' 'eqEqLower'
 	derive-composites 'lessEqEqBarNegated'      0x2268 'lessEqEqUpper'    'eqEqBarNegatedLower'
 	derive-composites 'greaterEqEqBarNegated'   0x2269 'greaterEqEqUpper' 'eqEqBarNegatedLower'
-	derive-composites 'lessSymSym'              0x2A85 'lessEqEqUpper'    'symSymLower'
-	derive-composites 'greaterSymSym'           0x2A86 'greaterEqEqUpper' 'symSymLower'
-	derive-composites 'lessSymSymBarNegated'    0x2A89 'lessEqEqUpper'    'symSymBarNegatedLower'
-	derive-composites 'greaterSymSymBarNegated' 0x2A8A 'greaterEqEqUpper' 'symSymBarNegatedLower'
+	define [InequalityApprox less negated] : glyph-proc
+		local lowerScale 0.62
+		local lowerY : SymbolMid - dSH - lessEqDist * 0.6
+		include : refer-glyph [if less 'lessEqEqUpper' 'greaterEqEqUpper']
+		include : with-transform [ApparentTranslate 0 (lowerY - SymbolMid)]
+			with-transform [ScaleAround Middle SymbolMid lowerScale lowerScale] : refer-glyph 'approx'
+		if negated : include : with-transform [ApparentTranslate 0 (lowerY - SymbolMid)]
+			with-transform [ScaleAround Middle SymbolMid lowerScale lowerScale] : dispiro
+				widths.center [AdviceStroke2 2.5 4 (dSH * 2)]
+				flat (SB + (RightSB - SB) * 0.2) (SymbolMid - dSH * 0.55)
+				curl (RightSB - (RightSB - SB) * 0.2) (SymbolMid + dSH * 0.55)
+
+	create-glyph 'lessSymSym'              0x2A85 : InequalityApprox true false
+	create-glyph 'greaterSymSym'           0x2A86 : InequalityApprox false false
+	create-glyph 'lessSymSymBarNegated'    0x2A89 : InequalityApprox true true
+	create-glyph 'greaterSymSymBarNegated' 0x2A8A : InequalityApprox false true
 	derive-composites 'lessSymEq'               0x2A8D 'lessEqEqUpper'    'symEqLower'
 	derive-composites 'greaterSymEq'            0x2A8E 'greaterEqEqUpper' 'symEqLower'
 
@@ -776,11 +788,11 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greaterLessEqEq' 0x2A92 : TwoInequalitiesOverEqual false
 
 	define [InequalitiesWithSlants lessFirst] : glyph-proc
-		local half : Math.max (llggHeight * 0.5) (OperatorStroke * 3)
+		local half : Math.max (llggHeight * 0.44) (OperatorStroke * 2.75)
 		local band : half * 0.18
 		local sw : Math.min [AdviceStrokeInSpace (half * 2) 8] (half * 0.15)
-		local upper : SymbolMid + half * 0.78
-		local lower : SymbolMid - half * 0.18
+		local upper : SymbolMid + half * 0.68
+		local lower : SymbolMid - half * 0.08
 		if lessFirst
 		: then : begin
 			include : LessShape (upper + band) (upper - band) SB RightSB sw
@@ -863,16 +875,15 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	define [NestedInequalities count less top bot width] : glyph-proc
 		local left : width * 0.08
 		local right : width * 0.92
-		local span : right - left
-		local pitch : span * 0.19
-		local innerSpan : span - (count - 1) * pitch
 		local halfHeight : (top - bot) / 2
-		local sw : Math.min [AdviceStroke 5] (pitch * halfHeight / [Math.hypot innerSpan halfHeight] * 0.72)
+		local sw : Math.min [AdviceStroke2 2.5 4 (top - bot)] (halfHeight * 0.2)
+		local scaleStep 0.25
+		local tip : if less left right
 		foreach j [range 0 count] : begin
-			local dx : j * pitch
+			local scale : 1 - j * scaleStep
 			if less
-			: then : include : LessShape top bot (left + dx) (left + dx + innerSpan) sw
-			: else : include : GreaterShape top bot (right - dx - innerSpan) (right - dx) sw
+			: then : include : with-transform [ScaleAround tip SymbolMid scale scale] : LessShape top bot left right sw
+			: else : include : with-transform [ScaleAround tip SymbolMid scale scale] : GreaterShape top bot left right sw
 
 	for-width-kinds WideWidth1
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
@@ -904,16 +915,16 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		include : LessShape (SymbolMid + dH) (SymbolMid - dH) (Middle + gap) RightSB lesslessSW
 
 	define [CurvedClosedInequality less top bot] : glyph-proc
-		local sw : AdviceStroke 4
-		local rx : (RightSB - SB) * 0.17
-		local y : mix top bot 0.5
+		local sw : Math.min [AdviceStroke2 2.5 4 (top - bot)] ((top - bot) * 0.17)
+		local rx : Math.min ((RightSB - SB) * 0.18) ((top - bot) * 0.45)
+		local inset : HSwToV : sw * 0.75
+		local outer : if less (RightSB - inset) (SB + inset)
+		local x : if less (outer - rx) (outer + rx)
 		if less
 		: then : begin
-			local x : RightSB - rx
 			include : LessShape top bot SB x sw
 			include : intersection [MaskRight x] : RingStroke top bot (x - rx) (x + rx) sw
 		: else : begin
-			local x : SB + rx
 			include : GreaterShape top bot x RightSB sw
 			include : intersection [MaskLeft x] : RingStroke top bot (x - rx) (x + rx) sw
 
@@ -981,13 +992,13 @@ glyph-block Symbol-Math-Relation-Precedes-Succeeds : begin
 	create-glyph 'precedes' 0x227a   : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 	create-glyph 'succeeds' 0x227b   : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 	create-glyph 'doublePrecedes' 0x2ABB : glyph-proc
-		local sw : Math.min [AdviceStroke 5] ((RightSB - SB) * 0.075)
-		local gap : (RightSB - SB) * 0.06
+		local sw : Math.min [AdviceStroke2 2.75 4 (dH * 2)] ((RightSB - SB) * 0.11)
+		local gap : (RightSB - SB) * 0.04
 		include : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) SB (Middle + gap) sw
 		include : PrecedesShape (SymbolMid + dH) (SymbolMid - dH) (Middle - gap) RightSB sw
 	create-glyph 'doubleSucceeds' 0x2ABC : glyph-proc
-		local sw : Math.min [AdviceStroke 5] ((RightSB - SB) * 0.075)
-		local gap : (RightSB - SB) * 0.06
+		local sw : Math.min [AdviceStroke2 2.75 4 (dH * 2)] ((RightSB - SB) * 0.11)
+		local gap : (RightSB - SB) * 0.04
 		include : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) SB (Middle + gap) sw
 		include : SucceedsShape (SymbolMid + dH) (SymbolMid - dH) (Middle - gap) RightSB sw
 	create-glyph 'precedesEqUpper'   : PrecedesShape (SymbolMid + dSH + lessEqDist) (SymbolMid - dSH + lessEqDist) SB RightSB

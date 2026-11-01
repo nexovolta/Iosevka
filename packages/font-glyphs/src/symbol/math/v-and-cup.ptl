@@ -310,7 +310,7 @@ glyph-block Symbol-Math-VAndCup : begin
 		local halfHeight : height * [if withBar 0.18 0.21]
 		local left : mix Middle SB 0.85
 		local right : mix Middle RightSB 0.85
-		local sw : Math.min [AdviceStroke 5] (height * 0.075)
+		local sw : Math.min [AdviceStroke2 3.5 5 (halfHeight * 2)] (halfHeight * 0.42)
 		local arch : Math.min ((right - left) * 0.3) (halfHeight * 1.4)
 		if upperCup
 		: then : begin
@@ -328,14 +328,20 @@ glyph-block Symbol-Math-VAndCup : begin
 	create-glyph 'cupBarCap' 0x2A48 : StackedCupCap true true
 	create-glyph 'capBarCup' 0x2A49 : StackedCupCap false true
 
-	create-glyph 'cupJoinedCup' 0x2A4A : glyph-proc
-		local sw : Math.min [AdviceStroke 5] ((RightSB - SB) * 0.08)
+	define [JoinedCupCup] : glyph-proc
+		local sw : Math.min [AdviceStroke2 3 4 (OperTop - OperBot)] ((RightSB - SB) * 0.1)
+		local stemLeft : Middle - [HSwToV : sw / 2]
+		local stemRight : Middle + [HSwToV : sw / 2]
 		local arch : (RightSB - SB) * 0.2
 		include : union
-			UShape OperTop OperBot SB Middle sw arch arch
-			UShape OperTop OperBot Middle RightSB sw arch arch
+			UShape OperTop OperBot SB stemLeft sw arch arch
+			UShape OperTop OperBot stemRight RightSB sw arch arch
+			VBar.m Middle OperBot OperTop sw
 
-	turned 'capJoinedCap' 0x2A4B 'cupJoinedCup' Middle SymbolMid
+	create-glyph 'cupJoinedCup' 0x2A4A : JoinedCupCup
+
+	create-glyph 'capJoinedCap' 0x2A4B : glyph-proc
+		include : with-transform [FlipAround Middle SymbolMid] : JoinedCupCup
 
 	turned 'elementDown' 0x2AD9 'elementUp' Middle SymbolMid
 
