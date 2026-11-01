@@ -96,22 +96,23 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 		local usable : df.rightSB - df.leftSB
 		local shift : usable * 0.15
 		local sw : Math.min [AdviceStroke 4] (usable * 0.1)
+		local outerSw : Math.min [AdviceStroke2 2.5 3 (BgOpTop - BgOpBot)] (usable * 0.16)
 		set-width df.width
 		foreach j [range 0 2] : begin
 			local x : df.middle + (j * 2 - 1) * shift
 			include : dispiro
-				widths.center sw
+				widths.center [if (j == 0) outerSw sw]
 				flat (x - usable * 0.35) BgOpBot
 				curl x BgOpTop
 			include : dispiro
-				widths.center sw
+				widths.center [if (j == 1) outerSw sw]
 				flat x BgOpTop
 				curl (x + usable * 0.35) BgOpBot
 
 	turned [MangleName 'twoVee'] [MangleUnicode 0x2A08] [MangleName 'twoWedge'] df.middle SymbolMid
 
 	create-glyph [MangleName 'moduloTwoSum'] [MangleUnicode 0x2A0A] : glyph-proc
-		local ringRadius : Math.min [Math.max ((df.rightSB - df.leftSB) * 0.24) [HSwToV (OperatorStroke * 1.15)]] ((BgOpTop - BgOpBot) * 0.3)
+		local ringRadius : Math.min [Math.max ((df.rightSB - df.leftSB) * 0.36) [HSwToV (OperatorStroke * 1.5)]] ((BgOpTop - BgOpBot) * 0.36)
 		local ringStroke : Math.min [AdviceStrokeInSpace (ringRadius * 2) 4] (ringRadius * 0.3)
 		local sigma : new-glyph : SigmaShape df BgOpTop BgOpBot [AdviceStroke 4]
 		local ringMask : OShapeOutline.NoOvershoot (SymbolMid + ringRadius) (SymbolMid - ringRadius) (df.middle - ringRadius) (df.middle + ringRadius)

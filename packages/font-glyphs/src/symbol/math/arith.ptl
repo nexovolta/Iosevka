@@ -10,6 +10,7 @@ glyph-block Symbol-Math-Arith : begin
 	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
 	glyph-block-import Symbol-Math-Relation-Common : EqualHalfSpace
 	glyph-block-import Symbol-Math-Relation-Sym : symWave
+	glyph-block-import Symbol-Punctuation-Dashes : ObliqueHyphenShapeAtAngle
 
 	do "Plus/Minus"
 		glyph-block-export PlusShape
@@ -93,7 +94,7 @@ glyph-block Symbol-Math-Arith : begin
 
 		create-glyph 'minusCommaAbove' 0x2A29 : glyph-proc
 			include : refer-glyph 'minus'
-			include : with-transform [ApparentTranslate 0 (SymbolMid + OperatorStroke * 1.5)]
+			include : with-transform [ApparentTranslate 0 (SymbolMid + OperatorStroke * 1.5 + XH * 0.07)]
 				with-transform [ScaleAround Middle 0 0.38 0.38] : refer-glyph 'comma'
 
 		create-glyph 'doublePlus' 0x29FA : glyph-proc
@@ -143,12 +144,18 @@ glyph-block Symbol-Math-Arith : begin
 			include : MultiplyStroke2Shape OperatorStroke 1 1 1
 
 		create-glyph 'smashProduct' 0x2A33 : glyph-proc
-			local sw : AdviceStroke 6
-			local shift : Size * 0.23
-			include : with-transform [ApparentTranslate (-shift) 0] : MultiplyStroke1Shape sw 1 0.76 0.76
-			include : with-transform [ApparentTranslate (+shift) 0] : MultiplyStroke1Shape sw 1 0.76 0.76
-			include : with-transform [ApparentTranslate (-shift) 0] : MultiplyStroke2Shape sw 1 0.76 0.76
-			include : with-transform [ApparentTranslate (+shift) 0] : MultiplyStroke2Shape sw 1 0.76 0.76
+			local df : DivFrame para.advanceScaleF
+			local shift : Math.max (Size * 0.4) (OperatorStroke * 0.9)
+			local sw : Math.min [AdviceStroke2 3 4 (Size * 2)] (shift * 0.5)
+			include : union
+				with-transform [ApparentTranslate (shift / 2) 0]
+					ObliqueHyphenShapeAtAngle df (SymbolMid - shift / 2) (Math.PI / 4) sw
+				with-transform [ApparentTranslate (-shift / 2) 0]
+					ObliqueHyphenShapeAtAngle df (SymbolMid + shift / 2) (Math.PI / 4) sw
+				with-transform [ApparentTranslate (-shift / 2) 0]
+					ObliqueHyphenShapeAtAngle df (SymbolMid - shift / 2) (-Math.PI / 4) sw
+				with-transform [ApparentTranslate (shift / 2) 0]
+					ObliqueHyphenShapeAtAngle df (SymbolMid + shift / 2) (-Math.PI / 4) sw
 
 		create-glyph 'multiplyUnderbar' 0x2A31 : glyph-proc
 			include : refer-glyph "multiply"

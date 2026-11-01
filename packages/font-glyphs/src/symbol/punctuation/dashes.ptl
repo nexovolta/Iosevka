@@ -52,17 +52,23 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		include : HBar.m df.leftSB df.rightSB SymbolMid
 
 	define ObliqueHyphenAngle : 22 / 180 * Math.PI
-	define ObliqueHyphenCos : 1 * [Math.cos ObliqueHyphenAngle]
-	define ObliqueHyphenSin : 1 * [Math.sin ObliqueHyphenAngle]
-	define [ObliqueHyphenDelta df] : begin
+	define [ObliqueHyphenDeltaAtAngle df angle] : begin
 		local half : (df.rightSB - df.leftSB) / 2
-		local dx : half * ObliqueHyphenCos
-		local dy : half * ObliqueHyphenSin
+		local dx : half * [Math.cos angle]
+		local dy : half * [Math.sin angle]
 		return {dx dy}
+	define [ObliqueHyphenDelta df] : ObliqueHyphenDeltaAtAngle df ObliqueHyphenAngle
 	define [ObliqueHyphenShape df yMid] : begin
 		local {dx dy} : ObliqueHyphenDelta df
 		return : dispiro
 			widths.center
+			corner (df.middle - dx) (yMid - dy)
+			corner (df.middle + dx) (yMid + dy)
+	glyph-block-export ObliqueHyphenShapeAtAngle
+	define [ObliqueHyphenShapeAtAngle df yMid angle sw] : begin
+		local {dx dy} : ObliqueHyphenDeltaAtAngle df angle
+		return : dispiro
+			widths.center sw
 			corner (df.middle - dx) (yMid - dy)
 			corner (df.middle + dx) (yMid + dy)
 	define [DoubleObliqueHyphenShape df] : union
