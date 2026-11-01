@@ -95,34 +95,36 @@ glyph-block Symbol-Math-Frame : begin
 				curl leftBox  topBox
 
 	for-width-kinds WideWidth1
+		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+		local mathMiddle : mathWidth / 2
 		local radiusBig : (TackTop - TackBot) / 2 * [Math.sqrt MosaicWidthScalar]
-		local leftBig   : MosaicMiddle - radiusBig
-		local rightBig  : MosaicMiddle + radiusBig
+		local leftBig   : mathMiddle - radiusBig
+		local rightBig  : mathMiddle + radiusBig
 		local topBig    : SymbolMid + radiusBig
 		local bottomBig : SymbolMid - radiusBig
 
 		create-glyph [MangleName 'mathOBig/outline'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : spiro-outline
-				g4 MosaicMiddle topBig
+				g4 mathMiddle topBig
 				archv nothing 2
 				g4 leftBig SymbolMid
 				arcvh nothing 2
-				g4 MosaicMiddle bottomBig
+				g4 mathMiddle bottomBig
 				archv nothing 2
 				g4 rightBig SymbolMid
 				arcvh nothing 2
 				close
 
 		create-glyph [MangleName 'mathOBig'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : dispiro
 				widths.lhs GeometryStroke
-				g4 MosaicMiddle (topBig - O)
+				g4 mathMiddle (topBig - O)
 				archv nothing 2
 				g4 (leftBig + O) SymbolMid
 				arcvh nothing 2
-				g4 MosaicMiddle (bottomBig + O)
+				g4 mathMiddle (bottomBig + O)
 				archv nothing 2
 				g4 (rightBig - O) SymbolMid
 				arcvh nothing 2

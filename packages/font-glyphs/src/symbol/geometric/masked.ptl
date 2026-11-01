@@ -8,10 +8,11 @@ glyph-module
 glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes
+	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes MathWidthShape
 
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 	define Size : GeometricSizes Geom
+	define [PackMathShape shape] : MathWidthShape Geom.Width FMosaicWide shape
 
 	define [UpperHalfMask] : Rect (Geom.MidY + Geom.Size * 2) Geom.MidY 0 Geom.Width
 	define [LowerHalfMask] : Rect Geom.MidY (Geom.MidY - Geom.Size * 2) 0 Geom.Width
@@ -173,7 +174,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 		foreach [{u UP DN LH RH} : items-of triangleParts] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				set-width Geom.Width
-				include : union
+				local shape : union
 					glyph-proc
 						if UP : include : refer-glyph : MangleName 'whiteTriangleUp'
 						if DN : include : refer-glyph : MangleName 'whiteTriangleDown'
@@ -184,6 +185,8 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 						glyph-proc
 							if LH : include : LeftHalfMask
 							if RH : include : RightHalfMask
+				if (u === 0x29E8 || u === 0x29E9) : include : PackMathShape shape
+				: else : include shape
 
 	do "Partial Stars"
 		define starParts : list
@@ -542,30 +545,34 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					dispiro [widths.center GeometryStroke] [flat Geom.Left Geom.Top] [curl Geom.Right Geom.Bot]
 
 		create-glyph [MangleName 'whiteLozengeBar'] [MangleUnicode 0x27E0] : glyph-proc
-			set-width Geom.Width
-			include : union
+			include : PackMathShape : union
 				refer-glyph : MangleName 'whiteLozenge'
 				intersection
-					refer-glyph : MangleName 'blackLozenge'
+					refer-glyph : MangleName 'blackLozengeBase'
 					HBar.m 0 MosaicWidth Geom.MidY GeometryStroke
 
 		# Mathematical Triangle Symbols
 		define triangleSideRadius : Geom.Size * 2.1 / [Math.sqrt 3]
 		derive-multi-part-glyphs [MangleName 'whiteTriangleUpDotAbove'] [MangleUnicode 0x29CA] { [MangleName 'whiteTriangleUp'] 'dotAbove' } : lambda [srcs gr] : glyph-proc
 			local { base mark } srcs
-			include : refer-glyph mark
-			include : Translate (Middle + Geom.MidX) (Geom.Top - XH)
-			include [refer-glyph base] AS_BASE ALSO_METRICS
+			include : PackMathShape : new-glyph : glyph-proc
+				include : refer-glyph mark
+				include : Translate (Middle + Geom.MidX) (Geom.Top - XH)
+				include [refer-glyph base] AS_BASE ALSO_METRICS
 
 		create-glyph [MangleName 'whiteTriangleUpBarBelow'] [MangleUnicode 0x29CB] : glyph-proc
-			include [refer-glyph : MangleName 'whiteTriangleUp'] AS_BASE ALSO_METRICS
-			include : HBar.t (Geom.MidX - triangleSideRadius) (Geom.MidX + triangleSideRadius) (Geom.Bot - AccentClearance) GeometryStroke
+			include : PackMathShape : new-glyph : glyph-proc
+				include [refer-glyph : MangleName 'whiteTriangleUp'] AS_BASE ALSO_METRICS
+				include : HBar.t (Geom.MidX - triangleSideRadius) (Geom.MidX + triangleSideRadius) (Geom.Bot - AccentClearance) Size.Oblique.sw
 
 		create-glyph [MangleName 'whiteTriangleUpSerifBottom'] [MangleUnicode 0x29CD] : glyph-proc
-			define jut : clamp 0 (MosaicMiddle - triangleSideRadius) (SideJut * MosaicWidthScalar)
-			include [refer-glyph : MangleName 'whiteTriangleUp'] AS_BASE ALSO_METRICS
-			include : HSerif.lb (Geom.MidX - triangleSideRadius) Geom.Bot jut GeometryStroke
-			include : HSerif.rb (Geom.MidX + triangleSideRadius) Geom.Bot jut GeometryStroke
+			local jut : SideJut * MosaicWidthScalar
+			local xScale : Math.min 1 ((Geom.MidX - jut - GeometryStroke / 2) / triangleSideRadius)
+			local side : triangleSideRadius * xScale
+			include : PackMathShape : union
+				with-transform [ScaleAround Geom.MidX Geom.MidY xScale 1] : refer-glyph : MangleName 'whiteTriangleUp'
+				HSerif.lb (Geom.MidX - side) Geom.Bot jut Size.Oblique.sw
+				HSerif.rb (Geom.MidX + side) Geom.Bot jut Size.Oblique.sw
 
 		# Genealogy Symbols
 		create-glyph [MangleName 'marriageSymbol'] [MangleUnicode 0x26AD] : glyph-proc

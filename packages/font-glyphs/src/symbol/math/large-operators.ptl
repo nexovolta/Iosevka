@@ -17,7 +17,7 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 	define MosaicBottom fontMetrics.os2.sTypoDescender
 	define MosaicHeight : MosaicTop - MosaicBottom
 
-	define advanceScaleLargeOperators : Math.max para.advanceScaleM (MosaicWidth / Width)
+	define advanceScaleLargeOperators : if (FMosaicWide && para.isQuasiProportional) para.advanceScaleMM : Math.max para.advanceScaleM (MosaicWidth / Width)
 	define df : DivFrame advanceScaleLargeOperators 0 [if FMosaicWide advanceScaleLargeOperators 1]
 
 	create-glyph [MangleName 'sum'] [MangleUnicode 0x2211] : glyph-proc
@@ -78,17 +78,18 @@ glyph-block Symbol-Math-Large-Operators : for-width-kinds WideWidth1
 
 	# These operators are always wide. In force-monospace variants they will be deleted
 	if (MosaicWidthScalar > 1 && !para.forceMonospace) : do
+		define longWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		define kLongTackSB : [DivFrame MosaicWidthScalar 4].leftSB / [DivFrame MosaicWidthScalar 2].leftSB
 
 		define l : mix 0 SB kLongTackSB
-		define r : MosaicWidth - l
+		define r : longWidth - l
 
 		create-glyph 'longVDash' 0x27DD : glyph-proc
-			set-width MosaicWidth
+			set-width longWidth
 			include : HBar.m l r SymbolMid OperatorStroke
 			include : VBar.l l TackTop TackBot OperatorStroke
 
-		turned 'longDashV' 0x27DE 'longVDash' (MosaicWidth / 2) SymbolMid
+		turned 'longDashV' 0x27DE 'longVDash' (longWidth / 2) SymbolMid
 
 	create-glyph [MangleName 'SquareCap'] [MangleUnicode 0x2A05] : glyph-proc
 		set-width df.width

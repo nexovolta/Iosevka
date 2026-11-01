@@ -475,43 +475,45 @@ glyph-block Symbol-Math-Arith : begin
 			g2 [mix SB RightSB 0.55] [mix PlusBot PlusTop 0.00]
 
 	for-width-kinds WideWidth1
+		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+		local mathMiddle : mathWidth / 2
 		create-glyph [MangleName 'innerPlusBig'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : union
-				HBar.m SB (MosaicWidth - SB) SymbolMid GeometryStroke
-				VBar.m MosaicMiddle [mix SymbolMid PlusTop MosaicWidthScalar] [mix SymbolMid PlusBot MosaicWidthScalar] GeometryStroke
+				HBar.m SB (mathWidth - SB) SymbolMid GeometryStroke
+				VBar.m mathMiddle [mix SymbolMid PlusTop MosaicWidthScalar] [mix SymbolMid PlusBot MosaicWidthScalar] GeometryStroke
 
 		create-glyph [MangleName 'innerMultiplyBig/stroke1'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			local radius : (RightSB - SB) / 2 * [Math.sqrt MosaicWidthScalar]
 			include : dispiro
 				widths.center GeometryStroke
-				flat (MosaicMiddle - radius) (SymbolMid - radius)
-				curl (MosaicMiddle + radius) (SymbolMid + radius)
+				flat (mathMiddle - radius) (SymbolMid - radius)
+				curl (mathMiddle + radius) (SymbolMid + radius)
 
 		create-glyph [MangleName 'innerMultiplyBig/stroke2'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			local radius : (RightSB - SB) / 2 * [Math.sqrt MosaicWidthScalar]
 			include : dispiro
 				widths.center GeometryStroke
-				flat (MosaicMiddle + radius) (SymbolMid - radius)
-				curl (MosaicMiddle - radius) (SymbolMid + radius)
+				flat (mathMiddle + radius) (SymbolMid - radius)
+				curl (mathMiddle - radius) (SymbolMid + radius)
 
 		create-glyph [MangleName 'innerMultiplyBig'] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : refer-glyph : MangleName "innerMultiplyBig/stroke1"
 			include : refer-glyph : MangleName "innerMultiplyBig/stroke2"
 
 		create-glyph [MangleName 'risingDiagonal'] [MangleUnicode 0x27CB] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : dispiro
 				widths.center OperatorStroke
 				flat SB [mix SymbolMid PlusBot MosaicWidthScalar]
-				curl (MosaicWidth - SB) [mix SymbolMid PlusTop MosaicWidthScalar]
+				curl (mathWidth - SB) [mix SymbolMid PlusTop MosaicWidthScalar]
 
 		create-glyph [MangleName 'fallingDiagonal'] [MangleUnicode 0x27CD] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : dispiro
 				widths.center OperatorStroke
 				flat SB [mix SymbolMid PlusTop MosaicWidthScalar]
-				curl (MosaicWidth - SB) [mix SymbolMid PlusBot MosaicWidthScalar]
+				curl (mathWidth - SB) [mix SymbolMid PlusBot MosaicWidthScalar]

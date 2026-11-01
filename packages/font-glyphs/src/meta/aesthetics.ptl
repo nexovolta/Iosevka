@@ -47,6 +47,8 @@ export : define [calculateMetrics para] : begin
 	define [Scale sx sy] : new Transform sx 0 0 [fallback sy sx] 0 0
 	define [Translate x y] : new Transform 1 0 0 1 x y
 	define [ApparentTranslate x y] : Translate (x + TanSlope * y) y
+	# Scale the upright shape before restoring the shear around SymbolMid.
+	define [ApparentScaleX scale] : new Transform scale (TanSlope * (1 - scale)) 0 1 (TanSlope * (scale - 1) * SymbolMid) 0
 	define [Rotate angle] : new Transform [Math.cos angle] [Math.sin (-angle)] [Math.sin angle] [Math.cos angle] 0 0
 
 	define GlobalTransform : Italify para.slopeAngle
@@ -134,6 +136,7 @@ export : define [calculateMetrics para] : begin
 	define WideWidth2 : if (para.spacing >= 2) WideWidth0 Width
 	define WideWidth3 : if (para.spacing >= 3) WideWidth0 Width
 	define WideWidth4 : if (para.spacing >= 4) WideWidth0 Width
+	define [MathOperatorWidth width wide] : if (wide && para.isQuasiProportional) (Width * para.advanceScaleMM) width
 
 	define [NarrowUnicodeT wd] : function [u] : if (wd === Width) u null
 	define [WideUnicodeT   wd] : function [u] : if (wd !== Width) u null
@@ -228,14 +231,14 @@ export : define [calculateMetrics para] : begin
 	return [object
 		DesignParameters UPM HalfUPM Width SB CAP XH Ascender Descender SymbolMid ParenTop ParenBot
 		OperTop OperBot TackTop TackBot PlusTop PlusBot PictTop PictBot BgOpTop BgOpBot BgTkTop
-		BgTkBot Contrast Italify Upright Scale Translate ApparentTranslate Rotate GlobalTransform
+		BgTkBot Contrast Italify Upright Scale Translate ApparentTranslate ApparentScaleX Rotate GlobalTransform
 		TanSlope HVContrast VHContrast HSwToV VSwToH Upward Downward Rightward Leftward O OX OXHook
 		Hook AHook SHook RHook JHook HookX TailX TailY DiagTailAngle DiagTailDepth ArchDepth
 		SmallArchDepth AdviceStrokeInSpace AdviceStroke AdviceStroke2 Stroke HalfStroke QuarterStroke
 		DotSize PeriodSize SquareDotScalar HBarPos OverlayPos OverlayStroke Jut LongJut MidJutSide
 		MidJutCenter VJut LongVJut VJutStroke AccentStackOffset AccentWidth AccentClearance
 		AccentHeight CThin CThinB SLAB IBalance IBalance2 JBalance JBalance2 TBalance TBalance2
-		RBalance RBalance2 FBalance OneBalance WideWidth0 WideWidth1 WideWidth2 WideWidth3 WideWidth4
+		RBalance RBalance2 FBalance OneBalance WideWidth0 WideWidth1 WideWidth2 WideWidth3 WideWidth4 MathOperatorWidth
 		NarrowUnicodeT WideUnicodeT EssRatioUpper EssRatioLower EssRatioQuestion EssUpper EssLower
 		EssQuestion RightSB Middle DotRadius PeriodRadius SideJut DToothlessRise ShoulderFine
 		TightBendInnerDiameter TightBendInnerRadius StrokeWidthBlend SmoothAdjust ArchDepthAOf

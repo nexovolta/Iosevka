@@ -185,6 +185,8 @@ glyph-block Digits-Eight : begin
 			g4.down.end [box.xp (1 - p)] (box.top - adaTop) [widths.lhs.heading sw Downward]
 
 	for-width-kinds WideWidth1 : do
+		define mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+		define mathScaleX : mathWidth / MosaicWidth
 		define xSF : 1 / [Math.pow (2 / MosaicWidthScalar) 0.6]
 		define xSS : 1 / [Math.pow (2 / MosaicWidthScalar) 0.3]
 		define xl : mix (MosaicWidth / 2) (MosaicWidthScalar * SB)               (1 / xSF)
@@ -192,20 +194,21 @@ glyph-block Digits-Eight : begin
 		define yt : mix SymbolMid OperTop 0.75
 		define yb : mix SymbolMid OperBot 0.75
 		create-glyph [MangleName 'infty'] [MangleUnicode 0x221E] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : PointingTo xr yt xr yb : function [] : glyph-proc
 				set currentGlyph.gizmo : Italify para.slopeAngle
 				local box : new Box (xr - xl) 0 0 (yt - yb)
 				include : EightShape (OperatorStroke / xSS) box 1 0.9
 				include : Italify (-para.slopeAngle)
 			include : ScaleAround (MosaicUnitWidth / 2) SymbolMid xSF xSF
+			include : ApparentScaleX mathScaleX
 
-		define symbolInfinityScale : if FMosaicWide 1 0.75
-		define [InfinityForSymbols] : with-transform [ScaleAround (MosaicWidth / 2) SymbolMid 1 symbolInfinityScale] : refer-glyph [MangleName 'infty']
+		define symbolInfinityScale 1
+		define [InfinityForSymbols] : with-transform [ScaleAround (mathWidth / 2) SymbolMid 1 symbolInfinityScale] : refer-glyph [MangleName 'infty']
 
 		create-glyph [MangleName 'incompleteInfinity'] [MangleUnicode 0x29DC] : glyph-proc
-			set-width MosaicWidth
-			local mid : MosaicWidth / 2
+			set-width mathWidth
+			local mid : mathWidth / 2
 			local sw : OperatorStroke * xSF / xSS
 			local cutHeight : sw * 0.9 + (MosaicWidth - 2 * MosaicWidthScalar * SB) * 0.032
 			include : with-transform [ScaleAround mid SymbolMid 1 symbolInfinityScale] : difference
@@ -214,46 +217,47 @@ glyph-block Digits-Eight : begin
 					corner mid VERY-FAR
 					corner VERY-FAR VERY-FAR
 					corner VERY-FAR SymbolMid
-					corner (mid + sw * 0.56 + 1) SymbolMid
+					corner (mid + sw * 0.56 * mathScaleX + 1) SymbolMid
 					corner mid (SymbolMid + cutHeight)
 
 		create-glyph [MangleName 'tieOverInfinity'] [MangleUnicode 0x29DD] : glyph-proc
-			set-width MosaicWidth
-			local mid : MosaicWidth / 2
-			local tieRadius : (mid - MosaicWidthScalar * SB) / 2
+			set-width mathWidth
+			local tieRadius : (MosaicWidth / 2 - MosaicWidthScalar * SB) / 2
 			local tieBase : SymbolMid + (yt - yb) * xSF * 0.40 * symbolInfinityScale
 			local tieStroke : AdviceStrokeInSpace (tieRadius * 2) 3.2
 			local infinity : InfinityForSymbols
 			include infinity
 			include : difference
 				intersection
-					Rect VERY-FAR tieBase 0 MosaicWidth
-					RingStrokeAt mid tieBase tieRadius tieStroke
+					Rect VERY-FAR tieBase 0 mathWidth
+					with-transform [ApparentScaleX mathScaleX] : RingStrokeAt (MosaicWidth / 2) tieBase tieRadius tieStroke
 				difference [remove-holes infinity] infinity
 
 		create-glyph [MangleName 'infinityNegatedWithVerticalBar'] [MangleUnicode 0x29DE] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			local halfHeight : (yt - yb) * xSF * symbolInfinityScale
 			include : InfinityForSymbols
-			include : VBar.m (MosaicWidth / 2) (SymbolMid - halfHeight) (SymbolMid + halfHeight) [AdviceStrokeInSpace (yt - yb) 6]
+			include : VBar.m (mathWidth / 2) (SymbolMid - halfHeight) (SymbolMid + halfHeight) [AdviceStrokeInSpace (yt - yb) 6]
 
 		create-glyph [MangleName 'propto'] [MangleUnicode 0x221D] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : PointingTo xr yt xr yb : function [] : glyph-proc
 				set currentGlyph.gizmo : Italify para.slopeAngle
 				local box : new Box (xr - xl) 0 0 (yt - yb)
 				include : PropToShape (OperatorStroke / xSS) box 1 0.9
 				include : Italify (-para.slopeAngle)
 			include : ScaleAround (MosaicUnitWidth / 2) SymbolMid xSF xSF
+			include : ApparentScaleX mathScaleX
 
 		create-glyph [MangleName 'invLazyS'] [MangleUnicode 0x223E] : glyph-proc
-			set-width MosaicWidth
+			set-width mathWidth
 			include : PointingTo xr yt xr yb : function [] : glyph-proc
 				set currentGlyph.gizmo : Italify para.slopeAngle
 				local box : new Box (xr - xl) 0 0 (yt - yb)
 				include : InvLazySShape (OperatorStroke / xSS) box 1 0.9
 				include : Italify (-para.slopeAngle)
 			include : ScaleAround (MosaicUnitWidth / 2) SymbolMid xSF xSF
+			include : ApparentScaleX mathScaleX
 
 	define [BBEightSd] : with-params [top swStart swEnd kTop sign OffsetLT OffsetRB OffsetC] : begin
 		define stroke : Math.max swStart swEnd

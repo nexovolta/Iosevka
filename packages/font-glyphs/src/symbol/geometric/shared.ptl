@@ -7,6 +7,14 @@ import [DesignParameters] from "../../meta/aesthetics.mjs"
 glyph-module
 
 glyph-block Symbol-Geometric-Shared : begin
+	glyph-block-import CommonShapes : with-transform
+
+	glyph-block-export MathWidthShape
+	define [MathWidthShape width wide shape] : glyph-proc
+		local mathWidth : MathOperatorWidth width wide
+		set-width mathWidth
+		include : with-transform [ApparentScaleX (mathWidth / width)] shape
+
 	glyph-block-export GeometricDim
 	define [GeometricDim unitWidth fullWidth] : begin
 		define s : fullWidth / unitWidth

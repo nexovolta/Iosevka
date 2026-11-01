@@ -44,8 +44,9 @@ glyph-block Symbol-Math-Dots-And-Colons : begin
 
 		for-width-kinds WideWidth1
 			create-glyph "\[MangleName 'mathCDotBig'].\(suffix)" : glyph-proc
-				set-width MosaicWidth
-				include : DrawAt MosaicMiddle SymbolMid (radius1 - overshoot)
+				local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
+				set-width mathWidth
+				include : DrawAt (mathWidth / 2) SymbolMid (radius1 - overshoot)
 
 	select-variant 'therefore' 0x2234 (follow -- 'punctuationDot')
 	select-variant 'because' 0x2235 (follow -- 'punctuationDot')
