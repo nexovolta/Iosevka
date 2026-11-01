@@ -120,7 +120,8 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 		create-glyph [MangleName 'rightDownBelowDash'] [MangleUnicode 0x296D] : HarpoonWithDash false false
 
 	do "Arrow and relation combinations"
-		glyph-block-import Symbol-Math-Relation-Sym : symWave
+		glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
+		glyph-block-import Mark-Above : TildeShape
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
 		local d : ArrowDims width
 		local a : ArrowT d
@@ -128,16 +129,11 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 		local right d.arrowRSB
 		local middle d.arrowMidX
 		local sw : AdviceStroke 4
-		local gap : Math.max (sw * 3.5) (d.compactHeadSize * 1.7)
 		local head : d.compactHeadSize * 0.8
 		define [RelationShape relation cy half inset] : new-glyph : glyph-proc
 			local innerLeft : left + inset
 			if (relation == 'less' || relation == 'greater')
-			: then : include : dispiro
-				widths.center sw
-				corner right (cy + half)
-				corner innerLeft cy
-				corner right (cy - half)
+			: then : include : [if (relation == 'less') LessShape GreaterShape] (cy + half) (cy - half) innerLeft right sw
 			: else : include : dispiro
 				widths.lhs sw
 				flat right (cy + half) [heading Leftward]
@@ -147,8 +143,16 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 				arcvh
 				flat [mix innerLeft right 0.4] (cy - half)
 				curl right (cy - half) [heading Rightward]
-			if (relation == 'greater' || relation == 'supst') : include : FlipAround middle cy
+			if (relation == 'supst') : include : FlipAround middle cy
+		define [RelationWave y amp] : TildeShape
+			ttop -- (y + amp)
+			tbot -- (y - amp)
+			leftEnd -- (left + sw / 2)
+			rightEnd -- (right - sw / 2)
+			hs -- (sw / 2)
+			stretch -- 1
 		define [StackedRelationArrow relation above rightward] : glyph-proc
+			local gap : if (relation == 'equal') [Math.max (sw * 3.5) (d.compactHeadSize * 1.7)] [Math.max (sw * 4.5) (d.compactHeadSize * 2.4)]
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
 			local yr : SymbolMid + [if above 0.5 (-0.5)] * gap
 			set-width width
@@ -161,13 +165,13 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 				include : HBar.m left right (yr - sw) sw
 			: else : begin
 				if (relation == 'wave')
-				: then : include : with-transform [ApparentTranslate (middle - Middle) (yr - SymbolMid)] : symWave SymbolMid 0.65 sw
+				: then : include : RelationWave yr [Math.max (sw * 0.9) ((right - left) * 0.08)]
 				: else : begin
 					if (relation == 'approx')
 					: then : begin
-						include : with-transform [ApparentTranslate (middle - Middle) (yr - SymbolMid + sw)] : symWave SymbolMid 0.5 sw
-						include : with-transform [ApparentTranslate (middle - Middle) (yr - SymbolMid - sw)] : symWave SymbolMid 0.5 sw
-					: else : include : RelationShape relation yr [Math.max (sw * 1.1) (head * 0.75)] 0
+						include : RelationWave (yr + sw) [Math.max (sw * 0.55) ((right - left) * 0.05)]
+						include : RelationWave (yr - sw) [Math.max (sw * 0.55) ((right - left) * 0.05)]
+					: else : include : RelationShape relation yr [Math.max (sw * 1.5) ((right - left) * 0.23)] 0
 		create-glyph [MangleName 'equalAboveRightArrow'] [MangleUnicode 0x2971] : StackedRelationArrow 'equal' true true
 		create-glyph [MangleName 'tildeAboveRightArrow'] [MangleUnicode 0x2972] : StackedRelationArrow 'wave' true true
 		create-glyph [MangleName 'leftArrowAboveTilde'] [MangleUnicode 0x2973] : StackedRelationArrow 'wave' false false
@@ -181,8 +185,8 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 			local extra : if para.isQuasiProportional (head * 0.8) 0
 			set-width : width + extra
 			include : with-transform [ApparentTranslate (extra / 2) 0] : union
-				RelationShape base SymbolMid gap [if (base == 'subst') (head * 0.9) 0]
-				a.shape right SymbolMid (left - head * 0.4) SymbolMid (head * 1.2) (sw / 2)
+				RelationShape base SymbolMid [Math.max (sw * 2) ((right - left) * 0.32)] [Math.min ((right - left) * 0.6) : Math.max (head * 1.8) (sw * 2.2)]
+				a.shape right SymbolMid left SymbolMid (head * 1.2) (sw / 2)
 		create-glyph [MangleName 'leftArrowThroughLess'] [MangleUnicode 0x2977] : ArrowThroughRelation 'less'
 		create-glyph [MangleName 'leftArrowThroughSubset'] [MangleUnicode 0x297A] : ArrowThroughRelation 'subst'
 

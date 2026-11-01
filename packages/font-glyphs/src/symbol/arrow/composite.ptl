@@ -235,20 +235,17 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 
 		define [FishTail] : glyph-proc
 			local x : mix left right 0.28
-			local y : Math.max (sw * 1.5) (d.compactHeadSize * 0.75)
+			local radius : Math.max (sw * 1.25) (d.compactHeadSize * 0.5)
 			set-width width
 			include : union
 				HBar.m x right SymbolMid sw
-				dispiro
-					widths.center sw
-					flat x SymbolMid [heading Leftward]
-					g4 (left + (x - left) * 0.2) (SymbolMid + y * 0.5)
-					curl x (SymbolMid + y) [heading Rightward]
-				dispiro
-					widths.center sw
-					flat x SymbolMid [heading Leftward]
-					g4 (left + (x - left) * 0.2) (SymbolMid - y * 0.5)
-					curl x (SymbolMid - y) [heading Rightward]
+				RingAt x SymbolMid (sw * 0.6)
+				intersection
+					RingStrokeAt x (SymbolMid + radius) radius sw
+					MaskLeft x
+				intersection
+					RingStrokeAt x (SymbolMid - radius) radius sw
+					MaskLeft x
 		create-glyph [MangleName 'leftFishTail'] [MangleUnicode 0x297C] : FishTail
 		turned [MangleName 'rightFishTail'] [MangleUnicode 0x297D] [MangleName 'leftFishTail'] middle SymbolMid
 		create-glyph [MangleName 'upFishTail'] [MangleUnicode 0x297E] : glyph-proc

@@ -155,9 +155,11 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 
 		local hw : right - arrowMidX
 		local hh : top - SymbolMid
-		local radius : Math.max (sw * 4) [Math.min hw hh]
+		local radius : Math.max (sw * 1.75) [Math.min hw hh]
 		local centerRadius : radius - sw / 2
-		define [ArcHead x y dx dy] : Arrow.Head.trigShape (x - dx * sz) (y - dy * sz) x y (sz * 0.7)
+		local arcHeadWidth : Math.max (headSize * 0.7) (sw * 1.5)
+		local arcHeadLength : Math.max (headSize * 1.2) (sw * 2.7)
+		define [ArcHead x y dx dy] : Arrow.Head.trigShape (x - dx * arcHeadLength) (y - dy * arcHeadLength) (x + dx * arcHeadLength * 0.6) (y + dy * arcHeadLength * 0.6) arcHeadWidth arcHeadLength
 		define [SideArc side] : glyph-proc
 			local x : arrowMidX + side * centerRadius * 0.6
 			local y : SymbolMid - centerRadius * 0.8
@@ -166,7 +168,7 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 				intersection
 					RingStrokeAt arrowMidX SymbolMid radius sw
 					[if (side > 0) MaskRight MaskLeft] arrowMidX
-					MaskAbove y
+					MaskAboveLine (arrowMidX - radius) (SymbolMid + side * radius * 4 / 3) (arrowMidX + radius) (SymbolMid - side * radius * 4 / 3) 100
 				ArcHead x y (-side * 0.8) (-0.6)
 		define [HorizontalArc dir vertical] : glyph-proc
 			local x : arrowMidX - dir * centerRadius * 0.8
@@ -176,25 +178,23 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 				intersection
 					RingStrokeAt arrowMidX SymbolMid radius sw
 					[if (vertical > 0) MaskAbove MaskBelow] SymbolMid
-					[if (dir > 0) MaskRight MaskLeft] x
+					[if (vertical > 0) MaskAboveLine MaskBelowLine] (arrowMidX - radius) (SymbolMid + vertical * dir * radius * 0.75) (arrowMidX + radius) (SymbolMid - vertical * dir * radius * 0.75) 100
 				ArcHead x y (-dir * 0.6) (-vertical * 0.8)
 		define [LowerCircleArc dir] : glyph-proc
-			local x : arrowMidX - dir * centerRadius * 0.8
-			local y : SymbolMid + centerRadius * 0.6
-			local tipX : x - dir * sz * 0.45
-			local tipY : y + sz * 0.6
+			local diagonal : centerRadius * Math.SQRT1_2
+			local x : arrowMidX - dir * diagonal
+			local y : SymbolMid - diagonal
 			set-width MosaicWidth
 			include : union
 				intersection
 					RingStrokeAt arrowMidX SymbolMid radius sw
-					MaskBelow y
-				Arrow.Bar.shape x y tipX tipY (sw / 2) 0 0
-				ArcHead tipX tipY (-dir * 0.6) 0.8
+					MaskBelowLine (arrowMidX - radius) (SymbolMid - dir * radius) (arrowMidX + radius) (SymbolMid + dir * radius) 100
+				ArcHead x y (-dir * Math.SQRT1_2) Math.SQRT1_2
 		define [ArcWithMark dir mark] : glyph-proc
 			set-width MosaicWidth
 			include : HorizontalArc dir 1
 			local markSize : Math.max (sz * 0.55) (sw * 1.25)
-			local y : SymbolMid - markSize * 0.35
+			local y : SymbolMid - markSize * [if (mark == 2) 1.05 0.35]
 			include : HBar.m (arrowMidX - markSize) (arrowMidX + markSize) y sw
 			if (mark == 2) : include : VBar.m arrowMidX (y - markSize) (y + markSize) sw
 		create-glyph [MangleName 'rightArcClockwise'] [MangleUnicode 0x2938] : SideArc 1
