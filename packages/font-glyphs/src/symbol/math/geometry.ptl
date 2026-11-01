@@ -105,10 +105,12 @@ glyph-block Symbol-Math-Geometry : begin
 				with-transform [ApparentTranslate (MosaicMiddle - Middle) sY] : with-transform [ScaleAround Middle 0 scale scale] : refer-glyph 'S'
 
 		define [OperatorInTriangle base] : glyph-proc
-			local scale : Math.min ((triangleHalfWidth * 0.65) / (RightSB - SB)) ((triangleHalfHeight * 0.6) / (PlusTop - PlusBot))
+			local halfWidth : Math.max (triangleHalfWidth * 1.25) (MosaicWidth * 0.55)
+			local halfHeight : triangleHalfHeight * halfWidth / triangleHalfWidth
+			local scale : Math.min ((halfWidth * 0.65) / (RightSB - SB)) ((halfHeight * 0.6) / (PlusTop - PlusBot))
 			include : MathWidthShape MosaicWidth FMosaicWide : union
-				refer-glyph : MangleName 'whiteTriangleUp'
-				with-transform [ApparentTranslate (MosaicMiddle - Middle) (-triangleHalfHeight / 3)]
+				UpTriangleOutline MosaicMiddle SymbolMid halfWidth halfHeight triangleStroke
+				with-transform [ApparentTranslate (MosaicMiddle - Middle) (-halfHeight / 3)]
 					with-transform [ScaleAround Middle SymbolMid scale scale] : refer-glyph base
 
 		create-glyph [MangleName 'trianglePlus'] [MangleUnicode 0x2A39] : OperatorInTriangle 'plus'
