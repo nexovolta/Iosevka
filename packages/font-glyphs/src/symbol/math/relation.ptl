@@ -329,10 +329,11 @@ glyph-block Symbol-Math-Relation-Sym : begin
 	glyph-block-import Mark-Above : TildeShape
 	glyph-block-import Symbol-Math-Relation-Common : EqualHalfSpace IdentHalfSpace
 	glyph-block-import Symbol-Math-Relation-Addons : EqEqBarNegationImpl
-	glyph-block-export ApproxShape
+	glyph-block-export ApproxShape CompactApproxShape
 
 	# Sym parameters
 	local approxDist : EqualHalfSpace * 1.75
+	local compactApproxDist : EqualHalfSpace * 1.25
 	local symMag : (OperTop - SymbolMid) * 0.17
 
 	glyph-block-export symWave
@@ -347,8 +348,14 @@ glyph-block Symbol-Math-Relation-Sym : begin
 	create-glyph 'flipSym' 0x223D : symWave SymbolMid (-1)
 
 	define [ApproxShape] : glyph-proc
-		include : symWave (SymbolMid + approxDist) 1
-		include : symWave (SymbolMid - approxDist) 1
+		include : union
+			symWave (SymbolMid + approxDist) 1
+			symWave (SymbolMid - approxDist) 1
+
+	define [CompactApproxShape] : glyph-proc
+		include : union
+			symWave (SymbolMid + compactApproxDist) 1
+			symWave (SymbolMid - compactApproxDist) 1
 
 	WithDotVariants 'twoDotSym' 0x223B : function [DrawAt kr ov] : composite-proc
 		refer-glyph 'sym'
@@ -442,7 +449,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Symbol-Math-Relation-Common : dH dSH lessEqDist
-	glyph-block-import Symbol-Math-Relation-Sym : symWave ApproxShape
+	glyph-block-import Symbol-Math-Relation-Sym : symWave ApproxShape CompactApproxShape
 	glyph-block-import Symbol-Math-Relation-Addons : lesslessSW muchLessSW llggHeight
 	glyph-block-import Symbol-Math-Relation-Addon-Glyphs
 
@@ -736,7 +743,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		local lowerY : SymbolMid - dSH - lessEqDist * 0.6
 		include : refer-glyph [if less 'lessEqEqUpper' 'greaterEqEqUpper']
 		include : with-transform [ApparentTranslate 0 (lowerY - SymbolMid)]
-			with-transform [ScaleAround Middle SymbolMid lowerScale lowerScale] : ApproxShape
+			with-transform [ScaleAround Middle SymbolMid lowerScale lowerScale] : CompactApproxShape
 		if negated : include : with-transform [ApparentTranslate 0 (lowerY - SymbolMid)]
 			with-transform [ScaleAround Middle SymbolMid lowerScale lowerScale] : dispiro
 				widths.center [AdviceStroke2 2.5 4 (dSH * 2)]
@@ -1469,7 +1476,7 @@ glyph-block Symbol-Math-Relation-Addon-Glyphs : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Symbol-Math-Relation-Common : dSH lessEqDist
-	glyph-block-import Symbol-Math-Relation-Sym : symWave ApproxShape
+	glyph-block-import Symbol-Math-Relation-Sym : symWave ApproxShape CompactApproxShape
 	glyph-block-import Symbol-Math-Relation-Addons : lesslessSW EqEqBarNegation
 
 	define [BarNegator symbolBottom dist] : begin
@@ -1493,7 +1500,7 @@ glyph-block Symbol-Math-Relation-Addon-Glyphs : begin
 		symWave (SymbolMid - dSH - lessEqDist * (17 / 12)) 0.65 [Math.min lesslessSW (lessEqDist * 0.55)]
 	create-glyph 'wideSymSymLower' : union
 		with-transform [ApparentTranslate 0 (-dSH - lessEqDist * 0.6)]
-			ApproxShape
+			CompactApproxShape
 	create-glyph 'symEqLower' : union
 		symWave (SymbolMid - dSH + lessEqDist * (2 / 3)) 1 lesslessSW
 		HBar.m SB RightSB (SymbolMid - dSH - lessEqDist * (7 / 6)) lesslessSW
