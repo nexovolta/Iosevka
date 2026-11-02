@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 
 glyph-module
 
@@ -205,6 +206,55 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 		create-glyph [MangleName 'topArcAnticlockwisePlus'] [MangleUnicode 0x293D] : ArcWithMark 1 2
 		create-glyph [MangleName 'lowerRightSemicircleClockwise'] [MangleUnicode 0x293E] : LowerCircleArc 1
 		create-glyph [MangleName 'lowerLeftSemicircleAnticlockwise'] [MangleUnicode 0x293F] : LowerCircleArc (-1)
+
+	do "Black curved arrows"
+		define [BlackCurvedArrow] : glyph-proc
+			set-width MosaicWidth
+			local w : [Math.min (arrowRSB - arrowSB) (arrowTop - arrowBot)] * 0.9
+			local left : arrowMidX - w / 2
+			local right : arrowMidX + w / 2
+			local headSize : w * 0.25 + OperatorStroke * 0.12
+			local head : left + headSize
+			local bend : right - w * 0.30
+			local y : SymbolMid - w * 0.10
+			local upper : y + w * 0.105
+			local lower : y - w * 0.105
+			local tail : SymbolMid + w * 0.32
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo left y
+			cs.lineTo head (y + w * 0.22 + OperatorStroke * 0.12)
+			cs.lineTo head upper
+			cs.lineTo bend upper
+			cs.cubicTo (right - w * 0.08) upper (right - w * 0.035) (y + w * 0.15) (right - w * 0.035) tail
+			cs.lineTo right tail
+			cs.cubicTo right (y + w * 0.02) (right - w * 0.03) lower bend lower
+			cs.lineTo head lower
+			cs.lineTo head (y - w * 0.22 - OperatorStroke * 0.12)
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+
+		create-glyph [MangleName 'blackCurvedDownLeft'] [MangleUnicode 0x2BA8] : BlackCurvedArrow
+		create-glyph [MangleName 'blackCurvedDownRight'] [MangleUnicode 0x2BA9] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid (-1) 1] : refer-glyph [MangleName 'blackCurvedDownLeft']
+		create-glyph [MangleName 'blackCurvedUpLeft'] [MangleUnicode 0x2BAA] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid 1 (-1)] : refer-glyph [MangleName 'blackCurvedDownLeft']
+		create-glyph [MangleName 'blackCurvedUpRight'] [MangleUnicode 0x2BAB] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid (-1) (-1)] : refer-glyph [MangleName 'blackCurvedDownLeft']
+		create-glyph [MangleName 'blackCurvedLeftUp'] [MangleUnicode 0x2BAC] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [Translate arrowMidX SymbolMid] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-arrowMidX) (-SymbolMid)] : refer-glyph [MangleName 'blackCurvedDownLeft']
+		create-glyph [MangleName 'blackCurvedRightUp'] [MangleUnicode 0x2BAD] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid (-1) 1] : refer-glyph [MangleName 'blackCurvedLeftUp']
+		create-glyph [MangleName 'blackCurvedLeftDown'] [MangleUnicode 0x2BAE] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid 1 (-1)] : refer-glyph [MangleName 'blackCurvedLeftUp']
+		create-glyph [MangleName 'blackCurvedRightDown'] [MangleUnicode 0x2BAF] : glyph-proc
+			set-width MosaicWidth
+			include : with-transform [ScaleAround arrowMidX SymbolMid (-1) (-1)] : refer-glyph [MangleName 'blackCurvedLeftUp']
 
 	define [EllipseOutline cx cy rx ry] : glyph-proc
 		include : spiro-outline
