@@ -941,31 +941,28 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 
 	define [CurvedClosedInequality less top bot] : glyph-proc
 		local sw : Math.min [AdviceStroke2 2.5 4 (top - bot)] ((top - bot) * 0.17)
-		local rx : Math.min ((RightSB - SB) * 0.18) ((top - bot) * 0.45)
-		local inset : HSwToV : sw * 0.75
-		local outer : if less (RightSB - inset) (SB + inset)
-		local x : if less (outer - rx) (outer + rx)
 		local center : mix bot top 0.5
-		local sectorEnd : if less (x + rx) (x - rx)
-		if less
-		: then : begin
-			include : LessShape top bot SB x sw
-			include : intersection
-				LessMaskShape top bot SB sectorEnd
-				RingStrokeAt x center rx sw
-		: else : begin
-			include : GreaterShape top bot x RightSB sw
-			include : intersection
-				GreaterMaskShape top bot sectorEnd RightSB
-				RingStrokeAt x center rx sw
+		local span : RightSB - SB
+		local radius : Math.hypot span ((top - bot) / 2)
+		local inset : HSwToV : sw * 1.5
+		local outerLeft : LessMaskShape (center + top - bot) (center - top + bot) SB (SB + span * 2)
+		local outerRight : GreaterMaskShape (center + top - bot) (center - top + bot) (RightSB - span * 2) RightSB
+		local innerLeft : LessMaskShape (center + top - bot - sw) (center - top + bot + sw) (SB + inset) (SB + span * 2)
+		local innerRight : GreaterMaskShape (center + top - bot - sw) (center - top + bot + sw) (RightSB - span * 2) (RightSB - inset)
+		local outerMask : if less outerLeft outerRight
+		local innerMask : if less innerLeft innerRight
+		local x : if less SB RightSB
+		include : difference
+			intersection outerMask : RingAt x center radius
+			intersection innerMask : RingAt x center (radius - sw)
 
 	create-glyph 'lessCurveClosed' 0x2AA6 : CurvedClosedInequality true (SymbolMid + dH) (SymbolMid - dH)
 	create-glyph 'greaterCurveClosed' 0x2AA7 : CurvedClosedInequality false (SymbolMid + dH) (SymbolMid - dH)
 	define [CircularSectorSlant less] : glyph-proc
 		local upperTop : SymbolMid + dSH + lessEqDist
 		local upperBot : SymbolMid - dSH + lessEqDist
-		local lowerTop : SymbolMid + dH - lessEqDist
-		local lowerBot : SymbolMid - dH - lessEqDist
+		local lowerTop : SymbolMid + dSH - lessEqDist
+		local lowerBot : SymbolMid - dSH - lessEqDist
 		include : CurvedClosedInequality less upperTop upperBot
 		if less
 		: then : include : LessShapeHalf 0 lowerTop lowerBot SB RightSB OperatorStroke

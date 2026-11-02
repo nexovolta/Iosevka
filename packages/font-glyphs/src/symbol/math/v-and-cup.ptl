@@ -305,13 +305,13 @@ glyph-block Symbol-Math-VAndCup : begin
 
 	turned 'cupVee' 0x2A45 'capWedge' Middle SymbolMid
 
-	define [StackedCupCap upperCup withBar] : glyph-proc
+	define [StackedCupCapShape upperCup withBar] : glyph-proc
 		local height : Math.max (OperTop - OperBot) (OperatorStroke * 8)
 		local shift : height * 0.29
 		local halfHeight : height * [if withBar 0.18 0.21]
 		local left : mix Middle SB 0.85
 		local right : mix Middle RightSB 0.85
-		local sw : Math.min [AdviceStroke2 2.5 4 (halfHeight * 2)] (halfHeight * 0.48)
+		local sw : Math.min ([AdviceStroke2 2 3.2 (halfHeight * 2)] * 1.12) (halfHeight * 0.58)
 		local arch : Math.min ((right - left) * 0.3) (halfHeight * 1.4)
 		if upperCup
 		: then : begin
@@ -324,19 +324,25 @@ glyph-block Symbol-Math-VAndCup : begin
 			include : UShape (SymbolMid - shift + halfHeight) (SymbolMid - shift - halfHeight) left right sw arch arch
 		if withBar : include : HBar.m left right SymbolMid sw
 
+	define [StackedCupCap upperCup withBar] : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid 1 1.08] : StackedCupCapShape upperCup withBar
+
 	create-glyph 'cupAboveCap' 0x2A46 : StackedCupCap true false
 	create-glyph 'capAboveCup' 0x2A47 : StackedCupCap false false
 	create-glyph 'cupBarCap' 0x2A48 : StackedCupCap true true
 	create-glyph 'capBarCup' 0x2A49 : StackedCupCap false true
 
-	define [JoinedCupCup] : glyph-proc
-		local sw : Math.min [AdviceStroke2 2.5 3.5 (OperTop - OperBot)] ((RightSB - SB) * 0.125)
+	define [JoinedCupCupShape] : glyph-proc
+		local sw : Math.min ([AdviceStroke2 2 2.8 (OperTop - OperBot)] * 1.12) ((RightSB - SB) * 0.16)
 		local arch : (RightSB - SB) * 0.24
 		local stemEdge : Middle + [HSwToV : sw / 2]
 		include : union
 			UShape OperTop OperBot SB stemEdge sw arch arch
 			with-transform [ScaleAround Middle SymbolMid (-1) 1]
 				UShape OperTop OperBot SB stemEdge sw arch arch
+
+	define [JoinedCupCup] : glyph-proc
+		include : with-transform [ScaleAround Middle SymbolMid 1 1.08] : JoinedCupCupShape
 
 	create-glyph 'cupJoinedCup' 0x2A4A : JoinedCupCup
 
