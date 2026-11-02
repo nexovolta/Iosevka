@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 
 glyph-module
 
@@ -121,7 +122,6 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 
 	do "Arrow and relation combinations"
 		glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
-		glyph-block-import Mark-Above : TildeShape
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
 		local d : ArrowDims width
 		local a : ArrowT d
@@ -144,75 +144,110 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 				flat [mix innerLeft right 0.4] (cy - half)
 				curl right (cy - half) [heading Rightward]
 			if (relation == 'supst') : include : FlipAround middle cy
-		define [RelationWave y amp rleft rright] : TildeShape
-			ttop -- (y + amp)
-			tbot -- (y - amp)
-			leftEnd -- (rleft + sw / 2)
-			rightEnd -- (rright - sw / 2)
-			hs -- (sw / 2)
-			stretch -- 1
-		define [StackedRelationArrow relation above rightward limitToShaft] : glyph-proc
-			local gap : if (relation == 'equal') [Math.max (sw * 3.5) (d.compactHeadSize * 1.7)] [Math.max (sw * 4.5) (d.compactHeadSize * 2.4)]
+		define [StackedRelationArrow relation above rightward] : glyph-proc
+			local gap : Math.max (sw * 4.5) (d.compactHeadSize * 2.4)
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
 			local yr : SymbolMid + [if above 0.5 (-0.5)] * gap
-			local trim : if limitToShaft [Math.min (head * 1.4) ((right - left) * 0.34)] 0
-			local rleft : left + [if rightward 0 trim]
-			local rright : right - [if rightward trim 0]
-			local rmid : (rleft + rright) / 2
 			set-width width
 			if rightward
 			: then : include : a.shape left ya right ya head (sw / 2)
 			: else : include : a.shape right ya left ya head (sw / 2)
-			if (relation == 'equal')
-			: then : begin
-				include : HBar.m rleft rright (yr + sw) sw
-				include : HBar.m rleft rright (yr - sw) sw
-			: else : begin
-				if (relation == 'wave' || relation == 'reverseWave')
-				: then : include : with-transform [ScaleAround rmid yr [if (relation == 'reverseWave') (-1) 1] 1] : RelationWave yr [Math.max (sw * 0.9) ((rright - rleft) * 0.08)] rleft rright
-				: else : begin
-					if (relation == 'approx' || relation == 'reverseApprox')
-					: then : begin
-						local amp : Math.max (sw * 0.55) ((rright - rleft) * 0.05)
-						include : with-transform [ScaleAround rmid yr [if (relation == 'reverseApprox') (-1) 1] 1] : glyph-proc
-							include : RelationWave (yr + sw) amp rleft rright
-							include : RelationWave (yr - sw) amp rleft rright
-					: else : include : RelationShape relation yr [Math.max (sw * 1.5) ((right - left) * 0.23)] 0
-		create-glyph [MangleName 'equalAboveRightArrow'] [MangleUnicode 0x2971] : StackedRelationArrow 'equal' true true
-		create-glyph [MangleName 'tildeAboveRightArrow'] [MangleUnicode 0x2972] : StackedRelationArrow 'wave' true true
-		create-glyph [MangleName 'leftArrowAboveTilde'] [MangleUnicode 0x2973] : StackedRelationArrow 'wave' false false
-		create-glyph [MangleName 'rightArrowAboveTilde'] [MangleUnicode 0x2974] : StackedRelationArrow 'wave' false true
-		create-glyph [MangleName 'rightArrowAboveApprox'] [MangleUnicode 0x2975] : StackedRelationArrow 'approx' false true
+			include : RelationShape relation yr [Math.max (sw * 1.5) ((right - left) * 0.23)] 0
 		create-glyph [MangleName 'lessAboveLeftArrow'] [MangleUnicode 0x2976] : StackedRelationArrow 'less' true false
 		create-glyph [MangleName 'greaterAboveRightArrow'] [MangleUnicode 0x2978] : StackedRelationArrow 'greater' true true
 		create-glyph [MangleName 'subsetAboveRightArrow'] [MangleUnicode 0x2979] : StackedRelationArrow 'subst' true true
 		create-glyph [MangleName 'supersetAboveLeftArrow'] [MangleUnicode 0x297B] : StackedRelationArrow 'supst' true false
-		create-glyph [MangleName 'equalAboveLeftArrow'] [MangleUnicode 0x2B40] : StackedRelationArrow 'equal' true false true
-		create-glyph [MangleName 'reverseTildeAboveLeftArrow'] [MangleUnicode 0x2B41] : StackedRelationArrow 'reverseWave' true false true
-		create-glyph [MangleName 'leftArrowAboveReverseApprox'] [MangleUnicode 0x2B42] : StackedRelationArrow 'reverseApprox' false false true
-		create-glyph [MangleName 'reverseTildeAboveRightArrow'] [MangleUnicode 0x2B47] : StackedRelationArrow 'reverseWave' true true true
-		create-glyph [MangleName 'rightArrowAboveReverseApprox'] [MangleUnicode 0x2B48] : StackedRelationArrow 'reverseApprox' false true true
-		create-glyph [MangleName 'tildeAboveLeftArrow'] [MangleUnicode 0x2B49] : StackedRelationArrow 'wave' true false true
-		create-glyph [MangleName 'leftArrowAboveApprox'] [MangleUnicode 0x2B4A] : StackedRelationArrow 'approx' false false true
-		create-glyph [MangleName 'leftArrowAboveReverseTilde'] [MangleUnicode 0x2B4B] : StackedRelationArrow 'reverseWave' false false true
-		create-glyph [MangleName 'rightArrowAboveReverseTilde'] [MangleUnicode 0x2B4C] : StackedRelationArrow 'reverseWave' false true true
-		define [ArrowThroughRelation base rightward] : glyph-proc
-			local extra : if (para.isQuasiProportional && !rightward) (head * 0.8) 0
-			local half : Math.max (sw * 2) ((right - left) * 0.32)
-			local inset : Math.min ((right - left) * 0.6) : Math.max (head * 1.8) (sw * 2.2)
-			local rel : RelationShape base SymbolMid half inset
-			if rightward
-			: then : begin
-				if (base == 'less')
-				: then : set rel : GreaterShape (SymbolMid + half) (SymbolMid - half) left (right - inset) sw
-				: else : set rel : RelationShape 'supst' SymbolMid half inset
-			local arr : a.shape [if rightward left right] SymbolMid [if rightward right left] SymbolMid (head * 1.2) (sw / 2)
+		define [SupsetThrough top bot l r s] : glyph-proc
+			include : dispiro
+				widths.center s
+				flat l top [heading Rightward]
+				curl [mix l r 0.6] top
+				archv
+				g4 r SymbolMid
+				arcvh
+				flat [mix l r 0.6] bot
+				curl l bot [heading Leftward]
+
+		define [ThroughRelationRight kind] : glyph-proc
+			local extra : if para.isQuasiProportional (head * 0.8) 0
+			local tipL : right - head * 1.15 - sw * 0.8
+			local sh : Math.max (sw * 2) ((tipL - left) * 0.32)
+			local rsw : Math.min sw ((tipL - left) * 0.16)
 			set-width : width + extra
-			include : with-transform [ApparentTranslate (extra / 2) 0] : union rel arr
-		create-glyph [MangleName 'leftArrowThroughLess'] [MangleUnicode 0x2977] : ArrowThroughRelation 'less' false
-		create-glyph [MangleName 'leftArrowThroughSubset'] [MangleUnicode 0x297A] : ArrowThroughRelation 'subst' false
-		create-glyph [MangleName 'rightArrowThroughGreater'] [MangleUnicode 0x2B43] : ArrowThroughRelation 'less' true
-		create-glyph [MangleName 'rightArrowThroughSuperset'] [MangleUnicode 0x2B44] : ArrowThroughRelation 'subst' true
+			include : with-transform [ApparentTranslate (extra / 2) 0] : union
+				a.shape left SymbolMid right SymbolMid (head * 0.9) (sw / 2)
+				if (kind == 'greater')
+					GreaterShape (SymbolMid + sh) (SymbolMid - sh) left tipL rsw
+					SupsetThrough (SymbolMid + sh) (SymbolMid - sh) left tipL rsw
+		create-glyph [MangleName 'rightArrowThroughGreater'] [MangleUnicode 0x2B43] : ThroughRelationRight 'greater'
+		create-glyph [MangleName 'rightArrowThroughSuperset'] [MangleUnicode 0x2B44] : ThroughRelationRight 'supst'
+		define [ThroughRelationLeft kind] : glyph-proc
+			local extra : if para.isQuasiProportional (head * 0.8) 0
+			local tipR : left + head * 1.15 + sw * 0.8
+			local sh : Math.max (sw * 2) ((right - tipR) * 0.32)
+			local rsw : Math.min sw ((right - tipR) * 0.16)
+			set-width : width + extra
+			include : with-transform [ApparentTranslate (extra / 2) 0] : union
+				a.shape right SymbolMid left SymbolMid (head * 0.9) (sw / 2)
+				if (kind == 'greater')
+					LessShape (SymbolMid + sh) (SymbolMid - sh) tipR right rsw
+					with-transform [FlipAround middle SymbolMid] : SupsetThrough (SymbolMid + sh) (SymbolMid - sh) left (right - (tipR - left)) rsw
+		create-glyph [MangleName 'leftArrowThroughLess'] [MangleUnicode 0x2977] : ThroughRelationLeft 'greater'
+		create-glyph [MangleName 'leftArrowThroughSubset'] [MangleUnicode 0x297A] : ThroughRelationLeft 'supst'
+
+		define [TailRelationWave wl wr y amp dsw] : glyph-proc
+			local h : dsw / 2
+			# Split the parallel cubic edges at their extrema for hinting.
+			local t : (3 - [Math.sqrt 3]) / 6
+			local x1 : mix wl wr t
+			local x2 : mix wl wr (1 - t)
+			local peak : amp * 2.7 / (2 * [Math.sqrt 3])
+			local endControl : amp * 2.7 * t
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo wl (y + h)
+			cs.cubicTo [mix wl x1 (1 / 3)] (y + h + endControl) [mix wl x1 (2 / 3)] (y + h + peak) x1 (y + h + peak)
+			cs.cubicTo [mix x1 x2 (1 / 3)] (y + h + peak) [mix x1 x2 (2 / 3)] (y + h - peak) x2 (y + h - peak)
+			cs.cubicTo [mix x2 wr (1 / 3)] (y + h - peak) [mix x2 wr (2 / 3)] (y + h - endControl) wr (y + h)
+			cs.lineTo wr (y - h)
+			cs.cubicTo [mix x2 wr (2 / 3)] (y - h - endControl) [mix x2 wr (1 / 3)] (y - h - peak) x2 (y - h - peak)
+			cs.cubicTo [mix x1 x2 (2 / 3)] (y - h - peak) [mix x1 x2 (1 / 3)] (y - h + peak) x1 (y - h + peak)
+			cs.cubicTo [mix wl x1 (2 / 3)] (y - h + peak) [mix wl x1 (1 / 3)] (y - h + endControl) wl (y - h)
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+		define [TailDecoration kind above leftward] : glyph-proc
+			local Ls : (right - left) * 0.55
+			local xa : if leftward (right - Ls) left
+			local xb : xa + Ls
+			local xm : mix xa xb 0.5
+			local dsw : Math.min sw (Ls * 0.15)
+			local amp : Ls * 0.15
+			local gap : Math.max (sw * 0.6 + dsw * 3.5 + amp * 0.6) (d.compactHeadSize * 1.5)
+			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
+			local yd : SymbolMid + [if above 0.5 (-0.5)] * gap
+			local flipX : if (kind == 'revWave' || kind == 'revApprox') (-1) 1
+			set-width width
+			if leftward
+			: then : include : a.shape right ya left ya head (sw / 2)
+			: else : include : a.shape left ya right ya head (sw / 2)
+			if (kind == 'equal') : include : HBar.m xa xb (yd + dsw) dsw
+			if (kind == 'equal') : include : HBar.m xa xb (yd - dsw) dsw
+			if (kind == 'wave' || kind == 'revWave') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb yd amp dsw
+			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd + dsw * 2.4) (amp * 0.6) dsw
+			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd - dsw * 2.4) (amp * 0.6) dsw
+		create-glyph [MangleName 'equalAboveLeftArrowTail'] [MangleUnicode 0x2B40] : TailDecoration 'equal' true true
+		create-glyph [MangleName 'reverseTildeAboveLeftArrowTail'] [MangleUnicode 0x2B41] : TailDecoration 'revWave' true true
+		create-glyph [MangleName 'leftArrowAboveReverseApproxTail'] [MangleUnicode 0x2B42] : TailDecoration 'revApprox' false true
+		create-glyph [MangleName 'reverseTildeAboveRightArrowTail'] [MangleUnicode 0x2B47] : TailDecoration 'revWave' true false
+		create-glyph [MangleName 'rightArrowAboveReverseApproxTail'] [MangleUnicode 0x2B48] : TailDecoration 'revApprox' false false
+		create-glyph [MangleName 'tildeAboveLeftArrowTail'] [MangleUnicode 0x2B49] : TailDecoration 'wave' true true
+		create-glyph [MangleName 'leftArrowAboveApproxTail'] [MangleUnicode 0x2B4A] : TailDecoration 'approx' false true
+		create-glyph [MangleName 'leftArrowAboveReverseTildeTail'] [MangleUnicode 0x2B4B] : TailDecoration 'revWave' false true
+		create-glyph [MangleName 'rightArrowAboveReverseTildeTail'] [MangleUnicode 0x2B4C] : TailDecoration 'revWave' false false
+		create-glyph [MangleName 'equalAboveRightArrow'] [MangleUnicode 0x2971] : TailDecoration 'equal' true false
+		create-glyph [MangleName 'tildeAboveRightArrow'] [MangleUnicode 0x2972] : TailDecoration 'wave' true false
+		create-glyph [MangleName 'leftArrowAboveTilde'] [MangleUnicode 0x2973] : TailDecoration 'wave' false true
+		create-glyph [MangleName 'rightArrowAboveTilde'] [MangleUnicode 0x2974] : TailDecoration 'wave' false false
+		create-glyph [MangleName 'rightArrowAboveApprox'] [MangleUnicode 0x2975] : TailDecoration 'approx' false false
 
 	VCombine [MangleName 'uni2B80'] [MangleUnicode 0x2B80] [MangleName 'trigArrowLeft'] [MangleName 'trigArrowRight'] vcDist
 	HCombine [MangleName 'uni2B81'] [MangleUnicode 0x2B81] [MangleName 'trigArrowUp'] [MangleName 'trigArrowDown'] hcDist

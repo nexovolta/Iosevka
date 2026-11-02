@@ -195,3 +195,57 @@ glyph-block Symbol-Arrow-Thick : for-width-kinds WideWidth1
 	MkArrow.single [ThickArrowShape 'blackSemiHookR'] [MangleName 'uni27A6'] [MangleUnicode 0x27A6] arrowSB SymbolMid arrowRSB SymbolMid
 
 	MkArrow.single [Arrow.toBarShapeT : ThickArrowShape 'black'] [MangleName 'blackArrowBarDown'] [MangleUnicode 0x1F8B3] arrowMidX arrowTop arrowMidX arrowBot
+
+	define [TriangleToBar fromX fromY tipX tipY dirUp] : glyph-proc
+		set-width MosaicWidth
+		local hs : (arrowRSB - arrowSB) * 0.2
+		local bw : (arrowRSB - arrowSB) * 0.2
+		local barX tipX
+		local barGap : o + hs * 0.65 + OperatorStroke * 1.05
+		local barY : if dirUp (tipY + barGap) (tipY - barGap)
+		include : Arrow.trigShape fromX fromY tipX tipY hs (OperatorStroke / 2)
+		include : HBar.m (barX - bw) (barX + bw) barY OperatorStroke
+
+	create-glyph [MangleName 'northWestTriangleArrowToBar'] [MangleUnicode 0x2B76] : TriangleToBar arrowDiagRSB arrowDiagBot arrowDiagSB arrowDiagTop true
+	create-glyph [MangleName 'northEastTriangleArrowToBar'] [MangleUnicode 0x2B77] : TriangleToBar arrowDiagSB arrowDiagBot arrowDiagRSB arrowDiagTop true
+	create-glyph [MangleName 'southEastTriangleArrowToBar'] [MangleUnicode 0x2B78] : TriangleToBar arrowDiagSB arrowDiagTop arrowDiagRSB arrowDiagBot false
+	create-glyph [MangleName 'southWestTriangleArrowToBar'] [MangleUnicode 0x2B79] : TriangleToBar arrowDiagRSB arrowDiagTop arrowDiagSB arrowDiagBot false
+
+	define [ChevronShape x1 y1 x2 y2 len] : begin
+		return : PointingTo x1 y1 x2 y2 : lambda [mag] : begin
+			spiro-outline
+				corner o 0
+				corner len (0.577 * len)
+				corner (0.62 * len) 0
+				corner len (-0.577 * len)
+
+	define [BlackEquilateralHead dx dy] : glyph-proc
+		set-width MosaicWidth
+		local len : Math.min ((arrowRSB - arrowSB) * 0.8) ((arrowTop - arrowBot) * 0.75)
+		include : ChevronShape (arrowMidX - dx * len * 0.5) (SymbolMid - dy * len * 0.5) (arrowMidX + dx * len * 0.5) (SymbolMid + dy * len * 0.5) len
+
+	define [ThreeDEquilateralHead dx dy side] : glyph-proc
+		set-width MosaicWidth
+		local len : Math.min ((arrowRSB - arrowSB) * 0.8) ((arrowTop - arrowBot) * 0.75)
+		local x1 : arrowMidX - dx * len * 0.5
+		local y1 : SymbolMid - dy * len * 0.5
+		local x2 : arrowMidX + dx * len * 0.5
+		local y2 : SymbolMid + dy * len * 0.5
+		local inset : Math.min 0.65 : Math.max 0.45 (OperatorStroke / len * 2)
+		local cx : len * 0.54
+		local cy : side * len * 0.1923333333
+		local hole : new-glyph : PointingTo x1 y1 x2 y2 : lambda [mag] : spiro-outline
+			corner [mix 0 cx inset] [mix 0 cy inset]
+			corner [mix len cx inset] [mix (side * len * 0.577) cy inset]
+			corner [mix (len * 0.62) cx inset] [mix 0 cy inset]
+		include : difference [ChevronShape x1 y1 x2 y2 len] hole
+
+	create-glyph [MangleName 'blackLeftEquilateralArrowhead'] [MangleUnicode 0x2B9C] : BlackEquilateralHead (-1) 0
+	create-glyph [MangleName 'blackUpEquilateralArrowhead'] [MangleUnicode 0x2B9D] : BlackEquilateralHead 0 1
+	create-glyph [MangleName 'blackRightEquilateralArrowhead'] [MangleUnicode 0x2B9E] : BlackEquilateralHead 1 0
+	create-glyph [MangleName 'blackDownEquilateralArrowhead'] [MangleUnicode 0x2B9F] : BlackEquilateralHead 0 (-1)
+
+	create-glyph [MangleName 'threeDTopLightedLeftArrowhead'] [MangleUnicode 0x2B98] : ThreeDEquilateralHead (-1) 0 1
+	create-glyph [MangleName 'threeDRightLightedUpArrowhead'] [MangleUnicode 0x2B99] : ThreeDEquilateralHead 0 1 1
+	create-glyph [MangleName 'threeDTopLightedRightArrowhead'] [MangleUnicode 0x2B9A] : ThreeDEquilateralHead 1 0 (-1)
+	create-glyph [MangleName 'threeDLeftLightedDownArrowhead'] [MangleUnicode 0x2B9B] : ThreeDEquilateralHead 0 (-1) 1

@@ -206,6 +206,61 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 		create-glyph [MangleName 'lowerRightSemicircleClockwise'] [MangleUnicode 0x293E] : LowerCircleArc 1
 		create-glyph [MangleName 'lowerLeftSemicircleAnticlockwise'] [MangleUnicode 0x293F] : LowerCircleArc (-1)
 
+	define [EllipseOutline cx cy rx ry] : glyph-proc
+		include : spiro-outline
+			g4 cx (cy + ry)
+			archv nothing 2
+			g4 (cx - rx) cy
+			arcvh nothing 2
+			g4 cx (cy - ry)
+			archv nothing 2
+			g4 (cx + rx) cy
+			arcvh nothing 2
+			close
+
+	define [EllipseRing cx cy rx ry sw] : glyph-proc
+		local outer : new-glyph : EllipseOutline cx cy rx ry
+		local inner : new-glyph : EllipseOutline cx cy (rx - sw) (ry - sw)
+		include : difference outer inner
+
+	define [CircledWhiteArrow dx dy] : glyph-proc
+		set-width MosaicWidth
+		local r : Math.min ((arrowRSB - arrowSB) * 0.475) ((arrowTop - arrowBot) * 0.475)
+		local tipX : arrowMidX + dx * r * 0.84
+		local tipY : SymbolMid + dy * r * 0.84
+		local tailX : arrowMidX - dx * r * 1.2
+		local tailY : SymbolMid - dy * r * 1.2
+		local white : new-glyph : PointingTo tailX tailY tipX tipY : lambda [mag] : spiro-outline
+			corner 0 0
+			corner (r * 0.55) (r * 0.45)
+			corner (r * 0.55) (r * 0.18)
+			corner mag (r * 0.18)
+			corner mag (-r * 0.18)
+			corner (r * 0.55) (-r * 0.18)
+			corner (r * 0.55) (-r * 0.45)
+		local disc : new-glyph : EllipseOutline arrowMidX SymbolMid r r
+		include : difference disc white
+
+	create-glyph [MangleName 'leftBlackCircledWhiteArrow'] [MangleUnicode 0x2B88] : CircledWhiteArrow (-1) 0
+	create-glyph [MangleName 'upBlackCircledWhiteArrow'] [MangleUnicode 0x2B89] : CircledWhiteArrow 0 1
+	create-glyph [MangleName 'rightBlackCircledWhiteArrow'] [MangleUnicode 0x2B8A] : CircledWhiteArrow 1 0
+	create-glyph [MangleName 'downBlackCircledWhiteArrow'] [MangleUnicode 0x2B8B] : CircledWhiteArrow 0 (-1)
+
+	create-glyph [MangleName 'heavyOvalWithOvalInside'] [MangleUnicode 0x2B56] : glyph-proc
+		set-width MosaicWidth
+		local rx : (arrowRSB - arrowSB) * 0.46
+		local ry : rx * 0.65
+		local sw : Math.min [Math.max (arrowSw * 1.1) (ry * 0.12)] (ry * 0.16)
+		include : EllipseRing arrowMidX SymbolMid rx ry sw
+		include : EllipseRing arrowMidX SymbolMid (rx - sw * 2.5) (ry - sw * 2.5) (sw * 0.7)
+
+	create-glyph [MangleName 'heavyCircleWithCircleInside'] [MangleUnicode 0x2B57] : glyph-proc
+		set-width MosaicWidth
+		local R : Math.min ((arrowRSB - arrowSB) * 0.45) ((arrowTop - arrowBot) * 0.45)
+		local sw : Math.min [Math.max (arrowSw * 1.1) (R * 0.12)] (R * 0.16)
+		include : EllipseRing arrowMidX SymbolMid R R sw
+		include : EllipseRing arrowMidX SymbolMid (R - sw * 2.5) (R - sw * 2.5) (sw * 0.7)
+
 	if (MosaicWidthScalar == 1) : do
 		create-glyph 'ccCcwArrow' : glyph-proc
 			include : ShareAlikeArrow Arrow.Head.trigShape
