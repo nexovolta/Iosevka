@@ -24,6 +24,7 @@ glyph-block Symbol-Arrow-Thick : for-width-kinds WideWidth1
 		.arrowDiagSB arrowDiagSB
 		.arrowDiagBot arrowDiagBot
 		.arrowDiagTop arrowDiagTop
+		.arrowHeadSize arrowHeadSize
 
 		.halfTerminal halfTerminal
 	} dims
@@ -199,7 +200,7 @@ glyph-block Symbol-Arrow-Thick : for-width-kinds WideWidth1
 
 	define [TriangleToBar arrow tipX tipY dirUp] : glyph-proc
 		set-width MosaicWidth
-		local bw : arrowWidth * 0.22
+		local bw : Math.min arrowHeadSize (MosaicWidth * 0.47)
 		local margin : MosaicWidth * 0.03
 		local barX : clamp (margin + bw) (MosaicWidth - margin - bw) tipX
 		local barGap : arrowWidth * 0.08 + OperatorStroke * 0.65

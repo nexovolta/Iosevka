@@ -55,10 +55,11 @@ glyph-block Symbol-Arrow-Simple : for-width-kinds WideWidth1
 	MkArrow.single Arrow.trigShape [MangleName 'trigArrowUp']         [MangleUnicode 0x2B61] arrowMidX arrowBot arrowMidX arrowTop
 	MkArrow.single Arrow.trigShape [MangleName 'trigArrowRight']      [MangleUnicode 0x2B62] arrowSB SymbolMid arrowRSB SymbolMid
 	MkArrow.single Arrow.trigShape [MangleName 'trigArrowDown']       [MangleUnicode 0x2B63] arrowMidX arrowTop arrowMidX arrowBot
-	MkArrow.single Arrow.trigShape [MangleName 'trigArrowUpLeft']     [MangleUnicode 0x2B66] arrowDiagRSB arrowDiagBot arrowDiagSB arrowDiagTop
-	MkArrow.single Arrow.trigShape [MangleName 'trigArrowUpRight']    [MangleUnicode 0x2B67] arrowDiagSB arrowDiagBot arrowDiagRSB arrowDiagTop
-	MkArrow.single Arrow.trigShape [MangleName 'trigArrowDownRight']  [MangleUnicode 0x2B68] arrowDiagSB arrowDiagTop arrowDiagRSB arrowDiagBot
-	MkArrow.single Arrow.trigShape [MangleName 'trigArrowDownLeft']   [MangleUnicode 0x2B69] arrowDiagRSB arrowDiagTop arrowDiagSB arrowDiagBot
+	define [DiagonalTrigArrow x1 y1 x2 y2 size] : Arrow.trigShape [mix arrowMidX x1 0.85] y1 [mix arrowMidX x2 0.85] y2 (size + dims.arrowSw * 0.5)
+	MkArrow.single DiagonalTrigArrow [MangleName 'trigArrowUpLeft']     [MangleUnicode 0x2B66] arrowDiagRSB arrowDiagBot arrowDiagSB arrowDiagTop
+	MkArrow.single DiagonalTrigArrow [MangleName 'trigArrowUpRight']    [MangleUnicode 0x2B67] arrowDiagSB arrowDiagBot arrowDiagRSB arrowDiagTop
+	MkArrow.single DiagonalTrigArrow [MangleName 'trigArrowDownRight']  [MangleUnicode 0x2B68] arrowDiagSB arrowDiagTop arrowDiagRSB arrowDiagBot
+	MkArrow.single DiagonalTrigArrow [MangleName 'trigArrowDownLeft']   [MangleUnicode 0x2B69] arrowDiagRSB arrowDiagTop arrowDiagSB arrowDiagBot
 
 	MkArrow.single Arrow.openShape [MangleName 'openHeadArrowLeft']   [MangleUnicode 0x21FD] arrowRSB SymbolMid arrowSB SymbolMid
 	MkArrow.single Arrow.openShape [MangleName 'openHeadArrowRight']  [MangleUnicode 0x21FE] arrowSB SymbolMid arrowRSB SymbolMid

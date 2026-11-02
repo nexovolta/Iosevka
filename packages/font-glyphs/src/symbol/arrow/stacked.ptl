@@ -225,10 +225,11 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
 			local yd : SymbolMid + [if above 0.5 (-0.5)] * gap
 			local flipX : if (kind == 'revWave' || kind == 'revApprox') (-1) 1
+			local arrowHead : if (kind == 'approx' || kind == 'revApprox') (head + sw * 0.5) head
 			set-width width
 			if leftward
-			: then : include : a.shape right ya left ya head (sw / 2)
-			: else : include : a.shape left ya right ya head (sw / 2)
+			: then : include : a.shape right ya left ya arrowHead (sw / 2)
+			: else : include : a.shape left ya right ya arrowHead (sw / 2)
 			if (kind == 'equal') : include : HBar.m xa xb (yd + dsw) dsw
 			if (kind == 'equal') : include : HBar.m xa xb (yd - dsw) dsw
 			if (kind == 'wave' || kind == 'revWave') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb yd amp dsw
