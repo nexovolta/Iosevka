@@ -21,7 +21,7 @@ const codes = [
 	0x2a33, 0x2a50, 0x2afb, 0x22d8, 0x22d9, 0x2a91, 0x2a92, 0x2a93, 0x2a94, 0x23b4, 0x23b5,
 	0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1, 0x2972, 0x2973, 0x2974, 0x2975,
 	0x2b41, 0x2b42, 0x2b47, 0x2b48, 0x2b49, 0x2b4a, 0x2b4b, 0x2b4c, 0x237c, 0x238c, 0x23af,
-	0x23d0, 0x2976, 0x2978, 0x2979, 0x297b, 0x2993, 0x2994, 0x239a, 0x23e7, 0x20e2,
+	0x23d0, 0x2976, 0x2978, 0x2979, 0x297b, 0x2993, 0x2994, 0x2995, 0x2996, 0x239a, 0x23e7, 0x20e2,
 	0x29c0, 0x29c1, 0x2e00, 0x2e01, 0x2e02, 0x2e03, 0x2e04, 0x2e05, 0x2e06, 0x2e07,
 	0x2e08, 0x2e09, 0x2e0a, 0x2e3f,
 ];
@@ -62,6 +62,11 @@ for (const spacing of ["term", "quasi-proportional"]) {
 			const bracketDependencies = glyphStore.queryByUnicode(0x2993).geometry.getDependencies();
 			assert.ok(bracketDependencies.includes(glyphStore.queryByUnicode(0x28)), "arc bracket must reference the parenthesis");
 			assert.ok(bracketDependencies.includes(glyphStore.queryByUnicode(0x3c)), "arc bracket must reference less-than");
+			for (const [bracket, paren, relation] of [[0x2995, 0x2e28, 0x3e], [0x2996, 0x2e29, 0x3c]]) {
+				const dependencies = glyphStore.queryByUnicode(bracket).geometry.getDependencies();
+				assert.ok(dependencies.includes(glyphStore.queryByUnicode(paren)), `U+${bracket.toString(16)} must reference its double parenthesis`);
+				assert.ok(dependencies.includes(glyphStore.queryByUnicode(relation)), `U+${bracket.toString(16)} must reference its relation`);
+			}
 			assert.equal(contours(0x239a).length, 5, "screen frame and three diagonal strokes must remain separated");
 			const screenParts = contours(0x239a).map(points => {
 				const xs = points.map(p => p.x);
@@ -215,4 +220,23 @@ test("arc bracket follows each parenthesis contour", () => {
 		offsets.push(leftEdge(0x2993) - 0.94 * leftEdge(0x28));
 	}
 	assert.ok(Math.max(...offsets) - Math.min(...offsets) < 1, `arc bracket alignment varies: ${offsets}`);
+});
+
+test("double arc brackets build in semilight italic", () => {
+	const argv = {
+		shape: { serifs: "sans", spacing: "term", weight: 300, width: 500, slope: "italic", slopeAngle: 9.4 },
+		featureControl: { noCvSs: true },
+		variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+	};
+	const para = init(data, argv);
+	Variant.apply(variantData, para, argv);
+	const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+	for (const [bracket, paren, relation] of [[0x2995, 0x2e28, 0x3e], [0x2996, 0x2e29, 0x3c]]) {
+		const glyph = glyphStore.queryByUnicode(bracket);
+		const points = glyph.geometry.toContours().flat();
+		assert.ok(points.length && points.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+		const dependencies = glyph.geometry.getDependencies();
+		assert.ok(dependencies.includes(glyphStore.queryByUnicode(paren)));
+		assert.ok(dependencies.includes(glyphStore.queryByUnicode(relation)));
+	}
 });
