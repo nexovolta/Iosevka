@@ -57,7 +57,7 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 		const para = init(data, argv);
 		Variant.apply(variantData, para, argv);
 		const filter = { blockIsNeeded: () => true, glyphIsNeeded: () => true };
-		const { glyphStore } = buildGlyphs(para, filter);
+		const { glyphStore, fontMetrics } = buildGlyphs(para, filter);
 		const outlines = new Map();
 		for (const code of codes) {
 			const name = `U+${code.toString(16).toUpperCase()}`;
@@ -85,7 +85,37 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 				);
 			}
 		}
+		for (const code of [0x2b5a, 0x2b5b, 0x2b5c, 0x2b5d, 0x2b5e, 0x2b5f]) {
+			assert.equal(
+				outlines.get(code).length,
+				1,
+				`U+${code.toString(16).toUpperCase()} must have one connected outline without holes`,
+			);
+		}
 		for (const code of [0x2b76, 0x2b77, 0x2b78, 0x2b79]) {
+			const source = 0x2b66 + (code - 0x2b76);
+			const glyph = glyphStore.queryByUnicode(code);
+			assert.ok(
+				glyph.geometry.getDependencies().includes(glyphStore.queryByUnicode(source)),
+				`U+${code.toString(16).toUpperCase()} must use U+${source.toString(16).toUpperCase()}`,
+			);
+			assert.deepEqual(
+				outlines.get(code).slice(0, -1),
+				glyphStore.queryByUnicode(source).geometry.toContours(),
+				`U+${code.toString(16).toUpperCase()} must retain the full base arrow`,
+			);
+			const bar = outlines.get(code).at(-1);
+			assert.ok(
+				bar.every(point => point.x >= 0 && point.x <= glyph.advanceWidth),
+				`U+${code.toString(16).toUpperCase()} bar must fit within its advance`,
+			);
+			assert.ok(
+				bar.every(
+					point =>
+						point.y >= fontMetrics.hhea.descender && point.y <= fontMetrics.hhea.ascender,
+				),
+				`U+${code.toString(16).toUpperCase()} bar must fit within the line metrics: ${JSON.stringify(bar.map(p => p.y))}, ${fontMetrics.hhea.descender}..${fontMetrics.hhea.ascender}`,
+			);
 			const bounds = outlines
 				.get(code)
 				.map(contour => [

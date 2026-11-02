@@ -16,6 +16,7 @@ glyph-block Symbol-Arrow-Thick : for-width-kinds WideWidth1
 	define {
 		.arrowTop arrowTop
 		.arrowBot arrowBot
+		.arrowWidth arrowWidth
 		.arrowMidX arrowMidX
 		.arrowSB arrowSB
 		.arrowRSB arrowRSB
@@ -196,20 +197,20 @@ glyph-block Symbol-Arrow-Thick : for-width-kinds WideWidth1
 
 	MkArrow.single [Arrow.toBarShapeT : ThickArrowShape 'black'] [MangleName 'blackArrowBarDown'] [MangleUnicode 0x1F8B3] arrowMidX arrowTop arrowMidX arrowBot
 
-	define [TriangleToBar fromX fromY tipX tipY dirUp] : glyph-proc
+	define [TriangleToBar arrow tipX tipY dirUp] : glyph-proc
 		set-width MosaicWidth
-		local hs : (arrowRSB - arrowSB) * 0.2
-		local bw : (arrowRSB - arrowSB) * 0.2
-		local barX tipX
-		local barGap : o + hs * 0.65 + OperatorStroke * 1.05
+		local bw : arrowWidth * 0.22
+		local margin : MosaicWidth * 0.03
+		local barX : clamp (margin + bw) (MosaicWidth - margin - bw) tipX
+		local barGap : arrowWidth * 0.08 + OperatorStroke * 0.65
 		local barY : if dirUp (tipY + barGap) (tipY - barGap)
-		include : Arrow.trigShape fromX fromY tipX tipY hs (OperatorStroke / 2)
+		include : refer-glyph [MangleName arrow]
 		include : HBar.m (barX - bw) (barX + bw) barY OperatorStroke
 
-	create-glyph [MangleName 'northWestTriangleArrowToBar'] [MangleUnicode 0x2B76] : TriangleToBar arrowDiagRSB arrowDiagBot arrowDiagSB arrowDiagTop true
-	create-glyph [MangleName 'northEastTriangleArrowToBar'] [MangleUnicode 0x2B77] : TriangleToBar arrowDiagSB arrowDiagBot arrowDiagRSB arrowDiagTop true
-	create-glyph [MangleName 'southEastTriangleArrowToBar'] [MangleUnicode 0x2B78] : TriangleToBar arrowDiagSB arrowDiagTop arrowDiagRSB arrowDiagBot false
-	create-glyph [MangleName 'southWestTriangleArrowToBar'] [MangleUnicode 0x2B79] : TriangleToBar arrowDiagRSB arrowDiagTop arrowDiagSB arrowDiagBot false
+	create-glyph [MangleName 'northWestTriangleArrowToBar'] [MangleUnicode 0x2B76] : TriangleToBar 'trigArrowUpLeft' arrowDiagSB arrowDiagTop true
+	create-glyph [MangleName 'northEastTriangleArrowToBar'] [MangleUnicode 0x2B77] : TriangleToBar 'trigArrowUpRight' arrowDiagRSB arrowDiagTop true
+	create-glyph [MangleName 'southEastTriangleArrowToBar'] [MangleUnicode 0x2B78] : TriangleToBar 'trigArrowDownRight' arrowDiagRSB arrowDiagBot false
+	create-glyph [MangleName 'southWestTriangleArrowToBar'] [MangleUnicode 0x2B79] : TriangleToBar 'trigArrowDownLeft' arrowDiagSB arrowDiagBot false
 
 	define [ChevronShape x1 y1 x2 y2 len] : begin
 		return : PointingTo x1 y1 x2 y2 : lambda [mag] : begin
