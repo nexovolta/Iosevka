@@ -22,6 +22,8 @@ const codes = [
 	0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1, 0x2972, 0x2973, 0x2974, 0x2975,
 	0x2b41, 0x2b42, 0x2b47, 0x2b48, 0x2b49, 0x2b4a, 0x2b4b, 0x2b4c, 0x237c, 0x238c, 0x23af,
 	0x23d0, 0x2976, 0x2978, 0x2979, 0x297b, 0x2993, 0x2994, 0x239a, 0x23e7, 0x20e2,
+	0x29c0, 0x29c1, 0x2e00, 0x2e01, 0x2e02, 0x2e03, 0x2e04, 0x2e05, 0x2e06, 0x2e07,
+	0x2e08, 0x2e09, 0x2e0a, 0x2e3f,
 ];
 
 await Geom.Init();
@@ -89,6 +91,47 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					Math.max(...points.map(p => p.y)) - Math.min(...points.map(p => p.y)),
 				];
 			};
+			const editorialHeight = span(0x2e00)[1];
+			for (const code of [0x2e02, 0x2e03, 0x2e06, 0x2e09, 0x2e0a]) {
+				const height = span(code)[1];
+				assert.ok(Math.abs(height - editorialHeight) < editorialHeight * 0.05, `U+${code.toString(16)} height ${height} differs from ${editorialHeight}`);
+			}
+			for (const code of [0x2e08, 0x2e09, 0x2e0a]) {
+				const glyph = glyphStore.queryByUnicode(code);
+				assert.ok(contours(code).flat().every(p => p.x >= 0 && p.x <= glyph.advanceWidth), `U+${code.toString(16)} exceeds its advance`);
+			}
+			const topStroke = code => {
+				const ys = [...new Set(contours(code).flat().map(p => p.y))].sort((a, b) => b - a);
+				return ys[0] - ys[1];
+			};
+			assert.ok(Math.abs(topStroke(0x2e00) - topStroke(0x2e06)) < 0.01, "substitution and interpolation strokes differ");
+			for (const [dotted, base] of [[0x2e01, 0x2e00], [0x2e04, 0x2e02], [0x2e05, 0x2e03], [0x2e07, 0x2e06]]) {
+				const parts = contours(dotted).map(points => ({
+					left: Math.min(...points.map(p => p.x)),
+					right: Math.max(...points.map(p => p.x)),
+					top: Math.max(...points.map(p => p.y)),
+					bottom: Math.min(...points.map(p => p.y)),
+				})).sort((a, b) => (a.right - a.left) * (a.top - a.bottom) - (b.right - b.left) * (b.top - b.bottom));
+				const dot = parts[0];
+				const body = contours(base).flat();
+				const dotX = (dot.left + dot.right) / 2;
+				assert.ok(dotX > Math.min(...body.map(p => p.x)) && dotX < Math.max(...body.map(p => p.x)), `U+${dotted.toString(16)} dot must be under the arm`);
+			}
+			for (const code of [0x29c0, 0x29c1]) {
+				assert.ok(glyphStore.queryByUnicode(code).geometry.getDependencies().some(g => g.identifier === "mathO"), `U+${code.toString(16)} must use the common mathematical circle`);
+				const reference = span(0x29b6);
+				const actual = span(code);
+				assert.ok(actual.every((value, i) => Math.abs(value - reference[i]) < 0.01), `U+${code.toString(16)} ring differs from circled operators`);
+			}
+			for (const code of [0x2e01, 0x2e04, 0x2e05, 0x2e07, 0x2e08]) {
+				assert.ok(contours(code).length >= 2, `U+${code.toString(16)} must retain a separate dot`);
+			}
+			const screen = span(0x239a);
+			const electrical = span(0x23e7);
+			if (spacing === "term") {
+				assert.ok(screen[0] > 440 && screen[1] > 400, `screen is too small: ${screen}`);
+				assert.ok(electrical[0] > 385 && electrical[1] > 450, `electrical intersection is too small: ${electrical}`);
+			}
 			const multiply = span(0xd7);
 			const smash = span(0x2a33);
 			for (let i = 0; i < 2; i++) {

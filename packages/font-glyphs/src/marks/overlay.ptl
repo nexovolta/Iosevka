@@ -499,6 +499,12 @@ glyph-block Mark-Overlay : begin
 			create-glyph [MangleName 'arrRingPlusOverLR'] : ArrowRingPlusOverlay HRingRadius HRingSw
 			create-glyph [MangleName 'arrRingOverLRMask'] : ArrowRingMaskOverlay HRingRadius HRingSw
 
+	glyph-block-export DownTackShape
+	define [DownTackShape] : with-params [[swV (markFine * 2)] [swH (markFine * 2)]] : glyph-proc
+		local ext : Math.min markExtend (aboveMarkTop - aboveMarkBot)
+		include : VBar.m 0 (-ext) (+ext) swV
+		include : HBar.t (-markExtend) (+markExtend) (+ext) swH
+
 	do "Half-XH marks for spacing modifiers"
 		define ext : Math.min markExtend (aboveMarkTop - aboveMarkBot)
 
@@ -527,8 +533,7 @@ glyph-block Mark-Overlay : begin
 			set-width 0
 			set-mark-anchor 'overlay' 0 0 0 0
 
-			include : VBar.m 0 (-ext) (+ext) (markFine * 2)
-			include : HBar.t (-markExtend) (+markExtend) (+ext) (markFine * 2)
+			include : DownTackShape
 
 		create-glyph 'plusOver' : glyph-proc
 			set-width 0

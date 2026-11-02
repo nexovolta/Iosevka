@@ -9,6 +9,10 @@ glyph-module
 glyph-block Symbol-Other-Phonetic : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Shared-Symbol-Shapes : Polyline
+	glyph-block-import Mark-Above : TildeShape aboveMarkTop aboveMarkBot
+	glyph-block-import Mark-Overlay : DownTackShape
+	glyph-block-import Mark-Shared-Metrics : markExtend
 
 	local triangleSize : Math.min (PeriodRadius) (XH / 6)
 	local toneMarkLeft : mix SB RightSB 0.1
@@ -40,6 +44,9 @@ glyph-block Symbol-Other-Phonetic : begin
 	define [yOfTone tone]        : mix (OperatorStroke / 2) (CAP - OperatorStroke / 2) (tone / 4)
 	define [yOfToneNeutral tone] : mix DotRadius (CAP - DotRadius) (tone / 4)
 	define [yOfToneDepart a b p] : mix (CAP * a + OperatorStroke / 2) (CAP * b - OperatorStroke / 2) p
+	define [ToneCorner] : with-params [left a b pos [swV OperatorStroke] [swH OperatorStroke]] : glyph-proc
+		include : [if left VBar.l VBar.r] [if left toneMarkLeft toneMarkRight] (CAP * a) (CAP * b) swV
+		include : HBar.m (toneMarkLeft + [if left TINY 0]) (toneMarkRight - [if left 0 TINY]) [yOfToneDepart a b pos] swH
 
 	foreach tone [range 4 downtill 0] : begin
 		create-glyph ('tone' + tone) (0x2E5 + 4 - tone) : glyph-proc
@@ -129,8 +136,7 @@ glyph-block Symbol-Other-Phonetic : begin
 		list 'beginLowTone'      0x2FB  0    0.4  0
 	foreach { name code a b pos } [items-of DepartingToneConfig] : begin
 		create-glyph name code : glyph-proc
-			include : VBar.l toneMarkLeft (CAP * a) (CAP * b) OperatorStroke
-			include : HBar.m (toneMarkLeft + TINY) toneMarkRight [yOfToneDepart a b pos] OperatorStroke
+			include : ToneCorner true a b pos
 
 	glyph-block-export TaperedVBar TaperedHBar
 	define [TaperedVBar x yBot yTop yBar sw] : union
@@ -214,8 +220,59 @@ glyph-block Symbol-Other-Phonetic : begin
 		list 'endLowTone'        0x2FC  0    0.4  0
 	foreach { name code a b pos } [items-of EnteringToneConfig] : begin
 		create-glyph name code : glyph-proc
-			include : VBar.r toneMarkRight (CAP * a) (CAP * b) OperatorStroke
-			include : HBar.m toneMarkLeft (toneMarkRight - TINY) [yOfToneDepart a b pos] OperatorStroke
+			include : ToneCorner false a b pos
+
+	do "Editorial markers"
+		local top : yOfToneDepart 0.48 1 1
+		local bot : CAP * 0.48
+		local sw OperatorStroke
+		local dr : Math.min (Width * 0.065) (sw * 0.65)
+		local left : mix Middle (toneMarkLeft + sw / 1.7) 0.85
+		local right : mix Middle toneMarkRight 0.85
+		local dotX : mix left right 0.72
+		local dotY : mix bot top 0.45
+		define [Dot x y] : RingAt x y dr
+		define [Corner] : with-transform [ScaleAround Middle 0 0.85 1] : ToneCorner true 0.48 1 1 (swV -- (sw / 0.85))
+		define [AngledCorner reversed] : dispiro
+			Polyline [widths.center sw]
+				points -- {{[if reversed (Width - left) left] bot} {[if reversed (Width - left) left] (top - Width * 0.15)} {[if reversed (Width - right) right] top}}
+		create-glyph 'rightAngleSubstitutionMarker' 0x2E00 : Corner
+		create-glyph 'rightAngleDottedSubstitutionMarker' 0x2E01 : union [Corner] [Dot dotX dotY]
+		create-glyph 'leftSubstitutionBracket' 0x2E02 : AngledCorner false
+		create-glyph 'rightSubstitutionBracket' 0x2E03 : AngledCorner true
+		create-glyph 'leftDottedSubstitutionBracket' 0x2E04 : union [AngledCorner false] [Dot dotX dotY]
+		create-glyph 'rightDottedSubstitutionBracket' 0x2E05 : union [AngledCorner true] [Dot (Width - dotX) dotY]
+		local markExt : Math.min markExtend (aboveMarkTop - aboveMarkBot)
+		local interpolationScale : (CAP - bot) / (markExt * 2)
+		define [Interpolation] : with-transform [Translate Middle [mix bot CAP 0.5]] : with-transform [Scale (interpolationScale * 0.72) interpolationScale] : DownTackShape (swV -- (sw / (interpolationScale * 0.72))) (swH -- (sw / interpolationScale))
+		create-glyph 'raisedInterpolationMarker' 0x2E06 : Interpolation
+		create-glyph 'raisedDottedInterpolationMarker' 0x2E07 : union [Interpolation] [Dot (Middle + markExtend * interpolationScale * 0.65) dotY]
+		define [TranspositionSource halfStroke] : new-glyph : glyph-proc
+			include : with-transform [Rotate (-Math.PI * 0.75)] : with-transform [Scale 1 (-1)] : TildeShape
+				ttop -- (CAP * 0.165)
+				tbot -- (0 - CAP * 0.165)
+				leftEnd -- (0 - CAP * 0.26)
+				rightEnd -- (CAP * 0.26)
+				hs -- halfStroke
+				compact -- true
+				stretch -- 1
+		define [TranspositionBounds source] : begin
+			local bottom CAP
+			local top : 0 - CAP
+			foreach contour [items-of : source.geometry.toContours] : foreach point [items-of contour] : begin
+				set bottom : Math.min bottom point.y
+				set top : Math.max top point.y
+			return { bottom top }
+		local probe : TranspositionSource (sw / 2)
+		local {probeBot probeTop} : TranspositionBounds probe
+		local probeScale : (CAP - bot) / (probeTop - probeBot)
+		local transpositionSource : TranspositionSource (sw / (2 * probeScale))
+		local {transBot transTop} : TranspositionBounds transpositionSource
+		local transScale : (CAP - bot) / (transTop - transBot)
+		define [Transposition] : with-transform [Translate (Middle - Width * 0.06) ([mix bot CAP 0.5] - transScale * [mix transBot transTop 0.5])] : with-transform [Scale (transScale * 0.7) transScale] transpositionSource
+		create-glyph 'dottedTranspositionMarker' 0x2E08 : union [Transposition] [Dot (Middle + Width * 0.3) dotY]
+		create-glyph 'leftTranspositionBracket' 0x2E09 : union [Transposition] [no-shape]
+		create-glyph 'rightTranspositionBracket' 0x2E0A : union [with-transform [ScaleAround Middle 0 (-1) 1] : Transposition] [no-shape]
 
 	local DblToneConfig : list
 		list 'stressAndHighTone'     0xA720  0.6  1    1.0

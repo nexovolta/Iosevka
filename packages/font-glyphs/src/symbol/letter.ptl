@@ -396,6 +396,27 @@ glyph-block Symbol-Letter : begin
 
 		select-variant 'letterLike/centreLineSymbol' 0x2104 (follow -- 'c')
 
+		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+			create-glyph "letterLike/capitulum.\(suffix)" : glyph-proc
+				set-width Width
+				local sw : Math.min [AdviceStroke 6] (Width * 0.055)
+				local barSw : Math.min [AdviceStroke 4] (Width * 0.08)
+				local df : DivFrame 1
+				local cHeight : 0.53 * CAP
+				local p : cHeight / XH
+				local yMid : CAP / 2
+				local xStem Middle
+				local cForm : CLetterForm df styTop styBot (yMid + cHeight / 2) (yMid - cHeight / 2)
+					ada -- (SmallArchDepthA * p)
+					adb -- (SmallArchDepthB * p)
+					hook -- (cHeight * 0.12)
+					sw -- (Width * 0.18)
+				include : union
+					with-outlined (sw / 2) [cForm.full]
+					VBar.m (xStem - barSw * 1.1) Descender CAP barSw
+					VBar.m (xStem + barSw * 1.1) Descender CAP barSw
+		select-variant 'letterLike/capitulum' 0x2E3F (follow -- 'c')
+
 		derive-glyphs 'letterLike/prescriptionTake' 0x211E 'R' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			local k 0.5

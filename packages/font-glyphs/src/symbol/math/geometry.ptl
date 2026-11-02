@@ -10,6 +10,7 @@ glyph-block Symbol-Math-Geometry : begin
 	glyph-block-import Shared-Symbol-Shapes : VZigzag Polyline
 	glyph-block-import Symbol-Geometric-Shared : ConvexPolygonOutline GeometricDim GeometricSizes MathWidthShape
 	glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
+	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
 
 	local kBox : 2 / 3
 	local leftBox : SB * kBox
@@ -302,12 +303,10 @@ glyph-block Symbol-Math-Geometry : begin
 
 	define circleStroke symbolFine
 	define [CircleRelationShape less] : glyph-proc
-		local r : radiusBox * 0.95
-		local w : r * 0.5
-		local h : r * 0.5
-		include : RingStrokeAt Middle SymbolMid r circleStroke
-		if less : include : LessShape (SymbolMid + h) (SymbolMid - h) (Middle - w) (Middle + w) circleStroke
-		: else : include : GreaterShape (SymbolMid + h) (SymbolMid - h) (Middle - w) (Middle + w) circleStroke
+		local w : radiusBox * 0.42
+		local h : radiusBox * 0.45
+		include : refer-glyph 'mathO'
+		include : intersection [refer-glyph 'mathO/outline'] : [if less LessShape GreaterShape] (SymbolMid + h) (SymbolMid - h) (Middle - w) (Middle + w) MathEnclosureSw
 	create-glyph 'circledLessThan' 0x29C0 : CircleRelationShape true
 	create-glyph 'circledGreaterThan' 0x29C1 : CircleRelationShape false
 
