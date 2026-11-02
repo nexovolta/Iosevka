@@ -144,33 +144,39 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 				flat [mix innerLeft right 0.4] (cy - half)
 				curl right (cy - half) [heading Rightward]
 			if (relation == 'supst') : include : FlipAround middle cy
-		define [RelationWave y amp] : TildeShape
+		define [RelationWave y amp rleft rright] : TildeShape
 			ttop -- (y + amp)
 			tbot -- (y - amp)
-			leftEnd -- (left + sw / 2)
-			rightEnd -- (right - sw / 2)
+			leftEnd -- (rleft + sw / 2)
+			rightEnd -- (rright - sw / 2)
 			hs -- (sw / 2)
 			stretch -- 1
-		define [StackedRelationArrow relation above rightward] : glyph-proc
+		define [StackedRelationArrow relation above rightward limitToShaft] : glyph-proc
 			local gap : if (relation == 'equal') [Math.max (sw * 3.5) (d.compactHeadSize * 1.7)] [Math.max (sw * 4.5) (d.compactHeadSize * 2.4)]
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
 			local yr : SymbolMid + [if above 0.5 (-0.5)] * gap
+			local trim : if limitToShaft [Math.min (head * 1.4) ((right - left) * 0.34)] 0
+			local rleft : left + [if rightward 0 trim]
+			local rright : right - [if rightward trim 0]
+			local rmid : (rleft + rright) / 2
 			set-width width
 			if rightward
 			: then : include : a.shape left ya right ya head (sw / 2)
 			: else : include : a.shape right ya left ya head (sw / 2)
 			if (relation == 'equal')
 			: then : begin
-				include : HBar.m left right (yr + sw) sw
-				include : HBar.m left right (yr - sw) sw
+				include : HBar.m rleft rright (yr + sw) sw
+				include : HBar.m rleft rright (yr - sw) sw
 			: else : begin
-				if (relation == 'wave')
-				: then : include : RelationWave yr [Math.max (sw * 0.9) ((right - left) * 0.08)]
+				if (relation == 'wave' || relation == 'reverseWave')
+				: then : include : with-transform [ScaleAround rmid yr [if (relation == 'reverseWave') (-1) 1] 1] : RelationWave yr [Math.max (sw * 0.9) ((rright - rleft) * 0.08)] rleft rright
 				: else : begin
-					if (relation == 'approx')
+					if (relation == 'approx' || relation == 'reverseApprox')
 					: then : begin
-						include : RelationWave (yr + sw) [Math.max (sw * 0.55) ((right - left) * 0.05)]
-						include : RelationWave (yr - sw) [Math.max (sw * 0.55) ((right - left) * 0.05)]
+						local amp : Math.max (sw * 0.55) ((rright - rleft) * 0.05)
+						include : with-transform [ScaleAround rmid yr [if (relation == 'reverseApprox') (-1) 1] 1] : glyph-proc
+							include : RelationWave (yr + sw) amp rleft rright
+							include : RelationWave (yr - sw) amp rleft rright
 					: else : include : RelationShape relation yr [Math.max (sw * 1.5) ((right - left) * 0.23)] 0
 		create-glyph [MangleName 'equalAboveRightArrow'] [MangleUnicode 0x2971] : StackedRelationArrow 'equal' true true
 		create-glyph [MangleName 'tildeAboveRightArrow'] [MangleUnicode 0x2972] : StackedRelationArrow 'wave' true true
@@ -181,14 +187,32 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 		create-glyph [MangleName 'greaterAboveRightArrow'] [MangleUnicode 0x2978] : StackedRelationArrow 'greater' true true
 		create-glyph [MangleName 'subsetAboveRightArrow'] [MangleUnicode 0x2979] : StackedRelationArrow 'subst' true true
 		create-glyph [MangleName 'supersetAboveLeftArrow'] [MangleUnicode 0x297B] : StackedRelationArrow 'supst' true false
-		define [ArrowThroughRelation base] : glyph-proc
-			local extra : if para.isQuasiProportional (head * 0.8) 0
+		create-glyph [MangleName 'equalAboveLeftArrow'] [MangleUnicode 0x2B40] : StackedRelationArrow 'equal' true false true
+		create-glyph [MangleName 'reverseTildeAboveLeftArrow'] [MangleUnicode 0x2B41] : StackedRelationArrow 'reverseWave' true false true
+		create-glyph [MangleName 'leftArrowAboveReverseApprox'] [MangleUnicode 0x2B42] : StackedRelationArrow 'reverseApprox' false false true
+		create-glyph [MangleName 'reverseTildeAboveRightArrow'] [MangleUnicode 0x2B47] : StackedRelationArrow 'reverseWave' true true true
+		create-glyph [MangleName 'rightArrowAboveReverseApprox'] [MangleUnicode 0x2B48] : StackedRelationArrow 'reverseApprox' false true true
+		create-glyph [MangleName 'tildeAboveLeftArrow'] [MangleUnicode 0x2B49] : StackedRelationArrow 'wave' true false true
+		create-glyph [MangleName 'leftArrowAboveApprox'] [MangleUnicode 0x2B4A] : StackedRelationArrow 'approx' false false true
+		create-glyph [MangleName 'leftArrowAboveReverseTilde'] [MangleUnicode 0x2B4B] : StackedRelationArrow 'reverseWave' false false true
+		create-glyph [MangleName 'rightArrowAboveReverseTilde'] [MangleUnicode 0x2B4C] : StackedRelationArrow 'reverseWave' false true true
+		define [ArrowThroughRelation base rightward] : glyph-proc
+			local extra : if (para.isQuasiProportional && !rightward) (head * 0.8) 0
+			local half : Math.max (sw * 2) ((right - left) * 0.32)
+			local inset : Math.min ((right - left) * 0.6) : Math.max (head * 1.8) (sw * 2.2)
+			local rel : RelationShape base SymbolMid half inset
+			if rightward
+			: then : begin
+				if (base == 'less')
+				: then : set rel : GreaterShape (SymbolMid + half) (SymbolMid - half) left (right - inset) sw
+				: else : set rel : RelationShape 'supst' SymbolMid half inset
+			local arr : a.shape [if rightward left right] SymbolMid [if rightward right left] SymbolMid (head * 1.2) (sw / 2)
 			set-width : width + extra
-			include : with-transform [ApparentTranslate (extra / 2) 0] : union
-				RelationShape base SymbolMid [Math.max (sw * 2) ((right - left) * 0.32)] [Math.min ((right - left) * 0.6) : Math.max (head * 1.8) (sw * 2.2)]
-				a.shape right SymbolMid left SymbolMid (head * 1.2) (sw / 2)
-		create-glyph [MangleName 'leftArrowThroughLess'] [MangleUnicode 0x2977] : ArrowThroughRelation 'less'
-		create-glyph [MangleName 'leftArrowThroughSubset'] [MangleUnicode 0x297A] : ArrowThroughRelation 'subst'
+			include : with-transform [ApparentTranslate (extra / 2) 0] : union rel arr
+		create-glyph [MangleName 'leftArrowThroughLess'] [MangleUnicode 0x2977] : ArrowThroughRelation 'less' false
+		create-glyph [MangleName 'leftArrowThroughSubset'] [MangleUnicode 0x297A] : ArrowThroughRelation 'subst' false
+		create-glyph [MangleName 'rightArrowThroughGreater'] [MangleUnicode 0x2B43] : ArrowThroughRelation 'less' true
+		create-glyph [MangleName 'rightArrowThroughSuperset'] [MangleUnicode 0x2B44] : ArrowThroughRelation 'subst' true
 
 	VCombine [MangleName 'uni2B80'] [MangleUnicode 0x2B80] [MangleName 'trigArrowLeft'] [MangleName 'trigArrowRight'] vcDist
 	HCombine [MangleName 'uni2B81'] [MangleUnicode 0x2B81] [MangleName 'trigArrowUp'] [MangleName 'trigArrowDown'] hcDist
