@@ -188,6 +188,13 @@ glyph-block Letter-Cyrillic-Che : begin
 			include : VSerif.dl xTopBarLeft  top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
+	define [CheVBarBarShape top pyBar fFlatHump] : begin
+		local SwCheVBar : Math.min OverlayStroke : VSwToH : 0.625 * ((RightSB - SB) - [HSwToV : 2 * Stroke])
+		local yc : [mix 0 top : fallback pyBar 0.5] + [if fFlatHump 0 O]
+		local half : Math.max (LongVJut * 0.8) (Stroke * 0.9)
+		return : VBar.m Middle (yc + half) (yc - half) SwCheVBar
+
+	glyph-block-export CheCapConfig
 	define CheCapConfig : SuffixCfg.weave
 		object # hump
 			""        false
@@ -212,6 +219,10 @@ glyph-block Letter-Cyrillic-Che : begin
 			include : LeaningAnchor.Below.VBar.r df.rightSB
 			include : CyrCcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
 				fFlatHump -- fFlatHump
+
+		create-glyph "cyrl/CheVBar.\(suffix)" : glyph-proc
+			include [refer-glyph "cyrl/Che.\(suffix)"] AS_BASE ALSO_METRICS
+			include : CheVBarBarShape CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] fFlatHump
 
 	select-variant 'cyrl/Che' 0x427
 	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
@@ -270,6 +281,14 @@ glyph-block Letter-Cyrillic-Che : begin
 			include : CyrCheShape [DivFrame 1] XH [if (slabTypeBGR !== SERIFS.NONE) 0.45 0.4] body slabTypeBGR
 				fFlatHump -- fFlatHump
 
+		create-glyph "cyrl/cheVBar.\(suffix)" : glyph-proc
+			include [refer-glyph "cyrl/che.\(suffix)"] AS_BASE ALSO_METRICS
+			include : CheVBarBarShape XH [if (slabType !== SERIFS.NONE) 0.45 0.4] fFlatHump
+
+		create-glyph "cyrl/cheVBar.BGR.\(suffix)" : glyph-proc
+			include [refer-glyph "cyrl/che.BGR.\(suffix)"] AS_BASE ALSO_METRICS
+			include : CheVBarBarShape XH [if (slabTypeBGR !== SERIFS.NONE) 0.45 0.4] fFlatHump
+
 		create-glyph "cyrl/cche.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
@@ -303,11 +322,6 @@ glyph-block Letter-Cyrillic-Che : begin
 	derive-composites 'cyrl/cheDescender' 0x4B7 'cyrl/che' [CyrDescender.rSideJut RightSB 0]
 	derive-composites 'cyrl/kha/che' 0x4CC 'cyrl/che' [CyrDescender.lSideJut (RightSB - [HSwToV Stroke]) 0 (jut -- MidJutSide)]
 
-	define [CheVBarBarShape top pyBar] : begin
-		local SwCheVBar : Math.min OverlayStroke : VSwToH : 0.625 * ((RightSB - SB) - [HSwToV : 2 * Stroke])
-		local yc : mix 0 top : fallback pyBar 0.5
-		local half : LongVJut * 0.8
-		return : VBar.m Middle (yc + half) (yc - half) SwCheVBar
-
-	derive-composites 'cyrl/CheVBar' 0x4B8 'cyrl/Che' [CheVBarBarShape CAP [if SLAB 0.45 0.35]]
-	derive-composites 'cyrl/cheVBar' 0x4B9 'cyrl/che' [CheVBarBarShape XH [if SLAB 0.45 0.4]]
+	select-variant 'cyrl/CheVBar' 0x4B8 (follow -- 'cyrl/Che')
+	select-variant 'cyrl/cheVBar' 0x4B9 (follow -- 'cyrl/che')
+	select-variant 'cyrl/cheVBar.BGR' (follow -- 'cyrl/che')

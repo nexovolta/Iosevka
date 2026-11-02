@@ -783,10 +783,10 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greaterSymLess' 0x2A90 : StackedInequalities false true
 
 	define [TwoInequalitiesOverEqual lessFirst] : glyph-proc
-		local half : Math.max (llggHeight * 0.5) (OperatorStroke * 3.5)
-		local band : half * 0.24
+		local half : (BgOpTop - BgOpBot) / 2
+		local band : half * 0.17
 		local sw : Math.min [AdviceStrokeInSpace (half * 2) 9] (half * 0.14)
-		local upper : SymbolMid + half * 0.72
+		local upper : SymbolMid + half * 0.79
 		local lower : SymbolMid + half * 0.05
 		if lessFirst
 		: then : begin
@@ -802,7 +802,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greaterLessEqEq' 0x2A92 : TwoInequalitiesOverEqual false
 
 	define [InequalitiesWithSlants lessFirst] : glyph-proc
-		local half : Math.max (llggHeight * 0.65) (OperatorStroke * 4)
+		local half : (BgOpTop - BgOpBot) / 2
 		local band : half * 0.22
 		local sw : Math.min [AdviceStrokeInSpace (half * 2) 8] (half * 0.15)
 		local upper : SymbolMid + half * 0.68
@@ -975,14 +975,14 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 
 	create-glyph 'muchLess' 0x22D8 : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
-		include : LessShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (0/3)] [mix df.leftSB df.rightSB (1/3)] muchLessSW
-		include : LessShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (1/3)] [mix df.leftSB df.rightSB (2/3)] muchLessSW
-		include : LessShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (2/3)] [mix df.leftSB df.rightSB (3/3)] muchLessSW
+		local pitch : (df.rightSB - df.leftSB) * 0.2
+		local sw : Math.min [AdviceStroke 3.5] (pitch * dH / [Math.hypot dH ((df.rightSB - df.leftSB) * 0.6)] * 0.65)
+		foreach j [range 0 3] : include : LessShape (SymbolMid + dH) (SymbolMid - dH) (df.leftSB + j * pitch) (df.rightSB - (2 - j) * pitch) sw
 	create-glyph 'muchGreater' 0x22D9 : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
-		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (0/3)] [mix df.leftSB df.rightSB (1/3)] muchLessSW
-		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (1/3)] [mix df.leftSB df.rightSB (2/3)] muchLessSW
-		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) [mix df.leftSB df.rightSB (2/3)] [mix df.leftSB df.rightSB (3/3)] muchLessSW
+		local pitch : (df.rightSB - df.leftSB) * 0.2
+		local sw : Math.min [AdviceStroke 3.5] (pitch * dH / [Math.hypot dH ((df.rightSB - df.leftSB) * 0.6)] * 0.65)
+		foreach j [range 0 3] : include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) (df.leftSB + j * pitch) (df.rightSB - (2 - j) * pitch) sw
 
 glyph-block Symbol-Math-Relation-Precedes-Succeeds : begin
 	glyph-block-import CommonShapes

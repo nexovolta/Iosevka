@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
+import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
@@ -22,6 +23,56 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	define fineGeometryStroke : AdviceStroke2 4 4 Geom.Size
 
 	do "Technical Symbols"
+		create-glyph [MangleName 'rightAngleDownZigzagArrow'] [MangleUnicode 0x237C] : glyph-proc
+			set-width Geom.Width
+			local left : Geom.MidX - Geom.Size * 0.68
+			local right : Geom.MidX + Geom.Size * 0.48
+			local cornerX : mix left right 0.3
+			local top : Geom.MidY + Geom.Size * 1.16
+			local mid1 : Geom.MidY + Geom.Size * 0.29
+			local mid2 : Geom.MidY - Geom.Size * 0.2175
+			local bottom : Geom.MidY - Geom.Size * 1.0875
+			local y : Geom.MidY - Geom.Size * 0.435
+			local sw : Math.min GeometryStroke (Geom.Size * 0.16)
+			include : union
+				dispiro
+					Polyline [widths.center sw]
+						points -- {{right top} {left mid1} {right mid2} {left bottom}}
+				dispiro
+					Polyline [widths.center sw]
+						points -- {{(left + Geom.Size * 0.1) (bottom + Geom.Size * 0.42)} {left bottom} {(left + Geom.Size * 0.42) (bottom + Geom.Size * 0.02)}}
+				HBar.m cornerX Geom.Right y sw
+				VBar.m cornerX y top sw
+
+		create-glyph [MangleName 'undoSymbol'] [MangleUnicode 0x238C] : glyph-proc
+			set-width Geom.Width
+			local r : Geom.Size * 0.16
+			local sw : Math.min GeometryStroke (r * 0.65)
+			local left : Geom.MidX - Geom.Size * 0.6
+			local right : Geom.MidX + Geom.Size * 0.6
+			local y : Geom.MidY - Geom.Size * 0.3
+			include : RingStrokeAt left y r sw
+			local arrow : new-glyph : glyph-proc
+				local cs : new BezToContoursSink currentGlyph.gizmo
+				cs.moveTo (right + sw / 2) y
+				cs.cubicTo (right + sw / 2) (Geom.MidY + Geom.Size * 0.85) left (Geom.MidY + Geom.Size * 0.8) left (Geom.MidY + Geom.Size * 0.2)
+				cs.lineTo (left - Geom.Size * 0.17) (Geom.MidY + Geom.Size * 0.25)
+				cs.lineTo (left - Geom.Size * 0.12) (Geom.MidY - Geom.Size * 0.02)
+				cs.lineTo (left + Geom.Size * 0.18) (Geom.MidY + Geom.Size * 0.1)
+				cs.lineTo (left + sw / 2) (Geom.MidY + Geom.Size * 0.14)
+				cs.cubicTo (left + sw / 2) (Geom.MidY + Geom.Size * 0.65 - sw) (right - sw / 2) (Geom.MidY + Geom.Size * 0.6 - sw) (right - sw / 2) y
+				cs.endShape
+				currentGlyph.includeContours cs.contours
+			include : union [RingAt right y r] arrow
+
+		create-glyph [MangleName 'horizontalLineExtension'] [MangleUnicode 0x23AF] : glyph-proc
+			set-width MosaicWidth
+			include : HBar.m 0 MosaicWidth SymbolMid Stroke
+
+		create-glyph [MangleName 'verticalLineExtension'] [MangleUnicode 0x23D0] : glyph-proc
+			set-width MosaicWidth
+			include : VBar.m (MosaicWidth / 2) fontMetrics.os2.sTypoDescender fontMetrics.os2.sTypoAscender Stroke
+
 		create-glyph [MangleName 'squareFoot'] [MangleUnicode 0x23CD] : glyph-proc
 			set-width Geom.Width
 			local left Geom.Left
@@ -383,9 +434,9 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : RingStrokeAt Geom.MidX Geom.MidY (0.65 * benzeneInnerRadius) benzeneInnerStroke
 
 	do "Wide Square Brackets"
-		local bracketHeight : aboveMarkTop - aboveMarkBot
+		local bracketHeight : Math.max (aboveMarkTop - aboveMarkBot) (Stroke * 2.5)
 		local bracketWidth : Width * para.advanceScaleMM
-		local bracketStroke : 2 * markFine
+		local bracketStroke Stroke
 		local middle : bracketWidth / 2
 		local edgeY : Ascender - bracketHeight + bracketStroke / 2
 		local peakY : Ascender - bracketStroke / 2
@@ -394,7 +445,6 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 		local parenthesisDim : Paren.Dim parenthesisDf
 		local braceLeft : mix SB RightSB DesignParameters.braceOutside
 		local braceRight : mix SB RightSB DesignParameters.braceInside
-		local bracketDim : Bracket.HDim
 		local tortoiseDim : Paren.Dim parenthesisDf
 
 		define [TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop] : glyph-proc
@@ -402,27 +452,40 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			local sourceMidY : (sourceBottom + sourceTop) / 2
 			local sourceWidth : sourceRight - sourceLeft
 			local scaleX : bracketWidth / (sourceTop - sourceBottom)
-			local scaleY : bracketHeight / sourceWidth
-			include : with-transform [Translate middle topMidY] : with-transform [Scale scaleX scaleY] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-sourceMidX) (-sourceMidY)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph baseName
+			local shapeMidY : Ascender - sourceWidth / 2
+			include : with-transform [Translate middle shapeMidY] : with-transform [Scale scaleX 1] : with-transform [Rotate (-Math.PI / 2)] : with-transform [Translate (-sourceMidX) (-sourceMidY)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph baseName
 
 		define [BracketPair topName topUnicode bottomName bottomUnicode baseName sourceLeft sourceRight sourceBottom sourceTop] : begin
+			local shapeHeight : sourceRight - sourceLeft
+			local shapeMidY : Ascender - shapeHeight / 2
 			create-glyph [MangleName topName] [MangleUnicode topUnicode] : glyph-proc
 				set-width bracketWidth
-				include : with-transform [Italify para.slopeAngle] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
+				include : with-transform [Italify para.slopeAngle] : with-transform [Translate 0 (shapeHeight - Ascender)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 			create-glyph [MangleName bottomName] [MangleUnicode bottomUnicode] : glyph-proc
 				set-width bracketWidth
-				include : with-transform [Italify para.slopeAngle] : with-transform [Translate middle topMidY] : with-transform [Scale 1 (-1)] : with-transform [Translate (-middle) (-topMidY)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
+				include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround middle shapeMidY 1 (-1)] : TopBracketShape baseName sourceLeft sourceRight sourceBottom sourceTop
 
 		BracketPair 'topParenthesis' 0x23DC 'bottomParenthesis' 0x23DD 'parenLeft' parenthesisDim.outside parenthesisDim.inside parenthesisDim.bottom parenthesisDim.top
-		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF 'braceLeft' braceLeft braceRight ParenBot ParenTop
+		BracketPair 'topCurlyBracket' 0x23DE 'bottomCurlyBracket' 0x23DF 'braceLeft.straight' braceLeft braceRight ParenBot ParenTop
 		BracketPair 'topTortoiseShellBracket' 0x23E0 'bottomTortoiseShellBracket' 0x23E1 'tortoiseShellBracketLeft' tortoiseDim.outside tortoiseDim.inside tortoiseDim.bottom tortoiseDim.top
 
-		BracketPair 'topSquareBracket' 0x23B4 'bottomSquareBracket' 0x23B5 'bracketLeft' bracketDim.l bracketDim.r ParenBot ParenTop
+		define [TopSquareShape] : union
+			HBar.t 0 bracketWidth Ascender bracketStroke
+			VBar.l 0 (Ascender - bracketHeight) Ascender bracketStroke
+			VBar.r bracketWidth (Ascender - bracketHeight) Ascender bracketStroke
+
+		create-glyph [MangleName 'topSquareBracket'] [MangleUnicode 0x23B4] : glyph-proc
+			set-width bracketWidth
+			include : with-transform [Italify para.slopeAngle] : with-transform [Translate 0 (bracketHeight - Ascender)] : TopSquareShape
+
+		create-glyph [MangleName 'bottomSquareBracket'] [MangleUnicode 0x23B5] : glyph-proc
+			set-width bracketWidth
+			include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround middle topMidY 1 (-1)] : TopSquareShape
 
 		create-glyph [MangleName 'bottomSquareBracketOverTopSquareBracket'] [MangleUnicode 0x23B6] : glyph-proc
 			set-width bracketWidth
-			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender true
-			include : WideBridgeShape 0 bracketWidth 0 bracketHeight false
+			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender true bracketStroke
+			include : WideBridgeShape 0 bracketWidth 0 bracketHeight false bracketStroke
 
 	do "Keyboard Symbols"
 		define topLine : Geom.MidY + Geom.Size / 1.5

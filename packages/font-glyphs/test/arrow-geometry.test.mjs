@@ -173,7 +173,7 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 			}).sort((a, b) => b[0] - a[0]);
 			const gap = ends[0][0] - ends[1][1];
 			const thickness = ends[0][1] - ends[0][0];
-			assert.ok(gap > thickness && gap < thickness * 3, `U+${code.toString(16).toUpperCase()} tilde spacing: ${gap} / ${thickness}`);
+			assert.ok(Math.abs(gap - thickness) < 0.001, `U+${code.toString(16).toUpperCase()} tilde spacing: ${gap} / ${thickness}`);
 		}
 		for (const code of [0x2b76, 0x2b77, 0x2b78, 0x2b79]) {
 			const source = 0x2b66 + (code - 0x2b76);

@@ -386,25 +386,12 @@ glyph-block Symbol-Math-VAndCup : begin
 		local right : Middle + halfWidth
 		local top : SymbolMid + halfHeight
 		local bottom : SymbolMid - halfHeight
-		local xSize : halfWidth * 0.38
-		local ySize : halfHeight * 0.3
-		local shift : xSize * 0.4
-		local sw : Math.min [AdviceStroke 5] (xSize * 0.25)
 		set-width mathWidth
 		include : UShape top bottom left right outerSw
 		include : HBar.t left right top outerSw
 		include : HSerif.lt left top SideJut outerSw
 		include : HSerif.rt right top SideJut outerSw
-		foreach j [range 0 2] : begin
-			local dx : (2 * j - 1) * shift
-			include : dispiro
-				widths.center sw
-				flat (Middle + dx - xSize) (SymbolMid - ySize)
-				curl (Middle + dx + xSize) (SymbolMid + ySize)
-			include : dispiro
-				widths.center sw
-				flat (Middle + dx - xSize) (SymbolMid + ySize)
-				curl (Middle + dx + xSize) (SymbolMid - ySize)
+		include : with-transform [ScaleAround Middle SymbolMid 0.5 0.5] : refer-glyph 'smashProduct'
 		include : ApparentTranslate ((mathWidth - Width) / 2) 0
 
 	turned 'capClosedSerifed' 0x2A4D 'cupClosedSerifed' Middle SymbolMid

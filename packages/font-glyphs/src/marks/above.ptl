@@ -1685,12 +1685,13 @@ glyph-block Mark-Above : begin
 		include : HBar.t leftEnd rightEnd aboveMarkTop boxhs
 
 	glyph-block-export WideBridgeShape
-	define [WideBridgeShape left right bot top inverted] : glyph-proc
-		include : VBar.l left  bot top (markFine * 2)
-		include : VBar.r right bot top (markFine * 2)
+	define [WideBridgeShape left right bot top inverted _sw] : glyph-proc
+		local sw : fallback _sw (markFine * 2)
+		include : VBar.l left  bot top sw
+		include : VBar.r right bot top sw
 		if inverted
-			include : HBar.b left right bot (markFine * 2)
-			include : HBar.t left right top (markFine * 2)
+			include : HBar.b left right bot sw
+			include : HBar.t left right top sw
 
 	create-glyph 'wideBridgeAbove' 0x20E9 : glyph-proc
 		set-width 0

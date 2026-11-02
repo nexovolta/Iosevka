@@ -221,7 +221,10 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 			local xm : mix xa xb 0.5
 			local dsw : Math.min sw (Ls * 0.15)
 			local amp : Ls * 0.15
-			local gap : Math.max (sw * 0.6 + dsw * 3.5 + amp * 0.6) (d.compactHeadSize * 1.5)
+			local waveExtent : if (kind == 'approx' || kind == 'revApprox') (dsw + amp * 0.47) (amp * 0.78)
+			local equalGap : Math.max (sw * 0.6 + dsw * 3.5 + amp * 0.6) (d.compactHeadSize * 1.5)
+			local waveGap : Math.max ((sw + dsw) / 2 + waveExtent + dsw) (d.compactHeadSize + dsw)
+			local gap : if (kind == 'equal') equalGap waveGap
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
 			local yd : SymbolMid + [if above 0.5 (-0.5)] * gap
 			local flipX : if (kind == 'revWave' || kind == 'revApprox') (-1) 1
@@ -233,8 +236,8 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 			if (kind == 'equal') : include : HBar.m xa xb (yd + dsw) dsw
 			if (kind == 'equal') : include : HBar.m xa xb (yd - dsw) dsw
 			if (kind == 'wave' || kind == 'revWave') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb yd amp dsw
-			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd + dsw * 1.6) (amp * 0.6) dsw
-			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd - dsw * 1.6) (amp * 0.6) dsw
+			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd + dsw) (amp * 0.6) dsw
+			if (kind == 'approx' || kind == 'revApprox') : include : with-transform [ScaleAround xm yd flipX 1] : TailRelationWave xa xb (yd - dsw) (amp * 0.6) dsw
 		create-glyph [MangleName 'equalAboveLeftArrowTail'] [MangleUnicode 0x2B40] : TailDecoration 'equal' true true
 		create-glyph [MangleName 'reverseTildeAboveLeftArrowTail'] [MangleUnicode 0x2B41] : TailDecoration 'revWave' true true
 		create-glyph [MangleName 'leftArrowAboveReverseApproxTail'] [MangleUnicode 0x2B42] : TailDecoration 'revApprox' false true
