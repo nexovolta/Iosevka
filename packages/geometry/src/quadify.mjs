@@ -23,6 +23,8 @@ export class QuadifySink {
 		this.#inPlaceRemoveColinearCorners(c);
 		this.#inPlaceCleanupOccurrentKnots1(c);
 		this.#inPlaceRoundCoordinates(c);
+		this.#inPlaceDropDuplicateFirstLast(c);
+		this.#inPlaceCleanupOccurrentKnots1(c);
 		if (c.length <= 2) return;
 
 		this.#inPlaceRotateToOptimizedStart(c);

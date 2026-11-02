@@ -13,8 +13,8 @@ glyph-module
 glyph-block Symbol-Currency : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay ArcStartSerif
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay SerifedArcStart InwardSlabArcStart ArcStartSerif
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-E : EShape
 	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
@@ -49,8 +49,8 @@ glyph-block Symbol-Currency : begin
 	foreach { suffix { serifGrade topSerif fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
 		define xBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 		define [BaseShape] : glyph-proc
-			local hookEndX : Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]
-			local hk : if fCornerHook [MakeCornerHook xBarLeft hookEndX CAP 0] [MakeFlatHook xBarLeft hookEndX CAP 0]
+			local hookEndX : [Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]] + [if (fCornerHook && para.isItalic) [HSwToV : Stroke * 0.2] 0]
+			local hk : if fCornerHook [MakeCornerHookBase xBarLeft hookEndX CAP 0] [MakeFlatHook xBarLeft hookEndX CAP 0]
 			include : union
 				if (fFlatHook || fCornerHook)
 					dispiro
@@ -61,13 +61,18 @@ glyph-block Symbol-Currency : begin
 						g4   SB Stroke
 					dispiro
 						widths.lhs
-						g4   hookEndX (CAP - Hook * 0.85)
-						HookStart CAP
+						match topSerif
+							[Just TOP-SERIFED] : SerifedArcStart.RtlLhs hookEndX CAP Stroke Hook
+							[Just TOP-INWARD-SERIFED] : InwardSlabArcStart.RtlLhs hookEndX CAP Stroke Hook
+							__ : list
+								g4 hookEndX (CAP - Hook * 0.85)
+								HookStart CAP
 						flat xBarLeft [CAP - ArchDepthA * 0.75]
 						curl xBarLeft [mix Stroke CAP 0.3]
 						g4   SB Stroke
 				HBar.b SB RightSB 0
 			if serifGrade : include : VSerif.ur RightSB 0 VJut
+			if fCornerHook : include : VBar.r hk.xRHook CAP (CAP - [CornerHookDepth Hook Stroke]) Stroke
 			if (topSerif === TOP-SERIFED) : include : ArcStartSerif.R hookEndX CAP Stroke Hook
 			if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR hookEndX CAP Stroke Hook
 

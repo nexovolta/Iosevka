@@ -2,7 +2,6 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
 
@@ -10,8 +9,8 @@ glyph-module
 glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : FlatHookDepth ArcStartSerif
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
 	define TOP-SERIFLESS       0
 	define TOP-SERIFED         1
@@ -117,17 +116,13 @@ glyph-block Symbol-Punctuation-At : begin
 		local otop [mix obot top 0.675]
 
 		local sw : AdviceStroke 3.5
+		local xCornerLeft : SB + [if para.isItalic [HSwToV : sw * 0.2] 0]
 		local m1 : [mix (SB + sw) (RightSB - sw) 0.53] + sw / 2
 		local m2 : [mix SB m1 0.5] + TanSlope * sw
 
 		local ada : ArchDepthA * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local adb : ArchDepthB * ((m1 - SB) / (RightSB - SB) * 1.1)
 		local atTurnBot (obot - ada / 4)
-		local hd : FlatHookDepth [DivFrame 1]
-		local fh : MakeFlatHook SB RightSB top 0 (sw -- sw)
-		local hookFactor : if (fFlatHook || fCornerHook) 1 0
-		local xHook : RightSB - [Math.min (0.625 * (RightSB - SB)) (1.375 * hd.x)] * hookFactor
-
 		local shrink 0.6
 
 		include : dispiro
@@ -149,18 +144,24 @@ glyph-block Symbol-Punctuation-At : begin
 			straight.down.start (m1 - sw * [HSwToV shrink]) (atTurnBot + ada) [heading Downward]
 			Arch.lhs atTurnBot (sw -- sw) (swBefore -- (sw * shrink))
 			flat RightSB (atTurnBot + ada)
-			if (fFlatHook || fCornerHook)
-			: then : list
-				curl RightSB (top - hd.y) [heading Upward]
-				arcvh.superness DesignParameters.tightHookSuperness
-				flat xHook top [widths.lhs sw]
-				~~~ [if fCornerHook [CornerHookEnd fh.xLHook top [CornerHookDepth Hook sw] sw (-1) (-1)] [list [curl SB top [heading Leftward]]]]
-			: else : list
-				curl RightSB (top - ArchDepthB)
-				HookEnd top (sw -- sw)
-				g4 SB (top - Hook)
-		if (topSerif === TOP-SERIFED) : include : ArcStartSerif.R xHook top sw Hook
-		if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR xHook top sw Hook
+			curl RightSB (top - ArchDepthB) [heading Upward]
+		include : dispiro
+			widths.rhs sw
+			if fFlatHook
+				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				if fCornerHook
+					[MakeCornerHookBase xCornerLeft RightSB top 0 (sw -- sw)].hookStartL
+					match topSerif
+						[Just TOP-SERIFED] : SerifedArcStart.LtrRhs SB top sw Hook
+						[Just TOP-INWARD-SERIFED] : InwardSlabArcStart.LtrRhs SB top sw Hook
+						__ : list
+							g4 SB (top - Hook)
+							HookStart top (sw -- sw)
+			flat RightSB (top - ArchDepthB)
+			curl RightSB (atTurnBot + ada) [heading Downward]
+		if fCornerHook : include : VBar.l [MakeCornerHookBase xCornerLeft RightSB top 0 (sw -- sw)].xLHook (top - [CornerHookDepth Hook sw]) top sw
+		if (topSerif === TOP-SERIFED) : include : ArcStartSerif.L SB top sw Hook
+		if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardL SB top sw Hook
 
 	define NormalHeight : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.600
 	define TallHeight   : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.875
@@ -181,12 +182,8 @@ glyph-block Symbol-Punctuation-At : begin
 		compactCornerHook       { CompactShape   CAP          false true  TOP-SERIFLESS }
 		compactSerifed          { CompactShape   CAP          false false TOP-SERIFED }
 		compactInwardSerifed    { CompactShape   CAP          false false TOP-INWARD-SERIFED }
-		compactFlatHookSerifed  { CompactShape   CAP          true  false TOP-SERIFED }
-		compactFlatHookInwardSerifed { CompactShape CAP       true  false TOP-INWARD-SERIFED }
-		compactCornerHookSerifed { CompactShape CAP          false true  TOP-SERIFED }
-		compactCornerHookInwardSerifed { CompactShape CAP     false true  TOP-INWARD-SERIFED }
 
-	foreach { suffix { body height fSolidInner fCornerHook } } [Object.entries AtConfig] : do
-		create-glyph "at.\(suffix)" : body height fSolidInner fCornerHook
+	foreach { suffix { body height fSolidInner fCornerHook topSerif } } [Object.entries AtConfig] : do
+		create-glyph "at.\(suffix)" : body height fSolidInner fCornerHook topSerif
 
 	select-variant 'at' '@'
