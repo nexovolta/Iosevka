@@ -599,11 +599,31 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 			with-transform [ScaleAround Middle SymbolMid 0.94 1] : with-transform [ApparentTranslate (parenCenter - Middle) 0] : refer-glyph 'less'
 	turned 'arcGreaterBracketRight' 0x2994 'arcLessBracketLeft' Middle SymbolMid
 
-	create-glyph 'doubleArcGreaterBracketLeft' 0x2995 : union
-		with-transform [ApparentTranslate (0 - Width * 0.14) 0] : with-transform [ScaleAround Middle SymbolMid 0.6 1] : refer-glyph 'parenLeft'
-		with-transform [ApparentTranslate (Width * 0.14) 0] : with-transform [ScaleAround Middle SymbolMid 0.6 1] : refer-glyph 'parenLeft'
-		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'greater'
-	turned 'doubleArcLessBracketRight' 0x2996 'doubleArcGreaterBracketLeft' Middle SymbolMid
+	define [ContourCenter name] : begin
+		local glyph : query-glyph name
+		local contours : glyph.geometry.toContours
+		local firstContour : contours.(0)
+		local first : firstContour.(0)
+		local xMin first.x
+		local xMax first.x
+		local yMin first.y
+		local yMax first.y
+		foreach contour [items-of contours] : foreach point [items-of contour] : begin
+			set xMin : Math.min xMin point.x
+			set xMax : Math.max xMax point.x
+			set yMin : Math.min yMin point.y
+			set yMax : Math.max yMax point.y
+		return { [mix xMin xMax 0.5] [mix yMin yMax 0.5] }
+
+	define [DoubleArcRelation paren relation] : glyph-proc
+		local {px py} : ContourCenter paren
+		local {rx ry} : ContourCenter relation
+		include : union
+			refer-glyph paren
+			with-transform [Translate (px - rx) (py - ry)] : refer-glyph relation
+
+	create-glyph 'doubleArcGreaterBracketLeft' 0x2995 : DoubleArcRelation 'doubleParenLeft' 'greater'
+	create-glyph 'doubleArcLessBracketRight' 0x2996 : DoubleArcRelation 'doubleParenRight' 'less'
 
 	WithDotVariants 'dottedRightPointingAngle' 0x2E16 : function [DrawAt kr ov] : glyph-proc
 		include : refer-glyph 'greater'
