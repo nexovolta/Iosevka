@@ -451,6 +451,7 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	glyph-block-import Symbol-Math-Relation-Sym : symWave CompactApproxShape
 	glyph-block-import Symbol-Math-Relation-Addons : lesslessSW muchLessSW llggHeight
 	glyph-block-import Symbol-Math-Relation-Addon-Glyphs
+	glyph-block-import Symbol-Punctuation-Brackets : Paren ParenVariantDp
 
 	define [LessGreaterExpansion top bot l r] : Math.hypot 1 : 0.5 * (top - bot) / (r - l)
 	define [LessGreaterVertSw s] : s * [StrokeWidthBlend 1.15 1.1]
@@ -590,9 +591,12 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 	create-glyph 'greater' '>' : glyph-proc
 		include : GreaterShape (SymbolMid + dH) (SymbolMid - dH) SB RightSB
 
-	create-glyph 'arcLessBracketLeft' 0x2993 : union
-		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'parenLeft'
-		with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'less'
+	create-glyph 'arcLessBracketLeft' 0x2993 : glyph-proc
+		local dim : Paren.Dim [DivFrame 1] 0 (dp -- [ParenVariantDp para.variantSelector.parenLeft]) (sw -- Stroke)
+		local parenCenter : dim.outside + [HSwToV Stroke] / 2
+		include : with-transform [ApparentTranslate (Width * 0.15) 0] : union
+			with-transform [ScaleAround Middle SymbolMid 0.94 1] : refer-glyph 'parenLeft'
+			with-transform [ScaleAround Middle SymbolMid 0.94 1] : with-transform [ApparentTranslate (parenCenter - Middle) 0] : refer-glyph 'less'
 	turned 'arcGreaterBracketRight' 0x2994 'arcLessBracketLeft' Middle SymbolMid
 
 	create-glyph 'doubleArcGreaterBracketLeft' 0x2995 : union

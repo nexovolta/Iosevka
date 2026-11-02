@@ -75,21 +75,28 @@ glyph-block Symbol-Punctuation-Brackets : begin
 						{ dim.inside dim.bottom }
 					}
 
+	define LargeContourDp : object
+		parenOutside           (0.25 * DesignParameters.parenOutside)
+		parenInside            DesignParameters.parenInside
+		parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
+		parenInsideSwAdj       DesignParameters.parenInsideSwAdj
+		parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
+		parenOvershoot         DesignParameters.parenOvershoot
+	define FlatArcDp : object
+		parenOutside           (0.5 * DesignParameters.parenOutside)
+		parenInside            DesignParameters.parenInside
+		parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
+		parenInsideSwAdj       DesignParameters.parenInsideSwAdj
+		parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
+		parenOvershoot         DesignParameters.parenOvershoot
+
+	glyph-block-export ParenVariantDp
+	define [ParenVariantDp suffix] : piecewise
+		(suffix === 'largeContour') LargeContourDp
+		(suffix === 'flatArc')      FlatArcDp
+		true                        DesignParameters
+
 	do "Paren glyphs"
-		define LargeContourDp : object
-			parenOutside           (0.25 * DesignParameters.parenOutside)
-			parenInside            DesignParameters.parenInside
-			parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-			parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-			parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-			parenOvershoot         DesignParameters.parenOvershoot
-		define FlatArcDp : object
-			parenOutside           (0.5 * DesignParameters.parenOutside)
-			parenInside            DesignParameters.parenInside
-			parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-			parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-			parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-			parenOvershoot         DesignParameters.parenOvershoot
 
 		define [NormalShape df] : Paren.Shape df df.mvs
 		define [LargeContourShape df] : Paren.Shape df df.mvs LargeContourDp
@@ -103,11 +110,6 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				curl dim.outside [mix dim.bottom dim.top 0.35]
 				arcvh
 				g4.right.start dim.inside dim.bottom
-
-		define [ParenVariantDp suffix] : piecewise
-			(suffix === 'largeContour') LargeContourDp
-			(suffix === 'flatArc')      FlatArcDp
-			true                        DesignParameters
 
 		define [ParenMiddleRing df suffix] : begin
 			local dim : Paren.Dim df 0 (dp -- [ParenVariantDp suffix]) (sw -- df.mvs)

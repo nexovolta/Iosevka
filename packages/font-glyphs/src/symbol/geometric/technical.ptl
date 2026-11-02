@@ -13,9 +13,9 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	glyph-block-import Mark-Shared-Metrics : markExtend markFine markMiddle markStroke
 	glyph-block-import Symbol-Punctuation-Brackets : Paren Bracket Brace TortoiseShellBracket
 	glyph-block-import Letter-Latin-Long-S : LongSShape
-	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline
+	glyph-block-import Symbol-Geometric-Shared : GeometricDim GeometricSizes ConvexPolygonOutline ScreenShape
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape Polyline
-	glyph-block-import Symbol-Arrow-Shared : ArrowShape ArrowHead TrigArrowShape
+	glyph-block-import Symbol-Arrow-Shared : ArrowShape ArrowHead TrigArrowShape ArrowDims ArrowT
 
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 	define Size : GeometricSizes Geom
@@ -23,6 +23,43 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 	define fineGeometryStroke : AdviceStroke2 4 4 Geom.Size
 
 	do "Technical Symbols"
+		create-glyph [MangleName 'clearScreen'] [MangleUnicode 0x239A] : glyph-proc
+			set-width Geom.Width
+			local radius : ([mix XH Ascender 1.5] - [mix 0 Descender 1.5]) / 2
+			local rx : Math.min (Geom.Size * 1.05) (Geom.Width * 0.43)
+			local ry : Geom.Size * 0.85
+			local sw : Math.min [AdviceStroke 5] (Geom.Size * 0.1)
+			local slashScale : Math.min 0.7 (sw / Stroke)
+			local hyphenMiddle : [query-glyph 'obliqueHyphen'].advanceWidth / 2
+			include : with-transform [Translate Geom.MidX Geom.MidY] : difference
+				with-transform [Scale (rx / (radius * 1.1)) (ry / (radius * 1.1))] : ScreenShape 0 0 radius 0
+				with-transform [Scale ((rx - sw) / (radius * 1.1)) ((ry - sw) / (radius * 1.1))] : ScreenShape 0 0 radius 0
+			foreach i [range 0 3] : include
+				with-transform [ApparentTranslate (Geom.MidX + (i - 1) * Geom.Size * 0.3 - Middle) 0]
+					with-transform [Translate Middle SymbolMid]
+						with-transform [Rotate (60 * Math.PI / 180)]
+							with-transform [Scale (0.7 * Geom.Width / Width) slashScale]
+								with-transform [Rotate (-22 * Math.PI / 180)]
+									with-transform [Translate (-hyphenMiddle) (-SymbolMid)] : refer-glyph 'obliqueHyphen'
+
+		create-glyph [MangleName 'electricalIntersection'] [MangleUnicode 0x23E7] : glyph-proc
+			set-width Geom.Width
+			local size : Math.min (Geom.Size * 1.35) (Geom.Width * 0.42)
+			local sw : Math.min GeometryStroke (size * 0.14)
+			local dot : size * 0.16
+			local end : size * 1.05
+			local arrow : ArrowT : ArrowDims (arrowSw -- sw) (fine -- sw) (terminal -- sw)
+			local shape : new-glyph : glyph-proc
+				local spokes : new-glyph : glyph-proc
+					foreach j [range 0 4] : begin
+						local angle : 2 * j * Math.PI / 5
+						local dx : Math.sin angle
+						local dy : Math.cos angle
+						include : ExtLineCenter Geom.MidX Geom.MidY (Geom.MidX + end * dx) (Geom.MidY + end * dy) sw
+				include : union [RingAt Geom.MidX Geom.MidY dot] spokes
+				include : arrow.shape (Geom.MidX - size * 0.5) (Geom.MidY + size * 0.94) (Geom.MidX - size * 0.5) (Geom.MidY + size * 0.24) (size * 0.15) (sw / 2)
+			include : with-transform [Translate Geom.MidX Geom.MidY] : with-transform [Rotate (10 * Math.PI / 180)] : with-transform [Translate (-Geom.MidX) (-Geom.MidY)] shape
+
 		create-glyph [MangleName 'rightAngleDownZigzagArrow'] [MangleUnicode 0x237C] : glyph-proc
 			set-width Geom.Width
 			local left : Geom.MidX - Geom.Size * 0.68

@@ -15,6 +15,18 @@ glyph-block Symbol-Geometric-Shared : begin
 		set-width mathWidth
 		include : with-transform [ApparentScaleX (mathWidth / width)] shape
 
+	glyph-block-export ScreenShape
+	define [ScreenShape cx cy radius inset] : spiro-outline
+		corner (cx - radius + inset) (cy + radius - inset)
+		g4 cx (cy + radius * 1.1 - inset)
+		corner (cx + radius - inset) (cy + radius - inset)
+		g4 (cx + radius * 1.1 - inset) cy
+		corner (cx + radius - inset) (cy - radius + inset)
+		g4 cx (cy - radius * 1.1 + inset)
+		corner (cx - radius + inset) (cy - radius + inset)
+		g4 (cx - radius * 1.1 + inset) cy
+		close
+
 	glyph-block-export GeometricDim
 	define [GeometricDim unitWidth fullWidth] : begin
 		define s : fullWidth / unitWidth

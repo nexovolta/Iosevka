@@ -21,7 +21,7 @@ const codes = [
 	0x2a33, 0x2a50, 0x2afb, 0x22d8, 0x22d9, 0x2a91, 0x2a92, 0x2a93, 0x2a94, 0x23b4, 0x23b5,
 	0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1, 0x2972, 0x2973, 0x2974, 0x2975,
 	0x2b41, 0x2b42, 0x2b47, 0x2b48, 0x2b49, 0x2b4a, 0x2b4b, 0x2b4c, 0x237c, 0x238c, 0x23af,
-	0x23d0,
+	0x23d0, 0x2976, 0x2978, 0x2979, 0x297b, 0x2993, 0x2994, 0x239a, 0x23e7, 0x20e2,
 ];
 
 await Geom.Init();
@@ -46,6 +46,42 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				return result;
 			};
 			for (const code of codes) contours(code);
+			for (const code of [0x2976, 0x2978, 0x2979, 0x297b]) {
+				const components = contours(code).map(points => {
+					const ys = points.map(p => p.y);
+					return { bottom: Math.min(...ys), top: Math.max(...ys) };
+				}).sort((a, b) => b.top - a.top);
+				assert.ok(components.length >= 2, `U+${code.toString(16)} must have separate relation and arrow`);
+				const arrowTop = Math.max(...components.slice(1).map(component => component.top));
+				const arrowBottom = Math.min(...components.slice(1).map(component => component.bottom));
+				const gap = components[0].bottom - arrowTop;
+				assert.ok(gap > 0 && gap < (components[0].top - arrowBottom) * 0.12, `U+${code.toString(16)} relation gap ${gap}`);
+			}
+			const bracketDependencies = glyphStore.queryByUnicode(0x2993).geometry.getDependencies();
+			assert.ok(bracketDependencies.includes(glyphStore.queryByUnicode(0x28)), "arc bracket must reference the parenthesis");
+			assert.ok(bracketDependencies.includes(glyphStore.queryByUnicode(0x3c)), "arc bracket must reference less-than");
+			assert.equal(contours(0x239a).length, 5, "screen frame and three diagonal strokes must remain separated");
+			const screenParts = contours(0x239a).map(points => {
+				const xs = points.map(p => p.x);
+				const ys = points.map(p => p.y);
+				return { left: Math.min(...xs), right: Math.max(...xs), bottom: Math.min(...ys), top: Math.max(...ys) };
+			}).sort((a, b) => (b.top - b.bottom) - (a.top - a.bottom));
+			const [outerScreen, innerScreen, ...screenStrokes] = screenParts;
+			for (const stroke of screenStrokes) {
+				assert.ok(stroke.top - stroke.bottom > (outerScreen.top - outerScreen.bottom) * 0.4, "screen stroke is too short");
+				assert.ok(stroke.left > innerScreen.left && stroke.right < innerScreen.right && stroke.bottom > innerScreen.bottom && stroke.top < innerScreen.top, "screen stroke exceeds its frame");
+				assert.ok(Math.abs((stroke.top + stroke.bottom) - (innerScreen.top + innerScreen.bottom)) < 2, "screen stroke is vertically off-center");
+			}
+			assert.ok(
+				glyphStore.queryByUnicode(0x239a).geometry.getDependencies().includes(glyphStore.queryByUnicode(0x2e5d)),
+				"clear screen must reference oblique hyphen",
+			);
+			assert.equal(contours(0x20e2).length, 2, "combining screen must retain its outline and counter");
+			assert.equal(contours(0x23e7).length, 3, "electrical intersection must retain its separate arrow components");
+			for (const code of [0x2993, 0x2994, 0x239a, 0x23e7]) {
+				const glyph = glyphStore.queryByUnicode(code);
+				assert.ok(contours(code).flat().every(p => p.x >= 0 && p.x <= glyph.advanceWidth), `U+${code.toString(16)} exceeds its advance`);
+			}
 			const span = code => {
 				const points = contours(code).flat();
 				return [
@@ -84,6 +120,7 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					assert.ok(Math.abs(bar.height - expectedBarStroke) < 0.01, `U+${code.toString(16)} equal-bar stroke changed`);
 				}
 			}
+
 			assert.ok(span(0x237c)[1] > span(0x22c0)[1] * 0.57, "zigzag arrow is too small");
 			const zigzag = contours(0x237c).flat();
 			assert.ok(
@@ -118,3 +155,21 @@ for (const spacing of ["term", "quasi-proportional"]) {
 		});
 	}
 }
+
+test("arc bracket follows each parenthesis contour", () => {
+	const offsets = [];
+	for (const paren of ["normal", "large-contour", "flat-arc"]) {
+		const argv = {
+			shape: { serifs: "sans", spacing: "term", weight: 420, width: 500, slope: "upright", slopeAngle: 0 },
+			featureControl: { noCvSs: true },
+			variants: { design: { paren, "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		};
+		const para = init(data, argv);
+		Variant.apply(variantData, para, argv);
+		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		const leftEdge = code => Math.min(...glyphStore.queryByUnicode(code).geometry.toContours().flat().map(p => p.x));
+		assert.ok(leftEdge(0x2993) >= 0, `${paren} arc bracket exceeds its advance`);
+		offsets.push(leftEdge(0x2993) - 0.94 * leftEdge(0x28));
+	}
+	assert.ok(Math.max(...offsets) - Math.min(...offsets) < 1, `arc bracket alignment varies: ${offsets}`);
+});

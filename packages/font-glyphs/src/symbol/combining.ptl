@@ -126,6 +126,7 @@ glyph-block Symbols-Combining-Mathematical : begin
 	glyph-block-import Mark-Shared-Metrics : markMiddle markExtend markFine
 	glyph-block-import Mark-Above : StdAnchors aboveMarkTop aboveMarkBot
 	glyph-block-import Symbol-Arrow-Shared : ArrowDims ArrowT
+	glyph-block-import Symbol-Geometric-Shared : ScreenShape
 
 	define cx markMiddle
 	define cy : XH / 2
@@ -214,16 +215,7 @@ glyph-block Symbols-Combining-Mathematical : begin
 		corner (l - radius * 0.25 + inset) (bot + inset)
 		close
 
-	define [Screen inset] : spiro-outline
-		corner (l + inset) (top - inset)
-		g4 cx (top + radius * 0.1 - inset)
-		corner (r - inset) (top - inset)
-		g4 (r + radius * 0.1 - inset) cy
-		corner (r - inset) (bot + inset)
-		g4 cx (bot - radius * 0.1 + inset)
-		corner (l + inset) (bot + inset)
-		g4 (l - radius * 0.1 + inset) cy
-		close
+	define [Screen inset] : ScreenShape cx cy radius inset
 
 	define [Keycap inset] : begin
 		local cr : radius * 0.25 - inset

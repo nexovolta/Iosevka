@@ -145,14 +145,16 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 				curl right (cy - half) [heading Rightward]
 			if (relation == 'supst') : include : FlipAround middle cy
 		define [StackedRelationArrow relation above rightward] : glyph-proc
-			local gap : Math.max (sw * 4.5) (d.compactHeadSize * 2.4)
+			local half : Math.max (sw * 1.5) ((right - left) * 0.23)
+			local gap : Math.max (head + half + sw * 0.6) (0.8 * [Math.max (sw * 4.5) (d.compactHeadSize * 2.4)])
 			local ya : SymbolMid + [if above (-0.5) 0.5] * gap
-			local yr : SymbolMid + [if above 0.5 (-0.5)] * gap
+			local curveShift : if (relation == 'subst' || relation == 'supst') (sw * 0.4) 0
+			local yr : SymbolMid + [if above 0.5 (-0.5)] * gap + [if above (-curveShift) curveShift]
 			set-width width
 			if rightward
 			: then : include : a.shape left ya right ya head (sw / 2)
 			: else : include : a.shape right ya left ya head (sw / 2)
-			include : RelationShape relation yr [Math.max (sw * 1.5) ((right - left) * 0.23)] 0
+			include : RelationShape relation yr half 0
 		create-glyph [MangleName 'lessAboveLeftArrow'] [MangleUnicode 0x2976] : StackedRelationArrow 'less' true false
 		create-glyph [MangleName 'greaterAboveRightArrow'] [MangleUnicode 0x2978] : StackedRelationArrow 'greater' true true
 		create-glyph [MangleName 'subsetAboveRightArrow'] [MangleUnicode 0x2979] : StackedRelationArrow 'subst' true true
