@@ -786,8 +786,9 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		local half : (BgOpTop - BgOpBot) / 2
 		local band : half * 0.17
 		local sw : Math.min [AdviceStrokeInSpace (half * 2) 9] (half * 0.14)
-		local upper : SymbolMid + half * 0.79
-		local lower : SymbolMid + half * 0.05
+		local spacingScale 0.8
+		local upper : SymbolMid + half * 0.79 * spacingScale
+		local lower : SymbolMid + half * 0.05 * spacingScale
 		if lessFirst
 		: then : begin
 			include : LessShape (upper + band) (upper - band) SB RightSB sw
@@ -795,8 +796,8 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 		: else : begin
 			include : GreaterShape (upper + band) (upper - band) SB RightSB sw
 			include : LessShape (lower + band) (lower - band) SB RightSB sw
-		include : HBar.m SB RightSB (SymbolMid - half * 0.55) sw
-		include : HBar.m SB RightSB (SymbolMid - half * 0.85) sw
+		include : HBar.m SB RightSB (SymbolMid - half * 0.55 * spacingScale) sw
+		include : HBar.m SB RightSB (SymbolMid - half * 0.85 * spacingScale) sw
 
 	create-glyph 'lessGreaterEqEq' 0x2A91 : TwoInequalitiesOverEqual true
 	create-glyph 'greaterLessEqEq' 0x2A92 : TwoInequalitiesOverEqual false

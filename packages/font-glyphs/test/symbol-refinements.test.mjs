@@ -71,10 +71,17 @@ for (const spacing of ["term", "quasi-proportional"]) {
 			for (const code of [0x2a91, 0x2a92]) {
 				const components = contours(code).map(points => {
 					const ys = points.map(p => p.y);
-					return { top: Math.max(...ys), height: Math.max(...ys) - Math.min(...ys) };
+					return { bottom: Math.min(...ys), top: Math.max(...ys), height: Math.max(...ys) - Math.min(...ys) };
 				}).sort((a, b) => b.top - a.top);
 				for (const chevron of components.slice(0, 2)) {
 					assert.ok(chevron.height < span(code)[1] * 0.3, `U+${code.toString(16)} chevron is too tall`);
+				}
+				const gaps = components.slice(0, -1).map((component, i) => component.bottom - components[i + 1].top);
+				const baselineGaps = weight === 120 ? [136.73, 148.36, 96.98] : weight === 420 ? [107.37, 119.16, 65.48] : [111.99, 124.28, 68.28];
+				assert.ok(gaps.every((gap, i) => gap > 0 && gap < baselineGaps[i] * 0.85), `U+${code.toString(16)} components are not all closer: ${gaps}`);
+				const expectedBarStroke = weight === 120 ? 21.158 : weight === 420 ? 57.288 : 59.752;
+				for (const bar of components.slice(2)) {
+					assert.ok(Math.abs(bar.height - expectedBarStroke) < 0.01, `U+${code.toString(16)} equal-bar stroke changed`);
 				}
 			}
 			assert.ok(span(0x237c)[1] > span(0x22c0)[1] * 0.57, "zigzag arrow is too small");
