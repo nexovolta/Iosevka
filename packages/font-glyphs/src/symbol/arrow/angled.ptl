@@ -217,7 +217,7 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 		create-glyph [MangleName 'slantedNorthArrowHorizontalTail'] [MangleUnicode 0x2B5C] : glyph-proc
 			local xk : arrowMidX - arrowWidth * 0.22
 			local yk arrowBot
-			local sw : Math.min arrowSw (arrowWidth * 0.12)
+			local sw arrowSw
 			set-width MosaicWidth
 			include : union
 				HBar.m (arrowSB + arrowWidth * 0.02) (xk + sw / 2) yk sw
@@ -229,12 +229,12 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 
 		create-glyph [MangleName 'slantedNorthArrowHookedHead'] [MangleUnicode 0x2B5A] : glyph-proc
 			set-width MosaicWidth
-			local sw : Math.min arrowSw (arrowWidth * 0.12)
+			local sw arrowSw
 			local x1 : arrowMidX - arrowWidth * 0.10
-			local x2 : arrowMidX + arrowWidth * 0.40
+			local x2 : arrowMidX + arrowWidth * 0.38
 			local y : arrowTop - arrowWidth * 0.23
-			include : with-transform [ApparentTranslate ((-0.12) * arrowWidth) 0] : union
-				Arrow.Bar.shape (arrowMidX - arrowWidth * 0.32) arrowBot x1 y (sw / 2) 0 0
+			include : with-transform [ApparentTranslate ((-0.11) * arrowWidth) 0] : union
+				Arrow.Bar.shape (arrowMidX - arrowWidth * 0.29) arrowBot x1 y (sw / 2) 0 0
 				dispiro
 					widths.center sw
 					flat x1 y [heading Upward]
@@ -246,7 +246,7 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 
 		create-glyph [MangleName 'backslantedSouthArrowHookedTail'] [MangleUnicode 0x2B5B] : glyph-proc
 			set-width MosaicWidth
-			local sw : Math.min arrowSw (arrowWidth * 0.12)
+			local sw arrowSw
 			local x1 : arrowMidX - arrowWidth * 0.40
 			local x2 : arrowMidX + arrowWidth * 0.10
 			local y : arrowTop - arrowWidth * 0.23
@@ -269,7 +269,7 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 			local yc : SymbolMid - hv
 			local xh : arrowMidX + arrowWidth * 0.43 * k
 			local yh : yc + hv * 0.30
-			local sw : Math.min arrowSw (arrowWidth * 0.12)
+			local sw arrowSw
 			set-width MosaicWidth
 			include : union
 				Arrow.Bar.shape xt (SymbolMid + hv) xc yc (sw / 2) 0 0
