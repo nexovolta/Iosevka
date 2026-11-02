@@ -215,13 +215,13 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 			include : Arrow.trigShape (arrowMidX - dx) (SymbolMid + hh) (arrowMidX + dx) (SymbolMid - hh) (arrowWidth * 0.28) [Math.min halfArrowSw (arrowWidth * 0.06)]
 
 		create-glyph [MangleName 'slantedNorthArrowHorizontalTail'] [MangleUnicode 0x2B5C] : glyph-proc
-			local xk : arrowMidX - arrowWidth * 0.18
-			local yk : arrowBot + (arrowTop - arrowBot) * 0.05
+			local xk : arrowMidX - arrowWidth * 0.22
+			local yk arrowBot
 			local sw : Math.min arrowSw (arrowWidth * 0.12)
 			set-width MosaicWidth
 			include : union
-				HBar.m (arrowSB + arrowWidth * 0.08) (xk + sw / 2) yk sw
-				Arrow.trigShape xk yk (arrowMidX + arrowWidth * 0.18) (arrowTop - (arrowTop - arrowBot) * 0.05) (arrowWidth * 0.28) (sw / 2)
+				HBar.m (arrowSB + arrowWidth * 0.02) (xk + sw / 2) yk sw
+				Arrow.trigShape xk yk (arrowMidX + arrowWidth * 0.25) arrowTop (arrowWidth * 0.30) (sw / 2)
 
 		create-glyph [MangleName 'backslantedSouthArrowHorizontalTail'] [MangleUnicode 0x2B5D] : glyph-proc
 			set-width MosaicWidth
@@ -230,16 +230,16 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 		create-glyph [MangleName 'slantedNorthArrowHookedHead'] [MangleUnicode 0x2B5A] : glyph-proc
 			set-width MosaicWidth
 			local sw : Math.min arrowSw (arrowWidth * 0.12)
-			local x1 : arrowMidX - arrowWidth * 0.07
-			local x2 : arrowMidX + arrowWidth * 0.34
+			local x1 : arrowMidX - arrowWidth * 0.10
+			local x2 : arrowMidX + arrowWidth * 0.40
 			local y : arrowTop - arrowWidth * 0.23
-			include : union
-				Arrow.Bar.shape (arrowMidX - arrowWidth * 0.25) arrowBot x1 y (sw / 2) 0 0
+			include : with-transform [ApparentTranslate ((-0.12) * arrowWidth) 0] : union
+				Arrow.Bar.shape (arrowMidX - arrowWidth * 0.32) arrowBot x1 y (sw / 2) 0 0
 				dispiro
 					widths.center sw
 					flat x1 y [heading Upward]
 					arcvh
-					g4 [mix x1 x2 0.5] (y + arrowWidth * 0.20)
+					g4 [mix x1 x2 0.5] (y + arrowWidth * 0.23)
 					archv
 					curl x2 y [heading Downward]
 				Arrow.trigShape x2 y x2 (y - arrowWidth * 0.18) (arrowWidth * 0.28) (sw / 2)
@@ -247,8 +247,8 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 		create-glyph [MangleName 'backslantedSouthArrowHookedTail'] [MangleUnicode 0x2B5B] : glyph-proc
 			set-width MosaicWidth
 			local sw : Math.min arrowSw (arrowWidth * 0.12)
-			local x1 : arrowMidX - arrowWidth * 0.34
-			local x2 : arrowMidX + arrowWidth * 0.07
+			local x1 : arrowMidX - arrowWidth * 0.40
+			local x2 : arrowMidX + arrowWidth * 0.10
 			local y : arrowTop - arrowWidth * 0.23
 			include : union
 				dispiro
@@ -256,18 +256,18 @@ glyph-block Symbol-Arrow-Angled : for-width-kinds WideWidth1
 					flat x1 (y - arrowWidth * 0.18) [heading Upward]
 					curl x1 y
 					arcvh
-					g4 [mix x1 x2 0.5] (y + arrowWidth * 0.20)
+					g4 [mix x1 x2 0.5] (y + arrowWidth * 0.23)
 					archv
 					curl x2 y [heading Downward]
-				Arrow.trigShape x2 y (arrowMidX + arrowWidth * 0.25) arrowBot (arrowWidth * 0.28) (sw / 2)
+				Arrow.trigShape x2 y (arrowMidX + arrowWidth * 0.32) arrowBot (arrowWidth * 0.28) (sw / 2)
 
 		define [BentNortheast short] : glyph-proc
-			local k : if short 0.8 1
-			local hv : (arrowTop - arrowBot) * 0.44 * k
+			local k : if short 0.88 1
+			local hv : (arrowTop - arrowBot) * 0.49 * k
 			local xt : arrowMidX - arrowWidth * 0.03 * k
-			local xc : arrowMidX - arrowWidth * 0.25 * k
+			local xc : arrowMidX - arrowWidth * 0.32 * k
 			local yc : SymbolMid - hv
-			local xh : arrowMidX + arrowWidth * 0.36 * k
+			local xh : arrowMidX + arrowWidth * 0.43 * k
 			local yh : yc + hv * 0.30
 			local sw : Math.min arrowSw (arrowWidth * 0.12)
 			set-width MosaicWidth

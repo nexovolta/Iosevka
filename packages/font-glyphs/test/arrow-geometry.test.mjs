@@ -18,7 +18,7 @@ const data = Object.assign(
 );
 const variantData = readParams("variants");
 const codes = [
-	0x2b40, 0x2b41, 0x2b42, 0x2b43, 0x2b44, 0x2b47, 0x2b48, 0x2b49, 0x2b4a, 0x2b4b, 0x2b4c, 0x2b4e,
+	0x2b40, 0x2b41, 0x2b42, 0x2b43, 0x2b44, 0x2b47, 0x2b48, 0x2b49, 0x2b4a, 0x2b4b, 0x2b4c, 0x2b4d, 0x2b4e,
 	0x2b4f, 0x2b56, 0x2b57, 0x2b5a, 0x2b5b, 0x2b5c, 0x2b5d, 0x2b5e, 0x2b5f, 0x2b76, 0x2b77, 0x2b78,
 	0x2b79, 0x2b88, 0x2b89, 0x2b8a, 0x2b8b, 0x2b98, 0x2b99, 0x2b9a, 0x2b9b, 0x2b9c, 0x2b9d, 0x2b9e,
 	0x2b9f, 0x2971, 0x2972, 0x2973, 0x2974, 0x2975, 0x2977, 0x297a,
@@ -91,6 +91,27 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 				1,
 				`U+${code.toString(16).toUpperCase()} must have one connected outline without holes`,
 			);
+			const glyph = glyphStore.queryByUnicode(code);
+			const points = outlines.get(code).flat();
+			assert.ok(
+				points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth),
+				`U+${code.toString(16).toUpperCase()} exceeds its advance: ${Math.min(...points.map(p => p.x))}..${Math.max(...points.map(p => p.x))}, advance ${glyph.advanceWidth}`,
+			);
+			const height = Math.max(...points.map(p => p.y)) - Math.min(...points.map(p => p.y));
+			const reference = outlines.get(0x2b4d).flat();
+			const referenceHeight = Math.max(...reference.map(p => p.y)) - Math.min(...reference.map(p => p.y));
+			assert.ok(height >= referenceHeight * 0.85, `U+${code.toString(16).toUpperCase()} is too small`);
+		}
+		for (const code of [0x2b42, 0x2b48, 0x2b4a, 0x2975]) {
+			const waves = outlines.get(code).slice(-2);
+			const ends = waves.map(contour => {
+				const left = Math.min(...contour.map(p => p.x));
+				const ys = contour.filter(p => Math.abs(p.x - left) < 0.001).map(p => p.y);
+				return [Math.min(...ys), Math.max(...ys)];
+			}).sort((a, b) => b[0] - a[0]);
+			const gap = ends[0][0] - ends[1][1];
+			const thickness = ends[0][1] - ends[0][0];
+			assert.ok(gap > thickness && gap < thickness * 3, `U+${code.toString(16).toUpperCase()} tilde spacing: ${gap} / ${thickness}`);
 		}
 		for (const code of [0x2b76, 0x2b77, 0x2b78, 0x2b79]) {
 			const source = 0x2b66 + (code - 0x2b76);
