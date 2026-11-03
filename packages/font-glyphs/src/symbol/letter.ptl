@@ -296,9 +296,10 @@ glyph-block Symbol-Currency : begin
 		include : df.markSet.capital
 		local sw : Math.min [AdviceStroke2 2 3 CAP df.adws] ((df.rightSB - df.leftSB) * 0.23)
 		local left df.leftSB
-		local right : df.rightSB - sw * 0.4
-		local span : right - left
-		local xStem : mix left right 0.33
+		local originalRight : df.rightSB - sw * 0.4
+		local span : originalRight - left
+		local xStem : mix left originalRight 0.33
+		local right : xStem + (originalRight - xStem) * 1.06
 		local yBar : CAP * 0.72
 		local loopR : span * 0.22
 		local zigSw : loopR * 0.8 * sw / (sw + loopR)
