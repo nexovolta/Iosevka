@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import * as Toml from "@iarna/toml";
 import { buildGlyphs } from "@iosevka/font-glyphs";
+import { calculateMetrics } from "@iosevka/font-glyphs/aesthetics";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
@@ -25,6 +26,10 @@ for (const spacing of ["term", "quasi-proportional"]) {
 		test(`undo circles and arrow grow with weight: ${spacing} ${slope}`, () => {
 			const circleStrokes = [];
 			const arrowStrokes = [];
+			const zigzagStrokes = [];
+			const zigzagHeads = [];
+			const checkStrokes = [];
+			const deleteStrokes = [];
 			for (const weight of [120, 420, 920]) {
 				const argv = {
 					shape: {
@@ -72,8 +77,37 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				}
 				assert.equal(crossings.length, 2, "arrow arch must cross the center as one stroke");
 				arrowStrokes.push(Math.abs(crossings[1] - crossings[0]));
+
+				const pointsOf = code => {
+					const points = glyphStore.queryByUnicode(code).geometry.toContours().flat();
+					assert.ok(points.length && points.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+					return points;
+				};
+				const bottomXs = points => {
+					const bottom = Math.min(...points.map(p => p.y));
+					return [...new Set(points.filter(p => Math.abs(p.y - bottom) < 0.01).map(p => p.x))].sort((a, b) => a - b);
+				};
+				const zigzag = pointsOf(0x237c).map(p => ({
+					x: p.x - calculateMetrics(para).TanSlope * p.y,
+					y: p.y,
+				}));
+				const zigzagRight = Math.max(...zigzag.map(p => p.x));
+				const rightYs = zigzag.filter(p => Math.abs(p.x - zigzagRight) < 0.01).map(p => p.y);
+				assert.ok(rightYs.length >= 2, "right-angle bar needs a flat end");
+				zigzagStrokes.push(Math.max(...rightYs) - Math.min(...rightYs));
+				const headXs = bottomXs(zigzag);
+				assert.ok(headXs.length >= 2, "zigzag arrowhead needs a horizontal arm");
+				zigzagHeads.push(headXs.at(-1) - headXs[0]);
+				const checkXs = bottomXs(pointsOf(0x237b));
+				assert.ok(checkXs.length >= 2);
+				checkStrokes.push(checkXs.at(-1) - checkXs[0]);
+				const deletion = glyphStore.queryByUnicode(0x2425).geometry.toContours();
+				assert.equal(deletion.length, 3, "delete symbol must retain three separate strokes");
+				const deleteXs = bottomXs(pointsOf(0x2425));
+				assert.ok(deleteXs.length >= 4);
+				deleteStrokes.push(deleteXs[1] - deleteXs[0]);
 			}
-			for (const strokes of [circleStrokes, arrowStrokes]) {
+			for (const strokes of [circleStrokes, arrowStrokes, zigzagStrokes, zigzagHeads, checkStrokes, deleteStrokes]) {
 				assert.ok(strokes[0] < strokes[1] && strokes[1] < strokes[2], `stroke widths must increase: ${strokes}`);
 			}
 		});

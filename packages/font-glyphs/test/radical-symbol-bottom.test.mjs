@@ -24,7 +24,7 @@ await Geom.Init();
 for (const spacing of ["term", "quasi-proportional"]) {
 	for (const weight of [120, 420, 920]) {
 		for (const slope of ["upright", "italic"]) {
-			test(`radical bottom joins box drawing at ${spacing} ${weight} ${slope}`, () => {
+			test(`radical bottom stops above the ascender at ${spacing} ${weight} ${slope}`, () => {
 				const argv = {
 					shape: {
 						serifs: "sans", spacing, weight, width: 500, slope,
@@ -51,14 +51,15 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					const lineBottom = Math.min(...linePoints.map(p => p.y));
 					const radTop = Math.max(...radPoints.map(p => p.y));
 					assert.ok(radTop > calculateMetrics(para).Ascender);
-					assert.ok(Math.abs(radTop - lineTop) < 0.01);
+					assert.ok(radTop < lineTop, "radical stem must stop below the cell boundary");
+					assert.ok(Math.abs(radTop - (calculateMetrics(para).Ascender * 0.75 + lineTop * 0.25)) < 0.01);
 					const edges = (points, y) => [...new Set(points.filter(p => Math.abs(p.y - y) < 0.01).map(p => p.x))].sort((a, b) => a - b);
 					const radicalEdges = edges(radPoints, radTop);
 					const lineEdges = edges(linePoints, lineBottom);
 					assert.equal(radicalEdges.length, 2);
 					assert.equal(lineEdges.length, 2);
 					for (let i = 0; i < 2; i++) {
-						assert.ok(Math.abs(radicalEdges[i] - lineEdges[i]) < 0.01, "box line must align at the cell boundary");
+						assert.ok(Math.abs(radicalEdges[i] - lineEdges[i]) < 0.01, "radical stem must retain the box line's center and weight");
 					}
 				}
 			});

@@ -140,8 +140,8 @@ glyph-block Symbol-Geometric-Shaded-Narrow : for-width-kinds WideWidth4
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 
 	create-glyph [MangleName 'symbolForDeleteFormTwo'] [MangleUnicode 0x2425] : glyph-proc
-		local sw : UnicodeWeightGrade 300 Geom.Scalar GeometryStroke
-		local gap : 0.75 * sw + [Math.max (Geom.Size * 0.125) (sw / 2)]
+		local sw : Geom.Size * 0.24 * GeometryStroke / (GeometryStroke + Geom.Size * 0.3)
+		local gap : Geom.Size * 0.3 + sw
 		set-width Geom.Width
 		include : intersection
 			refer-glyph : MangleName 'blackSquare'

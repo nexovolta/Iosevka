@@ -1,7 +1,6 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
-import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
@@ -70,15 +69,16 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			local mid2 : Geom.MidY - Geom.Size * 0.2175
 			local bottom : Geom.MidY - Geom.Size * 1.0875
 			local y : Geom.MidY - Geom.Size * 0.435
-			local sw : Math.min GeometryStroke (Geom.Size * 0.16)
+			local sw : Geom.Size * 0.24 * GeometryStroke / (GeometryStroke + Geom.Size * 0.3)
+			local head : Geom.Size * 0.18 + sw * 1.1
 			include : union
 				dispiro
 					Polyline [widths.center sw]
 						points -- {{right top} {left mid1} {right mid2} {left bottom}}
 				dispiro
 					Polyline [widths.center sw]
-						points -- {{(left + Geom.Size * 0.1) (bottom + Geom.Size * 0.42)} {left bottom} {(left + Geom.Size * 0.42) (bottom + Geom.Size * 0.02)}}
-				HBar.m cornerX Geom.Right y sw
+						points -- {{left (bottom + head)} {left bottom} {(left + head) bottom}}
+				HBar.m (cornerX - [HSwToV sw] / 2) Geom.Right y sw
 				VBar.m cornerX y top sw
 
 		create-glyph [MangleName 'undoSymbol'] [MangleUnicode 0x238C] : glyph-proc
@@ -90,18 +90,33 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			local y : Geom.MidY - Geom.Size * 0.48
 			define [UndoRing x] : difference [RingAt x y r] [RingAt x y (r - sw)]
 			include : UndoRing left
+			local head : r * 0.9 + sw
+			local radius : right - Geom.MidX
+			local cy : y + r - sw / 3
+			local ca : Math.cos (35 * Math.PI / 180)
+			local sa : Math.sin (35 * Math.PI / 180)
+			local endX : Geom.MidX - radius * ca
+			local endY : cy + radius * sa
+			local baseX : endX + head * 0.32 * sa
+			local baseY : endY + head * 0.32 * ca
 			local arrow : new-glyph : glyph-proc
-				local cs : new BezToContoursSink currentGlyph.gizmo
-				cs.moveTo (right + sw / 2) (y + r - sw / 3)
-				cs.cubicTo (right + sw / 2) (Geom.MidY + Geom.Size * 1.15) (left + r * 0.45) (Geom.MidY + Geom.Size * 1.2) (left + r * 0.24) (y + r * 2.38)
-				cs.lineTo (left - r * 0.26) (y + r * 2.75)
-				cs.lineTo (left - r * 0.3) (y + r * 1.35)
-				cs.lineTo (left + r * 0.75) (y + r * 2.15)
-				cs.lineTo (left + r * 0.24) (y + r * 2.38 - sw)
-				cs.cubicTo (left + r * 0.45) (Geom.MidY + Geom.Size * 1.2 - sw) (right - sw / 2) (Geom.MidY + Geom.Size * 1.15 - sw) (right - sw / 2) (y + r - sw / 3)
-				cs.endShape
-				currentGlyph.includeContours cs.contours
-			include : union [UndoRing right] arrow
+				include : intersection
+					difference
+						RingAt Geom.MidX cy (radius + sw / 2)
+						RingAt Geom.MidX cy (radius - sw / 2)
+					spiro-outline
+						corner Geom.MidX cy
+						corner (Geom.MidX + radius * 2) cy
+						corner (Geom.MidX + radius * 2) (cy + radius * 2)
+						corner (Geom.MidX - radius * 2) (cy + radius * 2)
+						corner (Geom.MidX - radius * 2 * ca) (cy + radius * 2 * sa)
+						close
+			local arrowhead : new-glyph : spiro-outline
+				corner (endX - head * 0.52 * sa) (endY - head * 0.52 * ca)
+				corner (baseX - head * 0.48 * ca) (baseY + head * 0.48 * sa)
+				corner (baseX + head * 0.48 * ca) (baseY - head * 0.48 * sa)
+				close
+			include : union [UndoRing right] arrow arrowhead
 
 		create-glyph [MangleName 'horizontalLineExtension'] [MangleUnicode 0x23AF] : glyph-proc
 			set-width MosaicWidth
