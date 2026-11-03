@@ -26,6 +26,8 @@ await Geom.Init();
 test("the omega feature does not renumber existing OpenType tags", () => {
 	const oldData = structuredClone(variantData);
 	delete oldData.prime["lower-omega"];
+	delete oldData.prime["capital-qoppa"];
+	delete oldData.prime["cyrl-capital-koppa"];
 	const oldPrimes = Variant.parse(oldData, {}).primes;
 	const newPrimes = Variant.parse(variantData, {}).primes;
 	for (const [key, prime] of oldPrimes) {

@@ -237,6 +237,11 @@ The broad forms turn the outer arms inward, shortening them as the middle
 notch rises. The rounded vertical-sided forms keep their outer stems straight.
 The flat-top choices raise the middle notch toward or to x-height.
 
+Greek archaic koppa has separate `capital-qoppa` and `qoppa` selectors.
+Likewise, `cyrl-capital-koppa` and `cyrl-koppa` independently select a hook
+and base serif, for example `corner-hooked-serifless` or
+`corner-hooked-base-serifed`.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

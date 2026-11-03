@@ -289,7 +289,7 @@ function assignOpenTypeTags(primes) {
 	letters.sort(compareLetters);
 	symbols.sort(compareByKey);
 	other.sort(compareByKey);
-	appendedLetters.sort(compareLetters);
+	appendedLetters.sort((a, b) => a.tagOrder - b.tagOrder || compareLetters(a, b));
 
 	const cvPrimes = [...digits, ...letters];
 	const overflow = [];
@@ -309,6 +309,7 @@ class Prime {
 		this.key = key;
 		this.tag = null;
 		this.tagKind = cfg.tagKind || null;
+		this.tagOrder = cfg.tagOrder || 0;
 		this.sampler = cfg.sampler;
 		this.samplerExplain = cfg.samplerExplain;
 

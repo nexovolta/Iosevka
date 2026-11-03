@@ -12140,21 +12140,35 @@ selector.oBar = "diagonalCrossbarFalling"
 
 
 [prime.qoppa]
-sampler = "Ϙϙ"
-samplerExplain = "Greek Archaic Koppa"
+sampler = "ϙ"
+samplerExplain = "Greek Small Archaic Koppa"
 tagKind = "letter"
 
 [prime.qoppa.variants.serifless]
 rank = 1
-description = "Greek Archaic Koppa (`Ϙϙ`) without a base serif"
-selector."grek/Qoppa" = "serifless"
+description = "Greek Small Archaic Koppa (`ϙ`) without a base serif"
 selector."grek/qoppa" = "serifless"
 
 [prime.qoppa.variants.base-serifed]
 rank = 2
-description = "Greek Archaic Koppa (`Ϙϙ`) with a serif at the base of the stem"
-selector."grek/Qoppa" = "baseSerifed"
+description = "Greek Small Archaic Koppa (`ϙ`) with a serif at the base of the stem"
 selector."grek/qoppa" = "baseSerifed"
+
+[prime.capital-qoppa]
+sampler = "Ϙ"
+samplerExplain = "Greek Capital Archaic Koppa"
+tagKind = "letter-append"
+tagOrder = 1
+
+[prime.capital-qoppa.variants.serifless]
+rank = 1
+description = "Greek Capital Archaic Koppa (`Ϙ`) without a base serif"
+selector."grek/Qoppa" = "serifless"
+
+[prime.capital-qoppa.variants.base-serifed]
+rank = 2
+description = "Greek Capital Archaic Koppa (`Ϙ`) with a serif at the base of the stem"
+selector."grek/Qoppa" = "baseSerifed"
 
 
 [prime.lower-theta]
@@ -18530,21 +18544,111 @@ selectorAffix."cyrl/yeUkrainian" = "DiagonalCrossbarFalling"
 
 
 [prime.cyrl-koppa]
-sampler = "Ҁҁ"
-samplerExplain = "Cyrillic Koppa"
+sampler = "ҁ"
+samplerExplain = "Cyrillic Small Koppa"
 tagKind = "letter"
 
-[prime.cyrl-koppa.variants.serifless]
-rank = 1
-description = "Cyrillic Koppa (`Ҁҁ`) without a base serif"
-selector."cyrl/Koppa" = "serifless"
-selector."cyrl/koppa" = "serifless"
+[prime.cyrl-koppa.variants-buildup]
+entry = "hook"
+descriptionLeader = "Cyrillic Small Koppa (`ҁ`)"
 
-[prime.cyrl-koppa.variants.base-serifed]
+[prime.cyrl-koppa.variants-buildup.stages.hook."*"]
+next = "base"
+
+[prime.cyrl-koppa.variants-buildup.stages.hook.serifless]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/koppa" = ""
+
+[prime.cyrl-koppa.variants-buildup.stages.hook.flat-hooked]
 rank = 2
-description = "Cyrillic Koppa (`Ҁҁ`) with a serif at the base of the stem"
-selector."cyrl/Koppa" = "baseSerifed"
-selector."cyrl/koppa" = "baseSerifed"
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "flat hook"
+selectorAffix."cyrl/koppa" = "flatHook"
+
+[prime.cyrl-koppa.variants-buildup.stages.hook.corner-hooked]
+rank = 3
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "corner hook"
+selectorAffix."cyrl/koppa" = "cornerHook"
+
+[prime.cyrl-koppa.variants-buildup.stages.hook.inward-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "inward serif"
+selectorAffix."cyrl/koppa" = "inwardSerifed"
+
+[prime.cyrl-koppa.variants-buildup.stages.hook.serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "serifed hook"
+selectorAffix."cyrl/koppa" = "serifed"
+
+[prime.cyrl-koppa.variants-buildup.stages.base.serifless]
+rank = 1
+keyAffix = "serifless"
+descriptionJoiner = "without"
+descriptionAffix = "base serif"
+selectorAffix."cyrl/koppa" = { if = [{ hook = "serifless" }], then = "serifless", else = "" }
+
+[prime.cyrl-koppa.variants-buildup.stages.base.base-serifed]
+rank = 2
+descriptionAffix = "base serif"
+selectorAffix."cyrl/koppa" = "baseSerifed"
+
+[prime.cyrl-capital-koppa]
+sampler = "Ҁ"
+samplerExplain = "Cyrillic Capital Koppa"
+tagKind = "letter-append"
+tagOrder = 1
+
+[prime.cyrl-capital-koppa.variants-buildup]
+entry = "hook"
+descriptionLeader = "Cyrillic Capital Koppa (`Ҁ`)"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook."*"]
+next = "base"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook.serifless]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/Koppa" = ""
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook.flat-hooked]
+rank = 2
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "flat hook"
+selectorAffix."cyrl/Koppa" = "flatHook"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook.corner-hooked]
+rank = 3
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "corner hook"
+selectorAffix."cyrl/Koppa" = "cornerHook"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook.inward-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "inward serif"
+selectorAffix."cyrl/Koppa" = "inwardSerifed"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.hook.serifed]
+rank = 5
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "serifed hook"
+selectorAffix."cyrl/Koppa" = "serifed"
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.base.serifless]
+rank = 1
+keyAffix = "serifless"
+descriptionJoiner = "without"
+descriptionAffix = "base serif"
+selectorAffix."cyrl/Koppa" = { if = [{ hook = "serifless" }], then = "serifless", else = "" }
+
+[prime.cyrl-capital-koppa.variants-buildup.stages.base.base-serifed]
+rank = 2
+descriptionAffix = "base serif"
+selectorAffix."cyrl/Koppa" = "baseSerifed"
 
 
 [prime.cyrl-capital-ya]
@@ -20453,6 +20557,7 @@ lower-omega = "round"
 capital-omega = "serifless"
 latin-upsilon = "serifless"
 qoppa = "serifless"
+capital-qoppa = "serifless"
 partial-derivative = "curly-bar"
 cyrl-capital-be = "serifless"
 cyrl-be = "standard"
@@ -20491,6 +20596,7 @@ cyrl-yery = "corner"
 cyrl-capital-e = "serifless"
 cyrl-e = "serifless"
 cyrl-koppa = "serifless"
+cyrl-capital-koppa = "serifless"
 cyrl-capital-ya = "straight-serifless"
 cyrl-ya = "straight-serifless"
 # Digits
@@ -20652,6 +20758,7 @@ capital-phi = "serifed"
 capital-omega = "serifless"
 latin-upsilon = "serifless"
 qoppa = "base-serifed"
+capital-qoppa = "base-serifed"
 cyrl-capital-be = "full-serifed"
 cyrl-ve = "standard-bilateral-serifed"
 cyrl-capital-ze = "unilateral-serifed"
@@ -20682,6 +20789,7 @@ cyrl-che = "standard-serifed"
 cyrl-capital-e = "unilateral-serifed"
 cyrl-e = "unilateral-serifed"
 cyrl-koppa = "base-serifed"
+cyrl-capital-koppa = "base-serifed"
 cyrl-capital-ya = "straight-serifed"
 cyrl-ya = "straight-serifed"
 one = "base"

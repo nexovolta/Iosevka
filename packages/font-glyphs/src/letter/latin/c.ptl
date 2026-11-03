@@ -453,18 +453,26 @@ glyph-block Letter-Latin-C : begin
 			no-shape
 
 	define KoppaConfig : object
-		serifless   false
-		baseSerifed true
+		serifless              { SLAB-NONE        false }
+		baseSerifed            { SLAB-NONE        true  }
+		flatHook               { SLAB-FLAT-HOOK   false }
+		flatHookBaseSerifed    { SLAB-FLAT-HOOK   true  }
+		cornerHook             { SLAB-CORNER-HOOK false }
+		cornerHookBaseSerifed  { SLAB-CORNER-HOOK true  }
+		inwardSerifed          { SLAB-INWARD      false }
+		inwardSerifedBaseSerifed { SLAB-INWARD   true  }
+		serifed                { SLAB-CLASSICAL   false }
+		serifedBaseSerifed     { SLAB-CLASSICAL   true  }
 
-	foreach { suffix fBaseSerif } [pairs-of KoppaConfig] : begin
+	foreach { suffix { styTop fBaseSerif } } [Object.entries KoppaConfig] : do
 		create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
-			local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE CAP 0
+			local lf : CLetterForm [DivFrame 1] styTop SLAB-NONE CAP 0
 			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] CAP fBaseSerif
 
 		create-glyph "cyrl/koppa.\(suffix)" : glyph-proc
 			include : MarkSet.p
-			local lf : CLetterForm [DivFrame 1] SLAB-NONE SLAB-NONE XH 0
+			local lf : CLetterForm [DivFrame 1] styTop SLAB-NONE XH 0
 				ada -- SmallArchDepthA
 				adb -- SmallArchDepthB
 			include : CyrKoppaShapeT [union [lf.baseTopOnly] [lf.topSerif]] XH fBaseSerif
