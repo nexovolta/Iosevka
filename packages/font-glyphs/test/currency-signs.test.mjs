@@ -34,6 +34,21 @@ const contourArea = contours => Math.abs(contours.reduce((sum, contour) => {
 	return sum;
 }, 0));
 
+function assertFlatSpesmiloBase(glyph, contours) {
+	const points = contours.flat();
+	assert.ok(points.every(p => p.y >= -0.001), "spesmilo must not extend below the baseline");
+	let longest = 0;
+	for (const contour of contours) {
+		for (let i = 0; i < contour.length; i++) {
+			const a = contour[i], b = contour[(i + 1) % contour.length];
+			if (Math.abs(a.y) < 0.001 && Math.abs(b.y) < 0.001) {
+				longest = Math.max(longest, Math.abs(a.x - b.x));
+			}
+		}
+	}
+	assert.ok(longest > glyph.advanceWidth * 0.45, "spesmilo must have a continuous flat base");
+}
+
 function build(spacing, weight, slope, capitalS = "serifless", metricOverride = null) {
 	const argv = {
 		shape: {
@@ -100,6 +115,7 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					assert.ok(smoothJoins > 0, "penny mask must meet the loop with curves");
 				}
 				assert.ok(spesmilo.length >= 3, "spesmilo must retain the m counters");
+				assertFlatSpesmiloBase(glyphStore.queryByUnicode(0x20b7), spesmilo);
 				assert.equal(nordic.length, 3, "nordic mark must have one joined outline and two counters");
 				for (const [code, shape] of [[0x20c2, rufiyaa], [0x20c4, omani]]) {
 					const glyph = glyphStore.queryByUnicode(code);
@@ -142,6 +158,7 @@ test("spesmilo follows each capital S top style without changing the other curre
 	for (const [option, suffix] of variants) {
 		const { glyphStore } = build("term", 420, "upright", option);
 		const actual = glyphStore.queryByUnicode(0x20b7).geometry.toContours();
+		assertFlatSpesmiloBase(glyphStore.queryByUnicode(0x20b7), actual);
 		const expected = glyphStore.queryByNameEnsured(`currency/spesmiloSign.${suffix}`).geometry.toContours();
 		assert.deepEqual(actual, expected, `spesmilo does not follow capital S ${option}`);
 		const other = [0x20b0, 0x20bb].map(code => glyphStore.queryByUnicode(code).geometry.toContours());
@@ -170,6 +187,10 @@ for (const [label, weight, , slope] of [
 		const nordic = glyphStore.queryByUnicode(0x20bb);
 		const contours = nordic.geometry.toContours();
 		assert.equal(contours.length, 3, "Nordic bowl and teardrop must both be closed");
+		if (slope === "upright") {
+			assert.ok(Math.max(...contours.flat().map(p => p.x)) > nordic.advanceWidth * 0.85,
+				"Nordic mark right side must extend across the frame");
+		}
 		const sorted = [...contours].sort((a, b) => contourArea([b]) - contourArea([a]));
 		for (const counter of sorted.slice(1)) {
 			const x = counter.map(p => p.x);

@@ -32,6 +32,7 @@ const topology = [
 	[4, [0x2b56, 0x2b57]],
 ];
 const headSizes = new Map();
+const ringWidths = new Map();
 
 function horizontalSpan(contour, y) {
 	const xs = [];
@@ -99,6 +100,17 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 					count,
 					`U+${code.toString(16).toUpperCase()} topology`,
 				);
+			}
+			for (const code of [0x2b56, 0x2b57]) {
+				const radii = outlines.get(code).map(contour =>
+					(Math.max(...contour.map(p => p.y)) - Math.min(...contour.map(p => p.y))) / 2
+				).sort((a, b) => b - a);
+				const outer = radii[0] - radii[1];
+				const gap = radii[1] - radii[2];
+				const inner = radii[2] - radii[3];
+				assert.ok(outer > 0 && gap > 0 && inner > 0 && radii[3] > 0,
+					`U+${code.toString(16)} must retain both rings and their counters`);
+				ringWidths.set(`${spacing}-${weight}-${code}`, outer);
 			}
 		}
 		const boundsOf = code => {
@@ -228,6 +240,16 @@ for (const [spacing, label, weight] of ["term", "quasi-proportional"].flatMap(sp
 		}
 	});
 }
+
+test("double-ring outer strokes thicken from Thin through Heavy", () => {
+	for (const spacing of ["term", "quasi-proportional"]) {
+		for (const code of [0x2b56, 0x2b57]) {
+			const [thin, regular, heavy] = [120, 420, 920].map(weight => ringWidths.get(`${spacing}-${weight}-${code}`));
+			assert.ok(regular > thin * 1.05 && heavy > regular * 1.05,
+				`U+${code.toString(16)} ${spacing}: ${thin}, ${regular}, ${heavy}`);
+		}
+	}
+});
 
 test("requested arrowheads grow from Thin through Heavy", () => {
 	for (const spacing of ["term", "quasi-proportional"]) {

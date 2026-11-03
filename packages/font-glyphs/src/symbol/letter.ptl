@@ -241,7 +241,7 @@ glyph-block Symbol-Currency : begin
 			local step : x1 - x0
 			local mSw : step * 0.48 * Stroke / (Stroke + step * 0.5)
 			local mTop : CAP * 0.36
-			local mBot : 0 - CAP * 0.04
+			local mBot 0
 			local shoulderY : mTop - step * 0.45
 			local sw : df.adviceStroke2 3 4 CAP
 			local spine : new-glyph : glyph-proc
@@ -255,7 +255,13 @@ glyph-block Symbol-Currency : begin
 					g4 [mix l r 0.5] mTop [heading Rightward]
 					g4 r shoulderY [heading Downward]
 			local mMask : new-glyph : difference [Rect shoulderY (mBot - sw) x0 x2] mShape
-			include : union [difference spine mMask] mShape [HBar.m x0 x2 0 [Math.min sw (CAP * 0.055)]]
+			local foot : new-glyph : spiro-outline
+				corner x2 0
+				corner (x2 + mSw / 2) 0
+				corner (x2 + mSw / 2 + CAP * 0.04) (CAP * 0.04)
+				corner x2 (CAP * 0.08)
+			include : intersection [MaskAbove 0]
+				union [difference spine mMask] mShape foot [HBar.b (x0 - mSw / 2) (x2 + mSw / 2) 0 [Math.min sw (CAP * 0.055)]]
 
 	select-variant 'currency/spesmiloSign' 0x20B7 (follow -- 'S')
 
@@ -299,7 +305,7 @@ glyph-block Symbol-Currency : begin
 		local originalRight : df.rightSB - sw * 0.4
 		local span : originalRight - left
 		local xStem : mix left originalRight 0.33
-		local right : xStem + (originalRight - xStem) * 1.06
+		local right : xStem + (originalRight - xStem) * 1.10
 		local yBar : CAP * 0.72
 		local loopR : span * 0.22
 		local zigSw : loopR * 0.8 * sw / (sw + loopR)
