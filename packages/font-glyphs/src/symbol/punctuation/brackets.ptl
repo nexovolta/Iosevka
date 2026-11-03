@@ -4,6 +4,7 @@ $$include '../../meta/macros.ptl'
 import [mix linreg clamp fallback] from "@iosevka/util"
 import [Joining] from "@iosevka/glyph/relation"
 import [Transform] from "@iosevka/geometry/transform"
+import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 import [DesignParameters] from "../../meta/aesthetics.mjs"
 
 glyph-module
@@ -221,8 +222,31 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : TortoiseShellBracket.Shape df df.mvs
 		turned 'tortoiseShellBracketRight' 0x3015 'tortoiseShellBracketLeft' Middle SymbolMid
 
-		alias 'flattenedParenLeft'  0x27EE 'parenLeft.flatArc'
-		alias 'flattenedParenRight' 0x27EF 'parenRight.flatArc'
+		create-glyph 'flattenedParenLeft' 0x27EE : glyph-proc
+			local df : DivFrame 1
+			local dim : Paren.Dim df 0 (dp -- FlatArcDp) (sw -- df.mvs)
+			local sw : Math.min df.mvs [VSwToH ((dim.inside - dim.outside) * 0.75)] ((dim.top - dim.bottom) * 0.20)
+			local innerX : dim.outside + [HSwToV sw]
+			local turnX : mix innerX dim.inside 0.65
+			local upper : mix dim.bottom dim.top 0.76
+			local lower : mix dim.bottom dim.top 0.24
+			local k 0.5522847498
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo dim.inside dim.top
+			cs.lineTo dim.inside (dim.top - sw)
+			cs.lineTo turnX (dim.top - sw)
+			cs.cubicTo (turnX - k * (turnX - innerX)) (dim.top - sw) innerX (upper + k * (dim.top - sw - upper)) innerX upper
+			cs.lineTo innerX lower
+			cs.cubicTo innerX (lower - k * (lower - dim.bottom - sw)) (turnX - k * (turnX - innerX)) (dim.bottom + sw) turnX (dim.bottom + sw)
+			cs.lineTo dim.inside (dim.bottom + sw)
+			cs.lineTo dim.inside dim.bottom
+			cs.lineTo turnX dim.bottom
+			cs.cubicTo (turnX - k * (turnX - dim.outside)) dim.bottom dim.outside (lower - k * (lower - dim.bottom)) dim.outside lower
+			cs.lineTo dim.outside upper
+			cs.cubicTo dim.outside (upper + k * (dim.top - upper)) (turnX - k * (turnX - dim.outside)) dim.top turnX dim.top
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+		turned 'flattenedParenRight' 0x27EF 'flattenedParenLeft' Middle SymbolMid
 
 		create-glyph 'parenLeftUpper' 0x239B : glyph-proc
 			include : ForceUpright
