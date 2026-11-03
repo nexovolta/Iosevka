@@ -7,6 +7,7 @@ glyph-module
 glyph-block Symbol-Mosaic-Box-Drawing : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Shared-Symbol-Shapes : Polyline
 
 	for-width-kinds WideWidth4
 
@@ -41,6 +42,18 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 		hline 0x23BB (3 / 4)
 		hline 0x23BC (1 / 4)
 		hline 0x23BD 0
+		create-glyph [MangleName 'radicalSymbolBottom'] [MangleUnicode 0x23B7] : glyph-proc
+			set-width MosaicWidth
+			include : ForceUpright
+			include : union
+				VBar.m midx ParenBot top light
+				dispiro
+					Polyline [widths.center light]
+						points -- {
+							{(MosaicWidth * 0.1) [mix ParenBot ParenTop 0.42]}
+							{(MosaicWidth * 0.25) [mix ParenBot ParenTop 0.48]}
+							{midx (ParenBot + light / 2)}
+						}
 
 		create-glyph [MangleName : NameUni 0x1CC1B] [MangleUnicode 0x1CC1B] : glyph-proc
 			set-width MosaicWidth

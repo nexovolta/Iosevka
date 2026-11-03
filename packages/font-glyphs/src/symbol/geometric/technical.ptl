@@ -83,24 +83,25 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 
 		create-glyph [MangleName 'undoSymbol'] [MangleUnicode 0x238C] : glyph-proc
 			set-width Geom.Width
-			local r : Geom.Size * 0.16
-			local sw : Math.min GeometryStroke (r * 0.65)
-			local left : Geom.MidX - Geom.Size * 0.6
-			local right : Geom.MidX + Geom.Size * 0.6
-			local y : Geom.MidY - Geom.Size * 0.3
-			include : RingStrokeAt left y r sw
+			local r : Geom.Size * 0.39
+			local sw : r * 0.8 * GeometryStroke / (GeometryStroke + r * 1.5)
+			local left : Geom.MidX - Geom.Size * 0.51
+			local right : Geom.MidX + Geom.Size * 0.51
+			local y : Geom.MidY - Geom.Size * 0.48
+			define [UndoRing x] : difference [RingAt x y r] [RingAt x y (r - sw)]
+			include : UndoRing left
 			local arrow : new-glyph : glyph-proc
 				local cs : new BezToContoursSink currentGlyph.gizmo
-				cs.moveTo (right + sw / 2) y
-				cs.cubicTo (right + sw / 2) (Geom.MidY + Geom.Size * 0.85) left (Geom.MidY + Geom.Size * 0.8) left (Geom.MidY + Geom.Size * 0.2)
-				cs.lineTo (left - Geom.Size * 0.17) (Geom.MidY + Geom.Size * 0.25)
-				cs.lineTo (left - Geom.Size * 0.12) (Geom.MidY - Geom.Size * 0.02)
-				cs.lineTo (left + Geom.Size * 0.18) (Geom.MidY + Geom.Size * 0.1)
-				cs.lineTo (left + sw / 2) (Geom.MidY + Geom.Size * 0.14)
-				cs.cubicTo (left + sw / 2) (Geom.MidY + Geom.Size * 0.65 - sw) (right - sw / 2) (Geom.MidY + Geom.Size * 0.6 - sw) (right - sw / 2) y
+				cs.moveTo (right + sw / 2) (y + r - sw / 3)
+				cs.cubicTo (right + sw / 2) (Geom.MidY + Geom.Size * 1.15) (left + r * 0.45) (Geom.MidY + Geom.Size * 1.2) (left + r * 0.24) (y + r * 2.38)
+				cs.lineTo (left - r * 0.26) (y + r * 2.75)
+				cs.lineTo (left - r * 0.3) (y + r * 1.35)
+				cs.lineTo (left + r * 0.75) (y + r * 2.15)
+				cs.lineTo (left + r * 0.24) (y + r * 2.38 - sw)
+				cs.cubicTo (left + r * 0.45) (Geom.MidY + Geom.Size * 1.2 - sw) (right - sw / 2) (Geom.MidY + Geom.Size * 1.15 - sw) (right - sw / 2) (y + r - sw / 3)
 				cs.endShape
 				currentGlyph.includeContours cs.contours
-			include : union [RingAt right y r] arrow
+			include : union [UndoRing right] arrow
 
 		create-glyph [MangleName 'horizontalLineExtension'] [MangleUnicode 0x23AF] : glyph-proc
 			set-width MosaicWidth
