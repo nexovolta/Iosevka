@@ -127,12 +127,14 @@ glyph-block Letter-Cyrillic-Che : begin
 		include : tagged 'serifMT' : match slabType
 			[Just SERIFS.ALL]           [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
 			[Just SERIFS.TOP]           [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
-			[Just SERIFS.BILATERAL]     sf.mt.full
-			[Just SERIFS.BILATERAL-BGR] sf.mt.full
+			[Just SERIFS.TL]            sf.mt.left
+			[Just SERIFS.BILATERAL]     sf.mt.left
+			[Just SERIFS.BILATERAL-BGR] sf.mt.left
 			__                     [glyph-proc]
 		include : tagged 'SerifRT' : match slabType
 			[Just SERIFS.ALL]           [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
 			[Just SERIFS.TOP]           [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
+			[Just SERIFS.TL]            sf.rt.inner
 			[Just SERIFS.RT]            sf.rt.inner
 			[Just SERIFS.BILATERAL]     sf.rt.inner
 			[Just SERIFS.BILATERAL-BGR] sf.rt.inner

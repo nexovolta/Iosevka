@@ -11,20 +11,31 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : nShoulder SerifFrame TopHook CyrDescender
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos
-	glyph-block-import Letter-Cyrillic-Che : CheCapConfig
+	glyph-block-import Letter-Cyrillic-Che : CheCapConfig CyrCheShape BODY SERIFS
+	glyph-block-import Letter-Latin-Lower-H : HConfig
+	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 
 	define SLAB-NONE                   0
 	define SLAB-TOP-LEFT               1
 	define SLAB-TOP-LEFT-BOTTOM-RIGHT  2
 	define SLAB-ALL                    4
 
-	define [CyrShhaShape slabType _stroke] : glyph-proc
+	define [CyrShhaShape slabType _stroke _flatHump] : glyph-proc
 		local stroke : fallback _stroke Stroke
 		local yBarTop : [mix 0 CAP YeriBarPos] + stroke / 2
 
 		include : tagged 'strokeL' : VBar.l SB 0 CAP stroke
-		include : nShoulder.earlessCorner
+		if (_flatHump === null || _flatHump) : then : include : nShoulder.earlessCorner
 			left   -- SB
+			right  -- RightSB
+			top    -- yBarTop
+			bottom -- 0
+			stroke -- stroke
+			ada    -- [ArchDepthAClamped yBarTop 0]
+			adb    -- [ArchDepthBClamped yBarTop 0]
+			rise   -- [if _flatHump 0 DToothlessRise]
+		: else : include : nShoulder.shape
+			left   -- (SB + [HSwToV stroke])
 			right  -- RightSB
 			top    -- yBarTop
 			bottom -- 0
@@ -52,23 +63,34 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 		topLeftBottomRightSerifed SLAB-TOP-LEFT-BOTTOM-RIGHT
 		serifed                   SLAB-ALL
 
-	foreach { suffix slabType } [pairs-of ShhaConfig] : do
-		create-glyph "cyrl/Hwe.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : LeaningAnchor.Above.VBar.l SB
-			include : CyrShhaShape slabType
-			eject-contour 'strokeL'
-			eject-contour 'serifLT'
-			include : TopHook.toRight.lBarInner SB 0 CAP
+	foreach { hSuffix { fFlatHump fTailed hSerifs } } [pairs-of HConfig] : do
+		DefineSelectorGlyph 'cyrl/Hwe' hSuffix [DivFrame 1] 'capital'
+		foreach { suffix slabType } [pairs-of ShhaConfig] : do
+			create-glyph "cyrl/Hwe.\(hSuffix).\(suffix)" : glyph-proc
+				include : MarkSet.capital
+				include : LeaningAnchor.Above.VBar.l SB
+				include : CyrShhaShape slabType Stroke fFlatHump
+				eject-contour 'strokeL'
+				eject-contour 'SerifLT'
+				include : TopHook.toRight.lBarInner SB 0 CAP
+		select-variant "cyrl/Hwe.\(hSuffix)" (follow -- 'hCapHookTop')
 
-	foreach { suffix config } [pairs-of CheCapConfig] : do
+	foreach { suffix { fFlatHump slabType } } [pairs-of CheCapConfig] : do
 		create-glyph "cyrl/Shha.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Above.VBar.l SB
-			include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround Middle (CAP / 2) (-1) (-1)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph "cyrl/Che.\(suffix)"
+			if (slabType === SERIFS.TL || slabType === SERIFS.RT || slabType === SERIFS.BILATERAL) : then : begin
+				include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround Middle (CAP / 2) (-1) (-1)] : with-transform [Italify (-para.slopeAngle)]
+					CyrCheShape [DivFrame 1] CAP 0.45 BODY.STRAIGHT SERIFS.NONE (fFlatHump -- fFlatHump)
+				local sf : SerifFrame.fromDf [DivFrame 1] CAP 0
+				include : match slabType
+					[Just SERIFS.TL]        sf.lt.outer
+					[Just SERIFS.RT]        sf.lt.inner
+					[Just SERIFS.BILATERAL] sf.lt.full
+			: else : include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround Middle (CAP / 2) (-1) (-1)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph "cyrl/Che.\(suffix)"
 
 	select-variant 'cyrl/Shha' 0x4BA (follow -- 'cyrl/Che')
-	select-variant 'cyrl/Hwe' 0xA694 (follow -- 'hCapHookTop')
+	CreateSelectorVariants 'cyrl/Hwe' 0xA694 [Object.keys HConfig] (follow -- 'h')
 
 	select-variant 'cyrl/Shha/descBase' (shapeFrom -- 'cyrl/Shha') (follow -- 'cyrl/Che')
 	derive-composites 'cyrl/ShhaDescender' 0x526 'cyrl/Shha/descBase' [CyrDescender.rSideJut RightSB 0]
@@ -82,7 +104,7 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 			create-glyph "latn/The.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				local stroke : AdviceStroke2 2 3 CAP
-				include : CyrShhaShape slabType stroke
+				include : CyrShhaShape slabType stroke null
 
 				local xTopRight : mix SB RightSB 0.9
 				include : HBar.t (SB - O) xTopRight CAP stroke

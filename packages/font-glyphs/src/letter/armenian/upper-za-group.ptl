@@ -11,9 +11,8 @@ glyph-block Letter-Armenian-Upper-Za-Group : begin
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
 	do "Za"
-		create-glyph 'armn/Za' 0x536 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
+		glyph-block-export ArmenianZaShape
+		define [ArmenianZaShape df] : glyph-proc
 			local fine : df.adviceStroke 4
 			include : dispiro
 				widths.rhs df.mvs
@@ -25,6 +24,11 @@ glyph-block Letter-Armenian-Upper-Za-Group : begin
 				g4 df.leftSB (df.mvs - df.shoulderFine) [widths.rhs df.shoulderFine]
 			include : VBar.l df.leftSB 0 VJut fine
 			include : [ArmHBar.normal df].base
+
+		create-glyph 'armn/Za' 0x536 : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			include : ArmenianZaShape df
 
 	do "Jheh"
 		create-glyph 'armn/Jheh' 0x54B : glyph-proc

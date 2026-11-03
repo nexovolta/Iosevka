@@ -21,6 +21,16 @@ const variantData = readParams("variants");
 
 await Geom.Init();
 
+const weightAreas = new Map();
+const contourArea = contours => Math.abs(contours.reduce((sum, contour) => {
+	for (let i = 0; i < contour.length; i++) {
+		const p = contour[i];
+		const q = contour[(i + 1) % contour.length];
+		sum += (p.x * q.y - q.x * p.y) / 2;
+	}
+	return sum;
+}, 0));
+
 function build(spacing, weight, slope, capitalS = "serifless") {
 	const argv = {
 		shape: {
@@ -53,9 +63,21 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				const penny = contours(0x20b0);
 				const spesmilo = contours(0x20b7);
 				const nordic = contours(0x20bb);
+				const rufiyaa = contours(0x20c2);
+				const omani = contours(0x20c4);
+				if (spacing === "term" && slope === "upright") {
+					weightAreas.set(weight, { penny: contourArea(penny), rufiyaa: contourArea(rufiyaa) });
+				}
 				assert.equal(penny.length, 2, "penny must have one joined outline and one loop counter");
 				assert.ok(spesmilo.length >= 3, "spesmilo must retain the m counters");
 				assert.equal(nordic.length, 3, "nordic mark must have one joined outline and two counters");
+				for (const [code, shape] of [[0x20c2, rufiyaa], [0x20c4, omani]]) {
+					const glyph = glyphStore.queryByUnicode(code);
+					const points = shape.flat();
+					assert.ok(points.every(p => p.y > -calculateMetrics(para).CAP && p.y < 2 * calculateMetrics(para).CAP),
+						`U+${code.toString(16)} has out-of-bounds geometry`);
+					if (slope === "upright") assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth));
+				}
 				assert.ok(Math.min(...penny.flat().map(p => p.y)) < calculateMetrics(para).Descender);
 				if (slope === "upright") {
 					for (const code of [0x20b0, 0x20b7, 0x20bb]) {
@@ -67,6 +89,13 @@ for (const spacing of ["term", "quasi-proportional"]) {
 		}
 	}
 }
+
+test("penny and Rufiyaa gain substantial ink at heavier weights", () => {
+	for (const glyph of ["penny", "rufiyaa"]) {
+		assert.ok(weightAreas.get(420)[glyph] > weightAreas.get(120)[glyph] * 1.5, `${glyph}: thin to regular`);
+		assert.ok(weightAreas.get(920)[glyph] > weightAreas.get(420)[glyph] * 1.15, `${glyph}: regular to heavy`);
+	}
+});
 
 test("spesmilo follows each capital S top style without changing the other currencies", () => {
 	const variants = [

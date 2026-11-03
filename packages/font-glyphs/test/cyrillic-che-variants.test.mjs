@@ -75,8 +75,35 @@ for (const [weight, slope, spacing] of [
 				}
 				const shhaName = `cyrl/Shha.${suffix}`;
 				const shha = glyph(shhaName);
-				assert.ok(dependencies(shha).includes(baseName), `${shhaName} must reference ${baseName}`);
 				assert.equal(variant.get(glyph("cyrl/Shha")), shhaName, variant.key);
+				if (slope === "upright" && suffix.toLowerCase().endsWith("motionserifed") && !suffix.toLowerCase().includes("topright")) {
+					const cche = glyph(`cyrl/Cche.${suffix}`);
+					const middleSerif = cche.geometry.toContours().at(-2);
+					const middle = cche.advanceWidth / 2;
+					assert.ok(Math.min(...middleSerif.map(p => p.x)) < middle - 1, `${suffix}: Cche middle serif does not extend left`);
+					assert.ok(Math.max(...middleSerif.map(p => p.x)) <= middle + 0.01, `${suffix}: Cche middle serif extends right`);
+				}
+				if (suffix.toLowerCase().endsWith("motionserifed")) {
+					const shhaPoints = points(shha);
+					if (slope === "upright") {
+						const plainSuffix = suffix.startsWith("flatHump") ? "flatHumpSerifless" : "serifless";
+						const plainPoints = points(glyph(`cyrl/Shha.${plainSuffix}`));
+						const leftAtTop = ps => Math.min(...ps.filter(p => p.y > top * 0.9).map(p => p.x));
+						const rightAtTop = ps => Math.max(...ps.filter(p => p.y > top * 0.9).map(p => p.x));
+						if (!suffix.toLowerCase().includes("topright")) {
+							assert.ok(leftAtTop(shhaPoints) < leftAtTop(plainPoints), `${shhaName} lacks a leftward top serif`);
+						}
+						if (suffix.toLowerCase().includes("topright") || suffix.toLowerCase().includes("bilateral")) {
+							assert.ok(rightAtTop(shhaPoints) > rightAtTop(plainPoints), `${shhaName} lacks a rightward top serif`);
+						}
+						const leftAtBottom = ps => Math.min(...ps.filter(p => p.y < top * 0.1).map(p => p.x));
+						const rightAtBottom = ps => Math.max(...ps.filter(p => p.y < top * 0.1).map(p => p.x));
+						assert.ok(leftAtBottom(shhaPoints) >= leftAtBottom(plainPoints) - 0.01, `${shhaName} has a bottom-left serif`);
+						assert.ok(rightAtBottom(shhaPoints) <= rightAtBottom(plainPoints) + 0.01, `${shhaName} has a bottom-right serif`);
+					}
+					continue;
+				}
+				assert.ok(dependencies(shha).includes(baseName), `${shhaName} must reference ${baseName}`);
 				const turned = points(shha);
 				assert.equal(turned.length, basePoints.length, shhaName);
 				const sumX = Math.min(...basePoints.map(p => p.x)) + Math.max(...turned.map(p => p.x));
@@ -86,6 +113,15 @@ for (const [weight, slope, spacing] of [
 				}
 			}
 		}
+		for (const variant of para.variants.primes.get("h").variants.values()) {
+			const suffix = variant.selector.h;
+			assert.equal(variant.get(glyph("cyrl/Hwe/selector")), `cyrl/Hwe/selector.${suffix}`, variant.key);
+		}
+		assert.notDeepEqual(
+			glyph("cyrl/Hwe.straightSerifless.serifless").geometry.toContours(),
+			glyph("cyrl/Hwe.flatHumpStraightSerifless.serifless").geometry.toContours(),
+			"Hwe must have distinct round and flat humps",
+		);
 		assert.equal(LocalizedForm.BGR.get(glyph("cyrl/cheVBar")), "cyrl/cheVBar.BGR");
 	});
 }
