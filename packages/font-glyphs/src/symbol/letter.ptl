@@ -261,19 +261,20 @@ glyph-block Symbol-Currency : begin
 		local bottom : Descender - CAP * 0.06
 		local crossY : mix bottom top 0.42
 		local span : df.rightSB - df.leftSB
-		local sw : span * 0.35 * Stroke / (Stroke + span * 0.25)
+		local sw : span * 0.42 * Stroke / (Stroke + span * 0.25)
+		local loopScale : 0.625 + [Math.min 0.18 (sw / span * 0.7)]
 		local joinY : crossY + [Math.min 0.28 : Math.max 0.15 (1.05 * sw / (top - crossY))] * (top - crossY)
 		local mask : new-glyph : glyph-proc
 			local cs : new BezToContoursSink currentGlyph.gizmo
 			cs.moveTo (df.leftSB - span) (bottom - CAP)
 			cs.lineTo (df.middle + sw * 0.1) (bottom - CAP)
 			cs.lineTo (df.middle + sw * 0.1) (joinY - sw * 1.5)
-			cs.cubicTo (df.middle + sw * 0.1) (joinY - sw * 0.4) (df.middle + sw * 0.1) (joinY + sw * 0.4) (df.middle - sw * 0.4) (joinY + sw)
-			cs.cubicTo (df.middle - sw * 0.9) (joinY + sw * 1.6) (df.middle - sw * 2) (joinY + sw * 2.8) (df.middle - sw * 3) (joinY + sw * 4.1)
-			cs.lineTo (df.leftSB - span) (joinY + sw * 4.1)
+			cs.cubicTo (df.middle + sw * 0.1) (joinY - sw * 0.4) (df.middle - sw * 0.35) (joinY + sw * 0.4) (df.middle - sw) (joinY + sw * 1.1)
+			cs.cubicTo (df.middle - sw * 1.65) (joinY + sw * 1.8) (df.middle - sw * 2.8) (joinY + sw * 3) (df.middle - sw * 3.5) (joinY + sw * 4)
+			cs.lineTo (df.leftSB - span) (joinY + sw * 4)
 			cs.endShape
 			currentGlyph.includeContours cs.contours
-		local outline : new-glyph : difference [UmShape df top bottom df.adws sw] mask
+		local outline : new-glyph : difference [UmShape df top bottom df.adws sw sw loopScale] mask
 		local zigzag : new-glyph : dispiro
 			Polyline [widths.center sw]
 				endAf -- [widths.center (sw * 0.85)]

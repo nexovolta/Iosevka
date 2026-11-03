@@ -69,6 +69,28 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					weightAreas.set(weight, { penny: contourArea(penny), rufiyaa: contourArea(rufiyaa) });
 				}
 				assert.equal(penny.length, 2, "penny must have one joined outline and one loop counter");
+				const counterWidth = Math.min(...penny.map(c => Math.max(...c.map(p => p.x)) - Math.min(...c.map(p => p.x))));
+				assert.ok(counterWidth >= glyphStore.queryByUnicode(0x20b0).advanceWidth * 0.08, "penny loop counter is too narrow");
+				if (spacing === "term" && weight === 920 && slope === "upright") {
+					const metrics = calculateMetrics(para);
+					const outer = penny.find(c => Math.max(...c.map(p => p.x)) - Math.min(...c.map(p => p.x)) > counterWidth);
+					const loop = outer.filter(p => p.y > metrics.Ascender * 0.52);
+					const loopWidth = Math.max(...loop.map(p => p.x)) - Math.min(...loop.map(p => p.x));
+					assert.ok((loopWidth - counterWidth) / 2 >= metrics.Stroke * 0.84, "heavy penny loop is too light");
+					let smoothJoins = 0;
+					for (let i = 0; i < outer.length; i++) {
+						const p = outer[i];
+						const before = outer[(i + outer.length - 1) % outer.length];
+						const after = outer[(i + 1) % outer.length];
+						if (p.type !== 0 || before.type !== 2 || after.type !== 1 || p.x >= glyphStore.queryByUnicode(0x20b0).advanceWidth / 2 || p.y < metrics.Ascender * 0.42 || p.y > metrics.Ascender * 0.66) continue;
+						const ax = p.x - before.x, ay = p.y - before.y;
+						const bx = after.x - p.x, by = after.y - p.y;
+						const cosine = (ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by));
+						assert.ok(cosine > 0.94, "penny mask leaves a kink in the loop");
+						smoothJoins++;
+					}
+					assert.ok(smoothJoins > 0, "penny mask must meet the loop with curves");
+				}
 				assert.ok(spesmilo.length >= 3, "spesmilo must retain the m counters");
 				assert.equal(nordic.length, 3, "nordic mark must have one joined outline and two counters");
 				for (const [code, shape] of [[0x20c2, rufiyaa], [0x20c4, omani]]) {

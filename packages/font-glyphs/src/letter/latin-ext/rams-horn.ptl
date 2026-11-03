@@ -193,21 +193,21 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	# the pinch into a flat-hook 5-like bowl on the baseline.
 	# Quasi-proportional families use a monospace cell (HalfUPM), not Width.
 	# Tall like b/h/l: ascender height, near-normal stroke for a one-cell letter.
-	define [UmLoopKnots middle rInner lInner top yJoin yPinch fine coFine sw d] : list
+	define [UmLoopKnots middle rInner lInner top yJoin yPinch fine coFine sw d k1] : list
 		g4 middle yPinch [widths.rhs coFine]
-		g4.down.mid [mix middle rInner 0.625] ([mix top yJoin 0.7] - d) [widths.rhs fine]
+		g4.down.mid [mix middle rInner k1] ([mix top yJoin 0.7] - d) [widths.rhs fine]
 		Arch.rhs yJoin (sw -- fine)
-		g4.up.mid [mix middle lInner 0.625] ([mix top yJoin 0.7] + d)
+		g4.up.mid [mix middle lInner k1] ([mix top yJoin 0.7] + d)
 		g4 middle yPinch [widths.rhs coFine]
 
 	glyph-block-export UmShape
-	define [UmShape df top bottom umAdws _stroke] : glyph-proc
-		local k1 0.625
+	define [UmShape df top bottom umAdws _stroke _fine _loopScale] : glyph-proc
+		local k1 : fallback _loopScale 0.625
 		local k2 0.7
 		local yJoin : mix bottom top 0.42
 		local loopH : top - yJoin
 		local sw   : fallback _stroke : Math.min Stroke : AdviceStroke2 [if SLAB 3.25 2.75] 3.75 loopH umAdws
-		local fine : Math.min sw     : AdviceStroke2 [if SLAB 3.50 3.00] 4.00 loopH umAdws
+		local fine : Math.min sw : fallback _fine : AdviceStroke2 [if SLAB 3.50 3.00] 4.00 loopH umAdws
 
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
@@ -244,7 +244,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			curl xTopCurl yFiveTop [heading Leftward]
 			archv.superness DesignParameters.tightHookSuperness
 			g4.down.mid (xHook + OX) [YSmoothMidL yFiveTop yPinch adaFive adbFive] [widths.rhs coFine]
-			UmLoopKnots df.middle rInner lInner top yJoin yPinch fine coFine sw d
+			UmLoopKnots df.middle rInner lInner top yJoin yPinch fine coFine sw d k1
 			flat xStubMid yStubMid [widths.rhs.heading sw stubNormal]
 			curl xStub yStub [heading stubNormal]
 
