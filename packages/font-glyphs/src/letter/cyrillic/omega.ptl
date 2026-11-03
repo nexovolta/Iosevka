@@ -8,8 +8,10 @@ glyph-block Letter-Cyrillic-Omega : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	define [CyrlOmegaShape df top p _ada _adb] : glyph-proc
+	glyph-block-export CyrlOmegaShape
+	define [CyrlOmegaShape df top p _ada _adb _armScale] : glyph-proc
 		local fine : df.mvs * CThin
+		local armScale : fallback _armScale 1
 
 		local minHookDepth : Math.min (0.625 * (df.middle - df.leftSB - [HSwToV df.mvs])) ((df.rightSB - df.leftSB) / 3)
 		local xMidBarLeft    : df.middle - [HSwToV : df.mvs / 2]
@@ -18,8 +20,10 @@ glyph-block Letter-Cyrillic-Omega : begin
 		local xMidBarCoRight : df.middle + [HSwToV : fine - df.mvs / 2]
 		local yMidBar : top * p
 
-		local xOpenL : Math.max [mix df.leftSB  xMidBarRight 0.5] (df.leftSB  + [HSwToV df.mvs] + minHookDepth)
-		local xOpenR : Math.min [mix df.rightSB xMidBarLeft  0.5] (df.rightSB - [HSwToV df.mvs] - minHookDepth)
+		local xOpenLFull : Math.max [mix df.leftSB xMidBarRight 0.5] (df.leftSB + [HSwToV df.mvs] + minHookDepth)
+		local xOpenRFull : Math.min [mix df.rightSB xMidBarLeft 0.5] (df.rightSB - [HSwToV df.mvs] - minHookDepth)
+		local xOpenL : if (armScale === 1) xOpenLFull : mix (df.leftSB + [HSwToV : df.mvs / 2]) xOpenLFull armScale
+		local xOpenR : if (armScale === 1) xOpenRFull : mix (df.rightSB - [HSwToV : df.mvs / 2]) xOpenRFull armScale
 
 		local ada : _ada * (2 / 3) * df.adws
 		local adb : _adb * (2 / 3) * df.adws

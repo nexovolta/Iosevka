@@ -229,6 +229,14 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
 
 Subsection `variants` is used to configure character variants in the font. Properties include:
 
+The `lower-omega` design controls `ω`, `ϖ`, `ɷ`, `ꞷ`, `𝽵`, `𝽷`, and `𝽠`.
+Its choices are `round`, `almost-flat-top`, `flat-top`, `broad`,
+`broad-almost-flat-top`, `broad-flat-top`, `rounded-vertical-sides`,
+`rounded-vertical-sides-almost-flat-top`, and `rounded-vertical-sides-flat-top`.
+The broad forms turn the outer arms inward, shortening them as the middle
+notch rises. The rounded vertical-sided forms keep their outer stems straight.
+The flat-top choices raise the middle notch toward or to x-height.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

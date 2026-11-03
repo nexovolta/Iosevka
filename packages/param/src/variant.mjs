@@ -276,10 +276,12 @@ function assignOpenTypeTags(primes) {
 	const letters = [];
 	const symbols = [];
 	const other = [];
+	const appendedLetters = []; // Add new letter features without renumbering existing tags.
 	for (const prime of primes.values()) {
 		if (!prime.tagKind) continue;
 		if (prime.tagKind === "digit") digits.push(prime);
 		else if (prime.tagKind === "letter") letters.push(prime);
+		else if (prime.tagKind === "letter-append") appendedLetters.push(prime);
 		else if (prime.tagKind === "symbol") symbols.push(prime);
 		else other.push(prime);
 	}
@@ -287,6 +289,7 @@ function assignOpenTypeTags(primes) {
 	letters.sort(compareLetters);
 	symbols.sort(compareByKey);
 	other.sort(compareByKey);
+	appendedLetters.sort(compareLetters);
 
 	const cvPrimes = [...digits, ...letters];
 	const overflow = [];
@@ -296,7 +299,7 @@ function assignOpenTypeTags(primes) {
 		else overflow.push(prime);
 	}
 	let vxCount = 0;
-	for (const prime of [...symbols, ...other, ...overflow]) {
+	for (const prime of [...symbols, ...other, ...overflow, ...appendedLetters]) {
 		prime.assignTag(`VX${mapNumberToLetter(vxCount++)}`);
 	}
 }

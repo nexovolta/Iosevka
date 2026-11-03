@@ -10,8 +10,13 @@ glyph-block Letter-Greek-Lower-Omega : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Letter-Shared : CreateTurnedLetter
+	glyph-block-import Letter-Cyrillic-Omega : CyrlOmegaShape
+	glyph-block-import Letter-Latin-Lower-M : EarlessRoundedDoubleArchSmallMShape
 
-	define [LowerOmegaShape df top] : glyph-proc
+	define [NotchRatio terminal] : if (terminal === 'flat') 1.0 : if (terminal === 'almost') 0.85 0.65
+
+	define [GenericLowerOmegaShape df top _terminal] : glyph-proc
+		local terminal : fallback _terminal 'round'
 		local stroke : df.adviceThinnerStroke 3
 		local fine : stroke * CThin
 
@@ -21,30 +26,47 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		local y0 : top - O
 		local y1 : mix 0 top 0.50 # 0.45
 		local y3 : mix 0 top 0.50
-		local y4 : mix 0 top 0.65
+		local y4 : top * [NotchRatio terminal]
 
 		include : dispiro
 			widths.lhs stroke
-			g4   x0 y0
-			g4   x1 y1
+			g4 x0 y0
+			g4 x1 y1
 			Arch.lhs 0 (sw -- stroke) (swAfter -- fine)
 			flat (df.middle - [HSwToV : stroke / 2 - fine]) y3 [widths.lhs.heading fine Upward]
 			curl (df.middle - [HSwToV : stroke / 2 - fine]) y4 [heading Upward]
 		include : dispiro
 			widths.rhs stroke
-			g4   (df.width - x0) y0
-			g4   (df.width - x1) y1
+			g4 (df.width - x0) y0
+			g4 (df.width - x1) y1
 			Arch.rhs 0 (sw -- stroke) (swAfter -- fine)
 			flat (df.middle + [HSwToV : stroke / 2 - fine]) y3 [widths.rhs.heading fine Upward]
 			curl (df.middle + [HSwToV : stroke / 2 - fine]) y4 [heading Upward]
 
-	create-glyph 'grek/omega' 0x3C9 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-		include : LowerOmegaShape df XH
+	define [LowerOmegaShape df top _body _terminal] : glyph-proc
+		local body : fallback _body 'round'
+		local terminal : fallback _terminal 'round'
+		if (body === 'broad')
+			include : CyrlOmegaShape df top [NotchRatio terminal] SmallArchDepthA SmallArchDepthB [if (terminal === 'flat') 0.5 : if (terminal === 'almost') 0.75 1]
+			if (body === 'vertical')
+				include : new-glyph : glyph-proc
+					include : EarlessRoundedDoubleArchSmallMShape df top 0 (top * (1 - [NotchRatio terminal])) 0
+					include : FlipAround (df.width / 2) (top / 2)
+				include : GenericLowerOmegaShape df top terminal
+
+	define OmegaConfig : object
+		round                    { 'round'    'round'  }
+		almostFlatTop            { 'round'    'almost' }
+		flatTop                  { 'round'    'flat'   }
+		broad                    { 'broad'    'round'  }
+		broadAlmostFlatTop       { 'broad'    'almost' }
+		broadFlatTop             { 'broad'    'flat'   }
+		roundedVerticalSides              { 'vertical' 'round'  }
+		roundedVerticalSidesAlmostFlatTop { 'vertical' 'almost' }
+		roundedVerticalSidesFlatTop       { 'vertical' 'flat'   }
 
 	# Omega with the middle masked out, plus an inverted rams horn loop in the gap.
-	define [LowerOmegaWithLoopShape df top] : glyph-proc
+	define [LowerOmegaWithLoopShape df top body terminal] : glyph-proc
 		local stroke : df.adviceThinnerStroke 3
 		local fine : stroke * CThin
 		local k1 0.625
@@ -53,7 +75,7 @@ glyph-block Letter-Greek-Lower-Omega : begin
 
 		local yCross : top * kInt
 		local loopHalf : 0.25 * df.width
-		local loopTop : top * 0.72
+		local loopTop : top * [if (terminal === 'flat') 1.0 : if (terminal === 'almost') 0.85 0.72]
 		local lInner : df.middle - loopHalf
 		local rInner : df.middle + loopHalf
 		local d 0
@@ -64,7 +86,7 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		local xMask : [mix df.middle rInner k1] + 0.5 * sw + gap
 		local yMask : [mix 0 loopTop k2] + d
 		include : difference
-			LowerOmegaShape df top
+			LowerOmegaShape df top body terminal
 			spiro-outline
 				corner df.middle (yCross + 0.35 * sw)
 				g4.up.mid (df.middle + xMask - df.middle) yMask
@@ -86,52 +108,38 @@ glyph-block Letter-Greek-Lower-Omega : begin
 			g4.down.mid  [mix df.middle lInner k1] ([mix 0 loopTop k2] - d)
 			g4 df.middle yCross [widths.lhs coFine]
 
-	create-glyph 'latn/omegaWithLoop' 0x1DF60 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-		include : LowerOmegaWithLoopShape df XH
-
-	CreateTurnedLetter 'grek/turnomega' null 'grek/omega' HalfAdvance (XH / 2)
-
-	create-glyph 'grek/piSymbol' 0x3D6 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-
-		include : union
-			HBar.t df.leftSB df.rightSB XH
-			difference
-				LowerOmegaShape df XH
-				MaskAbove XH
-
 	create-glyph 'latn/Omega' 0xA7B6 : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.capital
 		include : LowerOmegaShape df CAP
 
-	alias 'latn/omega' 0xA7B7 'grek/omega'
-
-	define [ClosedOmegaShape df top fLongLeg] : glyph-proc
+	define [ClosedOmegaShape df top fLongLeg _body _terminal] : glyph-proc
+		local body : fallback _body 'round'
+		local terminal : fallback _terminal 'round'
 		local stroke : df.adviceThinnerStroke 3
 		local fine : stroke * CThin
 
 		# local x0 : mix df.leftSB df.rightSB 0.1
-		local x1 : df.leftSB + OX
+		local x1 : df.leftSB + OX + [if (body === 'broad') ((df.rightSB - df.leftSB) * 0.035) 0]
 
 		local y0 : top - 0 # O
-		local y1 : mix 0 top 0.45
+		local y1 : mix 0 top : if (body === 'vertical') 0.60 0.45
 		local y3 : mix 0 top 0.50
-		local y4 : [mix 0 top : if fLongLeg 1.00 0.65] - [if fLongLeg O 0] - [if fLongLeg 0.5 0.0] * stroke
+		local yRound : [mix 0 top : if fLongLeg 1.00 0.65] - [if fLongLeg O 0] - [if fLongLeg 0.5 0.0] * stroke
+		local y4 : if (terminal === 'round') yRound : if (fLongLeg && terminal === 'almost') [mix yRound top 0.5] (top * [NotchRatio terminal])
 
 		include : dispiro
 			widths.rhs fine
 			flat (df.middle - [HSwToV : stroke / 2 - fine]) y4 [heading Downward]
 			curl (df.middle - [HSwToV : stroke / 2 - fine]) y3 [heading Downward]
 			Arch.rhs 0 (sw -- stroke) (swBefore -- fine)
-			g4   x1 y1
-			# g4 x0 y0
+			if (body === 'vertical')
+				flatside.lu df.leftSB 0 top (top * 0.3) (top * 0.3)
+				g4 x1 y1
 			Arch.rhs y0 (sw -- stroke)
-			# g4 (df.width - x0) y0
-			g4   (df.width - x1) y1
+			if (body === 'vertical')
+				flatside.rd df.rightSB 0 top (top * 0.3) (top * 0.3)
+				g4 (df.width - x1) y1
 			Arch.rhs 0 (sw -- stroke) (swAfter -- fine)
 			flat (df.middle + [HSwToV : stroke / 2 - fine]) y3 [widths.rhs.heading fine Upward]
 			curl (df.middle + [HSwToV : stroke / 2 - fine]) y4 [heading Upward]
@@ -141,20 +149,49 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		include : df.markSet.capital
 		include : ClosedOmegaShape df CAP false
 
-	create-glyph 'latn/omegaClosed' 0x277 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-		include : ClosedOmegaShape df XH false
-
 	create-glyph 'latn/OmegaClosedLongLeg' 0x1DF74 : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.capital
 		include : ClosedOmegaShape df CAP true
 
-	create-glyph 'latn/omegaClosedLongLeg' 0x1DF75 : glyph-proc
-		local df : include : DivFrame para.advanceScaleM 3
-		include : df.markSet.e
-		include : ClosedOmegaShape df XH true
+	foreach { suffix { body terminal } } [Object.entries OmegaConfig] : do
+		create-glyph "grek/omega.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			include : LowerOmegaShape df XH body terminal
+
+		create-glyph "grek/piSymbol.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			include : union
+				HBar.t df.leftSB df.rightSB XH
+				difference
+					LowerOmegaShape df XH body terminal
+					MaskAbove XH
+
+		create-glyph "latn/omegaWithLoop.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			include : LowerOmegaWithLoopShape df XH body terminal
+
+		create-glyph "latn/omegaClosed.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			include : ClosedOmegaShape df XH false body terminal
+
+		create-glyph "latn/omegaClosedLongLeg.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.e
+			include : ClosedOmegaShape df XH true body terminal
+
+	select-variant 'grek/omega' 0x3C9
+	select-variant 'grek/piSymbol' 0x3D6 (follow -- 'grek/omega')
+	select-variant 'latn/omegaWithLoop' 0x1DF60 (follow -- 'grek/omega')
+	select-variant 'latn/omegaClosed' 0x277 (follow -- 'grek/omega')
+	select-variant 'latn/omegaClosedLongLeg' 0x1DF75 (follow -- 'grek/omega')
+
+	alias 'latn/omega' 0xA7B7 'grek/omega'
+	CreateTurnedLetter 'grek/turnomega' null 'grek/omega' HalfAdvance (XH / 2)
 
 	CreateTurnedLetter 'latn/turnOmegaClosed' 0x1DF76 'latn/OmegaClosed' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'latn/turnomegaClosed' 0x1DF77 'latn/omegaClosed' HalfAdvance (XH  / 2)
