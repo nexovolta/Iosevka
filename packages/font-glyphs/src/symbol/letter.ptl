@@ -50,10 +50,8 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-S : SConfig SStrokeImpl SAutoSlabStart
-	glyph-block-import Letter-Latin-Upper-P : PShapeOutlineKnots
 	glyph-block-import Letter-Latin-Rams-Horn : UmShape
 	glyph-block-import Letter-Latin-Long-S : IsLoopVertical
-	glyph-block-import Letter-Armenian-Upper-Za-Group : ArmenianZaShape
 	glyph-block-import Letter-Latin-Upper-E : EShape
 	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
 	glyph-block-import Shared-Symbol-Shapes : Polyline
@@ -86,9 +84,17 @@ glyph-block Symbol-Currency : begin
 		seriflessCornerHook       { 0 TOP-SERIFLESS      false true  }
 		serifedCornerHook         { 1 TOP-SERIFLESS      false true  }
 
-	foreach { suffix { serifGrade topSerif fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
-		define xBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
-		define [BaseShape] : glyph-proc
+	define xSterlingBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
+	define [SterlingFootKnots xBarLeft fRial] : if fRial
+		list
+			g4 xBarLeft (CAP * 0.52)
+			g4 [mix xBarLeft RightSB 0.45] (CAP * 0.15)
+			curl RightSB (Stroke * 0.5) [heading Rightward]
+		list
+			curl xBarLeft [mix Stroke CAP 0.3]
+			g4 SB Stroke
+	define [SterlingBaseShape serifGrade topSerif fFlatHook fCornerHook fRial] : glyph-proc
+			local xBarLeft xSterlingBarLeft
 			local hookEndX : [Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]] + [if (fCornerHook && para.isItalic) [HSwToV : Stroke * 0.2] 0]
 			local hk : if fCornerHook [MakeCornerHookBase xBarLeft hookEndX CAP 0] [MakeFlatHook xBarLeft hookEndX CAP 0]
 			include : union
@@ -97,8 +103,7 @@ glyph-block Symbol-Currency : begin
 						widths.lhs
 						hk.hookStartR
 						flat xBarLeft [CAP - ArchDepthA * 0.75]
-						curl xBarLeft [mix Stroke CAP 0.3]
-						g4   SB Stroke
+						SterlingFootKnots xBarLeft fRial
 					dispiro
 						widths.lhs
 						match topSerif
@@ -108,24 +113,24 @@ glyph-block Symbol-Currency : begin
 								g4 hookEndX (CAP - Hook * 0.85)
 								HookStart CAP
 						flat xBarLeft [CAP - ArchDepthA * 0.75]
-						curl xBarLeft [mix Stroke CAP 0.3]
-						g4   SB Stroke
+						SterlingFootKnots xBarLeft fRial
 				HBar.b SB RightSB 0
 			if serifGrade : include : VSerif.ur RightSB 0 VJut
 			if fCornerHook : include : VBar.r hk.xRHook CAP (CAP - [CornerHookDepth Hook Stroke]) Stroke
 			if (topSerif === TOP-SERIFED) : include : ArcStartSerif.R hookEndX CAP Stroke Hook
 			if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR hookEndX CAP Stroke Hook
 
+	foreach { suffix { serifGrade topSerif fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
 		create-glyph "currency/sterlingSign.\(suffix)" : glyph-proc
 			set-width Width
-			include : BaseShape
-			include : LetterBarOverlay.l xBarLeft (CAP * 0.5)
+			include : SterlingBaseShape serifGrade topSerif fFlatHook fCornerHook false
+			include : LetterBarOverlay.l xSterlingBarLeft (CAP * 0.5)
 
 		create-glyph "currency/liraSymbolSign.\(suffix)" : glyph-proc
 			set-width Width
-			include : BaseShape
-			include : LetterBarOverlay.l xBarLeft (CAP * 0.37)
-			include : LetterBarOverlay.l xBarLeft (CAP * 0.60 - OverlayStroke * 0.25)
+			include : SterlingBaseShape serifGrade topSerif fFlatHook fCornerHook false
+			include : LetterBarOverlay.l xSterlingBarLeft (CAP * 0.37)
+			include : LetterBarOverlay.l xSterlingBarLeft (CAP * 0.60 - OverlayStroke * 0.25)
 
 	select-variant 'currency/sterlingSign'   0xA3
 	select-variant 'currency/liraSymbolSign' 0x20A4 (follow -- 'currency/sterlingSign')
@@ -301,27 +306,67 @@ glyph-block Symbol-Currency : begin
 		local endY : CAP * 0.37
 		local peakX : mix left right 0.72
 		local peakY : CAP * 0.43
-		local bp : (endY + sw * 0.25) / (yBar - sw)
+		local zigEndX : endX + zigSw * 0.6
+		local zigEndY : endY + zigSw * 0.3
+		local zig1X : mix left right 0.44
+		local zig1Y : CAP * 0.45
+		local zig2X : mix left right 0.56
+		local zig2Y : CAP * 0.34
+		local maskRight : right + span
+		local maskRightY : zigEndY + (maskRight - zigEndX) * (zigEndY - peakY) / (zigEndX - peakX)
+		local yBottom : CAP * 0.25
+		local yTurn : mix yBar yBottom 0.5
 		local et : new-glyph : glyph-proc
 			include : with-transform [FlipAround Middle 0 (-1) 1]
 				TironianEtStemShape (2 * Middle - right) (2 * Middle - xStem) yBar sw
-		local upperUntrimmed : new-glyph : dispiro
-			widths.rhs sw
-			PShapeOutlineKnots yBar df (xStem / df.leftSB) bp 0 sw 0 endX (zigSw * 0.7)
-		local upper : new-glyph : difference upperUntrimmed
-			MaskBelowLine peakX (peakY + zigSw * 0.35) endX (endY + zigSw * 0.35) 2
+		local upperUntrimmed : new-glyph : glyph-proc
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			local xInner : Math.max (xStem + sw * 0.3) (right - sw)
+			local yInner : yBar - sw
+			cs.moveTo xStem yBar
+			cs.cubicTo [mix xStem right 0.6] yBar right yBar right yTurn
+			cs.cubicTo right yBottom [mix xStem right 0.6] yBottom xStem yBottom
+			cs.lineTo xStem (yBottom + sw)
+			cs.cubicTo [mix xStem xInner 0.6] (yBottom + sw) xInner (yBottom + sw) xInner yTurn
+			cs.cubicTo xInner yInner [mix xStem xInner 0.6] yInner xStem yInner
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+		local zigMask : new-glyph : glyph-proc
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo left (0 - CAP)
+			cs.lineTo left (CAP * 0.29)
+			cs.lineTo zig1X zig1Y
+			cs.lineTo zig2X zig2Y
+			cs.lineTo peakX peakY
+			cs.lineTo zigEndX zigEndY
+			cs.lineTo maskRight maskRightY
+			cs.lineTo maskRight (0 - CAP)
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+		local upper : new-glyph : difference upperUntrimmed zigMask
+		local zigLimit : new-glyph : glyph-proc
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo (left - span) (0 - CAP)
+			cs.lineTo (left - span) (CAP * 2)
+			cs.lineTo xStem (CAP * 2)
+			cs.lineTo xStem yBar
+			cs.cubicTo [mix xStem right 0.6] yBar right yBar right yTurn
+			cs.cubicTo right yBottom [mix xStem right 0.6] yBottom xStem yBottom
+			cs.lineTo xStem (0 - CAP)
+			cs.endShape
+			currentGlyph.includeContours cs.contours
 		local hook : new-glyph : with-transform [FlipAround Middle 0 (-1) 1]
-			IsLoopVertical (2 * Middle - xStem - [HSwToV sw]) (2 * Middle - xStem + 2 * loopR) (yBar + 2 * loopR) (yBar - sw) (yBar - sw * 2) sw
-		local zigzag : new-glyph : dispiro
+			IsLoopVertical (2 * Middle - xStem - [HSwToV sw]) (2 * Middle - xStem + 2 * loopR - sw * 0.25) (yBar + 2 * loopR) (yBar - sw) (yBar - sw * 2) sw
+		local rawZigzag : new-glyph : dispiro
 			Polyline [widths.center zigSw]
-				endAf -- [widths.center (zigSw * 0.7)]
 				points -- {
 					{left (CAP * 0.29)}
-					{[mix left right 0.44] (CAP * 0.45)}
-					{[mix left right 0.56] (CAP * 0.34)}
+					{zig1X zig1Y}
+					{zig2X zig2Y}
 					{peakX peakY}
-					{(endX + zigSw * 0.6) (endY + zigSw * 0.3)}
+					{maskRight maskRightY}
 				}
+		local zigzag : new-glyph : intersection rawZigzag zigLimit
 		include : union et hook upper zigzag
 
 	define [RufiyaaCrossbar x y dx dy sw] : union
@@ -359,11 +404,9 @@ glyph-block Symbol-Currency : begin
 		include : union spine [Circle.Outline.At x0 y0 (sw / 2)] [Circle.Outline.At x1 y1 (sw / 2)] [RufiyaaCrossbar [mix x0 x1 0.48] [mix y0 y1 0.48] crossDx (CAP * 0.07) crossSw] [RufiyaaCrossbar [mix x0 x1 0.66] [mix y0 y1 0.66] crossDx (CAP * 0.07) crossSw]
 
 	create-glyph 'currency/omaniRialSign' 0x20C4 : glyph-proc
-		local df : include : DivFrame 1
-		include : df.markSet.capital
-		local body : new-glyph : with-transform [FlipAround df.middle 0 (-1) 1]
-			ArmenianZaShape df
-		include : union body [HBar.m df.leftSB df.rightSB (CAP * 0.35) df.mvs]
+		include : MarkSet.capital
+		local body : new-glyph : SterlingBaseShape 0 TOP-SERIFLESS false false true
+		include : union body [HBar.m SB RightSB (CAP * 0.48) Stroke]
 
 	define TurkLiraConfig : object
 		serifless { 0 }

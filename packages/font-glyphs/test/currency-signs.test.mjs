@@ -9,7 +9,10 @@ import { buildGlyphs } from "@iosevka/font-glyphs";
 import { calculateMetrics } from "@iosevka/font-glyphs/aesthetics";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
+import { applyMetricOverride } from "@iosevka/param/metric-override";
 import * as Variant from "@iosevka/param/variant";
+
+import { nexsevkaMetricOverride, nexsevkaWeights } from "./nexsevka-currency-metrics.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const readParams = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
@@ -31,19 +34,24 @@ const contourArea = contours => Math.abs(contours.reduce((sum, contour) => {
 	return sum;
 }, 0));
 
-function build(spacing, weight, slope, capitalS = "serifless") {
+function build(spacing, weight, slope, capitalS = "serifless", metricOverride = null) {
 	const argv = {
 		shape: {
-			serifs: "sans", spacing, weight, width: 500, slope,
-			slopeAngle: slope === "italic" ? 9.4 : 0,
+			serifs: "sans", spacing, weight, width: metricOverride ? 586 : 500, slope,
+			slopeAngle: slope === "italic" ? (metricOverride ? 10 : 9.4) : 0,
 		},
 		featureControl: { noCvSs: false },
 		variants: { design: {
 			"capital-s": capitalS, "capital-latin-gamma": "serifless", "latin-gamma": "serifless",
 		} },
 	};
+	if (metricOverride) {
+		argv.variants.design["cyrl-capital-che"] = "flat-hump-motion-serifed";
+		argv.variants.design.h = "flat-hump-straight-serifless";
+	}
 	const para = init(data, argv);
 	Variant.apply(variantData, para, argv);
+	if (metricOverride) applyMetricOverride(para, metricOverride, argv);
 	return { para, ...buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true }) };
 }
 
@@ -98,7 +106,9 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					const points = shape.flat();
 					assert.ok(points.every(p => p.y > -calculateMetrics(para).CAP && p.y < 2 * calculateMetrics(para).CAP),
 						`U+${code.toString(16)} has out-of-bounds geometry`);
-					if (slope === "upright") assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth));
+					if (slope === "upright") {
+						assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth), `U+${code.toString(16)} exceeds its advance`);
+					}
 				}
 				assert.ok(Math.min(...penny.flat().map(p => p.y)) < calculateMetrics(para).Descender);
 				if (slope === "upright") {
@@ -141,3 +151,40 @@ test("spesmilo follows each capital S top style without changing the other curre
 		shapes.push(actual);
 	}
 });
+
+for (const [label, weight, , slope] of [
+	...nexsevkaWeights.map(row => [...row, "upright"]),
+	["BoldItalic", 920, 700, "italic"],
+]) {
+	test(`Nexsevka ${label} currency outlines retain their counters and proportions`, () => {
+		const { para, glyphStore } = build("term", weight, slope, "bilateral-inward-serifed", nexsevkaMetricOverride);
+		const metrics = calculateMetrics(para);
+		assert.equal(metrics.CAP, 693);
+		assert.equal(metrics.Ascender, 732);
+		assert.equal(metrics.Descender, -186);
+		assert.deepEqual(
+			glyphStore.queryByUnicode(0x04ba).geometry.toContours(),
+			glyphStore.queryByNameEnsured("cyrl/Shha.flatHumpMotionSerifed").geometry.toContours(),
+			"Shha must use the flat-humped motion-serifed Che variant",
+		);
+		const nordic = glyphStore.queryByUnicode(0x20bb);
+		const contours = nordic.geometry.toContours();
+		assert.equal(contours.length, 3, "Nordic bowl and teardrop must both be closed");
+		const sorted = [...contours].sort((a, b) => contourArea([b]) - contourArea([a]));
+		for (const counter of sorted.slice(1)) {
+			const x = counter.map(p => p.x);
+			const y = counter.map(p => p.y);
+			assert.ok(Math.max(...x) - Math.min(...x) > nordic.advanceWidth * 0.07, "Nordic counter is too narrow");
+			assert.ok(Math.max(...y) - Math.min(...y) > metrics.CAP * 0.1, "Nordic counter is too short");
+		}
+		assert.equal(glyphStore.queryByUnicode(0x20c4).geometry.toContours().length, 1,
+			"Omani rial must not enclose a sliver between its bars");
+		for (const code of [0x20b0, 0x20b7, 0x20bb, 0x20c2, 0x20c4]) {
+			const glyph = glyphStore.queryByUnicode(code);
+			const points = glyph.geometry.toContours().flat();
+			assert.ok(points.length && points.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+			assert.ok(points.every(p => p.y > -metrics.CAP && p.y < metrics.CAP * 2));
+			if (slope === "upright") assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth));
+		}
+	});
+}
