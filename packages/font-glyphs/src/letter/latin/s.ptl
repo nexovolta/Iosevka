@@ -46,7 +46,8 @@ glyph-block Letter-Latin-S : begin
 			alsoThru.g4 0.5 0.5 [widths.center ess]
 			~~~ [alsoThru 0.5 (0.3 - adjustFactor)]
 
-	define [SStrokeImpl df top bot st sb stroke refSwEss] : begin
+	glyph-block-export SStrokeImpl
+	define [SStrokeImpl df top bot st sb stroke refSwEss _endStroke] : begin
 		local ess : refSwEss * (stroke / Stroke)
 		local archDepth : AdviceSArchDepth (top - bot) (-1) stroke
 		return : dispiro
@@ -68,9 +69,13 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
-				__ : list
-					HookEnd bot (sw -- stroke)
-					g4 ((df.leftSB - 0) + SOBot) (bot + Hook)
+				__ : if _endStroke
+					list
+						HookEnd bot (sw -- stroke) (swTerminal -- _endStroke)
+						g4 ((df.leftSB - 0) + SOBot - OXHook) (bot + Hook * 0.15) [widths.rhs _endStroke]
+					list
+						HookEnd bot (sw -- stroke)
+						g4 ((df.leftSB - 0) + SOBot) (bot + Hook)
 
 	define [RevSStrokeImpl df top bot st sb stroke refSwEss] : begin
 		local ess : refSwEss * (stroke / Stroke)

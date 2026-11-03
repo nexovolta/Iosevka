@@ -5,10 +5,43 @@ $$include '../meta/macros.ptl'
 import [Point] from "@iosevka/geometry/point"
 import [Box] from "@iosevka/geometry/box"
 import [Transform] from "@iosevka/geometry/transform"
+import [BezToContoursSink] from "@iosevka/geometry/curve-util"
 import [mix linreg clamp fallback] from "@iosevka/util"
 import [DesignParameters] from "../meta/aesthetics.mjs"
 
 glyph-module
+
+glyph-block Symbol-Tironian-Et-Shared : begin
+	glyph-block-import CommonShapes
+
+	glyph-block-export TironianEtTopBarShape TironianEtStemShape TironianEtCapitalShape
+	define [TironianEtTopBarShape y _left _right _stroke] : begin
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local stroke : fallback _stroke Stroke
+		return : intersection
+			Rect (y - O) 0 left right
+			dispiro
+				widths.rhs stroke
+				g4 (left + O) (y - O)
+				g4 [mix left right 0.5] (y + O)
+				g4 right (y - O)
+
+	define [TironianEtStemShape _left _right _top _stroke] : glyph-proc
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local top : fallback _top CAP
+		local stroke : fallback _stroke Stroke
+		include : dispiro
+			widths.rhs stroke
+			flat right (top - stroke / 2) [heading Downward]
+			curl right (0 + ArchDepthB)
+			HookEnd 0 (sw -- stroke)
+			g4 left Hook
+
+	define [TironianEtCapitalShape] : glyph-proc
+		include : TironianEtTopBarShape CAP
+		include : TironianEtStemShape
 
 glyph-block Symbol-Currency : begin
 	glyph-block-import CommonShapes
@@ -16,8 +49,14 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
+	glyph-block-import Letter-Latin-S : SConfig SStrokeImpl SAutoSlabStart
+	glyph-block-import Letter-Latin-Upper-P : PShapeOutlineKnots
+	glyph-block-import Letter-Latin-Rams-Horn : UmShape
+	glyph-block-import Letter-Latin-Long-S : IsLoopVertical
 	glyph-block-import Letter-Latin-Upper-E : EShape
 	glyph-block-import Letter-Shared-Metrics : EFMidBarPosY
+	glyph-block-import Shared-Symbol-Shapes : Polyline
+	glyph-block-import Symbol-Tironian-Et-Shared : TironianEtTopBarShape TironianEtStemShape
 
 	create-glyph 'currency' 0xA4 : glyph-proc
 		local sw : AdviceStroke 3.5
@@ -186,6 +225,103 @@ glyph-block Symbol-Currency : begin
 		include : HBar.t xLeft (0.3 * Width + Middle) XH Stroke
 		include : with-transform [ApparentTranslate (0.3 * Width) 0] : refer-glyph 't/pack75'
 
+	foreach { suffix { styTop _ } } [Object.entries SConfig] : do
+		create-glyph "currency/spesmiloSign.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.capital
+			local x0 : df.leftSB + OX
+			local x2 : mix df.leftSB df.rightSB 0.68
+			local x1 : mix x0 x2 0.5
+			local step : x1 - x0
+			local mSw : step * 0.48 * Stroke / (Stroke + step * 0.5)
+			local mTop : CAP * 0.36
+			local mBot : 0 - CAP * 0.04
+			local shoulderY : mTop - step * 0.45
+			local sw : df.adviceStroke2 3 4 CAP
+			local spine : new-glyph : glyph-proc
+				include : SStrokeImpl df CAP 0 styTop 0 sw EssUpper mSw
+				include : SAutoSlabStart df styTop CAP sw Hook
+			local mShape : new-glyph : glyph-proc
+				foreach x {x0 x1 x2} : include : VBar.m x mBot shoulderY mSw
+				foreach {l r} {{x0 x1} {x1 x2}} : include : dispiro
+					widths.center mSw
+					g4 l shoulderY [heading Upward]
+					g4 [mix l r 0.5] mTop [heading Rightward]
+					g4 r shoulderY [heading Downward]
+			local mMask : new-glyph : difference [Rect shoulderY (mBot - sw) x0 x2] mShape
+			include : union [difference spine mMask] mShape [HBar.m x0 x2 0 [Math.min sw (CAP * 0.055)]]
+
+	select-variant 'currency/spesmiloSign' 0x20B7 (follow -- 'S')
+
+	create-glyph 'currency/germanPennySign' 0x20B0 : glyph-proc
+		local df : include : DivFrame 1
+		include : df.markSet.p
+		local top Ascender
+		local bottom : Descender - CAP * 0.06
+		local crossY : mix bottom top 0.42
+		local span : df.rightSB - df.leftSB
+		local sw : span * 0.24 * Stroke / (Stroke + span * 0.25)
+		local joinY : crossY + [Math.min 0.28 : Math.max 0.15 (1.05 * sw / (top - crossY))] * (top - crossY)
+		local mask : new-glyph : glyph-proc
+			local cs : new BezToContoursSink currentGlyph.gizmo
+			cs.moveTo (df.leftSB - span) (bottom - CAP)
+			cs.lineTo (df.middle + sw * 0.1) (bottom - CAP)
+			cs.lineTo (df.middle + sw * 0.1) (joinY - sw * 1.5)
+			cs.cubicTo (df.middle + sw * 0.1) (joinY - sw * 0.4) (df.middle + sw * 0.1) (joinY + sw * 0.4) (df.middle - sw * 0.4) (joinY + sw)
+			cs.cubicTo (df.middle - sw * 0.9) (joinY + sw * 1.6) (df.middle - sw * 2) (joinY + sw * 2.8) (df.middle - sw * 3) (joinY + sw * 4.1)
+			cs.lineTo (df.leftSB - span) (joinY + sw * 4.1)
+			cs.endShape
+			currentGlyph.includeContours cs.contours
+		local outline : new-glyph : difference [UmShape df top bottom df.adws sw] mask
+		local zigzag : new-glyph : dispiro
+			Polyline [widths.center sw]
+				endAf -- [widths.center (sw * 0.85)]
+				points -- {
+					{df.leftSB [mix bottom joinY 0.64]}
+					{[mix df.leftSB df.middle 0.28] [mix bottom joinY 0.80]}
+					{[mix df.leftSB df.middle 0.52] [mix bottom joinY 0.70]}
+					{(df.middle + sw * 0.35) (joinY + sw * 0.8)}
+				}
+		include : union outline zigzag
+
+	create-glyph 'currency/nordicMarkSign' 0x20BB : glyph-proc
+		local df : include : DivFrame 1
+		include : df.markSet.capital
+		local sw : Math.min [AdviceStroke2 2 3 CAP df.adws] ((df.rightSB - df.leftSB) * 0.23)
+		local left df.leftSB
+		local right : df.rightSB - sw * 0.4
+		local span : right - left
+		local xStem : mix left right 0.33
+		local yBar : CAP * 0.72
+		local loopR : span * 0.22
+		local zigSw : loopR * 0.8 * sw / (sw + loopR)
+		local endX : mix left right 0.83
+		local endY : CAP * 0.37
+		local peakX : mix left right 0.72
+		local peakY : CAP * 0.43
+		local bp : (endY + sw * 0.25) / (yBar - sw)
+		local et : new-glyph : glyph-proc
+			include : with-transform [FlipAround Middle 0 (-1) 1]
+				TironianEtStemShape (2 * Middle - right) (2 * Middle - xStem) yBar sw
+		local upperUntrimmed : new-glyph : dispiro
+			widths.rhs sw
+			PShapeOutlineKnots yBar df (xStem / df.leftSB) bp 0 sw 0 endX (zigSw * 0.7)
+		local upper : new-glyph : difference upperUntrimmed
+			MaskBelowLine peakX (peakY + zigSw * 0.35) endX (endY + zigSw * 0.35) 2
+		local hook : new-glyph : with-transform [FlipAround Middle 0 (-1) 1]
+			IsLoopVertical (2 * Middle - xStem - [HSwToV sw]) (2 * Middle - xStem + 2 * loopR) (yBar + 2 * loopR) (yBar - sw) (yBar - sw * 2) sw
+		local zigzag : new-glyph : dispiro
+			Polyline [widths.center zigSw]
+				endAf -- [widths.center (zigSw * 0.7)]
+				points -- {
+					{left (CAP * 0.29)}
+					{[mix left right 0.44] (CAP * 0.45)}
+					{[mix left right 0.56] (CAP * 0.34)}
+					{peakX peakY}
+					{(endX + zigSw * 0.6) (endY + zigSw * 0.3)}
+				}
+		include : union et hook upper zigzag
+
 	define TurkLiraConfig : object
 		serifless { 0 }
 		serifed   { 1 }
@@ -316,6 +452,7 @@ glyph-block Symbol-Currency-Letter-Derived : begin
 
 glyph-block Symbol-Letter : begin
 	glyph-block-import CommonShapes
+	glyph-block-import Symbol-Tironian-Et-Shared : TironianEtTopBarShape TironianEtCapitalShape
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-X : XStrand
 	glyph-block-import Letter-Latin-Upper-P : PShape
@@ -608,14 +745,6 @@ glyph-block Symbol-Letter : begin
 	turned 'turnAmpersand' 0x214B 'ampersand' Middle (CAP / 2)
 
 	do "Tironian Et"
-		define [TironianEtTopBarShape y] : intersection
-			Rect (y - O) 0 SB RightSB
-			dispiro
-				widths.rhs
-				g4 (SB + O) (y - O)
-				g4 Middle   (y + O)
-				g4 RightSB  (y - O)
-
 		create-glyph 'tironianEt' 0x204A : glyph-proc
 			include : TironianEtTopBarShape XH
 			include : intersection
@@ -625,14 +754,7 @@ glyph-block Symbol-Letter : begin
 					flat RightSB ((XH - O) - Stroke)
 					curl (Middle + [HSwToV : 0.125 * Stroke]) O
 
-		create-glyph 'TironianEt' 0x2E52 : glyph-proc
-			include : TironianEtTopBarShape CAP
-			include : dispiro
-				widths.rhs
-				flat RightSB (CAP - HalfStroke) [heading Downward]
-				curl RightSB (0   + ArchDepthB)
-				HookEnd 0
-				g4 SB Hook
+		create-glyph 'TironianEt' 0x2E52 : TironianEtCapitalShape
 
 	do "Roman Numerals"
 		create-glyph 'romanFiftyEarlyForm' 0x2186 : glyph-proc

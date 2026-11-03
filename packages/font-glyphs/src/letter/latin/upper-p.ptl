@@ -49,7 +49,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			flat [Arch.adjust-x.bot [Math.max (endX + TINY + [Math.abs : 0.5 * sw * TanSlope]) df.middle] (sw -- (0.5 * sw))] bowlBottom
 			curl endX bowlBottom [heading Leftward]
 
-	define [PShapeOutlineKnots top df mul bp overshoot sw offset] : begin
+	glyph-block-export PShapeOutlineKnots
+	define [PShapeOutlineKnots top df mul bp overshoot sw offset _endX _endStroke] : begin
 		local bowlTop : top - offset
 		local bowlBottom : [PBarPosY top sw bp] + offset
 		local turnRadius : BowlXDepth bowlTop bowlBottom df.leftSB df.rightSB sw
@@ -63,9 +64,12 @@ glyph-block Letter-Latin-Upper-P : begin
 			curl [Arch.adjust-x.top (right - turnRadius) (sw -- sw)] bowlTop
 			archv
 			g4 (right - overshoot) turn
-			arcvh
-			flat [Arch.adjust-x.bot (right - turnRadius) (sw -- sw)] bowlBottom
-			curl (left - O) bowlBottom [heading Leftward]
+			if _endX
+				curl _endX bowlBottom [heading Downward] [widths.rhs _endStroke]
+				list
+					arcvh
+					flat [Arch.adjust-x.bot (right - turnRadius) (sw -- sw)] bowlBottom
+					curl (left - O) bowlBottom [heading Leftward]
 
 	define [RevPshapeOutlineKnots top df mul bp overshoot sw offset] : begin
 		local bowlTop : top - offset
