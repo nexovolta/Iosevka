@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -36,4 +36,27 @@ glyph-block Letter-Armenian-Upper-Ini : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					local sf2 : SerifFrame.fromDf df highBarPos barPosB
 					include : composite-proc sf.lt.full sf.lb.full sf2.rb.full
+		local IniPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topLeftMotion 1
+				topLeftFull 2
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 p1 p2 } } [Object.entries IniPositionedSerifs] : do
+			if (p0 || p1 || p2) : create-glyph "armn/Ini.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Ini.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local barPosB : barPos - df.mvs / 2
+				local sf : SerifFrame.fromDf df CAP 0
+				local sf2 : SerifFrame.fromDf df highBarPos barPosB
+				if p0 : include : if (p0 === 1) sf.lt.outer sf.lt.full
+				if p1 : include : if (p1 === 1) sf.lb.outer sf.lb.full
+				if p2 : include : if (p2 === 1) sf2.rb.outer sf2.rb.full
 		select-variant 'armn/Ini' 0x53B

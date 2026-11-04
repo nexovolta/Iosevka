@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -28,4 +28,30 @@ glyph-block Letter-Armenian-Upper-Xeh : begin
 					if sf2.enoughSpaceForFullSerifs
 						include : composite-proc sf2.mt.full sf2.rt.full
 						include sf2.rt.outer
+		local XehPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topLeftMotion 1
+				topLeftFull 2
+			object
+				"" 0
+				topCenterFull 2
+			object
+				"" 0
+				topRightMotion 1
+				topRightFull 2
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+		foreach { suffix { p0 p1 p2 p3 } } [Object.entries XehPositionedSerifs] : do
+			if (p0 || p1 || p2 || p3) : create-glyph "armn/Xeh.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Xeh.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame para.advanceScaleMM 3
+				local sf : SerifFrame.fromDf df CAP 0
+				local sf2 : SerifFrame.fromDf df XH 0
+				if p0 : include : if (p0 === 1) sf.lt.outer sf.lt.full
+				if p1 : include sf2.mt.full
+				if p2 : include : if (p2 === 1) sf2.rt.outer sf2.rt.full
+				if p3 : include : if (p3 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/Xeh' 0x53D

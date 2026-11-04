@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -39,6 +39,17 @@ glyph-block Letter-Armenian-Keh : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lb.full
+		local KehPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+		foreach { suffix { p0 } } [Object.entries KehPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Keh.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Keh.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/Keh' 0x554
 
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
@@ -62,4 +73,19 @@ glyph-block Letter-Armenian-Keh : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include sf.lt.outer
 					if [not para.isItalic] : include sf.lb.fullSide
+		local kehPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topLeftMotion 1
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+		foreach { suffix { p0 p1 } } [Object.entries kehPositionedSerifs] : do
+			if (p0 || p1) : create-glyph "armn/keh.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/keh.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df XH Descender
+				if p0 : include sf.lt.outer
+				if p1 : include : if (p1 === 1) sf.lb.outer sf.lb.fullSide
 		select-variant 'armn/keh' 0x584

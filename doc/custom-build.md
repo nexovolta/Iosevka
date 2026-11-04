@@ -244,8 +244,13 @@ and base serif, for example `corner-hooked-serifless` or
 
 Armenian letters with optional serifs have independent `armn-capital-*` and
 `armn-*` selectors, such as `armn-capital-ben` and `armn-ben`.
-Each accepts `serifless` or `serifed`; letters without optional serifs do not
-have these selectors.
+Each accepts `serifless`, `serifed`, or a combination of position-specific
+serifs. For example, `armn-vo = "top-left-motion-bottom-left-bottom-right-motion-serifed"`
+uses a top-left motion serif, a full bottom-left serif, and a bottom-right motion
+serif. Available positions vary by letter; spurs have only motion serifs and
+free centered stems have only full serifs. Letters without optional serifs do
+not have these selectors. Turned ayb follows ayb in each case; the font also
+maps an unofficial capital turned ayb to the unassigned code point U+0530.
 
 `diacritic-comma` and `punctuation-comma` independently choose `round`,
 `square`, `diamond`, `prime`, or `tick`. The tick uses an inverted-ogonek

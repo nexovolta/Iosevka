@@ -1,3 +1,6 @@
+# Preserve the retired Armenian turned ayb feature's tag.
+reserved-letter-append-orders = [30]
+
 [prime.one]
 sampler = "1"
 tagKind = "digit"
@@ -18971,15 +18974,61 @@ samplerExplain = "Armenian Ayb"
 tagKind = "letter-append"
 tagOrder = 2
 
-[prime.armn-capital-ayb.variants.serifless]
-rank = 1
-description = "Armenian Ayb without serifs"
-selector."armn/Ayb" = "serifless"
+[prime.armn-capital-ayb.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ayb"
 
-[prime.armn-capital-ayb.variants.serifed]
+[prime.armn-capital-ayb.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ayb" = "serifless"
+
+[prime.armn-capital-ayb.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ayb with serifs"
-selector."armn/Ayb" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ayb" = "serifed"
+
+[prime.armn-capital-ayb.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a top-left motion serif"
+selectorAffix."armn/Ayb" = "topLeftMotion"
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Ayb" = "topLeftFull"
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a top-right motion serif"
+selectorAffix."armn/Ayb" = "topRightMotion"
+
+[prime.armn-capital-ayb.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Ayb" = "topRightFull"
 
 [prime.armn-capital-ben]
 sampler = "Բ"
@@ -18987,15 +19036,37 @@ samplerExplain = "Armenian Ben"
 tagKind = "letter-append"
 tagOrder = 3
 
-[prime.armn-capital-ben.variants.serifless]
-rank = 1
-description = "Armenian Ben without serifs"
-selector."armn/Ben" = "serifless"
+[prime.armn-capital-ben.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ben"
 
-[prime.armn-capital-ben.variants.serifed]
+[prime.armn-capital-ben.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ben" = "serifless"
+
+[prime.armn-capital-ben.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ben with serifs"
-selector."armn/Ben" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ben" = "serifed"
+
+[prime.armn-capital-ben.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-ben.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Ben" = "bottomLeftMotion"
+
+[prime.armn-capital-ben.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Ben" = "bottomLeftFull"
 
 [prime.armn-capital-gim]
 sampler = "Գ"
@@ -19003,15 +19074,37 @@ samplerExplain = "Armenian Gim"
 tagKind = "letter-append"
 tagOrder = 4
 
-[prime.armn-capital-gim.variants.serifless]
-rank = 1
-description = "Armenian Gim without serifs"
-selector."armn/Gim" = "serifless"
+[prime.armn-capital-gim.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Gim"
 
-[prime.armn-capital-gim.variants.serifed]
+[prime.armn-capital-gim.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Gim" = "serifless"
+
+[prime.armn-capital-gim.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Gim with serifs"
-selector."armn/Gim" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Gim" = "serifed"
+
+[prime.armn-capital-gim.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-capital-gim.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Gim" = "bottomRightMotion"
+
+[prime.armn-capital-gim.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Gim" = "bottomRightFull"
 
 [prime.armn-capital-da]
 sampler = "Դ"
@@ -19019,15 +19112,37 @@ samplerExplain = "Armenian Da"
 tagKind = "letter-append"
 tagOrder = 5
 
-[prime.armn-capital-da.variants.serifless]
-rank = 1
-description = "Armenian Da without serifs"
-selector."armn/Da" = "serifless"
+[prime.armn-capital-da.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Da"
 
-[prime.armn-capital-da.variants.serifed]
+[prime.armn-capital-da.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Da" = "serifless"
+
+[prime.armn-capital-da.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Da with serifs"
-selector."armn/Da" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Da" = "serifed"
+
+[prime.armn-capital-da.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-capital-da.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Da" = "bottomRightMotion"
+
+[prime.armn-capital-da.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Da" = "bottomRightFull"
 
 [prime.armn-capital-ech]
 sampler = "Ե"
@@ -19035,15 +19150,37 @@ samplerExplain = "Armenian Ech"
 tagKind = "letter-append"
 tagOrder = 6
 
-[prime.armn-capital-ech.variants.serifless]
-rank = 1
-description = "Armenian Ech without serifs"
-selector."armn/Ech" = "serifless"
+[prime.armn-capital-ech.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ech"
 
-[prime.armn-capital-ech.variants.serifed]
+[prime.armn-capital-ech.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ech" = "serifless"
+
+[prime.armn-capital-ech.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ech with serifs"
-selector."armn/Ech" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ech" = "serifed"
+
+[prime.armn-capital-ech.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-ech.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion-serifed"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Ech" = "topLeftMotion"
+
+[prime.armn-capital-ech.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left-serifed"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Ech" = "topLeftFull"
 
 [prime.armn-capital-eh]
 sampler = "Է"
@@ -19051,15 +19188,55 @@ samplerExplain = "Armenian Eh"
 tagKind = "letter-append"
 tagOrder = 7
 
-[prime.armn-capital-eh.variants.serifless]
-rank = 1
-description = "Armenian Eh without serifs"
-selector."armn/Eh" = "serifless"
+[prime.armn-capital-eh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Eh"
 
-[prime.armn-capital-eh.variants.serifed]
+[prime.armn-capital-eh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Eh" = "serifless"
+
+[prime.armn-capital-eh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Eh with serifs"
-selector."armn/Eh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Eh" = "serifed"
+
+[prime.armn-capital-eh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-eh.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-capital-eh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-eh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Eh" = "topLeftMotion"
+
+[prime.armn-capital-eh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Eh" = "topLeftFull"
+
+[prime.armn-capital-eh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-eh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Eh" = "bottomLeftMotion"
 
 [prime.armn-capital-et]
 sampler = "Ը"
@@ -19067,15 +19244,31 @@ samplerExplain = "Armenian Et"
 tagKind = "letter-append"
 tagOrder = 8
 
-[prime.armn-capital-et.variants.serifless]
-rank = 1
-description = "Armenian Et without serifs"
-selector."armn/Et" = "serifless"
+[prime.armn-capital-et.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Et"
 
-[prime.armn-capital-et.variants.serifed]
+[prime.armn-capital-et.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Et" = "serifless"
+
+[prime.armn-capital-et.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Et with serifs"
-selector."armn/Et" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Et" = "serifed"
+
+[prime.armn-capital-et.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-et.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Et" = "bottomLeftMotion"
 
 [prime.armn-capital-to]
 sampler = "Թ"
@@ -19083,15 +19276,37 @@ samplerExplain = "Armenian To"
 tagKind = "letter-append"
 tagOrder = 9
 
-[prime.armn-capital-to.variants.serifless]
-rank = 1
-description = "Armenian To without serifs"
-selector."armn/To" = "serifless"
+[prime.armn-capital-to.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian To"
 
-[prime.armn-capital-to.variants.serifed]
+[prime.armn-capital-to.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/To" = "serifless"
+
+[prime.armn-capital-to.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian To with serifs"
-selector."armn/To" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/To" = "serifed"
+
+[prime.armn-capital-to.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-to.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/To" = "bottomLeftMotion"
+
+[prime.armn-capital-to.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/To" = "bottomLeftFull"
 
 [prime.armn-capital-zhe]
 sampler = "Ժ"
@@ -19099,15 +19314,37 @@ samplerExplain = "Armenian Zhe"
 tagKind = "letter-append"
 tagOrder = 10
 
-[prime.armn-capital-zhe.variants.serifless]
-rank = 1
-description = "Armenian Zhe without serifs"
-selector."armn/Zhe" = "serifless"
+[prime.armn-capital-zhe.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Zhe"
 
-[prime.armn-capital-zhe.variants.serifed]
+[prime.armn-capital-zhe.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Zhe" = "serifless"
+
+[prime.armn-capital-zhe.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Zhe with serifs"
-selector."armn/Zhe" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Zhe" = "serifed"
+
+[prime.armn-capital-zhe.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-capital-zhe.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Zhe" = "topRightMotion"
+
+[prime.armn-capital-zhe.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Zhe" = "topRightFull"
 
 [prime.armn-capital-ini]
 sampler = "Ի"
@@ -19115,15 +19352,80 @@ samplerExplain = "Armenian Ini"
 tagKind = "letter-append"
 tagOrder = 11
 
-[prime.armn-capital-ini.variants.serifless]
-rank = 1
-description = "Armenian Ini without serifs"
-selector."armn/Ini" = "serifless"
+[prime.armn-capital-ini.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ini"
 
-[prime.armn-capital-ini.variants.serifed]
+[prime.armn-capital-ini.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ini" = "serifless"
+
+[prime.armn-capital-ini.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ini with serifs"
-selector."armn/Ini" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ini" = "serifed"
+
+[prime.armn-capital-ini.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-ini.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-capital-ini.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-ini.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Ini" = "topLeftMotion"
+
+[prime.armn-capital-ini.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Ini" = "topLeftFull"
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Ini" = "bottomLeftMotion"
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Ini" = "bottomLeftFull"
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Ini" = "bottomRightMotion"
+
+[prime.armn-capital-ini.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Ini" = "bottomRightFull"
 
 [prime.armn-capital-liun]
 sampler = "Լ"
@@ -19131,15 +19433,55 @@ samplerExplain = "Armenian Liun"
 tagKind = "letter-append"
 tagOrder = 12
 
-[prime.armn-capital-liun.variants.serifless]
-rank = 1
-description = "Armenian Liun without serifs"
-selector."armn/Liun" = "serifless"
+[prime.armn-capital-liun.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Liun"
 
-[prime.armn-capital-liun.variants.serifed]
+[prime.armn-capital-liun.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Liun" = "serifless"
+
+[prime.armn-capital-liun.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Liun with serifs"
-selector."armn/Liun" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Liun" = "serifed"
+
+[prime.armn-capital-liun.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-liun.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-capital-liun.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-liun.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Liun" = "topLeftMotion"
+
+[prime.armn-capital-liun.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Liun" = "topLeftFull"
+
+[prime.armn-capital-liun.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-liun.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Liun" = "bottomLeftMotion"
 
 [prime.armn-capital-xeh]
 sampler = "Խ"
@@ -19147,15 +19489,93 @@ samplerExplain = "Armenian Xeh"
 tagKind = "letter-append"
 tagOrder = 13
 
-[prime.armn-capital-xeh.variants.serifless]
-rank = 1
-description = "Armenian Xeh without serifs"
-selector."armn/Xeh" = "serifless"
+[prime.armn-capital-xeh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Xeh"
 
-[prime.armn-capital-xeh.variants.serifed]
+[prime.armn-capital-xeh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Xeh" = "serifless"
+
+[prime.armn-capital-xeh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Xeh with serifs"
-selector."armn/Xeh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Xeh" = "serifed"
+
+[prime.armn-capital-xeh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-left."*"]
+next = "top-center"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Xeh" = "topLeftMotion"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Xeh" = "topLeftFull"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-center."*"]
+next = "top-right"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/Xeh" = "topCenterFull"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-right."*"]
+next = "bottom-left"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Xeh" = "topRightMotion"
+
+[prime.armn-capital-xeh.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Xeh" = "topRightFull"
+
+[prime.armn-capital-xeh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-center" = "none", "top-right" = "none" }]
+
+[prime.armn-capital-xeh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Xeh" = "bottomLeftMotion"
+
+[prime.armn-capital-xeh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Xeh" = "bottomLeftFull"
 
 [prime.armn-capital-ken]
 sampler = "Կ"
@@ -19163,15 +19583,80 @@ samplerExplain = "Armenian Ken"
 tagKind = "letter-append"
 tagOrder = 14
 
-[prime.armn-capital-ken.variants.serifless]
-rank = 1
-description = "Armenian Ken without serifs"
-selector."armn/Ken" = "serifless"
+[prime.armn-capital-ken.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ken"
 
-[prime.armn-capital-ken.variants.serifed]
+[prime.armn-capital-ken.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ken" = "serifless"
+
+[prime.armn-capital-ken.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ken with serifs"
-selector."armn/Ken" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ken" = "serifed"
+
+[prime.armn-capital-ken.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-ken.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Ken" = "topLeftMotion"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Ken" = "topLeftFull"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-ken.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Ken" = "topRightMotion"
+
+[prime.armn-capital-ken.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Ken" = "topRightFull"
+
+[prime.armn-capital-ken.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-right" = "none" }]
+
+[prime.armn-capital-ken.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Ken" = "bottomRightMotion"
+
+[prime.armn-capital-ken.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Ken" = "bottomRightFull"
 
 [prime.armn-capital-ho]
 sampler = "Հ"
@@ -19179,15 +19664,37 @@ samplerExplain = "Armenian Ho"
 tagKind = "letter-append"
 tagOrder = 15
 
-[prime.armn-capital-ho.variants.serifless]
-rank = 1
-description = "Armenian Ho without serifs"
-selector."armn/Ho" = "serifless"
+[prime.armn-capital-ho.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ho"
 
-[prime.armn-capital-ho.variants.serifed]
+[prime.armn-capital-ho.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ho" = "serifless"
+
+[prime.armn-capital-ho.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ho with serifs"
-selector."armn/Ho" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ho" = "serifed"
+
+[prime.armn-capital-ho.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-capital-ho.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Ho" = "bottomRightMotion"
+
+[prime.armn-capital-ho.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Ho" = "bottomRightFull"
 
 [prime.armn-capital-ghat]
 sampler = "Ղ"
@@ -19195,15 +19702,37 @@ samplerExplain = "Armenian Ghat"
 tagKind = "letter-append"
 tagOrder = 16
 
-[prime.armn-capital-ghat.variants.serifless]
-rank = 1
-description = "Armenian Ghat without serifs"
-selector."armn/Ghat" = "serifless"
+[prime.armn-capital-ghat.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Ghat"
 
-[prime.armn-capital-ghat.variants.serifed]
+[prime.armn-capital-ghat.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ghat" = "serifless"
+
+[prime.armn-capital-ghat.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Ghat with serifs"
-selector."armn/Ghat" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Ghat" = "serifed"
+
+[prime.armn-capital-ghat.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-capital-ghat.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Ghat" = "bottomRightMotion"
+
+[prime.armn-capital-ghat.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Ghat" = "bottomRightFull"
 
 [prime.armn-capital-men]
 sampler = "Մ"
@@ -19211,15 +19740,61 @@ samplerExplain = "Armenian Men"
 tagKind = "letter-append"
 tagOrder = 17
 
-[prime.armn-capital-men.variants.serifless]
-rank = 1
-description = "Armenian Men without serifs"
-selector."armn/Men" = "serifless"
+[prime.armn-capital-men.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Men"
 
-[prime.armn-capital-men.variants.serifed]
+[prime.armn-capital-men.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Men" = "serifless"
+
+[prime.armn-capital-men.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Men with serifs"
-selector."armn/Men" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Men" = "serifed"
+
+[prime.armn-capital-men.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-men.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-capital-men.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-men.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Men" = "topLeftMotion"
+
+[prime.armn-capital-men.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Men" = "topLeftFull"
+
+[prime.armn-capital-men.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-men.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Men" = "topRightMotion"
+
+[prime.armn-capital-men.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Men" = "topRightFull"
 
 [prime.armn-capital-yi]
 sampler = "Յ"
@@ -19227,15 +19802,31 @@ samplerExplain = "Armenian Yi"
 tagKind = "letter-append"
 tagOrder = 18
 
-[prime.armn-capital-yi.variants.serifless]
-rank = 1
-description = "Armenian Yi without serifs"
-selector."armn/Yi" = "serifless"
+[prime.armn-capital-yi.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Yi"
 
-[prime.armn-capital-yi.variants.serifed]
+[prime.armn-capital-yi.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Yi" = "serifless"
+
+[prime.armn-capital-yi.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Yi with serifs"
-selector."armn/Yi" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Yi" = "serifed"
+
+[prime.armn-capital-yi.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "middle-left"
+
+[prime.armn-capital-yi.variants-buildup.stages.middle-left.full]
+rank = 3
+keyAffix = "middle-left-serifed"
+descriptionAffix = "a full middle-left serif"
+selectorAffix."armn/Yi" = "middleLeftFull"
 
 [prime.armn-capital-nu]
 sampler = "Ն"
@@ -19243,15 +19834,37 @@ samplerExplain = "Armenian Nu"
 tagKind = "letter-append"
 tagOrder = 19
 
-[prime.armn-capital-nu.variants.serifless]
-rank = 1
-description = "Armenian Nu without serifs"
-selector."armn/Nu" = "serifless"
+[prime.armn-capital-nu.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Nu"
 
-[prime.armn-capital-nu.variants.serifed]
+[prime.armn-capital-nu.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Nu" = "serifless"
+
+[prime.armn-capital-nu.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Nu with serifs"
-selector."armn/Nu" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Nu" = "serifed"
+
+[prime.armn-capital-nu.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-nu.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion-serifed"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Nu" = "topLeftMotion"
+
+[prime.armn-capital-nu.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left-serifed"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Nu" = "topLeftFull"
 
 [prime.armn-capital-vo]
 sampler = "Ո"
@@ -19259,15 +19872,61 @@ samplerExplain = "Armenian Vo"
 tagKind = "letter-append"
 tagOrder = 20
 
-[prime.armn-capital-vo.variants.serifless]
-rank = 1
-description = "Armenian Vo without serifs"
-selector."armn/Vo" = "serifless"
+[prime.armn-capital-vo.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Vo"
 
-[prime.armn-capital-vo.variants.serifed]
+[prime.armn-capital-vo.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Vo" = "serifless"
+
+[prime.armn-capital-vo.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Vo with serifs"
-selector."armn/Vo" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Vo" = "serifed"
+
+[prime.armn-capital-vo.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Vo" = "bottomLeftMotion"
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Vo" = "bottomLeftFull"
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "bottom-left" = "none" }]
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Vo" = "bottomRightMotion"
+
+[prime.armn-capital-vo.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Vo" = "bottomRightFull"
 
 [prime.armn-capital-peh]
 sampler = "Պ"
@@ -19275,15 +19934,37 @@ samplerExplain = "Armenian Peh"
 tagKind = "letter-append"
 tagOrder = 21
 
-[prime.armn-capital-peh.variants.serifless]
-rank = 1
-description = "Armenian Peh without serifs"
-selector."armn/Peh" = "serifless"
+[prime.armn-capital-peh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Peh"
 
-[prime.armn-capital-peh.variants.serifed]
+[prime.armn-capital-peh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Peh" = "serifless"
+
+[prime.armn-capital-peh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Peh with serifs"
-selector."armn/Peh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Peh" = "serifed"
+
+[prime.armn-capital-peh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-capital-peh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Peh" = "bottomRightMotion"
+
+[prime.armn-capital-peh.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Peh" = "bottomRightFull"
 
 [prime.armn-capital-rra]
 sampler = "Ռ"
@@ -19291,15 +19972,61 @@ samplerExplain = "Armenian Rra"
 tagKind = "letter-append"
 tagOrder = 22
 
-[prime.armn-capital-rra.variants.serifless]
-rank = 1
-description = "Armenian Rra without serifs"
-selector."armn/Rra" = "serifless"
+[prime.armn-capital-rra.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Rra"
 
-[prime.armn-capital-rra.variants.serifed]
+[prime.armn-capital-rra.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Rra" = "serifless"
+
+[prime.armn-capital-rra.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Rra with serifs"
-selector."armn/Rra" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Rra" = "serifed"
+
+[prime.armn-capital-rra.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Rra" = "bottomLeftMotion"
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Rra" = "bottomLeftFull"
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "bottom-left" = "none" }]
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Rra" = "bottomRightMotion"
+
+[prime.armn-capital-rra.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Rra" = "bottomRightFull"
 
 [prime.armn-capital-seh]
 sampler = "Ս"
@@ -19307,15 +20034,61 @@ samplerExplain = "Armenian Seh"
 tagKind = "letter-append"
 tagOrder = 23
 
-[prime.armn-capital-seh.variants.serifless]
-rank = 1
-description = "Armenian Seh without serifs"
-selector."armn/Seh" = "serifless"
+[prime.armn-capital-seh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Seh"
 
-[prime.armn-capital-seh.variants.serifed]
+[prime.armn-capital-seh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Seh" = "serifless"
+
+[prime.armn-capital-seh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Seh with serifs"
-selector."armn/Seh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Seh" = "serifed"
+
+[prime.armn-capital-seh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-seh.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-capital-seh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-seh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Seh" = "topLeftMotion"
+
+[prime.armn-capital-seh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Seh" = "topLeftFull"
+
+[prime.armn-capital-seh.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-seh.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Seh" = "topRightMotion"
+
+[prime.armn-capital-seh.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Seh" = "topRightFull"
 
 [prime.armn-capital-vew]
 sampler = "Վ"
@@ -19323,15 +20096,80 @@ samplerExplain = "Armenian Vew"
 tagKind = "letter-append"
 tagOrder = 24
 
-[prime.armn-capital-vew.variants.serifless]
-rank = 1
-description = "Armenian Vew without serifs"
-selector."armn/Vew" = "serifless"
+[prime.armn-capital-vew.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Vew"
 
-[prime.armn-capital-vew.variants.serifed]
+[prime.armn-capital-vew.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Vew" = "serifless"
+
+[prime.armn-capital-vew.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Vew with serifs"
-selector."armn/Vew" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Vew" = "serifed"
+
+[prime.armn-capital-vew.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-vew.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Vew" = "topLeftMotion"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Vew" = "topLeftFull"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-vew.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/Vew" = "topRightMotion"
+
+[prime.armn-capital-vew.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/Vew" = "topRightFull"
+
+[prime.armn-capital-vew.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-right" = "none" }]
+
+[prime.armn-capital-vew.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/Vew" = "bottomRightMotion"
+
+[prime.armn-capital-vew.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/Vew" = "bottomRightFull"
 
 [prime.armn-capital-reh]
 sampler = "Ր"
@@ -19339,15 +20177,37 @@ samplerExplain = "Armenian Reh"
 tagKind = "letter-append"
 tagOrder = 25
 
-[prime.armn-capital-reh.variants.serifless]
-rank = 1
-description = "Armenian Reh without serifs"
-selector."armn/Reh" = "serifless"
+[prime.armn-capital-reh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Reh"
 
-[prime.armn-capital-reh.variants.serifed]
+[prime.armn-capital-reh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Reh" = "serifless"
+
+[prime.armn-capital-reh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Reh with serifs"
-selector."armn/Reh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Reh" = "serifed"
+
+[prime.armn-capital-reh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-reh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Reh" = "bottomLeftMotion"
+
+[prime.armn-capital-reh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Reh" = "bottomLeftFull"
 
 [prime.armn-capital-hiun]
 sampler = "Ւ"
@@ -19355,15 +20215,61 @@ samplerExplain = "Armenian Hiun"
 tagKind = "letter-append"
 tagOrder = 26
 
-[prime.armn-capital-hiun.variants.serifless]
-rank = 1
-description = "Armenian Hiun without serifs"
-selector."armn/Hiun" = "serifless"
+[prime.armn-capital-hiun.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Hiun"
 
-[prime.armn-capital-hiun.variants.serifed]
+[prime.armn-capital-hiun.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Hiun" = "serifless"
+
+[prime.armn-capital-hiun.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Hiun with serifs"
-selector."armn/Hiun" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Hiun" = "serifed"
+
+[prime.armn-capital-hiun.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-capital-hiun.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-capital-hiun.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-hiun.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/Hiun" = "topLeftMotion"
+
+[prime.armn-capital-hiun.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/Hiun" = "topLeftFull"
+
+[prime.armn-capital-hiun.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-capital-hiun.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Hiun" = "bottomLeftMotion"
+
+[prime.armn-capital-hiun.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Hiun" = "bottomLeftFull"
 
 [prime.armn-capital-piur]
 sampler = "Փ"
@@ -19371,15 +20277,49 @@ samplerExplain = "Armenian Piur"
 tagKind = "letter-append"
 tagOrder = 27
 
-[prime.armn-capital-piur.variants.serifless]
-rank = 1
-description = "Armenian Piur without serifs"
-selector."armn/Piur" = "serifless"
+[prime.armn-capital-piur.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Piur"
 
-[prime.armn-capital-piur.variants.serifed]
+[prime.armn-capital-piur.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Piur" = "serifless"
+
+[prime.armn-capital-piur.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Piur with serifs"
-selector."armn/Piur" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Piur" = "serifed"
+
+[prime.armn-capital-piur.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-center"
+
+[prime.armn-capital-piur.variants-buildup.stages.top-center."*"]
+next = "bottom-center"
+
+[prime.armn-capital-piur.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-capital-piur.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/Piur" = "topCenterFull"
+
+[prime.armn-capital-piur.variants-buildup.stages.bottom-center.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-center" = "none" }]
+
+[prime.armn-capital-piur.variants-buildup.stages.bottom-center.full]
+rank = 3
+keyAffix = "bottom-center-serifed"
+descriptionAffix = "a full bottom-center serif"
+selectorAffix."armn/Piur" = "bottomCenterFull"
 
 [prime.armn-capital-keh]
 sampler = "Ք"
@@ -19387,15 +20327,37 @@ samplerExplain = "Armenian Keh"
 tagKind = "letter-append"
 tagOrder = 28
 
-[prime.armn-capital-keh.variants.serifless]
-rank = 1
-description = "Armenian Keh without serifs"
-selector."armn/Keh" = "serifless"
+[prime.armn-capital-keh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Keh"
 
-[prime.armn-capital-keh.variants.serifed]
+[prime.armn-capital-keh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Keh" = "serifless"
+
+[prime.armn-capital-keh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Keh with serifs"
-selector."armn/Keh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Keh" = "serifed"
+
+[prime.armn-capital-keh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-left"
+
+[prime.armn-capital-keh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/Keh" = "bottomLeftMotion"
+
+[prime.armn-capital-keh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/Keh" = "bottomLeftFull"
 
 [prime.armn-capital-feh]
 sampler = "Ֆ"
@@ -19403,31 +20365,31 @@ samplerExplain = "Armenian Feh"
 tagKind = "letter-append"
 tagOrder = 29
 
-[prime.armn-capital-feh.variants.serifless]
+[prime.armn-capital-feh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian Feh"
+
+[prime.armn-capital-feh.variants-buildup.stages.style.serifless]
 rank = 1
-description = "Armenian Feh without serifs"
-selector."armn/Feh" = "serifless"
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/Feh" = "serifless"
 
-[prime.armn-capital-feh.variants.serifed]
+[prime.armn-capital-feh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian Feh with serifs"
-selector."armn/Feh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/Feh" = "serifed"
 
-[prime.armn-turnayb]
-sampler = "ՠ"
-samplerExplain = "Armenian turnayb"
-tagKind = "letter-append"
-tagOrder = 30
+[prime.armn-capital-feh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-center"
 
-[prime.armn-turnayb.variants.serifless]
-rank = 1
-description = "Armenian turnayb without serifs"
-selector."armn/turnayb" = "serifless"
-
-[prime.armn-turnayb.variants.serifed]
+[prime.armn-capital-feh.variants-buildup.stages.top-center.motion]
 rank = 2
-description = "Armenian turnayb with serifs"
-selector."armn/turnayb" = "serifed"
+keyAffix = "top-center-motion-serifed"
+descriptionAffix = "a motion top-center serif"
+selectorAffix."armn/Feh" = "topCenterMotion"
 
 [prime.armn-ayb]
 sampler = "ա"
@@ -19435,15 +20397,87 @@ samplerExplain = "Armenian ayb"
 tagKind = "letter-append"
 tagOrder = 31
 
-[prime.armn-ayb.variants.serifless]
-rank = 1
-description = "Armenian ayb without serifs"
-selector."armn/ayb" = "serifless"
+[prime.armn-ayb.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ayb"
 
-[prime.armn-ayb.variants.serifed]
+[prime.armn-ayb.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ayb" = "serifless"
+
+[prime.armn-ayb.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ayb with serifs"
-selector."armn/ayb" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ayb" = "serifed"
+
+[prime.armn-ayb.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ayb.variants-buildup.stages.top-left."*"]
+next = "top-center"
+
+[prime.armn-ayb.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ayb.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ayb" = "topLeftMotion"
+
+[prime.armn-ayb.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ayb" = "topLeftFull"
+
+[prime.armn-ayb.variants-buildup.stages.top-center."*"]
+next = "top-right"
+
+[prime.armn-ayb.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ayb.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/ayb" = "topCenterFull"
+
+[prime.armn-ayb.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-ayb.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ayb.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/ayb" = "topRightMotion"
+
+[prime.armn-ayb.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/ayb" = "topRightFull"
+
+[prime.armn-ayb.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-center" = "none", "top-right" = "none" }]
+
+[prime.armn-ayb.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/ayb" = "bottomRightMotion"
 
 [prime.armn-ben]
 sampler = "բ"
@@ -19451,15 +20485,55 @@ samplerExplain = "Armenian ben"
 tagKind = "letter-append"
 tagOrder = 32
 
-[prime.armn-ben.variants.serifless]
-rank = 1
-description = "Armenian ben without serifs"
-selector."armn/ben" = "serifless"
+[prime.armn-ben.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ben"
 
-[prime.armn-ben.variants.serifed]
+[prime.armn-ben.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ben" = "serifless"
+
+[prime.armn-ben.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ben with serifs"
-selector."armn/ben" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ben" = "serifed"
+
+[prime.armn-ben.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ben.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-ben.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ben.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ben" = "topLeftMotion"
+
+[prime.armn-ben.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-ben.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/ben" = "bottomLeftMotion"
+
+[prime.armn-ben.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/ben" = "bottomLeftFull"
 
 [prime.armn-gim]
 sampler = "գ"
@@ -19467,15 +20541,55 @@ samplerExplain = "Armenian gim"
 tagKind = "letter-append"
 tagOrder = 33
 
-[prime.armn-gim.variants.serifless]
-rank = 1
-description = "Armenian gim without serifs"
-selector."armn/gim" = "serifless"
+[prime.armn-gim.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian gim"
 
-[prime.armn-gim.variants.serifed]
+[prime.armn-gim.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/gim" = "serifless"
+
+[prime.armn-gim.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian gim with serifs"
-selector."armn/gim" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/gim" = "serifed"
+
+[prime.armn-gim.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-gim.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-gim.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-gim.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/gim" = "topRightMotion"
+
+[prime.armn-gim.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-right" = "none" }]
+
+[prime.armn-gim.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/gim" = "bottomRightMotion"
+
+[prime.armn-gim.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/gim" = "bottomRightFull"
 
 [prime.armn-da]
 sampler = "դ"
@@ -19483,15 +20597,74 @@ samplerExplain = "Armenian da"
 tagKind = "letter-append"
 tagOrder = 34
 
-[prime.armn-da.variants.serifless]
-rank = 1
-description = "Armenian da without serifs"
-selector."armn/da" = "serifless"
+[prime.armn-da.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian da"
 
-[prime.armn-da.variants.serifed]
+[prime.armn-da.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/da" = "serifless"
+
+[prime.armn-da.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian da with serifs"
-selector."armn/da" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/da" = "serifed"
+
+[prime.armn-da.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-da.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-da.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-da.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/da" = "topLeftMotion"
+
+[prime.armn-da.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-da.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-da.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/da" = "bottomLeftMotion"
+
+[prime.armn-da.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/da" = "bottomLeftFull"
+
+[prime.armn-da.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-da.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/da" = "bottomRightMotion"
+
+[prime.armn-da.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/da" = "bottomRightFull"
 
 [prime.armn-ech]
 sampler = "ե"
@@ -19499,15 +20672,55 @@ samplerExplain = "Armenian ech"
 tagKind = "letter-append"
 tagOrder = 35
 
-[prime.armn-ech.variants.serifless]
-rank = 1
-description = "Armenian ech without serifs"
-selector."armn/ech" = "serifless"
+[prime.armn-ech.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ech"
 
-[prime.armn-ech.variants.serifed]
+[prime.armn-ech.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ech" = "serifless"
+
+[prime.armn-ech.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ech with serifs"
-selector."armn/ech" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ech" = "serifed"
+
+[prime.armn-ech.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ech.variants-buildup.stages.top-left."*"]
+next = "bottom-right"
+
+[prime.armn-ech.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ech.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ech" = "topLeftMotion"
+
+[prime.armn-ech.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ech" = "topLeftFull"
+
+[prime.armn-ech.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-ech.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/ech" = "bottomRightMotion"
 
 [prime.armn-za]
 sampler = "զ"
@@ -19515,15 +20728,31 @@ samplerExplain = "Armenian za"
 tagKind = "letter-append"
 tagOrder = 36
 
-[prime.armn-za.variants.serifless]
-rank = 1
-description = "Armenian za without serifs"
-selector."armn/za" = "serifless"
+[prime.armn-za.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian za"
 
-[prime.armn-za.variants.serifed]
+[prime.armn-za.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/za" = "serifless"
+
+[prime.armn-za.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian za with serifs"
-selector."armn/za" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/za" = "serifed"
+
+[prime.armn-za.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-za.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/za" = "topRightMotion"
 
 [prime.armn-eh]
 sampler = "է"
@@ -19531,15 +20760,55 @@ samplerExplain = "Armenian eh"
 tagKind = "letter-append"
 tagOrder = 37
 
-[prime.armn-eh.variants.serifless]
-rank = 1
-description = "Armenian eh without serifs"
-selector."armn/eh" = "serifless"
+[prime.armn-eh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian eh"
 
-[prime.armn-eh.variants.serifed]
+[prime.armn-eh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/eh" = "serifless"
+
+[prime.armn-eh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian eh with serifs"
-selector."armn/eh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/eh" = "serifed"
+
+[prime.armn-eh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-eh.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-eh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-eh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/eh" = "topLeftMotion"
+
+[prime.armn-eh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/eh" = "topLeftFull"
+
+[prime.armn-eh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-eh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/eh" = "bottomLeftMotion"
 
 [prime.armn-et]
 sampler = "ը"
@@ -19547,15 +20816,55 @@ samplerExplain = "Armenian et"
 tagKind = "letter-append"
 tagOrder = 38
 
-[prime.armn-et.variants.serifless]
-rank = 1
-description = "Armenian et without serifs"
-selector."armn/et" = "serifless"
+[prime.armn-et.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian et"
 
-[prime.armn-et.variants.serifed]
+[prime.armn-et.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/et" = "serifless"
+
+[prime.armn-et.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian et with serifs"
-selector."armn/et" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/et" = "serifed"
+
+[prime.armn-et.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-et.variants-buildup.stages.top-left."*"]
+next = "bottom-right"
+
+[prime.armn-et.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-et.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/et" = "topLeftMotion"
+
+[prime.armn-et.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-et.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/et" = "bottomRightMotion"
+
+[prime.armn-et.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/et" = "bottomRightFull"
 
 [prime.armn-to]
 sampler = "թ"
@@ -19563,15 +20872,55 @@ samplerExplain = "Armenian to"
 tagKind = "letter-append"
 tagOrder = 39
 
-[prime.armn-to.variants.serifless]
-rank = 1
-description = "Armenian to without serifs"
-selector."armn/to" = "serifless"
+[prime.armn-to.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian to"
 
-[prime.armn-to.variants.serifed]
+[prime.armn-to.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/to" = "serifless"
+
+[prime.armn-to.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian to with serifs"
-selector."armn/to" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/to" = "serifed"
+
+[prime.armn-to.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-to.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-to.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-to.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/to" = "topLeftMotion"
+
+[prime.armn-to.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-to.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/to" = "bottomLeftMotion"
+
+[prime.armn-to.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/to" = "bottomLeftFull"
 
 [prime.armn-zhe]
 sampler = "ժ"
@@ -19579,15 +20928,37 @@ samplerExplain = "Armenian zhe"
 tagKind = "letter-append"
 tagOrder = 40
 
-[prime.armn-zhe.variants.serifless]
-rank = 1
-description = "Armenian zhe without serifs"
-selector."armn/zhe" = "serifless"
+[prime.armn-zhe.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian zhe"
 
-[prime.armn-zhe.variants.serifed]
+[prime.armn-zhe.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/zhe" = "serifless"
+
+[prime.armn-zhe.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian zhe with serifs"
-selector."armn/zhe" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/zhe" = "serifed"
+
+[prime.armn-zhe.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-zhe.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/zhe" = "topRightMotion"
+
+[prime.armn-zhe.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/zhe" = "topRightFull"
 
 [prime.armn-ini]
 sampler = "ի"
@@ -19595,15 +20966,80 @@ samplerExplain = "Armenian ini"
 tagKind = "letter-append"
 tagOrder = 41
 
-[prime.armn-ini.variants.serifless]
-rank = 1
-description = "Armenian ini without serifs"
-selector."armn/ini" = "serifless"
+[prime.armn-ini.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ini"
 
-[prime.armn-ini.variants.serifed]
+[prime.armn-ini.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ini" = "serifless"
+
+[prime.armn-ini.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ini with serifs"
-selector."armn/ini" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ini" = "serifed"
+
+[prime.armn-ini.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ini.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-ini.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ini.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ini" = "topLeftMotion"
+
+[prime.armn-ini.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ini" = "topLeftFull"
+
+[prime.armn-ini.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-ini.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ini.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/ini" = "bottomLeftMotion"
+
+[prime.armn-ini.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/ini" = "bottomLeftFull"
+
+[prime.armn-ini.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-ini.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/ini" = "bottomRightMotion"
+
+[prime.armn-ini.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/ini" = "bottomRightFull"
 
 [prime.armn-liun]
 sampler = "լ"
@@ -19611,15 +21047,31 @@ samplerExplain = "Armenian liun"
 tagKind = "letter-append"
 tagOrder = 42
 
-[prime.armn-liun.variants.serifless]
-rank = 1
-description = "Armenian liun without serifs"
-selector."armn/liun" = "serifless"
+[prime.armn-liun.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian liun"
 
-[prime.armn-liun.variants.serifed]
+[prime.armn-liun.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/liun" = "serifless"
+
+[prime.armn-liun.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian liun with serifs"
-selector."armn/liun" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/liun" = "serifed"
+
+[prime.armn-liun.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-center"
+
+[prime.armn-liun.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center-serifed"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/liun" = "topCenterFull"
 
 [prime.armn-xeh]
 sampler = "խ"
@@ -19627,15 +21079,93 @@ samplerExplain = "Armenian xeh"
 tagKind = "letter-append"
 tagOrder = 43
 
-[prime.armn-xeh.variants.serifless]
-rank = 1
-description = "Armenian xeh without serifs"
-selector."armn/xeh" = "serifless"
+[prime.armn-xeh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian xeh"
 
-[prime.armn-xeh.variants.serifed]
+[prime.armn-xeh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/xeh" = "serifless"
+
+[prime.armn-xeh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian xeh with serifs"
-selector."armn/xeh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/xeh" = "serifed"
+
+[prime.armn-xeh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-xeh.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-xeh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-xeh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/xeh" = "topLeftMotion"
+
+[prime.armn-xeh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/xeh" = "topLeftFull"
+
+[prime.armn-xeh.variants-buildup.stages.top-right."*"]
+next = "bottom-left"
+
+[prime.armn-xeh.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-xeh.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/xeh" = "topRightMotion"
+
+[prime.armn-xeh.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/xeh" = "topRightFull"
+
+[prime.armn-xeh.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-xeh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-xeh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/xeh" = "bottomLeftMotion"
+
+[prime.armn-xeh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/xeh" = "bottomLeftFull"
+
+[prime.armn-xeh.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-right" = "none", "bottom-left" = "none" }]
+
+[prime.armn-xeh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/xeh" = "bottomRightMotion"
 
 [prime.armn-ken]
 sampler = "կ"
@@ -19643,15 +21173,80 @@ samplerExplain = "Armenian ken"
 tagKind = "letter-append"
 tagOrder = 44
 
-[prime.armn-ken.variants.serifless]
-rank = 1
-description = "Armenian ken without serifs"
-selector."armn/ken" = "serifless"
+[prime.armn-ken.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ken"
 
-[prime.armn-ken.variants.serifed]
+[prime.armn-ken.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ken" = "serifless"
+
+[prime.armn-ken.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ken with serifs"
-selector."armn/ken" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ken" = "serifed"
+
+[prime.armn-ken.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ken.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-ken.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ken.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ken" = "topLeftMotion"
+
+[prime.armn-ken.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ken" = "topLeftFull"
+
+[prime.armn-ken.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-ken.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ken.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/ken" = "topRightMotion"
+
+[prime.armn-ken.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/ken" = "topRightFull"
+
+[prime.armn-ken.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-right" = "none" }]
+
+[prime.armn-ken.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/ken" = "bottomRightMotion"
+
+[prime.armn-ken.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/ken" = "bottomRightFull"
 
 [prime.armn-ho]
 sampler = "հ"
@@ -19659,15 +21254,80 @@ samplerExplain = "Armenian ho"
 tagKind = "letter-append"
 tagOrder = 45
 
-[prime.armn-ho.variants.serifless]
-rank = 1
-description = "Armenian ho without serifs"
-selector."armn/ho" = "serifless"
+[prime.armn-ho.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ho"
 
-[prime.armn-ho.variants.serifed]
+[prime.armn-ho.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ho" = "serifless"
+
+[prime.armn-ho.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ho with serifs"
-selector."armn/ho" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ho" = "serifed"
+
+[prime.armn-ho.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ho.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-ho.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ho.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ho" = "topLeftMotion"
+
+[prime.armn-ho.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ho" = "topLeftFull"
+
+[prime.armn-ho.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-ho.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ho.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/ho" = "bottomLeftMotion"
+
+[prime.armn-ho.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/ho" = "bottomLeftFull"
+
+[prime.armn-ho.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-ho.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/ho" = "bottomRightMotion"
+
+[prime.armn-ho.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/ho" = "bottomRightFull"
 
 [prime.armn-dza]
 sampler = "ձ"
@@ -19675,15 +21335,37 @@ samplerExplain = "Armenian dza"
 tagKind = "letter-append"
 tagOrder = 46
 
-[prime.armn-dza.variants.serifless]
-rank = 1
-description = "Armenian dza without serifs"
-selector."armn/dza" = "serifless"
+[prime.armn-dza.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian dza"
 
-[prime.armn-dza.variants.serifed]
+[prime.armn-dza.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/dza" = "serifless"
+
+[prime.armn-dza.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian dza with serifs"
-selector."armn/dza" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/dza" = "serifed"
+
+[prime.armn-dza.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-dza.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/dza" = "bottomRightMotion"
+
+[prime.armn-dza.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/dza" = "bottomRightFull"
 
 [prime.armn-ghat]
 sampler = "ղ"
@@ -19691,15 +21373,55 @@ samplerExplain = "Armenian ghat"
 tagKind = "letter-append"
 tagOrder = 47
 
-[prime.armn-ghat.variants.serifless]
-rank = 1
-description = "Armenian ghat without serifs"
-selector."armn/ghat" = "serifless"
+[prime.armn-ghat.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ghat"
 
-[prime.armn-ghat.variants.serifed]
+[prime.armn-ghat.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ghat" = "serifless"
+
+[prime.armn-ghat.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ghat with serifs"
-selector."armn/ghat" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ghat" = "serifed"
+
+[prime.armn-ghat.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ghat.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-ghat.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ghat.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ghat" = "topLeftMotion"
+
+[prime.armn-ghat.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-ghat.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/ghat" = "bottomLeftMotion"
+
+[prime.armn-ghat.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/ghat" = "bottomLeftFull"
 
 [prime.armn-cheh]
 sampler = "ճ"
@@ -19707,15 +21429,37 @@ samplerExplain = "Armenian cheh"
 tagKind = "letter-append"
 tagOrder = 48
 
-[prime.armn-cheh.variants.serifless]
-rank = 1
-description = "Armenian cheh without serifs"
-selector."armn/cheh" = "serifless"
+[prime.armn-cheh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian cheh"
 
-[prime.armn-cheh.variants.serifed]
+[prime.armn-cheh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/cheh" = "serifless"
+
+[prime.armn-cheh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian cheh with serifs"
-selector."armn/cheh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/cheh" = "serifed"
+
+[prime.armn-cheh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-right"
+
+[prime.armn-cheh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/cheh" = "bottomRightMotion"
+
+[prime.armn-cheh.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/cheh" = "bottomRightFull"
 
 [prime.armn-men]
 sampler = "մ"
@@ -19723,15 +21467,55 @@ samplerExplain = "Armenian men"
 tagKind = "letter-append"
 tagOrder = 49
 
-[prime.armn-men.variants.serifless]
-rank = 1
-description = "Armenian men without serifs"
-selector."armn/men" = "serifless"
+[prime.armn-men.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian men"
 
-[prime.armn-men.variants.serifed]
+[prime.armn-men.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/men" = "serifless"
+
+[prime.armn-men.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian men with serifs"
-selector."armn/men" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/men" = "serifed"
+
+[prime.armn-men.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-men.variants-buildup.stages.top-left."*"]
+next = "bottom-right"
+
+[prime.armn-men.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-men.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/men" = "topLeftMotion"
+
+[prime.armn-men.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/men" = "topLeftFull"
+
+[prime.armn-men.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-men.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/men" = "bottomRightMotion"
 
 [prime.armn-yi]
 sampler = "յ"
@@ -19739,15 +21523,31 @@ samplerExplain = "Armenian yi"
 tagKind = "letter-append"
 tagOrder = 50
 
-[prime.armn-yi.variants.serifless]
-rank = 1
-description = "Armenian yi without serifs"
-selector."armn/yi" = "serifless"
+[prime.armn-yi.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian yi"
 
-[prime.armn-yi.variants.serifed]
+[prime.armn-yi.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/yi" = "serifless"
+
+[prime.armn-yi.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian yi with serifs"
-selector."armn/yi" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/yi" = "serifed"
+
+[prime.armn-yi.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-center"
+
+[prime.armn-yi.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center-serifed"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/yi" = "topCenterFull"
 
 [prime.armn-nu]
 sampler = "ն"
@@ -19755,15 +21555,55 @@ samplerExplain = "Armenian nu"
 tagKind = "letter-append"
 tagOrder = 51
 
-[prime.armn-nu.variants.serifless]
-rank = 1
-description = "Armenian nu without serifs"
-selector."armn/nu" = "serifless"
+[prime.armn-nu.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian nu"
 
-[prime.armn-nu.variants.serifed]
+[prime.armn-nu.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/nu" = "serifless"
+
+[prime.armn-nu.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian nu with serifs"
-selector."armn/nu" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/nu" = "serifed"
+
+[prime.armn-nu.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-nu.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-nu.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-nu.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/nu" = "topRightMotion"
+
+[prime.armn-nu.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/nu" = "topRightFull"
+
+[prime.armn-nu.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-right" = "none" }]
+
+[prime.armn-nu.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/nu" = "bottomRightMotion"
 
 [prime.armn-vo]
 sampler = "ո"
@@ -19771,15 +21611,74 @@ samplerExplain = "Armenian vo"
 tagKind = "letter-append"
 tagOrder = 52
 
-[prime.armn-vo.variants.serifless]
-rank = 1
-description = "Armenian vo without serifs"
-selector."armn/vo" = "serifless"
+[prime.armn-vo.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian vo"
 
-[prime.armn-vo.variants.serifed]
+[prime.armn-vo.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/vo" = "serifless"
+
+[prime.armn-vo.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian vo with serifs"
-selector."armn/vo" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/vo" = "serifed"
+
+[prime.armn-vo.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-vo.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-vo.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-vo.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a top-left motion serif"
+selectorAffix."armn/vo" = "topLeftMotion"
+
+[prime.armn-vo.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-vo.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-vo.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a bottom-left motion serif"
+selectorAffix."armn/vo" = "bottomLeftMotion"
+
+[prime.armn-vo.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/vo" = "bottomLeftFull"
+
+[prime.armn-vo.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-vo.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a bottom-right motion serif"
+selectorAffix."armn/vo" = "bottomRightMotion"
+
+[prime.armn-vo.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/vo" = "bottomRightFull"
 
 [prime.armn-peh]
 sampler = "պ"
@@ -19787,15 +21686,93 @@ samplerExplain = "Armenian peh"
 tagKind = "letter-append"
 tagOrder = 53
 
-[prime.armn-peh.variants.serifless]
-rank = 1
-description = "Armenian peh without serifs"
-selector."armn/peh" = "serifless"
+[prime.armn-peh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian peh"
 
-[prime.armn-peh.variants.serifed]
+[prime.armn-peh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/peh" = "serifless"
+
+[prime.armn-peh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian peh with serifs"
-selector."armn/peh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/peh" = "serifed"
+
+[prime.armn-peh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-peh.variants-buildup.stages.top-left."*"]
+next = "top-center"
+
+[prime.armn-peh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-peh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/peh" = "topLeftMotion"
+
+[prime.armn-peh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/peh" = "topLeftFull"
+
+[prime.armn-peh.variants-buildup.stages.top-center."*"]
+next = "top-right"
+
+[prime.armn-peh.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-peh.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/peh" = "topCenterFull"
+
+[prime.armn-peh.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-peh.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-peh.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/peh" = "topRightMotion"
+
+[prime.armn-peh.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/peh" = "topRightFull"
+
+[prime.armn-peh.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-center" = "none", "top-right" = "none" }]
+
+[prime.armn-peh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/peh" = "bottomRightMotion"
+
+[prime.armn-peh.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/peh" = "bottomRightFull"
 
 [prime.armn-rra]
 sampler = "ռ"
@@ -19803,15 +21780,55 @@ samplerExplain = "Armenian rra"
 tagKind = "letter-append"
 tagOrder = 54
 
-[prime.armn-rra.variants.serifless]
-rank = 1
-description = "Armenian rra without serifs"
-selector."armn/rra" = "serifless"
+[prime.armn-rra.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian rra"
 
-[prime.armn-rra.variants.serifed]
+[prime.armn-rra.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/rra" = "serifless"
+
+[prime.armn-rra.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian rra with serifs"
-selector."armn/rra" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/rra" = "serifed"
+
+[prime.armn-rra.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-rra.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-rra.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-rra.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/rra" = "topLeftMotion"
+
+[prime.armn-rra.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-rra.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/rra" = "bottomLeftMotion"
+
+[prime.armn-rra.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/rra" = "bottomLeftFull"
 
 [prime.armn-seh]
 sampler = "ս"
@@ -19819,15 +21836,74 @@ samplerExplain = "Armenian seh"
 tagKind = "letter-append"
 tagOrder = 55
 
-[prime.armn-seh.variants.serifless]
-rank = 1
-description = "Armenian seh without serifs"
-selector."armn/seh" = "serifless"
+[prime.armn-seh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian seh"
 
-[prime.armn-seh.variants.serifed]
+[prime.armn-seh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/seh" = "serifless"
+
+[prime.armn-seh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian seh with serifs"
-selector."armn/seh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/seh" = "serifed"
+
+[prime.armn-seh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-seh.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-seh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-seh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/seh" = "topLeftMotion"
+
+[prime.armn-seh.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/seh" = "topLeftFull"
+
+[prime.armn-seh.variants-buildup.stages.top-right."*"]
+next = "bottom-right"
+
+[prime.armn-seh.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-seh.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/seh" = "topRightMotion"
+
+[prime.armn-seh.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/seh" = "topRightFull"
+
+[prime.armn-seh.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-right" = "none" }]
+
+[prime.armn-seh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/seh" = "bottomRightMotion"
 
 [prime.armn-vew]
 sampler = "վ"
@@ -19835,15 +21911,61 @@ samplerExplain = "Armenian vew"
 tagKind = "letter-append"
 tagOrder = 56
 
-[prime.armn-vew.variants.serifless]
-rank = 1
-description = "Armenian vew without serifs"
-selector."armn/vew" = "serifless"
+[prime.armn-vew.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian vew"
 
-[prime.armn-vew.variants.serifed]
+[prime.armn-vew.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/vew" = "serifless"
+
+[prime.armn-vew.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian vew with serifs"
-selector."armn/vew" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/vew" = "serifed"
+
+[prime.armn-vew.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-vew.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-vew.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-vew.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/vew" = "topLeftMotion"
+
+[prime.armn-vew.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/vew" = "topLeftFull"
+
+[prime.armn-vew.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-vew.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/vew" = "topRightMotion"
+
+[prime.armn-vew.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/vew" = "topRightFull"
 
 [prime.armn-tiun]
 sampler = "տ"
@@ -19851,15 +21973,87 @@ samplerExplain = "Armenian tiun"
 tagKind = "letter-append"
 tagOrder = 57
 
-[prime.armn-tiun.variants.serifless]
-rank = 1
-description = "Armenian tiun without serifs"
-selector."armn/tiun" = "serifless"
+[prime.armn-tiun.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian tiun"
 
-[prime.armn-tiun.variants.serifed]
+[prime.armn-tiun.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/tiun" = "serifless"
+
+[prime.armn-tiun.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian tiun with serifs"
-selector."armn/tiun" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/tiun" = "serifed"
+
+[prime.armn-tiun.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-tiun.variants-buildup.stages.top-left."*"]
+next = "top-center"
+
+[prime.armn-tiun.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-tiun.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/tiun" = "topLeftMotion"
+
+[prime.armn-tiun.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/tiun" = "topLeftFull"
+
+[prime.armn-tiun.variants-buildup.stages.top-center."*"]
+next = "bottom-center"
+
+[prime.armn-tiun.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-tiun.variants-buildup.stages.top-center.motion]
+rank = 2
+keyAffix = "top-center-motion"
+descriptionAffix = "a motion top-center serif"
+selectorAffix."armn/tiun" = "topCenterMotion"
+
+[prime.armn-tiun.variants-buildup.stages.bottom-center."*"]
+next = "bottom-right"
+
+[prime.armn-tiun.variants-buildup.stages.bottom-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-tiun.variants-buildup.stages.bottom-center.motion]
+rank = 2
+keyAffix = "bottom-center-motion"
+descriptionAffix = "a motion bottom-center serif"
+selectorAffix."armn/tiun" = "bottomCenterMotion"
+
+[prime.armn-tiun.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-center" = "none", "bottom-center" = "none" }]
+
+[prime.armn-tiun.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/tiun" = "bottomRightMotion"
+
+[prime.armn-tiun.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/tiun" = "bottomRightFull"
 
 [prime.armn-reh]
 sampler = "ր"
@@ -19867,15 +22061,74 @@ samplerExplain = "Armenian reh"
 tagKind = "letter-append"
 tagOrder = 58
 
-[prime.armn-reh.variants.serifless]
-rank = 1
-description = "Armenian reh without serifs"
-selector."armn/reh" = "serifless"
+[prime.armn-reh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian reh"
 
-[prime.armn-reh.variants.serifed]
+[prime.armn-reh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/reh" = "serifless"
+
+[prime.armn-reh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian reh with serifs"
-selector."armn/reh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/reh" = "serifed"
+
+[prime.armn-reh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-reh.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-reh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-reh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/reh" = "topLeftMotion"
+
+[prime.armn-reh.variants-buildup.stages.bottom-left."*"]
+next = "bottom-right"
+
+[prime.armn-reh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-reh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/reh" = "bottomLeftMotion"
+
+[prime.armn-reh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/reh" = "bottomLeftFull"
+
+[prime.armn-reh.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "bottom-left" = "none" }]
+
+[prime.armn-reh.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/reh" = "bottomRightMotion"
+
+[prime.armn-reh.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/reh" = "bottomRightFull"
 
 [prime.armn-co]
 sampler = "ց"
@@ -19883,15 +22136,31 @@ samplerExplain = "Armenian co"
 tagKind = "letter-append"
 tagOrder = 59
 
-[prime.armn-co.variants.serifless]
-rank = 1
-description = "Armenian co without serifs"
-selector."armn/co" = "serifless"
+[prime.armn-co.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian co"
 
-[prime.armn-co.variants.serifed]
+[prime.armn-co.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/co" = "serifless"
+
+[prime.armn-co.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian co with serifs"
-selector."armn/co" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/co" = "serifed"
+
+[prime.armn-co.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-right"
+
+[prime.armn-co.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/co" = "topRightMotion"
 
 [prime.armn-hiun]
 sampler = "ւ"
@@ -19899,15 +22168,55 @@ samplerExplain = "Armenian hiun"
 tagKind = "letter-append"
 tagOrder = 60
 
-[prime.armn-hiun.variants.serifless]
-rank = 1
-description = "Armenian hiun without serifs"
-selector."armn/hiun" = "serifless"
+[prime.armn-hiun.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian hiun"
 
-[prime.armn-hiun.variants.serifed]
+[prime.armn-hiun.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/hiun" = "serifless"
+
+[prime.armn-hiun.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian hiun with serifs"
-selector."armn/hiun" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/hiun" = "serifed"
+
+[prime.armn-hiun.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-hiun.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-hiun.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-hiun.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/hiun" = "topLeftMotion"
+
+[prime.armn-hiun.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/hiun" = "topLeftFull"
+
+[prime.armn-hiun.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-hiun.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/hiun" = "bottomLeftMotion"
 
 [prime.armn-piur]
 sampler = "փ"
@@ -19915,15 +22224,87 @@ samplerExplain = "Armenian piur"
 tagKind = "letter-append"
 tagOrder = 61
 
-[prime.armn-piur.variants.serifless]
-rank = 1
-description = "Armenian piur without serifs"
-selector."armn/piur" = "serifless"
+[prime.armn-piur.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian piur"
 
-[prime.armn-piur.variants.serifed]
+[prime.armn-piur.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/piur" = "serifless"
+
+[prime.armn-piur.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian piur with serifs"
-selector."armn/piur" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/piur" = "serifed"
+
+[prime.armn-piur.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-piur.variants-buildup.stages.top-left."*"]
+next = "top-center"
+
+[prime.armn-piur.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-piur.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/piur" = "topLeftMotion"
+
+[prime.armn-piur.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/piur" = "topLeftFull"
+
+[prime.armn-piur.variants-buildup.stages.top-center."*"]
+next = "bottom-center"
+
+[prime.armn-piur.variants-buildup.stages.top-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-piur.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/piur" = "topCenterFull"
+
+[prime.armn-piur.variants-buildup.stages.bottom-center."*"]
+next = "bottom-right"
+
+[prime.armn-piur.variants-buildup.stages.bottom-center.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-piur.variants-buildup.stages.bottom-center.full]
+rank = 3
+keyAffix = "bottom-center"
+descriptionAffix = "a full bottom-center serif"
+selectorAffix."armn/piur" = "bottomCenterFull"
+
+[prime.armn-piur.variants-buildup.stages.bottom-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none", "top-center" = "none", "bottom-center" = "none" }]
+
+[prime.armn-piur.variants-buildup.stages.bottom-right.motion]
+rank = 2
+keyAffix = "bottom-right-motion-serifed"
+descriptionAffix = "a motion bottom-right serif"
+selectorAffix."armn/piur" = "bottomRightMotion"
+
+[prime.armn-piur.variants-buildup.stages.bottom-right.full]
+rank = 3
+keyAffix = "bottom-right-serifed"
+descriptionAffix = "a full bottom-right serif"
+selectorAffix."armn/piur" = "bottomRightFull"
 
 [prime.armn-keh]
 sampler = "ք"
@@ -19931,15 +22312,55 @@ samplerExplain = "Armenian keh"
 tagKind = "letter-append"
 tagOrder = 62
 
-[prime.armn-keh.variants.serifless]
-rank = 1
-description = "Armenian keh without serifs"
-selector."armn/keh" = "serifless"
+[prime.armn-keh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian keh"
 
-[prime.armn-keh.variants.serifed]
+[prime.armn-keh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/keh" = "serifless"
+
+[prime.armn-keh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian keh with serifs"
-selector."armn/keh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/keh" = "serifed"
+
+[prime.armn-keh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-keh.variants-buildup.stages.top-left."*"]
+next = "bottom-left"
+
+[prime.armn-keh.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-keh.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/keh" = "topLeftMotion"
+
+[prime.armn-keh.variants-buildup.stages.bottom-left.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-keh.variants-buildup.stages.bottom-left.motion]
+rank = 2
+keyAffix = "bottom-left-motion-serifed"
+descriptionAffix = "a motion bottom-left serif"
+selectorAffix."armn/keh" = "bottomLeftMotion"
+
+[prime.armn-keh.variants-buildup.stages.bottom-left.full]
+rank = 3
+keyAffix = "bottom-left-serifed"
+descriptionAffix = "a full bottom-left serif"
+selectorAffix."armn/keh" = "bottomLeftFull"
 
 [prime.armn-feh]
 sampler = "ֆ"
@@ -19947,15 +22368,31 @@ samplerExplain = "Armenian feh"
 tagKind = "letter-append"
 tagOrder = 63
 
-[prime.armn-feh.variants.serifless]
-rank = 1
-description = "Armenian feh without serifs"
-selector."armn/feh" = "serifless"
+[prime.armn-feh.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian feh"
 
-[prime.armn-feh.variants.serifed]
+[prime.armn-feh.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/feh" = "serifless"
+
+[prime.armn-feh.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian feh with serifs"
-selector."armn/feh" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/feh" = "serifed"
+
+[prime.armn-feh.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "bottom-center"
+
+[prime.armn-feh.variants-buildup.stages.bottom-center.full]
+rank = 3
+keyAffix = "bottom-center-serifed"
+descriptionAffix = "a full bottom-center serif"
+selectorAffix."armn/feh" = "bottomCenterFull"
 
 [prime.armn-ew]
 sampler = "և"
@@ -19963,15 +22400,61 @@ samplerExplain = "Armenian ew"
 tagKind = "letter-append"
 tagOrder = 64
 
-[prime.armn-ew.variants.serifless]
-rank = 1
-description = "Armenian ew without serifs"
-selector."armn/ew" = "serifless"
+[prime.armn-ew.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian ew"
 
-[prime.armn-ew.variants.serifed]
+[prime.armn-ew.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/ew" = "serifless"
+
+[prime.armn-ew.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian ew with serifs"
-selector."armn/ew" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/ew" = "serifed"
+
+[prime.armn-ew.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-left"
+
+[prime.armn-ew.variants-buildup.stages.top-left."*"]
+next = "top-right"
+
+[prime.armn-ew.variants-buildup.stages.top-left.none]
+rank = 1
+keyAffix = ""
+
+[prime.armn-ew.variants-buildup.stages.top-left.motion]
+rank = 2
+keyAffix = "top-left-motion"
+descriptionAffix = "a motion top-left serif"
+selectorAffix."armn/ew" = "topLeftMotion"
+
+[prime.armn-ew.variants-buildup.stages.top-left.full]
+rank = 3
+keyAffix = "top-left"
+descriptionAffix = "a full top-left serif"
+selectorAffix."armn/ew" = "topLeftFull"
+
+[prime.armn-ew.variants-buildup.stages.top-right.none]
+rank = 1
+keyAffix = "serifed"
+disableIf = [{ "top-left" = "none" }]
+
+[prime.armn-ew.variants-buildup.stages.top-right.motion]
+rank = 2
+keyAffix = "top-right-motion-serifed"
+descriptionAffix = "a motion top-right serif"
+selectorAffix."armn/ew" = "topRightMotion"
+
+[prime.armn-ew.variants-buildup.stages.top-right.full]
+rank = 3
+keyAffix = "top-right-serifed"
+descriptionAffix = "a full top-right serif"
+selectorAffix."armn/ew" = "topRightFull"
 
 [prime.armn-yi-bar]
 sampler = "ֈ"
@@ -19979,15 +22462,31 @@ samplerExplain = "Armenian yiBar"
 tagKind = "letter-append"
 tagOrder = 65
 
-[prime.armn-yi-bar.variants.serifless]
-rank = 1
-description = "Armenian yiBar without serifs"
-selector."armn/yiBar" = "serifless"
+[prime.armn-yi-bar.variants-buildup]
+entry = "style"
+descriptionLeader = "Armenian yiBar"
 
-[prime.armn-yi-bar.variants.serifed]
+[prime.armn-yi-bar.variants-buildup.stages.style.serifless]
+rank = 1
+descriptionJoiner = "without"
+descriptionAffix = "serifs"
+selectorAffix."armn/yiBar" = "serifless"
+
+[prime.armn-yi-bar.variants-buildup.stages.style.serifed]
 rank = 2
-description = "Armenian yiBar with serifs"
-selector."armn/yiBar" = "serifed"
+descriptionAffix = "serifs"
+selectorAffix."armn/yiBar" = "serifed"
+
+[prime.armn-yi-bar.variants-buildup.stages.style.positioned]
+rank = 3
+keyAffix = ""
+next = "top-center"
+
+[prime.armn-yi-bar.variants-buildup.stages.top-center.full]
+rank = 3
+keyAffix = "top-center-serifed"
+descriptionAffix = "a full top-center serif"
+selectorAffix."armn/yiBar" = "topCenterFull"
 
 [prime.tittle]
 sampler = "ij "
@@ -21764,7 +24263,6 @@ armn-capital-hiun = "serifless"
 armn-capital-piur = "serifless"
 armn-capital-keh = "serifless"
 armn-capital-feh = "serifless"
-armn-turnayb = "serifless"
 armn-ayb = "serifless"
 armn-ben = "serifless"
 armn-gim = "serifless"
@@ -22024,7 +24522,6 @@ armn-capital-hiun = "serifed"
 armn-capital-piur = "serifed"
 armn-capital-keh = "serifed"
 armn-capital-feh = "serifed"
-armn-turnayb = "serifed"
 armn-ayb = "serifed"
 armn-ben = "serifed"
 armn-gim = "serifed"

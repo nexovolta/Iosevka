@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -42,4 +42,15 @@ glyph-block Letter-Armenian-Upper-Ho : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rb.full
+		local HoPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 } } [Object.entries HoPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Ho.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Ho.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Ho' 0x540

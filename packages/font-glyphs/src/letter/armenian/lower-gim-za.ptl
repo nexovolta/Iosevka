@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -32,6 +32,21 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include : if para.isItalic sf.rb.outer
 						composite-proc sf.rt.outer sf.rb.fullSide
+		local gimPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topRightMotion 1
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 p1 } } [Object.entries gimPositionedSerifs] : do
+			if (p0 || p1) : create-glyph "armn/gim.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/gim.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df XH Descender
+				if p0 : include sf.rt.outer
+				if p1 : include : if (p1 === 1) sf.rb.outer sf.rb.fullSide
 		select-variant 'armn/gim' 0x563
 
 	do "Za"
@@ -53,4 +68,14 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include sf.rt.outer
+		local zaPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topRightMotion 1
+		foreach { suffix { p0 } } [Object.entries zaPositionedSerifs] : do
+			if (p0) : create-glyph "armn/za.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/za.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df XH Descender
+				if p0 : include sf.rt.outer
 		select-variant 'armn/za' 0x566

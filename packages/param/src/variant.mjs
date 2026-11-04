@@ -25,7 +25,7 @@ export function parse(data, argv) {
 		const p = new Prime(k, data.prime[k]);
 		primes.set(k, p);
 	}
-	assignOpenTypeTags(primes);
+	assignOpenTypeTags(primes, data["reserved-letter-append-orders"] || []);
 	for (const p of primes.values()) p.register(selectorTree);
 	const defaultComposite = new Composite("{default}", data.default);
 	const composites = new Map();
@@ -271,7 +271,7 @@ function mapNumberToLetter(n) {
 	return String.fromCharCode(0x41 + hi) + String.fromCharCode(0x41 + lo);
 }
 
-function assignOpenTypeTags(primes) {
+function assignOpenTypeTags(primes, reservedLetterAppendOrders) {
 	const digits = [];
 	const letters = [];
 	const symbols = [];
@@ -290,6 +290,15 @@ function assignOpenTypeTags(primes) {
 	symbols.sort(compareByKey);
 	other.sort(compareByKey);
 	appendedLetters.sort((a, b) => a.tagOrder - b.tagOrder || compareLetters(a, b));
+	const reservedOrders = [...reservedLetterAppendOrders].sort((a, b) => a - b);
+	for (const [index, order] of reservedOrders.entries()) {
+		if (!Number.isInteger(order) || order < 0 || (index && order === reservedOrders[index - 1])) {
+			throw new Error(`Invalid reserved letter-append order: ${order}`);
+		}
+		if (appendedLetters.some(prime => prime.tagOrder === order)) {
+			throw new Error(`Reserved letter-append order already in use: ${order}`);
+		}
+	}
 
 	const cvPrimes = [...digits, ...letters];
 	const overflow = [];
@@ -299,7 +308,15 @@ function assignOpenTypeTags(primes) {
 		else overflow.push(prime);
 	}
 	let vxCount = 0;
-	for (const prime of [...symbols, ...other, ...overflow, ...appendedLetters]) {
+	for (const prime of [...symbols, ...other, ...overflow]) {
+		prime.assignTag(`VX${mapNumberToLetter(vxCount++)}`);
+	}
+	let reservedIndex = 0;
+	for (const prime of appendedLetters) {
+		while (reservedIndex < reservedOrders.length && reservedOrders[reservedIndex] < prime.tagOrder) {
+			vxCount++;
+			reservedIndex++;
+		}
 		prime.assignTag(`VX${mapNumberToLetter(vxCount++)}`);
 	}
 }

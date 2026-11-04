@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -34,6 +34,17 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rb.full
+		local GimPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 } } [Object.entries GimPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Gim.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Gim.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Gim' 0x533
 
 	do "Zhe"
@@ -52,6 +63,17 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rt.full
+		local ZhePositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topRightMotion 1
+				topRightFull 2
+		foreach { suffix { p0 } } [Object.entries ZhePositionedSerifs] : do
+			if (p0) : create-glyph "armn/Zhe.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Zhe.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rt.outer sf.rt.full
 		select-variant 'armn/Zhe' 0x53A
 
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
@@ -70,4 +92,15 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df Ascender 0
 					include sf.rt.inner
+		local zhePositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topRightMotion 1
+				topRightFull 2
+		foreach { suffix { p0 } } [Object.entries zhePositionedSerifs] : do
+			if (p0) : create-glyph "armn/zhe.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/zhe.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df Ascender 0
+				if p0 : include : if (p0 === 1) sf.rt.outer sf.rt.full
 		select-variant 'armn/zhe' 0x56A

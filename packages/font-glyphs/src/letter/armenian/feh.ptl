@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -42,6 +42,17 @@ glyph-block Letter-Armenian-Feh : begin
 			if fSerif : begin
 				local sf : SerifFrame.fromDf df CAP 0 (swSerif -- sw)
 				include sf.mt.right
+	local FehPositionedSerifs : SuffixCfg.weave
+		object
+			"" 0
+			topCenterMotion 1
+	foreach { suffix { p0 } } [Object.entries FehPositionedSerifs] : do
+		if (p0) : create-glyph "armn/Feh.\(suffix)" : glyph-proc
+			include [refer-glyph 'armn/Feh.serifless'] AS_BASE ALSO_METRICS
+			local df : DivFrame para.advanceScaleM 3
+			local sw : df.adviceThinnerStroke2 3 3 CAP
+			local sf : SerifFrame.fromDf df CAP 0 (swSerif -- sw)
+			if p0 : include sf.mt.right
 	select-variant 'armn/Feh' 0x556
 
 	foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
@@ -56,4 +67,15 @@ glyph-block Letter-Armenian-Feh : begin
 			if fSerif : begin
 				local sf : SerifFrame.fromDf df Ascender Descender (swSerif -- sw)
 				include sf.mb.fullCenter
+	local fehPositionedSerifs : SuffixCfg.weave
+		object
+			"" 0
+			bottomCenterFull 2
+	foreach { suffix { p0 } } [Object.entries fehPositionedSerifs] : do
+		if (p0) : create-glyph "armn/feh.\(suffix)" : glyph-proc
+			include [refer-glyph 'armn/feh.serifless'] AS_BASE ALSO_METRICS
+			local df : DivFrame para.advanceScaleM 3
+			local sw : df.adviceThinnerStroke2 3 3 Ascender
+			local sf : SerifFrame.fromDf df Ascender Descender (swSerif -- sw)
+			if p0 : include sf.mb.fullCenter
 	select-variant 'armn/feh' 0x586

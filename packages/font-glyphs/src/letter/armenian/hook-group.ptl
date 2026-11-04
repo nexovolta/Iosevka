@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 import [DependentSelector] from "@iosevka/glyph/relation"
 
 glyph-module
@@ -48,6 +48,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lb.full
+		local BenPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+		foreach { suffix { p0 } } [Object.entries BenPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Ben.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Ben.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/Ben' 0x532
 
 	do "Da"
@@ -60,6 +71,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rb.full
+		local DaPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 } } [Object.entries DaPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Da.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Da.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Da' 0x534
 
 	do "Ech"
@@ -73,6 +95,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lt.full
+		local EchPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topLeftMotion 1
+				topLeftFull 2
+		foreach { suffix { p0 } } [Object.entries EchPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Ech.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Ech.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.lt.outer sf.lt.full
 		select-variant 'armn/Ech' 0x535
 
 	do "Et"
@@ -85,6 +118,16 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lb.outer
+		local EtPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomLeftMotion 1
+		foreach { suffix { p0 } } [Object.entries EtPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Et.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Et.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include sf.lb.outer
 		select-variant 'armn/Et' 0x538
 
 	do "Ghat"
@@ -97,6 +140,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rb.full
+		local GhatPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 } } [Object.entries GhatPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Ghat.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Ghat.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Ghat' 0x542
 
 	do "Nu"
@@ -110,6 +164,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lt.full
+		local NuPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				topLeftMotion 1
+				topLeftFull 2
+		foreach { suffix { p0 } } [Object.entries NuPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Nu.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Nu.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.lt.outer sf.lt.full
 		select-variant 'armn/Nu' 0x546
 
 	do "Peh"
@@ -122,6 +187,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.rb.full
+		local PehPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomRightMotion 1
+				bottomRightFull 2
+		foreach { suffix { p0 } } [Object.entries PehPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Peh.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Peh.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame para.advanceScaleM 3
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Peh' 0x54A
 
 	do "Reh"
@@ -133,6 +209,17 @@ glyph-block Letter-Armenian-Hook-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df CAP 0
 					include sf.lb.full
+		local RehPositionedSerifs : SuffixCfg.weave
+			object
+				"" 0
+				bottomLeftMotion 1
+				bottomLeftFull 2
+		foreach { suffix { p0 } } [Object.entries RehPositionedSerifs] : do
+			if (p0) : create-glyph "armn/Reh.\(suffix)" : glyph-proc
+				include [refer-glyph 'armn/Reh.serifless'] AS_BASE ALSO_METRICS
+				local df : DivFrame 1
+				local sf : SerifFrame.fromDf df CAP 0
+				if p0 : include : if (p0 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/Reh' 0x550
 
 	do "Dram"

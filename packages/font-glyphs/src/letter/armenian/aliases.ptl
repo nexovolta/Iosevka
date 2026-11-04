@@ -1,10 +1,11 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
 
 glyph-module
 
 glyph-block Letter-Armenian-Aliases : begin
+	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 
@@ -17,7 +18,24 @@ glyph-block Letter-Armenian-Aliases : begin
 		alias "armn/yi.\(suffix)" null : if fSerif "dotlessj.flatHookShortSerifed" "dotlessj.flatHookSerifless"
 		alias "armn/co.\(suffix)" null : if fSerif "g.singleStoreyFlatHookSerifed" "g.singleStoreyFlatHookSerifless"
 		alias "armn/yiBar.\(suffix)" null : if fSerif "dotlessjBar.flatHookShortSerifed" "dotlessjBar.flatHookSerifless"
+	local PiurPositionedSerifs : SuffixCfg.weave
+		object
+			"" 0
+			topCenterFull 2
+		object
+			"" 0
+			bottomCenterFull 2
+	foreach { suffix { p0 p1 } } [Object.entries PiurPositionedSerifs] : do
+		if (p0 || p1) : create-glyph "armn/Piur.\(suffix)" : glyph-proc
+			include [refer-glyph 'armn/Piur.serifless'] AS_BASE ALSO_METRICS
+			local df : DivFrame para.advanceScaleM 3
+			local sw : Math.min Stroke : df.adviceStroke 2
+			if p0 : include : HSerif.mt df.middle CAP MidJutCenter sw
+			if p1 : include : HSerif.mb df.middle 0 MidJutCenter sw
 	select-variant 'armn/Piur'  0x553
+	alias "armn/yi.topCenterFull" null 'dotlessj.flatHookCenterShortSerifed'
 	select-variant 'armn/yi'    0x575
+	alias "armn/co.topRightMotion" null 'armn/co.serifed'
 	select-variant 'armn/co'    0x581
+	alias "armn/yiBar.topCenterFull" null 'dotlessjBar.flatHookCenterShortSerifed'
 	select-variant 'armn/yiBar' 0x588
