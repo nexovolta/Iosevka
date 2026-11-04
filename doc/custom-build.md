@@ -247,6 +247,10 @@ Armenian letters with optional serifs have independent `armn-capital-*` and
 Each accepts `serifless` or `serifed`; letters without optional serifs do not
 have these selectors.
 
+`diacritic-comma` and `punctuation-comma` independently choose `round`,
+`square`, `diamond`, `prime`, or `tick`. The tick uses an inverted-ogonek
+curve with a diagonal terminal.
+
 Capital and lowercase ezh have independent `capital-ezh` and `ezh` selectors.
 Each combines a `straight` or `cursive` body, a `serifless`, `serifed`,
 `inward-serifed`, `flat-hooked`, or `corner-hooked` hook, and a `serifless` or

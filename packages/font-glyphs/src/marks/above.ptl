@@ -97,6 +97,35 @@ glyph-block Mark-Above : begin
 	define commaOvershoot2 : O * [linreg 16 1 90 (-1) markStroke]
 	define commaAboveRadius : 0.85 * DotRadius * markHalfStroke / HalfStroke
 
+	glyph-block-export OgonekAboveShape
+	define [OgonekAboveShape diagonalTerminal _weight] : glyph-proc
+		local weight : fallback _weight 1
+		local fine : AdviceStroke 8
+		local depth : 0 - Descender - markStroke
+		local fullExt : (7 / 16) * depth + 0.125 * markStress
+		local extR : 0.25 * fullExt
+		local extL : 0.5 * fullExt + 0.375 * markStroke + [Math.max (0.125 * markExtend) (TanSlope * 1.5 * markStroke)]
+		local turnSlope : 0.5 * ((markStroke - fine) / markStroke - (ArchDepthB - ArchDepth) / ArchDepth)
+		include : intersection
+			if diagonalTerminal
+				MaskAboveLine (markMiddle - extL) (XH + 0.18 * depth) (markMiddle + extR) (XH - 0.10 * depth) 4
+				MaskAbove (XH + O)
+			dispiro
+				g4 (markMiddle + [mix (+extR) (-extL) 0.75]) XH [widths.rhs.heading (weight * fine) Rightward]
+				alsoThru 0.5 (0.375 - 0.2 * markStroke / depth) [widths.rhs : weight * [mix fine markStroke 0.25]]
+				g4.up.mid (markMiddle + extR) (XH + 0.75 * depth) [widths.rhs.heading (weight * markStroke) {.x (-HVContrast) .y (-turnSlope)}]
+				arcvh [widths.rhs (weight * markStroke)]
+				g4 (markMiddle + [mix (+extR) (-extL) 0.625]) (XH + depth - O) [heading Leftward]
+				g4 (markMiddle - extL) (XH + depth - 0.5 * O) [heading Leftward]
+
+	glyph-block-export OgonekTickShape
+	define [OgonekTickShape cx top] : glyph-proc
+		local bounds nothing
+		local shape : new-glyph : glyph-proc
+			include : OgonekAboveShape true 0.6
+			set bounds : include : MeasureGlyphBounds
+		include : with-transform [ApparentTranslate (cx - (bounds.xMin + bounds.xMax) / 2) (top - bounds.yMax)] shape
+
 	glyph-block-export StdAnchors
 	define StdAnchors : namespace
 		export : define [impl mk padding k fLeaning] : glyph-proc
@@ -1478,8 +1507,31 @@ glyph-block Mark-Above : begin
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.rhs swTip]
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 
-	select-variant 'commaAbove' 0x313 (follow -- 'diacriticDot')
-	select-variant 'commaAbove/asPunctuation' (shapeFrom -- 'commaAbove') (follow -- 'punctuationDot')
+	create-glyph 'commaAbove.prime' : glyph-proc
+		set-width 0
+		include : StdAnchors.narrow
+		local fine : 0.5 * markStroke
+		local primeBounds nothing
+		local shape : new-glyph : glyph-proc
+			include : dispiro
+				flat (markMiddle + commaAboveRadius) (aboveMarkTop + DotRadius * 0.3) [widths.heading (fine * 1.2) (fine * 1.2) Downward]
+				curl (markMiddle - commaAboveRadius) (aboveMarkBot - commaAboveRadius - commaOvershoot2 + DotRadius * 0.3) [widths.heading fine fine Downward]
+			set primeBounds : include : MeasureGlyphBounds
+		local tickBounds nothing
+		local tickShape : new-glyph : glyph-proc
+			include : OgonekTickShape markMiddle (aboveMarkTop + DotRadius * 0.3)
+			set tickBounds : include : MeasureGlyphBounds
+		local scale : (tickBounds.yMax - tickBounds.yMin) / (primeBounds.yMax - primeBounds.yMin)
+		include : with-transform [ApparentTranslate (markMiddle * (1 - scale)) (tickBounds.yMax - scale * primeBounds.yMax)]
+			with-transform [Scale scale scale] shape
+
+	create-glyph 'commaAbove.tick' : glyph-proc
+		set-width 0
+		include : StdAnchors.narrow
+		include : OgonekTickShape markMiddle (aboveMarkTop + DotRadius * 0.3)
+
+	select-variant 'commaAbove' 0x313 (follow -- 'diacriticComma')
+	select-variant 'commaAbove/asPunctuation' (shapeFrom -- 'commaAbove') (follow -- 'punctuationComma')
 
 	derive-composites 'commaAboveZero.round'  null 'commaAbove.round'  [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius)]
 	derive-composites 'commaAboveZero.square' null 'commaAbove.square' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * SquareDotScalar)]
@@ -1547,7 +1599,13 @@ glyph-block Mark-Above : begin
 			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.lhs swTip]
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 
-	select-variant 'revCommaAbove' 0x314 (follow -- 'diacriticDot')
+	foreach suffix { 'prime' 'tick' } : do
+		create-glyph "revCommaAbove.\(suffix)" : glyph-proc
+			set-width 0
+			include : StdAnchors.narrow
+			include : with-transform [ScaleAround markMiddle 0 (-1) 1] : refer-glyph "commaAbove.\(suffix)"
+
+	select-variant 'revCommaAbove' 0x314 (follow -- 'diacriticComma')
 
 	derive-glyphs 'revCommaGrekUpperTonos' null 'revCommaAbove' : function [src gr] : glyph-proc
 		set-width 0
@@ -2031,28 +2089,10 @@ glyph-block Mark-Above : begin
 
 	create-glyph 'ogonekAbove' 0x1DCE : glyph-proc
 		set-width 0
-
 		set-mark-anchor 'above' markMiddle XH markMiddle aboveMarkStack
 		set-base-anchor 'aboveBraceL' (markMiddle - 0.25 * markExtend) aboveMarkMid
 		set-base-anchor 'aboveBraceR' (markMiddle + 0.25 * markExtend + [HSwToV : 0.25 * markStroke]) aboveMarkMid
-
-		local fine : AdviceStroke 8
-		local depth : 0 - Descender - markStroke
-		local fullExt : (7 / 16) * depth + 0.125 * markStress
-		local extR : 0.25 * fullExt
-		local extL : 0.5 * fullExt + 0.375 * markStroke + [Math.max (0.125 * markExtend) (TanSlope * 1.5 * markStroke)]
-
-		local turnSlope : 0.5 * ((markStroke - fine) / markStroke - (ArchDepthB - ArchDepth) / ArchDepth)
-
-		include : intersection
-			MaskAbove (XH + O)
-			dispiro
-				g4 (markMiddle + [mix (+extR) (-extL) 0.75]) XH [widths.rhs.heading fine Rightward]
-				alsoThru 0.5 (0.375 - 0.2 * markStroke / depth) [widths.rhs : mix fine markStroke 0.25]
-				g4.up.mid (markMiddle + extR) (XH + 0.75 * depth) [widths.rhs.heading markStroke {.x (-HVContrast) .y (-turnSlope)}]
-				arcvh [widths.rhs markStroke]
-				g4 (markMiddle + [mix (+extR) (-extL) 0.625]) (XH + depth - O) [heading Leftward]
-				g4 (markMiddle - extL) (XH + depth - 0.5 * O) [heading Leftward]
+		include : OgonekAboveShape false
 
 	create-glyph 'deletionMarkAbove' 0x1DFB : glyph-proc
 		set-width 0
