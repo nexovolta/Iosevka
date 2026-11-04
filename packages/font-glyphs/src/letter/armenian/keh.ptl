@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Armenian-Keh : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : OBarLeft SerifFrame
 
 	# Common Params
@@ -16,45 +17,49 @@ glyph-block Letter-Armenian-Keh : begin
 	define jut Jut
 
 	do "K'eh"
-		create-glyph 'armn/Keh' 0x554 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			local barSw : OverlayStroke * (df.mvs / Stroke)
-			local oBot : CAP * HBarPos - df.mvs / 2
-			include : OBarLeft.earlessRounded
-				top   -- CAP
-				bot   -- oBot
-				left  -- df.leftSB
-				right -- df.rightSB
-				sw    -- df.mvs
-				fine  -- df.shoulderFine
-				ada   -- ArchDepthA
-				adb   -- ArchDepthB
-				yTerminal -- 0
-			include : HBar.m (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB
-				mix [if SLAB df.mvs 0] oBot 0.5
-				Math.min barSw : 0.5 * (oBot - [if SLAB df.mvs 0])
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Keh.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				local barSw : OverlayStroke * (df.mvs / Stroke)
+				local oBot : CAP * HBarPos - df.mvs / 2
+				include : OBarLeft.earlessRounded
+					top   -- CAP
+					bot   -- oBot
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- ArchDepthA
+					adb   -- ArchDepthB
+					yTerminal -- 0
+				include : HBar.m (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB
+					mix [if fSerif df.mvs 0] oBot 0.5
+					Math.min barSw : 0.5 * (oBot - [if fSerif df.mvs 0])
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lb.full
+		select-variant 'armn/Keh' 0x554
 
-		create-glyph 'armn/keh' 0x584 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.p
-			local barSw : OverlayStroke * (df.mvs / Stroke)
-			local oBot : Math.max (0.1 * (XH - Descender)) (barSw + 0.5 * df.mvs)
-			include : OBarLeft.shape
-				top   -- XH
-				bot   -- oBot
-				left  -- df.leftSB
-				right -- df.rightSB
-				sw    -- df.mvs
-				fine  -- df.shoulderFine
-				ada   -- SmallArchDepthA
-				adb   -- SmallArchDepthB
-			include : VBar.l df.leftSB Descender XH df.mvs
-			include : HBar.b (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB 0 barSw
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df XH Descender
-				include sf.lt.outer
-				if [not para.isItalic] : include sf.lb.fullSide
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/keh.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.p
+				local barSw : OverlayStroke * (df.mvs / Stroke)
+				local oBot : Math.max (0.1 * (XH - Descender)) (barSw + 0.5 * df.mvs)
+				include : OBarLeft.shape
+					top   -- XH
+					bot   -- oBot
+					left  -- df.leftSB
+					right -- df.rightSB
+					sw    -- df.mvs
+					fine  -- df.shoulderFine
+					ada   -- SmallArchDepthA
+					adb   -- SmallArchDepthB
+				include : VBar.l df.leftSB Descender XH df.mvs
+				include : HBar.b (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB 0 barSw
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df XH Descender
+					include sf.lt.outer
+					if [not para.isItalic] : include sf.lb.fullSide
+		select-variant 'armn/keh' 0x584

@@ -8,56 +8,67 @@ glyph-module
 glyph-block Letter-Armenian-Upper-U-Group : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
 	do "Ayb"
 		glyph-block-import Letter-Latin-Upper-Q : QCrossing QInnerDiagSw
-		create-glyph 'armn/Ayb' 0x531 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : UShape CAP 1 df.leftSB df.rightSB df.mvs
-			include : QCrossing df CAP QInnerDiagSw
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lt.full sf.rt.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Ayb.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : UShape CAP 1 df.leftSB df.rightSB df.mvs
+				include : QCrossing df CAP QInnerDiagSw
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lt.full sf.rt.full
+		select-variant 'armn/Ayb' 0x531
 
 	do "Men"
-		create-glyph 'armn/Men' 0x544 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : UShape CAP 0 df.leftSB df.rightSB df.mvs
-			include : [ArmHBar.right df].cap
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lt.full sf.rt.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Men.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : UShape CAP 0 df.leftSB df.rightSB df.mvs
+				include : [ArmHBar.right df fSerif].cap
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lt.full sf.rt.full
+		select-variant 'armn/Men' 0x544
 
 	do "Vo"
-		create-glyph 'armn/Vo' 0x548 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : UShape CAP 1 df.leftSB df.rightSB df.mvs
-			include : FlipAround Middle (CAP / 2)
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lb.full sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Vo.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : UShape CAP 1 df.leftSB df.rightSB df.mvs
+				include : FlipAround Middle (CAP / 2)
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lb.full sf.rb.full
+		select-variant 'armn/Vo' 0x548
 
 	do "Rra"
-		create-glyph 'armn/Rra' 0x54C : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : UShape CAP 1 df.leftSB df.rightSB df.mvs
-			include : FlipAround Middle (CAP / 2)
-			include : [ArmHBar.right df].mid
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lb.full sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Rra.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : UShape CAP 1 df.leftSB df.rightSB df.mvs
+				include : FlipAround Middle (CAP / 2)
+				include : [ArmHBar.right df fSerif].mid
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lb.full sf.rb.full
+		select-variant 'armn/Rra' 0x54C
 
 	do "Seh"
-		create-glyph 'armn/Seh' 0x54D : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : UShape CAP 1 df.leftSB df.rightSB df.mvs
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lt.full sf.rt.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Seh.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : UShape CAP 1 df.leftSB df.rightSB df.mvs
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lt.full sf.rt.full
+		select-variant 'armn/Seh' 0x54D

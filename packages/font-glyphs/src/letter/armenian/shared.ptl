@@ -18,14 +18,20 @@ glyph-block Letter-Armenian-Shared-Shapes : begin
 		RIGHT  1
 		LEFT   2
 
+	glyph-block-export ArmenianSerifConfig
+	define ArmenianSerifConfig : object
+		serifless false
+		serifed true
+
 	glyph-block-export ArmHBar
-	define [ArmHBar hPos df] : namespace
+	define [ArmHBar hPos df _serifed] : namespace
+		define serifed : fallback _serifed SLAB
 		define left : match hPos
 			[Just JUT.RIGHT]  df.rightSB
-			[Just JUT.LEFT]  (df.leftSB - (jut * [if SLAB 1.5 1]) + [HSwToV : 0.5 * df.mvs])
+			[Just JUT.LEFT]  (df.leftSB - (jut * [if serifed 1.5 1]) + [HSwToV : 0.5 * df.mvs])
 			--                df.leftSB
 		define right : match hPos
-			[Just JUT.RIGHT] (df.rightSB + (jut * [if SLAB 1.5 1]) - [HSwToV : 0.5 * df.mvs])
+			[Just JUT.RIGHT] (df.rightSB + (jut * [if serifed 1.5 1]) - [HSwToV : 0.5 * df.mvs])
 			[Just JUT.LEFT]   df.leftSB
 			--                df.rightSB
 
@@ -44,6 +50,6 @@ glyph-block Letter-Armenian-Shared-Shapes : begin
 		export : define [at y] : glyph-proc
 			include : HBar.m left right y df.mvs
 
-	set [ArmHBar.normal df] : ArmHBar JUT.NORMAL df
-	set [ArmHBar.right  df] : ArmHBar JUT.RIGHT  df
-	set [ArmHBar.left   df] : ArmHBar JUT.LEFT   df
+	set [ArmHBar.normal df serifed] : ArmHBar JUT.NORMAL df serifed
+	set [ArmHBar.right  df serifed] : ArmHBar JUT.RIGHT  df serifed
+	set [ArmHBar.left   df serifed] : ArmHBar JUT.LEFT   df serifed

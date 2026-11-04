@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Armenian-Hook-Group : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
@@ -38,85 +39,101 @@ glyph-block Letter-Armenian-Hook-Group : begin
 			curl df.rightSB bot [heading Downward]
 
 	do "Ben"
-		create-glyph 'armn/Ben' 0x532 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : RightHook df CAP 0 df.mvs
-			include : [ArmHBar.normal df].mid
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Ben.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : RightHook df CAP 0 df.mvs
+				include : [ArmHBar.normal df].mid
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lb.full
+		select-variant 'armn/Ben' 0x532
 
 	do "Da"
-		create-glyph 'armn/Da' 0x534 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : LeftHook df CAP 0 df.mvs
-			include : [ArmHBar.right df].mid
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Da.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : LeftHook df CAP 0 df.mvs
+				include : [ArmHBar.right df fSerif].mid
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.rb.full
+		select-variant 'armn/Da' 0x534
 
 	do "Ech"
-		create-glyph 'armn/Ech' 0x535 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : LeftHook df CAP 0 df.mvs
-			include : FlipAround df.middle (CAP / 2)
-			include : [ArmHBar.normal df].high
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lt.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Ech.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : LeftHook df CAP 0 df.mvs
+				include : FlipAround df.middle (CAP / 2)
+				include : [ArmHBar.normal df].high
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lt.full
+		select-variant 'armn/Ech' 0x535
 
 	do "Et"
-		create-glyph 'armn/Et' 0x538 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : RightHook df CAP 0 df.mvs
-			include : [ArmHBar.normal df].base
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lb.outer
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Et.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : RightHook df CAP 0 df.mvs
+				include : [ArmHBar.normal df].base
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lb.outer
+		select-variant 'armn/Et' 0x538
 
 	do "Ghat"
-		create-glyph 'armn/Ghat' 0x542 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : LeftHook df CAP 0 df.mvs
-			include : [ArmHBar.right df].base
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Ghat.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : LeftHook df CAP 0 df.mvs
+				include : [ArmHBar.right df fSerif].base
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.rb.full
+		select-variant 'armn/Ghat' 0x542
 
 	do "Nu"
-		create-glyph 'armn/Nu' 0x546 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : LeftHook df CAP 0 df.mvs
-			include : FlipAround df.middle (CAP / 2)
-			include : [ArmHBar.left df].cap
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lt.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Nu.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : LeftHook df CAP 0 df.mvs
+				include : FlipAround df.middle (CAP / 2)
+				include : [ArmHBar.left df fSerif].cap
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lt.full
+		select-variant 'armn/Nu' 0x546
 
 	do "Peh"
-		create-glyph 'armn/Peh' 0x54A : glyph-proc
-			local df : include : DivFrame para.advanceScaleM 3
-			include : df.markSet.capital
-			include : LeftHook df CAP 0 df.mvs Hook df.archDepthA df.archDepthB
-			include : VBar.m df.middle (XH / 2) (CAP - 0.5 * df.mvs) df.mvs
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Peh.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleM 3
+				include : df.markSet.capital
+				include : LeftHook df CAP 0 df.mvs Hook df.archDepthA df.archDepthB
+				include : VBar.m df.middle (XH / 2) (CAP - 0.5 * df.mvs) df.mvs
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.rb.full
+		select-variant 'armn/Peh' 0x54A
 
 	do "Reh"
-		create-glyph 'armn/Reh' 0x550 : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			include : RightHook df CAP 0 df.mvs
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				include sf.lb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Reh.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				include : RightHook df CAP 0 df.mvs
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					include sf.lb.full
+		select-variant 'armn/Reh' 0x550
 
 	do "Dram"
 		glyph-block-import Letter-Shared-Shapes : LetterBarOverlay

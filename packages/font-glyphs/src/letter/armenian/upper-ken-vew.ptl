@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Armenian-Upper-Ken-Vew : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : uBowl SerifFrame
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
@@ -17,42 +18,46 @@ glyph-block Letter-Armenian-Upper-Ken-Vew : begin
 	define jut Jut
 
 	do "Ken"
-		create-glyph 'armn/Ken' 0x53F : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			local barPosB : barPos - df.mvs / 2
-			include : uBowl.shape
-				top    -- CAP
-				bottom -- barPosB
-				left   -- df.leftSB
-				right  -- (df.rightSB - [HSwToV df.mvs])
-				ada    -- ArchDepthA
-				adb    -- ArchDepthB
-				stroke -- df.mvs
-				fine   -- df.shoulderFine
-			include : VBar.r df.rightSB 0 highBarPos df.mvs
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df CAP 0
-				local sf2 : SerifFrame.fromDf df highBarPos 0
-				include : composite-proc sf.lt.full sf2.rt.full sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Ken.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				local barPosB : barPos - df.mvs / 2
+				include : uBowl.shape
+					top    -- CAP
+					bottom -- barPosB
+					left   -- df.leftSB
+					right  -- (df.rightSB - [HSwToV df.mvs])
+					ada    -- ArchDepthA
+					adb    -- ArchDepthB
+					stroke -- df.mvs
+					fine   -- df.shoulderFine
+				include : VBar.r df.rightSB 0 highBarPos df.mvs
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df CAP 0
+					local sf2 : SerifFrame.fromDf df highBarPos 0
+					include : composite-proc sf.lt.full sf2.rt.full sf.rb.full
+		select-variant 'armn/Ken' 0x53F
 
 	do "Vew"
-		create-glyph 'armn/Vew' 0x54E : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capital
-			local barPosB : barPos - df.mvs / 2
-			include : uBowl.shape
-				top    -- highBarPos
-				bottom -- barPosB
-				left   -- df.leftSB
-				right  -- (df.rightSB - [HSwToV df.mvs])
-				ada    -- ArchDepthA
-				adb    -- ArchDepthB
-				stroke -- df.mvs
-				fine   -- df.shoulderFine
-			include : VBar.r df.rightSB 0 CAP df.mvs
-			include : [ArmHBar.right df].base
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df highBarPos 0
-				local sf2 : SerifFrame.fromDf df CAP 0
-				include : composite-proc sf.lt.full sf2.rt.full sf.rb.full
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/Vew.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.capital
+				local barPosB : barPos - df.mvs / 2
+				include : uBowl.shape
+					top    -- highBarPos
+					bottom -- barPosB
+					left   -- df.leftSB
+					right  -- (df.rightSB - [HSwToV df.mvs])
+					ada    -- ArchDepthA
+					adb    -- ArchDepthB
+					stroke -- df.mvs
+					fine   -- df.shoulderFine
+				include : VBar.r df.rightSB 0 CAP df.mvs
+				include : [ArmHBar.right df fSerif].base
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df highBarPos 0
+					local sf2 : SerifFrame.fromDf df CAP 0
+					include : composite-proc sf.lt.full sf2.rt.full sf.rb.full
+		select-variant 'armn/Vew' 0x54E

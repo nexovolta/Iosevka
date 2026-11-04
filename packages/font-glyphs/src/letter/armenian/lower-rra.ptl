@@ -8,6 +8,7 @@ glyph-module
 glyph-block Letter-Armenian-Lower-Rra : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : SerifFrame # nShoulder
 	# glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 	glyph-block-import Letter-Armenian-Lower-Sha-Group : TwoNeck
@@ -18,35 +19,37 @@ glyph-block Letter-Armenian-Lower-Rra : begin
 	define jut Jut
 
 	do "Rra"
-		create-glyph 'armn/rra' 0x57C : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.e
-			include : VBar.l df.leftSB 0 XH df.mvs
+		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+			create-glyph "armn/rra.\(suffix)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.e
+				include : VBar.l df.leftSB 0 XH df.mvs
 
-			# Combination of nShoulder and straight '2' shape
-			local left : Math.max df.middle : (df.rightSB - [HSwToV df.mvs]) - jut
-			include : dispiro
-				widths.rhs df.shoulderFine
-				flat (df.leftSB + [HSwToV : df.mvs - df.shoulderFine]) (XH - SmallArchDepthA - TINY)
-				curl (df.leftSB + [HSwToV : df.mvs - df.shoulderFine]) (XH - SmallArchDepthA)
-				Arch.rhs XH (sw -- df.mvs) (swBefore -- df.shoulderFine)
-				TwoNeck df XH 0 left
-			include : HBar.b left ((left + [HSwToV df.mvs]) + jut) 0 df.mvs
-			if SLAB : begin
-				local sf : SerifFrame.fromDf df XH 0
-				include sf.lt.outer
-				if [not para.isItalic] : include sf.lb.outer
+				# Combination of nShoulder and straight '2' shape
+				local left : Math.max df.middle : (df.rightSB - [HSwToV df.mvs]) - jut
+				include : dispiro
+					widths.rhs df.shoulderFine
+					flat (df.leftSB + [HSwToV : df.mvs - df.shoulderFine]) (XH - SmallArchDepthA - TINY)
+					curl (df.leftSB + [HSwToV : df.mvs - df.shoulderFine]) (XH - SmallArchDepthA)
+					Arch.rhs XH (sw -- df.mvs) (swBefore -- df.shoulderFine)
+					TwoNeck df XH 0 left
+				include : HBar.b left ((left + [HSwToV df.mvs]) + jut) 0 df.mvs
+				if fSerif : begin
+					local sf : SerifFrame.fromDf df XH 0
+					include sf.lt.outer
+					if [not para.isItalic] : include sf.lb.outer
 
-			# Alternate straight 'n' form
-			# include : nShoulder.shape
-			# 	top    -- XH
-			# 	bottom -- 0
-			# 	left   -- (df.leftSB + [HSwToV df.mvs])
-			# 	right  -- df.rightSB
-			# 	stroke -- df.mvs
-			# 	fine   -- df.shoulderFine
-			# include : [ArmHBar.right df].base
-			# if SLAB : begin
-			# 	local sf : SerifFrame.fromDf df XH 0
-			# 	include sf.lt.outer
-			# 	if [not para.isItalic] : include sf.lb.full
+				# Alternate straight 'n' form
+				# include : nShoulder.shape
+				# 	top    -- XH
+				# 	bottom -- 0
+				# 	left   -- (df.leftSB + [HSwToV df.mvs])
+				# 	right  -- df.rightSB
+				# 	stroke -- df.mvs
+				# 	fine   -- df.shoulderFine
+				# include : [ArmHBar.right df].base
+				# if SLAB : begin
+				# 	local sf : SerifFrame.fromDf df XH 0
+				# 	include sf.lt.outer
+				# 	if [not para.isItalic] : include sf.lb.full
+		select-variant 'armn/rra' 0x57C

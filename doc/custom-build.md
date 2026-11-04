@@ -242,6 +242,11 @@ Likewise, `cyrl-capital-koppa` and `cyrl-koppa` independently select a hook
 and base serif, for example `corner-hooked-serifless` or
 `corner-hooked-base-serifed`.
 
+Armenian letters with optional serifs have independent `armn-capital-*` and
+`armn-lower-*` selectors, such as `armn-capital-ben` and `armn-lower-ben`.
+Each accepts `serifless` or `serifed`; letters without optional serifs do not
+have these selectors.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
