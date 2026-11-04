@@ -22,11 +22,25 @@ const cyrillicKeys = hooks.flatMap(hook => hook === "serifless"
 
 test("koppa selectors are independent and preserve existing feature tags", () => {
 	const oldData = structuredClone(variants);
+	const appendedOrder = Math.min(
+		variants.prime["capital-qoppa"].tagOrder,
+		variants.prime["cyrl-capital-koppa"].tagOrder,
+	);
 	delete oldData.prime["capital-qoppa"];
 	delete oldData.prime["cyrl-capital-koppa"];
+	for (const [key, prime] of Object.entries(oldData.prime)) {
+		if (prime.tagKind === "letter-append" && (prime.tagOrder || 0) >= appendedOrder) {
+			delete oldData.prime[key];
+		}
+	}
 	const oldPrimes = Variant.parse(oldData, {}).primes;
 	const primes = Variant.parse(variants, {}).primes;
 	for (const [key, prime] of oldPrimes) assert.equal(primes.get(key).tag, prime.tag, key);
+	assert.equal(new Set(["qoppa", "capital-qoppa", "cyrl-koppa", "cyrl-capital-koppa"]
+		.map(key => primes.get(key).tag)).size, 4);
+	for (const key of ["qoppa", "capital-qoppa"]) {
+		assert.deepEqual([...primes.get(key).variants.keys()], ["serifless", "base-serifed"]);
+	}
 	for (const key of ["cyrl-koppa", "cyrl-capital-koppa"]) {
 		const prime = primes.get(key);
 		assert.deepEqual([...prime.variants.keys()], cyrillicKeys);
