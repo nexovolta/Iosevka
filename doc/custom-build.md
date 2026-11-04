@@ -247,6 +247,14 @@ Armenian letters with optional serifs have independent `armn-capital-*` and
 Each accepts `serifless` or `serifed`; letters without optional serifs do not
 have these selectors.
 
+Capital and lowercase ezh have independent `capital-ezh` and `ezh` selectors.
+Each combines a `straight` or `cursive` body, a `serifless`, `serifed`,
+`inward-serifed`, `flat-hooked`, or `corner-hooked` hook, and a `serifless` or
+`top-serifed` top, for example `straight-corner-hooked-top-serifed`.
+These selectors replace the previous dependence of ezh on Z/z.
+Ezh forms with distinctive tails retain those tails; Visigothic Z keeps its
+C-shaped upper half controlled by C/c.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
