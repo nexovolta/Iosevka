@@ -119,12 +119,25 @@ glyph-block Mark-Above : begin
 				g4 (markMiddle - extL) (XH + depth - 0.5 * O) [heading Leftward]
 
 	glyph-block-export OgonekTickShape
-	define [OgonekTickShape cx top] : glyph-proc
+	define [OgonekTickShape cx top _weight _height] : glyph-proc
 		local bounds nothing
 		local shape : new-glyph : glyph-proc
-			include : OgonekAboveShape true 0.6
+			include : OgonekAboveShape true [fallback _weight 0.6]
 			set bounds : include : MeasureGlyphBounds
-		include : with-transform [ApparentTranslate (cx - (bounds.xMin + bounds.xMax) / 2) (top - bounds.yMax)] shape
+		local scale : [fallback _height (bounds.yMax - bounds.yMin)] / (bounds.yMax - bounds.yMin)
+		include : with-transform [ApparentTranslate (cx - scale * (bounds.xMin + bounds.xMax) / 2) (top - scale * bounds.yMax)]
+			with-transform [Scale scale scale] shape
+
+	define [OgonekCommaHeight] : glyph-proc
+		local bounds nothing
+		local shape : new-glyph : glyph-proc
+			include : OgonekAboveShape false
+			set bounds : include : MeasureGlyphBounds
+		return : bounds.yMax - bounds.yMin
+
+	define [SetCommaStackAnchor] : glyph-proc
+		local bounds : include : MeasureGlyphBounds
+		set-base-anchor 'above' markMiddle (XH + [Math.max AccentStackOffset (bounds.yMax - bounds.yMin + AccentClearance / 2)])
 
 	glyph-block-export StdAnchors
 	define StdAnchors : namespace
@@ -1475,6 +1488,7 @@ glyph-block Mark-Above : begin
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)
+		include : SetCommaStackAnchor
 
 	create-glyph 'commaAbove.square' : glyph-proc
 		set-width 0
@@ -1489,6 +1503,7 @@ glyph-block Mark-Above : begin
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
 		include : ApparentTranslate 0 (DotRadius * 0.3)
+		include : SetCommaStackAnchor
 
 	create-glyph 'commaAbove.diamond' : glyph-proc
 		set-width 0
@@ -1506,29 +1521,25 @@ glyph-block Mark-Above : begin
 			quadControls 0 0.6
 			g4   [mix markMiddle (markMiddle - radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.rhs swTip]
 		include : ApparentTranslate 0 (DotRadius * 0.3)
+		include : SetCommaStackAnchor
 
 	create-glyph 'commaAbove.prime' : glyph-proc
 		set-width 0
 		include : StdAnchors.narrow
 		local fine : 0.5 * markStroke
-		local primeBounds nothing
-		local shape : new-glyph : glyph-proc
-			include : dispiro
-				flat (markMiddle + commaAboveRadius) (aboveMarkTop + DotRadius * 0.3) [widths.heading (fine * 1.2) (fine * 1.2) Downward]
-				curl (markMiddle - commaAboveRadius) (aboveMarkBot - commaAboveRadius - commaOvershoot2 + DotRadius * 0.3) [widths.heading fine fine Downward]
-			set primeBounds : include : MeasureGlyphBounds
-		local tickBounds nothing
-		local tickShape : new-glyph : glyph-proc
-			include : OgonekTickShape markMiddle (aboveMarkTop + DotRadius * 0.3)
-			set tickBounds : include : MeasureGlyphBounds
-		local scale : (tickBounds.yMax - tickBounds.yMin) / (primeBounds.yMax - primeBounds.yMin)
-		include : with-transform [ApparentTranslate (markMiddle * (1 - scale)) (tickBounds.yMax - scale * primeBounds.yMax)]
-			with-transform [Scale scale scale] shape
+		local height : include : OgonekCommaHeight
+		local top : aboveMarkTop + DotRadius * 0.3
+		local shift : commaAboveRadius * height / (aboveMarkTop - aboveMarkBot + commaAboveRadius + commaOvershoot2)
+		include : dispiro
+			flat (markMiddle + shift) top [widths.heading (fine * 1.2) (fine * 1.2) Downward]
+			curl (markMiddle - shift) (top - height) [widths.heading fine fine Downward]
+		include : SetCommaStackAnchor
 
 	create-glyph 'commaAbove.tick' : glyph-proc
 		set-width 0
 		include : StdAnchors.narrow
-		include : OgonekTickShape markMiddle (aboveMarkTop + DotRadius * 0.3)
+		include : OgonekTickShape markMiddle (aboveMarkTop + DotRadius * 0.3) 1 [include : OgonekCommaHeight]
+		include : SetCommaStackAnchor
 
 	select-variant 'commaAbove' 0x313 (follow -- 'diacriticComma')
 	select-variant 'commaAbove/asPunctuation' (shapeFrom -- 'commaAbove') (follow -- 'punctuationComma')
@@ -1548,62 +1559,22 @@ glyph-block Mark-Above : begin
 		include : with-transform [Translate (+markExtend) 0] : refer-glyph src
 		include : with-transform [Translate (-markExtend) 0] : refer-glyph src
 		include : StdAnchors.wide
+		include : SetCommaStackAnchor
 
 	derive-glyphs 'turnCommaAbove' 0x312 'commaAbove' : function [src gr] : glyph-proc
 		set-width 0
 		include : refer-glyph src
-		include : FlipAround markMiddle ([mix aboveMarkTop (aboveMarkBot - commaAboveRadius) 0.5] + (DotRadius * 0.3) + commaOvershoot / 2)
+		local bounds : include : MeasureGlyphBounds
+		include : FlipAround markMiddle ((bounds.yMin + bounds.yMax) / 2)
 		include : StdAnchors.narrow
+		include : SetCommaStackAnchor
 
-	create-glyph 'revCommaAbove.round' : glyph-proc
-		set-width 0
-		include : StdAnchors.narrow
-
-		local radius commaAboveRadius
-		include : Ring (aboveMarkTop + commaOvershoot) (aboveMarkTop - radius * 2 + commaOvershoot) (markMiddle - radius) (markMiddle + radius)
-		include : dispiro
-			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			straight.down.start (markMiddle - radius) (aboveMarkTop - radius + commaOvershoot)
-			quadControls 0 0.6
-			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
-		include : ApparentTranslate 0 (DotRadius * 0.3)
-
-	create-glyph 'revCommaAbove.square' : glyph-proc
-		set-width 0
-		include : StdAnchors.narrow
-
-		local radius : commaAboveRadius * SquareDotScalar
-		include : Rect (aboveMarkTop + commaOvershoot) (aboveMarkTop - radius * 2 + commaOvershoot) (markMiddle - radius) (markMiddle + radius)
-		include : dispiro
-			widths.lhs [Math.min radius : markFine * [linreg 16 2 90 1.75 markStroke]]
-			flat (markMiddle - radius) aboveMarkTop [heading Downward]
-			curl (markMiddle - radius) (aboveMarkTop - 2 * radius) [heading Downward]
-			quadControls 0 0.6
-			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2)
-		include : ApparentTranslate 0 (DotRadius * 0.3)
-
-	create-glyph 'revCommaAbove.diamond' : glyph-proc
-		set-width 0
-		include : StdAnchors.narrow
-
-		local radius : commaAboveRadius * SquareDotScalar
-		local q : radius * Math.SQRT2
-		local swStart : 0.88 * q
-		local swTip : 0.48 * swStart
-		local yEq : aboveMarkTop - radius
-		include : DiamondAt markMiddle yEq radius
-		include : dispiro
-			flat (markMiddle - q) yEq [widths.lhs.heading swStart Downward]
-			curl (markMiddle - q) (yEq - 0.18 * q) [widths.lhs.heading swStart Downward]
-			quadControls 0 0.6
-			g4   [mix markMiddle (markMiddle + radius) 0.2] (aboveMarkBot - radius - commaOvershoot2) [widths.lhs swTip]
-		include : ApparentTranslate 0 (DotRadius * 0.3)
-
-	foreach suffix { 'prime' 'tick' } : do
+	foreach suffix { 'round' 'square' 'diamond' 'prime' 'tick' } : do
 		create-glyph "revCommaAbove.\(suffix)" : glyph-proc
 			set-width 0
-			include : StdAnchors.narrow
 			include : with-transform [ScaleAround markMiddle 0 (-1) 1] : refer-glyph "commaAbove.\(suffix)"
+			include : StdAnchors.narrow
+			include : SetCommaStackAnchor
 
 	select-variant 'revCommaAbove' 0x314 (follow -- 'diacriticComma')
 

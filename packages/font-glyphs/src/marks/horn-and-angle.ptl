@@ -80,6 +80,19 @@ glyph-block Mark-Horn-And-Angle : begin
 					widths.rhs [mix hornFine hornStroke t]
 				g4 (attX - overshootX - [HSwToV HalfStroke]) (attY - overshootY - Stroke) [widths.rhs hornStroke]
 
+	define [ArcHornShape attX attY overshootX overshootY krY] : glyph-proc
+		local [object radius startX] : HornDim attX attY overshootX overshootY krY
+		local bottom : attY - 0.35 * markStroke
+		local curveTop : bottom + radius
+		include : union
+			HBar.m (attX - [HSwToV HalfStroke]) (startX - radius) bottom markStroke
+			dispiro
+				widths.center markStroke
+				g4.right.start (startX - radius) bottom [heading Rightward]
+				archv
+				g4.up.end startX curveTop [heading Upward]
+			VBar.m startX curveTop (curveTop + radius) markStroke
+
 	create-glyph 'horn.round' : glyph-proc
 		set-width 0
 		include : HornShape      0 XH 0 0 0.5
@@ -95,7 +108,13 @@ glyph-block Mark-Horn-And-Angle : begin
 		include : DiamondHornShape 0 XH 0 0 0.5
 		include : HornMarkAnchor  0 XH 0 0 0.5
 
-	select-variant 'horn' 0x31B (follow -- 'diacriticDot')
+	foreach suffix { 'prime' 'tick' } : do
+		create-glyph "horn.\(suffix)" : glyph-proc
+			set-width 0
+			include : ArcHornShape   0 XH 0 0 0.5
+			include : HornMarkAnchor 0 XH 0 0 0.5
+
+	select-variant 'horn' 0x31B (follow -- 'diacriticComma')
 
 	create-glyph 'longHorn.round' : glyph-proc
 		set-width 0
@@ -112,7 +131,13 @@ glyph-block Mark-Horn-And-Angle : begin
 		include : DiamondHornShape 0 XH (Width / 2) (ArchDepthB) 0.5
 		include : HornMarkAnchor  0 XH (Width / 2) (ArchDepthB) 0.5
 
-	select-variant 'longHorn' null (follow -- 'diacriticDot')
+	foreach suffix { 'prime' 'tick' } : do
+		create-glyph "longHorn.\(suffix)" : glyph-proc
+			set-width 0
+			include : ArcHornShape   0 XH (Width / 2) (ArchDepthB) 0.5
+			include : HornMarkAnchor 0 XH (Width / 2) (ArchDepthB) 0.5
+
+	select-variant 'longHorn' null (follow -- 'diacriticComma')
 
 	create-glyph 'leftAngleTR' 0x31A : glyph-proc
 		set-width 0

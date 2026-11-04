@@ -249,7 +249,8 @@ have these selectors.
 
 `diacritic-comma` and `punctuation-comma` independently choose `round`,
 `square`, `diamond`, `prime`, or `tick`. The tick uses an inverted-ogonek
-curve with a diagonal terminal.
+curve with a diagonal terminal. The horn follows `diacritic-comma`; its
+`prime` and `tick` forms use a plain curved horn.
 
 Capital and lowercase ezh have independent `capital-ezh` and `ezh` selectors.
 Each combines a `straight` or `cursive` body, a `serifless`, `serifed`,
