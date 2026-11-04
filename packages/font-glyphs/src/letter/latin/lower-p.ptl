@@ -177,11 +177,12 @@ glyph-block Letter-Latin-Lower-P : begin
 			local xMask : Math.max
 				SB + [HSwToV Stroke] + 2 * tinyGap
 				SB + [HSwToV HalfStroke] + MidJutSide + tinyGap
+			local xBowlLeft : if fFlat SB (SB + [HSwToV : Stroke - ShoulderFine])
 
 			include : PalatalHook.r
-				x -- [mix [Arch.adjust-x.bot Middle] RightSB 0.75]
+				x -- [mix [Arch.adjust-x.bot [mix xBowlLeft (RightSB - OX) 0.5]] (RightSB - OX) 0.75]
 				y -- 0
-				yAttach -- [mix O SmallArchDepthA : archv.yFromX 0.75]
+				yAttach -- [mix [if fFlat 0 O] SmallArchDepthA : archv.yFromX 0.75]
 				maskOut -- [intersection [MaskBelow 0] [MaskLeft xMask]]
 
 		create-glyph "pFlourish.\(suffix)" : glyph-proc

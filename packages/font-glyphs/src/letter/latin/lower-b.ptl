@@ -21,7 +21,7 @@ glyph-block Letter-Latin-Lower-B : begin
 	# Always flat at the top (C joins here). Bottom follows the `b` spur variant.
 	define [FlourishFlatTopKnots left right top sw] : list
 		arcvh
-		flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] top
+		flat [Arch.adjust-x.top [mix left (right - OX) 0.5] (sw -- sw)] top
 		curl (left + TINY) top [heading Leftward]
 
 	define [FlourishBowl] : with-params [Body top bot left right sw ada adb] : begin
@@ -57,7 +57,7 @@ glyph-block Letter-Latin-Lower-B : begin
 		return : dispiro
 			widths.lhs sw
 			flat (left + TINY) bot [heading Rightward]
-			curl [Arch.adjust-x.bot [mix left right 0.5] (sw -- sw)] bot
+			curl [Arch.adjust-x.bot [mix left (right - OX) 0.5] (sw -- sw)] bot
 			archv
 			flatside.ru right bot top ada adb
 			FlourishFlatTopKnots left right top sw
@@ -167,6 +167,11 @@ glyph-block Letter-Latin-Lower-B : begin
 			include : MarkSet.b
 			include : Body Ascender fFlat cut
 			include : Serifs
+			local bowlKind : BBowlKind Body
+			local xBowlLeft : if (bowlKind === 'toothed') (SB + [HSwToV : Stroke - ShoulderFine]) SB
+			set-base-anchor 'palatalHookAttach'
+				mix [Arch.adjust-x.bot [mix xBowlLeft (RightSB - OX) 0.5] (sw -- Stroke)] (RightSB - OX) 0.75
+				mix [if (bowlKind === 'flatBottom') 0 O] SmallArchDepthA [archv.yFromX 0.75]
 			include : LeaningAnchor.Above.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
 			set-base-anchor 'overlay' Middle (XH / 2)
@@ -269,12 +274,15 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	select-variant 'bHookTop' 0x253
 
-	derive-composites 'bPalatalHook' 0x1D80 'b' : PalatalHook.r
-		x -- [mix [Arch.adjust-x.bot Middle] RightSB 0.75]
-		y -- 0
-		yAttach -- [mix O SmallArchDepthA : archv.yFromX 0.75]
+	derive-glyphs 'bPalatalHook' 0x1D80 'b' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		local attach : currentGlyph.gizmo.unapply (currentGlyph.baseAnchors.palatalHookAttach || currentGlyph.baseAnchors.bottomRight)
+		include : PalatalHook.r
+			x -- attach.x
+			y -- 0
+			yAttach -- attach.y
 
-	derive-multi-part-glyphs 'bDot' 0x1E03 {'b' 'dotAbove'} : lambda [srcs gr] : glyph-proc
+	derive-multi-part-glyphs 'bDot' 0x1E03 { 'b' 'dotAbove' } : lambda [srcs gr] : glyph-proc
 		local { base mark } srcs
 		include : refer-glyph mark
 		include : Translate (Width + [HSwToV HalfStroke]) 0

@@ -14,10 +14,7 @@ glyph-block Digits-Seven : begin
 	define SevenStraightInnerX : SevenXLeft + [HSwToV : 0.75 * Stroke]
 	define [StraightBody top] : union [HBar.t SB RightSB top] : intersection
 		Rect (top - Stroke) 0 SB RightSB
-		dispiro
-			widths.rhs
-			corner RightSB (top - Stroke)
-			corner [mix RightSB SevenStraightInnerX 2] [mix (top - Stroke) 0 2]
+		ExtLineRhs RightSB (top - Stroke) [mix RightSB SevenStraightInnerX 2] [mix (top - Stroke) 0 2]
 
 	define SevenXLeftBend : mix SB RightSB 0.38
 	define SevenBendKnotX : SevenXLeftBend + [HSwToV : 0.6 * Stroke]
@@ -34,11 +31,12 @@ glyph-block Digits-Seven : begin
 		MaskBelow top
 		MaskAbove 0
 		dispiro
-			g4.down.start RightSB top [widths.rhs.heading Stroke Downward]
+			widths.rhs
+			g4.down.start RightSB                                    [mix top 0 0] [heading Downward]
 			alsoThru.g2 0.5 0.5
 			g4.down.mid SevenBendKnotX 0 [heading Downward]
 			alsoThru.g2 0.5 0.5
-			g4.down.end RightSB (-top) [widths.rhs.heading Stroke Downward]
+			g4.down.end   RightSB                                    [mix top 0 2] [heading Downward]
 
 	define [SevenSquareYShoulder top] : top - Stroke - [Math.max (0.12 * top) Stroke]
 	define [SevenSquareYFoot top] : Math.max (0.14 * top) Stroke
