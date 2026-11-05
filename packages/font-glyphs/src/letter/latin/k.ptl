@@ -104,6 +104,55 @@ glyph-block Letter-Latin-K : begin
 			maskRB
 
 	define KLegs : namespace
+		export : define [Rounded fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
+			local start : left + [HSwToV : stroke / 2]
+			local halfInk : HSwToV : stroke / 2
+			local outer : right - halfInk
+			local mid : top / 2
+			local bend : mix start outer 0.35
+			local armTop : top - [if fHookRight Hook TINY]
+			set-base-anchor 'overlay' [mix left right 0.5] mid
+			set-base-anchor 'strike' [mix left right 0.5] mid
+			set-base-anchor 'trailing' right 0
+			if [not fHookRight] : set-base-anchor 'armOverlay' [mix bend outer 0.94] [mix mid top 0.58]
+			set-base-anchor 'legOverlay' [mix bend outer 0.94] [mix mid 0 0.58]
+			include : union
+				dispiro
+					widths.center stroke
+					flat start mid [heading Rightward]
+					curl bend mid [heading Rightward]
+					archv
+					flat outer armTop [heading Upward]
+					curl outer (armTop + TINY) [heading Upward]
+				dispiro
+					widths.center stroke
+					flat start mid [heading Rightward]
+					curl bend mid [heading Rightward]
+					archv
+					flat outer 0 [heading Downward]
+					curl outer (-TINY) [heading Downward]
+				if fHookRight
+					dispiro
+						widths.center stroke
+						flat outer (armTop - TINY) [heading Upward]
+						arcvh
+						curl (outer + HookX / 2) top [heading Rightward]
+					no-shape
+			if [not fHookRight] : begin
+				if [HasFullRtSerif slabLegs]
+				: then : include : HSerif.mt outer top Jut stroke
+				: else : begin
+					if [HasRtInner slabLegs] : include : HSerif.lt (outer - halfInk) top SideJut stroke
+					if [HasRtOuter slabLegs] : include : HSerif.rt (outer + halfInk) top SideJut stroke
+			if [HasRbSerif slabLegs]
+			: then : include : if [HasFullRtSerif slabLegs]
+				HSerif.mb outer 0 Jut stroke
+				HSerif.rb (outer + halfInk) 0 SideJut stroke
+			if attachment : include : attachment.rSideJut
+				x -- (outer + halfInk)
+				y -- 0
+				jut -- Jut
+
 		export : define [Straight fHookRight left right stroke top slabLT slabLegs attachment omitLegSerifs] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
 			local ox : KOvershootX slabLegs true top stroke
@@ -591,6 +640,7 @@ glyph-block Letter-Latin-K : begin
 			symmetricConnected   [KLegs.Symmetric [AdviceStroke 6]]
 			inverseConnected     KLegs.InverseConnected
 			roundedConnected     KLegs.RoundedConnected
+			rounded              KLegs.Rounded
 			symmetricConnectedKH [KLegs.Symmetric [AdviceStroke 6] Descender]
 			symmetricConnectedVB [KLegs.Symmetric CyrlVbGap]
 		function [body] : object # serifs

@@ -263,6 +263,9 @@ in slab builds.
 
 <!-- END Section-Stylistic-Sets -->
 
+For Greek lowercase kappa, `lower-kappa = 'rounded-serifless'` selects rounded
+arms; the rounded body also supports the existing kappa serif choices.
+
 <!-- BEGIN Section-Cherry-Picking-Styles -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
