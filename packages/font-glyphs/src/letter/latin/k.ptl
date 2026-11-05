@@ -687,7 +687,7 @@ glyph-block Letter-Latin-K : begin
 		local r : mix SB RightSB 0.92
 		include : HOverlayBar l r currentGlyph.baseAnchors.overlay.y
 
-	define [CyrlKaVBarBody LegsImpl top sw slabLT slabLB slabLegs fStraightBar] : glyph-proc
+	define [CyrlKaVBarBody LegsImpl top sw slabLT slabLB slabLegs fStraightBar suffix] : glyph-proc
 		local xBarLeft : SB + [KBalance slabLT fStraightBar]
 		local barSw : sw / 2
 		local barInk : HSwToV barSw
@@ -698,7 +698,6 @@ glyph-block Letter-Latin-K : begin
 		local legRun : Math.max TINY (RightSB - xBarLeft - stemInk)
 		local sxRaw : 1 - dx / legRun
 		local sx : Math.max 0.5 sxRaw
-		local half : [CyrlVbLength top] / 2
 		include : VBar.l xBarLeft 0 top sw
 		if slabLT : include : UpperKLTSerif top sw xBarLeft slabLT
 		if slabLB : include : UpperKLBSerif top sw xBarLeft slabLB
@@ -710,7 +709,20 @@ glyph-block Letter-Latin-K : begin
 			include : Scale sx 1
 			include : Translate crotch cy
 			include : Regizmo
-		include : VBar.r crotch (top / 2 - half) (top / 2 + half) barSw
+		local yJoin : piecewise
+			[suffix.startsWith 'straight'] (top * 0.42 - sw)
+			[suffix.startsWith 'inverseConnected'] (top * 0.58 + sw)
+			[suffix.startsWith 'curly'] (top * [if [HasLegSerif slabLegs] 0.325 0.375])
+			[suffix.startsWith 'roundedConnected'] : begin
+				local ox : KOvershootX slabLegs true top sw
+				local right : RightSB + [KBalanceRight slabLegs true]
+				local run : Math.max TINY (right - ox - [HSwToV sw] - xBarLeft - stemInk)
+				Math.min (0.4 * top) (top - run)
+			true (top / 2)
+		local alignJoin : [suffix.startsWith 'straight'] || [suffix.startsWith 'curly'] || [suffix.startsWith 'symmetric'] || [suffix.startsWith 'inverseConnected'] || [suffix.startsWith 'roundedConnected']
+		local barCenter : if alignJoin [clamp TINY (top - TINY) yJoin] cy
+		local half : if alignJoin [Math.min ([CyrlVbLength top] / 2) barCenter (top - barCenter)] ([CyrlVbLength top] / 2)
+		include : VBar.r crotch (barCenter - half) (barCenter + half) barSw
 
 	# Attachment glyph used for Greek Kai Symbol
 	create-glyph 'UpperKaiSymbolAttachment' : glyph-proc
@@ -764,7 +776,7 @@ glyph-block Letter-Latin-K : begin
 
 		create-glyph "KVBar.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : CyrlKaVBarBody LegsImpl CAP Stroke slabLT slabLB slabLegs fStraightBar
+			include : CyrlKaVBarBody LegsImpl CAP Stroke slabLT slabLB slabLegs fStraightBar suffix
 
 		create-glyph "grek/KaiSymbol.\(suffix)" : glyph-proc
 			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
@@ -783,7 +795,7 @@ glyph-block Letter-Latin-K : begin
 
 		create-glyph "smcpKVBar.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : CyrlKaVBarBody LegsImpl XH Stroke slabLT slabLB slabLegs fStraightBar
+			include : CyrlKaVBarBody LegsImpl XH Stroke slabLT slabLB slabLegs fStraightBar suffix
 
 		create-glyph "KHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -831,6 +843,7 @@ glyph-block Letter-Latin-K : begin
 			symmetricConnected  [KLegs.Symmetric [AdviceStroke 6]]
 			inverseConnected    KLegs.InverseConnected
 			roundedConnected    KLegs.RoundedConnected
+			rounded             KLegs.Rounded
 		object # serifs
 			serifless                     { 0 0 0 }
 			topLeftSerifed                { 1 0 SLAB-TL }

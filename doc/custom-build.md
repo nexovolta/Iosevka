@@ -263,6 +263,14 @@ in slab builds.
 
 <!-- END Section-Stylistic-Sets -->
 
+The `capital-k`, `k`, `cyrl-capital-ka`, and `cyrl-ka` selectors support the
+`rounded` body with their existing serif choices, for example
+`capital-k = 'rounded-serifless'`. The `capital-y`, `cyrl-capital-ue`, and
+`cyrl-ue` selectors also support rounded bodies, for example
+`cyrl-ue = 'rounded-serifless'`. Cyrillic capital Ү/Ұ and lowercase ү/ұ are
+configured independently through `cyrl-capital-ue` and `cyrl-ue`, respectively;
+they no longer follow `capital-y` automatically.
+
 For Greek lowercase kappa, `lower-kappa = 'rounded-serifless'` selects rounded
 arms; the rounded body also supports the existing kappa serif choices.
 

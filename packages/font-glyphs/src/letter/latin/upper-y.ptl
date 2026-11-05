@@ -16,6 +16,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 
 	define BODY-CURLY    0
 	define BODY-STRAIGHT 1
+	define BODY-ROUNDED  2
 
 	define SLAB-NONE                    0
 	define SLAB-ALL                     1
@@ -33,38 +34,60 @@ glyph-block Letter-Latin-Upper-Y : begin
 
 	define [YCrossPos top bot] : mix bot top 0.4
 
-	define [YSlabs slabType top bot] : glyph-proc
-		local sf : SerifFrame.fromDf [DivFrame 1] top 0
-		match slabType
-			[Just SLAB-ALL] : begin
-				include : composite-proc sf.lt.full [VExtendedRtFull sf]
-				include : HSerif.mb Middle bot MidJutCenter
-			[Just SLAB-MOTION] : include sf.lt.outer
-			[Just SLAB-TOP-RIGHT-MOTION] : include : VExtendedRtInner sf
-			[Just SLAB-BILATERAL-MOTION] : include : composite-proc sf.lt.outer [VExtendedRtInner sf]
-			[Just SLAB-BASE] : include : HSerif.mb Middle bot MidJutCenter
-			[Just SLAB-BASE-MOTION] : begin
-				include sf.lt.outer
-				include : HSerif.mb Middle bot MidJutCenter
-			[Just SLAB-BASE-TOP-RIGHT-MOTION] : begin
-				include : VExtendedRtInner sf
-				include : HSerif.mb Middle bot MidJutCenter
-			[Just SLAB-BASE-BILATERAL-MOTION] : begin
-				include : composite-proc sf.lt.outer [VExtendedRtInner sf]
-				include : HSerif.mb Middle bot MidJutCenter
+	define [YOverlayAnchors slabType bot cross] : glyph-proc
+		set-base-anchor 'overlay' Middle cross
+		set-base-anchor 'overlayOnExtension' Middle
+			[mix (bot + [if [YHasBaseSerif slabType] Stroke 0]) cross 0.5] + (Stroke - OverlayStroke) / 2
+
+	define [YSlabs slabType top bot bodyType] : glyph-proc
+		if (bodyType === BODY-ROUNDED) : begin
+			local halfInk : HSwToV HalfStroke
+			if [YHasTopLeftSerif slabType] : include : tagged 'serifLT' : if (slabType === SLAB-ALL)
+				HSerif.mt (SB + OX + halfInk) top Jut
+				HSerif.lt (SB + OX) top SideJut
+			if [YHasTopRightSerif slabType] : include : tagged 'serifRT' : if (slabType === SLAB-ALL)
+				HSerif.mt (RightSB - OX - halfInk) top Jut
+				HSerif.lt (RightSB - OX - 2 * halfInk) top SideJut
+			if [YHasBaseSerif slabType] : include : HSerif.mb Middle bot MidJutCenter
+		: else : begin
+			local sf : SerifFrame.fromDf [DivFrame 1] top 0
+			match slabType
+				[Just SLAB-ALL] : begin
+					include : composite-proc sf.lt.full [VExtendedRtFull sf]
+					include : HSerif.mb Middle bot MidJutCenter
+				[Just SLAB-MOTION] : include sf.lt.outer
+				[Just SLAB-TOP-RIGHT-MOTION] : include : VExtendedRtInner sf
+				[Just SLAB-BILATERAL-MOTION] : include : composite-proc sf.lt.outer [VExtendedRtInner sf]
+				[Just SLAB-BASE] : include : HSerif.mb Middle bot MidJutCenter
+				[Just SLAB-BASE-MOTION] : begin
+					include sf.lt.outer
+					include : HSerif.mb Middle bot MidJutCenter
+				[Just SLAB-BASE-TOP-RIGHT-MOTION] : begin
+					include : VExtendedRtInner sf
+					include : HSerif.mb Middle bot MidJutCenter
+				[Just SLAB-BASE-BILATERAL-MOTION] : begin
+					include : composite-proc sf.lt.outer [VExtendedRtInner sf]
+					include : HSerif.mb Middle bot MidJutCenter
 
 	define [YShape] : with-params [bodyType slabType top bot [cross [YCrossPos top bot]]] : glyph-proc
 		local maskLT : YHasTopLeftSerif slabType
 		local maskRT : YHasTopRightSerif slabType
 
-		include : tagged 'strokeLT' : WithSerifOverflowMask maskLT [[DivFrame].bodyBox top bot]
-			HalfXStrand bodyType SLAB SB top Middle cross 0.1 0.4 0.28
-		include : tagged 'strokeRT' : WithSerifOverflowMask maskRT [[DivFrame].bodyBox top bot]
-			HalfXStrand bodyType SLAB RightSB top Middle cross 0.1 0.4 0.28
-		include : tagged 'strokeVMid' : VBar.m Middle bot (cross + HalfStroke)
-		set-base-anchor 'overlay' Middle cross
-		set-base-anchor 'overlayOnExtension' Middle
-			[mix (bot + [if [YHasBaseSerif slabType] Stroke 0]) cross 0.5] + (Stroke - OverlayStroke) / 2
+		if (bodyType === BODY-ROUNDED)
+		: then : include : union
+			dispiro
+				widths.lhs Stroke
+				g4.down.start (SB + OX) top [heading Downward]
+				Arch.lhs cross (sw -- Stroke)
+				g4.up.end (RightSB - OX) top [heading Upward]
+			VBar.m Middle bot (cross + HalfStroke)
+		: else : begin
+			include : tagged 'strokeLT' : WithSerifOverflowMask maskLT [[DivFrame].bodyBox top bot]
+				HalfXStrand bodyType SLAB SB top Middle cross 0.1 0.4 0.28
+			include : tagged 'strokeRT' : WithSerifOverflowMask maskRT [[DivFrame].bodyBox top bot]
+				HalfXStrand bodyType SLAB RightSB top Middle cross 0.1 0.4 0.28
+			include : tagged 'strokeVMid' : VBar.m Middle bot (cross + HalfStroke)
+		include : YOverlayAnchors slabType bot cross
 
 	define [YenOverlayShape slabType] : glyph-proc
 		define { ks bot } : match slabType
@@ -92,9 +115,22 @@ glyph-block Letter-Latin-Upper-Y : begin
 		g4 (Middle + [HSwToV HalfStroke]) cross [widths.rhs : AdviceStroke 3.5]
 
 	define [YHookRightShape] : with-params [bodyType slabType top bot [cross [YCrossPos top bot]]] : glyph-proc
-		include : YShape bodyType slabType top bot cross
-		eject-contour 'strokeRT'
-		include : YHookRightHookedStroke top bot cross
+		if (bodyType === BODY-ROUNDED)
+		: then : begin
+			include : union
+				dispiro
+					widths.lhs Stroke
+					g4.down.start (SB + OX) top [heading Downward]
+					Arch.lhs cross (sw -- Stroke)
+					g4 (RightSB - OX) (top - TailY) [heading Upward]
+					arcvh
+					curl (RightSB + TailX / 3) (top - Stroke) [heading Rightward]
+				VBar.m Middle bot (cross + HalfStroke)
+			include : YOverlayAnchors slabType bot cross
+		: else : begin
+			include : YShape bodyType slabType top bot cross
+			eject-contour 'strokeRT'
+			include : YHookRightHookedStroke top bot cross
 
 	define [YHookLeftRightShape] : with-params [bodyType slabType top bot [cross [YCrossPos top bot]]] : glyph-proc
 		include : VBar.m Middle bot (cross + HalfStroke)
@@ -120,12 +156,21 @@ glyph-block Letter-Latin-Upper-Y : begin
 		curlyBaseBilateralMotionSerifed        { BODY-CURLY    SLAB-BASE-BILATERAL-MOTION  }
 		straightSerifed                        { BODY-STRAIGHT SLAB-ALL                    }
 		curlySerifed                           { BODY-CURLY    SLAB-ALL                    }
+		roundedSerifless                       { BODY-ROUNDED  SLAB-NONE                   }
+		roundedBaseSerifed                     { BODY-ROUNDED  SLAB-BASE                   }
+		roundedMotionSerifed                   { BODY-ROUNDED  SLAB-MOTION                 }
+		roundedTopRightMotionSerifed           { BODY-ROUNDED  SLAB-TOP-RIGHT-MOTION       }
+		roundedBilateralMotionSerifed          { BODY-ROUNDED  SLAB-BILATERAL-MOTION       }
+		roundedBaseMotionSerifed               { BODY-ROUNDED  SLAB-BASE-MOTION            }
+		roundedBaseTopRightMotionSerifed       { BODY-ROUNDED  SLAB-BASE-TOP-RIGHT-MOTION  }
+		roundedBaseBilateralMotionSerifed      { BODY-ROUNDED  SLAB-BASE-BILATERAL-MOTION  }
+		roundedSerifed                         { BODY-ROUNDED  SLAB-ALL                    }
 
 	foreach { suffix { bodyType slabType } } [Object.entries YConfig] : do
 		create-glyph "Y.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : YShape bodyType slabType CAP 0
-			include : YSlabs          slabType CAP 0
+			include : YSlabs          slabType CAP 0 bodyType
 
 		create-glyph "grek/Upsilon.\(suffix)" : glyph-proc
 			include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
@@ -134,24 +179,24 @@ glyph-block Letter-Latin-Upper-Y : begin
 		create-glyph "smcpY.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : YShape bodyType slabType XH 0
-			include : YSlabs          slabType XH 0
+			include : YSlabs          slabType XH 0 bodyType
 
 		create-glyph "YHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : YHookRightShape bodyType slabType CAP 0
-			include : YSlabs                   slabType CAP 0
+			include : YSlabs                   slabType CAP 0 bodyType
 			eject-contour 'serifRT'
 
 		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
 			include : MarkSet.p
-			include : YShape bodyType slabType XH Descender (cross -- 0)
-			include : YSlabs          slabType XH Descender
+			include : YShape bodyType slabType XH Descender (cross -- [if (bodyType === BODY-ROUNDED) 0 [YCrossPos XH Descender]])
+			include : YSlabs          slabType XH Descender bodyType
 
 		if ((slabType === SLAB-NONE || slabType === SLAB-BASE) && bodyType === BODY-STRAIGHT) : begin
 			create-glyph "grek/UpsilonHookSymbol.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				include : YHookLeftRightShape bodyType slabType CAP 0
-				include : YSlabs                       slabType CAP 0
+				include : YSlabs                       slabType CAP 0 bodyType
 				eject-contour 'serifLT'
 				eject-contour 'serifRT'
 				include : SetGrekUpperTonos (OX - TailX / 3)
@@ -171,7 +216,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 	select-variant 'grek/UpsilonHookSymbol' 0x3D2
 
 	select-variant 'cyrl/Ue' 0x4AE (shapeFrom -- 'Y')
-	select-variant 'cyrl/ue' 0x4AF (follow -- 'cyrl/Ue')
+	select-variant 'cyrl/ue' 0x4AF
 	CreateAccentedComposition 'cyrl/Uo' 0x4B0 'cyrl/Ue' 'barOver'
 	CreateAccentedComposition 'cyrl/uo' 0x4B1 'cyrl/ue' 'barOver'
 
