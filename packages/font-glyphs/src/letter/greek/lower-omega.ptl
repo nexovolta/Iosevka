@@ -108,11 +108,6 @@ glyph-block Letter-Greek-Lower-Omega : begin
 			g4.down.mid  [mix df.middle lInner k1] ([mix 0 loopTop k2] - d)
 			g4 df.middle yCross [widths.lhs coFine]
 
-	create-glyph 'latn/Omega' 0xA7B6 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : LowerOmegaShape df CAP
-
 	define [ClosedOmegaShape df top fLongLeg _body _terminal] : glyph-proc
 		local body : fallback _body 'round'
 		local terminal : fallback _terminal 'round'
@@ -120,10 +115,11 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		local fine : stroke * CThin
 
 		# local x0 : mix df.leftSB df.rightSB 0.1
-		local x1 : df.leftSB + OX + [if (body === 'broad') ((df.rightSB - df.leftSB) * 0.035) 0]
+		local verticalSides : body === 'vertical' || body === 'broad'
+		local x1 : df.leftSB + OX
 
 		local y0 : top - 0 # O
-		local y1 : mix 0 top : if (body === 'vertical') 0.60 0.45
+		local y1 : mix 0 top : if verticalSides 0.60 0.45
 		local y3 : mix 0 top 0.50
 		local yRound : [mix 0 top : if fLongLeg 1.00 0.65] - [if fLongLeg O 0] - [if fLongLeg 0.5 0.0] * stroke
 		local y4 : if (terminal === 'round') yRound : if (fLongLeg && terminal === 'almost') [mix yRound top 0.5] (top * [NotchRatio terminal])
@@ -133,28 +129,33 @@ glyph-block Letter-Greek-Lower-Omega : begin
 			flat (df.middle - [HSwToV : stroke / 2 - fine]) y4 [heading Downward]
 			curl (df.middle - [HSwToV : stroke / 2 - fine]) y3 [heading Downward]
 			Arch.rhs 0 (sw -- stroke) (swBefore -- fine)
-			if (body === 'vertical')
+			if verticalSides
 				flatside.lu df.leftSB 0 top (top * 0.3) (top * 0.3)
 				g4 x1 y1
 			Arch.rhs y0 (sw -- stroke)
-			if (body === 'vertical')
+			if verticalSides
 				flatside.rd df.rightSB 0 top (top * 0.3) (top * 0.3)
 				g4 (df.width - x1) y1
 			Arch.rhs 0 (sw -- stroke) (swAfter -- fine)
 			flat (df.middle + [HSwToV : stroke / 2 - fine]) y3 [widths.rhs.heading fine Upward]
 			curl (df.middle + [HSwToV : stroke / 2 - fine]) y4 [heading Upward]
 
-	create-glyph 'latn/OmegaClosed' 0xA7DD : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : ClosedOmegaShape df CAP false
-
-	create-glyph 'latn/OmegaClosedLongLeg' 0x1DF74 : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.capital
-		include : ClosedOmegaShape df CAP true
-
 	foreach { suffix { body terminal } } [Object.entries OmegaConfig] : do
+		create-glyph "latn/Omega.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : LowerOmegaShape df CAP body terminal
+
+		create-glyph "latn/OmegaClosed.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : ClosedOmegaShape df CAP false body terminal
+
+		create-glyph "latn/OmegaClosedLongLeg.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleMM 3
+			include : df.markSet.capital
+			include : ClosedOmegaShape df CAP true body terminal
+
 		create-glyph "grek/omega.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.e
@@ -185,6 +186,9 @@ glyph-block Letter-Greek-Lower-Omega : begin
 			include : ClosedOmegaShape df XH true body terminal
 
 	select-variant 'grek/omega' 0x3C9
+	select-variant 'latn/Omega' 0xA7B6 (follow -- 'grek/omega')
+	select-variant 'latn/OmegaClosed' 0xA7DD (follow -- 'grek/omega')
+	select-variant 'latn/OmegaClosedLongLeg' 0x1DF74 (follow -- 'grek/omega')
 	select-variant 'grek/piSymbol' 0x3D6 (follow -- 'grek/omega')
 	select-variant 'latn/omegaWithLoop' 0x1DF60 (follow -- 'grek/omega')
 	select-variant 'latn/omegaClosed' 0x277 (follow -- 'grek/omega')

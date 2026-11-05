@@ -15,7 +15,7 @@ const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const read = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
 const data = Object.assign({}, ...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read));
 const variantData = read("variants");
-const codes = [0x3c9, 0x3d6, 0x277, 0xa7b7, 0x1df75, 0x1df77, 0x1df60];
+const codes = [0x3c9, 0x3d6, 0xa7b6, 0xa7b7, 0xa7dd, 0x277, 0x1df74, 0x1df75, 0x1df76, 0x1df77, 0x1df60];
 const keys = [
 	"round", "almost-flat-top", "flat-top",
 	"broad", "broad-almost-flat-top", "broad-flat-top",
@@ -31,9 +31,11 @@ test("the omega feature does not renumber existing OpenType tags", () => {
 	const oldPrimes = Variant.parse(oldData, {}).primes;
 	const newPrimes = Variant.parse(variantData, {}).primes;
 	for (const [key, prime] of oldPrimes) {
-		assert.equal(newPrimes.get(key).tag, prime.tag, key);
+		if (oldData.prime[key].tagKind !== "letter-append") {
+			assert.equal(newPrimes.get(key).tag, prime.tag, key);
+		}
 	}
-	assert.ok(newPrimes.get("lower-omega").tag);
+	assert.equal(newPrimes.get("lower-omega").tag, "VXCZ");
 });
 
 for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "upright"], [920, "italic"]]) {
@@ -61,14 +63,19 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "uprigh
 				assert.ok(contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
 				assert.equal(target.advanceWidth, glyph.advanceWidth, name);
 				for (const [index, previous] of shapes.entries()) {
-					assert.notDeepEqual(contours, previous, `U+${code.toString(16)}: ${keys[index]} and ${variant.key} match`);
+					// Closed omega uses the same vertical body for broad and vertical-side choices.
+					if ([0xa7dd, 0x277, 0x1df74, 0x1df75, 0x1df76, 0x1df77].includes(code) && index >= 3 && index % 3 === shapes.length % 3) {
+						assert.deepEqual(contours, previous, `U+${code.toString(16)}: ${keys[index]} and ${variant.key} differ`);
+					} else {
+						assert.notDeepEqual(contours, previous, `U+${code.toString(16)}: ${keys[index]} and ${variant.key} match`);
+					}
 				}
 
 				shapes.push(contours);
 			}
 		}
 		if (slope === "upright") {
-			const xHeight = calculateMetrics(para).XH;
+			const { XH: xHeight, CAP: capHeight } = calculateMetrics(para);
 			const omega = glyphStore.queryByUnicode(0x3c9);
 			for (const [index, variant] of [...prime.variants.values()].entries()) {
 				const points = glyphStore.queryByNameEnsured(variant.get(omega)).geometry.toContours().flat();
@@ -76,6 +83,12 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "uprigh
 				assert.ok(points.some(p =>
 					Math.abs(p.y - expected) < 0.01 && Math.abs(p.x - omega.advanceWidth / 2) < omega.advanceWidth * 0.2
 				), `${variant.key}: middle notch must reach ${expected}`);
+				const capital = glyphStore.queryByUnicode(0xa7b6);
+				const capitalPoints = glyphStore.queryByNameEnsured(variant.get(capital)).geometry.toContours().flat();
+				const capitalExpected = capHeight * [0.65, 0.85, 1][index % 3];
+				assert.ok(capitalPoints.some(p =>
+					Math.abs(p.y - capitalExpected) < 0.01 && Math.abs(p.x - capital.advanceWidth / 2) < capital.advanceWidth * 0.2
+				), `${variant.key}: capital middle notch must reach ${capitalExpected}`);
 			}
 			if (weight === 120) {
 				const pointsFor = key => glyphStore.queryByNameEnsured(prime.variants.get(key).get(omega)).geometry.toContours().flat();
@@ -89,6 +102,32 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "uprigh
 					assert.ok(points.some(top => Math.abs(top.y - xHeight) < 0.01 && points.some(lower =>
 						Math.abs(lower.x - top.x) < 0.01 && top.y - lower.y > xHeight * 0.4
 					)), `${key}: outer stem must remain vertical from the top`);
+				}
+			}
+			for (const [code, top, turned, longLeg] of [
+				[0xa7dd, capHeight, false, false], [0x277, xHeight, false, false],
+				[0x1df74, capHeight, false, true], [0x1df75, xHeight, false, true],
+				[0x1df76, capHeight, true, false], [0x1df77, xHeight, true, false],
+			]) {
+				const glyph = glyphStore.queryByUnicode(code);
+				const pointsFor = key => glyphStore.queryByNameEnsured(prime.variants.get(key).get(glyph)).geometry.toContours().flat();
+				for (let notch = 0; notch < 3; notch++) {
+					const roundPoints = pointsFor(keys[notch]);
+					const expectedY = roundPoints[0].y;
+					if (!longLeg) {
+						const expected = top * (turned ? 1 - [0.65, 0.85, 1][notch] : [0.65, 0.85, 1][notch]);
+						assert.ok(Math.abs(expectedY - expected) < 0.01, `U+${code.toString(16)}: ${keys[notch]} notch height`);
+					}
+					for (const index of [notch + 3, notch + 6]) {
+						const points = pointsFor(keys[index]);
+						assert.ok(Math.abs(points[0].y - expectedY) < 0.01, `U+${code.toString(16)}: ${keys[index]} notch height`);
+						for (const side of [-1, 1]) {
+							const edge = points.filter(p => side * (p.x - glyph.advanceWidth / 2) > 0);
+							assert.ok(edge.some(a => edge.some(b =>
+								Math.abs(a.x - b.x) < 0.05 && Math.abs(a.y - b.y) > top * 0.3
+							)), `U+${code.toString(16)}: ${keys[index]} must have vertical ${side < 0 ? "left" : "right"} side`);
+						}
+					}
 				}
 			}
 		}
