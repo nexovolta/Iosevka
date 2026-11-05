@@ -230,6 +230,11 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
 
 Subsection `variants` is used to configure character variants in the font. Properties include:
 
+The `x` and `capital-x` designs include rounded variants with optional serifs,
+and a serifless `rounded-chancery` variant.
+The `capital-omega` design includes a `serifed` Greek Omega, selected by default
+in slab builds.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

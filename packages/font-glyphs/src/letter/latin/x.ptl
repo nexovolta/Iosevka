@@ -137,9 +137,51 @@ glyph-block Letter-Latin-X : begin
 	define STROKE-CHANCERY       2
 	define STROKE-CURSIVE        3
 	define STROKE-CURSIVE-FLAT   4
-	define STROKE-H-SHAPED            5
-	define STROKE-H-SHAPED-CURLY      6
+	define STROKE-H-SHAPED           5
+	define STROKE-H-SHAPED-CURLY     6
 	define STROKE-STRAIGHT-TOUCHING  7
+	define STROKE-ROUNDED            8
+	define STROKE-ROUNDED-CHANCERY   9
+
+	define [RoundedXShape box sw botLong] : glyph-proc
+		local archHeight : (box.t - box.b) * 0.5 + sw * 0.3
+		local xl : box.l + OX
+		local xr : box.r - OX
+		include : dispiro
+			widths.rhs sw
+			g4.up.start xl box.b [heading Upward]
+			Arch.rhs (box.b + archHeight) (sw -- sw)
+			g4.down.end xr box.b [heading Downward]
+		include : dispiro
+			widths.lhs sw
+			g4.down.start xl box.t [heading Downward]
+			Arch.lhs (box.t - archHeight) (sw -- sw)
+			g4.up.end xr box.t [heading Upward]
+		if (botLong < box.b) : include : VBar.l xl botLong (box.b + TINY) sw
+
+	define [RoundedChanceryXShape box sw botLong] : glyph-proc
+		local middle : mix box.t box.b 0.5
+		local overlap : HSwToV : 0.5 * sw
+		local joinTop : middle + (box.t - box.b) * 0.10
+		local joinBottom : middle - (box.t - box.b) * 0.10
+		local longJoin : if (botLong < box.b) (box.b + (box.t - box.b) * 0.1) joinBottom
+		include : union
+			dispiro
+				widths.rhs sw
+				g4.right.start box.l box.t
+				archv
+				flat (box.xMid + overlap) joinTop
+				curl (box.xMid + overlap) longJoin
+				arcvh
+				g4.left.start box.l botLong
+			dispiro
+				widths.lhs sw
+				g4.left.start box.r box.t
+				archv
+				flat (box.xMid - overlap) joinTop
+				curl (box.xMid - overlap) joinBottom
+				arcvh
+				g4.right.start box.r box.b
 
 	define [HShapedCurlyLegs left right stroke top xBar] : glyph-proc
 		local yMid : top / 2
@@ -288,6 +330,8 @@ glyph-block Letter-Latin-X : begin
 
 		export : define [base fSlab] : glyph-proc
 			include : match stroke1
+				[Just STROKE-ROUNDED] : RoundedXShape box sw box.b
+				[Just STROKE-ROUNDED-CHANCERY] : RoundedChanceryXShape box sw box.b
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t false sw
@@ -305,7 +349,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.t box.r box.b turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING] || [Just STROKE-ROUNDED] || [Just STROKE-ROUNDED-CHANCERY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -316,6 +360,8 @@ glyph-block Letter-Latin-X : begin
 		export : define [longLeftLeg fSlab botLong] : glyph-proc
 			local midy : mix box.t box.b 0.5
 			include : match stroke1
+				[Just STROKE-ROUNDED] : RoundedXShape box sw botLong
+				[Just STROKE-ROUNDED-CHANCERY] : RoundedChanceryXShape box sw botLong
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
@@ -337,7 +383,7 @@ glyph-block Letter-Latin-X : begin
 					include : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw
 					include : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING] || [Just STROKE-ROUNDED] || [Just STROKE-ROUNDED-CHANCERY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -349,6 +395,8 @@ glyph-block Letter-Latin-X : begin
 			local midy : mix box.t box.b 0.5
 
 			include : match stroke1
+				[Just STROKE-ROUNDED] : intersection [MaskRight box.xMid] : RoundedXShape box sw box.b
+				[Just STROKE-ROUNDED-CHANCERY] : intersection [MaskRight box.xMid] : RoundedChanceryXShape box sw box.b
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.r box.t box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.t box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t true sw
@@ -359,7 +407,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.r box.b box.xMid midy turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b true sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING] || [Just STROKE-ROUNDED] || [Just STROKE-ROUNDED-CHANCERY]) : no-shape
 				[Just STROKE-CURSIVE]  : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -370,6 +418,8 @@ glyph-block Letter-Latin-X : begin
 		export : define [lowRightRing fSlab] : glyph-proc
 			local midy : mix box.t box.b 0.5
 			include : match stroke1
+				[Just STROKE-ROUNDED] : difference [RoundedXShape box sw box.b] : intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
+				[Just STROKE-ROUNDED-CHANCERY] : difference [RoundedChanceryXShape box sw box.b] : intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l box.b box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l box.b box.r box.t false sw
@@ -391,7 +441,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING] || [Just STROKE-ROUNDED] || [Just STROKE-ROUNDED-CHANCERY]) : no-shape
 				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -402,6 +452,8 @@ glyph-block Letter-Latin-X : begin
 		export : define [longLeftLowRightRing fSlab botLong] : glyph-proc
 			local midy : mix box.t box.b 0.5
 			include : match stroke1
+				[Just STROKE-ROUNDED] : difference [RoundedXShape box sw botLong] : intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
+				[Just STROKE-ROUNDED-CHANCERY] : difference [RoundedChanceryXShape box sw botLong] : intersection [MaskBelow (midy + TINY)] [MaskRight (box.xMid - TINY)]
 				[Just STROKE-STRAIGHT] : XStrand true  fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CURLY]    : XStrand false fSlab box.l botLong box.r box.t turn 0.4 tension sw
 				[Just STROKE-CHANCERY] : XChanceryStrand (-1) fSlab box.l botLong box.r box.t false sw
@@ -423,7 +475,7 @@ glyph-block Letter-Latin-X : begin
 				[Just STROKE-STRAIGHT] : HalfXStrand true  fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CURLY]    : HalfXStrand false fSlab box.l box.t box.xMid midy turn 0.4 tension sw (-0.001)
 				[Just STROKE-CHANCERY] : intersection [MaskAbove (midy - TINY)] : XChanceryStrand (+1) fSlab box.l box.t box.r box.b false sw
-				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING]) : no-shape
+				([Just STROKE-H-SHAPED] || [Just STROKE-H-SHAPED-CURLY] || [Just STROKE-STRAIGHT-TOUCHING] || [Just STROKE-ROUNDED] || [Just STROKE-ROUNDED-CHANCERY]) : no-shape
 				[Just STROKE-CURSIVE]  : intersection [MaskAbove (midy - TINY)] : XCursiveHalfShape box.t box.b box.xMid box.r
 					swCoEnd -- swCursiveCoEnd
 					swEnd   -- swCursiveEnd
@@ -522,7 +574,8 @@ glyph-block Letter-Latin-X : begin
 				curly                   { STROKE-CURLY          STROKE-CURLY          }
 				hShaped                 { STROKE-H-SHAPED            STROKE-H-SHAPED            }
 				hShapedCurly            { STROKE-H-SHAPED-CURLY      STROKE-H-SHAPED-CURLY      }
-				straightTouching       { STROKE-STRAIGHT-TOUCHING  STROKE-STRAIGHT-TOUCHING  }
+				straightTouching        { STROKE-STRAIGHT-TOUCHING  STROKE-STRAIGHT-TOUCHING  }
+				rounded                 { STROKE-ROUNDED STROKE-ROUNDED }
 			object # height
 				""                      { 0         'capital' 'e' }
 				descending              { Descender 'capDesc' 'p' }
@@ -547,6 +600,8 @@ glyph-block Letter-Latin-X : begin
 		object # chancery variants
 			chancery              { { STROKE-CHANCERY STROKE-CHANCERY } { 0         'capital' 'e' } { null false } }
 			chanceryDescending    { { STROKE-CHANCERY STROKE-CHANCERY } { Descender 'capDesc' 'p' } { null false } }
+			roundedChancery       { { STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY } { 0 'capital' 'e' } { null false } }
+			roundedChanceryDescending { { STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY } { Descender 'capDesc' 'p' } { null false } }
 		object # cursive variants
 			cursive               { { STROKE-CURSIVE  STROKE-CURSIVE  } { 0         'capital' 'e' } { null false } }
 			cursiveDescending     { { STROKE-CURSIVE  STROKE-CURSIVE  } { Descender 'capDesc' 'p' } { null false } }
