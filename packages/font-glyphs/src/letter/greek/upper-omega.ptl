@@ -13,8 +13,11 @@ glyph-block Letter-Greek-Upper-Omega : begin
 	glyph-block-import Letter-Latin-Upper-T : TLeftX TRightX
 
 	define [UpperOmegaShape top extend ada adb _serifed] : glyph-proc
-		local fine : Stroke * CThin
-		local x1 : mix SB RightSB 0.4
+		local halfSpan : Middle - SB
+		local fine : if _serifed [Math.min (Stroke * CThin) [VSwToH : 0.38 * halfSpan]] (Stroke * CThin)
+		local x0 : mix SB RightSB 0.4
+		local inward : if _serifed [Math.max 0 : Math.min (Middle - [HSwToV : fine / 2] - 0.05 * halfSpan - x0) : HSwToV : 0.55 * Stroke] 0
+		local x1 : x0 + inward
 		local x2 : Width - x1
 		local yattach : if _serifed [Math.min (top * 0.7) (top * 0.32 + Stroke)] (top * extend + Stroke)
 		include : dispiro
@@ -31,8 +34,9 @@ glyph-block Letter-Greek-Upper-Omega : begin
 		include : HBar.m x2 RightSB HalfStroke
 		if _serifed : begin
 			local serifHeight : Math.min (Stroke + VJut * 0.55) (yattach - Stroke - top * 0.03)
-			include : VSerif.ul SB 0 serifHeight VJutStroke
-			include : VSerif.ur RightSB 0 serifHeight VJutStroke
+			local serifStroke : Math.min VJutStroke : VSwToH : Math.max TINY (x1 - SB - [HSwToV fine] - 0.14 * halfSpan)
+			include : VSerif.ul SB 0 serifHeight serifStroke
+			include : VSerif.ur RightSB 0 serifHeight serifStroke
 
 	define [DisjointOmegaShape top doSerifs] : glyph-proc
 		local dfT : DivFrame para.advanceScaleT
@@ -72,19 +76,16 @@ glyph-block Letter-Greek-Upper-Omega : begin
 					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
 				include : ScaleAround Middle 0 1 (XH / CAP)
 
-		create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			if fDisjoint
-				include : DisjointOmegaShape CAP doSerifs
+		if [not fDisjoint] : begin
+			create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
+				include : MarkSet.capital
 				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
-			include : FlipAround Middle (CAP / 2)
+				include : FlipAround Middle (CAP / 2)
 
-		create-glyph "latn/upsilon.\(suffix)" : glyph-proc
-			include : MarkSet.e
-			if fDisjoint
-				include : DisjointOmegaShape XH doSerifs
+			create-glyph "latn/upsilon.\(suffix)" : glyph-proc
+				include : MarkSet.e
 				include : UpperOmegaShape XH 0.08 SmallArchDepthA SmallArchDepthB doSerifs
-			include : FlipAround Middle (XH / 2)
+				include : FlipAround Middle (XH / 2)
 
 	select-variant 'grek/Omega' 0x3A9
 	select-variant 'grek/smcpOmega' 0xAB65 (follow -- 'grek/Omega')

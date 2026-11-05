@@ -61,6 +61,51 @@ glyph-block CommonShapes : begin
 			corner x       (y - q)
 			corner (x - q) y
 
+	glyph-block-export HexagonAt AngularCommaAt
+	define [HexagonAt x y r] : begin
+		local h : r * [Math.sqrt 3] / 2
+		return : spiro-outline
+			corner x (y + r)
+			corner (x + h) (y + r / 2)
+			corner (x + h) (y - r / 2)
+			corner x (y - r)
+			corner (x - h) (y - r / 2)
+			corner (x - h) (y + r / 2)
+
+	define [AngularCommaAt style x y r bottom] : begin
+		local h : r * [Math.sqrt 3] / 2
+		local width : r * 0.75
+		local slope 0.35
+		return : match style
+			[Just 'hexagon'] : begin
+				local hexSlope 0.46
+				local hexWidth : r * 0.9
+				local joinDrop : (2 * h - hexWidth) / (2 * h / r + hexSlope)
+				local tailBottom : Math.min (y - r / 2 - joinDrop - r * 0.25) [mix bottom (y - r / 2) 0.12]
+				spiro-outline
+					corner x (y + r)
+					corner (x + h) (y + r / 2)
+					corner (x + h) (y - r / 2)
+					corner (x + h - hexSlope * (y - r / 2 - tailBottom)) tailBottom
+					corner (x + h - hexSlope * (y - r / 2 - tailBottom) - hexWidth) tailBottom
+					corner (x + h - hexSlope * joinDrop - hexWidth) (y - r / 2 - joinDrop)
+					corner (x - h) (y - r / 2)
+					corner (x - h) (y + r / 2)
+			[Just 'corner'] : spiro-outline
+				corner (x - r) (y + r)
+				corner (x + r) (y + r)
+				corner (x + r - slope * (y + r - bottom)) bottom
+				corner (x + r - slope * (y + r - bottom) - width) bottom
+				corner (x + r - slope * (1.95 * r) - width) (y - r * 0.95)
+				corner (x - r) (y - r * 0.95)
+			[Just 'bottomCut'] : spiro-outline
+				corner (x - r) (y + r)
+				corner (x + r) (y + r)
+				corner (x + r) (bottom + r * 0.8)
+				corner (x + r - width) bottom
+				corner (x + r - width) (y - r * 0.95)
+				corner (x - r) (y - r * 0.95)
+
 	glyph-block-export MaskAbove
 	define [MaskAbove y] : Rect (+VERY-FAR) y (-VERY-FAR) (+VERY-FAR)
 	glyph-block-export MaskBelow
@@ -882,11 +927,13 @@ glyph-block CommonShapes : begin
 			corner [mix x1 x2 (1+k)] [mix y1 y2 (1+k)] [widths.lhs sw]
 
 	# Dot variant constructor
-	glyph-block-export DotVariants
+	glyph-block-export HexagonDotScalar DotVariants
+	define HexagonDotScalar : SquareDotScalar * 1.12
 	define DotVariants : object
 		round   { DotAt     1               O }
 		square  { SquareAt  SquareDotScalar 0 }
 		diamond { DiamondAt SquareDotScalar 0 }
+		hexagon { HexagonAt HexagonDotScalar 0 }
 
 	glyph-block-export WithDotVariants
 	define [WithDotVariants name unicode F] : begin

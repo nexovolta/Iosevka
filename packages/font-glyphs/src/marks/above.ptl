@@ -1523,6 +1523,29 @@ glyph-block Mark-Above : begin
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 		include : SetCommaStackAnchor
 
+	foreach suffix { 'hexagon' 'corner' 'bottomCut' } : do
+		create-glyph "commaAbove.\(suffix)" : glyph-proc
+			set-width 0
+			include : StdAnchors.narrow
+			local radius : commaAboveRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar]
+			if (suffix === 'hexagon')
+			: then : include : AngularCommaAt suffix markMiddle (aboveMarkTop - radius) radius (aboveMarkBot - radius - commaOvershoot2)
+			: else : begin
+				local bounds nothing
+				local shape : new-glyph : glyph-proc
+					include : AngularCommaAt suffix markMiddle (aboveMarkTop - radius) radius (aboveMarkBot - radius - commaOvershoot2)
+					set bounds : include : MeasureGlyphBounds
+				local tickBounds nothing
+				local tick : new-glyph : glyph-proc
+					include : OgonekTickShape markMiddle aboveMarkTop 1 [include : OgonekCommaHeight]
+					set tickBounds : include : MeasureGlyphBounds
+				local sx : 1.3 * (tickBounds.xMax - tickBounds.xMin) / (bounds.xMax - bounds.xMin)
+				local sy : 1.25 * (tickBounds.yMax - tickBounds.yMin) / (bounds.yMax - bounds.yMin)
+				include : with-transform [ApparentTranslate (markMiddle * (1 - sx)) (tickBounds.yMax - sy * bounds.yMax)]
+					with-transform [Scale sx sy] shape
+			include : ApparentTranslate 0 (DotRadius * 0.3)
+			include : SetCommaStackAnchor
+
 	create-glyph 'commaAbove.prime' : glyph-proc
 		set-width 0
 		include : StdAnchors.narrow
@@ -1547,6 +1570,7 @@ glyph-block Mark-Above : begin
 	derive-composites 'commaAboveZero.round'  null 'commaAbove.round'  [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius)]
 	derive-composites 'commaAboveZero.square' null 'commaAbove.square' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * SquareDotScalar)]
 	derive-composites 'commaAboveZero.diamond' null 'commaAbove.diamond' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * SquareDotScalar)]
+	derive-composites 'commaAboveZero.hexagon' null 'commaAbove.hexagon' [ApparentTranslate (-markMiddle) ((-aboveMarkTop) + commaAboveRadius * HexagonDotScalar)]
 	select-variant 'commaAboveZero' (follow -- 'punctuationDot')
 
 	derive-glyphs 'commaGrekUpperTonos' null 'commaAbove' : function [src gr] : glyph-proc
@@ -1569,7 +1593,7 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 		include : SetCommaStackAnchor
 
-	foreach suffix { 'round' 'square' 'diamond' 'prime' 'tick' } : do
+	foreach suffix { 'round' 'square' 'diamond' 'hexagon' 'corner' 'bottomCut' 'prime' 'tick' } : do
 		create-glyph "revCommaAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : with-transform [ScaleAround markMiddle 0 (-1) 1] : refer-glyph "commaAbove.\(suffix)"

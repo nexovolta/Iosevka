@@ -38,6 +38,14 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "uprigh
 		assert.notDeepEqual(serifed.geometry.toContours(), serifless.geometry.toContours());
 		assert.equal(serifed.advanceWidth, serifless.advanceWidth);
 		assert.ok(serifed.geometry.toContours().flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+		if (weight === 920 && slope === "upright") {
+			const contours = serifed.geometry.toContours();
+			const minX = c => Math.min(...c.map(p => p.x));
+			const maxX = c => Math.max(...c.map(p => p.x));
+			assert.ok(minX(contours[1]) - maxX(contours[5]) >= 20, "left serif counter");
+			assert.ok(minX(contours[6]) - maxX(contours[3]) >= 20, "right serif counter");
+			assert.ok(minX(contours[3]) - maxX(contours[1]) >= 20, "central counter");
+		}
 		const small = glyphStore.queryByUnicode(0xab65);
 		assert.ok(prime.variants.get("serifed").get(small));
 	});
