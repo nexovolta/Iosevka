@@ -4,18 +4,18 @@
 
 To make the font, first you need to have the files that contain the repository’s source code. Here are two ways:
 
- * Download [the archive of Iosevka’s source code](https://github.com/be5invis/Iosevka/archive/refs/heads/main.zip), then extract its contents into somewhere on your computer.
- * [Cloning](https://git-scm.com/docs/git-clone) this repository using [Git](https://git-scm.com/): 
-    ```
-    git clone --depth 1 https://github.com/be5invis/Iosevka.git 
-    ```
+- Download [the archive of Iosevka’s source code](https://github.com/be5invis/Iosevka/archive/refs/heads/main.zip), then extract its contents into somewhere on your computer.
+- [Cloning](https://git-scm.com/docs/git-clone) this repository using [Git](https://git-scm.com/):
+  ```
+  git clone --depth 1 https://github.com/be5invis/Iosevka.git
+  ```
 
 ### Building
 
 To build Iosevka you should:
 
-1. Install [`nodejs`](http://nodejs.org) (≥ 18.0.0) and [`ttfautohint`](http://www.freetype.org/ttfautohint/). Make sure that they are accessible from [`PATH` environment variable](https://en.wikipedia.org/wiki/PATH_(variable)).
-2. Open a CLI shell in a terminal, [`cd`](https://en.wikipedia.org/wiki/Cd_(command)) into the directory containing Iosevka source code.
+1. Install [`nodejs`](http://nodejs.org) (≥ 18.0.0) and [`ttfautohint`](http://www.freetype.org/ttfautohint/). Make sure that they are accessible from [`PATH` environment variable](<https://en.wikipedia.org/wiki/PATH_(variable)>).
+2. Open a CLI shell in a terminal, [`cd`](<https://en.wikipedia.org/wiki/Cd_(command)>) into the directory containing Iosevka source code.
 3. Run `npm install`. This command will install **all** the NPM dependencies.
 4. Run `npm run build -- contents::Iosevka`. This command will build your fonts.
 
@@ -30,18 +30,18 @@ To create a custom build, you need:
 1. Create `private-build-plans.toml` file if absent, place alongside the `build-plans.toml` in the repository.
 
 2. Add a build plan into `private-build-plans.toml`. The configurable properties are described in the following sections.
-   
+
 3. Run `npm run build -- contents::<your plan name>` and the built fonts would be available in `dist/`. Aside from `contents::<plan>`, other options are:
 
    1. `contents::<plan>` : Everything (TTF + webfont, hinted + unhinted);
    2. `ttf::<plan>` : TTF only;
    3. `ttf-unhinted::<plan>` : Unhinted TTF only;
    4. `webfont::<plan>` : Web fonts only (CSS + WOFF2);
-   4. `webfont-unhinted::<plan>` : Unhinted web fonts only (CSS + WOFF2);
-   5. `woff2::<plan>` : WOFF2 only.
-   5. `woff2-unhinted::<plan>` : Unhinted WOFF2 only.
+   5. `webfont-unhinted::<plan>` : Unhinted web fonts only (CSS + WOFF2);
+   6. `woff2::<plan>` : WOFF2 only.
+   7. `woff2-unhinted::<plan>` : Unhinted WOFF2 only.
 
-⚠️ **Important**: By default, the build system will schedule a number of concurrently running jobs equal to the number of threads available on the CPU, which *will* push CPU usage and also likely RAM usage, if you do not have very much to work with, to the ceiling (each job consumes more than 1 GB of RAM at its peak). If this is an issue for you, pass an additional argument `--jCmd=<number of concurrent jobs>`.
+⚠️ **Important**: By default, the build system will schedule a number of concurrently running jobs equal to the number of threads available on the CPU, which _will_ push CPU usage and also likely RAM usage, if you do not have very much to work with, to the ceiling (each job consumes more than 1 GB of RAM at its peak). If this is an issue for you, pass an additional argument `--jCmd=<number of concurrent jobs>`.
 
 ### Configuring Custom Build
 
@@ -49,8 +49,8 @@ Configuration of build plans are organized under `[buildPlans.<plan name>]` sect
 
 Inside the plan, top-level properties include:
 
-* `family`: String, defines the family name of your custom variant.
-* `spacing`: Optional, String, denotes the spacing of the custom variant. Valid values include:
+- `family`: String, defines the family name of your custom variant.
+- `spacing`: Optional, String, denotes the spacing of the custom variant. Valid values include:
   - `normal`: The normal monospace font.
   - `quasi-proportional`: The font will become quasi-proportional.
   - `quasi-proportional-extension-only`: The font will become quasi-proportional, but will not shrink narrow letters (like `i`). Only wide letters (like `M`) will get expanded.
@@ -84,25 +84,26 @@ Inside the plan, top-level properties include:
     - Remove `NWID` and `WWID` features typographic features
   - `fixed`: Apply `fontconfig-mono` changes and further remove ligations.
   - `wide-mosaic`: Similar to `normal`, but all mosaic (box-drawing characters and block elements) will be wide.
-* `serifs`: Optional, String, configures style of serifs.
+- `serifs`: Optional, String, configures style of serifs.
   - When set to `slab`, the font will be converted into slab-serif.
   - Otherwise the font will be sans-serif.
-* `noCvSs`: Optional, Boolean, disables `cv##` and `ss##` OpenType features.
-* `noLigation`: Optional, Boolean, disables ligations.
-* `exportGlyphNames`: Optional, Boolean, whether to export glyph names into the fonts. Setting this to `true` will increase file footprint, however this is necessary for ligature support in [Kitty](https://sw.kovidgoyal.net/kitty/).
-* `webfontFormats`: Optional, Array of String. Controls the formats needed to be exported into the webfont CSS. Valid options are `'TTF'` and `'WOFF2'`, or including both.
-* `buildTextureFeature`: Optional, Boolean, whether to build the `TXTR` feature for cross-letter texture adjustments. Defaults to false.
+- `noCvSs`: Optional, Boolean, disables `cv##` and `ss##` OpenType features.
+- `noLigation`: Optional, Boolean, disables ligations.
+- `exportGlyphNames`: Optional, Boolean, whether to export glyph names into the fonts. Setting this to `true` will increase file footprint, however this is necessary for ligature support in [Kitty](https://sw.kovidgoyal.net/kitty/).
+- `webfontFormats`: Optional, Array of String. Controls the formats needed to be exported into the webfont CSS. Valid options are `'TTF'` and `'WOFF2'`, or including both.
+- `buildTextureFeature`: Optional, Boolean, whether to build the `TXTR` feature for cross-letter texture adjustments. Defaults to false.
 
 Build plan could have 9 optional subsections:
-* `ligations`
-* `variants`
-* `weights`
-* `widths`
-* `slopes`
-* `compatibilityLigatures`
-* `subset`
-* `metricOverride`
-* `namingOverride`
+
+- `ligations`
+- `variants`
+- `weights`
+- `widths`
+- `slopes`
+- `compatibilityLigatures`
+- `subset`
+- `metricOverride`
+- `namingOverride`
 
 #### Configuring Ligations
 
@@ -111,7 +112,7 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
 <!-- BEGIN Section-Predefined-Ligation-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
-* `inherits`: Optional, String, defines the inherited ligation set. When absent, the ligation set will not inherit any other sets. Valid values are:
+- `inherits`: Optional, String, defines the inherited ligation set. When absent, the ligation set will not inherit any other sets. Valid values are:
 
   - `default-calt`: Inherit default ligation set.
   - `dlig`: Default ligation set would be assigned to Discretionary ligatures.
@@ -140,7 +141,7 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
 <!-- BEGIN Section-Cherry-Picking-Ligation-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
-* `disables` and `enables`: Optional, String Array, Cherry-picking ligation groups to be disabled or enabled. Valid values include:
+- `disables` and `enables`: Optional, String Array, Cherry-picking ligation groups to be disabled or enabled. Valid values include:
 
   - `arrow-l`: Left-pointing arrows.
   - `arrow-r`: Right-pointing arrows.
@@ -229,49 +230,10 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
 
 Subsection `variants` is used to configure character variants in the font. Properties include:
 
-The `lower-omega` design controls `ω`, `ϖ`, `Ꞷ`, `ꞷ`, `꟝`, `ɷ`, `𝽴`, `𝽵`,
-`𝽶`, `𝽷`, and `𝽠`.
-Its choices are `round`, `almost-flat-top`, `flat-top`, `broad`,
-`broad-almost-flat-top`, `broad-flat-top`, `rounded-vertical-sides`,
-`rounded-vertical-sides-almost-flat-top`, and `rounded-vertical-sides-flat-top`.
-Closed omegas use vertical sides for both broad and rounded-vertical-side choices,
-while retaining the selected notch height.
-The broad forms turn the outer arms inward, shortening them as the middle
-notch rises. The rounded vertical-sided forms keep their outer stems straight.
-The flat-top choices raise the middle notch toward or to x-height.
-
-Greek archaic koppa has separate `capital-qoppa` and `qoppa` selectors.
-Likewise, `cyrl-capital-koppa` and `cyrl-koppa` independently select a hook
-and base serif, for example `corner-hooked-serifless` or
-`corner-hooked-base-serifed`.
-
-Armenian letters with optional serifs have independent `armn-capital-*` and
-`armn-*` selectors, such as `armn-capital-ben` and `armn-ben`.
-Each accepts `serifless`, `serifed`, or a combination of position-specific
-serifs. For example, `armn-vo = "top-left-motion-bottom-left-bottom-right-motion-serifed"`
-uses a top-left motion serif, a full bottom-left serif, and a bottom-right motion
-serif. Available positions vary by letter; spurs have only motion serifs and
-free centered stems have only full serifs. Letters without optional serifs do
-not have these selectors. Turned ayb follows ayb in each case; the font also
-maps an unofficial capital turned ayb to the unassigned code point U+0530.
-
-`diacritic-comma` and `punctuation-comma` independently choose `round`,
-`square`, `diamond`, `prime`, or `tick`. The tick uses an inverted-ogonek
-curve with a diagonal terminal. The horn follows `diacritic-comma`; its
-`prime` and `tick` forms use a plain curved horn.
-
-Capital and lowercase ezh have independent `capital-ezh` and `ezh` selectors.
-Each combines a `straight` or `cursive` body, a `serifless`, `serifed`,
-`inward-serifed`, `flat-hooked`, or `corner-hooked` hook, and a `serifless` or
-`top-serifed` top, for example `straight-corner-hooked-top-serifed`.
-These selectors replace the previous dependence of ezh on Z/z.
-Ezh forms with distinctive tails retain those tails; Visigothic Z keeps its
-C-shaped upper half controlled by C/c.
-
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
-* `inherits`: Optional, String, defines the inherited stylistic set. Valid options include:
+- `inherits`: Optional, String, defines the inherited stylistic set. Valid options include:
 
   - `ss01`: Set character variant to “Andale Mono Style”.
   - `ss02`: Set character variant to “Anonymous Pro Style”.
@@ -299,10 +261,10 @@ C-shaped upper half controlled by C/c.
 <!-- BEGIN Section-Cherry-Picking-Styles -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 
-* `design`, `upright`, `italic`, and `oblique`: Optional, Dictionary, defines styles for individual characters. The choices are organized in key-value pairs, assigning a variant to a character group. Alternatively, you could assign numbers to `cv##` tags, like what you did when using OpenType in CSS. Assignments under `design` will be applied to all the slopes, and `upright`, `italic`, and `oblique` will apply to corresponded slopes. 
+- `design`, `upright`, `italic`, and `oblique`: Optional, Dictionary, defines styles for individual characters. The choices are organized in key-value pairs, assigning a variant to a character group. Alternatively, you could assign numbers to `cv##` tags, like what you did when using OpenType in CSS. Assignments under `design` will be applied to all the slopes, and `upright`, `italic`, and `oblique` will apply to corresponded slopes.
 
   In addition, style selector for default digit form also uses these dictionaries.
-  
+
   The valid combinations include:
 
   - Default digit form
@@ -4435,28 +4397,28 @@ C-shaped upper half controlled by C/c.
 
 Subsection `weights` is used to change the weight grades that the custom family needs. It is a dictionary from the filename suffix (in PascalCase) to either...
 
- * A string formatted in `default.<weight>` format, meaning reusing a default weight grade;
- * Or, a sub-object with properties:
-   * `shape`: Number, configures the weight grade of the glyphs' shapes.
-   * `menu`: Integer, configures the weight grade used when naming fonts.
-   * `css`: Integer, configures the weight grade used in web font CSS.
+- A string formatted in `default.<weight>` format, meaning reusing a default weight grade;
+- Or, a sub-object with properties:
+  - `shape`: Number, configures the weight grade of the glyphs' shapes.
+  - `menu`: Integer, configures the weight grade used when naming fonts.
+  - `css`: Integer, configures the weight grade used in web font CSS.
 
 Subsection `widths` is used to change the width grades that the custom family needs. It is a dictionary from the filename suffix (in PascalCase) to either...
 
- * A string formatted in `default.<width>` format, meaning reusing a default width grade;
- * Or, a sub-object with properties:
-   * `shape`: Number, configures the width of the glyphs' shapes, measured in 1/1000 em.
-   * `menu`: Integer, configures the width grade used when naming fonts. The valid values are from `1` to `9`, inclusive.
-   * `css`: String, configures the [font-stretch](https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch) value used in web font CSS.
+- A string formatted in `default.<width>` format, meaning reusing a default width grade;
+- Or, a sub-object with properties:
+  - `shape`: Number, configures the width of the glyphs' shapes, measured in 1/1000 em.
+  - `menu`: Integer, configures the width grade used when naming fonts. The valid values are from `1` to `9`, inclusive.
+  - `css`: String, configures the [font-stretch](https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch) value used in web font CSS.
 
 Subsection `slopes` is used to change the slope angles and grades that the custom family needs. It is a dictionary from the filename suffix (in PascalCase) to either...
 
- * A string formatted in `default.<slope>` format, meaning reusing a default slope grade;
- * Or, a sub-object with properties:
-   * `angle`: Number, configures the slope angle in degrees. The valid vales are from `0` to `15`, inclusive.
-   * `shape`: String from `upright`, `italic` or `oblique`. Configures the slope used for variant selection. 
-   * `menu`: String from `upright`, `italic` or `oblique`. Configures the slope grade used when naming fonts.
-   * `css`: String from `normal`, `italic` or `oblique`. Configures the [CSS font-style](https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-style) value.
+- A string formatted in `default.<slope>` format, meaning reusing a default slope grade;
+- Or, a sub-object with properties:
+  - `angle`: Number, configures the slope angle in degrees. The valid vales are from `0` to `15`, inclusive.
+  - `shape`: String from `upright`, `italic` or `oblique`. Configures the slope used for variant selection.
+  - `menu`: String from `upright`, `italic` or `oblique`. Configures the slope grade used when naming fonts.
+  - `css`: String from `normal`, `italic` or `oblique`. Configures the [CSS font-style](https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-style) value.
 
 In addition to list all the weights/widths/slopes directly, the user could also configure the weights/widths/slopes list using “inherits” to inherit the list from another build plan:
 
@@ -4473,9 +4435,9 @@ slopes.inherits = "default"  # Inherit slopes list from default
 
 Certain software, notably Emacs, relies on pre-encoded ligatures instead of OpenType to provide ligations. Iosevka could be configured with additional subsection `compatibilityLigatures`, being an array of records with following fields:
 
-* `unicode`: The PUA code point being assigned to.
-* `featureTag`: The feature tag to compute ligations.
-* `sequence`: The source character sequence.
+- `unicode`: The PUA code point being assigned to.
+- `featureTag`: The feature tag to compute ligations.
+- `sequence`: The source character sequence.
 
 A sample of compatibility ligature config is:
 
@@ -4490,15 +4452,15 @@ sequence = '<*>'
 
 Use the `subset` configuration to limit the character set in the final font. The `subset` subsection is an object with either `include` or `exclude` property.
 
- - When `include` is used, only the characters in the list will be included in the final font.
- - When `exclude` is used, all characters except those in the list will be included in the final font.
- - When both `include` and `exclude` are used, the final font will include only the characters in `include`, and without those in `exclude`.
+- When `include` is used, only the characters in the list will be included in the final font.
+- When `exclude` is used, all characters except those in the list will be included in the final font.
+- When both `include` and `exclude` are used, the final font will include only the characters in `include`, and without those in `exclude`.
 
 In `include` or `exclude`, we could specify the character set in thre ways:
 
- - `textFile`: the path to a text file containing the characters to include/exclude. The file should be in UTF-8 encoding.
- - `text`: a string containing the characters to include/exclude.
- - `ranges`: a list of ranges of code points to include/exclude. Each range is a list of two integers, representing the start and end code points (inclusive).
+- `textFile`: the path to a text file containing the characters to include/exclude. The file should be in UTF-8 encoding.
+- `text`: a string containing the characters to include/exclude.
+- `ranges`: a list of ranges of code points to include/exclude. Each range is a list of two integers, representing the start and end code points (inclusive).
 
 Sample of `include`:
 
@@ -4516,35 +4478,35 @@ ranges = [[10003, 10008]]
 
 #### Metric Override
 
-Subsection `metricOverride` provides ability to override certain metric values, if you *reallly* want to. Adding this section is **strongly discouraged** as it may introduce broken geometry or broken shapes.
+Subsection `metricOverride` provides ability to override certain metric values, if you _reallly_ want to. Adding this section is **strongly discouraged** as it may introduce broken geometry or broken shapes.
 
-| Property | Unit | Default Value | Meaning |
-|----------|------|---------|----------|
-| `cap` | emu | 735 | Height of `H`. |
-| `ascender` | emu | 735 | Height of `b`. |
-| `xHeight` | emu | 520 | Height of `x`. |
-| `sb` | emu | (*varies, 60 for Regular*) | Width of common side-bearings. |
-| `accentWidth` | emu | 200 | Width of accent marks. |
-| `accentClearance` | emu | 72 | Vertical clearance of accent marks to the base. |
-| `accentHeight` | emu | 176 | Height of accent marks. |
-| `accentStackOffset` | emu | 220 | Offset height of accent mark stack. |
-| `dotSize` | emu | (*varies, 125 for regular*) | Size of dots in diacritic marks. |
-| `periodSize` | emu | (*varies, 140 for regular*) | Size of dots in period. |
-| `leading` | emu | 1250 | Built-in line height. |
-| `symbolMid` | emu | 340 | Height of the center of hyphen (`-`). |
-| `parenSize` | emu | 966 | Height of Parentheses. |
-| `winMetricAscenderPad` | emu | 0 | Additional pad for Win metrics’ ascender to avoid clipping in legacy Windows applications. |
-| `winMetricDescenderPad` | emu | 0 | Additional pad for Win metrics’ descender to avoid clipping in legacy Windows applications. |
-| `powerlineScaleX`, `powerlineScaleY` | (*ratio*) | 1 | X and Y scale of Powerline glyphs. |
-| `powerlineShiftX`, `powerlineShiftY` | emu | 0 | X and Y shift of Powerline glyphs. |
-| `onumZeroHeightRatio` | (*ratio*) | 1.145 | Ratio of height of `0` under `onum` feature, to the height of `x`. |
-| `essRatio` | (*ratio*) | (*varies, 1.12 for Regular*) | Ratio of the thickness of the neck of `S`/`s`/`?`, to the normal stroke width. `essRatioUpper`, `essRatioLower` and `rssRatioQuestion` will override this value for corresponded glyph categories when set. |
-| `essRatioUpper` | (*ratio*) | (*varies, 1.12 for Regular*) | Ratio of the thickness of the neck of `S`, to the normal stroke width. |
-| `essRatioLower` | (*ratio*) | (*varies, 1.12 for Regular*) | Ratio of the thickness of the neck of `s`, to the normal stroke width. |
-| `essRatioQuestion` | (*ratio*) | (*varies, 1.12 for Regular*) | Ratio of the thickness of the neck of `?`, to the normal stroke width. |
-| `archDepth` | emu | (*varies, 195 for Regular*) | Depth of the curve segment of arches / O rings in capital letters. |
-| `smallArchDepth` | emu | (*varies, 200 for Regular*) | Depth of the curve segment of arches / O rings in small letters. |
-| `advanceScaleSp` | (*ratio*) | (*varies, 1.0 for monospace, 0.58333 for quasi-proportional*) | The advance width ratio of space character, relative to the width of digit `0`. |
+| Property                             | Unit      | Default Value                                                 | Meaning                                                                                                                                                                                                     |
+| ------------------------------------ | --------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cap`                                | emu       | 735                                                           | Height of `H`.                                                                                                                                                                                              |
+| `ascender`                           | emu       | 735                                                           | Height of `b`.                                                                                                                                                                                              |
+| `xHeight`                            | emu       | 520                                                           | Height of `x`.                                                                                                                                                                                              |
+| `sb`                                 | emu       | (_varies, 60 for Regular_)                                    | Width of common side-bearings.                                                                                                                                                                              |
+| `accentWidth`                        | emu       | 200                                                           | Width of accent marks.                                                                                                                                                                                      |
+| `accentClearance`                    | emu       | 72                                                            | Vertical clearance of accent marks to the base.                                                                                                                                                             |
+| `accentHeight`                       | emu       | 176                                                           | Height of accent marks.                                                                                                                                                                                     |
+| `accentStackOffset`                  | emu       | 220                                                           | Offset height of accent mark stack.                                                                                                                                                                         |
+| `dotSize`                            | emu       | (_varies, 125 for regular_)                                   | Size of dots in diacritic marks.                                                                                                                                                                            |
+| `periodSize`                         | emu       | (_varies, 140 for regular_)                                   | Size of dots in period.                                                                                                                                                                                     |
+| `leading`                            | emu       | 1250                                                          | Built-in line height.                                                                                                                                                                                       |
+| `symbolMid`                          | emu       | 340                                                           | Height of the center of hyphen (`-`).                                                                                                                                                                       |
+| `parenSize`                          | emu       | 966                                                           | Height of Parentheses.                                                                                                                                                                                      |
+| `winMetricAscenderPad`               | emu       | 0                                                             | Additional pad for Win metrics’ ascender to avoid clipping in legacy Windows applications.                                                                                                                  |
+| `winMetricDescenderPad`              | emu       | 0                                                             | Additional pad for Win metrics’ descender to avoid clipping in legacy Windows applications.                                                                                                                 |
+| `powerlineScaleX`, `powerlineScaleY` | (_ratio_) | 1                                                             | X and Y scale of Powerline glyphs.                                                                                                                                                                          |
+| `powerlineShiftX`, `powerlineShiftY` | emu       | 0                                                             | X and Y shift of Powerline glyphs.                                                                                                                                                                          |
+| `onumZeroHeightRatio`                | (_ratio_) | 1.145                                                         | Ratio of height of `0` under `onum` feature, to the height of `x`.                                                                                                                                          |
+| `essRatio`                           | (_ratio_) | (_varies, 1.12 for Regular_)                                  | Ratio of the thickness of the neck of `S`/`s`/`?`, to the normal stroke width. `essRatioUpper`, `essRatioLower` and `rssRatioQuestion` will override this value for corresponded glyph categories when set. |
+| `essRatioUpper`                      | (_ratio_) | (_varies, 1.12 for Regular_)                                  | Ratio of the thickness of the neck of `S`, to the normal stroke width.                                                                                                                                      |
+| `essRatioLower`                      | (_ratio_) | (_varies, 1.12 for Regular_)                                  | Ratio of the thickness of the neck of `s`, to the normal stroke width.                                                                                                                                      |
+| `essRatioQuestion`                   | (_ratio_) | (_varies, 1.12 for Regular_)                                  | Ratio of the thickness of the neck of `?`, to the normal stroke width.                                                                                                                                      |
+| `archDepth`                          | emu       | (_varies, 195 for Regular_)                                   | Depth of the curve segment of arches / O rings in capital letters.                                                                                                                                          |
+| `smallArchDepth`                     | emu       | (_varies, 200 for Regular_)                                   | Depth of the curve segment of arches / O rings in small letters.                                                                                                                                            |
+| `advanceScaleSp`                     | (_ratio_) | (_varies, 1.0 for monospace, 0.58333 for quasi-proportional_) | The advance width ratio of space character, relative to the width of digit `0`.                                                                                                                             |
 
 The values of each item could be either a number, or a string representing an expression so that it could be different for different instance fonts, or depending on default values. The syntax of valid expressions are:
 
@@ -4565,13 +4527,15 @@ Binding    -> Identifier
 ```
 
 Valid identifiers include:
- * `weight`: being the weight grade;
- * `width`: being the characters' unit width, measured in em-units;
- * `slopeAngle`: being the slope angle in degrees;
- * Default value of all overridable metrics, prefixed with `default_`, i.e., default `cap` value will be accessable thorugh `default_cap`.
+
+- `weight`: being the weight grade;
+- `width`: being the characters' unit width, measured in em-units;
+- `slopeAngle`: being the slope angle in degrees;
+- Default value of all overridable metrics, prefixed with `default_`, i.e., default `cap` value will be accessable thorugh `default_cap`.
 
 Valid functions include:
- * `blend`(_x_, \[_x1_, _y1_\], \[_x2_, _y2_\], ...): Perform a smooth interpolation through data pairs \[_x1_, _y1_\], \[_x2_, _y2_\], ..., against parameter _x_.
+
+- `blend`(_x_, \[_x1_, _y1_\], \[_x2_, _y2_\], ...): Perform a smooth interpolation through data pairs \[_x1_, _y1_\], \[_x2_, _y2_\], ..., against parameter _x_.
 
 For example, the following configuration:
 
@@ -4584,25 +4548,25 @@ dotSize = 'blend(weight, [100, 50], [400, 125], [900, 180])'
 
 will:
 
- * Override line height to `1500` em-unit;
- * Override the sidebearing value by its value multiplied by `1.0625` then added with `15`.
- * Override the dot size by a interpolation against weight: at thin (`100`) being `50`, at regular (`400`) being `125`, and at heavy (`900`) being `180`.
+- Override line height to `1500` em-unit;
+- Override the sidebearing value by its value multiplied by `1.0625` then added with `15`.
+- Override the dot size by a interpolation against weight: at thin (`100`) being `50`, at regular (`400`) being `125`, and at heavy (`900`) being `180`.
 
 #### Naming Override
 
 The properties in the `namingOverride` section could be uase to override menu names of the produced font. The following properties will be applied to the font directly:
 
- - `copyright`: Name ID 0, copyright notice.
- - `manufacturer`: Name ID 8, manufacturer name.
- - `designer`: Name ID 9, designer name.
- - `description`: Name ID 10, description of the typeface.
- - `urlVendor`: Name ID 11, URL of font vendor.
- - `urlDesigner`: Name ID 12, URL of typeface designer.
- - `license` (or alternatively `licence`): Name ID 13, license description.
- - `licenseURL` (or alternatively `licenceURL`): Name ID 14, license Info URL.
- - `sampleText`: Name ID 19, sample text for the font.
- - `version`: Override font version. The version number should follow [SemVer](https://semver.org/), like being `1.0.0`.
- - `vendorIdTag`: Four-character vendor ID tag in OS/2 table.
+- `copyright`: Name ID 0, copyright notice.
+- `manufacturer`: Name ID 8, manufacturer name.
+- `designer`: Name ID 9, designer name.
+- `description`: Name ID 10, description of the typeface.
+- `urlVendor`: Name ID 11, URL of font vendor.
+- `urlDesigner`: Name ID 12, URL of typeface designer.
+- `license` (or alternatively `licence`): Name ID 13, license description.
+- `licenseURL` (or alternatively `licenceURL`): Name ID 14, license Info URL.
+- `sampleText`: Name ID 19, sample text for the font.
+- `version`: Override font version. The version number should follow [SemVer](https://semver.org/), like being `1.0.0`.
+- `vendorIdTag`: Four-character vendor ID tag in OS/2 table.
 
 Additionally, the `namingOverride` section now supports a `menuNameMap` configuration property. This property allows for the customization of menu names based on specific attributes related to the font's style and characteristics. The `menuNameMap` configuration is structured as follows:
 
@@ -4634,26 +4598,29 @@ A sample configuration could be found at [private-build-plans.sample.toml](https
 
 It is possible to create a customized TTC build by using the following method:
 
- 1. Add a collect plan into `private-build-plans.toml`, with a `from` field containing all the TTF groups it needs:
-   ```toml
-   [collectPlans.IosevkaCustom]
-   from = ["IosevkaCustom1", "IosevkaCustom2"]
-   ```
- 2. Run build with the following command:
-  - `npm run build -- ttc::IosevkaCustom`: Create TTCs from collection `IosevkaCustom`; The file will be saved into `dist/.ttc`.
-  - `npm run build -- super-ttc::IosevkaCustom`: Create a single-file TTC from collection `IosevkaCustom`; The file will be saved into `dist/.super-ttc`.
+1.  Add a collect plan into `private-build-plans.toml`, with a `from` field containing all the TTF groups it needs:
+
+```toml
+[collectPlans.IosevkaCustom]
+from = ["IosevkaCustom1", "IosevkaCustom2"]
+```
+
+2.  Run build with the following command:
+
+- `npm run build -- ttc::IosevkaCustom`: Create TTCs from collection `IosevkaCustom`; The file will be saved into `dist/.ttc`.
+- `npm run build -- super-ttc::IosevkaCustom`: Create a single-file TTC from collection `IosevkaCustom`; The file will be saved into `dist/.super-ttc`.
 
 #### Single-Group TTCs (SGr)
 
 When your collection contains multiple groups (e.g. different spacing variants), you can also build separate TTCs for each group individually:
 
-  - `npm run build -- sgr-ttc::IosevkaCustom`: Create individual TTCs for each group in collection `IosevkaCustom`; Files will be saved into `dist/.ttc/SGr-<group>/`.
-  - `npm run build -- sgr-super-ttc::IosevkaCustom`: Create individual single-file TTCs for each group in collection `IosevkaCustom`; Files will be saved into `dist/.super-ttc/`.
+- `npm run build -- sgr-ttc::IosevkaCustom`: Create individual TTCs for each group in collection `IosevkaCustom`; Files will be saved into `dist/.ttc/SGr-<group>/`.
+- `npm run build -- sgr-super-ttc::IosevkaCustom`: Create individual single-file TTCs for each group in collection `IosevkaCustom`; Files will be saved into `dist/.super-ttc/`.
 
 To build both bundled and single-group TTCs in one command:
 
-  - `npm run build -- all-ttc::IosevkaCustom`: Create both bundled and separate SGr TTCs.
-  - `npm run build -- all-super-ttc::IosevkaCustom`: Create both bundled and separate SGr Super TTCs.
+- `npm run build -- all-ttc::IosevkaCustom`: Create both bundled and separate SGr TTCs.
+- `npm run build -- all-super-ttc::IosevkaCustom`: Create both bundled and separate SGr Super TTCs.
 
 Note: SGR commands require the collection to have more than one group in the `from` array, since they'd otherwise be equivalent to the regular bundled TTCs.
 
@@ -4661,7 +4628,7 @@ Note: SGR commands require the collection to have more than one group in the `fr
 
 There are tools tha could be used to bake other OpenType that are not configurable with TOML files (like baking localized forms). The tools include:
 
- * https://mutsuntsai.github.io/fontfreeze/
- * https://github.com/twardoch/fonttools-opentype-feature-freezer
+- https://mutsuntsai.github.io/fontfreeze/
+- https://github.com/twardoch/fonttools-opentype-feature-freezer
 
 These tools could be used in post-processing fonts. Please refer their documents for instructions.
