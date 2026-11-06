@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
+	glyph-block-import Letter-Arc-Hook : CornerHookOutset
 	glyph-block-import Letter-Latin-Lower-I : CasualTop ILTopStageConfig
 	glyph-block-import Letter-Latin-Upper-T : TShape
 
@@ -116,6 +117,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		export : local rHookRightX : match shapeMode
 			[Just RMode.Hookless]        : rArchMiddleX + TINY
 			[Just RMode.HooklessSerifed] : mix df.width rHookRightXFull df.adws
+			([Just RMode.CornerHook] || [Just RMode.CornerHookSerifed]) : rHookRightXFull + [CornerHookOutset strokeA]
 			__                           : begin rHookRightXFull
 		export : local rHookLeftX : df.width - rHookRightX
 		export : local rHookDepthY : RHook * rHookMultiplier + stroke * rHookSwMultiplier

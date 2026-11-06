@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook nShoulder EngHook
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
 
 	define CH-NONE          0
 	define CH-SERIF         1
@@ -87,10 +87,10 @@ glyph-block Letter-Latin-Lower-F : begin
 
 	define [SmallFDownHook df barRight counterHookLeft fCorner] : glyph-proc
 		local hd : FlatHookDepth df
-		local xTip : counterHookLeft - [if fCorner [CornerHookOffset Stroke] 0]
+		local xTip : counterHookLeft - [if fCorner ([CornerHookOffset Stroke] + [CornerHookOutset Stroke]) 0]
 		include : dispiro
 			widths.lhs
-			flat xTip Descender
+			flat xTip Descender : if (fCorner && para.isItalic) [heading Rightward] nothing
 			curl [Math.max (barRight - hd.x) (counterHookLeft + TINY)] Descender
 			archv.superness DesignParameters.tightHookSuperness
 			flat barRight [Math.min 0 (Descender + hd.y)] [heading Upward]
@@ -212,14 +212,14 @@ glyph-block Letter-Latin-Lower-F : begin
 		local hd : FlatHookDepth df
 		local { xCrossLeft xCrossRight } : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
 		local topHookRight : if (sym === SYM-LEFT) xCrossRight (crossRight + topHookExt)
-		local xTip : topHookRight + [if fCorner [CornerHookOffset Stroke] 0]
+		local xTip : topHookRight + [if fCorner ([CornerHookOffset Stroke] + [CornerHookOutset Stroke]) 0]
 
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 		include : LeaningAnchor.Above.Hook barLeft topHookRight
 
 		include : dispiro
 			widths.lhs
-			flat xTip Ascender
+			flat xTip Ascender : if (fCorner && para.isItalic) [heading Leftward] nothing
 			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (topHookRight - TINY)] Ascender
 			archv.superness DesignParameters.tightHookSuperness
 			flat barLeft [Math.max XH (Ascender - hd.y)]

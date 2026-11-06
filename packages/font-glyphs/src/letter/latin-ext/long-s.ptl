@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
 
 	define SLAB_SERIFLESS       0
 	define SLAB_BOTTOM          1
@@ -31,10 +31,10 @@ glyph-block Letter-Latin-Long-S : begin
 	define [LongSUpperHalf sign x top bottom hookX hookY _sw fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
-		local xTip : x + sign * (hookX + [if fCorner [CornerHookOffset sw] 0])
+		local xTip : x + sign * (hookX + [if fCorner ([CornerHookOffset sw] + [CornerHookOutset sw]) 0])
 		include : dispiro
 			widths.center sw
-			flat (xTip - sign * [if fCorner [HSwToV : sw / 2] 0]) (top - sw / 2)
+			flat (xTip - sign * [if fCorner [HSwToV : sw / 2] 0]) (top - sw / 2) : if (fCorner && para.isItalic) [heading [if (sign > 0) Leftward Rightward]] nothing
 			curl (x + sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner ([HSwToV sw] - [CornerHookOffset sw]) 0])]) (top - sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (top - sw / 2 - [Math.min hd.y hookY])
@@ -44,10 +44,10 @@ glyph-block Letter-Latin-Long-S : begin
 	define [LongSLowerHalf sign x top bottom hookX hookY _sw fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
 		local sw : fallback _sw Stroke
-		local xTip : x - sign * (hookX + [if fCorner [CornerHookOffset sw] 0])
+		local xTip : x - sign * (hookX + [if fCorner ([CornerHookOffset sw] + [CornerHookOutset sw]) 0])
 		include : dispiro
 			widths.center sw
-			flat (xTip + sign * [if fCorner [HSwToV : sw / 2] 0]) (bottom + sw / 2)
+			flat (xTip + sign * [if fCorner [HSwToV : sw / 2] 0]) (bottom + sw / 2) : if (fCorner && para.isItalic) [heading [if (sign > 0) Rightward Leftward]] nothing
 			curl (x - sign * [Math.min (hd.x - [HSwToV : 0.25 * sw]) (hookX - TINY - [if fCorner ([HSwToV sw] - [CornerHookOffset sw]) 0])]) (bottom + sw / 2) [widths.center sw]
 			archv.superness DesignParameters.tightHookSuperness
 			flat x (bottom + sw / 2 + [Math.min hd.y hookY])
@@ -100,10 +100,10 @@ glyph-block Letter-Latin-Long-S : begin
 
 	define [LongSFlatHookNoTailShape m yBot fSlab _kSerif fCorner] : glyph-proc
 		local hd : FlatHookDepth [DivFrame 1]
-		local xTip : RightSB + [if fCorner [CornerHookOffset Stroke] 0]
+		local xTip : RightSB + [if fCorner ([CornerHookOffset Stroke] + [CornerHookOutset Stroke]) 0]
 		include : dispiro
 			widths.lhs
-			flat xTip Ascender
+			flat xTip Ascender : if (fCorner && para.isItalic) [heading Leftward] nothing
 			curl [Math.min (RightSB - TINY) (m + hd.x)] Ascender
 			archv
 			flat m (Ascender - hd.y)
