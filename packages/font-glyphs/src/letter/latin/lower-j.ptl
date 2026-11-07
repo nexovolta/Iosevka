@@ -286,8 +286,19 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : LetterBarOverlay.m currentGlyph.baseAnchors.overlay.x (XH / 2) (space -- {0  df.width})
 			include : CenterInkInFrame df
 
+	foreach { suffix _ } [Object.entries JConfig] : do
+		local key : suffix.toLowerCase
+		local bottom ''
+		if [key.includes 'diagonaltailed'] : set bottom 'BottomDiagonalTailed'
+		if [key.includes 'straight'] : set bottom 'BottomStraight'
+		if [key.includes 'flathook'] : set bottom 'BottomFlatHook'
+		if [key.includes 'cornerhook'] : set bottom 'BottomCornerHook'
+		if [key.includes 'benthook'] : set bottom 'BottomBentHook'
+		if [key.includes 'narrowbenthook'] : set bottom 'BottomNarrowBentHook'
+		if [not bottom] : throw : new Error "Unrecognized hooked dotless j variant: \(suffix)"
 		create-glyph "dotlessjBarHookTop.\(suffix)" : glyph-proc
-			include [refer-glyph "dotlessjBar.\(suffix)"] AS_BASE ALSO_METRICS
+			include [refer-glyph "dotlessjBar.topSerifless\(bottom)"] AS_BASE ALSO_METRICS
+			local df : DivFrame (currentGlyph.advanceWidth / Width)
 			include : TopHook.toRight.mBarOuter currentGlyph.baseAnchors.overlay.x (XH + O) XH
 			include : CenterInkInFrame df
 

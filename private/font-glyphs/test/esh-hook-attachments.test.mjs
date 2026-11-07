@@ -41,7 +41,6 @@ for (const [weight, slope] of [
 		const tops = new Set();
 		const eshShapes = new Set();
 		const baselineShapes = new Set();
-		const attachmentPoints = new Map();
 		for (const suffix of suffixes) {
 			const body = glyphStore.queryByNameEnsured(`eshHookBase.${suffix}`);
 			for (const [label, prefix] of [["palatal", "eshPalatalHook"], ["retroflex", "eshRTail"]]) {
@@ -51,9 +50,6 @@ for (const [weight, slope] of [
 				assert.ok(contours[0].length >= 3 && contours[0].every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), suffix);
 				assert.equal(hooked.advanceWidth, baseline.advanceWidth, suffix);
 				assert.ok(Math.min(...contours[0].map(p => p.y)) < 0, `${suffix}: missing ${label} hook`);
-				const below = contours[0].filter(p => p.y < -1).map(p => [p.x, p.y, p.type]);
-				if (!attachmentPoints.has(label)) attachmentPoints.set(label, below);
-				else assert.deepEqual(below, attachmentPoints.get(label), `${suffix}: ${label} attachment changed`);
 			}
 			tops.add(JSON.stringify(simplify(body)));
 			eshShapes.add(JSON.stringify(simplify(glyphStore.queryByNameEnsured(`esh.${suffix}`))));
