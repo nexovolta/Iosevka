@@ -180,6 +180,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : stroke        -- Stroke
 		local-parameter : hook          -- Hook
 		local-parameter : origBar       -- nothing
+		local-parameter : lowerEnd      -- nothing
 		local-parameter : ada           -- SmallArchDepthA
 		local-parameter : adb           -- SmallArchDepthB
 
@@ -258,7 +259,12 @@ glyph-block Letter-Latin-Ezh : begin
 					archv
 					match terminal
 						[Just TERMINAL-NONE] : list
-							g4.down.mid xArcMid yArcMid [heading Downward]
+							if lowerEnd
+								list
+									g4 xArcMid yArcMid
+									~~~ [lowerEnd xArcMid]
+								list
+									g4.down.mid xArcMid yArcMid [heading Downward]
 						__ : list
 							g4 xArcMid yArcMid
 							match hookStyle

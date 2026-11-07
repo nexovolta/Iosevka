@@ -388,19 +388,14 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed
 				terminal   -- 0
+				stroke     -- SwAmpersand
 				ada        -- adaEt
 				adb        -- adbEt
 				pyMidRight -- pyEtFlatTopBarPos
-			define [object xArcMid yArcMid] : et.Dim
+				lowerEnd   -- [lambda [xArcMid] : EtBowlEnd FORM-TOOTHLESS-ROUNDED (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
 			include : union
 				LowerOpenCrossbar yEtFlatTopEnd
 				et.Shape
-				dispiro
-					widths.lhs
-					g4.down.mid xArcMid yArcMid [heading Downward]
-					Arch.lhs 0 (swAfter -- SwAmpersand)
-					flat (xLowerOpenRight - OX) adaEt [widths.lhs SwAmpersand]
-					curl (xLowerOpenRight - OX) yEtFlatTopEnd [heading Upward]
 
 	define FlatTopToothForms : object
 		'FlatBottom'       FORM-FLAT-BOTTOM
@@ -417,17 +412,14 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				define et : RevEzh CAP 0
 					fSerifed   -- fSerifed
 					terminal   -- 0
+					stroke     -- SwAmpersand
 					ada        -- adaEt
 					adb        -- adbEt
 					pyMidRight -- pyEtFlatTopBarPos
-				define [object xArcMid yArcMid] : et.Dim
+					lowerEnd   -- [lambda [xArcMid] : EtBowlEnd form (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
 				include : union
 					LowerOpenCrossbar yEtFlatTopEnd
 					et.Shape
-					dispiro
-						widths.lhs SwAmpersand
-						g4.down.mid xArcMid yArcMid [heading Downward]
-						EtBowlEnd form (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand
 					match form
 						[Just FORM-TOOTHED] : union
 							VBar.r (xLowerOpenRight - OX) (adaEt + O) yEtFlatTopEnd SwAmpersand
@@ -451,16 +443,16 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed
 				terminal   -- 0
+				stroke     -- SwAmpersand
 				ada        -- adaEt
 				adb        -- adbEt
 				pyMidRight -- pyEtFlatTopBarPos
-			include : union
-				et.Shape
-				EtLowerHalf form
-			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yEtRightBarTop
-			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yEtRightBarTop
-			if (form === FORM-TOOTHED) : include : VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (Stroke - ShoulderFine / 2)]
-			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yEtRightBarTop
+				lowerEnd   -- [lambda [xArcMid] : EtBowlEnd form xEtRight [mix xArcMid xEtRight 0.5] adaEt yEtRightBarTop SwAmpersand]
+			include : et.Shape
+			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yEtRightBarTop SwAmpersand
+			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yEtRightBarTop SwAmpersand
+			if (form === FORM-TOOTHED) : include : VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (SwAmpersand - ShoulderFine / 2)]
+			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yEtRightBarTop SwAmpersand
 
 	define [UpperOpenRoundRest] : UpperOpenRest HOOK-ROUND TOP-SERIFLESS
 	define [UpperOpenFlatRest] : UpperOpenRest HOOK-FLAT TOP-SERIFLESS
