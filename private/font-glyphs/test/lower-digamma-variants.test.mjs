@@ -57,6 +57,9 @@ for (const [weight, slope] of [
 			outlines.add(JSON.stringify(contours));
 		}
 		assert.equal(outlines.size, 5);
+		const flatTopContours = glyphStore.queryByNameEnsured("grek/digamma.flatTop").geometry.toContours();
+		const flatTopBar = flatTopContours[flatTopContours.length - 1];
+		const barY = contour => contour.reduce((sum, point) => sum + point.y, 0) / contour.length;
 		for (const [choice, source] of [
 			["flat-top-bend", "rLongLeg.flatTopSerifless"],
 			["toothless-rounded", "rLongLeg.earlessRoundedSerifless"],
@@ -68,6 +71,7 @@ for (const [weight, slope] of [
 			const original = body.geometry.toContours();
 			assert.ok(original.every(contour => raw.some(candidate => JSON.stringify(candidate) === JSON.stringify(contour))), `${choice}: r body changed`);
 			assert.ok(raw.length > original.length, `${choice}: middle bar is missing`);
+			assert.ok(barY(raw[raw.length - 1]) < barY(flatTopBar), `${choice}: middle bar must sit lower than the flat-top bar`);
 		}
 		const top = name => Math.max(...simplified(glyphStore.queryByNameEnsured(name)).flat().map(p => p.y));
 		assert.ok(top("grek/digamma.flatTopUpturn") > top("grek/digamma.flatTop"), "upturn must extend above the flat top");
