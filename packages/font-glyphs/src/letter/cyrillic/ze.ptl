@@ -360,32 +360,44 @@ glyph-block Letter-Cyrillic-Ze : begin
 				[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase left right top bot (sw -- stroke)].xRHook bot (bot + [CornerHookDepth hookBot stroke]) stroke
 				__ : glyph-proc
 
+	define ZeSerifConfig : object
+		serifless               { SLAB-NONE      SLAB-NONE      }
+		bottomSerifed           { SLAB-NONE      SLAB-CLASSICAL }
+		bottomInwardSerifed     { SLAB-NONE      SLAB-INWARD    }
+		unilateralSerifed       { SLAB-CLASSICAL SLAB-NONE      }
+		bilateralSerifed        { SLAB-CLASSICAL SLAB-CLASSICAL }
+		unilateralInwardSerifed { SLAB-INWARD    SLAB-NONE      }
+		bilateralInwardSerifed  { SLAB-INWARD    SLAB-INWARD    }
+		hybridSerifed1          { SLAB-INWARD    SLAB-CLASSICAL }
+		flatHook                        { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
+		topFlatHook                    { SLAB-FLAT-HOOK SLAB-NONE }
+		bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
+		unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
+		unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
+		cornerHook                        { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
+		topCornerHook                    { SLAB-CORNER-HOOK SLAB-NONE }
+		bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
+		unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }
+		unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
+
+	define ZeArcTypes : object
+		Rounded SLAB-NONE
+		Serifed SLAB-CLASSICAL
+		InwardSerifed SLAB-INWARD
+		FlatHook SLAB-FLAT-HOOK
+		CornerHook SLAB-CORNER-HOOK
+	foreach { topName topStyle } [pairs-of ZeArcTypes] : begin
+		foreach { bottomName bottomStyle } [pairs-of ZeArcTypes] : begin
+			set ZeSerifConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
+
+	define ZeHeightConfig : object
+		""   { 0         'capital' 'e' }
+		tall { Descender 'capDesc' 'p' }
+
 	glyph-block-export ZeConfig
-	define ZeConfig : SuffixCfg.weave
-		object # height
-			""                      { 0         'capital' 'e' }
-			tall                    { Descender 'capDesc' 'p' }
-		object # serifs
-			serifless               { SLAB-NONE      SLAB-NONE      }
-			bottomSerifed           { SLAB-NONE      SLAB-CLASSICAL }
-			bottomInwardSerifed     { SLAB-NONE      SLAB-INWARD    }
-			unilateralSerifed       { SLAB-CLASSICAL SLAB-NONE      }
-			bilateralSerifed        { SLAB-CLASSICAL SLAB-CLASSICAL }
-			unilateralInwardSerifed { SLAB-INWARD    SLAB-NONE      }
-			bilateralInwardSerifed  { SLAB-INWARD    SLAB-INWARD    }
-			hybridSerifed1          { SLAB-INWARD    SLAB-CLASSICAL }
-			flatHook                        { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
-			topFlatHook                    { SLAB-FLAT-HOOK SLAB-NONE }
-			bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
-			bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
-			unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
-			unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
-			cornerHook                        { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
-			topCornerHook                    { SLAB-CORNER-HOOK SLAB-NONE }
-			bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
-			bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
-			unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }
-			unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
+	define ZeConfig : SuffixCfg.weave ZeHeightConfig ZeSerifConfig
 
 	foreach { suffix { { bottom mkCap mkXH } { slabTop slabBot } } } [Object.entries ZeConfig] : do
 		create-glyph "cyrl/Ze.\(suffix)" : glyph-proc

@@ -292,7 +292,11 @@ function assignOpenTypeTags(primes, reservedLetterAppendOrders) {
 	appendedLetters.sort((a, b) => a.tagOrder - b.tagOrder || compareLetters(a, b));
 	const reservedOrders = [...reservedLetterAppendOrders].sort((a, b) => a - b);
 	for (const [index, order] of reservedOrders.entries()) {
-		if (!Number.isInteger(order) || order < 0 || (index && order === reservedOrders[index - 1])) {
+		if (
+			!Number.isInteger(order) ||
+			order < 0 ||
+			(index && order === reservedOrders[index - 1])
+		) {
 			throw new Error(`Invalid reserved letter-append order: ${order}`);
 		}
 		if (appendedLetters.some(prime => prime.tagOrder === order)) {
@@ -313,7 +317,10 @@ function assignOpenTypeTags(primes, reservedLetterAppendOrders) {
 	}
 	let reservedIndex = 0;
 	for (const prime of appendedLetters) {
-		while (reservedIndex < reservedOrders.length && reservedOrders[reservedIndex] < prime.tagOrder) {
+		while (
+			reservedIndex < reservedOrders.length &&
+			reservedOrders[reservedIndex] < prime.tagOrder
+		) {
 			vxCount++;
 			reservedIndex++;
 		}
@@ -350,6 +357,22 @@ class Prime {
 			variantConfig = vb.process();
 		}
 		if (!variantConfig) throw new Error(`Missing variants in ${key}`);
+		if (cfg["variants-extra-buildup"]) {
+			const extra = new VariantBuilder(cfg["variants-extra-buildup"]).process();
+			const ranks = new Set(Object.values(variantConfig).map(variant => variant.rank));
+			const keys = new Set(Object.keys(variantConfig));
+			variantConfig = { ...variantConfig };
+			for (const [extraKey, variant] of Object.entries(extra)) {
+				if (keys.has(extraKey)) {
+					throw new Error(`Duplicate variant ${key}.${extraKey}`);
+				}
+				if (ranks.has(variant.rank))
+					throw new Error(`Duplicate variant rank ${key}.${variant.rank}`);
+				ranks.add(variant.rank);
+				keys.add(extraKey);
+				variantConfig[extraKey] = variant;
+			}
+		}
 		for (const varKey in variantConfig) {
 			const variant = variantConfig[varKey];
 			this.variants.set(varKey, new PrimeVariant(varKey, this.tag, variant));
@@ -499,6 +522,21 @@ class VariantBuilder {
 	constructor(cfg) {
 		this.entry = cfg.entry;
 		this.descriptionLeader = cfg.descriptionLeader;
+		this.rankOffset = cfg.rankOffset ?? 0;
+		if (!Number.isInteger(this.rankOffset) || this.rankOffset < 0) {
+			throw new Error("Variant rank offset must be a non-negative integer");
+		}
+		const reserved = cfg.reservedVariantRanks ?? [];
+		if (
+			!Array.isArray(reserved) ||
+			reserved.some(rank => !Number.isInteger(rank) || rank < 1)
+		) {
+			throw new Error("Reserved variant ranks must be positive integers");
+		}
+		this.reservedVariantRanks = new Set(reserved);
+		if (this.reservedVariantRanks.size !== reserved.length) {
+			throw new Error("Duplicate reserved variant rank");
+		}
 		this.stages = new Map();
 		for (const [key, stage] of Object.entries(cfg.stages)) {
 			this.stages.set(key, new VbStage(key, stage));
@@ -518,11 +556,16 @@ class VariantBuilder {
 		);
 
 		const ans = {};
-		let itemRank = 0;
+		let itemRank = this.rankOffset;
 		for (const item of globalState.sink) {
 			const cfg = item.createPrimeVariant();
-			const defaultRank = ++itemRank;
+			do itemRank++;
+			while (this.reservedVariantRanks.has(itemRank));
+			const defaultRank = itemRank;
 			cfg.rank = item.variantRank ?? defaultRank;
+			if (this.reservedVariantRanks.has(cfg.rank)) {
+				throw new Error(`Variant rank ${cfg.rank} is reserved`);
+			}
 			if (!cfg.key) throw new Error("Invalid variant key");
 			if (ans[cfg.key]) throw new Error(`Duplicate variant : ${cfg.key}`);
 			ans[cfg.key] = cfg;

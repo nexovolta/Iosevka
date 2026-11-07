@@ -295,6 +295,17 @@ glyph-block Letter-Shared-Shapes : begin
 			return : new FunctionInterpolator normalBlender
 				object [flat true] fine bottom xOuter x2 yLoopTop swBefore terminalSlopeAdj
 
+	glyph-block-export JCurlyTailShape
+	define [JCurlyTailShape xMiddle top xEnd] : begin
+		local fine : AdviceStroke 3.5
+		return : dispiro
+			widths.rhs
+			flat (xMiddle + [HSwToV HalfStroke]) top [heading Downward]
+			curl (xMiddle + [HSwToV HalfStroke]) (Descender + LongVJut)
+			CurlyTail.n fine Descender ((xMiddle - [HSwToV HalfStroke]) - LongJut)
+				x2 -- xEnd
+				y2 -- (Descender + fine / 2)
+
 	glyph-block-export HCurlyTail
 	define [HCurlyTail fine wide rinner left m1 _right x1 x2 y2] : glyph-proc
 		local right : _right - fine

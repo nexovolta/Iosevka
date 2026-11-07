@@ -47,24 +47,22 @@ for (const [weight, slope] of [
 			const q = contour[(i + 1) % contour.length];
 			return area + p.x * q.y - q.x * p.y;
 		}, 0) / 2;
-		const curlBase = glyphStore.queryByNameEnsured("eshCurlyTail.compact").geometry.toContours();
+		const simplify = glyph => new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+		const curlBase = simplify(glyphStore.queryByNameEnsured("eshCurlyTail.compact"));
 		const curlCounter = curlBase.map(contourArea).filter(area => area > 0);
+		assert.equal(curlBase.length, 2, "compact esh curl must not have disconnected contours or pinholes");
 		assert.equal(curlCounter.length, 1, "compact esh curl must have one counter");
 		assert.ok(curlCounter[0] > 100, "compact esh curl counter must remain open");
-		const counter = curlBase.find(contour => contourArea(contour) > 0).map(p => ({
-			x: p.x - p.y * Math.tan((argv.shape.slopeAngle * Math.PI) / 180),
-			y: p.y,
-		}));
-		const xMin = Math.min(...counter.map(p => p.x));
-		const xMax = Math.max(...counter.map(p => p.x));
-		for (const extreme of [Math.min, Math.max]) {
-			const y = extreme(...counter.map(p => p.y));
-			const extremePoints = counter.filter(p => Math.abs(p.y - y) < 0.01);
-			assert.ok(
-				extremePoints.every(p => p.x < xMax - (xMax - xMin) * 0.2),
-				"esh curl counter must taper sideways toward its right-hand join",
-			);
+		const jCurl = simplify(glyphStore.queryByNameEnsured("dotlessjCurlyTail.bentHookSerifless"));
+		const jCounter = jCurl.find(contour => contourArea(contour) > 0);
+		const counter = curlBase.find(contour => contourArea(contour) > 0);
+		assert.ok(jCounter, "j curl must have a counter");
+		assert.ok(Math.abs(contourArea(counter) / contourArea(jCounter) - 1) < 0.02, "esh and j curl counters must have the same area");
+		for (const bound of [Math.min, Math.max]) {
+			assert.ok(Math.abs(bound(...counter.map(p => p.y)) - bound(...jCounter.map(p => p.y))) <= 1, "esh and j curl counters must align vertically");
 		}
+		const width = points => Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x));
+		assert.ok(Math.abs(width(counter) - width(jCounter)) <= 1, "esh and j curl counters must have the same width");
 		for (const key of choices) {
 			const name = `esh.${prime.variants.get(key).selector.esh}`;
 			const contours = glyphStore.queryByNameEnsured(name).geometry.toContours();
@@ -88,8 +86,9 @@ for (const [weight, slope] of [
 				assert.ok(relatedContours.every(c => c.length >= 3 && c.every(p => Number.isFinite(p.x) && Number.isFinite(p.y))), relatedName);
 				assert.equal(related.advanceWidth, glyphStore.queryByNameEnsured(`${member}.compact`).advanceWidth, relatedName);
 				if (member === "eshCurlyTail") {
-					const counters = relatedContours.map(contourArea).filter(area => area > 0);
-					assert.equal(relatedContours.length, 2, `${relatedName}: unexpected contours or pinholes`);
+					const simplified = simplify(related);
+					const counters = simplified.map(contourArea).filter(area => area > 0);
+					assert.equal(simplified.length, 2, `${relatedName}: unexpected contours or pinholes`);
 					assert.equal(counters.length, 1, `${relatedName}: loop must have one counter`);
 					assert.ok(Math.abs(counters[0] - curlCounter[0]) < 1, `${relatedName}: loop counter changed`);
 				}

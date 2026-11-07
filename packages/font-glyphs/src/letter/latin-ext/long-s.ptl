@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateAccentedComposition
-	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth LetterBarOverlay
+	glyph-block-import Letter-Shared-Shapes : JCurlyTailShape FlatHookDepth LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
@@ -383,37 +383,11 @@ glyph-block Letter-Latin-Long-S : begin
 		refSw   -- [AdviceStroke 3]
 		maskOut -- [intersection [MaskBelow 0] [MaskLeft : Middle + [HSwToV HalfStroke]]]
 
-	define [EshCurlyTailLower] : begin
-		local fine : AdviceStroke 3.5
-		local m : Middle - FBalance
-		return : dispiro
-			widths.rhs
-			flat (m + [HSwToV HalfStroke]) (-O) [heading Downward]
-			curl (m + [HSwToV HalfStroke]) (Descender + LongVJut)
-			CurlyTail.n fine Descender ((m - [HSwToV HalfStroke]) - LongJut)
-				x2 -- (RightSB + [HSwToV : 0.5 * fine])
-				y2 -- (Descender + fine / 2)
-
 	define [EshCurlyTailShape upper] : begin
 		local fine : AdviceStroke 3.5
 		local m : Middle - FBalance
-		local left : m - [HSwToV HalfStroke] - LongJut
-		local right : m + [HSwToV HalfStroke]
-		local span : right - left
-		local counterX : mix left right 0.4
-		local counterY : Descender + span * 0.43
-		local rx : 0.8 * [Math.max (fine * 0.25) (span / 2 - [HSwToV fine])]
-		local ry : 0.8 * [Math.max (fine * 0.25) (span / 2 - fine)]
-		return : difference
-			remove-holes : union upper [EshCurlyTailLower]
-			spiro-outline
-				corner (counterX + rx) counterY
-				g4 (counterX - rx * 0.15) (counterY - ry) [heading Leftward]
-				archv
-				g4 (counterX - rx) counterY [heading Upward]
-				arcvh
-				g4 (counterX - rx * 0.15) (counterY + ry) [heading Rightward]
-				corner (counterX + rx) counterY
+		# The full j stem preserves the curl's interpolation at heavy weights.
+		return : union upper [JCurlyTailShape m XH (m + RightSB - Middle + [HSwToV : 0.5 * fine])]
 
 	create-glyph 'eshCurlyTail.compact' : glyph-proc
 		include : MarkSet.bp

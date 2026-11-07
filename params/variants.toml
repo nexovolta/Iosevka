@@ -150,39 +150,82 @@ selectorAffix."three/sansSerif" = "flatTop"
 
 [prime.three.variants-buildup.stages.body.rounded]
 rank = 2
-next = "END"
+next = "rounded-bottom-arc"
+keyAffix = ""
 descriptionAffix = "rounded top"
-selectorAffix.three = "rounded"
-selectorAffix."three/sansSerif" = "rounded"
 
 [prime.three.variants-buildup.stages.body.flat-hooked]
 rank = 4
-next = "END"
-descriptionAffix = "flat hooks"
-selectorAffix.three = "flatHooked"
-selectorAffix."three/sansSerif" = "flatHooked"
+next = "rounded-bottom-arc"
+keyAffix = ""
+descriptionAffix = "flat-hooked top"
 
 [prime.three.variants-buildup.stages.body.corner-hooked]
 rank = 5
-next = "END"
-descriptionAffix = "corner hooks"
-selectorAffix.three = "cornerHooked"
-selectorAffix."three/sansSerif" = "cornerHooked"
+next = "rounded-bottom-arc"
+keyAffix = ""
+descriptionAffix = "corner-hooked top"
 
 [prime.three.variants-buildup.stages.body.inward-serifed]
 rank = 6
-next = "END"
-descriptionAffix = "inward serifs"
-selectorAffix.three = "inwardSerifed"
-selectorAffix."three/sansSerif" = "inwardSerifed"
+next = "rounded-bottom-arc"
+keyAffix = ""
+descriptionAffix = "inward-serifed top"
 
 [prime.three.variants-buildup.stages.body.serifed-hooked]
 rank = 7
 nonBreakingVariantAdditionPriority = 1000
+next = "rounded-bottom-arc"
+keyAffix = ""
+descriptionAffix = "serifed-hooked top"
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc."*"]
 next = "END"
-descriptionAffix = "serifed hooks"
-selectorAffix.three = "serifedHooked"
-selectorAffix."three/sansSerif" = "serifedHooked"
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc.rounded]
+rank = 1
+nonBreakingVariantAdditionPriority = { if = [{ body = "rounded" }], then = 0, else = 2000 }
+keyAffix = { if = [{ body = "rounded" }], then = "rounded", else = { if = [{ body = "flat-hooked" }], then = "top-flat-hooked-bottom-rounded", else = { if = [{ body = "corner-hooked" }], then = "top-corner-hooked-bottom-rounded", else = { if = [{ body = "inward-serifed" }], then = "top-inward-serifed-bottom-rounded", else = "top-serifed-hooked-bottom-rounded" } } } }
+descriptionAffix = "rounded bottom"
+selectorAffix.three = { if = [{ body = "rounded" }], then = "rounded", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomRounded", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomRounded", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = "topSerifedBottomRounded" } } } }
+selectorAffix."three/sansSerif" = { if = [{ body = "rounded" }], then = "rounded", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomRounded", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomRounded", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = "topSerifedBottomRounded" } } } }
+variantRank = { body = { "rounded" = 7, "flat-hooked" = 22, "corner-hooked" = 23, "inward-serifed" = 24, "serifed-hooked" = 25 } }
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc.flat-hooked]
+rank = 2
+nonBreakingVariantAdditionPriority = { if = [{ body = "flat-hooked" }], then = 0, else = 2000 }
+keyAffix = { if = [{ body = "rounded" }], then = "top-rounded-bottom-flat-hooked", else = { if = [{ body = "flat-hooked" }], then = "flat-hooked", else = { if = [{ body = "corner-hooked" }], then = "top-corner-hooked-bottom-flat-hooked", else = { if = [{ body = "inward-serifed" }], then = "top-inward-serifed-bottom-flat-hooked", else = "top-serifed-hooked-bottom-flat-hooked" } } } }
+descriptionAffix = "flat-hooked bottom"
+selectorAffix.three = { if = [{ body = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ body = "flat-hooked" }], then = "flatHooked", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomFlatHook", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = "topSerifedBottomFlatHook" } } } }
+selectorAffix."three/sansSerif" = { if = [{ body = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ body = "flat-hooked" }], then = "flatHooked", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomFlatHook", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = "topSerifedBottomFlatHook" } } } }
+variantRank = { body = { "rounded" = 26, "flat-hooked" = 14, "corner-hooked" = 27, "inward-serifed" = 28, "serifed-hooked" = 29 } }
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc.corner-hooked]
+rank = 3
+nonBreakingVariantAdditionPriority = { if = [{ body = "corner-hooked" }], then = 0, else = 2000 }
+keyAffix = { if = [{ body = "rounded" }], then = "top-rounded-bottom-corner-hooked", else = { if = [{ body = "flat-hooked" }], then = "top-flat-hooked-bottom-corner-hooked", else = { if = [{ body = "corner-hooked" }], then = "corner-hooked", else = { if = [{ body = "inward-serifed" }], then = "top-inward-serifed-bottom-corner-hooked", else = "top-serifed-hooked-bottom-corner-hooked" } } } }
+descriptionAffix = "corner-hooked bottom"
+selectorAffix.three = { if = [{ body = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = { if = [{ body = "corner-hooked" }], then = "cornerHooked", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = "topSerifedBottomCornerHook" } } } }
+selectorAffix."three/sansSerif" = { if = [{ body = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = { if = [{ body = "corner-hooked" }], then = "cornerHooked", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = "topSerifedBottomCornerHook" } } } }
+variantRank = { body = { "rounded" = 30, "flat-hooked" = 31, "corner-hooked" = 15, "inward-serifed" = 32, "serifed-hooked" = 33 } }
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc.inward-serifed]
+rank = 4
+nonBreakingVariantAdditionPriority = { if = [{ body = "inward-serifed" }], then = 0, else = 2000 }
+keyAffix = { if = [{ body = "rounded" }], then = "top-rounded-bottom-inward-serifed", else = { if = [{ body = "flat-hooked" }], then = "top-flat-hooked-bottom-inward-serifed", else = { if = [{ body = "corner-hooked" }], then = "top-corner-hooked-bottom-inward-serifed", else = { if = [{ body = "inward-serifed" }], then = "inward-serifed", else = "top-serifed-hooked-bottom-inward-serifed" } } } }
+descriptionAffix = "inward-serifed bottom"
+selectorAffix.three = { if = [{ body = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomInwardSerifed", else = { if = [{ body = "inward-serifed" }], then = "inwardSerifed", else = "topSerifedBottomInwardSerifed" } } } }
+selectorAffix."three/sansSerif" = { if = [{ body = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomInwardSerifed", else = { if = [{ body = "inward-serifed" }], then = "inwardSerifed", else = "topSerifedBottomInwardSerifed" } } } }
+variantRank = { body = { "rounded" = 34, "flat-hooked" = 35, "corner-hooked" = 36, "inward-serifed" = 16, "serifed-hooked" = 37 } }
+
+[prime.three.variants-buildup.stages.rounded-bottom-arc.serifed-hooked]
+rank = 5
+nonBreakingVariantAdditionPriority = { if = [{ body = "serifed-hooked" }], then = 0, else = 2000 }
+keyAffix = { if = [{ body = "rounded" }], then = "top-rounded-bottom-serifed-hooked", else = { if = [{ body = "flat-hooked" }], then = "top-flat-hooked-bottom-serifed-hooked", else = { if = [{ body = "corner-hooked" }], then = "top-corner-hooked-bottom-serifed-hooked", else = { if = [{ body = "inward-serifed" }], then = "top-inward-serifed-bottom-serifed-hooked", else = "serifed-hooked" } } } }
+descriptionAffix = "serifed-hooked bottom"
+selectorAffix.three = { if = [{ body = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomSerifed", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = "serifedHooked" } } } }
+selectorAffix."three/sansSerif" = { if = [{ body = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ body = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = { if = [{ body = "corner-hooked" }], then = "topCornerHookBottomSerifed", else = { if = [{ body = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = "serifedHooked" } } } }
+variantRank = { body = { "rounded" = 38, "flat-hooked" = 39, "corner-hooked" = 40, "inward-serifed" = 41, "serifed-hooked" = 21 } }
 
 [prime.three.variants-buildup.stages.body.flat-top-broken]
 rank = 3
@@ -23312,31 +23355,77 @@ selectorAffix.asciiCaret = "horizontalTerminal"
 sampler = "§"
 tagKind = "symbol"
 
-[prime.section.variants.serifless]
+[prime.section.variants-buildup]
+entry = "top-arc"
+descriptionLeader = "Section sign (`§`)"
+
+[prime.section.variants-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.section.variants-buildup.stages.top-arc.rounded]
 rank = 1
-description = "Section sign (`§`) with hooked terminals"
-selector.section = "serifless"
+keyAffix = ""
+descriptionAffix = "rounded top"
 
-[prime.section.variants.flat-hooked]
+[prime.section.variants-buildup.stages.top-arc.serifed]
 rank = 2
-description = "Section sign (`§`) with flat hooks"
-selector.section = "flatHook"
+keyAffix = ""
+descriptionAffix = "serifed top"
 
-[prime.section.variants.corner-hooked]
-rank = 5
-description = "Section sign (`§`) with corner hooks"
-selector.section = "cornerHook"
-
-[prime.section.variants.serifed]
+[prime.section.variants-buildup.stages.top-arc.inward-serifed]
 rank = 3
-description = "Section sign (`§`) with serifs"
-selector.section = "serifed"
+keyAffix = ""
+descriptionAffix = "inward-serifed top"
 
-[prime.section.variants.inward-serifed]
+[prime.section.variants-buildup.stages.top-arc.flat-hooked]
 rank = 4
-description = "Section sign (`§`) with inward serifs"
-selector.section = "inwardSerifed"
+keyAffix = ""
+descriptionAffix = "flat-hooked top"
 
+[prime.section.variants-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = ""
+descriptionAffix = "corner-hooked top"
+
+[prime.section.variants-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = { if = [{ top-arc = "rounded" }], then = "serifless", else = { if = [{ top-arc = "serifed" }], then = "top-serifed-bottom-rounded", else = { if = [{ top-arc = "inward-serifed" }], then = "top-inward-serifed-bottom-rounded", else = { if = [{ top-arc = "flat-hooked" }], then = "top-flat-hooked-bottom-rounded", else = "top-corner-hooked-bottom-rounded" } } } }
+descriptionAffix = "rounded bottom"
+selectorAffix.section = { if = [{ top-arc = "rounded" }], then = "serifless", else = { if = [{ top-arc = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ top-arc = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ top-arc = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+variantRank = { top-arc = { "rounded" = 1, "serifed" = 6, "inward-serifed" = 7, "flat-hooked" = 8, "corner-hooked" = 9 } }
+
+[prime.section.variants-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = { if = [{ top-arc = "rounded" }], then = "top-rounded-bottom-serifed", else = { if = [{ top-arc = "serifed" }], then = "serifed", else = { if = [{ top-arc = "inward-serifed" }], then = "top-inward-serifed-bottom-serifed", else = { if = [{ top-arc = "flat-hooked" }], then = "top-flat-hooked-bottom-serifed", else = "top-corner-hooked-bottom-serifed" } } } }
+descriptionAffix = "serifed bottom"
+selectorAffix.section = { if = [{ top-arc = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ top-arc = "serifed" }], then = "serifed", else = { if = [{ top-arc = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ top-arc = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+variantRank = { top-arc = { "rounded" = 10, "serifed" = 3, "inward-serifed" = 11, "flat-hooked" = 12, "corner-hooked" = 13 } }
+
+[prime.section.variants-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = { if = [{ top-arc = "rounded" }], then = "top-rounded-bottom-inward-serifed", else = { if = [{ top-arc = "serifed" }], then = "top-serifed-bottom-inward-serifed", else = { if = [{ top-arc = "inward-serifed" }], then = "inward-serifed", else = { if = [{ top-arc = "flat-hooked" }], then = "top-flat-hooked-bottom-inward-serifed", else = "top-corner-hooked-bottom-inward-serifed" } } } }
+descriptionAffix = "inward-serifed bottom"
+selectorAffix.section = { if = [{ top-arc = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ top-arc = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ top-arc = "inward-serifed" }], then = "inwardSerifed", else = { if = [{ top-arc = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+variantRank = { top-arc = { "rounded" = 14, "serifed" = 15, "inward-serifed" = 4, "flat-hooked" = 16, "corner-hooked" = 17 } }
+
+[prime.section.variants-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = { if = [{ top-arc = "rounded" }], then = "top-rounded-bottom-flat-hooked", else = { if = [{ top-arc = "serifed" }], then = "top-serifed-bottom-flat-hooked", else = { if = [{ top-arc = "inward-serifed" }], then = "top-inward-serifed-bottom-flat-hooked", else = { if = [{ top-arc = "flat-hooked" }], then = "flat-hooked", else = "top-corner-hooked-bottom-flat-hooked" } } } }
+descriptionAffix = "flat-hooked bottom"
+selectorAffix.section = { if = [{ top-arc = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ top-arc = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ top-arc = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ top-arc = "flat-hooked" }], then = "flatHook", else = "topCornerHookBottomFlatHook" } } } }
+variantRank = { top-arc = { "rounded" = 18, "serifed" = 19, "inward-serifed" = 20, "flat-hooked" = 2, "corner-hooked" = 21 } }
+
+[prime.section.variants-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = { if = [{ top-arc = "rounded" }], then = "top-rounded-bottom-corner-hooked", else = { if = [{ top-arc = "serifed" }], then = "top-serifed-bottom-corner-hooked", else = { if = [{ top-arc = "inward-serifed" }], then = "top-inward-serifed-bottom-corner-hooked", else = { if = [{ top-arc = "flat-hooked" }], then = "top-flat-hooked-bottom-corner-hooked", else = "corner-hooked" } } } }
+descriptionAffix = "corner-hooked bottom"
+selectorAffix.section = { if = [{ top-arc = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ top-arc = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ top-arc = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ top-arc = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "cornerHook" } } } }
+variantRank = { top-arc = { "rounded" = 22, "serifed" = 23, "inward-serifed" = 24, "flat-hooked" = 25, "corner-hooked" = 5 } }
 
 [prime.ascii-grave]
 sampler = "`"
@@ -23559,6 +23648,8 @@ tagKind = "symbol"
 [prime.ampersand.variants-buildup]
 entry = "body"
 descriptionLeader = "Ampersand (`&`)"
+# Former flat-top hook selections; keep the other character-variant ranks stable.
+reservedVariantRanks = [12, 13, 14, 15]
 
 [prime.ampersand.variants-buildup.stages.body.closed]
 rank = 1
@@ -23595,14 +23686,46 @@ selectorAffix.ampersand = "upperOpen"
 [prime.ampersand.variants-buildup.stages.body.lower-open]
 rank = 3
 groupRank = 1
-next = "END"
+next = "lower-open-form"
 descriptionAffix = "open contour at lower half"
 selectorAffix.ampersand = "lowerOpen"
+
+[prime.ampersand.variants-buildup.stages.lower-open-form."*"]
+next = "END"
+
+[prime.ampersand.variants-buildup.stages.lower-open-form.legacy]
+rank = 1
+keyAffix = ""
+selectorAffix.ampersand = ""
+
+[prime.ampersand.variants-buildup.stages.lower-open-form.flat-bottom]
+rank = 2
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "flat bottom"
+selectorAffix.ampersand = "flatBottom"
+
+[prime.ampersand.variants-buildup.stages.lower-open-form.toothed]
+rank = 3
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "tooth"
+selectorAffix.ampersand = "toothed"
+
+[prime.ampersand.variants-buildup.stages.lower-open-form.toothless-corner]
+rank = 4
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "toothless corner"
+selectorAffix.ampersand = "toothlessCorner"
+
+[prime.ampersand.variants-buildup.stages.lower-open-form.toothless-rounded]
+rank = 5
+nonBreakingVariantAdditionPriority = 1000
+descriptionAffix = "toothless rounded corner"
+selectorAffix.ampersand = "toothlessRounded"
 
 [prime.ampersand.variants-buildup.stages.body.flat-top]
 rank = 4
 groupRank = 1
-next = "flat-top-hook"
+next = "flat-top-form"
 descriptionAffix = "flat top"
 selectorAffix.ampersand = "flatTop"
 
@@ -23694,23 +23817,37 @@ rank = 2
 descriptionAffix = "serif at top-right"
 selectorAffix.ampersand = "serifed"
 
-[prime.ampersand.variants-buildup.stages.flat-top-hook."*"]
+[prime.ampersand.variants-buildup.stages.flat-top-form."*"]
 next = "serifs"
 
-[prime.ampersand.variants-buildup.stages.flat-top-hook.plain]
+[prime.ampersand.variants-buildup.stages.flat-top-form.legacy]
 rank = 1
 keyAffix = ""
 selectorAffix.ampersand = ""
 
-[prime.ampersand.variants-buildup.stages.flat-top-hook.flat-hooked]
+[prime.ampersand.variants-buildup.stages.flat-top-form.flat-bottom]
 rank = 2
-descriptionAffix = "flat hook"
-selectorAffix.ampersand = "flatHook"
+nonBreakingVariantAdditionPriority = 2000
+descriptionAffix = "flat bottom"
+selectorAffix.ampersand = "flatBottom"
 
-[prime.ampersand.variants-buildup.stages.flat-top-hook.corner-hooked]
+[prime.ampersand.variants-buildup.stages.flat-top-form.toothed]
 rank = 3
-descriptionAffix = "corner hook"
-selectorAffix.ampersand = "cornerHook"
+nonBreakingVariantAdditionPriority = 2000
+descriptionAffix = "tooth"
+selectorAffix.ampersand = "toothed"
+
+[prime.ampersand.variants-buildup.stages.flat-top-form.toothless-corner]
+rank = 4
+nonBreakingVariantAdditionPriority = 2000
+descriptionAffix = "toothless corner"
+selectorAffix.ampersand = "toothlessCorner"
+
+[prime.ampersand.variants-buildup.stages.flat-top-form.toothless-rounded]
+rank = 5
+nonBreakingVariantAdditionPriority = 2000
+descriptionAffix = "toothless rounded corner"
+selectorAffix.ampersand = "toothlessRounded"
 
 [prime.ampersand.variants-buildup.stages.body.closed-et]
 rank = 7
@@ -27762,3 +27899,884 @@ z = "cursive"
 lower-kappa = "curly-top-left-serifed"
 cyrl-u = "cursive-motion-serifed"
 cyrl-ya = "curly-bilateral-motion-serifed"
+
+[prime.capital-c.variants-extra-buildup]
+entry = "top-arc"
+descriptionLeader = "C (C)"
+rankOffset = 11
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.capital-c.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.capital-c.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."C" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."C/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."C/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."CHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."OOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."C/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."C/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+
+[prime.capital-c.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."C" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."C/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."C/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."CHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."OOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."C/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."C/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+
+[prime.capital-c.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."C" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."C/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."C/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."CHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."OOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."C/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."C/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+
+[prime.capital-c.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."C" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."C/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."C/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."CHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."OOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."C/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."C/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+
+[prime.capital-c.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."C" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."C/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."C/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."CHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."OOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."C/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."C/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+
+[prime.c.variants-extra-buildup]
+entry = "top-arc"
+descriptionLeader = "c (c)"
+rankOffset = 11
+
+[prime.c.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.c.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.c.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.c.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.c.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.c.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.c.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."c" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."c/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."c/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."oOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."c/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."c/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."cCurlyTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."oOpen/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+
+[prime.c.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."c" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."c/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."c/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."oOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."c/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."c/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."cCurlyTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."oOpen/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.c.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."c" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."c/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."c/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."oOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."c/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."c/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."cCurlyTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."oOpen/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.c.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."c" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."c/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."c/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."oOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."c/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."c/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."cCurlyTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."oOpen/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+
+[prime.c.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."c" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."c/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."c/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cHookTop" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."oOpen" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."c/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."c/bottomSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."cCurlyTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."oOpen/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+
+[prime.capital-s.variants-extra-buildup]
+entry = "top-arc"
+descriptionLeader = "S (S)"
+rankOffset = 11
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.capital-s.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.capital-s.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."S" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."S/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.capital-s.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."S" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."S/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.capital-s.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."S" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."S/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.capital-s.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."S" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."S/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."SSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.capital-s.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."S" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."S/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."SSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."SRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.s.variants-extra-buildup]
+entry = "top-arc"
+descriptionLeader = "s (s)"
+rankOffset = 11
+
+[prime.s.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.s.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.s.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.s.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.s.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.s.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.s.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."s" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."s/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."s/phoneticRight" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."tsLig/lowerHalf" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "serifless", else = { if = [{ "top-arc" = "inward-serifed" }], then = "serifless", else = { if = [{ "top-arc" = "flat-hooked" }], then = "serifless", else = "serifless" } } } }
+selectorAffix."s/ascBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+
+[prime.s.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."s" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."s/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."s/phoneticRight" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."tsLig/lowerHalf" = { if = [{ "top-arc" = "rounded" }], then = "bilateralSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "bilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "bilateralSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "bilateralSerifed", else = "bilateralSerifed" } } } }
+selectorAffix."s/ascBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.s.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."s" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."s/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."s/phoneticRight" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."tsLig/lowerHalf" = { if = [{ "top-arc" = "rounded" }], then = "bilateralInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "bilateralInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "bilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "bilateralInwardSerifed", else = "bilateralInwardSerifed" } } } }
+selectorAffix."s/ascBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.s.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."s" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."s/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."sSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."s/phoneticRight" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."tsLig/lowerHalf" = { if = [{ "top-arc" = "rounded" }], then = "flatHook", else = { if = [{ "top-arc" = "serifed" }], then = "flatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "flatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "flatHook", else = "flatHook" } } } }
+selectorAffix."s/ascBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+
+[prime.s.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."s" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."s/sansSerif" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."sSwash" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."sRTail" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."s/phoneticRight" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."tsLig/lowerHalf" = { if = [{ "top-arc" = "rounded" }], then = "cornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "cornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "cornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "cornerHook", else = "cornerHook" } } } }
+selectorAffix."s/ascBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup]
+entry = "bar-key"
+descriptionLeader = "Cyrillic Capital E (`Э`) (Э)"
+rankOffset = 69
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-key."*"]
+next = "top-arc"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-key.straight]
+rank = 1
+keyAffix = ""
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-key.diagonal-crossbar]
+rank = 2
+keyAffix = "diagonal-crossbar"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-key.diagonal-crossbar-falling]
+rank = 3
+keyAffix = "diagonal-crossbar-falling"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "bar-selector"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."cyrl/E" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/E/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/YeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."currency/euroSign" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "bar-selector"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."cyrl/E" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/E/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/YeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."currency/euroSign" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "bar-selector"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."cyrl/E" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/E/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/YeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."currency/euroSign" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "bar-selector"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."cyrl/E" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/E/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/YeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."currency/euroSign" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "bar-selector"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."cyrl/E" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/E/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/YeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."currency/euroSign" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-selector."*"]
+next = "END"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-selector.straight]
+rank = 1
+keyAffix = ""
+enableIf = [{ "bar-key" = "straight" }]
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-selector.diagonal-crossbar]
+rank = 2
+keyAffix = ""
+enableIf = [{ "bar-key" = "diagonal-crossbar" }]
+selectorAffix."cyrl/E" = "DiagonalCrossbar"
+selectorAffix."cyrl/YeUkrainian" = "DiagonalCrossbar"
+
+[prime.cyrl-capital-e.variants-extra-buildup.stages.bar-selector.diagonal-crossbar-falling]
+rank = 3
+keyAffix = ""
+enableIf = [{ "bar-key" = "diagonal-crossbar-falling" }]
+selectorAffix."cyrl/E" = "DiagonalCrossbarFalling"
+selectorAffix."cyrl/YeUkrainian" = "DiagonalCrossbarFalling"
+
+[prime.cyrl-e.variants-extra-buildup]
+entry = "bar-key"
+descriptionLeader = "Cyrillic Lower E (`э`) (э)"
+rankOffset = 70
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-key."*"]
+next = "top-arc"
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-key.straight]
+rank = 1
+keyAffix = ""
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-key.diagonal-crossbar]
+rank = 2
+keyAffix = "diagonal-crossbar"
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-key.diagonal-crossbar-falling]
+rank = 3
+keyAffix = "diagonal-crossbar-falling"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.cyrl-e.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.cyrl-e.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "bar-selector"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."cyrl/e" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/e/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/yeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+
+[prime.cyrl-e.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "bar-selector"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."cyrl/e" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/e/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/yeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+
+[prime.cyrl-e.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "bar-selector"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."cyrl/e" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/e/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/yeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+
+[prime.cyrl-e.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "bar-selector"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."cyrl/e" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/e/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/yeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+
+[prime.cyrl-e.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "bar-selector"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."cyrl/e" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/e/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/yeUkrainian/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-selector."*"]
+next = "END"
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-selector.straight]
+rank = 1
+keyAffix = ""
+enableIf = [{ "bar-key" = "straight" }]
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-selector.diagonal-crossbar]
+rank = 2
+keyAffix = ""
+enableIf = [{ "bar-key" = "diagonal-crossbar" }]
+selectorAffix."cyrl/e" = "DiagonalCrossbar"
+selectorAffix."cyrl/yeUkrainian" = "DiagonalCrossbar"
+
+[prime.cyrl-e.variants-extra-buildup.stages.bar-selector.diagonal-crossbar-falling]
+rank = 3
+keyAffix = ""
+enableIf = [{ "bar-key" = "diagonal-crossbar-falling" }]
+selectorAffix."cyrl/e" = "DiagonalCrossbarFalling"
+selectorAffix."cyrl/yeUkrainian" = "DiagonalCrossbarFalling"
+
+[prime.cyrl-capital-ze.variants-extra-buildup]
+entry = "top-arc"
+descriptionLeader = "Cyrillic Capital Ze (З)"
+rankOffset = 17
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."cyrl/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/Ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/revZe" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/Zhwe/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/Dzze/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."latn/Epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."latn/revEpsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."cyrl/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/Ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/revZe" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/Zhwe/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/Dzze/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."latn/Epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revEpsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."cyrl/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/Ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/revZe" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/Zhwe/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/Dzze/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."latn/Epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."latn/revEpsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."cyrl/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/Ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/revZe" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/Zhwe/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/Dzze/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."latn/Epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."latn/revEpsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+
+[prime.cyrl-capital-ze.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."cyrl/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/Ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/revZe" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/Zhwe/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/Dzze/Ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."latn/Epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."latn/revEpsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+
+[prime.cyrl-ze.variants-extra-buildup]
+entry = "body"
+descriptionLeader = "Cyrillic Lower Ze (з)"
+rankOffset = 34
+
+[prime.cyrl-ze.variants-extra-buildup.stages.body."*"]
+next = "top-arc"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.body.non-descending]
+rank = 1
+keyAffix = ""
+selectorAffix."cyrl/ze" = ""
+selectorAffix."cyrl/ze/topSerif" = ""
+selectorAffix."cyrl/ze.BGR" = "tall"
+selectorAffix."cyrl/revze" = ""
+selectorAffix."cyrl/zhwe/ze" = ""
+selectorAffix."cyrl/dzze.upright/ze" = ""
+selectorAffix."cyrl/dzze.italic/ze" = "tall"
+selectorAffix."latn/epsilon" = ""
+selectorAffix."latn/epsilon/descBase" = ""
+selectorAffix."latn/revepsilon" = ""
+selectorAffix."latn/revepsilon/descBase" = ""
+
+[prime.cyrl-ze.variants-extra-buildup.stages.body.tall]
+rank = 2
+descriptionAffix = "tall body that descends below the baseline"
+selectorAffix."cyrl/ze" = "tall"
+selectorAffix."cyrl/ze/topSerif" = ""
+selectorAffix."cyrl/ze.BGR" = "tall"
+selectorAffix."cyrl/revze" = "tall"
+selectorAffix."cyrl/zhwe/ze" = ""
+selectorAffix."cyrl/dzze.upright/ze" = ""
+selectorAffix."cyrl/dzze.italic/ze" = "tall"
+selectorAffix."latn/epsilon" = ""
+selectorAffix."latn/epsilon/descBase" = ""
+selectorAffix."latn/revepsilon" = ""
+selectorAffix."latn/revepsilon/descBase" = ""
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc."*"]
+next = "bottom-arc"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc.rounded]
+rank = 1
+keyAffix = "top-rounded"
+descriptionAffix = "rounded top"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc.serifed]
+rank = 2
+keyAffix = "top-serifed"
+descriptionAffix = "serifed top"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc.inward-serifed]
+rank = 3
+keyAffix = "top-inward-serifed"
+descriptionAffix = "inward-serifed top"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc.flat-hooked]
+rank = 4
+keyAffix = "top-flat-hooked"
+descriptionAffix = "flat-hooked top"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.top-arc.corner-hooked]
+rank = 5
+keyAffix = "top-corner-hooked"
+descriptionAffix = "corner-hooked top"
+
+[prime.cyrl-ze.variants-extra-buildup.stages.bottom-arc.rounded]
+rank = 1
+next = "END"
+keyAffix = "bottom-rounded"
+descriptionAffix = "rounded bottom"
+selectorAffix."cyrl/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/ze.BGR" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/revze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/zhwe/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."cyrl/dzze.upright/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."cyrl/dzze.italic/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomRounded", else = "topRoundedBottomRounded" } } } }
+selectorAffix."latn/epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."latn/epsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revepsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomRounded", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomRounded", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomRounded", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomRounded", else = "topCornerHookBottomRounded" } } } }
+selectorAffix."latn/revepsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.cyrl-ze.variants-extra-buildup.stages.bottom-arc.serifed]
+rank = 2
+next = "END"
+keyAffix = "bottom-serifed"
+descriptionAffix = "serifed bottom"
+selectorAffix."cyrl/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/ze.BGR" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/revze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/zhwe/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."cyrl/dzze.upright/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."cyrl/dzze.italic/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomSerifed", else = "topRoundedBottomSerifed" } } } }
+selectorAffix."latn/epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/epsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revepsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revepsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.cyrl-ze.variants-extra-buildup.stages.bottom-arc.inward-serifed]
+rank = 3
+next = "END"
+keyAffix = "bottom-inward-serifed"
+descriptionAffix = "inward-serifed bottom"
+selectorAffix."cyrl/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/ze.BGR" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/revze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/zhwe/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."cyrl/dzze.upright/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."cyrl/dzze.italic/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomInwardSerifed", else = "topRoundedBottomInwardSerifed" } } } }
+selectorAffix."latn/epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."latn/epsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."latn/revepsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+selectorAffix."latn/revepsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomInwardSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomInwardSerifed", else = "topCornerHookBottomInwardSerifed" } } } }
+
+[prime.cyrl-ze.variants-extra-buildup.stages.bottom-arc.flat-hooked]
+rank = 4
+next = "END"
+keyAffix = "bottom-flat-hooked"
+descriptionAffix = "flat-hooked bottom"
+selectorAffix."cyrl/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/ze.BGR" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/revze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/zhwe/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."cyrl/dzze.upright/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."cyrl/dzze.italic/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomFlatHook", else = "topRoundedBottomFlatHook" } } } }
+selectorAffix."latn/epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."latn/epsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revepsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomFlatHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomFlatHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomFlatHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomFlatHook", else = "topCornerHookBottomFlatHook" } } } }
+selectorAffix."latn/revepsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+
+[prime.cyrl-ze.variants-extra-buildup.stages.bottom-arc.corner-hooked]
+rank = 5
+next = "END"
+keyAffix = "bottom-corner-hooked"
+descriptionAffix = "corner-hooked bottom"
+selectorAffix."cyrl/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/ze/topSerif" = { if = [{ "top-arc" = "rounded" }], then = "serifless", else = { if = [{ "top-arc" = "serifed" }], then = "unilateralSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "unilateralInwardSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHook", else = "topCornerHook" } } } }
+selectorAffix."cyrl/ze.BGR" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/revze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/zhwe/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."cyrl/dzze.upright/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."cyrl/dzze.italic/ze" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topRoundedBottomCornerHook", else = "topRoundedBottomCornerHook" } } } }
+selectorAffix."latn/epsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."latn/epsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }
+selectorAffix."latn/revepsilon" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomCornerHook", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomCornerHook", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomCornerHook", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomCornerHook", else = "topCornerHookBottomCornerHook" } } } }
+selectorAffix."latn/revepsilon/descBase" = { if = [{ "top-arc" = "rounded" }], then = "topRoundedBottomSerifed", else = { if = [{ "top-arc" = "serifed" }], then = "topSerifedBottomSerifed", else = { if = [{ "top-arc" = "inward-serifed" }], then = "topInwardSerifedBottomSerifed", else = { if = [{ "top-arc" = "flat-hooked" }], then = "topFlatHookBottomSerifed", else = "topCornerHookBottomSerifed" } } } }

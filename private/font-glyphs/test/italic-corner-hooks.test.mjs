@@ -42,6 +42,13 @@ for (const [weight, slope] of [[260, "italic"], [537, "italic"], [920, "italic"]
 			const next = stub[(index + 1) % (stub.length - 1)];
 			assert.ok(next.y < inner.y, `${name}: stub does not extend past the arc`);
 			assert.ok(Math.abs((outer.x - next.x) - tangent * (outer.y - next.y)) < epsilon, `${name}: stub edge does not align with arc`);
+			if (name === "C.cornerHook") {
+				const [, inwardStub] = glyphStore.queryByNameEnsured("C.bilateralInwardSerifed").geometry.toContours();
+				assert.ok(
+					Math.abs(Math.min(...stub.map(p => p.y)) - Math.min(...inwardStub.map(p => p.y))) < epsilon,
+					`${name}: hook does not reach the inward-serif depth`,
+				);
+			}
 		}
 
 		const [two] = glyphStore.queryByNameEnsured("two.lnum.curlyNeckCornerHookSerifless").geometry.toContours();

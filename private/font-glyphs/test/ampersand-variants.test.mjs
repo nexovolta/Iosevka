@@ -36,7 +36,23 @@ test("symbol hook and serif variants are mutually exclusive", () => {
 	assert.equal(primes.get("at").variants.size, 13);
 	assert.equal(primes.get("sterling").variants.size, 10);
 	assert.equal(primes.get("pilcrow").variants.size, 7);
-	assert.equal(variants.size, 78);
+	assert.equal(variants.size, 86);
+	assert.equal(variants.get("et-toothed").rank, 16);
+	assert.equal(variants.get("et-serifed-toothed").rank, 21);
+	const ranks = [...variants.values()].map(variant => variant.rank);
+	assert.equal(new Set(ranks).size, ranks.length);
+	for (const rank of [12, 13, 14, 15]) assert.ok(!ranks.includes(rank));
+});
+
+test("reserved character-variant ranks reject invalid values and explicit collisions", () => {
+	for (const reserved of [[0], [12, 12], "12"]) {
+		const input = structuredClone(variantData);
+		input.prime.ampersand["variants-buildup"].reservedVariantRanks = reserved;
+		assert.throws(() => Variant.parse(input, {}), /reserved variant rank/i);
+	}
+	const input = structuredClone(variantData);
+	input.prime.ampersand["variants-buildup"].stages["closed-hook"].plain.variantRank = 12;
+	assert.throws(() => Variant.parse(input, {}), /rank 12 is reserved/);
 });
 
 for (const [serifs, spacing, width] of [

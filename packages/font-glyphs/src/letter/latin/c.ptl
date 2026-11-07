@@ -167,6 +167,16 @@ glyph-block Letter-Latin-C : begin
 		bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
 		bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
 
+	define CArcTypes : object
+		Rounded SLAB-NONE
+		Serifed SLAB-CLASSICAL
+		InwardSerifed SLAB-INWARD
+		FlatHook SLAB-FLAT-HOOK
+		CornerHook SLAB-CORNER-HOOK
+	foreach { topName topStyle } [pairs-of CArcTypes] : begin
+		foreach { bottomName bottomStyle } [pairs-of CArcTypes] : begin
+			set CConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
+
 	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
 		create-glyph "C.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -387,7 +397,8 @@ glyph-block Letter-Latin-C : begin
 			DiagonalCrossbar        1
 			DiagonalCrossbarFalling (-1)
 		foreach { dsuf dval0 } [Object.entries DiagCfg] : do
-			local dval : if (suffix == 'flatHook' || suffix == 'cornerHook') dval0 (dval0 * 0.5)
+			local fullDiagonal : (styTop == SLAB-FLAT-HOOK && styBot == SLAB-FLAT-HOOK) || (styTop == SLAB-CORNER-HOOK && styBot == SLAB-CORNER-HOOK)
+			local dval : if fullDiagonal dval0 (dval0 * 0.5)
 			create-glyph "cyrl/E.\(suffix)\(dsuf)" : glyph-proc
 				include : MarkSet.capital
 				include : CyrEShepe true false [DivFrame 1] CAP ArchDepthA ArchDepthB dval

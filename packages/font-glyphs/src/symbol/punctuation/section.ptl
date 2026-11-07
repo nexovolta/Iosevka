@@ -10,7 +10,7 @@ glyph-block Symbol-Punctuation-Section : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Latin-S : SAutoSlabStart
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
 
 	define SLAB-NONE      0
 	define SLAB-CLASSICAL 1
@@ -26,7 +26,7 @@ glyph-block Symbol-Punctuation-Section : begin
 		[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs RightSB top Stroke Hook
 		[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke Hook
 		[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot (sw -- Stroke)].hookStartR
-		[Just SLAB-CORNER-HOOK] : [MakeCornerHook SB RightSB top bot (sw -- Stroke)].hookStartR
+		[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase SB RightSB top bot (sw -- Stroke)].hookStartR
 		__ : list
 			g4 (RightSB - offset) (top - Hook)
 			HookStart (top - offset)
@@ -45,24 +45,34 @@ glyph-block Symbol-Punctuation-Section : begin
 				corner Width [mix bot top 2]
 				corner Width (top - Hook - TINY)
 				corner RightSB (top - Hook - TINY)
-	define [halfShape st] : glyph-proc
+	define [halfShape st opposite] : glyph-proc
 		include : intersection [s dispiro 0 st] : union
 			MaskAbove SymbolMid
-			with-transform [FlipAround Middle SymbolMid] : s spiro-outline 0.1 st
+			with-transform [FlipAround Middle SymbolMid] : s spiro-outline 0.1 opposite
 		include : SAutoSlabStart [DivFrame 1] st top Stroke Hook
 
 	define SectionConfig : object
-		serifless     SLAB-NONE
-		flatHook      SLAB-FLAT-HOOK
-		cornerHook    SLAB-CORNER-HOOK
-		serifed       SLAB-CLASSICAL
-		inwardSerifed SLAB-INWARD
+		serifless     { SLAB-NONE SLAB-NONE }
+		flatHook      { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
+		cornerHook    { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
+		serifed       { SLAB-CLASSICAL SLAB-CLASSICAL }
+		inwardSerifed { SLAB-INWARD SLAB-INWARD }
 
-	foreach { suffix st } [pairs-of SectionConfig] : begin
+	define SectionArcTypes : object
+		Rounded SLAB-NONE
+		Serifed SLAB-CLASSICAL
+		InwardSerifed SLAB-INWARD
+		FlatHook SLAB-FLAT-HOOK
+		CornerHook SLAB-CORNER-HOOK
+	foreach { topName topStyle } [pairs-of SectionArcTypes] : begin
+		foreach { bottomName bottomStyle } [pairs-of SectionArcTypes] : begin
+			set SectionConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
+
+	foreach { suffix { topStyle bottomStyle } } [pairs-of SectionConfig] : begin
 		create-glyph "section.\(suffix)" : glyph-proc
 			include : union
-				halfShape st
-				with-transform [FlipAround Middle SymbolMid] : halfShape st
+				halfShape topStyle bottomStyle
+				with-transform [FlipAround Middle SymbolMid] : halfShape bottomStyle topStyle
 
 	select-variant 'section' 0xA7
 

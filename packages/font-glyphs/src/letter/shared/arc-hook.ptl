@@ -295,8 +295,7 @@ glyph-block Letter-Arc-Hook : begin
 		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] - [if para.isItalic 0 [CornerHookOffset sw]] - [CornerHookOutset sw])
 		fSlantedHookTerminal -- true
 
-	# Flat hook whose terminal turns 90 degrees into the counter, like an inward serif
-	define [CornerHookDepth hook sw] : Math.max (hook * 15 / 16) (sw * 1.5)
+	define [CornerHookDepth hook sw] : ArcStartInwardSerifDepth hook sw
 
 	# A miter normal offsets the inner corner along both axes without a folded inner contour.
 	# CornerHookEnd:   a bar heading dirBar (-1 left, +1 right) ends at x, then a stub runs dirStub (+1 up, -1 down).

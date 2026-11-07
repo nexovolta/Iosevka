@@ -27,10 +27,11 @@ glyph-block Digits-Three : begin
 	define HOOK-INWARD 3
 	define HOOK-SLAB   4
 
-	define [ThreeShapeT sink offset sw top hookStyle] : glyph-proc
+	define [ThreeShapeT sink offset sw top hookStyle _bottomHookStyle] : glyph-proc
 		local barcenter : mix 0 top HBarPos
 		local xMid : mix SB RightSB 0.4
 		local fine : sw * CThin
+		local bottomHookStyle : fallback _bottomHookStyle hookStyle
 
 		include : sink
 			widths.rhs sw
@@ -50,7 +51,7 @@ glyph-block Digits-Three : begin
 			flat xMid (barcenter + (fine - sw / 2)) [heading Rightward]
 			curl (xMid + TINY) (barcenter + (fine - sw / 2)) [heading Rightward]
 			g4 (RightSB - offset - O * 2) [YSmoothMidR (barcenter + sw / 2) (offset + O) ArchDepthA ArchDepthB] [widths.rhs sw]
-			match hookStyle
+			match bottomHookStyle
 				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-INWARD] : InwardSlabArcEnd.RtlRhs (SB + offset) offset sw Hook
@@ -58,15 +59,13 @@ glyph-block Digits-Three : begin
 				__ : list
 					HookEnd offset (sw -- sw)
 					g4 (SB + offset + O) Hook
-		if (hookStyle === HOOK-INWARD) : begin
-			include : ArcStartSerif.InwardL (SB + offset) (top - offset) sw Hook
-			include : ArcEndSerif.InwardL (SB + offset) offset sw Hook
-		if (hookStyle === HOOK-SLAB) : begin
-			include : ArcStartSerif.L (SB + offset) (top - offset) sw Hook
-			include : ArcEndSerif.L (SB + offset) offset sw Hook
+		if (hookStyle === HOOK-INWARD) : include : ArcStartSerif.InwardL (SB + offset) (top - offset) sw Hook
+		if (bottomHookStyle === HOOK-INWARD) : include : ArcEndSerif.InwardL (SB + offset) offset sw Hook
+		if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L (SB + offset) (top - offset) sw Hook
+		if (bottomHookStyle === HOOK-SLAB) : include : ArcEndSerif.L (SB + offset) offset sw Hook
 
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
-	define [ThreeShapeHooked top hookStyle] : ThreeShapeT dispiro 0 Stroke top hookStyle
+	define [ThreeShapeHooked top hookStyle bottomHookStyle] : ThreeShapeT dispiro 0 Stroke top hookStyle bottomHookStyle
 
 	define [ThreeFlatTopShape top serif hookStyle] : glyph-proc
 		define ezh : Ezh [DivFrame 1] top 0
@@ -79,8 +78,6 @@ glyph-block Digits-Three : begin
 		include : ezh.Shape
 		if (hookStyle === HOOK-SLAB) : include : ArcEndSerif.L SB 0 Stroke Hook
 
-	# Horizontal top bar plus a tironian-et diagonal (50° from horizontal,
-	# diagonal terminal). Used by the broken flat-top body.
 	define [ThreeFlatTopEtGeom top _yEndIdeal] : begin
 		local kFall : Math.tan (50 * Math.PI / 180)
 		local yBarBot : top - Stroke
@@ -102,8 +99,6 @@ glyph-block Digits-Three : begin
 					flat RightSB yBarBot
 					curl xEnd yEnd [widths.rhs swEnd]
 
-	# Reversed-c bowl clipped against the et stem so the arch continues
-	# past it. The leftover mask follows the et and stops at the terminal.
 	define [ThreeFlatTopBrokenShape top serif hookStyle] : glyph-proc
 		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top
 		local yBowl : mix 0 top 0.72
@@ -129,19 +124,29 @@ glyph-block Digits-Three : begin
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
 
 	define ThreeBodyConfig : object
-		rounded       HOOK-ROUND
-		flatHooked    HOOK-FLAT
-		cornerHooked  HOOK-CORNER
-		inwardSerifed HOOK-INWARD
-		serifedHooked HOOK-SLAB
+		rounded       { HOOK-ROUND HOOK-ROUND }
+		flatHooked    { HOOK-FLAT HOOK-FLAT }
+		cornerHooked  { HOOK-CORNER HOOK-CORNER }
+		inwardSerifed { HOOK-INWARD HOOK-INWARD }
+		serifedHooked { HOOK-SLAB HOOK-SLAB }
 
-	foreach { suffix hookStyle } [pairs-of ThreeBodyConfig] : do
+	define ThreeArcTypes : object
+		Rounded HOOK-ROUND
+		FlatHook HOOK-FLAT
+		CornerHook HOOK-CORNER
+		InwardSerifed HOOK-INWARD
+		Serifed HOOK-SLAB
+	foreach { topName topStyle } [pairs-of ThreeArcTypes] : begin
+		foreach { bottomName bottomStyle } [pairs-of ThreeArcTypes] : begin
+			set ThreeBodyConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
+
+	foreach { suffix { topStyle bottomStyle } } [pairs-of ThreeBodyConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : ThreeShapeHooked CAP hookStyle
+			include : ThreeShapeHooked CAP topStyle bottomStyle
 		create-glyph "three.onum.\(suffix)" : glyph-proc
 			include : OnumMarks.p
-			include : ThreeShapeHooked CAP hookStyle
+			include : ThreeShapeHooked CAP topStyle bottomStyle
 			include : ShiftDown
 
 	define ThreeFlatTopConfig : SuffixCfg.weave

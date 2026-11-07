@@ -228,6 +228,16 @@ glyph-block Letter-Latin-S : begin
 		unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
 		bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
 
+	define SArcTypes : object
+		Rounded SLAB-NONE
+		Serifed SLAB-CLASSICAL
+		InwardSerifed SLAB-INWARD
+		FlatHook SLAB-FLAT-HOOK
+		CornerHook SLAB-CORNER-HOOK
+	foreach { topName topStyle } [pairs-of SArcTypes] : begin
+		foreach { bottomName bottomStyle } [pairs-of SArcTypes] : begin
+			set SConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
+
 	define DfUpper : DivFrame 1
 	define DfLower : DivFrame 1
 
