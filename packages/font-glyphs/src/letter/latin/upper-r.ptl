@@ -189,8 +189,7 @@ glyph-block Letter-Latin-Upper-R : begin
 		local-parameter : open    -- false
 		local-parameter : sw      -- Stroke
 		local-parameter : hook    -- Hook
-		local-parameter : flatHook -- false
-		local-parameter : cornerHook -- false
+		local-parameter : hookStyle -- 'serifless'
 
 		local fStraightLeg : legShape !== RLegShape.Curly
 		local legTop : RLegTop top sw bp
@@ -202,10 +201,10 @@ glyph-block Letter-Latin-Upper-R : begin
 			local [object xStem yJoin xEnd] : RLegShape.BrokenJoin [RLegTop top sw PShape.BarPos] 0 df.middle right [mix 0 df.leftSB mul] legSlab sw
 			local legW : [HSwToV sw] * [DiagCor yJoin (xEnd - xStem) 0 sw]
 			local xLhsAtBowl : mix xEnd xStem (legTop / yJoin)
-			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (flatHook -- flatHook) (cornerHook -- cornerHook) (sw -- sw)
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- (xLhsAtBowl + 0.5 * legW)) (hook -- hook) (hookStyle -- hookStyle) (sw -- sw)
 			include : RRotundaBrokenLeg top bp df mul legSlab sw
 		: else : begin
-			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (flatHook -- flatHook) (cornerHook -- cornerHook) (sw -- sw)
+			include : PRotundaShape top (df -- df) (mul -- mul) (bp -- bp) (overshoot -- O) (endX -- endX) (hook -- hook) (hookStyle -- hookStyle) (sw -- sw)
 			include : difference
 				legShape legTop 0 df.middle right top [mix 0 df.leftSB mul] legSlab sw
 				MaskLeft endX
@@ -348,13 +347,13 @@ glyph-block Letter-Latin-Upper-R : begin
 					include : MarkSet.capital
 					local bp : 0.9 * PShape.BarPos
 					include : StrikeAnchor CAP swCap bp
-					include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (flatHook -- (zeSuffix === 'topFlatHook')) (cornerHook -- (zeSuffix === 'topCornerHook'))
+					include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (hookStyle -- zeSuffix)
 
 				create-glyph "rRotunda.\(suffix).\(zeSuffix)" : glyph-proc
 					include : MarkSet.e
 					local bp : 0.9 * PShape.BarPos
 					include : StrikeAnchor XH swXH bp
-					include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (flatHook -- (zeSuffix === 'topFlatHook')) (cornerHook -- (zeSuffix === 'topCornerHook'))
+					include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (hookStyle -- zeSuffix)
 
 			create-glyph "currency/indianRupeeSign.\(suffix)" : glyph-proc
 				local shift : (-0.125) * (Width - 0)

@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook FlatHookDepth
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook FlatHookDepth SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 
@@ -29,7 +29,7 @@ glyph-block Letter-Latin-Upper-P : begin
 		flat [Math.max (xHook + TINY) (xTurn - TINY)] (targetY + scaleY * (yBarTop - originY)) [heading Rightward]
 		curl xEnd (targetY + scaleY * (yBarTop - endDrop - originY)) [heading endDirection]
 
-	define [PRotundaOutlineKnots top df mul bp overshoot sw offset endX hook flatHook cornerHook] : begin
+	define [PRotundaOutlineKnots top df mul bp overshoot sw offset endX hook hookStyle] : begin
 		local bowlTop : top - offset
 		local bowlBottom : [PBarPosY top sw bp] + offset
 		local turnRadius : BowlXDepth bowlTop bowlBottom df.leftSB df.rightSB sw
@@ -38,12 +38,15 @@ glyph-block Letter-Latin-Upper-P : begin
 		local left : mix 0 df.leftSB mul
 		local right : df.rightSB - offset
 		local turn : YSmoothMidR bowlTop bowlBottom ada adb
-		local hk : if cornerHook [MakeCornerHook left df.rightSB bowlTop bowlBottom (sw -- sw)] [MakeFlatHook left df.rightSB bowlTop bowlBottom (sw -- sw)]
 		return : list
-			if (flatHook || cornerHook) : then : hk.hookStartL
-			: else : list
-				g4 (left - O) (bowlTop - hook)
-				HookStart bowlTop
+			match hookStyle
+				[Just 'topFlatHook'] : [MakeFlatHook left df.rightSB bowlTop bowlBottom (sw -- sw)].hookStartL
+				[Just 'topCornerHook'] : [MakeCornerHook left df.rightSB bowlTop bowlBottom (sw -- sw) (hook -- hook)].hookStartL
+				[Just 'unilateralSerifed'] : SerifedArcStart.LtrRhs left bowlTop sw hook
+				[Just 'unilateralInwardSerifed'] : InwardSlabArcStart.LtrRhs left bowlTop sw hook
+				__ : list
+					g4 (left - O) (bowlTop - hook)
+					HookStart bowlTop
 			g4 (right - overshoot) turn
 			arcvh
 			flat [Arch.adjust-x.bot [Math.max (endX + TINY + [Math.abs : 0.5 * sw * TanSlope]) df.middle] (sw -- (0.5 * sw))] bowlBottom
@@ -130,12 +133,13 @@ glyph-block Letter-Latin-Upper-P : begin
 		local-parameter : slab      -- null
 		local-parameter : endX      -- SB
 		local-parameter : hook      -- Hook
-		local-parameter : flatHook  -- false
-		local-parameter : cornerHook -- false
+		local-parameter : hookStyle -- 'serifless'
 
 		include : tagged 'bowl' : dispiro
 			widths.rhs sw
-			PRotundaOutlineKnots top df mul bp overshoot sw 0 endX hook flatHook cornerHook
+			PRotundaOutlineKnots top df mul bp overshoot sw 0 endX hook hookStyle
+		if (hookStyle === 'unilateralSerifed') : include : ArcStartSerif.L [mix 0 df.leftSB mul] top sw hook
+		if (hookStyle === 'unilateralInwardSerifed') : include : ArcStartSerif.InwardL [mix 0 df.leftSB mul] top sw hook
 
 	glyph-block-export RevPShape
 	define flex-params [RevPShape] : glyph-proc

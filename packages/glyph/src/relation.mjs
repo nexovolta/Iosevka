@@ -263,20 +263,33 @@ export const AnyCvOrCherryPicking = {
 export function getGrTree(gid, grSetList, fnGidToGlyph) {
 	if (typeof gid !== "string") throw new TypeError("Must supply a GID");
 	const sink = [];
-	getGrTreeImpl(gid, grSetList, fnGidToGlyph, sink);
+	const visited = grSetList.map(() => new Set());
+	const emitted = new Map();
+	getGrTreeImpl(gid, grSetList, 0, fnGidToGlyph, sink, visited, emitted);
 	return sink;
 }
 
-function getGrTreeImpl(gid, grSetList, fnGidToGlyph, sink) {
-	if (!grSetList.length) return;
+function getGrTreeImpl(gid, grSetList, index, fnGidToGlyph, sink, visited, emitted) {
+	if (index === grSetList.length || visited[index].has(gid)) return;
+	visited[index].add(gid);
 	const g = fnGidToGlyph(gid);
 	if (!g) return;
-	const grs = grSetList[0].query(g);
-	getGrTreeImpl(gid, grSetList.slice(1), fnGidToGlyph, sink);
+	const grs = grSetList[index].query(g);
+	getGrTreeImpl(gid, grSetList, index + 1, fnGidToGlyph, sink, visited, emitted);
 	if (grs?.length) {
 		for (const gr of grs) {
-			sink.push([gr, gid, gr.get(g)]);
-			getGrTreeImpl(gr.get(g), grSetList, fnGidToGlyph, sink);
+			const target = gr.get(g);
+			if (!target) continue;
+			let glyphRelations = emitted.get(gid);
+			if (!glyphRelations) {
+				glyphRelations = new Set();
+				emitted.set(gid, glyphRelations);
+			}
+			if (!glyphRelations.has(gr)) {
+				glyphRelations.add(gr);
+				sink.push([gr, gid, target]);
+			}
+			getGrTreeImpl(target, grSetList, index, fnGidToGlyph, sink, visited, emitted);
 		}
 	}
 }
