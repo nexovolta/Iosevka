@@ -23,7 +23,11 @@ test("lower esh exposes exactly six exclusive choices", () => {
 	assert.deepEqual([...prime.variants.keys()], choices);
 });
 
-for (const [weight, slope] of [[120, "upright"], [420, "italic"], [920, "italic"]]) {
+for (const [weight, slope] of [
+	[120, "upright"], [120, "italic"],
+	[420, "upright"], [420, "italic"],
+	[920, "upright"], [920, "italic"],
+]) {
 	test(`lower esh variants generate distinct outlines at ${weight} ${slope}`, () => {
 		const argv = {
 			shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
@@ -47,6 +51,20 @@ for (const [weight, slope] of [[120, "upright"], [420, "italic"], [920, "italic"
 		const curlCounter = curlBase.map(contourArea).filter(area => area > 0);
 		assert.equal(curlCounter.length, 1, "compact esh curl must have one counter");
 		assert.ok(curlCounter[0] > 100, "compact esh curl counter must remain open");
+		const counter = curlBase.find(contour => contourArea(contour) > 0).map(p => ({
+			x: p.x - p.y * Math.tan((argv.shape.slopeAngle * Math.PI) / 180),
+			y: p.y,
+		}));
+		const xMin = Math.min(...counter.map(p => p.x));
+		const xMax = Math.max(...counter.map(p => p.x));
+		for (const extreme of [Math.min, Math.max]) {
+			const y = extreme(...counter.map(p => p.y));
+			const extremePoints = counter.filter(p => Math.abs(p.y - y) < 0.01);
+			assert.ok(
+				extremePoints.every(p => p.x < xMax - (xMax - xMin) * 0.2),
+				"esh curl counter must taper sideways toward its right-hand join",
+			);
+		}
 		for (const key of choices) {
 			const name = `esh.${prime.variants.get(key).selector.esh}`;
 			const contours = glyphStore.queryByNameEnsured(name).geometry.toContours();

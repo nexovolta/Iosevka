@@ -402,11 +402,18 @@ glyph-block Letter-Latin-Long-S : begin
 		local span : right - left
 		local counterX : mix left right 0.4
 		local counterY : Descender + span * 0.43
-		local rx : Math.max (fine * 0.25) (span / 2 - [HSwToV fine])
-		local ry : Math.max (fine * 0.25) (span / 2 - fine)
+		local rx : 0.8 * [Math.max (fine * 0.25) (span / 2 - [HSwToV fine])]
+		local ry : 0.8 * [Math.max (fine * 0.25) (span / 2 - fine)]
 		return : difference
 			remove-holes : union upper [EshCurlyTailLower]
-			Ellipse.Outline.At counterX counterY rx ry
+			spiro-outline
+				corner (counterX + rx) counterY
+				g4 (counterX - rx * 0.15) (counterY - ry) [heading Leftward]
+				archv
+				g4 (counterX - rx) counterY [heading Upward]
+				arcvh
+				g4 (counterX - rx * 0.15) (counterY + ry) [heading Rightward]
+				corner (counterX + rx) counterY
 
 	create-glyph 'eshCurlyTail.compact' : glyph-proc
 		include : MarkSet.bp
