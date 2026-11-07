@@ -36,25 +36,29 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : body subDf hookStyle df.mvs cut diag
 				if xTrailing : set-base-anchor 'trailing' xTrailing 0
 
-			if (body === DoubleStorey.ToothlessRounded) : begin
+			do
 				create-glyph "ao/a.\(suffix)" : glyph-proc
 					local aoDf : include : DivFrame para.advanceScaleMM 3
 					include : aoDf.markSet.e
 					set-base-anchor 'cvDecompose' 0 0
 					local aoSubDf : aoDf.slice 3 2
 					local rise : ArchDepthBClamped XH 0 aoSubDf.smallArchDepthA aoSubDf.smallArchDepthB
-					include : union
-						DoubleStorey.HookAndBar aoSubDf hookStyle rise aoDf.mvs (aoDf.mvs * CThin)
-						DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin) diag
+					if (body === DoubleStorey.ToothlessRounded)
+						then : include : union
+							DoubleStorey.HookAndBar aoSubDf hookStyle rise aoDf.mvs (aoDf.mvs * CThin)
+							DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin) diag
+						else : include : body aoSubDf hookStyle aoDf.mvs cut diag
 				create-glyph "au/a.\(suffix)" : glyph-proc
 					local auDf : include : DivFrame para.advanceScaleMM 3
 					include : auDf.markSet.e
 					set-base-anchor 'cvDecompose' 0 0
 					local auSubDf : auDf.slice 3 2
 					local rise : ArchDepthBClamped XH 0 auSubDf.smallArchDepthA auSubDf.smallArchDepthB
-					include : union
-						DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
-						DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB) diag
+					if (body === DoubleStorey.ToothlessRounded)
+						then : include : union
+							DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
+							DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB) diag
+						else : include : body auSubDf hookStyle auDf.mvs cut diag
 				create-glyph "av/a.\(suffix)" : glyph-proc
 					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "ay/a.\(suffix)" : glyph-proc

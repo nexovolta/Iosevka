@@ -381,7 +381,8 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : body df [fallback _hookStyle hookStyle] nothing cut diag
 
 		create-glyph "aSwash.\(suffix)" : glyph-proc
-			include [refer-glyph "a.\(suffix)"] AS_BASE ALSO_METRICS
+			local baseSuffix : if (body === DoubleStorey.Tailed) [suffix.replace "Tailed" "Serifless"] suffix
+			include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifRB'
 			include : RetroflexHook.rExt RightSB 0
 				yAttach -- [DoubleStorey.SmoothA : DivFrame 1]
@@ -653,7 +654,8 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : df.markSet.e
 			include : revBody df XH revBar cut
 		create-glyph "aSwash.\(suffix)" : glyph-proc
-			include [refer-glyph "a.\(suffix)"] AS_BASE ALSO_METRICS
+			local baseSuffix : if (bar === SingleStorey.TailedBar || bar === SingleStorey.TailedSerifedBar) [suffix.replace [if (bar === SingleStorey.TailedBar) "Tailed" "TailedSerifed"] "Serifless"] suffix
+			include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifRB'
 			include : RetroflexHook.rExt RightSB 0
 		create-glyph "aRetroflexHook.\(suffix)" : glyph-proc

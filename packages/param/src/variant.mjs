@@ -43,31 +43,7 @@ export function parse(data, argv) {
 	return { selectorTree: selectorTree, primes, composites, defaultComposite };
 }
 
-const DEFAULT_FORCED_DOUBLE_STOREY_A = "doubleStoreySerifless";
 const LIGATURE_A_SELECTORS = ["ae/a", "ao/a", "au/a", "av/a", "ay/a", "cyrl/aye/a"];
-const DOUBLE_STOREY_HOOKS = ["HookInwardSerifed", "HookFlat"];
-const DOUBLE_STOREY_CUTS = ["BottomCut"];
-const DOUBLE_STOREY_DIAGS = ["DiagonalBarFalling", "DiagonalBar"];
-const DOUBLE_STOREY_SPURS = [
-	"FlatBottomSerifless",
-	"FlatBottomSerifed",
-	"ToothlessCorner",
-	"ToothlessRounded",
-	"Serifless",
-	"Serifed",
-	"Tailed",
-];
-const A_TERMINALS = [
-	"FlatBottomSerifless",
-	"FlatBottomSerifed",
-	"ToothlessCorner",
-	"ToothlessRounded",
-	"TailedSerifed",
-	"DoubleSerifed",
-	"Tailed",
-	"Serifed",
-	"Serifless",
-];
 
 function resolveSelectors(parsed, para, argv) {
 	const variantSelector = {};
@@ -83,67 +59,6 @@ function resolveSelectors(parsed, para, argv) {
 	return variantSelector;
 }
 
-function parseDoubleStoreyA(suffix) {
-	if (typeof suffix !== "string" || !suffix.startsWith("doubleStorey")) return null;
-	let rest = suffix.slice("doubleStorey".length);
-	let diag = "";
-	for (const d of DOUBLE_STOREY_DIAGS) {
-		if (rest.endsWith(d)) {
-			diag = d;
-			rest = rest.slice(0, -d.length);
-			break;
-		}
-	}
-	let hook = "";
-	for (const h of DOUBLE_STOREY_HOOKS) {
-		if (rest.startsWith(h)) {
-			hook = h;
-			rest = rest.slice(h.length);
-			break;
-		}
-	}
-	let cut = "";
-	for (const c of DOUBLE_STOREY_CUTS) {
-		if (rest.startsWith(c)) {
-			cut = c;
-			rest = rest.slice(c.length);
-			break;
-		}
-	}
-	if (!DOUBLE_STOREY_SPURS.includes(rest)) return null;
-	return { hook, cut, diag, spur: rest };
-}
-
-function assembleDoubleStoreyA({ hook = "", cut = "", diag = "", spur = "Serifless" } = {}) {
-	return `doubleStorey${hook}${cut}${spur}${diag}`;
-}
-
-function terminalFromA(suffix) {
-	if (typeof suffix !== "string") return null;
-	for (const t of A_TERMINALS) {
-		if (suffix.endsWith(t)) return t;
-	}
-	return null;
-}
-
-function mapToDoubleStoreySpur(terminal) {
-	if (terminal === "TailedSerifed") return "Tailed";
-	if (terminal === "DoubleSerifed") return "Serifed";
-	if (DOUBLE_STOREY_SPURS.includes(terminal)) return terminal;
-	return "Serifless";
-}
-
-function pickForcedDoubleStoreyA(currentVs, obliqueVs, uprightVs) {
-	for (const vs of [obliqueVs, uprightVs]) {
-		const parsed = parseDoubleStoreyA(vs.a);
-		if (parsed) return assembleDoubleStoreyA(parsed);
-	}
-	const terminal =
-		terminalFromA(currentVs.a) || terminalFromA(uprightVs.a) || terminalFromA(obliqueVs.a);
-	if (!terminal) return DEFAULT_FORCED_DOUBLE_STOREY_A;
-	return assembleDoubleStoreyA({ spur: mapToDoubleStoreySpur(terminal) });
-}
-
 function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantSelector) {
 	const obliqueVs = resolveSelectors(
 		parsed,
@@ -155,22 +70,17 @@ function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantS
 		Object.assign({}, para, { isItalic: false, isOblique: false }),
 		argv,
 	);
-	const suffix = pickForcedDoubleStoreyA(variantSelector, obliqueVs, uprightVs);
-	const parsedA = parseDoubleStoreyA(suffix);
-	const hook = parsedA ? parsedA.hook : "";
-	const cut = parsedA ? parsedA.cut : "";
-	const diag = parsedA ? parsedA.diag : "";
-	variantSelector["a/doubleStorey"] = suffix;
-	variantSelector["aRetroflexHook/doubleStorey"] = assembleDoubleStoreyA({
-		hook,
-		cut,
-		diag,
-		spur: "Serifless",
-	});
-	const ligature = hook
-		? assembleDoubleStoreyA({ hook, diag, spur: "ToothlessRounded" })
-		: assembleDoubleStoreyA({ diag, spur: "ToothlessRounded" });
-	for (const selector of LIGATURE_A_SELECTORS) variantSelector[selector] = ligature;
+	const source =
+		[variantSelector, obliqueVs, uprightVs].find(vs => vs.a?.startsWith("doubleStorey")) ||
+		variantSelector;
+	for (const selector of [
+		"a/doubleStorey",
+		"aHalf",
+		"aRetroflexHook/doubleStorey",
+		...LIGATURE_A_SELECTORS,
+	]) {
+		variantSelector[selector] = source[selector];
+	}
 }
 
 class SelectorTree {
