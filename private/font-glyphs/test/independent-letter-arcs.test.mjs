@@ -44,7 +44,7 @@ test("independent arc stages preserve existing variants and character-variant ra
 		const prefixes = primeName === "cyrl-ze"
 			? ["", "tall-"]
 			: ["cyrl-capital-e", "cyrl-e"].includes(primeName)
-				? ["", "diagonal-crossbar-", "diagonal-crossbar-falling-"]
+				? ["", "diagonal-crossbar-rising-", "diagonal-crossbar-falling-"]
 				: [""];
 		for (const prefix of prefixes) for (const [i, top] of arcKeys.entries()) for (const [j, bottom] of arcKeys.entries()) {
 			const key = `${prefix}top-${top}-bottom-${bottom}`;
