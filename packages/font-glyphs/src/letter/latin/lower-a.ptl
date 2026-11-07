@@ -331,7 +331,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
 		do
 			create-glyph "a.\(suffix)" : make [DivFrame 1]
-			if (!hookStyle && !diag) : begin
+			if (!hookStyle) : begin
 				create-glyph "aHalf.\(suffix)" : make [DivFrame 1] HOOK-HALF
 		: where : [make df _hookStyle] : glyph-proc
 			set-width df.width
@@ -637,7 +637,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	select-variant 'aRetroflexHook' 0x1D8F
 	link-reduced-variant 'aRetroflexHook/doubleStorey' 'aRetroflexHook'
 
-	select-variant 'aSwash' 0x1DF69 (follow -- 'aRTail')
+	select-variant 'aSwash' 0x1DF69 (follow -- 'a')
 	select-variant 'aRoundTop.upright' (follow -- 'a/doubleStorey') (shapeFrom -- 'reva')
 
 	select-variant 'grek/alpha' 0x3B1 (shapeFrom -- 'a')

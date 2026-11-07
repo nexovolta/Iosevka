@@ -198,7 +198,7 @@ glyph-block Letter-Latin-Lower-I : begin
 				flat (xMiddle + Hook - 0.5 * stroke) (bot + 0.5 * stroke)
 				curl [Math.max df.rightSB : xMiddle + [Math.max tailLength HookX]] (bot + 0.5 * stroke) [heading Rightward]
 
-		define [CasualTailBody kind] : match kind
+		export : define [CasualTailBody kind] : match kind
 			[Just 'tailed']    CasualCurly
 			[Just 'flat']      FlatTailed
 			[Just 'semi']      SemiTailed
@@ -403,9 +403,11 @@ glyph-block Letter-Latin-Lower-I : begin
 
 	define [SmallILConfig mode] : Object.assign [SmallILBaseConfig mode] [SmallILStageConfig mode]
 
-	glyph-block-export Casual CasualTop
+	glyph-block-export Casual CasualTop CasualTopBetween CasualBottom
 	define [Casual df top bot xMiddle topKind botKind _stroke] : ILBody.Casual df top bot xMiddle topKind botKind _stroke
 	define [CasualTop df top xMiddle kind _stroke] : ILBody.CasualTop df top xMiddle kind _stroke
+	define [CasualTopBetween df top bot xMiddle kind _stroke] : ILBody.CasualTopBetween df top bot xMiddle kind _stroke
+	define [CasualBottom df top bot xMiddle kind _stroke] : [ILBody.CasualTailBody kind] df top bot xMiddle _stroke
 
 	# Keep the existing bottom of `Body` and stack a casual top in the upper half.
 	define [ILWithCasualTop kind Body] : lambda [df top bot xMiddle _stroke] : glyph-proc
@@ -815,7 +817,7 @@ glyph-block Letter-Latin-Lower-I : begin
 
 		select-variant 'dotlessiStretchedHookLeft' 0x27F
 
-		create-glyph 'dotlessiStretchedHookLeftRTail' 0x285 : glyph-proc
+		create-glyph 'dotlessiStretchedHookLeftRTail.compact' : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : df.markSet.p
 			local xMiddle : [XMiddleT MODE-I].Center df

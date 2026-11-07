@@ -15,6 +15,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
+	glyph-block-import Letter-Latin-Lower-I : Casual CasualTopBetween CasualBottom
 	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
 
 	define SLAB_SERIFLESS       0
@@ -259,12 +260,57 @@ glyph-block Letter-Latin-Long-S : begin
 	select-variant 'longs/compLigLeft' (shapeFrom -- 'longs')
 	select-variant 'longsBar' 0x1E9D
 
-	alias 'esh' 0x283 "longs.flatHookTailedSerifless"
+	create-glyph 'esh.compact' : glyph-proc
+		include [refer-glyph 'longs.flatHookTailedSerifless'] AS_BASE ALSO_METRICS
+	create-glyph 'esh.cornerHooked' : glyph-proc
+		include [refer-glyph 'longs.cornerHookTailedSerifless'] AS_BASE ALSO_METRICS
+	create-glyph 'esh.sshaped' : glyph-proc
+		include : MarkSet.bp
+		local xMid Middle
+		local xLeft : Middle - [Math.max HookX LongJut]
+		local xRight : Middle + [Math.max HookX LongJut]
+		include : union
+			VBar.m xMid Descender Ascender Stroke
+			HBar.t xMid xRight Ascender Stroke
+			HBar.b xLeft xMid Descender Stroke
+		include : LeaningAnchor.Above.At xMid
+		include : LeaningAnchor.Below.At xMid
+		set-base-anchor 'overlay' xMid [mix Descender Ascender OverlayPos]
 
-	# Esh hook (LongS lower half) plus a Stroke-weight teardrop and crossbar
-	# like H/T. Loop does not descend into the hook, so the stem join stays smooth.
-	# Do not use a P/OBarLeft bowl — that fills at heavy weight.
-	define [IsShape top bot] : glyph-proc
+	define EshTailConfig : object
+		flatTailed     'flat'
+		diagonalTailed 'diagonal'
+		tailed         'tailed'
+	foreach { suffix kind } [pairs-of EshTailConfig] : do
+		create-glyph "esh.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			include : with-transform [ScaleAround Middle 0 (-1) 1]
+				Casual [DivFrame 1] Ascender Descender Middle kind kind Stroke
+			include : LeaningAnchor.Above.At Middle
+			include : LeaningAnchor.Below.At Middle
+			set-base-anchor 'overlay' Middle [mix Descender Ascender OverlayPos]
+
+	select-variant 'esh' 0x283
+
+	define [EshUpperTerminal df sign x top bot kind] : match kind
+		[Just 'cornerHooked'] : LongSUpperHalf sign x top bot (HookX + QuarterStroke) Hook Stroke true
+		[Just 'sshaped'] : union
+			VBar.m x bot top Stroke
+			HBar.t [Math.min x (x + sign * [Math.max HookX LongJut])] [Math.max x (x + sign * [Math.max HookX LongJut])] top Stroke
+		__ : if (sign > 0)
+			with-transform [ScaleAround x 0 (-1) 1] : CasualTopBetween df top (2 * bot - top) x kind Stroke
+			CasualTopBetween df top (2 * bot - top) x kind Stroke
+
+	define [EshLowerTerminal df sign x top bot kind] : match kind
+		[Just 'cornerHooked'] : LongSLowerHalf sign x top bot (HookX + QuarterStroke) Hook Stroke true
+		[Just 'sshaped'] : union
+			VBar.m x bot top Stroke
+			HBar.b [Math.min x (x - sign * [Math.max HookX LongJut])] [Math.max x (x - sign * [Math.max HookX LongJut])] bot Stroke
+		__ : if (sign > 0)
+			with-transform [ScaleAround x 0 (-1) 1] : CasualBottom df top bot x kind Stroke
+			CasualBottom df top bot x kind Stroke
+
+	define [IsShape top bot _kind] : glyph-proc
 		local sw : 1 * Stroke
 		local xStem : mix SB RightSB 0.40
 		local xLeft : xStem - [HSwToV : 0.5 * sw]
@@ -274,7 +320,7 @@ glyph-block Letter-Latin-Long-S : begin
 		local yBar : Math.min [mix 0 top 0.56] (top - minLoopH)
 		local yJoin : mix yBar top 0.55
 		include : union
-			LongSLowerHalf (+1) xStem yJoin bot hookx Hook sw
+			if _kind [intersection [MaskBelow yJoin] [EshLowerTerminal [DivFrame 1] (+1) xStem yJoin bot _kind]] [LongSLowerHalf (+1) xStem yJoin bot hookx Hook sw]
 			dispiro
 				widths.lhs sw
 				flat (xLeft - hookx) yBar [heading Rightward]
@@ -286,16 +332,14 @@ glyph-block Letter-Latin-Long-S : begin
 				flat xLeft [mix yBar yJoin 0.5] [heading Downward]
 				curl xLeft yBar [heading Downward]
 
-	create-glyph 'Is' 0xA76C : glyph-proc
+	create-glyph 'Is.compact' : glyph-proc
 		include : MarkSet.capital
 		include : IsShape CAP 0
 
-	create-glyph 'is' 0xA76D : glyph-proc
+	create-glyph 'is.compact' : glyph-proc
 		include : MarkSet.bp
 		include : IsShape Ascender Descender
 
-	# Is teardrop loop with a vertical stem to the baseline (no esh/long-s hook).
-	# yBar is the bottom of the T-bar (Rightward lhs sits above the path).
 	glyph-block-export IsLoopVertical
 	define [IsLoopVertical xLeft xRight top yBar bot sw] : glyph-proc
 		local xLoopR : xRight - OX
@@ -311,8 +355,6 @@ glyph-block Letter-Latin-Long-S : begin
 			flat xLeft [mix yBar yJoin 0.5] [heading Downward]
 			curl xLeft bot [heading Downward]
 
-	# Right half of tum: Is teardrop to the baseline (no esh descender).
-	# Packed with t/phoneticLeft3 like tesh (ʧ).
 	create-glyph 'is/phoneticRight' : glyph-proc
 		include : MarkSet.b
 		local sw Stroke
@@ -341,24 +383,37 @@ glyph-block Letter-Latin-Long-S : begin
 		refSw   -- [AdviceStroke 3]
 		maskOut -- [intersection [MaskBelow 0] [MaskLeft : Middle + [HSwToV HalfStroke]]]
 
-	create-glyph 'eshCurlyTail' 0x286 : glyph-proc
-		include : MarkSet.bp
+	define [EshCurlyTailLower] : begin
 		local fine : AdviceStroke 3.5
 		local m : Middle - FBalance
-		include : union
-			LongSUpperHalf (+1) m Ascender 0 (HookX + QuarterStroke) Hook
-			dispiro
-				widths.rhs
-				flat (m + [HSwToV HalfStroke]) (-O) [heading Downward]
-				curl (m + [HSwToV HalfStroke]) (Descender + LongVJut)
-				CurlyTail.n fine Descender ((m - [HSwToV HalfStroke]) - LongJut)
-					x2 -- (RightSB + [HSwToV : 0.5 * fine])
-					y2 -- (Descender + fine / 2)
+		return : dispiro
+			widths.rhs
+			flat (m + [HSwToV HalfStroke]) (-O) [heading Downward]
+			curl (m + [HSwToV HalfStroke]) (Descender + LongVJut)
+			CurlyTail.n fine Descender ((m - [HSwToV HalfStroke]) - LongJut)
+				x2 -- (RightSB + [HSwToV : 0.5 * fine])
+				y2 -- (Descender + fine / 2)
 
-	CreateAccentedComposition 'eshDblBar'          0x1DF0B 'esh'          'dblBarOver'
-	CreateAccentedComposition 'eshDblBarCurlyTail' 0x1DF0C 'eshCurlyTail' 'dblBarOver'
+	define [EshCurlyTailShape upper] : begin
+		local fine : AdviceStroke 3.5
+		local m : Middle - FBalance
+		local left : m - [HSwToV HalfStroke] - LongJut
+		local right : m + [HSwToV HalfStroke]
+		local span : right - left
+		local counterX : mix left right 0.4
+		local counterY : Descender + span * 0.43
+		local rx : Math.max (fine * 0.25) (span / 2 - [HSwToV fine])
+		local ry : Math.max (fine * 0.25) (span / 2 - fine)
+		return : difference
+			remove-holes : union upper [EshCurlyTailLower]
+			Ellipse.Outline.At counterX counterY rx ry
 
-	create-glyph 'reveshLoop' 0x1AA : glyph-proc
+	create-glyph 'eshCurlyTail.compact' : glyph-proc
+		include : MarkSet.bp
+		local m : Middle - FBalance
+		include : EshCurlyTailShape : LongSUpperHalf (+1) m Ascender 0 (HookX + QuarterStroke) Hook
+
+	create-glyph 'reveshLoop.compact' : glyph-proc
 		include : MarkSet.bp
 		local fine : AdviceStroke 4
 		include : dispiro
@@ -375,3 +430,63 @@ glyph-block Letter-Latin-Long-S : begin
 			curl Middle (Descender + Hook) [heading Downward]
 			arcvh
 			straight.right.end (Middle + HookX) (Descender + O + HalfStroke)
+
+	define [ReversedEshLoopTop bot] : begin
+		local fine : AdviceStroke 4
+		return : dispiro
+			widths.center fine
+			g4.down.start Middle (Ascender - fine * 1.5) [heading Downward]
+			arcvh
+			g4   (Middle - fine * 1) (Ascender - fine * 2.5) [heading Leftward]
+			archv
+			g4   (Middle - fine * 2) (Ascender - fine * 1.5) [heading Upward]
+			arcvh
+			g4   (Middle - fine * 1) (Ascender - fine * 0.5) [heading Rightward]
+			archv
+			flat Middle (Ascender - fine * 1.5) [widths.center.heading Stroke Downward]
+			curl Middle bot [heading Downward]
+
+	define EshRelatedConfig : object
+		cornerHooked 'cornerHooked'
+		sshaped 'sshaped'
+		flatTailed 'flat'
+		diagonalTailed 'diagonal'
+		tailed 'tailed'
+	foreach { suffix kind } [pairs-of EshRelatedConfig] : do
+		create-glyph "eshCurlyTail.\(suffix)" : glyph-proc
+			include [refer-glyph 'eshCurlyTail.compact'] AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			include : EshCurlyTailShape : EshUpperTerminal [DivFrame 1] (+1) (Middle - FBalance) Ascender 0 kind
+
+		create-glyph "dotlessiStretchedHookLeftRTail.\(suffix)" : glyph-proc
+			local df : DivFrame para.advanceScaleI
+			local join : XH / 2
+			local base : refer-glyph 'dotlessiStretchedHookLeftRTail.compact'
+			include base AS_BASE ALSO_METRICS
+			local stemAnchor : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.overlay
+			currentGlyph.clearGeometry
+			include : intersection base [MaskBelow join]
+			include : intersection [MaskAbove join] : EshUpperTerminal df (-1) stemAnchor.x XH join kind
+
+		create-glyph "reveshLoop.\(suffix)" : glyph-proc
+			local join : mix Descender Ascender 0.5
+			include [refer-glyph 'reveshLoop.compact'] AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			include : union
+				ReversedEshLoopTop (join - TINY)
+				intersection [MaskBelow (join + TINY)] : EshLowerTerminal [DivFrame 1] (-1) Middle (join + TINY) Descender kind
+
+		create-glyph "Is.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : IsShape CAP 0 kind
+		create-glyph "is.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			include : IsShape Ascender Descender kind
+
+	select-variant 'eshCurlyTail' 0x286
+	select-variant 'dotlessiStretchedHookLeftRTail' 0x285
+	select-variant 'reveshLoop' 0x1AA
+	select-variant 'Is' 0xA76C
+	select-variant 'is' 0xA76D
+	CreateAccentedComposition 'eshDblBar'          0x1DF0B 'esh'          'dblBarOver'
+	CreateAccentedComposition 'eshDblBarCurlyTail' 0x1DF0C 'eshCurlyTail' 'dblBarOver'
