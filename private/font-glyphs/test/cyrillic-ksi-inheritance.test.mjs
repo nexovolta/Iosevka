@@ -19,9 +19,9 @@ const tails = ["curly", "straightTail", "diagonalTail", "straightTailSharpCorner
 
 await Geom.Init();
 
-function build(weight, slope, enableCvSs) {
+function build(weight, slope, enableCvSs, width = 500) {
 	const argv = {
-		shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+		shape: { serifs: "sans", spacing: "term", weight, width, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 		featureControl: { noCvSs: !enableCvSs },
 		variants: { design: {
 			"capital-latin-gamma": "serifless", "latin-gamma": "serifless",
@@ -37,18 +37,54 @@ function outline(glyph) {
 	return new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 }
 
-function bottomX(contours) {
+function bottomEdge(contours) {
 	const segments = [];
 	for (const contour of contours) {
 		for (const [i, p] of contour.entries()) {
 			const q = contour[(i + 1) % contour.length];
 			if (p.type === 0 && q.type === 0 && Math.hypot(q.x - p.x, q.y - p.y) > 20) {
-				segments.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+				segments.push({ contour, i, x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
 			}
 		}
 	}
 	assert.ok(segments.length, "tail terminal must have a straight edge");
-	return segments.reduce((lowest, segment) => segment.y < lowest.y ? segment : lowest).x;
+	return segments.reduce((lowest, segment) => segment.y < lowest.y ? segment : lowest);
+}
+
+function assertSmoothTail(contours, name) {
+	const { contour, i } = bottomEdge(contours);
+	const at = n => contour[(n + contour.length) % contour.length];
+	for (const [control, joint, end, types] of [
+		[at(i - 2), at(i - 1), at(i), [0, 2, 3]],
+		[at(i + 3), at(i + 2), at(i + 1), [0, 1, 3]],
+	]) {
+		if (joint.type !== 0 || !types.includes(control.type)) continue;
+		const ax = joint.x - control.x, ay = joint.y - control.y;
+		const bx = end.x - joint.x, by = end.y - joint.y;
+		const cosine = (ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by));
+		assert.ok(cosine > 0.5, `${name}: tail bend doubles back at its join (${cosine})`);
+	}
+
+}
+
+for (const [width, slope] of [[416, "upright"], [416, "italic"], [720, "upright"], [720, "italic"]]) {
+	test(`heavy ksi tails and broken-top serifs at width ${width} ${slope}`, () => {
+		const { glyphStore } = build(920, slope, false, width);
+		for (const name of ["cyrl/Ksi/base", "cyrl/ksi/base"]) {
+			for (const top of ["rounded", "flatTopBroken", "flatTopBrokenSerifed"]) {
+				const glyphName = `${name}.${top}.diagonalTail`;
+				const contours = outline(glyphStore.queryByNameEnsured(glyphName));
+				const straight = outline(glyphStore.queryByNameEnsured(`${name}.${top}.straightTail`));
+				assert.equal(contours.length, straight.length, `${glyphName}: unexpected contour`);
+				for (const point of contours.flat()) assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), glyphName);
+				assertSmoothTail(contours, glyphName);
+				if (name === "cyrl/ksi/base" && top.startsWith("flatTopBroken")) {
+					const curly = outline(glyphStore.queryByNameEnsured(`${name}.${top}.curly`));
+					assert.equal(curly.length, 1, `${name}.${top}: disconnected contour or enclosed counter`);
+				}
+			}
+		}
+	});
 }
 
 function hasDiagonal(contours, slope) {
@@ -95,14 +131,15 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 					assert.ok(contours.length, glyphName);
 					assert.equal(contours.length, 1, `${glyphName}: detached contours`);
 					for (const point of contours.flat()) assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), glyphName);
+					if (tail === "diagonalTail") assertSmoothTail(contours, glyphName);
 					if (weight === 420 && slope === "upright" && top.startsWith("flatTopBroken")) {
-						const expectedSlope = name === "cyrl/ksi/base" ? 1 : Math.tan(50 * Math.PI / 180);
+						const expectedSlope = Math.tan((name === "cyrl/ksi/base" ? 40 : 50) * Math.PI / 180);
 						assert.ok(hasDiagonal(contours, expectedSlope), `${glyphName}: incorrect broken-top diagonal`);
 					}
 				}
 				for (const suffix of ["", "SharpCorner"]) {
 					assert.ok(
-						bottomX(outlines.get(`diagonalTail${suffix}`)) > bottomX(outlines.get(`straightTail${suffix}`)),
+						bottomEdge(outlines.get(`diagonalTail${suffix}`)).x > bottomEdge(outlines.get(`straightTail${suffix}`)).x,
 						`${name}.${top}: mirrored diagonal tail must end to the right of the straight tail`,
 					);
 				}

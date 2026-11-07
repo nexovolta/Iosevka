@@ -107,8 +107,9 @@ glyph-block Digits-Three : begin
 
 	define [ThreeFlatTopBrokenShape top serif hookStyle _sw lowerEnd lowerEndY _angle] : glyph-proc
 		local sw : fallback _sw Stroke
-		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top nothing sw _angle
+		local [object kFall yBarBot cor xEnd yEnd] : ThreeFlatTopEtGeom top nothing sw _angle
 		local yBowl : mix 0 top 0.72
+		local joinOverlap : if _angle [Math.max 2 : 0.08 * sw] 0
 		local styBot : match hookStyle
 			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
 			[Just HOOK-CORNER] SLAB-CORNER-HOOK
@@ -129,9 +130,15 @@ glyph-block Digits-Three : begin
 			difference
 				lf.revFull
 				union
-					MaskAboveLine RightSB yBarBot xEnd yEnd
-					intersection [MaskLeft xEnd] [MaskAbove yEnd]
-		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
+					MaskAboveLine RightSB (yBarBot + joinOverlap) xEnd (yEnd + joinOverlap)
+					intersection [MaskLeft xEnd] [MaskAbove (yEnd + joinOverlap)]
+		if serif : begin
+			local serifX : SB + (OX - O)
+			local serifInnerX : serifX + [HSwToV VJutStroke]
+			# Keep a shallower diagonal from closing the space beneath the serif.
+			local maxSerifLength : Math.max 0 : top - (yBarBot - (RightSB - [HSwToV cor] - serifInnerX) * kFall) - [AdviceStroke 12]
+			local serifLength : if _angle [Math.min VJut maxSerifLength] VJut
+			include : VSerif.dl serifX top serifLength
 
 	glyph-block-export ThreeFlatHookTop ThreeFlatHookBrokenTop
 	define [ThreeFlatHookTop top serif sw lowerEnd lowerEndY] : ThreeFlatTopShape top serif HOOK-FLAT sw lowerEnd lowerEndY

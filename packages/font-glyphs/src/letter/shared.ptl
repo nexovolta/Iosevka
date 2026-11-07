@@ -1491,16 +1491,24 @@ glyph-block Letter-Shared-Shapes : begin
 			local xArch : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * 0.05) sw
 			local bendX : [Math.max [HSwToV sw] (0.5 * Hook)] + [Math.max TightBendInnerRadius [HSwToV : 0.25 * sw]]
 			local bendY : [Math.max sw (0.5 * Hook)] + [Math.max TightBendInnerRadius (0.25 * sw)]
-			local xTurn : Math.min (xDown + bendX) (xArch - [Math.abs : TanSlope * sw] - TINY)
+			local xTurnPref : Math.min (xDown + bendX) (xArch - [Math.abs : TanSlope * sw] - TINY)
+			local xTurn : if diagonal [Math.max (xDown + TINY) xTurnPref] xTurnPref
 			local yEnd : RoundedBendTailBot
-			local yCorner : Math.max (yHoriz - bendY) [mix yEnd yHoriz 0.35]
+			local yCorner : Math.max (yHoriz - bendY) [mix yEnd yHoriz [if diagonal 0.27 0.35]]
+			local xEnd : xDown + [if diagonal (0.24 * (yCorner - yEnd)) 0]
+			local dxTail : xEnd - xDown
+			local dyTail : yEnd - yCorner
+			local tailLength : Math.hypot dxTail dyTail
+			local tailNormal : object
+				x : (-dyTail) * HVContrast / tailLength
+				y : dxTail / tailLength
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat [Math.max (xTurn + TanSlope * sw) xArch] yHoriz [widths.lhs.heading sw Leftward]
 				curl xTurn yHoriz [heading Leftward]
 				archv.superness DesignParameters.tightHookSuperness
-				flat xDown yCorner [if diagonal [widths.lhs sw] [heading Downward]]
-				curl [if diagonal (xDown - [mix 0 Descender 0.24]) xDown] yEnd [if diagonal nothing [heading Downward]]
+				[if diagonal g4 flat] xDown yCorner [heading Downward]
+				curl xEnd yEnd [heading [if diagonal tailNormal Downward]]
 
 		# Cyrillic long curl descender, used by old Abkhazian letters
 		glyph-block-export CyrCurlDescender
