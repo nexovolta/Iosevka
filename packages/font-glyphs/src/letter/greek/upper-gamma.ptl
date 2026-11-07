@@ -14,6 +14,7 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 	glyph-block-import Letter-Shared-Metrics : EFMidBarShrinkK EFMidBarPosY
 	glyph-block-import Letter-Shared-Shapes : CyrDescender MidHook LegShape
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
+	glyph-block-import Letter-Latin-Lower-R : RDim RMode
 
 	define SLAB-NONE             0
 	define SLAB-TR               1
@@ -213,36 +214,37 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 
 	select-variant 'grek/Digamma' 0x3DC
 
-	define LowerDigammaConfig : object
-		straight         0
-		toothlessCorner  1
-		toothlessRounded 2
+	create-glyph "grek/digamma.flatTop" : glyph-proc
+		include : MarkSet.p
+		include : GammaShape XH Descender SLAB-NONE
+		local yBar : EFMidBarPosY XH 0
+		local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] SLAB
+		include : HBar.m xGammaBarLeft xMidRight yBar
+		if SLAB : begin
+			include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
 
-	foreach { suffix kind } [Object.entries LowerDigammaConfig] : do
-		create-glyph "grek/digamma.\(suffix)" : glyph-proc
-			include : MarkSet.p
-			match kind
-				[Just 0] : begin
-					include : GammaShape XH Descender SLAB-NONE
-					local yBar : EFMidBarPosY XH 0
-					local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] SLAB
-					include : HBar.m xGammaBarLeft xMidRight yBar
-					if SLAB : begin
-						include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke) [mix Stroke VJut 0.5]
-				[Just 1] : begin
-					include : GammaShape XH Descender SLAB-NONE
-				[Just 2] : begin
-					include : LeaningAnchor.Below.VBar.l xGammaBarLeft
-					local xStem : xGammaBarLeft + [HSwToV HalfStroke]
-					local yTop : XH - HalfStroke
-					local rad : Math.min (0.5 * (xGammaTopRight - xStem)) (0.45 * XH)
-					include : dispiro
-						widths.center Stroke
-						g4.left.start xGammaTopRight yTop [heading Leftward]
-						g4 (xStem + rad) yTop [heading Leftward]
-						archv
-						g4.down.mid xStem (yTop - rad) [heading Downward]
-						g4.down.end xStem Descender [heading Downward]
+	define [RDigammaMiddleBar] : glyph-proc
+		define [object rBarLeftX] : RDim [DivFrame 1] RMode.Earless
+		local yBar : EFMidBarPosY XH 0
+		local xMidRight : mix Width RightSB : EFMidBarShrinkK [DivFrame 1] false
+		include : HBar.m rBarLeftX xMidRight yBar
+
+	create-glyph "grek/digamma.flatTopBend" : glyph-proc
+		include [refer-glyph "rLongLeg.flatTopSerifless"] AS_BASE ALSO_METRICS
+		include : RDigammaMiddleBar
+
+	create-glyph "grek/digamma.flatTopUpturn" : glyph-proc
+		include [refer-glyph "grek/digamma.flatTop"] AS_BASE ALSO_METRICS
+		include : ExtendAboveBaseAnchors (XH + LongVJut - QuarterStroke)
+		include : VBar.r xGammaTopRight XH (XH + LongVJut - QuarterStroke) VJutStroke
+
+	create-glyph "grek/digamma.toothlessRounded" : glyph-proc
+		include [refer-glyph "rLongLeg.earlessRoundedSerifless"] AS_BASE ALSO_METRICS
+		include : RDigammaMiddleBar
+
+	create-glyph "grek/digamma.toothlessCorner" : glyph-proc
+		include [refer-glyph "rLongLeg.earlessCornerSerifless"] AS_BASE ALSO_METRICS
+		include : RDigammaMiddleBar
 
 	select-variant 'grek/digamma' 0x3DD
 	define [GhaynOverlayBar top] : LetterBarOverlay.l xGammaBarLeft (top * (1 - OverlayPos))

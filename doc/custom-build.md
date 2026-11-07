@@ -274,6 +274,11 @@ they no longer follow `capital-y` automatically.
 For Greek lowercase kappa, `lower-kappa = 'rounded-serifless'` selects rounded
 arms; the rounded body also supports the existing kappa serif choices.
 
+For Greek lowercase digamma, `lower-digamma` supports `flat-top` (the default),
+`flat-top-bend`, `flat-top-upturn`, `toothless-rounded`, and `toothless-corner`.
+All five include a middle bar. The former `straight` choice is now named
+`flat-top`.
+
 The `tittle`, `diacritic-dot`, `punctuation-dot`, and `braille-dot` selectors
 support `hexagon`. The `diacritic-comma` and `punctuation-comma` selectors
 independently support `hexagon`, `corner`, and `bottom-cut`; horn diacritics
