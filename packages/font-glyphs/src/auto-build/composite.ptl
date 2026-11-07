@@ -2,7 +2,7 @@
 $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from "@iosevka/util"
-import [getGrMesh AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant] from "@iosevka/glyph/relation"
+import [getGrMesh AnyCv AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant] from "@iosevka/glyph/relation"
 import [hashGeometry] from "@iosevka/geometry"
 import [Transform] from "@iosevka/geometry/transform"
 extern Map
@@ -65,8 +65,8 @@ glyph-block Autobuild-Enclosure-Shared : begin
 			local restInfo    : demand.slice 2
 			local origJobGlyphGn : CircName unicode prefix origParts suffix
 
-			# Bake the build-plan-selected parts only. Live cv##/VX## do not
-			# restyle the compound, even when enableCvSs is true.
+			# Bake the build-plan-selected parts unless a builder explicitly
+			# adds live cv##/VX## relations for its compounds.
 			nonDecomposable.push { origJobGlyphGn unicode mappedParts :: restInfo }
 
 			if [not globallyDecomposable] : begin
@@ -1665,7 +1665,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Recursive-Build : Thinner
-	glyph-block-import Autobuild-Enclosure-Shared : CollectJobs CreateDerivedFontFromJobs EnsureComponentGlyphT applyRelations
+	glyph-block-import Autobuild-Enclosure-Shared : CircNameNoCheck CollectJobs CreateDerivedFontFromJobs EnsureComponentGlyphT applyRelations
 	glyph-block-import Autobuild-Transformed-Shared : ToSuperscript ToSubscript
 	glyph-block-import Letter-Latin-Lower-F : FengTrillConfig
 
@@ -1683,6 +1683,19 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 	define [createPhoneticLigatures tfm prefix adws mockNParts _shrink kKern demands] : begin
 		local { ww0 wwM shrink kern } : PhoneticDimensions tfm adws mockNParts _shrink kKern
 		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix "" demands
+
+		# Hooked tesh keeps its attachment but follows lower-esh's free terminal.
+		local eshPrime : para.variants.primes.get 'lower-esh'
+		local eshTag eshPrime.tag
+		foreach { gn unicode parts mak } [items-of : jobs.nonDecomposable.slice 0] : if (unicode === 0x1DF17 || unicode === 0x1DF1C) : begin
+			local right : query-glyph parts.1
+			foreach gr [items-of : AnyCv.query right] : if (gr.tag === eshTag) : begin
+				local target : gr.get right
+				if (target && target !== parts.1) : begin
+					local toParts : list parts.0 target
+					local toGn : CircNameNoCheck unicode prefix toParts ""
+					jobs.nonDecomposable.push { toGn null toParts mak }
+					jobs.relApplications.push { gr gn toGn }
 
 		local thinFont : CreateDerivedFontFromJobs jobs {} : function [gs]
 			Thinner gs shrink true tfm.crowd tfm.crowdAdjScale
@@ -1798,7 +1811,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 		list 0x1DF12 { 'd/phoneticLeft1'   'ezhPalatalHook/phoneticRight' } 'bp'
 		list 0x1DF17 { 't/phoneticLeft3'   'eshPalatalHook'               } 'bp'
 		list 0x1DF19 { 'd/phoneticLeft1'   'ezhRTail/phoneticRight'       } 'bp'
-		list 0x1DF1C { 't/phoneticLeft3'   'eshRTail/phoneticRight'       } 'bp'
+		list 0x1DF1C { 't/phoneticLeft3'   'eshRTail'                     } 'bp'
 		list 0x1DF1F { 'd/phoneticLeft1'   'eth'                          } 'b'
 		list 0x1DF20 { 'd/phoneticLeft2'   'lyogh/phoneticRight'          } 'bp'
 		list 0x1DF21 { 'd/phoneticLeft2'   'lyoghRTail/phoneticRight'     } 'bp'
@@ -1831,7 +1844,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 		list 0x1DFE0 { 'd/phoneticLeft1' 'ezhCurlyTail/phoneticRight' } 'bp'
 		list 0x1DFE1 { 'd/phoneticLeft1' 'ezhRTail/phoneticRight'     } 'bp'
 		list 0x1DFE4 { 't/phoneticLeft3' 'eshCurlyTail'               } 'bp'
-		list 0x1DFE5 { 't/phoneticLeft3' 'eshRTail/phoneticRight'     } 'bp'
+		list 0x1DFE5 { 't/phoneticLeft3' 'eshRTail'                   } 'bp'
 
 	createPhoneticLigatures ToSubscript 'tenSubscript' 1 2 1 0.5 : list
 		list 0x23E8 { 'one.lnum' 'zero.lnum' } 'capital'

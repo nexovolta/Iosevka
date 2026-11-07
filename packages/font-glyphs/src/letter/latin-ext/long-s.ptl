@@ -362,26 +362,55 @@ glyph-block Letter-Latin-Long-S : begin
 		local xLeft : xStem - [HSwToV : 0.5 * sw]
 		include : IsLoopVertical xLeft RightSB Ascender (XH - sw) 0 sw
 
-	create-glyph 'eshBaseline' 0xAB4D : glyph-proc
+	create-glyph 'eshBaseline.compact' : glyph-proc
 		include : MarkSet.b
 		include : LongSShape Ascender 0 (HookX + QuarterStroke) Hook
 
-	derive-composites 'eshRTail' 0x1D98 'eshBaseline' : RetroflexHook.l
+	create-glyph 'eshHookBase.compact' : glyph-proc
+		include [refer-glyph 'eshBaseline.compact'] AS_BASE ALSO_METRICS
+
+	define EshRelatedConfig : object
+		cornerHooked 'cornerHooked'
+		sshaped 'sshaped'
+		flatTailed 'flat'
+		diagonalTailed 'diagonal'
+		tailed 'tailed'
+	foreach { suffix kind } [pairs-of EshRelatedConfig] : do
+		create-glyph "eshBaseline.\(suffix)" : glyph-proc
+			include [refer-glyph 'eshBaseline.compact'] AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			local join : Ascender / 2
+			include : union
+				EshUpperTerminal [DivFrame 1] (+1) Middle Ascender join kind
+				EshLowerTerminal [DivFrame 1] (+1) Middle join 0 kind
+
+		create-glyph "eshHookBase.\(suffix)" : glyph-proc
+			include [refer-glyph 'eshBaseline.compact'] AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			local join : Ascender / 2
+			include : union
+				EshUpperTerminal [DivFrame 1] (+1) Middle Ascender join kind
+				LongSLowerHalf (+1) Middle join 0 (HookX + QuarterStroke) Hook
+
+	select-variant 'eshBaseline' 0xAB4D (follow -- 'esh')
+	select-variant 'eshHookBase' (follow -- 'esh')
+
+	define [CreateEshHooked name unicode source hook] : begin
+		derive-multi-part-glyphs name unicode { source } : function [srcs] : glyph-proc
+			local base : refer-glyph srcs.0
+			include base AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			include : union base hook
+
+	CreateEshHooked 'eshRTail' 0x1D98 'eshHookBase' : RetroflexHook.l
 		x -- (Middle - (HookX + QuarterStroke))
 		y -- 0
 		yOverflow -- Stroke
 
-	derive-composites 'eshRTail/phoneticRight' null 'esh' : RetroflexHook.l
+	CreateEshHooked 'eshPalatalHook' 0x1D8B 'eshHookBase' : PalatalHook.l
 		x -- (Middle - (HookX + QuarterStroke))
-		y -- Descender
+		y -- 0
 		yOverflow -- Stroke
-
-	derive-composites 'eshPalatalHook' 0x1D8B 'esh' : PalatalHook.r
-		x       -- RightSB
-		y       -- 0
-		xLink   -- Middle
-		refSw   -- [AdviceStroke 3]
-		maskOut -- [intersection [MaskBelow 0] [MaskLeft : Middle + [HSwToV HalfStroke]]]
 
 	define [EshCurlyTailShape upper] : begin
 		local fine : AdviceStroke 3.5
@@ -427,12 +456,6 @@ glyph-block Letter-Latin-Long-S : begin
 			flat Middle (Ascender - fine * 1.5) [widths.center.heading Stroke Downward]
 			curl Middle bot [heading Downward]
 
-	define EshRelatedConfig : object
-		cornerHooked 'cornerHooked'
-		sshaped 'sshaped'
-		flatTailed 'flat'
-		diagonalTailed 'diagonal'
-		tailed 'tailed'
 	foreach { suffix kind } [pairs-of EshRelatedConfig] : do
 		create-glyph "eshCurlyTail.\(suffix)" : glyph-proc
 			include [refer-glyph 'eshCurlyTail.compact'] AS_BASE ALSO_METRICS
