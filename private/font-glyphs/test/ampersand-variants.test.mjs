@@ -37,8 +37,8 @@ test("symbol hook and serif variants are mutually exclusive", () => {
 	assert.equal(primes.get("sterling").variants.size, 10);
 	assert.equal(primes.get("pilcrow").variants.size, 7);
 	assert.equal(variants.size, 86);
-	assert.equal(variants.get("et-toothed").rank, 16);
-	assert.equal(variants.get("et-serifed-toothed").rank, 21);
+	assert.equal(variants.get("et-toothed").rank, 28);
+	assert.equal(variants.get("et-serifed-toothed").rank, 33);
 	const ranks = [...variants.values()].map(variant => variant.rank);
 	assert.equal(new Set(ranks).size, ranks.length);
 	for (const rank of [12, 13, 14, 15]) assert.ok(!ranks.includes(rank));

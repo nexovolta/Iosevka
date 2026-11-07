@@ -549,22 +549,27 @@ class VariantBuilder {
 
 		globalState.stages.get(this.entry).accept(globalState, localState);
 
-		globalState.sink.sort(
-			(a, b) =>
-				a.nonBreakingVariantAdditionPriority - b.nonBreakingVariantAdditionPriority ||
-				a.rank - b.rank,
-		);
+		const claimedRanks = new Set(this.reservedVariantRanks);
+		for (const item of globalState.sink) {
+			if (item.variantRank == null) continue;
+			if (this.reservedVariantRanks.has(item.variantRank))
+				throw new Error(`Variant rank ${item.variantRank} is reserved`);
+			if (claimedRanks.has(item.variantRank))
+				throw new Error(`Duplicate variant rank ${item.variantRank}`);
+			claimedRanks.add(item.variantRank);
+		}
 
 		const ans = {};
 		let itemRank = this.rankOffset;
 		for (const item of globalState.sink) {
 			const cfg = item.createPrimeVariant();
-			do itemRank++;
-			while (this.reservedVariantRanks.has(itemRank));
-			const defaultRank = itemRank;
-			cfg.rank = item.variantRank ?? defaultRank;
-			if (this.reservedVariantRanks.has(cfg.rank)) {
-				throw new Error(`Variant rank ${cfg.rank} is reserved`);
+			if (item.variantRank != null) {
+				cfg.rank = item.variantRank;
+			} else {
+				do itemRank++;
+				while (claimedRanks.has(itemRank));
+				cfg.rank = itemRank;
+				claimedRanks.add(itemRank);
 			}
 			if (!cfg.key) throw new Error("Invalid variant key");
 			if (ans[cfg.key]) throw new Error(`Duplicate variant : ${cfg.key}`);
@@ -605,7 +610,6 @@ class VbStageAlternative {
 		this.key = key;
 		this.rank = raw.rank;
 		this.groupRank = raw.groupRank;
-		this.nonBreakingVariantAdditionPriority = raw.nonBreakingVariantAdditionPriority || 0;
 		this.next = raw.next;
 		this.mode = raw.mode;
 		this.enableIf = raw.enableIf;
@@ -640,12 +644,6 @@ class VbStageAlternative {
 		// RankGroup
 		if (this.groupRank) ans.groupRank += this.evalValue(this.groupRank, localState);
 		else if (this.stage === globalState.entry) ans.groupRank += this.rank;
-
-		// nonBreakingVariantAdditionPriority
-		if (this.nonBreakingVariantAdditionPriority) {
-			const p = this.evalValue(this.nonBreakingVariantAdditionPriority, localState);
-			ans.nonBreakingVariantAdditionPriority += p;
-		}
 
 		if (this.keyAffix) ans.addKeyAffix(this.mode, this.evalValue(this.keyAffix, localState));
 		if (this.descriptionJoiner && this.descriptionAffix) {
@@ -742,7 +740,6 @@ class VbLocalState {
 		this.rank = 0;
 		this.variantRank = null;
 		this.groupRank = 0;
-		this.nonBreakingVariantAdditionPriority = 0;
 		this.descriptionLeader = "";
 
 		this.assignments = new Map();
@@ -757,7 +754,6 @@ class VbLocalState {
 		ans.rank = this.rank;
 		ans.variantRank = this.variantRank;
 		ans.groupRank = this.groupRank;
-		ans.nonBreakingVariantAdditionPriority = this.nonBreakingVariantAdditionPriority;
 		ans.descriptionLeader = this.descriptionLeader;
 		ans.assignments = new Map(this.assignments);
 		ans.key = [...this.key];

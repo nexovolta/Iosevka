@@ -13,8 +13,7 @@ import * as Variant from "@iosevka/param/variant";
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const readParams = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
 const data = Object.assign({}, ...["parameters", "shape-weight", "shape-width", "shape-slope"].map(readParams));
-const variantText = readFileSync(path.join(paramsDir, "variants.toml"), "utf8");
-const variantData = Toml.parse(variantText);
+const variantData = readParams("variants");
 const arcs = ["Rounded", "Serifed", "InwardSerifed", "FlatHook", "CornerHook"];
 const glyphs = ["C", "c", "S", "s", "cyrl/E", "cyrl/e", "cyrl/Ze", "cyrl/ze"];
 const arcKeys = ["rounded", "serifed", "inward-serifed", "flat-hooked", "corner-hooked"];
@@ -22,10 +21,12 @@ const primes = ["capital-c", "c", "capital-s", "s", "cyrl-capital-e", "cyrl-e", 
 await Geom.Init();
 
 test("independent arc stages preserve existing variants and character-variant ranks", () => {
-	const marker = "\n[prime.capital-c.variants-extra-buildup]";
-	const offset = variantText.indexOf(marker);
-	assert.notEqual(offset, -1, "independent arc stages are missing");
-	const before = Variant.parse(Toml.parse(variantText.slice(0, offset)), {}).primes;
+	const baseline = structuredClone(variantData);
+	for (const primeName of primes) {
+		assert.ok(baseline.prime[primeName]["variants-extra-buildup"], `${primeName}: independent arc stages are missing`);
+		delete baseline.prime[primeName]["variants-extra-buildup"];
+	}
+	const before = Variant.parse(baseline, {}).primes;
 	const after = Variant.parse(variantData, {}).primes;
 	for (const primeName of primes) {
 		const previous = before.get(primeName);
