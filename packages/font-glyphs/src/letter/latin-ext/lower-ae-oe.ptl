@@ -33,32 +33,21 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : df.markSet.e
 				set-base-anchor 'cvDecompose' 0 0
 				local subDf : df.slice 3 2
-				include : body subDf hookStyle df.mvs cut diag
-				if xTrailing : set-base-anchor 'trailing' xTrailing 0
+				include : DoubleStorey.ToothlessRounded subDf hookStyle df.mvs cut diag
+
+			create-glyph "av/aMask.\(suffix)" : glyph-proc
+				local df : DivFrame para.advanceScaleMM 3
+				local subDf : df.slice 3 2
+				local rise : DoubleStorey.SmoothA subDf
+				include : union
+					DoubleStorey.HookAndBarMask subDf hookStyle rise df.mvs
+					DoubleStorey.ArcMask subDf 2 rise df.mvs nothing nothing diag
 
 			do
 				create-glyph "ao/a.\(suffix)" : glyph-proc
-					local aoDf : include : DivFrame para.advanceScaleMM 3
-					include : aoDf.markSet.e
-					set-base-anchor 'cvDecompose' 0 0
-					local aoSubDf : aoDf.slice 3 2
-					local rise : ArchDepthBClamped XH 0 aoSubDf.smallArchDepthA aoSubDf.smallArchDepthB
-					if (body === DoubleStorey.ToothlessRounded)
-						then : include : union
-							DoubleStorey.HookAndBar aoSubDf hookStyle rise aoDf.mvs (aoDf.mvs * CThin)
-							DoubleStorey.Arc        aoSubDf 0         rise aoDf.mvs (aoDf.mvs * CThin) diag
-						else : include : body aoSubDf hookStyle aoDf.mvs cut diag
+					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "au/a.\(suffix)" : glyph-proc
-					local auDf : include : DivFrame para.advanceScaleMM 3
-					include : auDf.markSet.e
-					set-base-anchor 'cvDecompose' 0 0
-					local auSubDf : auDf.slice 3 2
-					local rise : ArchDepthBClamped XH 0 auSubDf.smallArchDepthA auSubDf.smallArchDepthB
-					if (body === DoubleStorey.ToothlessRounded)
-						then : include : union
-							DoubleStorey.HookAndBar auSubDf hookStyle rise auDf.mvs
-							DoubleStorey.Arc        auSubDf 0         rise auDf.mvs (auDf.mvs * CThinB) diag
-						else : include : body auSubDf hookStyle auDf.mvs cut diag
+					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "av/a.\(suffix)" : glyph-proc
 					include [refer-glyph "ae/a.\(suffix)"] AS_BASE ALSO_METRICS
 				create-glyph "ay/a.\(suffix)" : glyph-proc
@@ -69,12 +58,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : df.markSet.e
 				local { subDf shift } : SubDfAndShift 1 df
 				local barTop : [mix 0 XH DesignParameters.aBarPos] + df.mvs * (0.5 + DesignParameters.aBarStrokeAdj)
-				local ada2 : ArchDepthAOf (SmallArchDepth * DesignParameters.aBarPos)
-				local adb2 : ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
-				local rise : YSmoothMidL barTop 0 ada2 adb2
-				define [left] : union
-					DoubleStorey.HookAndBar subDf hookStyle rise df.mvs
-					DoubleStorey.Arc        subDf 0         rise df.mvs (df.mvs * CThinB) diag
+				define [left] : DoubleStorey.ToothlessRounded subDf hookStyle df.mvs cut diag
 				define [right] : with-transform [ApparentTranslate shift 0]
 					body subDf hookStyle df.mvs cut diag
 				include : difference [right] : intersection
@@ -236,7 +220,10 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		foreach { suffix { fStraightBar fSquareTop } } [Object.entries avVConfig] : do
 			create-glyph "av/v.\(suffix)" : glyph-proc
 				include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
-					if fSquareTop : include : VSquareTopShape subDfVY XH dfVY.mvs
+					# The two square-top strokes otherwise meet only at a point.
+					if fSquareTop : include : union
+						VSquareTopShape subDfVY XH dfVY.mvs
+						Rect (dfVY.mvs / 8) 0 (subDfVY.middle - [HSwToV : dfVY.mvs / 4]) (subDfVY.middle + [HSwToV : dfVY.mvs / 4])
 					if [not fSquareTop] : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
 					include : NeedSlab SLAB : VSerifs subDfVY fStraightBar XH dfVY.mvs
 					eject-contour 'serifLT'
@@ -455,6 +442,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant "au/a"
 	select-variant "av/a"
 	select-variant "ay/a"
+	select-variant "av/aMask" (follow -- 'a/doubleStorey')
 	select-variant "ae/e" (follow -- 'e')
 	select-variant "au/u"
 	select-variant "ue/u"
@@ -468,40 +456,37 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant "av/v" (follow -- 'v/sansSerif')
 	select-variant "ay/y" (follow -- 'y/nonCursive')
 
-	# Vertical clip of v/y between baseline and x-height at the a's stem.
-	# Spike at XH is clipped by the a itself (shifted right) so slab
-	# serifs on v/y are not sheared by a rectangle. At heavy, overlap
-	# and yShave ease so the left stroke still meets the stem.
+	glyph-block-import Letter-Latin-Lower-A : DoubleStorey
 	define [AvAyJoinX df] : begin
 		local aSub : df.slice 3 2
 		return : aSub.rightSB - [HSwToV : 0.5 * df.mvs]
 	define [AvAyRightShift df] : begin
 		local { subDf shift0 } : SubDfAndShift 1 df 0
 		return : shift0 - [HSwToV : df.mvs * [AvAyOverlapK]]
-	define [AvAyClipRight df left src] : glyph-proc
-		local xJoin : AvAyJoinX df
-		local yShave : df.mvs * [if para.isQuasiProportional 0.85 [mix 0.4 0.22 [AvAyHeavyT]]]
+	define [AvAyClipRight df mask src] : glyph-proc
+		local aSub : df.slice 3 2
 		include : difference [refer-glyph src]
-			intersection [MaskLeft xJoin] : intersection [MaskBelow XH] [MaskAbove 0]
-			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.25 * df.mvs) 0] [refer-glyph left]
-			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.50 * df.mvs) 0] [refer-glyph left]
-			intersection [MaskAbove (XH - yShave)] : with-transform [ApparentTranslate (0.75 * df.mvs) 0] [refer-glyph left]
+			union
+				refer-glyph mask
+				intersection
+					MaskAbove (XH - [DoubleStorey.SmoothB aSub])
+					MaskLeft (aSub.rightSB + [HSwToV df.mvs])
 
-	derive-multi-part-glyphs-baked 'av' 0xA739 { "av/a" "av/v" }
+	derive-multi-part-glyphs-baked 'av' 0xA739 { "av/a" "av/v" "av/aMask" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			define { left right } srcs
+			define { left right mask } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
-			include : AvAyClipRight df left right
-	derive-multi-part-glyphs-baked 'ay' 0xA73D { "ay/a" "ay/y" }
+			include : AvAyClipRight df mask right
+	derive-multi-part-glyphs-baked 'ay' 0xA73D { "ay/a" "ay/y" "av/aMask" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			define { left right } srcs
+			define { left right mask } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : df.markSet.p
-			include : AvAyClipRight df left right
+			include : AvAyClipRight df mask right
 	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
 		define df : DivFrame para.advanceScaleMM 3
 		local { subDf } : SubDfAndShift 1 df 0
