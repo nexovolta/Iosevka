@@ -19,7 +19,7 @@ await Geom.Init();
 for (const noCvSs of [false, true]) {
 	test(`half a inherits both diagonal bar directions (noCvSs=${noCvSs})`, () => {
 		const contours = [];
-		for (const suffix of ["", "-diagonal-bar", "-diagonal-bar-falling"]) {
+		for (const suffix of ["", "-diagonal-bar-rising", "-diagonal-bar-falling"]) {
 			const argv = {
 				shape: { serifs: "sans", spacing: "term", weight: 420, width: 500, slope: "italic", slopeAngle: 9.4 },
 				featureControl: { noCvSs },
@@ -53,7 +53,7 @@ for (const noCvSs of [false, true]) {
 
 	test("swash a follows the selected a, including diagonal bars and single-storey forms", () => {
 		const contours = [];
-		for (const choice of ["double-storey-serifless", "double-storey-serifless-diagonal-bar", "single-storey-serifless"]) {
+		for (const choice of ["double-storey-serifless", "double-storey-serifless-diagonal-bar-rising", "single-storey-serifless"]) {
 			const argv = {
 				shape: { serifs: "sans", spacing: "term", weight: 420, width: 500, slope: "italic", slopeAngle: 9.4 },
 				featureControl: { noCvSs: true },

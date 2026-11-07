@@ -454,7 +454,7 @@ both `Ʊ` and `ʊ`.
     <table>
     <tr><td rowspan="2" width="60"><img src="../images/cv-eight-crossing.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-crossing.dark.svg#gh-dark-mode-only" width=32/></td><td><code>eight = 'crossing'</code>, <code>cv08 = 1</code></td></tr>
     <tr><td><code>8</code> with crossing middle part (default)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-eight-two-circles.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-two-circles.dark.svg#gh-dark-mode-only" width=32/></td><td><code>eight = 'two-circles'</code>, <code>cv08 = 2</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-eight-double-circle.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-double-circle.dark.svg#gh-dark-mode-only" width=32/></td><td><code>eight = 'double-circle'</code>, <code>cv08 = 2</code></td></tr>
     <tr><td><code>8</code> looks like two circles joined together</td></tr>
     <tr><td rowspan="2" width="60"><img src="../images/cv-eight-crossing-asymmetric.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-crossing-asymmetric.dark.svg#gh-dark-mode-only" width=32/></td><td><code>eight = 'crossing-asymmetric'</code>, <code>cv08 = 3</code></td></tr>
     <tr><td><code>8</code> looks asymmetric crossing middle part</td></tr>

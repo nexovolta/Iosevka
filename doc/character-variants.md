@@ -160,7 +160,7 @@
 <tr>
 <td rowspan="2"><code>cv08</code></td>
 <td><img src="../images/cv-eight-crossing.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-crossing.dark.svg#gh-dark-mode-only" width=32/></td>
-<td><img src="../images/cv-eight-two-circles.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-two-circles.dark.svg#gh-dark-mode-only" width=32/></td>
+<td><img src="../images/cv-eight-double-circle.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-double-circle.dark.svg#gh-dark-mode-only" width=32/></td>
 <td><img src="../images/cv-eight-crossing-asymmetric.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-eight-crossing-asymmetric.dark.svg#gh-dark-mode-only" width=32/></td>
 <td colspan="9"> </td>
 </tr>
