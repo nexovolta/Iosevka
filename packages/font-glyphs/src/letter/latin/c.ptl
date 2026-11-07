@@ -56,7 +56,7 @@ glyph-block Letter-Latin-C : begin
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
 
-	define [RevCShapeT sink offset df st sb top bot ada adb hook sw ob ox oy] : sink
+	define [RevCShapeT sink offset df st sb top bot ada adb hook sw ob ox oy lowerEnd lowerEndY] : sink
 		widths.rhs sw
 		match st
 			[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs (df.leftSB + offset) top sw [fallback hook Hook] ob (o -- oy)
@@ -70,19 +70,23 @@ glyph-block Letter-Latin-C : begin
 			__ : list
 				g4   (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
-		flatside.rd (df.rightSB - offset) bot top ada adb ox
-		match sb
-			[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs (df.leftSB + offset) bot sw [fallback hook Hook] ob (o -- oy)
-			[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs (df.leftSB + offset) bot sw [fallback hook Hook] ob (o -- oy)
-			[Just FLAT-CONNECTION] : list
-				arcvh
-				flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
-				curl (0 + offset) (bot + offset)
-			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
-			__ : list
-				HookEnd (bot + offset) (sw -- sw) (o -- oy)
-				g4   (df.leftSB + offset) (bot + [fallback hook Hook])
+		if (lowerEnd && lowerEndY !== nothing)
+			g4 (df.rightSB - offset - [fallback ox OX]) lowerEndY
+			flatside.rd (df.rightSB - offset) bot top ada adb ox
+		if lowerEnd
+			then : ~~~ [lowerEnd]
+			else : match sb
+				[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs (df.leftSB + offset) bot sw [fallback hook Hook] ob (o -- oy)
+				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs (df.leftSB + offset) bot sw [fallback hook Hook] ob (o -- oy)
+				[Just FLAT-CONNECTION] : list
+					arcvh
+					flat [Arch.adjust-x.bot df.middle (sw -- sw)] (bot + offset)
+					curl (0 + offset) (bot + offset)
+				[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
+				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
+				__ : list
+					HookEnd (bot + offset) (sw -- sw) (o -- oy)
+					g4   (df.leftSB + offset) (bot + [fallback hook Hook])
 
 	define [AutoStartSerifR df sty y hook sw] : match sty
 		[Just SLAB-CLASSICAL] : ArcStartSerif.R       df.rightSB y [fallback sw Stroke] [fallback hook Hook]
@@ -124,12 +128,12 @@ glyph-block Letter-Latin-C : begin
 			CurlyTail.n fine bot df.rightSB 0 bot (yLoopTop -- loopTop)
 
 	glyph-block-export CLetterForm
-	define [CLetterForm] : with-params [df styTop styBot top bot [ada ArchDepthA] [adb ArchDepthB] [hook Hook] [sw Stroke] [origBar nothing] [ox nothing] [oy nothing]] : namespace
+	define [CLetterForm] : with-params [df styTop styBot top bot [ada ArchDepthA] [adb ArchDepthB] [hook Hook] [sw Stroke] [origBar nothing] [ox nothing] [oy nothing] [lowerEnd nothing] [lowerEndY nothing]] : namespace
 		export : define [base] : CShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy
 		export : define [topSerif] : AutoStartSerifR df styTop top hook sw
 		export : define [botSerif] : AutoEndSerifR   df styBot bot hook sw
 
-		export : define [revBase] : RevCShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy
+		export : define [revBase] : RevCShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy lowerEnd lowerEndY
 		export : define [revTopSerif] : AutoStartSerifL df styTop top hook sw
 		export : define [revBotSerif] : AutoEndSerifL   df styBot bot hook sw
 

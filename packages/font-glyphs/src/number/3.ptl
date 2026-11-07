@@ -67,40 +67,47 @@ glyph-block Digits-Three : begin
 	define [ThreeShape top] : ThreeShapeT dispiro 0 Stroke top
 	define [ThreeShapeHooked top hookStyle bottomHookStyle] : ThreeShapeT dispiro 0 Stroke top hookStyle bottomHookStyle
 
-	define [ThreeFlatTopShape top serif hookStyle] : glyph-proc
+	define [ThreeFlatTopShape top serif hookStyle _sw lowerEnd lowerEndY] : glyph-proc
+		local sw : fallback _sw Stroke
 		define ezh : Ezh [DivFrame 1] top 0
 			pxMidLeft    -- 0.25
 			pxTopRight   -- 0.975
 			fSerifed     -- serif
 			fFlatHook    -- (hookStyle === HOOK-FLAT)
 			fCornerHook  -- (hookStyle === HOOK-CORNER)
-			terminal     -- [if (hookStyle === HOOK-SLAB) 2 1]
+			terminal     -- [if lowerEnd 0 [if (hookStyle === HOOK-SLAB) 2 1]]
+			stroke       -- sw
+			lowerEnd     -- lowerEnd
+			lowerEndY    -- lowerEndY
 		include : ezh.Shape
 		if (hookStyle === HOOK-SLAB) : include : ArcEndSerif.L SB 0 Stroke Hook
 
-	define [ThreeFlatTopEtGeom top _yEndIdeal] : begin
-		local kFall : Math.tan (50 * Math.PI / 180)
-		local yBarBot : top - Stroke
-		local cor : Stroke * [DiagCor kFall 1]
-		local yEndIdeal : Math.min (yBarBot - HalfStroke) : fallback _yEndIdeal : mix 0 top 0.42
+	define [ThreeFlatTopEtGeom top _yEndIdeal _sw _angle] : begin
+		local sw : fallback _sw Stroke
+		local kFall : Math.tan ([fallback _angle 50] * Math.PI / 180)
+		local yBarBot : top - sw
+		local cor : sw * [DiagCor kFall 1]
+		local yEndIdeal : Math.min (yBarBot - sw / 2) : fallback _yEndIdeal : mix 0 top 0.42
 		local xEnd : Math.max (SB + cor) : RightSB - (yBarBot - yEndIdeal) / kFall
 		local yEnd : yBarBot - (RightSB - xEnd) * kFall
 		return : object kFall yBarBot cor xEnd yEnd
 
-	define [ThreeFlatTopEtTop top _swEnd _yEndIdeal] : glyph-proc
-		local swEnd : fallback _swEnd Stroke
-		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top _yEndIdeal
+	define [ThreeFlatTopEtTop top _swEnd _yEndIdeal _sw _angle] : glyph-proc
+		local sw : fallback _sw Stroke
+		local swEnd : fallback _swEnd sw
+		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top _yEndIdeal sw _angle
 		include : union
-			HBar.t SB RightSB top
+			HBar.t SB RightSB top sw
 			intersection
-				Rect yBarBot (yEnd - 2 * Stroke) SB RightSB
+				Rect yBarBot (yEnd - 2 * sw) SB RightSB
 				dispiro
-					widths.rhs
+					widths.rhs sw
 					flat RightSB yBarBot
 					curl xEnd yEnd [widths.rhs swEnd]
 
-	define [ThreeFlatTopBrokenShape top serif hookStyle] : glyph-proc
-		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top
+	define [ThreeFlatTopBrokenShape top serif hookStyle _sw lowerEnd lowerEndY _angle] : glyph-proc
+		local sw : fallback _sw Stroke
+		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top nothing sw _angle
 		local yBowl : mix 0 top 0.72
 		local styBot : match hookStyle
 			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
@@ -108,11 +115,14 @@ glyph-block Digits-Three : begin
 			[Just HOOK-SLAB]   SLAB-CLASSICAL
 			__                 SLAB-NONE
 
-		define [etTop] : ThreeFlatTopEtTop top
+		define [etTop] : ThreeFlatTopEtTop top nothing nothing sw _angle
 
 		local lf : CLetterForm [DivFrame 1] FLAT-CONNECTION styBot yBowl 0
 			ada -- [ArchDepthAClamped yBowl 0 ArchDepthA ArchDepthB]
 			adb -- [ArchDepthBClamped yBowl 0 ArchDepthA ArchDepthB]
+			sw  -- sw
+			lowerEnd -- lowerEnd
+			lowerEndY -- lowerEndY
 
 		include : union
 			etTop
@@ -122,6 +132,10 @@ glyph-block Digits-Three : begin
 					MaskAboveLine RightSB yBarBot xEnd yEnd
 					intersection [MaskLeft xEnd] [MaskAbove yEnd]
 		if serif : include : VSerif.dl (SB + (OX - O)) top VJut
+
+	glyph-block-export ThreeFlatHookTop ThreeFlatHookBrokenTop
+	define [ThreeFlatHookTop top serif sw lowerEnd lowerEndY] : ThreeFlatTopShape top serif HOOK-FLAT sw lowerEnd lowerEndY
+	define [ThreeFlatHookBrokenTop top serif sw lowerEnd lowerEndY angle] : ThreeFlatTopBrokenShape top serif HOOK-FLAT sw lowerEnd lowerEndY angle
 
 	define ThreeBodyConfig : object
 		rounded       { HOOK-ROUND HOOK-ROUND }
@@ -157,9 +171,9 @@ glyph-block Digits-Three : begin
 			""      { false }
 			serifed { true }
 		object
-			""         { HOOK-ROUND }
-			flatHook   { HOOK-FLAT }
-			cornerHook { HOOK-CORNER }
+			""          { HOOK-ROUND }
+			flatHook    { HOOK-FLAT }
+			cornerHook  { HOOK-CORNER }
 			serifedHook { HOOK-SLAB }
 
 	foreach { suffix { { Shape } { fSerif } { hookStyle } } } [pairs-of ThreeFlatTopConfig] : do

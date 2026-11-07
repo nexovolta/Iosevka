@@ -1453,7 +1453,7 @@ glyph-block Letter-Shared-Shapes : begin
 					ExtLineCenter (x + [mix 0 Descender 0.24]) (y + (Descender + 0.5 * sw)) x y sw 16
 
 		# Rounded-bend tail knots: continue the letter-body dispiro (same construction as #3299).
-		glyph-block-export RoundedBendTailBot RoundedTailStraightKnots RoundedTailDiagonalKnots
+		glyph-block-export RoundedBendTailBot RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedTailReverseKnots
 		define [RoundedBendTailBot] : (-LongVJut) + QuarterStroke
 		define [RoundedTailBendX] : [Math.max [HSwToV Stroke] (0.5 * Hook)] + [Math.max TightBendInnerRadius [HSwToV : 0.25 * Stroke]]
 		define [RoundedTailBendY] : [Math.max         Stroke  (0.5 * Hook)] + [Math.max TightBendInnerRadius         (0.25 * Stroke)]
@@ -1486,6 +1486,21 @@ glyph-block Letter-Shared-Shapes : begin
 				archv.superness DesignParameters.tightHookSuperness
 				flat xDown yCorner [widths.rhs Stroke]
 				curl xDiagEnd [RoundedBendTailBot]
+
+		define [RoundedTailReverseKnots yHoriz xDown sw diagonal] : begin
+			local xArch : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * 0.05) sw
+			local bendX : [Math.max [HSwToV sw] (0.5 * Hook)] + [Math.max TightBendInnerRadius [HSwToV : 0.25 * sw]]
+			local bendY : [Math.max sw (0.5 * Hook)] + [Math.max TightBendInnerRadius (0.25 * sw)]
+			local xTurn : Math.min (xDown + bendX) (xArch - [Math.abs : TanSlope * sw] - TINY)
+			local yEnd : RoundedBendTailBot
+			local yCorner : Math.max (yHoriz - bendY) [mix yEnd yHoriz 0.35]
+			return : list
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.max (xTurn + TanSlope * sw) xArch] yHoriz [widths.lhs.heading sw Leftward]
+				curl xTurn yHoriz [heading Leftward]
+				archv.superness DesignParameters.tightHookSuperness
+				flat xDown yCorner [if diagonal [widths.lhs sw] [heading Downward]]
+				curl [if diagonal (xDown - [mix 0 Descender 0.24]) xDown] yEnd [if diagonal nothing [heading Downward]]
 
 		# Cyrillic long curl descender, used by old Abkhazian letters
 		glyph-block-export CyrCurlDescender

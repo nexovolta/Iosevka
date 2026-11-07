@@ -42,6 +42,8 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : stroke        -- df.mvs
 		local-parameter : hook          -- Hook
 		local-parameter : origBar       -- nothing
+		local-parameter : lowerEnd      -- nothing
+		local-parameter : lowerEndY     -- nothing
 		local-parameter : ada           -- SmallArchDepthA
 		local-parameter : adb           -- SmallArchDepthB
 
@@ -128,7 +130,12 @@ glyph-block Letter-Latin-Ezh : begin
 					archv
 					match term
 						[Just TERMINAL-NONE] : list
-							g4.down.mid xArcMid yArcMid [heading Downward]
+							if lowerEnd
+								list
+									g4 xArcMid [fallback lowerEndY yArcMid]
+									~~~ [lowerEnd]
+								list
+									g4.down.mid xArcMid yArcMid [heading Downward]
 						[Just TERMINAL-DESC] : list
 							g4 xArcMid yArcMid
 							SerifedArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
