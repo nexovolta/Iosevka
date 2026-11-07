@@ -1,5 +1,9 @@
 # List of Character Variants of Iosevka
 
+Double-storey `a` supports tapered `curved-bar-rising` and `curved-bar-falling` options,
+for example `double-storey-serifless-curved-bar-rising` and
+`double-storey-serifless-curved-bar-falling`.
+
 <!-- BEGIN Section-OT-Character-Variants -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

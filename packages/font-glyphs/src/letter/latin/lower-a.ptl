@@ -21,6 +21,8 @@ glyph-block Letter-Latin-Lower-A : begin
 	define HOOK-HALF           3
 	define HOOK-FLAT           4
 	define HOOK-CORNER         5
+	define CURVED-BAR-RISING   1
+	define CURVED-BAR-FALLING (-1)
 
 	glyph-block-export DoubleStorey
 	define DoubleStorey : namespace
@@ -89,12 +91,29 @@ glyph-block Letter-Latin-Lower-A : begin
 			local rr : [fallback diag 0] * 0.09 * XH
 			local xStart : df.rightSB - [HSwToV stroke] * 0.5
 			local xEnd : mix df.leftSB df.rightSB 0.42
+			local curved : diag === CURVED-BAR-RISING || diag === CURVED-BAR-FALLING
+			local arcTop : if curved [if (diag === CURVED-BAR-FALLING) barTop (barTop - 0.35 * rr)] (barTop - rr)
+			# Heading is the stroke normal, perpendicular to the bar's tangent.
+			local normalX : (-0.385) * rr
+			local normalY : (-0.35) * (xStart - xEnd)
+			local normalLength : Math.max TINY : Math.hypot normalX normalY
 			include : sink
 				widths.lhs stroke
-				[if isMask corner flat] [if (rr && !isMask) xStart (df.rightSB + O)] (barTop + rr) [heading : if rr [new Vec2 (-2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Leftward]
-				curl xEnd (barTop - rr)
-				archv
-				g4 (df.leftSB + OX) ([YSmoothMidL (barTop - rr) 0 ada2 adb2] - [HSwToV leftSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (+leftSlope)}]
+				if (diag === CURVED-BAR-FALLING)
+					list
+						if isMask { [corner (df.rightSB + O) (barTop - adb2 - TINY)] } {}
+						OBarRight.arcStart (top -- barTop) (left -- df.leftSB) (right -- df.rightSB) (sw -- stroke) (fine -- (0.55 * stroke)) (ada -- ada2) (adb -- adb2)
+					if curved
+						list
+							[if isMask corner flat] [if isMask (df.rightSB + O) xStart] (barTop + 0.35 * rr) [heading : new Vec2 (normalX / normalLength) (normalY / normalLength)] [widths.lhs : 0.55 * stroke]
+							bezControls 0.35 0.55 0.6 1 8
+							flat xEnd (barTop - 0.35 * rr) [heading Leftward] [widths.lhs stroke]
+							archv
+						list
+							[if isMask corner flat] [if (rr && !isMask) xStart (df.rightSB + O)] (barTop + rr) [heading : if rr [new Vec2 (-2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Leftward]
+							curl xEnd (barTop - rr)
+							archv
+				g4 (df.leftSB + OX) ([YSmoothMidL arcTop 0 ada2 adb2] - [HSwToV leftSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (+leftSlope)}]
 				match kind
 					0 : list
 						Arch.lhs 0 (sw -- stroke) (swAfter -- fine)
@@ -229,12 +248,28 @@ glyph-block Letter-Latin-Lower-A : begin
 			local rr : [fallback diag 0] * 0.09 * XH
 			local xStart : df.leftSB + [HSwToV stroke] * 0.5
 			local xEnd : mix df.rightSB df.leftSB 0.42
+			local curved : diag === CURVED-BAR-RISING || diag === CURVED-BAR-FALLING
+			local arcTop : if curved [if (diag === CURVED-BAR-FALLING) barTop (barTop - 0.35 * rr)] (barTop + rr)
+			local normalX : 0.385 * rr
+			local normalY : 0.35 * (xEnd - xStart)
+			local normalLength : Math.max TINY : Math.hypot normalX normalY
 			include : sink
 				widths.rhs stroke
-				[if isMask corner flat] [if (rr && !isMask) xStart (df.leftSB - O)] (barTop - rr) [heading : if rr [new Vec2 (2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Rightward]
-				curl xEnd (barTop + rr)
-				archv
-				g4 (df.rightSB - OX) ([YSmoothMidR (barTop + rr) 0 ada2 adb2] - [HSwToV rightSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (-rightSlope)}]
+				if (diag === CURVED-BAR-FALLING)
+					list
+						if isMask { [corner (df.leftSB - O) (barTop - ada2 - TINY)] } {}
+						OBarLeft.arcStart (top -- barTop) (left -- df.leftSB) (right -- df.rightSB) (sw -- stroke) (fine -- (0.55 * stroke)) (ada -- ada2) (adb -- adb2)
+					if curved
+						list
+							[if isMask corner flat] [if isMask (df.leftSB - O) xStart] (barTop + 0.35 * rr) [heading : new Vec2 (normalX / normalLength) (normalY / normalLength)] [widths.rhs : 0.55 * stroke]
+							bezControls 0.35 0.55 0.6 1 8
+							flat xEnd (barTop - 0.35 * rr) [heading Rightward] [widths.rhs stroke]
+							archv
+						list
+							[if isMask corner flat] [if (rr && !isMask) xStart (df.leftSB - O)] (barTop - rr) [heading : if rr [new Vec2 (2 * rr / [Math.hypot (xEnd - xStart) (2 * rr)]) ((xEnd - xStart) / [Math.hypot (xEnd - xStart) (2 * rr)])] Rightward]
+							curl xEnd (barTop + rr)
+							archv
+				g4 (df.rightSB - OX) ([YSmoothMidR arcTop 0 ada2 adb2] - [HSwToV rightSlopeS] * SmoothAdjust) [heading {.x (+HVContrast) .y (-rightSlope)}]
 				match kind
 					0 : list
 						Arch.rhs 0 (sw -- stroke) (swAfter -- fine)
@@ -327,6 +362,8 @@ glyph-block Letter-Latin-Lower-A : begin
 		""         0
 		diagonalBar        0.5
 		diagonalBarFalling (-0.5)
+		curvedBarRising    CURVED-BAR-RISING
+		curvedBarFalling   CURVED-BAR-FALLING
 
 	foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
 		do
