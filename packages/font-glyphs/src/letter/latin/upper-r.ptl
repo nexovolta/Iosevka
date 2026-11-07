@@ -271,11 +271,6 @@ glyph-block Letter-Latin-Upper-R : begin
 			topLeftAndBottomRightSerifed { PShape.SlabMotion    true  }
 			serifed                      { PShape.SlabSymmetric true  }
 
-	# The rotunda hook follows the Cyrillic Ze hook.
-	define zeSel : fallback para.variantSelector.('cyrl/ze') ''
-	define zeFlatHook : (([zeSel.indexOf 'FlatHook'] >= 0) || (zeSel === 'flatHook')) && ([zeSel.indexOf 'nilateral'] < 0)
-	define zeCornerHook : (([zeSel.indexOf 'CornerHook'] >= 0) || (zeSel === 'cornerHook')) && ([zeSel.indexOf 'nilateral'] < 0)
-
 	foreach { suffix { legShape fGap { slabs doLegSlab } } } [Object.entries RConfig] : do
 		define fStraightLeg : (legShape === RLegShape.Straight) || (legShape === RLegShape.StraightBroken)
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
@@ -348,17 +343,18 @@ glyph-block Letter-Latin-Upper-R : begin
 			include : RShape legShape XH (sw -- swXH) (slab -- slabs) (legSlab -- doLegSlab) (open -- fGap) (legBottom -- Descender)
 
 		if (!slabs && !fGap) : begin
-			create-glyph "RRotunda.\(suffix)" : glyph-proc
-				include : MarkSet.capital
-				local bp : 0.9 * PShape.BarPos
-				include : StrikeAnchor CAP swCap bp
-				include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (flatHook -- zeFlatHook) (cornerHook -- zeCornerHook)
+			foreach zeSuffix [items-of { 'serifless' 'unilateralSerifed' 'unilateralInwardSerifed' 'topFlatHook' 'topCornerHook' }] : do
+				create-glyph "RRotunda.\(suffix).\(zeSuffix)" : glyph-proc
+					include : MarkSet.capital
+					local bp : 0.9 * PShape.BarPos
+					include : StrikeAnchor CAP swCap bp
+					include : RRotundaShape legShape CAP bp (sw -- swCap) (legSlab -- doLegSlab) (hook -- Hook) (flatHook -- (zeSuffix === 'topFlatHook')) (cornerHook -- (zeSuffix === 'topCornerHook'))
 
-			create-glyph "rRotunda.\(suffix)" : glyph-proc
-				include : MarkSet.e
-				local bp : 0.9 * PShape.BarPos
-				include : StrikeAnchor XH swXH bp
-				include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (flatHook -- zeFlatHook) (cornerHook -- zeCornerHook)
+				create-glyph "rRotunda.\(suffix).\(zeSuffix)" : glyph-proc
+					include : MarkSet.e
+					local bp : 0.9 * PShape.BarPos
+					include : StrikeAnchor XH swXH bp
+					include : RRotundaShape legShape XH bp (sw -- swXH) (legSlab -- doLegSlab) (hook -- AHook) (flatHook -- (zeSuffix === 'topFlatHook')) (cornerHook -- (zeSuffix === 'topCornerHook'))
 
 			create-glyph "currency/indianRupeeSign.\(suffix)" : glyph-proc
 				local shift : (-0.125) * (Width - 0)
@@ -419,8 +415,8 @@ glyph-block Letter-Latin-Upper-R : begin
 	select-variant 'Yr'           0x1A6  (follow -- 'R')
 	select-variant 'smcpRLongLeg' 0xAB46 (follow -- 'R')
 
-	select-variant 'RRotunda' 0xA75A
-	select-variant 'rRotunda' 0xA75B (follow -- 'RRotunda')
+	select-multi-dimensional-variant 'RRotunda' 0xA75A (follows -- { 'RRotunda' 'cyrl/Ze/topSerif' })
+	select-multi-dimensional-variant 'rRotunda' 0xA75B (follows -- { 'RRotunda' 'cyrl/ze/topSerif' })
 
 	select-variant 'currency/indianRupeeSign' 0x20B9 (follow -- 'RRotunda')
 
