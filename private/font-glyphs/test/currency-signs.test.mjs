@@ -12,53 +12,83 @@ import { init } from "@iosevka/param";
 import { applyMetricOverride } from "@iosevka/param/metric-override";
 import * as Variant from "@iosevka/param/variant";
 
-import { nexsevkaMetricOverride, nexsevkaWeights } from "./nexsevka-currency-metrics.mjs";
+import {
+	nexsevkaMetricOverride,
+	nexsevkaWeights,
+} from "./nexsevka-currency-metrics.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
-const readParams = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
+const readParams = (name) =>
+	Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
 const data = Object.assign(
 	{},
-	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(readParams),
+	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(
+		readParams,
+	),
 );
 const variantData = readParams("variants");
 
 await Geom.Init();
 
 const weightAreas = new Map();
-const contourArea = contours => Math.abs(contours.reduce((sum, contour) => {
-	for (let i = 0; i < contour.length; i++) {
-		const p = contour[i];
-		const q = contour[(i + 1) % contour.length];
-		sum += (p.x * q.y - q.x * p.y) / 2;
-	}
-	return sum;
-}, 0));
+const contourArea = (contours) =>
+	Math.abs(
+		contours.reduce((sum, contour) => {
+			for (let i = 0; i < contour.length; i++) {
+				const p = contour[i];
+				const q = contour[(i + 1) % contour.length];
+				sum += (p.x * q.y - q.x * p.y) / 2;
+			}
+			return sum;
+		}, 0),
+	);
 
 function assertFlatSpesmiloBase(glyph, contours) {
 	const points = contours.flat();
-	assert.ok(points.every(p => p.y >= -0.001), "spesmilo must not extend below the baseline");
+	assert.ok(
+		points.every((p) => p.y >= -0.001),
+		"spesmilo must not extend below the baseline",
+	);
 	let longest = 0;
 	for (const contour of contours) {
 		for (let i = 0; i < contour.length; i++) {
-			const a = contour[i], b = contour[(i + 1) % contour.length];
+			const a = contour[i],
+				b = contour[(i + 1) % contour.length];
 			if (Math.abs(a.y) < 0.001 && Math.abs(b.y) < 0.001) {
 				longest = Math.max(longest, Math.abs(a.x - b.x));
 			}
 		}
 	}
-	assert.ok(longest > glyph.advanceWidth * 0.45, "spesmilo must have a continuous flat base");
+	assert.ok(
+		longest > glyph.advanceWidth * 0.45,
+		"spesmilo must have a continuous flat base",
+	);
 }
 
-function build(spacing, weight, slope, capitalS = "serifless", metricOverride = null) {
+function build(
+	spacing,
+	weight,
+	slope,
+	capitalS = "serifless",
+	metricOverride = null,
+) {
 	const argv = {
 		shape: {
-			serifs: "sans", spacing, weight, width: metricOverride ? 586 : 500, slope,
+			serifs: "sans",
+			spacing,
+			weight,
+			width: metricOverride ? 586 : 500,
+			slope,
 			slopeAngle: slope === "italic" ? (metricOverride ? 10 : 9.4) : 0,
 		},
 		featureControl: { noCvSs: false },
-		variants: { design: {
-			"capital-s": capitalS, "capital-latin-gamma": "serifless", "latin-gamma": "serifless",
-		} },
+		variants: {
+			design: {
+				"capital-s": capitalS,
+				"capital-latin-gamma": "serifless",
+				"latin-gamma": "serifless",
+			},
+		},
 	};
 	if (metricOverride) {
 		argv.variants.design["cyrl-capital-che"] = "flat-hump-motion-serifed";
@@ -67,7 +97,13 @@ function build(spacing, weight, slope, capitalS = "serifless", metricOverride = 
 	const para = init(data, argv);
 	Variant.apply(variantData, para, argv);
 	if (metricOverride) applyMetricOverride(para, metricOverride, argv);
-	return { para, ...buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true }) };
+	return {
+		para,
+		...buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		}),
+	};
 }
 
 for (const spacing of ["term", "quasi-proportional"]) {
@@ -75,12 +111,22 @@ for (const spacing of ["term", "quasi-proportional"]) {
 		for (const slope of ["upright", "italic"]) {
 			test(`currency symbols have intact ${spacing} ${weight} ${slope} outlines`, () => {
 				const { para, glyphStore } = build(spacing, weight, slope);
-				const contours = code => {
+				const contours = (code) => {
 					const glyph = glyphStore.queryByUnicode(code);
 					assert.ok(glyph, `missing U+${code.toString(16)}`);
 					const result = glyph.geometry.toContours();
 					assert.ok(result.length);
-					assert.ok(result.every(c => c.length >= 3 && c.every(p => Number.isFinite(p.x) && Number.isFinite(p.y))));
+					assert.ok(
+						result.every(
+							(c) =>
+								c.length >= 3 &&
+								c.every(
+									(p) =>
+										Number.isFinite(p.x) &&
+										Number.isFinite(p.y),
+								),
+						),
+					);
 					return result;
 				};
 				const penny = contours(0x20b0);
@@ -89,48 +135,137 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				const rufiyaa = contours(0x20c2);
 				const omani = contours(0x20c4);
 				if (spacing === "term" && slope === "upright") {
-					weightAreas.set(weight, { penny: contourArea(penny), rufiyaa: contourArea(rufiyaa) });
+					weightAreas.set(weight, {
+						penny: contourArea(penny),
+						rufiyaa: contourArea(rufiyaa),
+					});
 				}
-				assert.equal(penny.length, 2, "penny must have one joined outline and one loop counter");
-				const counterWidth = Math.min(...penny.map(c => Math.max(...c.map(p => p.x)) - Math.min(...c.map(p => p.x))));
-				assert.ok(counterWidth >= glyphStore.queryByUnicode(0x20b0).advanceWidth * 0.08, "penny loop counter is too narrow");
-				if (spacing === "term" && weight === 920 && slope === "upright") {
+				assert.equal(
+					penny.length,
+					2,
+					"penny must have one joined outline and one loop counter",
+				);
+				const counterWidth = Math.min(
+					...penny.map(
+						(c) =>
+							Math.max(...c.map((p) => p.x)) -
+							Math.min(...c.map((p) => p.x)),
+					),
+				);
+				assert.ok(
+					counterWidth >=
+						glyphStore.queryByUnicode(0x20b0).advanceWidth * 0.08,
+					"penny loop counter is too narrow",
+				);
+				if (
+					spacing === "term" &&
+					weight === 920 &&
+					slope === "upright"
+				) {
 					const metrics = calculateMetrics(para);
-					const outer = penny.find(c => Math.max(...c.map(p => p.x)) - Math.min(...c.map(p => p.x)) > counterWidth);
-					const loop = outer.filter(p => p.y > metrics.Ascender * 0.52);
-					const loopWidth = Math.max(...loop.map(p => p.x)) - Math.min(...loop.map(p => p.x));
-					assert.ok((loopWidth - counterWidth) / 2 >= metrics.Stroke * 0.84, "heavy penny loop is too light");
+					const outer = penny.find(
+						(c) =>
+							Math.max(...c.map((p) => p.x)) -
+								Math.min(...c.map((p) => p.x)) >
+							counterWidth,
+					);
+					const loop = outer.filter(
+						(p) => p.y > metrics.Ascender * 0.52,
+					);
+					const loopWidth =
+						Math.max(...loop.map((p) => p.x)) -
+						Math.min(...loop.map((p) => p.x));
+					assert.ok(
+						(loopWidth - counterWidth) / 2 >= metrics.Stroke * 0.84,
+						"heavy penny loop is too light",
+					);
 					let smoothJoins = 0;
 					for (let i = 0; i < outer.length; i++) {
 						const p = outer[i];
-						const before = outer[(i + outer.length - 1) % outer.length];
+						const before =
+							outer[(i + outer.length - 1) % outer.length];
 						const after = outer[(i + 1) % outer.length];
-						if (p.type !== 0 || before.type !== 2 || after.type !== 1 || p.x >= glyphStore.queryByUnicode(0x20b0).advanceWidth / 2 || p.y < metrics.Ascender * 0.42 || p.y > metrics.Ascender * 0.66) continue;
-						const ax = p.x - before.x, ay = p.y - before.y;
-						const bx = after.x - p.x, by = after.y - p.y;
-						const cosine = (ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by));
-						assert.ok(cosine > 0.94, "penny mask leaves a kink in the loop");
+						if (
+							p.type !== 0 ||
+							before.type !== 2 ||
+							after.type !== 1 ||
+							p.x >=
+								glyphStore.queryByUnicode(0x20b0).advanceWidth /
+									2 ||
+							p.y < metrics.Ascender * 0.42 ||
+							p.y > metrics.Ascender * 0.66
+						)
+							continue;
+						const ax = p.x - before.x,
+							ay = p.y - before.y;
+						const bx = after.x - p.x,
+							by = after.y - p.y;
+						const cosine =
+							(ax * bx + ay * by) /
+							(Math.hypot(ax, ay) * Math.hypot(bx, by));
+						assert.ok(
+							cosine > 0.94,
+							"penny mask leaves a kink in the loop",
+						);
 						smoothJoins++;
 					}
-					assert.ok(smoothJoins > 0, "penny mask must meet the loop with curves");
+					assert.ok(
+						smoothJoins > 0,
+						"penny mask must meet the loop with curves",
+					);
 				}
-				assert.ok(spesmilo.length >= 3, "spesmilo must retain the m counters");
-				assertFlatSpesmiloBase(glyphStore.queryByUnicode(0x20b7), spesmilo);
-				assert.equal(nordic.length, 3, "nordic mark must have one joined outline and two counters");
-				for (const [code, shape] of [[0x20c2, rufiyaa], [0x20c4, omani]]) {
+				assert.ok(
+					spesmilo.length >= 3,
+					"spesmilo must retain the m counters",
+				);
+				assertFlatSpesmiloBase(
+					glyphStore.queryByUnicode(0x20b7),
+					spesmilo,
+				);
+				assert.equal(
+					nordic.length,
+					3,
+					"nordic mark must have one joined outline and two counters",
+				);
+				for (const [code, shape] of [
+					[0x20c2, rufiyaa],
+					[0x20c4, omani],
+				]) {
 					const glyph = glyphStore.queryByUnicode(code);
 					const points = shape.flat();
-					assert.ok(points.every(p => p.y > -calculateMetrics(para).CAP && p.y < 2 * calculateMetrics(para).CAP),
-						`U+${code.toString(16)} has out-of-bounds geometry`);
+					assert.ok(
+						points.every(
+							(p) =>
+								p.y > -calculateMetrics(para).CAP &&
+								p.y < 2 * calculateMetrics(para).CAP,
+						),
+						`U+${code.toString(16)} has out-of-bounds geometry`,
+					);
 					if (slope === "upright") {
-						assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth), `U+${code.toString(16)} exceeds its advance`);
+						assert.ok(
+							points.every(
+								(p) => p.x >= 0 && p.x <= glyph.advanceWidth,
+							),
+							`U+${code.toString(16)} exceeds its advance`,
+						);
 					}
 				}
-				assert.ok(Math.min(...penny.flat().map(p => p.y)) < calculateMetrics(para).Descender);
+				assert.ok(
+					Math.min(...penny.flat().map((p) => p.y)) <
+						calculateMetrics(para).Descender,
+				);
 				if (slope === "upright") {
 					for (const code of [0x20b0, 0x20b7, 0x20bb]) {
 						const glyph = glyphStore.queryByUnicode(code);
-						assert.ok(contours(code).flat().every(p => p.x >= 0 && p.x <= glyph.advanceWidth), `U+${code.toString(16)} exceeds its advance`);
+						assert.ok(
+							contours(code)
+								.flat()
+								.every(
+									(p) =>
+										p.x >= 0 && p.x <= glyph.advanceWidth,
+								),
+							`U+${code.toString(16)} exceeds its advance`,
+						);
 					}
 				}
 			});
@@ -140,8 +275,14 @@ for (const spacing of ["term", "quasi-proportional"]) {
 
 test("penny and Rufiyaa gain substantial ink at heavier weights", () => {
 	for (const glyph of ["penny", "rufiyaa"]) {
-		assert.ok(weightAreas.get(420)[glyph] > weightAreas.get(120)[glyph] * 1.5, `${glyph}: thin to regular`);
-		assert.ok(weightAreas.get(920)[glyph] > weightAreas.get(420)[glyph] * 1.15, `${glyph}: regular to heavy`);
+		assert.ok(
+			weightAreas.get(420)[glyph] > weightAreas.get(120)[glyph] * 1.5,
+			`${glyph}: thin to regular`,
+		);
+		assert.ok(
+			weightAreas.get(920)[glyph] > weightAreas.get(420)[glyph] * 1.15,
+			`${glyph}: regular to heavy`,
+		);
 	}
 });
 
@@ -159,53 +300,104 @@ test("spesmilo follows each capital S top style without changing the other curre
 		const { glyphStore } = build("term", 420, "upright", option);
 		const actual = glyphStore.queryByUnicode(0x20b7).geometry.toContours();
 		assertFlatSpesmiloBase(glyphStore.queryByUnicode(0x20b7), actual);
-		const expected = glyphStore.queryByNameEnsured(`currency/spesmiloSign.${suffix}`).geometry.toContours();
-		assert.deepEqual(actual, expected, `spesmilo does not follow capital S ${option}`);
-		const other = [0x20b0, 0x20bb].map(code => glyphStore.queryByUnicode(code).geometry.toContours());
+		const expected = glyphStore
+			.queryByNameEnsured(`currency/spesmiloSign.${suffix}`)
+			.geometry.toContours();
+		assert.deepEqual(
+			actual,
+			expected,
+			`spesmilo does not follow capital S ${option}`,
+		);
+		const other = [0x20b0, 0x20bb].map((code) =>
+			glyphStore.queryByUnicode(code).geometry.toContours(),
+		);
 		if (independent) assert.deepEqual(other, independent);
 		else independent = other;
-		for (const previous of shapes) assert.notDeepEqual(actual, previous, `top style ${option} is not distinct`);
+		for (const previous of shapes)
+			assert.notDeepEqual(
+				actual,
+				previous,
+				`top style ${option} is not distinct`,
+			);
 		shapes.push(actual);
 	}
 });
 
 for (const [label, weight, , slope] of [
-	...nexsevkaWeights.map(row => [...row, "upright"]),
+	...nexsevkaWeights.map((row) => [...row, "upright"]),
 	["BoldItalic", 920, 700, "italic"],
 ]) {
 	test(`Nexsevka ${label} currency outlines retain their counters and proportions`, () => {
-		const { para, glyphStore } = build("term", weight, slope, "bilateral-inward-serifed", nexsevkaMetricOverride);
+		const { para, glyphStore } = build(
+			"term",
+			weight,
+			slope,
+			"bilateral-inward-serifed",
+			nexsevkaMetricOverride,
+		);
 		const metrics = calculateMetrics(para);
 		assert.equal(metrics.CAP, 693);
 		assert.equal(metrics.Ascender, 732);
 		assert.equal(metrics.Descender, -186);
 		assert.deepEqual(
 			glyphStore.queryByUnicode(0x04ba).geometry.toContours(),
-			glyphStore.queryByNameEnsured("cyrl/Shha.flatHumpMotionSerifed").geometry.toContours(),
+			glyphStore
+				.queryByNameEnsured("cyrl/Shha.flatHumpMotionSerifed")
+				.geometry.toContours(),
 			"Shha must use the flat-humped motion-serifed Che variant",
 		);
 		const nordic = glyphStore.queryByUnicode(0x20bb);
 		const contours = nordic.geometry.toContours();
-		assert.equal(contours.length, 3, "Nordic bowl and teardrop must both be closed");
+		assert.equal(
+			contours.length,
+			3,
+			"Nordic bowl and teardrop must both be closed",
+		);
 		if (slope === "upright") {
-			assert.ok(Math.max(...contours.flat().map(p => p.x)) > nordic.advanceWidth * 0.85,
-				"Nordic mark right side must extend across the frame");
+			assert.ok(
+				Math.max(...contours.flat().map((p) => p.x)) >
+					nordic.advanceWidth * 0.85,
+				"Nordic mark right side must extend across the frame",
+			);
 		}
-		const sorted = [...contours].sort((a, b) => contourArea([b]) - contourArea([a]));
+		const sorted = [...contours].sort(
+			(a, b) => contourArea([b]) - contourArea([a]),
+		);
 		for (const counter of sorted.slice(1)) {
-			const x = counter.map(p => p.x);
-			const y = counter.map(p => p.y);
-			assert.ok(Math.max(...x) - Math.min(...x) > nordic.advanceWidth * 0.07, "Nordic counter is too narrow");
-			assert.ok(Math.max(...y) - Math.min(...y) > metrics.CAP * 0.1, "Nordic counter is too short");
+			const x = counter.map((p) => p.x);
+			const y = counter.map((p) => p.y);
+			assert.ok(
+				Math.max(...x) - Math.min(...x) > nordic.advanceWidth * 0.07,
+				"Nordic counter is too narrow",
+			);
+			assert.ok(
+				Math.max(...y) - Math.min(...y) > metrics.CAP * 0.1,
+				"Nordic counter is too short",
+			);
 		}
-		assert.equal(glyphStore.queryByUnicode(0x20c4).geometry.toContours().length, 1,
-			"Omani rial must not enclose a sliver between its bars");
+		assert.equal(
+			glyphStore.queryByUnicode(0x20c4).geometry.toContours().length,
+			1,
+			"Omani rial must not enclose a sliver between its bars",
+		);
 		for (const code of [0x20b0, 0x20b7, 0x20bb, 0x20c2, 0x20c4]) {
 			const glyph = glyphStore.queryByUnicode(code);
 			const points = glyph.geometry.toContours().flat();
-			assert.ok(points.length && points.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
-			assert.ok(points.every(p => p.y > -metrics.CAP && p.y < metrics.CAP * 2));
-			if (slope === "upright") assert.ok(points.every(p => p.x >= 0 && p.x <= glyph.advanceWidth));
+			assert.ok(
+				points.length &&
+					points.every(
+						(p) => Number.isFinite(p.x) && Number.isFinite(p.y),
+					),
+			);
+			assert.ok(
+				points.every(
+					(p) => p.y > -metrics.CAP && p.y < metrics.CAP * 2,
+				),
+			);
+			if (slope === "upright")
+				assert.ok(
+					points.every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
+				);
 		}
 	});
 }

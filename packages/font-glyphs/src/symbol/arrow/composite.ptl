@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -41,7 +41,7 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 	MkArrow.single [ThinBarShape HRingSw] [MangleName 'thinArrowBarH'] null arrowRSB SymbolMid arrowSB SymbolMid
 	# MkArrow.single [ThinBarShape VRingSw] [MangleName 'thinArrowBarV'] null arrowMidX arrowBot arrowMidX arrowTop
 
-	do "Arrow with Stroke"
+	do 'Arrow with Stroke'
 		create-glyph [MangleName 'uni219A'] [MangleUnicode 0x219A] : composite-proc
 			refer-glyph : MangleName 'arrowLeft'
 			refer-glyph : MangleName 'arrSlashOver'
@@ -166,7 +166,7 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 			refer-glyph : MangleName 'arrDhtVStrokeOver'
 
 
-	do "Arrow with ring"
+	do 'Arrow with ring'
 		define [RingOverlayShape base baseThin overlay overlayMask] : composite-proc
 			with-transform [Translate 0 0] : composite-proc
 				refer-glyph : MangleName base
@@ -196,7 +196,7 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 		create-glyph [MangleName 'uni2B32'] [MangleUnicode 0x2B32]
 			RingOverlayShape 'arrowLeft' 'thinArrowBarH' 'arrRingPlusOverLR' 'arrRingOverLRMask'
 
-	do "Branched Arrows"
+	do 'Branched Arrows'
 		local branchInset : 0.5 * MosaicWidth - 1.5 * arrowHeadSize
 		create-glyph [MangleName 'arrowLeftFromDown'] [MangleUnicode 0x1F8C0]  : composite-proc
 			refer-glyph : MangleName 'arrowDown'
@@ -207,7 +207,7 @@ glyph-block Symbol-Arrow-Composite : for-width-kinds WideWidth1
 			intersection [MaskRight arrowMidX]
 				with-transform [ApparentTranslate (-branchInset) 0] : refer-glyph : MangleName 'arrowRight'
 
-	do "Supplemental arrows"
+	do 'Supplemental arrows'
 		local width : MathOperatorWidth MosaicWidth FMosaicWide
 		local d : ArrowDims width
 		local a : ArrowT d

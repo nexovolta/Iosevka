@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -19,7 +19,6 @@ glyph-block Letter-Latin-Vend : begin
 
 	define [VendVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
 
-	# Stem through the letter; the right half of V meets it at yJoin.
 	define [VendBody] : with-params [bot top fBarStraight fSquareTop [yJoin 0]] : glyph-proc
 		include : VBar.l SB bot top
 		include : with-transform [ApparentTranslate 0 yJoin]
@@ -38,7 +37,7 @@ glyph-block Letter-Latin-Vend : begin
 			curly                 { false 0 }
 			squareTop             { true  1 }
 		object # serifs
-			""                    { VendVAutoSerifs    VendAutoStemSerif }
+			''                    { VendVAutoSerifs    VendAutoStemSerif }
 			serifless              { no-shape                 no-shape }
 			motionSerifed          { VMotionSerifs            VendMotionStemSerif }
 			topRightMotionSerifed  { VTopRightMotionSerifs    no-shape }
@@ -61,8 +60,8 @@ glyph-block Letter-Latin-Vend : begin
 			include : StemSlab XH Descender
 
 	define VendCursiveConfig : object
-		cursiveSerifless     { (1/24) false }
-		cursiveSerifed       { (1/16) true  }
+		cursiveSerifless  { (1/24)  false }
+		cursiveSerifed    { (1/16)  true }
 
 	foreach { suffix { pxBar fDoSerif } } [Object.entries VendCursiveConfig] : do
 		create-glyph "vend.\(suffix)" : glyph-proc

@@ -1,11 +1,11 @@
 ### Punctuation symbols
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Joining] from "@iosevka/glyph/relation"
-import [Transform] from "@iosevka/geometry/transform"
-import [BezToContoursSink] from "@iosevka/geometry/curve-util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [Joining] from '@iosevka/glyph/relation'
+import [Transform] from '@iosevka/geometry/transform'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -97,7 +97,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		(suffix === 'flatArc')      FlatArcDp
 		true                        DesignParameters
 
-	do "Paren glyphs"
+	do 'Paren glyphs'
 
 		define [NormalShape df] : Paren.Shape df df.mvs
 		define [LargeContourShape df] : Paren.Shape df df.mvs LargeContourDp
@@ -311,7 +311,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				HBar.t hDim.l hDim.r top
 				VBar.l hDim.l bottom top
 
-	do "Bracket Glyphs"
+	do 'Bracket Glyphs'
 		create-glyph 'bracketLeft' '[' : Bracket.Shape ParenTop ParenBot
 
 		create-glyph 'cornerBracketLeft' 0x300C : glyph-proc
@@ -626,8 +626,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		.braceOutside [mix DesignParameters.braceOutside (1 - DesignParameters.braceInside ) 0.5]
 	}
 
-	do "Brace glyphs"
-		do "Normal"
+	do 'Brace glyphs'
+		do 'Normal'
 			local top : [mix SymbolMid ParenTop (1 + DesignParameters.braceOvershoot)] - HalfStroke
 			local bot : [mix SymbolMid ParenBot (1 + DesignParameters.braceOvershoot)] + HalfStroke
 
@@ -672,7 +672,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				include : VBar.r xIns (bot + fine / 2) (top - fine / 2) fine
 			turned 'whiteBraceRight.straight' null 'whiteBraceLeft.straight' Middle SymbolMid
 
-		do "Diagonal"
+		do 'Diagonal'
 			local top : mix SymbolMid ParenTop (1 + DesignParameters.braceOvershoot)
 			local bot : mix SymbolMid ParenBot (1 + DesignParameters.braceOvershoot)
 			create-glyph 'upperLeftOrLowerRightfBrace' 0x23B0 : glyph-proc
@@ -682,10 +682,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				include : ForceUpright
 				include : Brace.LowerHalfShape (top - HalfStroke) (bot + HalfStroke) Stroke
 
-		do "Curly"
+		do 'Curly'
 			define CurlyBraceConfig : object
-				curly             { 0   0     }
-				curlyFlatBoundary { 0.25 0.05 }
+				curly              { 0     0 }
+				curlyFlatBoundary  { 0.25  0.05 }
 
 			foreach { suffix { pFlatIn pFlatOut } } [Object.entries CurlyBraceConfig] : do
 				create-glyph "braceLeft.\(suffix)" : Brace.CurlyShape Stroke pFlatIn pFlatOut
@@ -719,7 +719,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		select-variant 'whiteBraceLeft'  0x2983 (follow -- 'braceLeft')
 		select-variant 'whiteBraceRight' 0x2984 (follow -- 'braceRight')
 
-	do "Angle Bracket"
+	do 'Angle Bracket'
 		define [AngleLeftShape outside inside sw] : begin
 			local fatten : Math.hypot 1 ((inside - outside - O) / (ParenTop - SymbolMid))
 			return : union
@@ -779,7 +779,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		alias 'cjkDoubleAngleBracketLeft'  0x300A 'dblAngleLeft'
 		alias 'cjkDoubleAngleBracketRight' 0x300B 'dblAngleRight'
 
-	do "Sideways U Bracket"
+	do 'Sideways U Bracket'
 		create-glyph 'uSidewaysBracketLeft' 0x2E26 : with-transform [ApparentTranslate 0 (SymbolMid - XH / 2)]
 			PointingTo Width XH Width 0 : function [] : glyph-proc
 				local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
@@ -789,7 +789,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		turned 'uSidewaysBracketRight' 0x2E27 'uSidewaysBracketLeft' Middle SymbolMid
 
-	do "Floor and Ceiling"
+	do 'Floor and Ceiling'
 		create-glyph 'ceilingLeft' 0x2308 : glyph-proc
 			include : HBar.t [mix SB RightSB DesignParameters.bracketOutside] [mix SB RightSB DesignParameters.bracketInside] ParenTop
 			include : VBar.l [mix SB RightSB DesignParameters.bracketOutside] ParenBot ParenTop
@@ -801,7 +801,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'floorRight'   0x230B 'ceilingLeft' Middle SymbolMid
 		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
 
-	do "Postal Marks"
+	do 'Postal Marks'
 		define [PostalShape df shapeWidth shapeHeight strokeScale] : glyph-proc
 			local center : mix df.leftSB df.rightSB 0.5
 			local top : SymbolMid + shapeHeight / 2

@@ -67,8 +67,8 @@ class LayoutTable
 		return lookup
 
 	public [setDependency a b] : begin
-		if [not a.name] : throw : new Error "Invalid lookup"
-		if [not b.name] : throw : new Error "Invalid lookup"
+		if [not a.name] : throw : new Error 'Invalid lookup'
+		if [not b.name] : throw : new Error 'Invalid lookup'
 
 		this.lookupDep.push { a.name b.name }
 
@@ -108,7 +108,7 @@ class LayoutTable
 
 		define [getSubLookup left right] : piecewise
 			[not right] null
-			([typeof right] === "string") : throw : new Error "Invalid substitution"
+			([typeof right] === 'string') : throw : new Error 'Invalid substitution'
 			(right <@ Function) : getSubLookup left [right left]
 			true : begin
 				local found    null
@@ -165,7 +165,7 @@ class LayoutTable
 				foreach [g : items-of term.left] : subst.set g g
 
 				if term.right : begin
-					if foundi : throw : new Error "Duplicate substitutions in one reverse rule"
+					if foundi : throw : new Error 'Duplicate substitutions in one reverse rule'
 					set foundi true
 					set rule.inputIndex j
 					local toGlyphs : piecewise
@@ -189,7 +189,7 @@ class LayoutFeature
 		set this.lookups {}
 
 	public [addLookup lookup] : begin
-		if [not lookup.name] : throw : new Error "Invalid lookup"
+		if [not lookup.name] : throw : new Error 'Invalid lookup'
 		define index : this.lookups.indexOf lookup.name
 		if (index < 0) : this.lookups.push lookup.name
 		return lookup
@@ -200,7 +200,7 @@ class LayoutLanguage
 		set this.features  {}
 
 	public [addFeature feature] : begin
-		if [not feature.name] : throw : new Error "Invalid feature"
+		if [not feature.name] : throw : new Error 'Invalid feature'
 		define index : this.features.indexOf feature.name
 		if (index < 0) : this.features.push feature.name
 		return feature

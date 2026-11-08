@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -59,24 +59,24 @@ glyph-block Letter-Latin-Upper-E : begin
 		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft barPos jutMid swVJut
 
 	define EConfig : object
-		serifless            { false false false false false }
-		topLeftSerifed       { true  false false false false }
-		serifed              { true  true  true  true  false }
-		serifedCapped        { true  true  true  true  true  }
-		capped               { false false false false true  }
-		topLeftSerifedCapped { true  false false false true  }
-		diagonalCrossbar { false false false false false 1 }
-		diagonalCrossbarTopLeftSerifed { true  false false false false 1 }
-		diagonalCrossbarSerifed { true  true  true  true  false 1 }
-		diagonalCrossbarSerifedCapped { true  true  true  true  true 1 }
-		diagonalCrossbarCapped { false false false false true 1 }
-		diagonalCrossbarTopLeftSerifedCapped { true  false false false true 1 }
-		diagonalCrossbarFalling { false false false false false (-1) }
-		diagonalCrossbarFallingTopLeftSerifed { true  false false false false (-1) }
-		diagonalCrossbarFallingSerifed { true  true  true  true  false (-1) }
-		diagonalCrossbarFallingSerifedCapped { true  true  true  true  true (-1) }
-		diagonalCrossbarFallingCapped { false false false false true (-1) }
-		diagonalCrossbarFallingTopLeftSerifedCapped { true  false false false true (-1) }
+		serifless             { false  false  false  false  false }
+		topLeftSerifed        { true   false  false  false  false }
+		serifed               { true   true   true   true   false }
+		serifedCapped         { true   true   true   true   true }
+		capped                { false  false  false  false  true }
+		topLeftSerifedCapped  { true   false  false  false  true }
+		diagonalCrossbar                             { false  false  false  false  false  1 }
+		diagonalCrossbarTopLeftSerifed               { true   false  false  false  false  1 }
+		diagonalCrossbarSerifed                      { true   true   true   true   false  1 }
+		diagonalCrossbarSerifedCapped                { true   true   true   true   true   1 }
+		diagonalCrossbarCapped                       { false  false  false  false  true   1 }
+		diagonalCrossbarTopLeftSerifedCapped         { true   false  false  false  true   1 }
+		diagonalCrossbarFalling                      { false  false  false  false  false  (-1) }
+		diagonalCrossbarFallingTopLeftSerifed        { true   false  false  false  false  (-1) }
+		diagonalCrossbarFallingSerifed               { true   true   true   true   false  (-1) }
+		diagonalCrossbarFallingSerifedCapped         { true   true   true   true   true   (-1) }
+		diagonalCrossbarFallingCapped                { false  false  false  false  true   (-1) }
+		diagonalCrossbarFallingTopLeftSerifedCapped  { true   false  false  false  true   (-1) }
 
 	foreach { suffix { lt lb rt rb rm diag } } [Object.entries EConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [MathSansSerif DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [MathSansSerif DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -123,10 +123,10 @@ glyph-block Letter-Latin-Upper-T : begin
 
 	glyph-block-export TConfig
 	define TConfig : object
-		serifless     { 1                  false false false }
-		motionSerifed { para.advanceScaleT true  false false }
-		serifed       { para.advanceScaleT true  true  false }
-		baseSerifed   { para.advanceScaleT true  true  true  }
+		serifless      { 1                   false  false  false }
+		motionSerifed  { para.advanceScaleT  true   false  false }
+		serifed        { para.advanceScaleT  true   true   false }
+		baseSerifed    { para.advanceScaleT  true   true   true }
 
 	foreach { suffix { adws doST doSB fShort } } [Object.entries TConfig] : do
 		create-glyph "T.\(suffix)" : glyph-proc
@@ -215,8 +215,8 @@ glyph-block Letter-Latin-Upper-T : begin
 			include : CyrTweUpperShape df XH doST doSB
 			set-base-anchor 'cvDecompose' (df.width / 2) XH
 
-		DefineSelectorGlyph "cyrl/Tsse" suffix [DivFrame adws] 'capDesc'
-		DefineSelectorGlyph "cyrl/tsse" suffix [DivFrame adws] 'p'
+		DefineSelectorGlyph 'cyrl/Tsse' suffix [DivFrame adws] 'capDesc'
+		DefineSelectorGlyph 'cyrl/tsse' suffix [DivFrame adws] 'p'
 
 		foreach { suffixEs { styTop styBot } } [Object.entries CConfig] : do
 			define [TsseDescenderShape df ada adb] : begin

@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix slY] from "@iosevka/util"
+import [mix slY] from '@iosevka/util'
 
 glyph-module
 
@@ -14,7 +14,7 @@ glyph-block LetterLike-Fraktur-Lower-IJL : begin
 	glyph-block-import LetterLike-Fraktur-Common : DecoSizeX DecoSizeY SlopeA SlopeB
 	glyph-block-import LetterLike-Fraktur-Common : Wave PHexTop PHexBot LTDecoration RBDecoration
 
-	create-glyph "frak/tittleAbove" : glyph-proc
+	create-glyph 'frak/tittleAbove' : glyph-proc
 		set-width 0
 		include : StdAnchors.narrow
 		local xC markMiddle
@@ -28,7 +28,7 @@ glyph-block LetterLike-Fraktur-Lower-IJL : begin
 			~~~ [flat (@xB - TINY) (@yB - SlopeB * TINY)]
 			close
 
-	create-glyph "frak/dotlessi" : glyph-proc
+	create-glyph 'frak/dotlessi' : glyph-proc
 		local df : include : LowerDf para.advanceScaleI
 		include : df.markSet.e
 
@@ -37,7 +37,7 @@ glyph-block LetterLike-Fraktur-Lower-IJL : begin
 			LTDecoration box.xMid box.top
 			RBDecoration box.xMid box.bot
 
-	create-glyph "frak/dotlessj" : glyph-proc
+	create-glyph 'frak/dotlessj' : glyph-proc
 		local df : include : LowerDf para.advanceScaleI
 		include : df.markSet.p
 
@@ -50,7 +50,7 @@ glyph-block LetterLike-Fraktur-Lower-IJL : begin
 	CreateAccentedComposition 'frak/i' 0x1D526 'frak/dotlessi' 'frak/tittleAbove'
 	CreateAccentedComposition 'frak/j' 0x1D527 'frak/dotlessj' 'frak/tittleAbove'
 
-	create-glyph "frak/l" 0x1D529 : glyph-proc
+	create-glyph 'frak/l' 0x1D529 : glyph-proc
 		local df : include : LowerDf para.advanceScaleI
 		include : df.markSet.b
 

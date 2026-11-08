@@ -1,8 +1,8 @@
-$$include "../../meta/macros.ptl"
+$$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
-import [maskBit maskBits] from "@iosevka/util/mask-bit"
+import [maskBit maskBits] from '@iosevka/util/mask-bit'
 
 glyph-module
 
@@ -85,7 +85,7 @@ glyph-block Letter-Latin-Long-S : begin
 			flat m (Ascender - ArchDepthA)
 			curl m 0 [heading Downward]
 		include : LeaningAnchor.Above.Hook m xTerminal
-		set-base-anchor "overlay" (m + [HSwToV : 0.65 * Stroke]) [mix 0 Ascender OverlayPos]
+		set-base-anchor 'overlay' (m + [HSwToV : 0.65 * Stroke]) [mix 0 Ascender OverlayPos]
 		include : StandardSerifs m fSlab _kSerif
 
 	define [LongSBentHookOverlayBar m] : LetterBarOverlay.m.in
@@ -112,19 +112,19 @@ glyph-block Letter-Latin-Long-S : begin
 			curl m yBot [heading Downward]
 		if fCorner : include : VBar.r xTip (Ascender - [CornerHookDepth Hook Stroke]) Ascender
 		include : LeaningAnchor.Above.Hook m RightSB
-		set-base-anchor "overlay" (m + [HSwToV : 0.65 * Stroke]) [mix 0 Ascender OverlayPos]
+		set-base-anchor 'overlay' (m + [HSwToV : 0.65 * Stroke]) [mix 0 Ascender OverlayPos]
 		include : StandardSerifs m fSlab _kSerif
 
 	# Non-descending variants
 	define SerifSuffixes : object
-		"Serifless"                 { SLAB_SERIFLESS       1.0 }
-		"MiddleSerifed"             { SLAB_MIDDLE          0.5 }
-		"MiddleSerifedXH"           { SLAB_MIDDLE_XH       0.5 }
-		"MiddleSerifedHalfAscender" { SLAB_MIDDLE_HALF_ASC 0.5 }
-		"BottomSerifed"             { SLAB_BOTTOM          0.5 }
-		"DoubleSerifed"             { SLAB_DOUBLE          0.5 }
-		"DoubleSerifedXH"           { SLAB_DOUBLE_XH       0.5 }
-		"DoubleSerifedHalfAscender" { SLAB_DOUBLE_HALF_ASC 0.5 }
+		'Serifless'                 { SLAB_SERIFLESS       1.0 }
+		'MiddleSerifed'             { SLAB_MIDDLE          0.5 }
+		'MiddleSerifedXH'           { SLAB_MIDDLE_XH       0.5 }
+		'MiddleSerifedHalfAscender' { SLAB_MIDDLE_HALF_ASC 0.5 }
+		'BottomSerifed'             { SLAB_BOTTOM          0.5 }
+		'DoubleSerifed'             { SLAB_DOUBLE          0.5 }
+		'DoubleSerifedXH'           { SLAB_DOUBLE_XH       0.5 }
+		'DoubleSerifedHalfAscender' { SLAB_DOUBLE_HALF_ASC 0.5 }
 
 	foreach { suffix { serifStyle pShift } } [Object.entries SerifSuffixes] : do
 		create-glyph "longs.bentHook\(suffix)" : glyph-proc
@@ -155,10 +155,10 @@ glyph-block Letter-Latin-Long-S : begin
 
 	# Descending and Tailed variants
 	define SerifSuffixesDescending : object
-		"Serifless"                 { SLAB_SERIFLESS       1.0 }
-		"MiddleSerifed"             { SLAB_MIDDLE          0.5 }
-		"MiddleSerifedXH"           { SLAB_MIDDLE_XH       0.5 }
-		"MiddleSerifedHalfAscender" { SLAB_MIDDLE_HALF_ASC 0.5 }
+		'Serifless'                 { SLAB_SERIFLESS       1.0 }
+		'MiddleSerifed'             { SLAB_MIDDLE          0.5 }
+		'MiddleSerifedXH'           { SLAB_MIDDLE_XH       0.5 }
+		'MiddleSerifedHalfAscender' { SLAB_MIDDLE_HALF_ASC 0.5 }
 
 	foreach { suffix { serifStyle pShift } } [Object.entries SerifSuffixesDescending] : do
 		create-glyph "longs.flatHookDescending\(suffix)" : glyph-proc

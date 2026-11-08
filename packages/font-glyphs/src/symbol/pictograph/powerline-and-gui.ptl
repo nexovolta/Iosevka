@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Box] from "@iosevka/geometry/box"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
 
 glyph-module
 
@@ -77,7 +77,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 		local diameter : RightSB - SB - OX * 2
 		include : KeyholeStroke (PictTop - O) PictBot (SB + OX) (RightSB - OX) GeometryStroke (PictTop - O - diameter)
 
-	do "Progress Bar"
+	do 'Progress Bar'
 		define frameLeft  : mix SB RightSB DesignParameters.bracketOutside
 		define frameRight : mix RightSB SB DesignParameters.bracketOutside
 		define progressBarGap : Math.min ((TackTop - TackBot) / 6) (Width / 6) [AdviceStroke 5]
@@ -123,7 +123,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 	for-width-kinds WideWidth4
 		define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 
-		do "arrowheadShapedPointer"
+		do 'arrowheadShapedPointer'
 			define scaffold : object
 			set scaffold.top : mix uiFigBot uiFigTop 0.85
 			set scaffold.bot : mix uiFigBot uiFigTop 0.15
@@ -139,28 +139,28 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 					corner [mix scaffold.xLeft scaffold.xRight (2 / 5)] [mix scaffold.bot scaffold.top (1 / 4)]
 					corner scaffold.xLeft scaffold.bot
 
-		do "Pointer"
+		do 'Pointer'
 			define pointerTop : mix uiFigBot uiFigTop (0.25 * MosaicWidthScalar)
 			define fineStroke : AdviceStroke 3.5 : Math.sqrt (MosaicWidthScalar / 2)
 
-			create-glyph [MangleName "whiteLowerLeftPointer"] [MangleUnicode 0x1CC86] : glyph-proc
+			create-glyph [MangleName 'whiteLowerLeftPointer'] [MangleUnicode 0x1CC86] : glyph-proc
 				set-width MosaicWidth
 				include : TriangleShape SB uiFigBot SB pointerTop (MosaicWidth - SB) uiFigBot fineStroke
 
-			create-glyph [MangleName "whiteLowerRightPointer"] [MangleUnicode 0x1CC87] : glyph-proc
+			create-glyph [MangleName 'whiteLowerRightPointer'] [MangleUnicode 0x1CC87] : glyph-proc
 				set-width MosaicWidth
 				include : TriangleShape SB uiFigBot (MosaicWidth - SB) pointerTop (MosaicWidth - SB) uiFigBot fineStroke
 
-			create-glyph [MangleName "topLeftBlackSmallTriangleLeft"] [MangleUnicode 0x1CE07] : glyph-proc
+			create-glyph [MangleName 'topLeftBlackSmallTriangleLeft'] [MangleUnicode 0x1CE07] : glyph-proc
 				set-width MosaicWidth
 				include : with-transform [ApparentTranslate (-MosaicWidth / 4) ((CAP - Geom.MidY) * 0.3 + AccentStackOffset / 2)] : refer-glyph : MangleName 'blackSmallTriangleLeft'
 
 			if (MosaicWidthScalar == 1) : begin
-				create-glyph "blackRightTriangleCaret" 0x1CEB3 : glyph-proc
+				create-glyph 'blackRightTriangleCaret' 0x1CEB3 : glyph-proc
 					set-width 0
 					include : HalfRectTriangle MosaicWidth ParenBot 0 [mix 0 ParenBot 0.2]
 
-		do "Split graphics"
+		do 'Split graphics'
 			define [BoxN n] : new Box uiFigTop uiFigBot SB (MosaicWidth * n - SB)
 
 			define [MosaicWidthMask] : spiro-outline
@@ -253,7 +253,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 					MosaicWidthMask
 					PointingHandBody (-MosaicWidth * 2)
 
-		do "upPointingChevron"
+		do 'upPointingChevron'
 			define scaffold : object
 			set scaffold.top : mix uiFigBot uiFigTop 0.85
 			set scaffold.bot : mix uiFigBot uiFigTop 0.15
@@ -288,7 +288,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 						corner scaffold.xMiddle scaffold.top
 						corner scaffold.xRight  (scaffold.top - scaffold.slopeRise)
 
-			create-glyph [MangleName "upPointingChevron"] [MangleUnicode 0x1FBCA] : glyph-proc
+			create-glyph [MangleName 'upPointingChevron'] [MangleUnicode 0x1FBCA] : glyph-proc
 				set-width MosaicWidth
 				include : ChevronUpperHalf false
 				include : intersection
@@ -307,12 +307,12 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 							corner scaffold.xMiddle (scaffold.bot + scaffold.slopeRise + scaffold.stroke)
 							corner scaffold.xRight2 (scaffold.bot - scaffold.slopeRise + scaffold.stroke)
 
-			create-glyph [MangleName "upPointingHouse"] [MangleUnicode 0x2302] : glyph-proc
+			create-glyph [MangleName 'upPointingHouse'] [MangleUnicode 0x2302] : glyph-proc
 				set-width MosaicWidth
 				include : ChevronUpperHalf true
 				include : HBar.b scaffold.xLeft scaffold.xRight scaffold.bot scaffold.stroke
 
-		do "Segmented digits"
+		do 'Segmented digits'
 			define scaffold : object
 			set scaffold.gap : Width / 16
 			set scaffold.stroke : [AdviceStroke 2] / 2
@@ -359,8 +359,8 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			SegmentedDigit 0x1FBF8 1 1 1 1 1 1 1
 			SegmentedDigit 0x1FBF9 1 1 1 1 0 1 1
 
-		do "voidedGreekCross"
-			create-glyph [MangleName "voidedGreekCross"] [MangleUnicode 0x1FBBB] : glyph-proc
+		do 'voidedGreekCross'
+			create-glyph [MangleName 'voidedGreekCross'] [MangleUnicode 0x1FBBB] : glyph-proc
 				set-width MosaicWidth
 				local sw : AdviceStroke 4
 				local gap : [Math.max (Width / 8) (Width / 6 - sw / 2) ([AdviceStroke 3] - sw / 2)] / 2

@@ -11,22 +11,45 @@ import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
-const read = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
-const data = Object.assign({}, ...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read));
+const read = (name) =>
+	Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
+const data = Object.assign(
+	{},
+	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read),
+);
 const variantData = read("variants");
-const choices = [...Variant.parse(variantData).primes.get("a").variants.values()]
-	.filter(v => /curved-bar-(rising|falling)$/.test(v.key));
+const choices = [
+	...Variant.parse(variantData).primes.get("a").variants.values(),
+].filter((v) => /curved-bar-(rising|falling)$/.test(v.key));
 await Geom.Init();
 
 function build(weight, slope, noCvSs) {
 	const argv = {
-		shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+		shape: {
+			serifs: "sans",
+			spacing: "term",
+			weight,
+			width: 500,
+			slope,
+			slopeAngle: slope === "italic" ? 9.4 : 0,
+		},
 		featureControl: { noCvSs },
-		variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		variants: {
+			design: {
+				"capital-latin-gamma": "serifless",
+				"latin-gamma": "serifless",
+			},
+		},
 	};
 	const para = init(data, argv);
 	Variant.apply(variantData, para, argv);
-	return { para, glyphStore: buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true }).glyphStore };
+	return {
+		para,
+		glyphStore: buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		}).glyphStore,
+	};
 }
 
 function upperBarAt(contours, x) {
@@ -35,7 +58,8 @@ function upperBarAt(contours, x) {
 		let from = contour[0];
 		function sample(to) {
 			if ((from.x <= x && x < to.x) || (to.x <= x && x < from.x)) {
-				const y = from.y + (to.y - from.y) * (x - from.x) / (to.x - from.x);
+				const y =
+					from.y + ((to.y - from.y) * (x - from.x)) / (to.x - from.x);
 				if (y > 150 && y < 350) crossings.push(y);
 			}
 			from = to;
@@ -46,12 +70,23 @@ function upperBarAt(contours, x) {
 			if (p.type === 0) {
 				sample(p);
 			} else if (p.type === 3) {
-				const end = q.type === 0 ? q : { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+				const end =
+					q.type === 0
+						? q
+						: { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
 				const start = from;
 				for (let j = 1; j <= 16; j++) {
 					const t = j / 16;
-					sample({ x: (1 - t) ** 2 * start.x + 2 * (1 - t) * t * p.x + t ** 2 * end.x,
-						y: (1 - t) ** 2 * start.y + 2 * (1 - t) * t * p.y + t ** 2 * end.y });
+					sample({
+						x:
+							(1 - t) ** 2 * start.x +
+							2 * (1 - t) * t * p.x +
+							t ** 2 * end.x,
+						y:
+							(1 - t) ** 2 * start.y +
+							2 * (1 - t) * t * p.y +
+							t ** 2 * end.y,
+					});
 				}
 				if (q.type === 0) i++;
 			} else {
@@ -78,13 +113,24 @@ test("curved a selections reach their case, half, swash, hook and iotated deriva
 			["aRetroflexHook", "aRetroflexHook", "aRetroflexHook"],
 		]) {
 			const expected = `${target}.${choice.selector[selector]}`;
-			assert.equal(cv.get(glyphStore.queryByNameEnsured(name)), expected, `${choice.key}: ${name}`);
+			assert.equal(
+				cv.get(glyphStore.queryByNameEnsured(name)),
+				expected,
+				`${choice.key}: ${name}`,
+			);
 			assert.ok(glyphStore.queryByName(expected), expected);
 		}
 	}
 });
 
-for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
+for (const [weight, slope] of [
+	[120, "upright"],
+	[120, "italic"],
+	[420, "upright"],
+	[420, "italic"],
+	[920, "upright"],
+	[920, "italic"],
+]) {
 	test(`curved a and derivative outlines are valid at ${weight} ${slope}`, () => {
 		const { glyphStore } = build(weight, slope, true);
 		const names = new Set();
@@ -98,32 +144,80 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		for (const direction of ["Rising", "Falling"]) {
 			for (const body of ["Serifless", "ToothlessRounded"]) {
 				const suffix = `doubleStorey${body}CurvedBar${direction}`;
-				for (const name of ["reva", "ae/a", "aa"]) names.add(`${name}.${suffix}`);
+				for (const name of ["reva", "ae/a", "aa"])
+					names.add(`${name}.${suffix}`);
 				if (body === "ToothlessRounded") {
-					for (const name of ["ao/a", "au/a", "av/a", "ay/a"]) names.add(`${name}.${suffix}`);
+					for (const name of ["ao/a", "au/a", "av/a", "ay/a"])
+						names.add(`${name}.${suffix}`);
 				}
 			}
 		}
 		for (const name of names) {
 			const glyph = glyphStore.queryByNameEnsured(name);
-			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
-			assert.ok(contours.length && contours.every(c => c.length >= 3 && c.every(p => Number.isFinite(p.x) && Number.isFinite(p.y))), name);
+			const contours = new Geom.SimplifyGeometry(
+				glyph.geometry,
+				glyph.gizmo,
+				true,
+			).toContours();
+			assert.ok(
+				contours.length &&
+					contours.every(
+						(c) =>
+							c.length >= 3 &&
+							c.every(
+								(p) =>
+									Number.isFinite(p.x) &&
+									Number.isFinite(p.y),
+							),
+					),
+				name,
+			);
 			if (name.startsWith("a.")) {
-				assert.ok(contours.length >= 2, `Missing bowl counter: ${name}`);
-				assert.ok(contours.every(c => c.every(p =>
-					p.x >= -glyph.advanceWidth / 2 && p.x <= 1.5 * glyph.advanceWidth &&
-					p.y >= -250 && p.y <= 800
-				)), `Out-of-bounds contour: ${name}`);
+				assert.ok(
+					contours.length >= 2,
+					`Missing bowl counter: ${name}`,
+				);
+				assert.ok(
+					contours.every((c) =>
+						c.every(
+							(p) =>
+								p.x >= -glyph.advanceWidth / 2 &&
+								p.x <= 1.5 * glyph.advanceWidth &&
+								p.y >= -250 &&
+								p.y <= 800,
+						),
+					),
+					`Out-of-bounds contour: ${name}`,
+				);
 			}
 		}
-		const rising = glyphStore.queryByNameEnsured("a.doubleStoreySeriflessCurvedBarRising");
-		const falling = glyphStore.queryByNameEnsured("a.doubleStoreySeriflessCurvedBarFalling");
-		assert.notDeepEqual(rising.geometry.toContours(), falling.geometry.toContours());
+		const rising = glyphStore.queryByNameEnsured(
+			"a.doubleStoreySeriflessCurvedBarRising",
+		);
+		const falling = glyphStore.queryByNameEnsured(
+			"a.doubleStoreySeriflessCurvedBarFalling",
+		);
+		assert.notDeepEqual(
+			rising.geometry.toContours(),
+			falling.geometry.toContours(),
+		);
 		if (weight === 120 && slope === "upright") {
-			const contours = new Geom.SimplifyGeometry(rising.geometry, rising.gizmo, true).toContours();
-			const [left, middle, right] = [0.48, 0.60, 0.72].map(x => upperBarAt(contours, x * rising.advanceWidth));
-			assert.ok(right - left > 5 && right - left < 50, "Rising bar should rise gently toward the stem");
-			assert.ok((left + right) / 2 - middle > 1, "Rising bar should curve instead of forming a diagonal");
+			const contours = new Geom.SimplifyGeometry(
+				rising.geometry,
+				rising.gizmo,
+				true,
+			).toContours();
+			const [left, middle, right] = [0.48, 0.6, 0.72].map((x) =>
+				upperBarAt(contours, x * rising.advanceWidth),
+			);
+			assert.ok(
+				right - left > 5 && right - left < 50,
+				"Rising bar should rise gently toward the stem",
+			);
+			assert.ok(
+				(left + right) / 2 - middle > 1,
+				"Rising bar should curve instead of forming a diagonal",
+			);
 		}
 	});
 }

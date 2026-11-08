@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg boole joinCamel] from "@iosevka/util"
-import [MathSansSerif Joining] from "@iosevka/glyph/relation"
+import [mix clamp fallback SuffixCfg boole joinCamel] from '@iosevka/util'
+import [MathSansSerif Joining] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -128,7 +128,7 @@ glyph-block Letter-Latin-Lower-N : begin
 
 	define NConfig : SuffixCfg.weave
 		object # ear
-			""                  EaredBody
+			''                  EaredBody
 			flatTop             FlatTopBody
 			earlessCorner       EarlessCornerBody
 			earlessRounded      EarlessRoundedBody
@@ -136,10 +136,10 @@ glyph-block Letter-Latin-Lower-N : begin
 			earlessRoundedHTB   EarlessRoundedBody
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded' || ear === 'earlessCornerHTB' || ear === 'earlessRoundedHTB') : return : object
-				""         ""
+				''         ''
 			return : object
-				""         ""
-				topCut     "topCut"
+				''         ''
+				topCut     'topCut'
 		object # terminal
 			straight            0
 			tailed              1
@@ -147,36 +147,36 @@ glyph-block Letter-Latin-Lower-N : begin
 			serifless           { nothing  nothing  nothing }
 			topLeftSerifed : list
 				match ear
-					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
-					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
+					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
 					__                                                        NTopLeftSerif
 				begin nothing
 				begin nothing
 			motionSerifed : list
 				match ear
-					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
-					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
+					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
 					__                                                        NTopLeftSerif
 				begin nothing
 				if (tail != 'tailed') NBottomRightSerifItalic
 			serifed : list
 				match ear
-					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
-					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
+					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftSerif
 				if (tail != 'tailed') NBottomRightSerifUpright
 			serifedItalicYatCorner : list
 				match ear
-					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
-					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
+					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin NBottomRightYatSerif
 			serifedItalicYatCursive : list
 				match ear
-					([Just "earlessCorner"]    || [Just "earlessRounded"])    nothing
-					([Just "earlessCornerHTB"] || [Just "earlessRoundedHTB"]) NHTB
+					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
 					__                                                        NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin nothing

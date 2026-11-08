@@ -10,17 +10,38 @@ import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
-const read = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
-const data = Object.assign({}, ...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read));
+const read = (name) =>
+	Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
+const data = Object.assign(
+	{},
+	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read),
+);
 const variants = read("variants");
 await Geom.Init();
 
-for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "upright"], [920, "italic"]]) {
+for (const [weight, slope] of [
+	[120, "upright"],
+	[420, "upright"],
+	[920, "upright"],
+	[920, "italic"],
+]) {
 	test(`serifed capital omega at ${weight} ${slope}`, () => {
 		const argv = {
-			shape: { serifs: "slab", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			shape: {
+				serifs: "slab",
+				spacing: "term",
+				weight,
+				width: 500,
+				slope,
+				slopeAngle: slope === "italic" ? 9.4 : 0,
+			},
 			featureControl: { noCvSs: false },
-			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+			variants: {
+				design: {
+					"capital-latin-gamma": "serifless",
+					"latin-gamma": "serifless",
+				},
+			},
 		};
 		const para = init(data, argv);
 		Variant.apply(variants, para, argv);
@@ -29,22 +50,49 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [920, "uprigh
 		const sansPara = init(data, sansArgv);
 		Variant.apply(variants, sansPara, sansArgv);
 		assert.equal(sansPara.variantSelector["grek/Omega"], "serifless");
-		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		const { glyphStore } = buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		});
 		const prime = para.variants.primes.get("capital-omega");
 		const omega = glyphStore.queryByUnicode(0x3a9);
-		const serifed = glyphStore.queryByNameEnsured(prime.variants.get("serifed").get(omega));
-		const serifless = glyphStore.queryByNameEnsured(prime.variants.get("serifless").get(omega));
-		assert.deepEqual(omega.geometry.toContours(), serifed.geometry.toContours());
-		assert.notDeepEqual(serifed.geometry.toContours(), serifless.geometry.toContours());
+		const serifed = glyphStore.queryByNameEnsured(
+			prime.variants.get("serifed").get(omega),
+		);
+		const serifless = glyphStore.queryByNameEnsured(
+			prime.variants.get("serifless").get(omega),
+		);
+		assert.deepEqual(
+			omega.geometry.toContours(),
+			serifed.geometry.toContours(),
+		);
+		assert.notDeepEqual(
+			serifed.geometry.toContours(),
+			serifless.geometry.toContours(),
+		);
 		assert.equal(serifed.advanceWidth, serifless.advanceWidth);
-		assert.ok(serifed.geometry.toContours().flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+		assert.ok(
+			serifed.geometry
+				.toContours()
+				.flat()
+				.every((p) => Number.isFinite(p.x) && Number.isFinite(p.y)),
+		);
 		if (weight === 920 && slope === "upright") {
 			const contours = serifed.geometry.toContours();
-			const minX = c => Math.min(...c.map(p => p.x));
-			const maxX = c => Math.max(...c.map(p => p.x));
-			assert.ok(minX(contours[1]) - maxX(contours[5]) >= 20, "left serif counter");
-			assert.ok(minX(contours[6]) - maxX(contours[3]) >= 20, "right serif counter");
-			assert.ok(minX(contours[3]) - maxX(contours[1]) >= 20, "central counter");
+			const minX = (c) => Math.min(...c.map((p) => p.x));
+			const maxX = (c) => Math.max(...c.map((p) => p.x));
+			assert.ok(
+				minX(contours[1]) - maxX(contours[5]) >= 20,
+				"left serif counter",
+			);
+			assert.ok(
+				minX(contours[6]) - maxX(contours[3]) >= 20,
+				"right serif counter",
+			);
+			assert.ok(
+				minX(contours[3]) - maxX(contours[1]) >= 20,
+				"central counter",
+			);
 		}
 		const small = glyphStore.queryByUnicode(0xab65);
 		assert.ok(prime.variants.get("serifed").get(small));

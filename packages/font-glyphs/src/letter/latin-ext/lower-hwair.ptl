@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -13,9 +13,9 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 	glyph-block-import Letter-Shared-Shapes : nShoulder uBowl SerifFrame
 
 	define HConfig : object
-		straightSerifless                { false false }
-		straightTopLeftSerifed           { true  false }
-		straightSerifedExceptBottomRight { true  true  }
+		straightSerifless                 { false  false }
+		straightTopLeftSerifed            { true   false }
+		straightSerifedExceptBottomRight  { true   true }
 
 	define VConfig : object
 		roundedSerifless false
@@ -23,7 +23,7 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 
 	foreach { suffix { serifLT serifLB } } [pairs-of HConfig] : do
 		local df : DivFrame para.advanceScaleMM 3
-		DefineSelectorGlyph "hwair" suffix df 'b'
+		DefineSelectorGlyph 'hwair' suffix df 'b'
 
 		foreach { suffixV serifRT } [Object.entries VConfig] : do
 			create-glyph "hwair.\(suffix).\(suffixV)" : glyph-proc

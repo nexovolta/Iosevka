@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -24,14 +24,14 @@ glyph-block Letter-Latin-Lower-Eth : begin
 		flat (RightSB - OX) [fallback _flatY1 yMid2]
 		curl (RightSB - OX) [fallback _flatY2 yMid3]
 
-	create-glyph "dInsular.curlyBar" : glyph-proc
+	create-glyph 'dInsular.curlyBar' : glyph-proc
 		include : MarkSet.b
 		include : dispiro
 			ArcStartKnots
 			quadControls 0 0.8
 			g4 (SB + Stroke * 1.1) Ascender [widths.lhs]
 
-	create-glyph "dInsular.straightBar" : glyph-proc
+	create-glyph 'dInsular.straightBar' : glyph-proc
 		include : MarkSet.b
 		local yMockBarStart : yMid2 + Stroke * 0.3
 		local xTerminal : [mix SB RightSB 0.4] + [HSwToV HalfStroke]
@@ -41,7 +41,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 			flat [mix Width xTerminal pStraightBarStart] [mix yMockBarStart CAP pStraightBarStart] [widths.lhs]
 			curl [mix Width xTerminal 2]                 [mix yMockBarStart CAP 2]
 
-	create-glyph "dInsular.closedContour" : glyph-proc
+	create-glyph 'dInsular.closedContour' : glyph-proc
 		include : MarkSet.b
 		include : dispiro
 			ArcStartKnots SmallArchDepthA (Ascender - SmallArchDepthB)

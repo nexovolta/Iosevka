@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -13,7 +13,7 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
-	do "Ayb"
+	do 'Ayb'
 		glyph-block-import Letter-Latin-Upper-Q : QCrossing QInnerDiagSw
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Ayb.\(suffix)" : glyph-proc
@@ -27,11 +27,11 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 
 		local aybSerifConfig : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { topLeft topRight } } [Object.entries aybSerifConfig] : do
@@ -44,7 +44,7 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 		select-variant 'armn/Ayb' 0x531
 		CreateTurnedLetter 'armn/Turnayb' 0x530 'armn/Ayb' HalfAdvance (CAP / 2)
 
-	do "Men"
+	do 'Men'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Men.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -56,11 +56,11 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 					include : composite-proc sf.lt.full sf.rt.full
 		local MenPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries MenPositionedSerifs] : do
@@ -72,7 +72,7 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 				if p1 : include : if (p1 === 1) sf.rt.outer sf.rt.full
 		select-variant 'armn/Men' 0x544
 
-	do "Vo"
+	do 'Vo'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Vo.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -84,11 +84,11 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 					include : composite-proc sf.lb.full sf.rb.full
 		local VoPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries VoPositionedSerifs] : do
@@ -100,7 +100,7 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 				if p1 : include : if (p1 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Vo' 0x548
 
-	do "Rra"
+	do 'Rra'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Rra.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -113,11 +113,11 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 					include : composite-proc sf.lb.full sf.rb.full
 		local RraPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries RraPositionedSerifs] : do
@@ -129,7 +129,7 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 				if p1 : include : if (p1 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Rra' 0x54C
 
-	do "Seh"
+	do 'Seh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Seh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -140,11 +140,11 @@ glyph-block Letter-Armenian-Upper-U-Group : begin
 					include : composite-proc sf.lt.full sf.rt.full
 		local SehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries SehPositionedSerifs] : do

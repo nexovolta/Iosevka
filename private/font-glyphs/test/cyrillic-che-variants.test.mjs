@@ -12,10 +12,13 @@ import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
-const readParams = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
+const readParams = (name) =>
+	Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
 const data = Object.assign(
 	{},
-	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(readParams),
+	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(
+		readParams,
+	),
 );
 const variantData = readParams("variants");
 
@@ -31,97 +34,228 @@ for (const [weight, slope, spacing] of [
 ]) {
 	test(`Che derivatives follow their source: ${weight} ${slope} ${spacing}`, () => {
 		const argv = {
-			shape: { serifs: "sans", spacing, weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			shape: {
+				serifs: "sans",
+				spacing,
+				weight,
+				width: 500,
+				slope,
+				slopeAngle: slope === "italic" ? 9.4 : 0,
+			},
 			featureControl: { noCvSs: false },
-			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+			variants: {
+				design: {
+					"capital-latin-gamma": "serifless",
+					"latin-gamma": "serifless",
+				},
+			},
 		};
 		const para = init(data, argv);
 		Variant.apply(variantData, para, argv);
-		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
-		const glyph = name => glyphStore.queryByNameEnsured(name);
-		const dependencies = g => g.geometry.getDependencies().map(d => d.identifier);
-		const points = g => g.geometry.toContours().flat();
+		const { glyphStore } = buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		});
+		const glyph = (name) => glyphStore.queryByNameEnsured(name);
+		const dependencies = (g) =>
+			g.geometry.getDependencies().map((d) => d.identifier);
+		const points = (g) => g.geometry.toContours().flat();
 		for (const [prime, base, barred] of [
 			["cyrl-capital-che", "cyrl/Che", "cyrl/CheVBar"],
 			["cyrl-che", "cyrl/che", "cyrl/cheVBar"],
 		]) {
-			for (const variant of para.variants.primes.get(prime).variants.values()) {
+			for (const variant of para.variants.primes
+				.get(prime)
+				.variants.values()) {
 				const suffix = variant.selector[base];
 				const baseName = `${base}.${suffix}`;
 				const barredName = `${barred}.${suffix}`;
 				const barGlyph = glyph(barredName);
-				assert.ok(dependencies(barGlyph).includes(baseName), `${barredName} must reference ${baseName}`);
-				assert.equal(variant.get(glyph(barred)), barredName, `${barred}: ${variant.key}`);
+				assert.ok(
+					dependencies(barGlyph).includes(baseName),
+					`${barredName} must reference ${baseName}`,
+				);
+				assert.equal(
+					variant.get(glyph(barred)),
+					barredName,
+					`${barred}: ${variant.key}`,
+				);
 				const basePoints = points(glyph(baseName));
 				const barContour = barGlyph.geometry.toContours().at(-1);
-				const barY = (Math.min(...barContour.map(p => p.y)) + Math.max(...barContour.map(p => p.y))) / 2;
-				const top = Math.max(...basePoints.map(p => p.y));
-				const expected = suffix.toLowerCase().endsWith("serifless") ? (prime === "cyrl-capital-che" ? 0.35 : 0.4) : 0.45;
-				const overshoot = suffix.startsWith("flatHump") ? 0 : para.overshoot;
-				assert.ok(Math.abs(barY - top * expected - overshoot) < 0.01, `${barredName}: bar does not follow hump height`);
+				const barY =
+					(Math.min(...barContour.map((p) => p.y)) +
+						Math.max(...barContour.map((p) => p.y))) /
+					2;
+				const top = Math.max(...basePoints.map((p) => p.y));
+				const expected = suffix.toLowerCase().endsWith("serifless")
+					? prime === "cyrl-capital-che"
+						? 0.35
+						: 0.4
+					: 0.45;
+				const overshoot = suffix.startsWith("flatHump")
+					? 0
+					: para.overshoot;
+				assert.ok(
+					Math.abs(barY - top * expected - overshoot) < 0.01,
+					`${barredName}: bar does not follow hump height`,
+				);
 				if (slope === "upright") {
-					const barX = (Math.min(...barContour.map(p => p.x)) + Math.max(...barContour.map(p => p.x))) / 2;
-					assert.ok(Math.abs(barX - barGlyph.advanceWidth / 2) < 0.01, `${barredName}: bar is off center`);
+					const barX =
+						(Math.min(...barContour.map((p) => p.x)) +
+							Math.max(...barContour.map((p) => p.x))) /
+						2;
+					assert.ok(
+						Math.abs(barX - barGlyph.advanceWidth / 2) < 0.01,
+						`${barredName}: bar is off center`,
+					);
 				}
 				assert.ok(
-					Math.max(...barContour.map(p => p.y)) - Math.min(...barContour.map(p => p.y)) > top * 0.12,
+					Math.max(...barContour.map((p) => p.y)) -
+						Math.min(...barContour.map((p) => p.y)) >
+						top * 0.12,
 					`${barredName}: bar is too short to show above and below the hump`,
 				);
 				if (prime !== "cyrl-capital-che") {
 					const bgrName = `cyrl/cheVBar.BGR.${suffix}`;
-					assert.ok(dependencies(glyph(bgrName)).includes(`cyrl/che.BGR.${suffix}`), bgrName);
-					assert.equal(variant.get(glyph("cyrl/cheVBar.BGR")), bgrName, variant.key);
+					assert.ok(
+						dependencies(glyph(bgrName)).includes(
+							`cyrl/che.BGR.${suffix}`,
+						),
+						bgrName,
+					);
+					assert.equal(
+						variant.get(glyph("cyrl/cheVBar.BGR")),
+						bgrName,
+						variant.key,
+					);
 					continue;
 				}
 				const shhaName = `cyrl/Shha.${suffix}`;
 				const shha = glyph(shhaName);
-				assert.equal(variant.get(glyph("cyrl/Shha")), shhaName, variant.key);
-				if (slope === "upright" && suffix.toLowerCase().endsWith("motionserifed") && !suffix.toLowerCase().includes("topright")) {
+				assert.equal(
+					variant.get(glyph("cyrl/Shha")),
+					shhaName,
+					variant.key,
+				);
+				if (
+					slope === "upright" &&
+					suffix.toLowerCase().endsWith("motionserifed") &&
+					!suffix.toLowerCase().includes("topright")
+				) {
 					const cche = glyph(`cyrl/Cche.${suffix}`);
 					const middleSerif = cche.geometry.toContours().at(-2);
 					const middle = cche.advanceWidth / 2;
-					assert.ok(Math.min(...middleSerif.map(p => p.x)) < middle - 1, `${suffix}: Cche middle serif does not extend left`);
-					assert.ok(Math.max(...middleSerif.map(p => p.x)) <= middle + 0.01, `${suffix}: Cche middle serif extends right`);
+					assert.ok(
+						Math.min(...middleSerif.map((p) => p.x)) < middle - 1,
+						`${suffix}: Cche middle serif does not extend left`,
+					);
+					assert.ok(
+						Math.max(...middleSerif.map((p) => p.x)) <=
+							middle + 0.01,
+						`${suffix}: Cche middle serif extends right`,
+					);
 				}
 				if (suffix.toLowerCase().endsWith("motionserifed")) {
 					const shhaPoints = points(shha);
 					if (slope === "upright") {
-						const plainSuffix = suffix.startsWith("flatHump") ? "flatHumpSerifless" : "serifless";
-						const plainPoints = points(glyph(`cyrl/Shha.${plainSuffix}`));
-						const leftAtTop = ps => Math.min(...ps.filter(p => p.y > top * 0.9).map(p => p.x));
-						const rightAtTop = ps => Math.max(...ps.filter(p => p.y > top * 0.9).map(p => p.x));
+						const plainSuffix = suffix.startsWith("flatHump")
+							? "flatHumpSerifless"
+							: "serifless";
+						const plainPoints = points(
+							glyph(`cyrl/Shha.${plainSuffix}`),
+						);
+						const leftAtTop = (ps) =>
+							Math.min(
+								...ps
+									.filter((p) => p.y > top * 0.9)
+									.map((p) => p.x),
+							);
+						const rightAtTop = (ps) =>
+							Math.max(
+								...ps
+									.filter((p) => p.y > top * 0.9)
+									.map((p) => p.x),
+							);
 						if (!suffix.toLowerCase().includes("topright")) {
-							assert.ok(leftAtTop(shhaPoints) < leftAtTop(plainPoints), `${shhaName} lacks a leftward top serif`);
+							assert.ok(
+								leftAtTop(shhaPoints) < leftAtTop(plainPoints),
+								`${shhaName} lacks a leftward top serif`,
+							);
 						}
-						if (suffix.toLowerCase().includes("topright") || suffix.toLowerCase().includes("bilateral")) {
-							assert.ok(rightAtTop(shhaPoints) > rightAtTop(plainPoints), `${shhaName} lacks a rightward top serif`);
+						if (
+							suffix.toLowerCase().includes("topright") ||
+							suffix.toLowerCase().includes("bilateral")
+						) {
+							assert.ok(
+								rightAtTop(shhaPoints) >
+									rightAtTop(plainPoints),
+								`${shhaName} lacks a rightward top serif`,
+							);
 						}
-						const leftAtBottom = ps => Math.min(...ps.filter(p => p.y < top * 0.1).map(p => p.x));
-						const rightAtBottom = ps => Math.max(...ps.filter(p => p.y < top * 0.1).map(p => p.x));
-						assert.ok(leftAtBottom(shhaPoints) >= leftAtBottom(plainPoints) - 0.01, `${shhaName} has a bottom-left serif`);
-						assert.ok(rightAtBottom(shhaPoints) <= rightAtBottom(plainPoints) + 0.01, `${shhaName} has a bottom-right serif`);
+						const leftAtBottom = (ps) =>
+							Math.min(
+								...ps
+									.filter((p) => p.y < top * 0.1)
+									.map((p) => p.x),
+							);
+						const rightAtBottom = (ps) =>
+							Math.max(
+								...ps
+									.filter((p) => p.y < top * 0.1)
+									.map((p) => p.x),
+							);
+						assert.ok(
+							leftAtBottom(shhaPoints) >=
+								leftAtBottom(plainPoints) - 0.01,
+							`${shhaName} has a bottom-left serif`,
+						);
+						assert.ok(
+							rightAtBottom(shhaPoints) <=
+								rightAtBottom(plainPoints) + 0.01,
+							`${shhaName} has a bottom-right serif`,
+						);
 					}
 					continue;
 				}
-				assert.ok(dependencies(shha).includes(baseName), `${shhaName} must reference ${baseName}`);
+				assert.ok(
+					dependencies(shha).includes(baseName),
+					`${shhaName} must reference ${baseName}`,
+				);
 				const turned = points(shha);
 				assert.equal(turned.length, basePoints.length, shhaName);
-				const sumX = Math.min(...basePoints.map(p => p.x)) + Math.max(...turned.map(p => p.x));
+				const sumX =
+					Math.min(...basePoints.map((p) => p.x)) +
+					Math.max(...turned.map((p) => p.x));
 				for (let i = 0; i < turned.length; i++) {
-					assert.ok(Math.abs(turned[i].x + basePoints[i].x - sumX) < 0.01, shhaName);
-					assert.ok(Math.abs(turned[i].y + basePoints[i].y - top) < 0.01, shhaName);
+					assert.ok(
+						Math.abs(turned[i].x + basePoints[i].x - sumX) < 0.01,
+						shhaName,
+					);
+					assert.ok(
+						Math.abs(turned[i].y + basePoints[i].y - top) < 0.01,
+						shhaName,
+					);
 				}
 			}
 		}
 		for (const variant of para.variants.primes.get("h").variants.values()) {
 			const suffix = variant.selector.h;
-			assert.equal(variant.get(glyph("cyrl/Hwe/selector")), `cyrl/Hwe/selector.${suffix}`, variant.key);
+			assert.equal(
+				variant.get(glyph("cyrl/Hwe/selector")),
+				`cyrl/Hwe/selector.${suffix}`,
+				variant.key,
+			);
 		}
 		assert.notDeepEqual(
 			glyph("cyrl/Hwe.straightSerifless.serifless").geometry.toContours(),
-			glyph("cyrl/Hwe.flatHumpStraightSerifless.serifless").geometry.toContours(),
+			glyph(
+				"cyrl/Hwe.flatHumpStraightSerifless.serifless",
+			).geometry.toContours(),
 			"Hwe must have distinct round and flat humps",
 		);
-		assert.equal(LocalizedForm.BGR.get(glyph("cyrl/cheVBar")), "cyrl/cheVBar.BGR");
+		assert.equal(
+			LocalizedForm.BGR.get(glyph("cyrl/cheVBar")),
+			"cyrl/cheVBar.BGR",
+		);
 	});
 }

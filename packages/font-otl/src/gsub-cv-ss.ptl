@@ -1,6 +1,6 @@
 $$include './meta/macros.ptl'
 
-import [AnyCv CvCherryPickingGrs CvDecompose] from "@iosevka/glyph/relation"
+import [AnyCv CvCherryPickingGrs CvDecompose] from '@iosevka/glyph/relation'
 
 extern Map
 extern Set
@@ -94,13 +94,13 @@ export : define [buildCVSS gsub para glyphStore] : begin
 
 	local cvs : new Map
 
-	do "Initialize CV feature atlas"
+	do 'Initialize CV feature atlas'
 		foreach {name prime} para.variants.primes : if prime.tag : begin
 			define feature : gsub.addCommonFeature : gsub.createFeature prime.tag
 			local cvLookupManager : new CvLookupManager gsub prime.tag feature
 			cvs.set prime.tag cvLookupManager
 
-	do "Build decomposition lookups"
+	do 'Build decomposition lookups'
 		foreach { gn glyph } [glyphStore.namedEntries] : begin
 			local parts : CvDecompose.get glyph
 			if parts : foreach part [items-of parts] : begin
@@ -109,7 +109,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 					local lookup : [cvs.get gr.tag].createDecompositionSubst
 					if [not lookup.substitutions.(gn)] : set lookup.substitutions.(gn) parts
 
-	do "cvxx / ssxx"
+	do 'cvxx / ssxx'
 		local grSetUsedBySs : new Set
 		foreach {name composition} para.variants.composites : if composition.tag : begin
 			define feature : gsub.addCommonFeature : gsub.createFeature composition.tag
@@ -139,7 +139,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 						local cvSingle : [cvs.get gr.tag].createSingleSubstFor gr.rank
 						set cvSingle.substitutions.(gn) : glyphStore.ensureExists subst
 
-	do "CV cherry picking"
+	do 'CV cherry picking'
 		foreach {name prime} para.variants.primes : if prime.cherryPicking : begin
 			local cv : cvs.get prime.tag
 			foreach cp [items-of prime.cherryPicking] : begin
@@ -155,7 +155,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 							set lookup.substitutions.(gn) : glyphStore.ensureExists subst
 
 
-	do "Cleanup and link dependency"
+	do 'Cleanup and link dependency'
 		local sortedCvs : Array.from [cvs.values]
 		sortedCvs.sort CvLookupManager.compare
 

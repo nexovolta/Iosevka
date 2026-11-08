@@ -1,8 +1,8 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [Point] from "@iosevka/geometry/point"
-import [bitOr] from "@iosevka/util/mask-bit"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [Point] from '@iosevka/geometry/point'
+import [bitOr] from '@iosevka/util/mask-bit'
 
 glyph-module
 
@@ -222,7 +222,7 @@ glyph-block Letter-Cyrillic-El : begin
 				include : CyrElMidHookShape df CAP bodyType fBarStraight fSquareBottom serifType false
 
 			define cyrSoftElCapDf : DivFrame para.advanceScaleM 3
-			DefineSelectorGlyph "cyrl/ElSoft" suffix cyrSoftElCapDf 'capital'
+			DefineSelectorGlyph 'cyrl/ElSoft' suffix cyrSoftElCapDf 'capital'
 			foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
 				create-glyph "cyrl/ElSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
@@ -283,7 +283,7 @@ glyph-block Letter-Cyrillic-El : begin
 			include : CyrElMidHookShape df XH bodyType fBarStraight fSquareBottom serifType true
 
 		define cyrSoftElDf : DivFrame para.advanceScaleM 3
-		DefineSelectorGlyph "cyrl/elSoft" suffix cyrSoftElDf 'e'
+		DefineSelectorGlyph 'cyrl/elSoft' suffix cyrSoftElDf 'e'
 		foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
 			create-glyph "cyrl/elSoft.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
@@ -321,7 +321,7 @@ glyph-block Letter-Cyrillic-El : begin
 		alias "cyrl/LjeKomi.tailed\(ser)" null "cyrl/LjeKomi.standard\(ser)"
 		alias "cyrl/ljeKomi.tailed\(ser)" null "cyrl/ljeKomi.standard\(ser)"
 		alias "cyrl/lje/leftHalf.tailed\(ser)" null "cyrl/lje/leftHalf.standard\(ser)"
-		DefineSelectorGlyph "cyrl/ElSoft" "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
+		DefineSelectorGlyph 'cyrl/ElSoft' "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
 		alias "cyrl/ElSoft.tailed\(ser)" null "cyrl/ElSoft.standard\(ser)"
 
 	select-variant 'cyrl/El' 0x41B

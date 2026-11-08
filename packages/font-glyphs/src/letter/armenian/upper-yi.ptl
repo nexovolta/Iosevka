@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -12,7 +12,7 @@ glyph-block Letter-Armenian-Upper-Yi : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe
 
-	do "Yi"
+	do 'Yi'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Yi.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -30,5 +30,5 @@ glyph-block Letter-Armenian-Upper-Yi : begin
 					define [object stroke midx midy] : ze.Dim
 					local { jutTop jutBot jutMid } : EFVJutLength CAP 0 HBarPos stroke Hook Hook
 					include : VSerif.ml midx midy jutMid (VJutStroke * (stroke / Stroke))
-		alias "armn/Yi.middleLeftFull" null 'armn/Yi.serifed'
+		alias 'armn/Yi.middleLeftFull' null 'armn/Yi.serifed'
 		select-variant 'armn/Yi' 0x545

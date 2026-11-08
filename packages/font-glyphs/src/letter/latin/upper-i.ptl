@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -37,10 +37,10 @@ glyph-block Letter-Latin-Upper-I : begin
 
 	glyph-block-export UpperIConfig
 	define UpperIConfig : object
-		'straight'     { para.advanceScaleI  ISerifs.None  }
-		'serifless'    { para.advanceScaleII ISerifs.None  }
-		'serifed'      { para.advanceScaleI  ISerifs.Long  }
-		'shortSerifed' { para.advanceScaleII ISerifs.Short }
+		'straight'      { para.advanceScaleI   ISerifs.None }
+		'serifless'     { para.advanceScaleII  ISerifs.None }
+		'serifed'       { para.advanceScaleI   ISerifs.Long }
+		'shortSerifed'  { para.advanceScaleII  ISerifs.Short }
 
 	foreach { suffix { adws Serifs } } [Object.entries UpperIConfig] : do
 		create-glyph "I.\(suffix)" : glyph-proc

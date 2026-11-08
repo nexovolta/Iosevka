@@ -11,8 +11,11 @@ import { init } from "@iosevka/param";
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const data = Object.assign(
 	{},
-	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(name =>
-		Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8")),
+	...["parameters", "shape-weight", "shape-width", "shape-slope"].map(
+		(name) =>
+			Toml.parse(
+				readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"),
+			),
 	),
 );
 
@@ -31,7 +34,10 @@ function metricsFor(spacing, width, slopeAngle = 0) {
 	return { para, metrics: calculateMetrics(para) };
 }
 
-for (const spacing of ["quasi-proportional", "quasi-proportional-extension-only"]) {
+for (const spacing of [
+	"quasi-proportional",
+	"quasi-proportional-extension-only",
+]) {
 	for (const width of [500, 600]) {
 		test(`${spacing} uses MM width for wide math operators at ${width}`, () => {
 			const { para, metrics } = metricsFor(spacing, width);
@@ -39,7 +45,10 @@ for (const spacing of ["quasi-proportional", "quasi-proportional-extension-only"
 				metrics.MathOperatorWidth(metrics.WideWidth0, true),
 				metrics.Width * para.advanceScaleMM,
 			);
-			assert.equal(metrics.MathOperatorWidth(metrics.Width, false), metrics.Width);
+			assert.equal(
+				metrics.MathOperatorWidth(metrics.Width, false),
+				metrics.Width,
+			);
 			assert.equal(metrics.WideWidth0, 1000);
 		});
 	}
@@ -47,8 +56,14 @@ for (const spacing of ["quasi-proportional", "quasi-proportional-extension-only"
 
 test("monospace math widths keep their existing narrow and wide advances", () => {
 	const { metrics } = metricsFor("term", 500);
-	assert.equal(metrics.MathOperatorWidth(metrics.Width, false), metrics.Width);
-	assert.equal(metrics.MathOperatorWidth(metrics.WideWidth0, true), metrics.WideWidth0);
+	assert.equal(
+		metrics.MathOperatorWidth(metrics.Width, false),
+		metrics.Width,
+	);
+	assert.equal(
+		metrics.MathOperatorWidth(metrics.WideWidth0, true),
+		metrics.WideWidth0,
+	);
 	assert.equal(metrics.WideWidth0, 2 * metrics.Width);
 });
 

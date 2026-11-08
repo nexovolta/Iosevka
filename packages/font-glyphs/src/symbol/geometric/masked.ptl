@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -39,7 +39,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
 		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
 
-	do "Partial circles"
+	do 'Partial circles'
 		define partialCircleQuarters : list
 			list 0x25D0 1 1 1 0 0
 			list 0x25D1 1 0 0 1 1
@@ -108,7 +108,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 						progressCircleMaskPoint [mix pAngleStart pAngleEnd (4 / 4)]
 
 
-	do "Partial square"
+	do 'Partial square'
 		define squareParts : list
 			list 0x25E7 1 1 0 0 0 0 0 0
 			list 0x25E8 0 0 1 1 0 0 0 0
@@ -146,7 +146,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 				LowerHalfMask
 				refer-glyph : MangleName 'heavyWhiteSquare'
 
-	do "Partial diamond"
+	do 'Partial diamond'
 		define diamondParts : list
 			list 0x2B16 1 1 0 0
 			list 0x2B17 0 0 1 1
@@ -165,7 +165,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 							if RT : include : UpperRightQuarterMark
 							if RB : include : LowerRightQuarterMark
 
-	do "Partial triangle"
+	do 'Partial triangle'
 		define triangleParts : list
 			list 0x25ED 1 0 1 0
 			list 0x25EE 1 0 0 1
@@ -188,7 +188,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 				if (u === 0x29E8 || u === 0x29E9) : include : PackMathShape shape
 				: else : include shape
 
-	do "Partial Stars"
+	do 'Partial Stars'
 		define starParts : list
 			list 0x2BE8 1 0 0
 			list 0x2BE9 0 1 0
@@ -202,7 +202,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 				if lh : include : intersection [LeftHalfMask]  [refer-glyph : MangleName 'blackStar']
 				if rh : include : intersection [RightHalfMask] [refer-glyph : MangleName 'blackStar']
 
-	do "Quarter-line square and circle"
+	do 'Quarter-line square and circle'
 		define quarterLineParts : list
 			list 0x25F0 'whiteSquare' 1 1 0 0
 			list 0x25F1 'whiteSquare' 0 1 1 0
@@ -229,7 +229,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					if T [VBar.m Geom.MidX (Geom.MidY + Geom.Size - hv) (Geom.MidY - hv) s] [no-shape]
 					if B [VBar.m Geom.MidX (Geom.MidY - Geom.Size + hv) (Geom.MidY + hv) s] [no-shape]
 
-	do "Three-Dimensional Arrow head"
+	do 'Three-Dimensional Arrow head'
 		define arrowHeadParts : list
 			list 0x27A2 0 1
 			list 0x27A3 1 0
@@ -241,12 +241,12 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 				if th : include : intersection [UpperHalfMask] [refer-glyph : MangleName 'blackArrowHeadRight']
 				if bh : include : intersection [LowerHalfMask] [refer-glyph : MangleName 'blackArrowHeadRight']
 
-	do "Diamond minus white X"
-		create-glyph [MangleName "blackDiamondMinusWhiteX"] [MangleUnicode 0x2756] : glyph-proc
+	do 'Diamond minus white X'
+		create-glyph [MangleName 'blackDiamondMinusWhiteX'] [MangleUnicode 0x2756] : glyph-proc
 			set-width Geom.Width
 			local gap : Math.max (0.2 * Geom.Size) [UnicodeWeightGrade 400 Geom.Scalar GeometryStroke]
 			include : difference
-				refer-glyph : MangleName "blackDiamond"
+				refer-glyph : MangleName 'blackDiamond'
 				dispiro
 					flat (Geom.MidX - Geom.Size) (Geom.MidY - Geom.Size) [widths.center gap]
 					curl (Geom.MidX + Geom.Size) (Geom.MidY + Geom.Size)
@@ -254,7 +254,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					flat (Geom.MidX + Geom.Size) (Geom.MidY - Geom.Size) [widths.center gap]
 					curl (Geom.MidX - Geom.Size) (Geom.MidY + Geom.Size)
 
-	do "Moon Phases"
+	do 'Moon Phases'
 		alias [MangleName 'newMoon']          [MangleUnicode 0x1F311] [MangleName 'blackCircle']
 		alias [MangleName 'firstQuarterMoon'] [MangleUnicode 0x1F313] [MangleName : NameUni 0x25D0]
 		alias [MangleName 'fullMoon']         [MangleUnicode 0x1F315] [MangleName 'whiteCircle']
@@ -301,7 +301,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					WaxingMoonMask
 					FlipAround Geom.MidX Geom.MidY
 
-	do "Partial White Circle"
+	do 'Partial White Circle'
 		local yOffset : Geom.Size * (-0.5)
 
 		create-glyph [MangleName 'arc'] [MangleUnicode 0x2312] : glyph-proc
@@ -335,7 +335,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 							dispiro [widths.lhs GeometryStroke] [corner Geom.MidX Geom.MidY] [corner Geom.Right Geom.Top]
 							dispiro [widths.rhs GeometryStroke] [corner Geom.MidX Geom.MidY] [corner Geom.Left  Geom.Top]
 
-	do "Miscellaneous"
+	do 'Miscellaneous'
 		glyph-block-import Symbol-Arrow-Shared : TrigArrowShape
 
 		define fineGeometryStroke : AdviceStroke2 4 4 Geom.Size
@@ -503,7 +503,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					VBar.m Geom.MidX (Geom.MidY + Geom.Size - GeometryStroke / 2) (Geom.MidY - Geom.Size + GeometryStroke / 2) GeometryStroke
 					refer-glyph : MangleName 'whiteCircle'
 
-	do "Compositions"
+	do 'Compositions'
 		glyph-block-import Symbol-Punctuation-Bar : BarShape
 
 		create-glyph [MangleName 'compositionSymbol'] [MangleUnicode 0x2384] : glyph-proc

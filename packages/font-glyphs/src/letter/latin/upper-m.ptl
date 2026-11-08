@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif DependentSelector] from "@iosevka/glyph/relation"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -141,10 +141,10 @@ glyph-block Letter-Latin-Upper-M : begin
 	define MConfig : SuffixCfg.combine
 		SuffixCfg.weave
 			object # sides
-				""            false
+				''            false
 				slantedSides  true
 			object # body
-				""              BODY-STANDARD
+				''              BODY-STANDARD
 				verticalMiddle  BODY-VERTICAL
 			object # middle
 				hanging           MID-HANGING
@@ -223,8 +223,8 @@ glyph-block Letter-Latin-Upper-M : begin
 		# This is incidentally equivalent to `para.advanceScaleT + (para.advanceScaleM - 1)`.
 		define cyrSoftemDf : DivFrame para.advanceScaleMM 4
 
-		DefineSelectorGlyph "cyrl/EmSoft" suffix cyrSoftEmDf 'capital'
-		DefineSelectorGlyph "cyrl/emSoft" suffix cyrSoftemDf 'e'
+		DefineSelectorGlyph 'cyrl/EmSoft' suffix cyrSoftEmDf 'capital'
+		DefineSelectorGlyph 'cyrl/emSoft' suffix cyrSoftemDf 'e'
 
 		foreach { suffixGhe cyrSoftEmVSlab } [Object.entries CyrSoftEmGheConfig] : do
 			create-glyph "cyrl/EmSoft.\(suffix).\(suffixGhe)" : glyph-proc
@@ -242,10 +242,10 @@ glyph-block Letter-Latin-Upper-M : begin
 
 	define EmConfig : SuffixCfg.weave
 		object # sides
-			""            false
+			''            false
 			slantedSides  true
 		object # body
-			""              BODY-STANDARD
+			''              BODY-STANDARD
 			verticalMiddle  BODY-VERTICAL
 		object # middle
 			hanging           MID-HANGING
@@ -254,7 +254,7 @@ glyph-block Letter-Latin-Upper-M : begin
 			yShaped           MID-YSTEM
 			yShapedAlmostFlat MID-YSTEM-ALMOST
 		object # tail
-			""      0
+			''      0
 			tailed  1
 		object # serifs
 			serifless     SLAB-NONE

@@ -1,10 +1,10 @@
 ###### Other symbols
 $$include '../meta/macros.ptl'
 
-import [mix clamp fallback] from "@iosevka/util"
-import [Box] from "@iosevka/geometry/box"
-import [Joining NeqLigationSlashDotted] from "@iosevka/glyph/relation"
-import [DesignParameters] from "../meta/aesthetics.mjs"
+import [mix clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
+import [Joining NeqLigationSlashDotted] from '@iosevka/glyph/relation'
+import [DesignParameters] from '../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -41,7 +41,7 @@ glyph-block Symbol-Ligation : begin
 		VBar.m x (SymbolMid - OperatorStroke / 3) (SymbolMid - OperatorStroke) EqualHoleWidth
 
 
-	do "Arrow Bar"
+	do 'Arrow Bar'
 		define [ArrowBarConfig extend kern join doubleBar] : begin
 			define cleft   0
 			define cright  Width
@@ -117,7 +117,7 @@ glyph-block Symbol-Ligation : begin
 					follow -- "lig-arrowBar-\(prefix)"
 					shapeFrom -- "\(prefix).lig.\(lS)\(rS)"
 
-	do "Waves"
+	do 'Waves'
 		glyph-block-import Shared-Symbol-Shapes : CreateWaveShape
 		define WaveShape : CreateWaveShape (EqualHalfSpace + 0.5 * OperatorStroke) OperatorStroke (-1 / 4)
 
@@ -161,7 +161,7 @@ glyph-block Symbol-Ligation : begin
 				diagJoinF -- djR
 
 
-	do "Arrowheads"
+	do 'Arrowheads'
 		glyph-block-import Symbol-Math-Relation-Common : dH
 		glyph-block-import Symbol-Math-Relation-Inequality : LigationLessShape LigationGreaterShape
 
@@ -234,28 +234,28 @@ glyph-block Symbol-Ligation : begin
 		create-glyph 'less.lig.hole' : glyph-proc
 			Joining.set currentGlyph Joining.Classes.Left
 			include : difference
-				glyph-proc : include : refer-glyph "less"
+				glyph-proc : include : refer-glyph 'less'
 				ArrowHeadHole
 
 		create-glyph 'greater.lig.hole' : glyph-proc
 			Joining.set currentGlyph Joining.Classes.Right
 			include : difference
-				glyph-proc : include : refer-glyph "greater"
+				glyph-proc : include : refer-glyph 'greater'
 				ArrowHeadHole
 
 		create-glyph 'less.lig.hole.shiftN1' : glyph-proc
 			Joining.set currentGlyph Joining.Classes.Mid
 			include : difference
-				glyph-proc : include : refer-glyph "less.lig.shiftN1"
+				glyph-proc : include : refer-glyph 'less.lig.shiftN1'
 				ArrowHeadHole
 
 		create-glyph 'greater.lig.hole.shiftN1' : glyph-proc
 			Joining.set currentGlyph Joining.Classes.Mid
 			include : difference
-				glyph-proc : include : refer-glyph "greater.lig.shiftN1"
+				glyph-proc : include : refer-glyph 'greater.lig.shiftN1'
 				ArrowHeadHole
 
-	do "bottom sign derivatives"
+	do 'bottom sign derivatives'
 		glyph-block-import Symbol-Punctuation-Dashes : UnderScoreConfig
 
 		foreach { suffix { yBar } } [Object.entries UnderScoreConfig] : do
@@ -284,28 +284,28 @@ glyph-block Symbol-Ligation : begin
 			create-glyph "bar.lig.bottomMid.\(suffix)"
 				VBar.m Middle yBar ParenTop
 
-		select-variant "underscore.lig.fc" (follow -- 'underscore')
-		select-variant "underscore.lig.cc" (follow -- 'underscore')
-		select-variant "underscore.lig.cf" (follow -- 'underscore')
-		select-variant "underscore.lig.fm" (follow -- 'underscore')
-		select-variant "underscore.lig.mf" (follow -- 'underscore')
-		select-variant "bar.lig.bottomMid" (follow -- 'underscore')
+		select-variant 'underscore.lig.fc' (follow -- 'underscore')
+		select-variant 'underscore.lig.cc' (follow -- 'underscore')
+		select-variant 'underscore.lig.cf' (follow -- 'underscore')
+		select-variant 'underscore.lig.fm' (follow -- 'underscore')
+		select-variant 'underscore.lig.mf' (follow -- 'underscore')
+		select-variant 'bar.lig.bottomMid' (follow -- 'underscore')
 
-	do "Inequality"
+	do 'Inequality'
 		define Neq : namespace
 			export : define Sw   OperatorStroke
 			export : define Dr : Sw / Stroke * DotRadius
 			export : define DotGap : Math.max ((ParenTop - ParenBot) / 8) [AdviceStroke 5]
 
 			export : define PlacementSuffixes : object
-				"1l" { 0   Joining.Classes.Right }
-				"2l" { 1   Joining.Classes.Right }
-				"3l" { 2   Joining.Classes.Right }
-				"4l" { 3   Joining.Classes.Right }
-				"1m" { 0   Joining.Classes.Mid   }
-				"2m" { 1   Joining.Classes.Mid   }
-				"3m" { 2   Joining.Classes.Mid   }
-				"4m" { 3   Joining.Classes.Mid   }
+				'1l' { 0   Joining.Classes.Right }
+				'2l' { 1   Joining.Classes.Right }
+				'3l' { 2   Joining.Classes.Right }
+				'4l' { 3   Joining.Classes.Right }
+				'1m' { 0   Joining.Classes.Mid   }
+				'2m' { 1   Joining.Classes.Mid   }
+				'3m' { 2   Joining.Classes.Mid   }
+				'4m' { 3   Joining.Classes.Mid   }
 
 			export : define BarShapeSuffixes : object
 				vertical              {  0      false  }
@@ -351,16 +351,16 @@ glyph-block Symbol-Ligation : begin
 						set-base-anchor 'cvDecompose' xDotCenter yDotCenter
 
 			select-variant "neq.allow-dot.\(place)/barPart"
-				follow    -- "neq.allow-dot"
+				follow    -- 'neq.allow-dot'
 				shapeFrom -- "neq.\(place)/barPart"
 			select-variant "neq.bar-only.\(place)/barPart"
-				follow    -- "neq.bar-only"
+				follow    -- 'neq.bar-only'
 				shapeFrom -- "neq.\(place)/barPart"
 
-			derive-multi-part-glyphs "neq.allow-dot.\(place)" null { "neq.allow-dot.\(place)/barPart" "neq/dotPart" } Neq.DependentGlyphBuilder
-			derive-multi-part-glyphs "neq.bar-only.\(place)"  null { "neq.bar-only.\(place)/barPart"  "neq/dotPart" } Neq.DependentGlyphBuilder
+			derive-multi-part-glyphs "neq.allow-dot.\(place)" null { "neq.allow-dot.\(place)/barPart" 'neq/dotPart' } Neq.DependentGlyphBuilder
+			derive-multi-part-glyphs "neq.bar-only.\(place)"  null { "neq.bar-only.\(place)/barPart"  'neq/dotPart' } Neq.DependentGlyphBuilder
 
-	do "<| , |> and <>"
+	do '<| , |> and <>'
 		glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
 		glyph-block-import Symbol-Punctuation-Slashes-And-Number-Sign : slashDefautLeft slashDefaultRight
 
@@ -441,7 +441,7 @@ glyph-block Symbol-Ligation : begin
 				TrigRightShape koTag kiExtend2 0
 				MaskRightLine (slashDefautLeft - Width) ParenBot (slashDefaultRight - Width) ParenTop
 
-	do "Chaining Plus (shifted middle bars)"
+	do 'Chaining Plus (shifted middle bars)'
 		define NotchConfig : object
 			'withoutNotch' { false }
 			'withNotch'    { true  }

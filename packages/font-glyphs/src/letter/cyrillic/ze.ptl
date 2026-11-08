@@ -2,7 +2,7 @@ $$include '../../meta/macros.ptl'
 
 extern isFinite
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -365,26 +365,26 @@ glyph-block Letter-Cyrillic-Ze : begin
 				__ : glyph-proc
 
 	define ZeSerifConfig : object
-		serifless               { SLAB-NONE      SLAB-NONE      }
-		bottomSerifed           { SLAB-NONE      SLAB-CLASSICAL }
-		bottomInwardSerifed     { SLAB-NONE      SLAB-INWARD    }
-		unilateralSerifed       { SLAB-CLASSICAL SLAB-NONE      }
-		bilateralSerifed        { SLAB-CLASSICAL SLAB-CLASSICAL }
-		unilateralInwardSerifed { SLAB-INWARD    SLAB-NONE      }
-		bilateralInwardSerifed  { SLAB-INWARD    SLAB-INWARD    }
-		hybridSerifed1          { SLAB-INWARD    SLAB-CLASSICAL }
-		flatHook                        { SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
-		topFlatHook                    { SLAB-FLAT-HOOK SLAB-NONE }
-		bottomSerifedFlatHook           { SLAB-FLAT-HOOK SLAB-CLASSICAL }
-		bottomInwardSerifedFlatHook     { SLAB-FLAT-HOOK SLAB-INWARD    }
-		unilateralSerifedFlatHook       { SLAB-CLASSICAL SLAB-FLAT-HOOK }
-		unilateralInwardSerifedFlatHook { SLAB-INWARD    SLAB-FLAT-HOOK }
-		cornerHook                        { SLAB-CORNER-HOOK SLAB-CORNER-HOOK }
-		topCornerHook                    { SLAB-CORNER-HOOK SLAB-NONE }
-		bottomSerifedCornerHook           { SLAB-CORNER-HOOK SLAB-CLASSICAL }
-		bottomInwardSerifedCornerHook     { SLAB-CORNER-HOOK SLAB-INWARD    }
-		unilateralSerifedCornerHook       { SLAB-CLASSICAL SLAB-CORNER-HOOK }
-		unilateralInwardSerifedCornerHook { SLAB-INWARD    SLAB-CORNER-HOOK }
+		serifless                          { SLAB-NONE         SLAB-NONE }
+		bottomSerifed                      { SLAB-NONE         SLAB-CLASSICAL }
+		bottomInwardSerifed                { SLAB-NONE         SLAB-INWARD }
+		unilateralSerifed                  { SLAB-CLASSICAL    SLAB-NONE }
+		bilateralSerifed                   { SLAB-CLASSICAL    SLAB-CLASSICAL }
+		unilateralInwardSerifed            { SLAB-INWARD       SLAB-NONE }
+		bilateralInwardSerifed             { SLAB-INWARD       SLAB-INWARD }
+		hybridSerifed1                     { SLAB-INWARD       SLAB-CLASSICAL }
+		flatHook                           { SLAB-FLAT-HOOK    SLAB-FLAT-HOOK }
+		topFlatHook                        { SLAB-FLAT-HOOK    SLAB-NONE }
+		bottomSerifedFlatHook              { SLAB-FLAT-HOOK    SLAB-CLASSICAL }
+		bottomInwardSerifedFlatHook        { SLAB-FLAT-HOOK    SLAB-INWARD }
+		unilateralSerifedFlatHook          { SLAB-CLASSICAL    SLAB-FLAT-HOOK }
+		unilateralInwardSerifedFlatHook    { SLAB-INWARD       SLAB-FLAT-HOOK }
+		cornerHook                         { SLAB-CORNER-HOOK  SLAB-CORNER-HOOK }
+		topCornerHook                      { SLAB-CORNER-HOOK  SLAB-NONE }
+		bottomSerifedCornerHook            { SLAB-CORNER-HOOK  SLAB-CLASSICAL }
+		bottomInwardSerifedCornerHook      { SLAB-CORNER-HOOK  SLAB-INWARD }
+		unilateralSerifedCornerHook        { SLAB-CLASSICAL    SLAB-CORNER-HOOK }
+		unilateralInwardSerifedCornerHook  { SLAB-INWARD       SLAB-CORNER-HOOK }
 
 	define ZeArcTypes : object
 		Rounded SLAB-NONE
@@ -397,8 +397,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 			set ZeSerifConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
 
 	define ZeHeightConfig : object
-		""   { 0         'capital' 'e' }
-		tall { Descender 'capDesc' 'p' }
+		''    { 0          'capital'  'e' }
+		tall  { Descender  'capDesc'  'p' }
 
 	glyph-block-export ZeConfig
 	define ZeConfig : SuffixCfg.weave ZeHeightConfig ZeSerifConfig
@@ -768,7 +768,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			Middle - [HSwToV : 0.5 * strokeV]
 			Middle + [HSwToV : 0.5 * strokeV]
 
-	do "Closed Epsilon"
+	do 'Closed Epsilon'
 		create-glyph 'latn/epsilonClosed' 0x29A : glyph-proc
 			include : MarkSet.e
 			local revZe : CyrRevZe CLOSED-CIRCLE CLOSED-CIRCLE XH 0
@@ -789,7 +789,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- SmallArchDepthB
 			include : ze.Shape
 
-	do "Volapuk OE"
+	do 'Volapuk OE'
 		create-glyph 'OeVolapuk' 0xA79C : glyph-proc
 			include : MarkSet.capital
 			local revZe : CyrRevZe CLOSED-CIRCLE CLOSED-CIRCLE CAP 0
@@ -810,7 +810,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				adb       -- SmallArchDepthB
 			include : revZe.Shape
 
-	do "Volapuk AE"
+	do 'Volapuk AE'
 		glyph-block-import Letter-Latin-Lower-A : SingleStorey
 
 		define [FullBarBody df top bar hook ada adb cut] : glyph-proc
@@ -869,12 +869,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 				singleStoreyEarlessRounded EarlessRoundedBody
 			function [ear] : begin
 				if (ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
-					""         ""
-					bottomCut  "bottomCut"
+					''         ''
+					bottomCut  'bottomCut'
 				return : object
-					""         ""
-					topCut     "topCut"
-					bottomCut  "bottomCut"
+					''         ''
+					topCut     'topCut'
+					bottomCut  'bottomCut'
 			function [ear cut] : begin
 				if (cut === 'bottomCut') : return : object
 					serifless SingleStorey.SeriflessBar
@@ -913,7 +913,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 
 		alias 'aRoundTop.italic' null [if SLAB 'aeVolapuk.slab.italic' 'aeVolapuk.sans']
 
-	do "Volapuk UE"
+	do 'Volapuk UE'
 		glyph-block-import Letter-Latin-U : USerifs
 		glyph-block-import Letter-Shared-Shapes : RightwardTailedBar
 
@@ -996,10 +996,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 				toothlessRounded  UToothlessRounded
 			function [body] : begin
 				if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
-					""         ""
+					''         ''
 				return : object
-					""         ""
-					bottomCut  "bottomCut"
+					''         ''
+					bottomCut  'bottomCut'
 			function [body cut] : object # capital U serifs
 				serifless               no-shape
 				bottomRightSerifed      USerifs.BottomRight
@@ -1020,12 +1020,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 				toothlessRounded  UToothlessRounded
 			function [body] : begin
 				if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
-					""         ""
-					topCut     "topCut"
+					''         ''
+					topCut     'topCut'
 				return : object
-					""         ""
-					topCut     "topCut"
-					bottomCut  "bottomCut"
+					''         ''
+					topCut     'topCut'
+					bottomCut  'bottomCut'
 			function [body cut] : object # small u serifs
 				serifless            no-shape
 				bottomRightSerifed   USerifs.BottomRight

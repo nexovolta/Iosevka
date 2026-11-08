@@ -1,10 +1,10 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback boole boolePn] from "@iosevka/util"
-import [Transform] from "@iosevka/geometry/transform"
-import [Vec2 Point] from "@iosevka/geometry/point"
-import [FunctionInterpolator AfCombine] from "@iosevka/geometry/spiro-control"
-import [RadicalGeometry StrokeGeometry RemoveHolesGeometry] from "@iosevka/geometry"
+import [mix linreg clamp fallback boole boolePn] from '@iosevka/util'
+import [Transform] from '@iosevka/geometry/transform'
+import [Vec2 Point] from '@iosevka/geometry/point'
+import [FunctionInterpolator AfCombine] from '@iosevka/geometry/spiro-control'
+import [RadicalGeometry StrokeGeometry RemoveHolesGeometry] from '@iosevka/geometry'
 
 glyph-module
 
@@ -243,8 +243,8 @@ glyph-block CommonShapes : begin
 
 	glyph-block-export OShapeT
 	define [OShapeT sink u d l r _width _ada _adb] : begin
-		if (l > r) : throw : new Error "OShapeT: l > r"
-		if (d > u) : throw : new Error "OShapeT: d > u"
+		if (l > r) : throw : new Error 'OShapeT: l > r'
+		if (d > u) : throw : new Error 'OShapeT: d > u'
 
 		local middle : mix l r 0.5
 		local width : fallback _width Stroke
@@ -293,8 +293,8 @@ glyph-block CommonShapes : begin
 
 	glyph-block-export UShapeT
 	define [UShapeT sink u d l r _width _ada _adb] : begin
-		if (l > r) : throw : new Error "UShapeT: l > r"
-		if (d > u) : throw : new Error "UShapeT: d > u"
+		if (l > r) : throw : new Error 'UShapeT: l > r'
+		if (d > u) : throw : new Error 'UShapeT: d > u'
 
 		local width : fallback _width Stroke
 		local ada : fallback _ada ArchDepthA
@@ -527,7 +527,7 @@ glyph-block CommonShapes : begin
 		local keyKnotDirection : if ltr Rightward Leftward
 		local extraSlope : [if ltr (+1) (-1)] * 0.5 * (sw - swTerminal) / sw
 		local finalTurnSlope : keyKnotDirection.x + extraSlope - [if ltr (+1) (-1)] * 0.5 * TanSlope
-		local keyKnot : g4.[if ltr "right" "left"].mid
+		local keyKnot : g4.[if ltr 'right' 'left'].mid
 			begin mx
 			begin y
 			heading {.x finalTurnSlope .y keyKnotDirection.y}
@@ -794,9 +794,9 @@ glyph-block CommonShapes : begin
 
 		foreach side {lhs rhs} : begin
 			set side.centerAt : object
-			foreach dir {"ltr" "rtl"} : begin
+			foreach dir {'ltr' 'rtl'} : begin
 				set side.centerAt.(dir) : object
-				foreach ydir {"t" "b"} : let [side] [dir] [ydir] : do
+				foreach ydir {'t' 'b'} : let [side] [dir] [ydir] : do
 					define flex-params [f] : begin
 						local-parameter : x
 						local-parameter : y
@@ -808,8 +808,8 @@ glyph-block CommonShapes : begin
 						local-parameter : swAfter      -- sw
 						return : impl : object x y sw compact knot-ty o swBefore swAfter
 							lhs : side == lhs
-							rtl : dir == "rtl"
-							atBot : ydir == "b"
+							rtl : dir == 'rtl'
+							atBot : ydir == 'b'
 					set side.centerAt.(dir).(ydir) f
 
 	glyph-block-export Ungizmo
@@ -952,8 +952,8 @@ glyph-block CommonShapes : begin
 	define [VectorDot p1 p2] : p1.x * p2.x + p1.y * p2.y
 
 	define [SharpCornerImpl before after args] : begin
-		if [not (before.af && before.af.l !== undefined)] : throw : new Error "Unable to infer stroke information for previous knot"
-		if [not (after.af  && after.af.l  !== undefined)] : throw : new Error "Unable to infer stroke information for next knot"
+		if [not (before.af && before.af.l !== undefined)] : throw : new Error 'Unable to infer stroke information for previous knot'
+		if [not (after.af  && after.af.l  !== undefined)] : throw : new Error 'Unable to infer stroke information for next knot'
 
 		local beforeT : new Vec2 (args.x - before.x) (args.y - before.y)
 		local afterT  : new Vec2 (after.x - args.x)  (after.y - args.y)

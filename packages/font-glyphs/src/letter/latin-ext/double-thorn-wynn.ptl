@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
+import [mix fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -24,7 +24,6 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	define [yThornBowlBot top] : mix 0 top 0.19
 	define [yThornBowlTop top] : top - [yThornBowlBot top]
 
-	# B bowls in Thorn's mid-stem band, plus a through stem.
 	define [DoubleThornShape xStem stemBot stemTop bowlBot bowlTop] : glyph-proc
 		local h : bowlTop - bowlBot
 		include : with-transform [ApparentTranslate (xStem - SB) bowlBot]
@@ -33,7 +32,6 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : LeaningAnchor.Above.VBar.l xStem
 		include : LeaningAnchor.Below.VBar.l xStem
 
-	# Lower thorn: closed-stem Cyrillic ze bowls (like ɞ) on a through stem.
 	define [DoubleThornLowerShape xStem stemBot stemTop bowlBot bowlTop hook ada adb slabTop slabBot] : glyph-proc
 		local ze : CyrZe slabTop slabBot bowlTop bowlBot
 			left      -- xStem
@@ -49,8 +47,6 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : LeaningAnchor.Above.VBar.l xStem
 		include : LeaningAnchor.Below.VBar.l xStem
 
-	# Two bowls on a through stem, joined like yogh: the lower half is clipped
-	# to the upper's down-curve so the middle is one smooth stroke into the stem.
 	define [DoubleWynnUpper sink offset bowlTop bowlBot] : begin
 		local py : [mix bowlBot bowlTop OverlayPos] - QuarterStroke
 		local yRight : YSmoothMidR bowlTop py
@@ -96,7 +92,7 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 
 	define ThornDoubleLowerConfig : SuffixCfg.weave
 		object # body
-			""               { CLOSED-STEM     CLOSED-STEM }
+			''               { CLOSED-STEM     CLOSED-STEM }
 			flatTop          { FLAT-CONNECTION CLOSED-STEM }
 			flatBottom       { CLOSED-STEM     FLAT-CONNECTION }
 			flatTopAndBottom { FLAT-CONNECTION FLAT-CONNECTION }

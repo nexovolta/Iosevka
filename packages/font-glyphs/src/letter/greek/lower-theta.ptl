@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -20,9 +20,9 @@ glyph-block Letter-Greek-Lower-Theta : begin
 	define Diamond : ThetaShapeBase DiamondShapeT
 
 	define ThetaConfig : object
-		'capsule' { Capsule [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB] }
-		'oval'    { Oval    [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB] }
-		'diamond' { Diamond null                                                           }
+		'capsule'  { Capsule  [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB] }
+		'oval'     { Oval     [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB] }
+		'diamond'  { Diamond  null }
 
 	foreach { suffix { ShapeBase y0R } } [pairs-of ThetaConfig] : begin
 		create-glyph "grek/theta.\(suffix)" : glyph-proc
@@ -35,7 +35,7 @@ glyph-block Letter-Greek-Lower-Theta : begin
 				mix [Arch.adjust-x.bot Middle] (RightSB - OX) 0.75
 				mix O y0R [archv.yFromX 0.75]
 
-	create-glyph "grek/theta.cursive" : glyph-proc
+	create-glyph 'grek/theta.cursive' : glyph-proc
 		include : MarkSet.b
 
 		define pXTopLeft 0.2
@@ -60,8 +60,8 @@ glyph-block Letter-Greek-Lower-Theta : begin
 	select-variant 'grek/theta' 0x3B8
 	select-variant 'grek/theta/nonCursive' (shapeFrom -- 'grek/theta')
 
-	alias 'grek/thetaSymbol' 0x03D1 "grek/theta.cursive"
-	alias 'grek/theta.UPPH'  null   "grek/theta.cursive"
+	alias 'grek/thetaSymbol' 0x03D1 'grek/theta.cursive'
+	alias 'grek/theta.UPPH'  null   'grek/theta.cursive'
 
 	derive-glyphs 'latn/thetaPalatalHook' 0x1DF3C 'grek/theta/nonCursive' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

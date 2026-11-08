@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -43,11 +43,11 @@ glyph-block Letter-Cyrillic-Iotated : begin
 			if (hBarRight > df.leftSB) : include : HBar.m df.leftSB hBarRight hBarY swRef
 			if (slabTop || slabBottom) : begin
 				local sf : SerifFrame.fromDf df top 0 (swRef -- swRef) (swSerif -- swSerif) (fForceSymmetric -- fForceSymmetric)
-				include : tagged "serifLT" : match slabTop
+				include : tagged 'serifLT' : match slabTop
 					[Just SLAB-FULL]    : begin sf.lt.full
 					[Just SLAB-OUTWARD] : begin sf.lt.outer
 					__                  : glyph-proc
-				include : tagged "serifLB" : match slabBottom
+				include : tagged 'serifLB' : match slabBottom
 					[Just SLAB-FULL]    : begin sf.lb.full
 					[Just SLAB-OUTWARD] : begin sf.lb.outer
 					__                  : glyph-proc
@@ -71,11 +71,11 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				begin slabBottom
 			if (topSlab || botSlab) : begin
 				local sf : SerifFrame.fromDf df top 0 (swRef -- swRef) (swSerif -- swSerif)
-				include : tagged "serifRT" : match topSlab
+				include : tagged 'serifRT' : match topSlab
 					[Just SLAB-FULL]    : begin sf.rt.full
 					[Just SLAB-OUTWARD] : begin sf.rt.outer
 					__                  : glyph-proc
-				if [not fTailed] : include : tagged "serifRB" : match botSlab
+				if [not fTailed] : include : tagged 'serifRB' : match botSlab
 					[Just SLAB-FULL]    : begin sf.rb.full
 					[Just SLAB-OUTWARD] : begin sf.rb.outer
 					__                  : glyph-proc
@@ -155,7 +155,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				swRef      -- swRef
 				swSerif    -- swSerif
 
-	do "Iotated A"
+	do 'Iotated A'
 		glyph-block-import Letter-Latin-Upper-A : AShape AConfig
 
 		foreach { suffix { bodyShape slabKind diag } } [Object.entries AConfig] : do
@@ -182,7 +182,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 					with-transform [ApparentTranslate shift 0]
 						AShape.Mask subDf bodyShape CAP sw
 
-	do "Iotated a"
+	do 'Iotated a'
 		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyDiagConfig SingleStorey SingleStoreyConfig
 
 		foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
@@ -218,7 +218,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 
 				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
-	do "Iotated e"
+	do 'Iotated e'
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
 
 		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
@@ -279,7 +279,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				create-glyph "cyrl/eIotated.\(suffix)Capped\(dsuf)" : glyph-proc
 					include [refer-glyph "cyrl/eIotated.\(suffix)Capped"] AS_BASE ALSO_METRICS
 
-	do "Latin iotated e"
+	do 'Latin iotated e'
 		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
 
 		foreach { suffix { body revbody tailSlab diag } } [Object.entries SmallEConfig] : do
@@ -309,7 +309,7 @@ glyph-block Letter-Cyrillic-Iotated : begin
 	select-variant 'cyrl/eIotated' 0x465  (follow -- 'cyrl/yeUkrainian')
 	select-variant 'latn/eIotated' 0xAB61 (follow -- 'e')
 
-	do "Latin ie digraph"
+	do 'Latin ie digraph'
 		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
 		glyph-block-import Letter-Latin-Lower-I
 

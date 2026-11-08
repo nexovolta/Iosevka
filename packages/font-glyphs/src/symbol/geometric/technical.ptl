@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -21,7 +21,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 
 	define fineGeometryStroke : AdviceStroke2 4 4 Geom.Size
 
-	do "Technical Symbols"
+	do 'Technical Symbols'
 		create-glyph [MangleName 'clearScreen'] [MangleUnicode 0x239A] : glyph-proc
 			set-width Geom.Width
 			local radius : ([mix XH Ascender 1.5] - [mix 0 Descender 1.5]) / 2
@@ -306,7 +306,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : MetricalShorts MetricalMidY
 			include : Italify (-para.slopeAngle)
 
-	do "Dimensions"
+	do 'Dimensions'
 		create-glyph [MangleName 'straightness'] [MangleUnicode 0x23E4] : glyph-proc
 			set-width Geom.Width
 			include : HBar.m Geom.Left Geom.Right Geom.MidY GeometryStroke
@@ -404,7 +404,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			flat @x2 @y3
 			curl Geom.MidX @y3
 
-	do "Output Circuit and Benzene Symbols"
+	do 'Output Circuit and Benzene Symbols'
 		define [DiamondShape cx cy radius] : spiro-outline
 			corner cx (cy + radius)
 			corner (cx + radius) cy
@@ -486,7 +486,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : BenzeneOutline
 			include : RingStrokeAt Geom.MidX Geom.MidY (0.65 * benzeneInnerRadius) benzeneInnerStroke
 
-	do "Wide Square Brackets"
+	do 'Wide Square Brackets'
 		local bracketHeight : Math.max (aboveMarkTop - aboveMarkBot) (Stroke * 2.5)
 		local bracketWidth : Width * para.advanceScaleMM
 		local bracketStroke Stroke
@@ -540,7 +540,7 @@ glyph-block Symbol-Geometric-Technical : for-width-kinds WideWidth1
 			include : WideBridgeShape 0 bracketWidth (Ascender - bracketHeight) Ascender true bracketStroke
 			include : WideBridgeShape 0 bracketWidth 0 bracketHeight false bracketStroke
 
-	do "Keyboard Symbols"
+	do 'Keyboard Symbols'
 		define topLine : Geom.MidY + Geom.Size / 1.5
 		define botLine : Geom.MidY - Geom.Size / 1.5
 		define topLineC : topLine - GeometryStroke / 2

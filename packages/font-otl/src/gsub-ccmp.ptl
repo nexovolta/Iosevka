@@ -1,8 +1,8 @@
 $$include './meta/macros.ptl'
 
-import [UkMapToLookup UkLigatureToLookup] from "./table-util.mjs"
-import [Dotless TieMark TieGlyph OgonekTrY IsSuperscript IsSubscript LeaningMark LeaningMarkSpacer NLDAcuteVariant HBSCaronVariant Nwid Wwid] from "@iosevka/glyph/relation"
-import as UnicodeKnowledge from "@iosevka/font-glyphs/unicode-knowledge"
+import [UkMapToLookup UkLigatureToLookup] from './table-util.mjs'
+import [Dotless TieMark TieGlyph OgonekTrY IsSuperscript IsSubscript LeaningMark LeaningMarkSpacer NLDAcuteVariant HBSCaronVariant Nwid Wwid] from '@iosevka/glyph/relation'
+import as UnicodeKnowledge from '@iosevka/font-glyphs/unicode-knowledge'
 
 extern Map
 extern Set
@@ -34,7 +34,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 		gsub.endBlock rec
 
-	Ccmp-Group "Combining of overlay/hoked letters" : begin
+	Ccmp-Group 'Combining of overlay/hoked letters' : begin
 		local substitutions : UkLigatureToLookup UnicodeKnowledge.ccmpCombinations
 			function u : glyphStore.queryNameByUnicode u
 		local infinity : glyphStore.queryByUnicode 0x221E
@@ -53,13 +53,13 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 		export-lookup combineLookup
 
-	Ccmp-Group "Mark transforms" : begin
+	Ccmp-Group 'Mark transforms' : begin
 		define groupGrekUpperTonos {}
 		define groupLF             {}
 		define dotlessFrom         {}
 		define dotlessTo           {}
 
-		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== "."): begin
+		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.'): begin
 			if g.baseAnchors.lf             : groupLF.push gn
 			if g.baseAnchors.grekUpperTonos : groupGrekUpperTonos.push gn
 			if [Dotless.get g] : begin
@@ -97,12 +97,12 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				'parenBelow' { 'leftParenBelow' 'rightParenBelow' }
 				'parenOver' { 'leftParenOver' 'rightParenOver' }
 
-	Ccmp-Group "Tie Mark Transform" : begin
+	Ccmp-Group 'Tie Mark Transform' : begin
 		define TieMarkFrom         {}
 		define TieMarkTo           {}
 		define TieGlyphs           {}
 
-		foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== ".") : begin
+		foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
 			if [TieGlyph.get g] : TieGlyphs.push gid
 			if [TieMark.get g] : begin
 				TieMarkFrom.push gid
@@ -122,18 +122,18 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				inputEnds 3
 				apply {{.at 1 .lookup lookupTieMarkLigature}}
 
-	Ccmp-Group "Special dot-above transformation" : begin
+	Ccmp-Group 'Special dot-above transformation' : begin
 		# b-dot, d-dot, h-dot, k-dot
 		export-lookup : gsub.createLookup : object
 			.type 'gsub_ligature'
 			.ignoreGlyphs [filterMarkByClassNegated markGlyphs 'above']
 			.substitutions : list
-				object [from : list "b" "dotAbove"] [to "bDot"]
-				object [from : list "d" "dotAbove"] [to "dDot"]
-				object [from : list "h" "dotAbove"] [to "hDot"]
-				object [from : list "k" "dotAbove"] [to "kDot"]
+				object [from : list 'b' 'dotAbove'] [to 'bDot']
+				object [from : list 'd' 'dotAbove'] [to 'dDot']
+				object [from : list 'h' 'dotAbove'] [to 'hDot']
+				object [from : list 'k' 'dotAbove'] [to 'kDot']
 
-	Ccmp-Group "IJ-Acute composites" : begin
+	Ccmp-Group 'IJ-Acute composites' : begin
 		local substitutions {}
 		foreach { gn g } [glyphStore.namedEntries] : begin
 			local nldVariant : NLDAcuteVariant.get g
@@ -144,7 +144,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 			.type 'gsub_ligature'
 			.substitutions substitutions
 
-	Ccmp-Group "DZ-Caron composites" : begin
+	Ccmp-Group 'DZ-Caron composites' : begin
 		local substitutions {}
 		foreach { gn g } [glyphStore.namedEntries] : begin
 			local hbsVariant : HBSCaronVariant.get g
@@ -155,7 +155,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 			.type 'gsub_ligature'
 			.substitutions substitutions
 
-	Ccmp-Group "Leaning Mark Trasnform" : begin
+	Ccmp-Group 'Leaning Mark Trasnform' : begin
 		define LeaningAnchorMap : list
 			list 'above' 'leaningAbove'
 			list 'below' 'leaningBelow'
@@ -167,7 +167,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 			local markSpacer      {}
 			local splitMapping    {}
 
-			foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== ".") : begin
+			foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 				if (![markGlyphs.all.has gn] && g.baseAnchors.(mkLeaning)) : basesToConsider.push gn
 				if (g.markAnchors.(mkCenter) && [LeaningMark.get g] && [LeaningMarkSpacer.get g]) : begin
 					markFrom.push       gn
@@ -189,11 +189,11 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 						.inputEnds     2
 						.apply         {{.at 1 .lookup lookupTurnMarkIntoLeaningAndSpacer}}
 
-	Ccmp-Group "Rhotic Hook Transform" : begin
+	Ccmp-Group 'Rhotic Hook Transform' : begin
 		define superscripts        {}
 		define subscripts          {}
 
-		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== ".") : begin
+		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 			if [IsSuperscript.get g] : superscripts.push gn
 			if [IsSubscript.get g]   : subscripts.push gn
 
@@ -201,10 +201,10 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 			.type 'gsub_chaining'
 			.ignoreGlyphs anyMark
 			.rules : list
-				chain-rule superscripts ({"rhoticHook"} ~> {"rhoticHook/sup"})
-				chain-rule subscripts   ({"rhoticHook"} ~> {"rhoticHook/sub"})
+				chain-rule superscripts ({'rhoticHook'} ~> {'rhoticHook/sup'})
+				chain-rule subscripts   ({'rhoticHook'} ~> {'rhoticHook/sub'})
 
-	Ccmp-Group "Tone Transform" : begin
+	Ccmp-Group 'Tone Transform' : begin
 		define [ToneToToneStart toneEnd] : begin
 			local f {}
 			local e {}
@@ -331,7 +331,7 @@ export : define [buildCCMPPostCvSs gsub ccmp glyphStore markGlyphs] : begin
 
 	define triggerGlyphs_Normal { }
 	define triggerGlyphs_Y      { }
-	foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== "."): begin
+	foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.'): begin
 		if g.baseAnchors.trailing : piecewise
 			[OgonekTrY.get g] : triggerGlyphs_Y.push      gid
 			true              : triggerGlyphs_Normal.push gid

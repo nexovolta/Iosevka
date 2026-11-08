@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -24,7 +24,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		local shift : pShift * subDfFullShift
 		return { subDf shift }
 
-	do "a subglyphs"
+	do 'a subglyphs'
 		glyph-block-import Letter-Latin-Lower-A : DoubleStorey DoubleStoreyDiagConfig
 
 		foreach { suffix { { hookStyle cut { body revBody xTrailing } } diag } } [Object.entries DoubleStoreyDiagConfig] : do
@@ -76,7 +76,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						with-transform [ApparentTranslate ((+0.75) * df.mvs) 0] [right]
 						with-transform [ApparentTranslate ((+1.00) * df.mvs) 0] [right]
 
-	do "o subglyphs"
+	do 'o subglyphs'
 		glyph-block-import Letter-Shared-Shapes : OBarLeft OBarRight
 
 		define [oeOPart pShift] : function [df top ad sw fine] : begin
@@ -125,7 +125,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				adb       -- subDf.smallArchDepthB
 				yend      -- (XH - [ArchDepthAClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB] + O)
 
-	do "e subglyphs"
+	do 'e subglyphs'
 		glyph-block-import Letter-Latin-Lower-E : SchwaConfig
 
 		define df : DivFrame para.advanceScaleMM 3
@@ -157,7 +157,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						turned -- true
 						diag   -- diag
 
-	do "u subglyphs"
+	do 'u subglyphs'
 		glyph-block-import Letter-Shared-Shapes : uBowl
 		glyph-block-import Letter-Latin-U : UShapeGroup USerifs SmallUConfigT
 
@@ -165,8 +165,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define { subDf shift } : SubDfAndShift 1 df 0
 
 		define SmallULeftConfig : object
-			"ue"  CThinB
-			"uo"  CThin
+			'ue'  CThinB
+			'uo'  CThin
 
 		foreach { prefix cThin } [Object.entries SmallULeftConfig] : do
 			create-glyph "\(prefix)/u.toothlessRoundedSerifless" : glyph-proc
@@ -202,7 +202,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	define [AvAyHeavyT] : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 	define [AvAyOverlapK] : mix 0.3 0.08 [AvAyHeavyT]
 
-	do "v and y subglyphs for av/ay"
+	do 'v and y subglyphs for av/ay'
 		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
@@ -212,10 +212,10 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define shiftVY : shiftVY0 - [HSwToV : dfVY.mvs * [AvAyOverlapK]]
 
 		define avVConfig : object
-			straightSerifless  { true  0 }
-			curlySerifless     { false 0 }
-			squareTopSerifless { true  1 }
-			cursiveSerifless   { true  0 }
+			straightSerifless   { true   0 }
+			curlySerifless      { false  0 }
+			squareTopSerifless  { true   1 }
+			cursiveSerifless    { true   0 }
 
 		foreach { suffix { fStraightBar fSquareTop } } [Object.entries avVConfig] : do
 			create-glyph "av/v.\(suffix)" : glyph-proc
@@ -245,7 +245,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					include : refer-glyph "ay/y.\(suffix)"
 					eject-contour 'leftHalf'
 
-	do "c subglyphs"
+	do 'c subglyphs'
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
 
 		define FLAT-CONNECTION 3
@@ -287,7 +287,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					local subDfLeft : df.slice 4.5 2
 					include : EsTeLeftShape subDfLeft styBot
 
-	do "Te (upright) subglyphs"
+	do 'Te (upright) subglyphs'
 		glyph-block-import Letter-Latin-Upper-T : TConfig
 
 		define [EsTeRightShape subDf doTopSerifs doBottomSerifs] : new-glyph : glyph-proc
@@ -311,7 +311,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : EsTeRightShape subDfRight doST doSB
 				include : ApparentTranslate (df.width - subDfRight.width) 0
 
-	do "Te (italic) subglyphs"
+	do 'Te (italic) subglyphs'
 		glyph-block-import Letter-Latin-Lower-M : mShapeBodyImpl SmallMConfig
 
 		foreach { suffix { { Body earless } cut { shortLeg } { tailed } { Serifs } } } [pairs-of SmallMConfig] : do
@@ -324,7 +324,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : mShapeBodyImpl subDfRight XH Body earless shortLeg tailed Serifs cut
 				include : ApparentTranslate (df.width - subDfRight.width) 0
 
-	do "Ya subglyphs"
+	do 'Ya subglyphs'
 		glyph-block-import Letter-Latin-Upper-P : PShape PBarPosY
 		glyph-block-import Letter-Latin-Upper-R : RevRShape RevRConfig
 
@@ -348,7 +348,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					eject-contour 'serifRT'
 					include : VBar.r subDf.rightSB [PBarPosY XH df.mvs PShape.BarPos] XH df.mvs
 
-	do "Er subglyphs"
+	do 'Er subglyphs'
 		glyph-block-import Letter-Latin-Lower-P : PConfig
 
 		foreach { suffix { Body cut fFlat { Serifs doTS doBS } } } [Object.entries PConfig] : do
@@ -369,7 +369,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : Serifs subDf XH df.mvs
 				include : LeaningAnchor.Below.VBar.l SB
 
-	do "Kha subglyphs"
+	do 'Kha subglyphs'
 		glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 		glyph-block-import Letter-Latin-X : XConfig XLetterForm XSerifs
 
@@ -426,8 +426,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					include : with-transform [ApparentTranslate shift 0]
 						LhaRightShape subDf CAP 0 0.1 0.28
 
-	do "subglyph diacritics"
-		create-glyph "turnoeSlash/oSlash/overlay" : glyph-proc
+	do 'subglyph diacritics'
+		create-glyph 'turnoeSlash/oSlash/overlay' : glyph-proc
 			local df : DivFrame para.advanceScaleMM 3
 			local { subDf shift } : SubDfAndShift 1 df OX
 			local fine : 0.375 * OverlayStroke
@@ -436,33 +436,33 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				flat (shift + subDf.leftSB  + OX + fine) [mix XH 0 1.05]
 				curl (shift + subDf.rightSB - OX - fine) [mix 0 XH 1.05]
 
-		create-glyph "turnoeBar/oBar/overlay" : glyph-proc
+		create-glyph 'turnoeBar/oBar/overlay' : glyph-proc
 			local df : DivFrame para.advanceScaleMM 3
 			local { subDf shift } : SubDfAndShift 1 df OX
 			include : HBar.m (shift + subDf.leftSB + [HSwToV : 0.5 * df.mvs]) (shift + subDf.rightSB - [HSwToV : 0.5 * df.mvs]) (XH / 2) df.mvs
 
-	select-variant "aa" 0xA733 (follow -- 'a/doubleStorey')
+	select-variant 'aa' 0xA733 (follow -- 'a/doubleStorey')
 
-	select-variant "ae/a"
-	select-variant "ao/a"
-	select-variant "au/a"
-	select-variant "av/a"
-	select-variant "ay/a"
-	select-variant "av/aMask" (follow -- 'a/doubleStorey')
-	select-variant "ae/e" (follow -- 'e')
-	select-variant "au/u"
-	select-variant "ue/u"
-	select-variant "uo/u" (follow -- 'ue/u')
+	select-variant 'ae/a'
+	select-variant 'ao/a'
+	select-variant 'au/a'
+	select-variant 'av/a'
+	select-variant 'ay/a'
+	select-variant 'av/aMask' (follow -- 'a/doubleStorey')
+	select-variant 'ae/e' (follow -- 'e')
+	select-variant 'au/u'
+	select-variant 'ue/u'
+	select-variant 'uo/u' (follow -- 'ue/u')
 
 	derive-composites 'ae' 0xE6   'ae/a' 'ae/e'
 	derive-composites 'oe' 0x153  'oe/o' 'ae/e'
 	derive-composites 'ue' 0x1D6B 'ue/u' 'ae/e'
 	derive-composites 'ao' 0xA735 'ao/a' 'ao/o'
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
-	select-variant "av/v" (follow -- 'v/sansSerif')
-	select-variant "ay/y" (follow -- 'y/nonCursive')
-	select-variant "av/vRight" (follow -- 'v/sansSerif')
-	select-variant "ay/yRight" (follow -- 'y/nonCursive')
+	select-variant 'av/v' (follow -- 'v/sansSerif')
+	select-variant 'ay/y' (follow -- 'y/nonCursive')
+	select-variant 'av/vRight' (follow -- 'v/sansSerif')
+	select-variant 'ay/yRight' (follow -- 'y/nonCursive')
 
 	glyph-block-import Letter-Latin-Lower-A : DoubleStorey
 	define [AvAyJoinX df] : begin
@@ -485,14 +485,14 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						MaskLeft (aSub.rightSB + [HSwToV df.mvs])
 			difference [refer-glyph rightStroke] [overlapMask]
 
-	derive-multi-part-glyphs-baked 'av' 0xA739 { "av/a" "av/v" "av/aMask" "av/vRight" }
+	derive-multi-part-glyphs-baked 'av' 0xA739 { 'av/a' 'av/v' 'av/aMask' 'av/vRight' }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
 			define { left right mask rightStroke } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : AvAyClipRight df mask right rightStroke
-	derive-multi-part-glyphs-baked 'ay' 0xA73D { "ay/a" "ay/y" "av/aMask" "ay/yRight" }
+	derive-multi-part-glyphs-baked 'ay' 0xA73D { 'ay/a' 'ay/y' 'av/aMask' 'ay/yRight' }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
@@ -512,37 +512,37 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
 	CreateTurnedLetter 'turnoe' 0x1D14 'oe' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]
 
-	select-variant "aInve/inve" (follow -- 'schwa')
+	select-variant 'aInve/inve' (follow -- 'schwa')
 	derive-composites 'aInve' 0xAB31 'ae/a' 'aInve/inve'
 	derive-composites 'oInve' 0xAB40 'oe/o' 'aInve/inve'
 
 	derive-composites 'turnoeSlash' 0xAB41 'turnoe' 'turnoeSlash/oSlash/overlay'
 	derive-composites 'turnoeBar'   0xAB42 'turnoe' 'turnoeBar/oBar/overlay'
 
-	select-variant "oeOpen/oOpen" (follow -- 'oOpen')
-	select-variant "oeOpen/e" (shapeFrom -- 'ae/e') (follow -- 'e')
+	select-variant 'oeOpen/oOpen' (follow -- 'oOpen')
+	select-variant 'oeOpen/e' (shapeFrom -- 'ae/e') (follow -- 'e')
 	derive-composites 'oeOpen' 0xAB62 'oeOpen/oOpen' 'oeOpen/e'
 
-	select-variant "cyrl/este.upright/es" (follow -- 'c/bottomSerif')
-	select-variant "cyrl/este.upright/te" (follow -- 'T')
+	select-variant 'cyrl/este.upright/es' (follow -- 'c/bottomSerif')
+	select-variant 'cyrl/este.upright/te' (follow -- 'T')
 	derive-composites 'cyrl/este.upright' null 'cyrl/este.upright/es' 'cyrl/este.upright/te'
 
-	select-variant "cyrl/este.italic/es" (follow -- 'c/bottomSerif')
-	select-variant "cyrl/este.italic/te" (follow -- 'cyrl/este/te.italic')
+	select-variant 'cyrl/este.italic/es' (follow -- 'c/bottomSerif')
+	select-variant 'cyrl/este.italic/te' (follow -- 'cyrl/este/te.italic')
 	derive-composites 'cyrl/este.italic' null 'cyrl/este.italic/es' 'cyrl/este.italic/te'
 
-	select-variant "cyrl/aye/a" (shapeFrom -- 'ae/a')
+	select-variant 'cyrl/aye/a' (shapeFrom -- 'ae/a')
 	derive-composites 'cyrl/aye' 0x4D5 'cyrl/aye/a' 'ae/e'
 
-	select-variant "cyrl/yaye/ya"
+	select-variant 'cyrl/yaye/ya'
 	derive-composites 'cyrl/yaye' 0x519 'cyrl/yaye/ya' 'ae/e'
 
-	select-variant "cyrl/rha/er" (follow -- 'p')
-	select-variant "cyrl/rha/kha"
+	select-variant 'cyrl/rha/er' (follow -- 'p')
+	select-variant 'cyrl/rha/kha'
 
-	select-variant "cyrl/Lha/Kha" (follow -- 'cyrl/Rha/Kha')
+	select-variant 'cyrl/Lha/Kha' (follow -- 'cyrl/Rha/Kha')
 
-	select-variant "cyrl/lha/kha" (follow -- 'cyrl/rha/kha')
+	select-variant 'cyrl/lha/kha' (follow -- 'cyrl/rha/kha')
 
 	glyph-block-export BuildRha
 	define [BuildRha srcs] : glyph-proc
@@ -556,4 +556,4 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			with-transform [ApparentTranslate ((-0.75) * df.mvs) 0] [refer-glyph er]
 			with-transform [ApparentTranslate ((-1.00) * df.mvs) 0] [refer-glyph er]
 
-	derive-multi-part-glyphs-baked 'cyrl/rha' 0x517 { "cyrl/rha/er" "cyrl/rha/kha" } BuildRha
+	derive-multi-part-glyphs-baked 'cyrl/rha' 0x517 { 'cyrl/rha/er' 'cyrl/rha/kha' } BuildRha

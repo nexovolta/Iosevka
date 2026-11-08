@@ -1,9 +1,9 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
-import [maskBits bitOr] from "@iosevka/util/mask-bit"
-import [Seg] from "@iosevka/geometry/segment"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
+import [maskBits bitOr] from '@iosevka/util/mask-bit'
+import [Seg] from '@iosevka/geometry/segment'
 
 glyph-module
 
@@ -150,7 +150,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			baseSerifed  [bitOr SLAB-LEFT SLAB-RIGHT]
 			triSerifed   [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
 		object
-			""                 0
+			''                 0
 			diagonalBar        0.5
 			diagonalBarFalling (-0.5)
 
@@ -160,9 +160,9 @@ glyph-block Letter-Latin-Upper-A : begin
 		local fSlabBot : maskBits slabKind [bitOr SLAB-LEFT SLAB-RIGHT]
 
 		do
-			create-glyph "A.\(suffix)"          : AShapeImpl "capital" CAP false
-			create-glyph "grek/Alpha.\(suffix)" : AShapeImpl "capital" CAP true
-			create-glyph "smcpA.\(suffix)"      : AShapeImpl "e"       XH  false
+			create-glyph "A.\(suffix)"          : AShapeImpl 'capital' CAP false
+			create-glyph "grek/Alpha.\(suffix)" : AShapeImpl 'capital' CAP true
+			create-glyph "smcpA.\(suffix)"      : AShapeImpl 'e'       XH  false
 		: where : [AShapeImpl mk top fTonos] : glyph-proc
 			include : MarkSet.(mk)
 			set-base-anchor 'trailing' RightSB 0

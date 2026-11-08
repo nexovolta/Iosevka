@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -149,7 +149,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			eject-contour 'serifYeriLT'
 			eject-contour 'serifYeriLB'
 
-			DependentSelector.set currentGlyph : if (suffix === "corner") 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
 
 		create-glyph "cyrl/tje.italic/yeri.\(suffix)" : glyph-proc
 			local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
@@ -164,7 +164,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			eject-contour 'serifYeriLT'
 			eject-contour 'serifYeriLB'
 
-			DependentSelector.set currentGlyph : if (suffix === "corner") 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
 
 	foreach { suffix { Uc Lc BGRc } } [pairs-of YeriConfig] : do
 		create-glyph "cyrl/YatIotated.\(suffix)" : glyph-proc

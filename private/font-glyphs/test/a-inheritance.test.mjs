@@ -30,7 +30,14 @@ const points = [
 
 await Geom.Init();
 
-function build(weight, slope, design, italicDesign = design, noCvSs = true, otherVariants = {}) {
+function build(
+	weight,
+	slope,
+	design,
+	italicDesign = design,
+	noCvSs = true,
+	otherVariants = {},
+) {
 	const argv = {
 		shape: {
 			serifs: "sans",
@@ -163,7 +170,9 @@ test("ae keeps its independently selected e when inheriting a", () => {
 	});
 	assert.deepEqual(
 		contours(glyphStore.queryByNameEnsured("ae/e")),
-		contours(glyphStore.queryByNameEnsured(`ae/e.${para.variantSelector.e}`)),
+		contours(
+			glyphStore.queryByNameEnsured(`ae/e.${para.variantSelector.e}`),
+		),
 	);
 });
 

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -290,10 +290,10 @@ glyph-block Letter-Latin-Lower-T : begin
 			cornerHook                     { dfF CornerHook     }
 			hookless                       { dfF Hookless       }
 		object # symmetry
-			""                             SYM-BALANCED
+			''                             SYM-BALANCED
 			asymmetric                     SYM-LEFT
 		object # height
-			""                             Ascender
+			''                             Ascender
 			shortNeck                      yShortNeck1
 			shorterNeck                    yShorterNeck
 
@@ -417,7 +417,7 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	local bakedH BakedHDigraphSuffix
 	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
-		if (hSuffix === bakedH) : create-glyph "tH/h" : glyph-proc
+		if (hSuffix === bakedH) : create-glyph 'tH/h' : glyph-proc
 			local L : THLayout
 			include : with-transform [ApparentTranslate L.shift 0] : HDigraphBody L.hDf L.swH HSerifs true fFlatHump fTailed
 
@@ -580,7 +580,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tsLig/upperHalf'
 	select-variant 'tsLig/lowerHalf'
 
-	derive-composites "tsLig" 0x1BE 'tsLig/upperHalf' 'tsLig/lowerHalf'
+	derive-composites 'tsLig' 0x1BE 'tsLig/upperHalf' 'tsLig/lowerHalf'
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/t' 0x1D565 : glyph-proc

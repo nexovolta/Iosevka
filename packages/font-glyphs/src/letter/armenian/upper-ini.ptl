@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -16,7 +16,7 @@ glyph-block Letter-Armenian-Upper-Ini : begin
 	define highBarPos XH
 	define jut Jut
 
-	do "Ini"
+	do 'Ini'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Ini.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -38,15 +38,15 @@ glyph-block Letter-Armenian-Upper-Ini : begin
 					include : composite-proc sf.lt.full sf.lb.full sf2.rb.full
 		local IniPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries IniPositionedSerifs] : do

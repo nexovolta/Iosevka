@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -30,7 +30,7 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 	define waveArrowAmplitude : (Width - SB) * DesignParameters.arrow_size * (0.7 + 0.4 * MosaicWidthScalar)
 	define WaveSw : AdviceStroke (5.5 - MosaicWidthScalar)
 	define waveDist : waveArrowAmplitude * 0.4 + WaveSw / 4 * MosaicWidthScalar
-	do "Wave arrows"
+	do 'Wave arrows'
 		glyph-block-import Shared-Symbol-Shapes : CreateWaveShape
 
 		define WaveShape : CreateWaveShape waveDist WaveSw
@@ -72,7 +72,7 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 				waveCount -- (2 / MosaicWidthScalar)
 			include : ArrowHead.shape arrowSB SymbolMid arrowRSB SymbolMid
 
-	do "Direct wave arrows"
+	do 'Direct wave arrows'
 		local mag : arrowRSB - arrowSB
 		local p : (mag - o - halfArrowSw) / mag
 
@@ -108,7 +108,7 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 			include : SingleWave arrowSB [mix arrowSB arrowRSB (p)] (-waveBias)
 			include : ArrowHead.shape arrowSB SymbolMid arrowRSB SymbolMid
 
-	do "Squiggle Arrows"
+	do 'Squiggle Arrows'
 		glyph-block-import Shared-Symbol-Shapes : CreateWaveShape
 		define WaveSw : AdviceStroke (5.5 - MosaicWidthScalar)
 

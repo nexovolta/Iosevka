@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -19,7 +19,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 	define highBarPos XH
 	define jut Jut
 
-	do "Ayb"
+	do 'Ayb'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ayb.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -33,18 +33,18 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						include : composite-proc sf.mt.left sf.rt.inner
 		local aybPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topCenterFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries aybPositionedSerifs] : do
 			if (p0 || p1 || p2 || p3) : create-glyph "armn/ayb.\(suffix)" : glyph-proc
@@ -58,7 +58,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 		select-variant 'armn/ayb' 0x561
 		CreateTurnedLetter 'armn/turnayb' 0x560 'armn/ayb' HalfAdvance (XH / 2)
 
-	do "Ben"
+	do 'Ben'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ben.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -79,10 +79,10 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					if [not para.isItalic] : include sf.lb.fullSide
 		local benPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 		foreach { suffix { p0 p1 } } [Object.entries benPositionedSerifs] : do
@@ -94,7 +94,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include : if (p1 === 1) sf.lb.outer sf.lb.fullSide
 		select-variant 'armn/ben' 0x562
 
-	do "Da"
+	do 'Da'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/da.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -116,14 +116,14 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf.lb.full sf2.rb.fullSide
 		local daPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries daPositionedSerifs] : do
@@ -137,7 +137,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p2 : include : if (p2 === 1) sf2.rb.outer sf2.rb.fullSide
 		select-variant 'armn/da' 0x564
 
-	do "Ech"
+	do 'Ech'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ech.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -157,11 +157,11 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					include : composite-proc sf.lt.outer sf.rb.outer
 		local echPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries echPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/ech.\(suffix)" : glyph-proc
@@ -172,7 +172,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include sf.rb.outer
 		select-variant 'armn/ech' 0x565
 
-	do "Et"
+	do 'Et'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/et.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -193,10 +193,10 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						if para.isItalic sf2.rb.outer sf2.rb.full
 		local etPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries etPositionedSerifs] : do
@@ -209,7 +209,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include : if (p1 === 1) sf2.rb.outer sf2.rb.full
 		select-variant 'armn/et' 0x568
 
-	do "Ini"
+	do 'Ini'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ini.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -230,15 +230,15 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf.lb.fullSide sf2.rb.full
 		local iniPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries iniPositionedSerifs] : do
@@ -252,7 +252,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p2 : include : if (p2 === 1) sf2.rb.outer sf2.rb.full
 		select-variant 'armn/ini' 0x56B
 
-	do "Xeh"
+	do 'Xeh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/xeh.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -286,19 +286,19 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						include : composite-proc sf.lb.fullSide sf2.rt.inner
 		local xehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries xehPositionedSerifs] : do
 			if (p0 || p1 || p2 || p3) : create-glyph "armn/xeh.\(suffix)" : glyph-proc
@@ -312,7 +312,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p3 : include sf2.rb.outer
 		select-variant 'armn/xeh' 0x56D
 
-	do "Ken"
+	do 'Ken'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ken.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -333,15 +333,15 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf2.rt.inner sf2.rb.fullSide
 		local kenPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries kenPositionedSerifs] : do
@@ -355,7 +355,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p2 : include : if (p2 === 1) sf2.rb.outer sf2.rb.fullSide
 		select-variant 'armn/ken' 0x56F
 
-	do "Ho"
+	do 'Ho'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ho.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -375,15 +375,15 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf.lb.full sf.rb.full
 		local hoPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries hoPositionedSerifs] : do
@@ -396,7 +396,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p2 : include : if (p2 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/ho' 0x570
 
-	do "Ghat"
+	do 'Ghat'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ghat.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -416,10 +416,10 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					if [not para.isItalic] : include sf.lb.full
 		local ghatPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 		foreach { suffix { p0 p1 } } [Object.entries ghatPositionedSerifs] : do
@@ -431,7 +431,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include : if (p1 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/ghat' 0x572
 
-	do "Men"
+	do 'Men'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/men.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -451,11 +451,11 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					include : composite-proc sf.lt.outer sf2.rb.outer
 		local menPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries menPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/men.\(suffix)" : glyph-proc
@@ -466,7 +466,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include sf.rb.outer
 		select-variant 'armn/men' 0x574
 
-	do "Nu"
+	do 'Nu'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/nu.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -486,11 +486,11 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					if [not para.isItalic] : include sf.rt.inner
 		local nuPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries nuPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/nu.\(suffix)" : glyph-proc
@@ -501,7 +501,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include sf.rb.outer
 		select-variant 'armn/nu' 0x576
 
-	do "Vo"
+	do 'Vo'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/vo.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -522,14 +522,14 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 
 		local voSerifConfig : SuffixCfg.weave
 			object
-				"" false
+				'' false
 				topLeftMotion true
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { topLeft bottomLeft bottomRight } } [Object.entries voSerifConfig] : do
@@ -542,7 +542,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if bottomRight : include : if (bottomRight === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/vo' 0x578
 
-	do "Peh"
+	do 'Peh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/peh.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -558,18 +558,18 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						include : composite-proc sf.mt.left sf.rt.inner
 		local pehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topCenterFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries pehPositionedSerifs] : do
@@ -583,7 +583,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p3 : include : if (p3 === 1) sf.rb.outer sf.rb.fullSide
 		select-variant 'armn/peh' 0x57A
 
-	do "Seh"
+	do 'Seh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/seh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -602,15 +602,15 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					if [not para.isItalic] : include sf.rt.inner
 		local sehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 		foreach { suffix { p0 p1 p2 } } [Object.entries sehPositionedSerifs] : do
 			if (p0 || p1 || p2) : create-glyph "armn/seh.\(suffix)" : glyph-proc
@@ -622,7 +622,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p2 : include sf.rb.outer
 		select-variant 'armn/seh' 0x57D
 
-	do "Vew"
+	do 'Vew'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/vew.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -642,11 +642,11 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					include : composite-proc sf.lt.outer sf2.rt.inner
 		local vewPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries vewPositionedSerifs] : do
@@ -659,7 +659,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p1 : include : if (p1 === 1) sf2.rt.outer sf2.rt.full
 		select-variant 'armn/vew' 0x57E
 
-	do "Tiun"
+	do 'Tiun'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/tiun.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -691,17 +691,17 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf.mt.left sf.mb.right sf.rb.full
 		local tiunPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topCenterMotion 1
 			object
-				"" 0
+				'' 0
 				bottomCenterMotion 1
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries tiunPositionedSerifs] : do
@@ -715,7 +715,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p3 : include : if (p3 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/tiun' 0x57F
 
-	do "Reh"
+	do 'Reh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/reh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -736,14 +736,14 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						composite-proc sf.lb.fullSide sf2.rb.full
 		local rehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 } } [Object.entries rehPositionedSerifs] : do
@@ -790,17 +790,17 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					if [not para.isItalic] : include sf2.mb.fullCenter
 		local piurPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topCenterFull 2
 			object
-				"" 0
+				'' 0
 				bottomCenterFull 2
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries piurPositionedSerifs] : do
@@ -815,7 +815,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if p3 : include : if (p3 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/piur' 0x583
 
-	do "Ew"
+	do 'Ew'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/ew.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleM 1
@@ -840,11 +840,11 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 						include sf2.rt.inner
 		local ewPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries ewPositionedSerifs] : do

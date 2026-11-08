@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -199,7 +199,7 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-export CheCapConfig
 	define CheCapConfig : SuffixCfg.weave
 		object # hump
-			""        false
+			''        false
 			flatHump  true
 		object # serifs
 			serifless              SERIFS.NONE
@@ -230,11 +230,11 @@ glyph-block Letter-Cyrillic-Che : begin
 	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
 
 	define TcheConfig : object
-		serifless     { false false }
-		motionSerifed { true  false }
+		serifless      { false  false }
+		motionSerifed  { true   false }
 
 	foreach { suffixChe { fFlatHump slabType } } [Object.entries CheCapConfig] : do
-		DefineSelectorGlyph "cyrl/Tche" suffixChe [DivFrame para.advanceScaleT] 'capital'
+		DefineSelectorGlyph 'cyrl/Tche' suffixChe [DivFrame para.advanceScaleT] 'capital'
 		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
 			create-glyph "cyrl/Tche.\(suffixChe).\(suffixTe)" : glyph-proc
 				set-width 0
@@ -254,7 +254,7 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-export CheConfig
 	define CheConfig : SuffixCfg.weave
 		object # hump
-			""        false
+			''        false
 			flatHump  true
 		object # body
 			standard { BODY.STRAIGHT }
@@ -300,7 +300,7 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		define cyrTcheDf : DivFrame para.advanceScaleT
 
-		DefineSelectorGlyph "cyrl/tche.upright" suffix cyrTcheDf 'e'
+		DefineSelectorGlyph 'cyrl/tche.upright' suffix cyrTcheDf 'e'
 
 		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
 			create-glyph "cyrl/tche.upright.\(suffix).\(suffixTe)" : glyph-proc

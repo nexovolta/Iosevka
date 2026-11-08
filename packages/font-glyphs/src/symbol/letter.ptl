@@ -2,12 +2,12 @@
 
 $$include '../meta/macros.ptl'
 
-import [Point] from "@iosevka/geometry/point"
-import [Box] from "@iosevka/geometry/box"
-import [Transform] from "@iosevka/geometry/transform"
-import [BezToContoursSink] from "@iosevka/geometry/curve-util"
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../meta/aesthetics.mjs"
+import [Point] from '@iosevka/geometry/point'
+import [Box] from '@iosevka/geometry/box'
+import [Transform] from '@iosevka/geometry/transform'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DesignParameters] from '../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -73,16 +73,16 @@ glyph-block Symbol-Currency : begin
 	define TOP-INWARD-SERIFED  2
 
 	define SterlingConfig : object
-		serifless                 { 0 TOP-SERIFLESS      false false }
-		serifed                   { 1 TOP-SERIFLESS      false false }
-		seriflessSerifed          { 0 TOP-SERIFED        false false }
-		serifedSerifed            { 1 TOP-SERIFED        false false }
-		seriflessInwardSerifed    { 0 TOP-INWARD-SERIFED  false false }
-		serifedInwardSerifed      { 1 TOP-INWARD-SERIFED  false false }
-		seriflessFlatHook         { 0 TOP-SERIFLESS      true  false }
-		serifedFlatHook           { 1 TOP-SERIFLESS      true  false }
-		seriflessCornerHook       { 0 TOP-SERIFLESS      false true  }
-		serifedCornerHook         { 1 TOP-SERIFLESS      false true  }
+		serifless               { 0  TOP-SERIFLESS       false  false }
+		serifed                 { 1  TOP-SERIFLESS       false  false }
+		seriflessSerifed        { 0  TOP-SERIFED         false  false }
+		serifedSerifed          { 1  TOP-SERIFED         false  false }
+		seriflessInwardSerifed  { 0  TOP-INWARD-SERIFED  false  false }
+		serifedInwardSerifed    { 1  TOP-INWARD-SERIFED  false  false }
+		seriflessFlatHook       { 0  TOP-SERIFLESS       true   false }
+		serifedFlatHook         { 1  TOP-SERIFLESS       true   false }
+		seriflessCornerHook     { 0  TOP-SERIFLESS       false  true }
+		serifedCornerHook       { 1  TOP-SERIFLESS       false  true }
 
 	define xSterlingBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 	define [SterlingFootKnots xBarLeft fRial] : if fRial
@@ -561,7 +561,7 @@ glyph-block Symbol-Letter : begin
 	alias 'letterLike/kelvinSign'   0x212A 'K'
 	alias 'letterLike/angstromSign' 0x212B 'ARing'
 
-	do "Centre line, prescription, response, versicle, property line"
+	do 'Centre line, prescription, response, versicle, property line'
 		define xLStem : mix 0 SB 1.5
 		define xLMiddle : mix xLStem RightSB 0.40
 		define overlayHeavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
@@ -835,7 +835,7 @@ glyph-block Symbol-Letter : begin
 
 	turned 'turnAmpersand' 0x214B 'ampersand' Middle (CAP / 2)
 
-	do "Tironian Et"
+	do 'Tironian Et'
 		create-glyph 'tironianEt' 0x204A : glyph-proc
 			include : TironianEtTopBarShape XH
 			include : intersection
@@ -847,7 +847,7 @@ glyph-block Symbol-Letter : begin
 
 		create-glyph 'TironianEt' 0x2E52 : TironianEtCapitalShape
 
-	do "Roman Numerals"
+	do 'Roman Numerals'
 		create-glyph 'romanFiftyEarlyForm' 0x2186 : glyph-proc
 			include : MarkSet.capital
 			include : VBar.m Middle 0 CAP

@@ -1,10 +1,10 @@
 $$include '../../meta/macros.ptl'
 
-import [Arcs ShapeConv] from "typo-geom"
-import [TaperedOffsetCurve BezToContoursSink GEOMETRY_PRECISION] from "@iosevka/geometry/curve-util"
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
+import [Arcs ShapeConv] from 'typo-geom'
+import [TaperedOffsetCurve BezToContoursSink GEOMETRY_PRECISION] from '@iosevka/geometry/curve-util'
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
-import [maskBits] from "@iosevka/util/mask-bit"
+import [maskBits] from '@iosevka/util/mask-bit'
 
 glyph-module
 
@@ -175,7 +175,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			sulzbacher                Sulzbacher
 			longSSLig                 LongSSLig
 		object # terminal
-			""                        TERMINAL-BASELINE
+			''                        TERMINAL-BASELINE
 			descending                TERMINAL-DESCENDING
 			tailed                    TERMINAL-TAILED
 			diagonalTailed            TERMINAL-DIAGONAL
@@ -201,8 +201,6 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 		local sw : fallback _sw Stroke
 		return : Math.max (XH * 0.055) (0.3 * sw)
 
-	# Vertical tilde as a cubic (same construction as TildeShape), first
-	# bulge inward, second outward. Amplitude stays on the right side.
 	glyph-block-export ScotsHangingTilde
 	define [ScotsHangingTilde xJoin yJoin yBot _sw] : glyph-proc
 		local sw : fallback _sw Stroke
@@ -236,8 +234,6 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			[Just TERMINAL-DIAGONAL]   : LeftwardDiagTailedBar SB Descender 0 sw
 			__                         : no-shape
 
-	# Flat-top arch with a square top-right so the hanging tilde meets at a
-	# sharp corner. The VBar buries the tilde's start cap inside the top bar.
 	glyph-block-export ScotsSFlatTopArch
 	define [ScotsSFlatTopArch top ada] : glyph-proc
 		include : dispiro
@@ -264,7 +260,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			sulzbacher                FlatTopScotsS
 			longSSLig                 FlatTopScotsS
 		object # terminal
-			""                        TERMINAL-BASELINE
+			''                        TERMINAL-BASELINE
 			descending                TERMINAL-DESCENDING
 			tailed                    TERMINAL-TAILED
 			diagonalTailed            TERMINAL-DIAGONAL

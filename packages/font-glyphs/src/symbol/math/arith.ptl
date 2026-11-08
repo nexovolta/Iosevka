@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -11,7 +11,7 @@ glyph-block Symbol-Math-Arith : begin
 	glyph-block-import Symbol-Math-Relation-Common : EqualHalfSpace
 	glyph-block-import Symbol-Math-Relation-Sym : symWave
 
-	do "Plus/Minus"
+	do 'Plus/Minus'
 		glyph-block-export PlusShape
 		define [PlusShape left right s sw] : union
 			HBar.m left right SymbolMid [fallback sw OperatorStroke]
@@ -45,19 +45,19 @@ glyph-block Symbol-Math-Arith : begin
 			SquareAt Middle SymbolMid DotRadius
 
 		create-glyph 'plusminus' 0xB1 : glyph-proc
-			include : refer-glyph "plus"
+			include : refer-glyph 'plus'
 			include : HBar.b SB RightSB 0 OperatorStroke
 
 		turned 'minusplus' 0x2213 'plusminus' Middle SymbolMid
 
 		create-glyph 'plustilde' 0x2A26 : glyph-proc
-			include : refer-glyph "plus"
+			include : refer-glyph 'plus'
 			include : symWave 0 1
 
 		turned 'tildeplus' 0x2A24 'plustilde' Middle SymbolMid
 
 		create-glyph 'plusequal' 0x2A72 : glyph-proc
-			include : refer-glyph "plus"
+			include : refer-glyph 'plus'
 			include : ApparentTranslate 0 (EqualHalfSpace * 1.5)
 			include : HBar.b SB RightSB (EqualHalfSpace * 1.5) OperatorStroke
 			include : HBar.b SB RightSB 0 OperatorStroke
@@ -108,7 +108,7 @@ glyph-block Symbol-Math-Arith : begin
 			include : VBar.m [mix SB RightSB (1/2)] PlusTop PlusBot fine
 			include : VBar.m ([mix SB RightSB (3/4)] + (1/8) * [HSwToV OperatorStroke]) PlusTop PlusBot fine
 
-	do "Multiply"
+	do 'Multiply'
 		define Size : 0.5 * (RightSB - SB) + 0.25 * SB
 		define swBowtie : AdviceStroke 4.25
 		define swBowtieHv : AdviceStroke 4.75
@@ -157,7 +157,7 @@ glyph-block Symbol-Math-Arith : begin
 					MultiplyStroke2Shape sw 1 scale scale
 
 		create-glyph 'multiplyUnderbar' 0x2A31 : glyph-proc
-			include : refer-glyph "multiply"
+			include : refer-glyph 'multiply'
 			include : HBar.b (Middle - Size) (Middle + Size) (-OperatorStroke * 0.6 - XH * 0.04) OperatorStroke
 
 		alias 'vectorOrCrossProduct' 0x2A2F 'multiply'
@@ -302,7 +302,7 @@ glyph-block Symbol-Math-Arith : begin
 			include : MultiplyStroke1Shape MathEnclosureSw 1 1 1
 			include : MultiplyStroke2Shape MathEnclosureSw 1 1 1
 
-	do "dotted"
+	do 'dotted'
 		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 			local dr : DotRadius * kDotRadius * OperatorStroke / Stroke
 			create-glyph "dotplus.\(suffix)" : glyph-proc
@@ -329,7 +329,7 @@ glyph-block Symbol-Math-Arith : begin
 				DrawAt [mix Middle SB      0.5] SymbolMid (dr - overshoot)
 
 			create-glyph "dottimes.\(suffix)" : glyph-proc
-				include : refer-glyph "multiply"
+				include : refer-glyph 'multiply'
 				define sw : AdviceStroke 4
 				define gap : (RightSB - SB) / 2
 				include : DrawAt Middle (SymbolMid + gap) (dr * sw / OperatorStroke - overshoot)
@@ -353,25 +353,25 @@ glyph-block Symbol-Math-Arith : begin
 				include : HBar.m (SB * sbSquash) (RightSB - DotSize) SymbolMid OperatorStroke
 
 			create-glyph "divide.\(suffix)" : glyph-proc
-				include : refer-glyph "minus"
+				include : refer-glyph 'minus'
 				define gap : (RightSB - SB) / 2
 				include : DrawAt Middle (SymbolMid + gap) (dr - overshoot)
 				include : DrawAt Middle (SymbolMid - gap) (dr - overshoot)
 
 			create-glyph "rotatedDivide.\(suffix)" : glyph-proc
-				include : refer-glyph "multiply/stroke1"
+				include : refer-glyph 'multiply/stroke1'
 				define gap : (RightSB - SB) / 2
 				include : DrawAt (Middle - Math.SQRT1_2 * gap) (SymbolMid + Math.SQRT1_2 * gap) (dr - overshoot)
 				include : DrawAt (Middle + Math.SQRT1_2 * gap) (SymbolMid - Math.SQRT1_2 * gap) (dr - overshoot)
 
 			create-glyph "innerDivide.\(suffix)" : glyph-proc
-				include : refer-glyph "innerMinus"
+				include : refer-glyph 'innerMinus'
 				define sw : MathEnclosureSw / 1.5
 				include : DrawAt Middle [mix SymbolMid PlusTop 0.5] (dr * sw / OperatorStroke - overshoot)
 				include : DrawAt Middle [mix SymbolMid PlusBot 0.5] (dr * sw / OperatorStroke - overshoot)
 
 			create-glyph "rotatedInnerDivide.\(suffix)" : glyph-proc
-				include : refer-glyph "innerMultiply/stroke1"
+				include : refer-glyph 'innerMultiply/stroke1'
 				define sw : MathEnclosureSw / 1.5
 				include : DrawAt [mix Middle SB 0.35] [mix SymbolMid PlusTop 0.35] (dr * sw / OperatorStroke - overshoot)
 				include : DrawAt [mix Middle RightSB 0.35] [mix SymbolMid PlusBot 0.35] (dr * sw / OperatorStroke - overshoot)
@@ -386,13 +386,13 @@ glyph-block Symbol-Math-Arith : begin
 					DrawAt Middle (SymbolMid - gap) (dr * sw / OperatorStroke - overshoot)
 
 			create-glyph "minusFallingDots.\(suffix)" : glyph-proc
-				include : refer-glyph "minus"
+				include : refer-glyph 'minus'
 				define gap : (RightSB - SB) / 2
 				include : DrawAt [mix SB RightSB (1/6)] (SymbolMid + gap) (dr - overshoot)
 				include : DrawAt [mix SB RightSB (5/6)] (SymbolMid - gap) (dr - overshoot)
 
 			create-glyph "minusRisingDots.\(suffix)" : glyph-proc
-				include : refer-glyph "minus"
+				include : refer-glyph 'minus'
 				define gap : (RightSB - SB) / 2
 				include : DrawAt [mix SB RightSB (1/6)] (SymbolMid - gap) (dr - overshoot)
 				include : DrawAt [mix SB RightSB (5/6)] (SymbolMid + gap) (dr - overshoot)
@@ -420,7 +420,7 @@ glyph-block Symbol-Math-Arith : begin
 		select-variant 'minusFallingDots' 0x2A2B (follow -- 'punctuationDot')
 		select-variant 'minusRisingDots' 0x2A2C (follow -- 'punctuationDot')
 
-	do "small circles"
+	do 'small circles'
 		glyph-block-import Symbol-Arrow-Shared : TrigArrowShape
 
 		define fine : AdviceStroke 6
@@ -535,8 +535,8 @@ glyph-block Symbol-Math-Arith : begin
 
 		create-glyph [MangleName 'innerMultiplyBig'] : glyph-proc
 			set-width mathWidth
-			include : refer-glyph : MangleName "innerMultiplyBig/stroke1"
-			include : refer-glyph : MangleName "innerMultiplyBig/stroke2"
+			include : refer-glyph : MangleName 'innerMultiplyBig/stroke1'
+			include : refer-glyph : MangleName 'innerMultiplyBig/stroke2'
 
 		create-glyph [MangleName 'risingDiagonal'] [MangleUnicode 0x27CB] : glyph-proc
 			set-width mathWidth

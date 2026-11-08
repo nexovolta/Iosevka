@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp quantize fallback SuffixCfg joinCamel] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp quantize fallback SuffixCfg joinCamel] from '@iosevka/util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -28,8 +28,6 @@ glyph-block Letter-Greek-Phi : begin
 			include : OShape y3 y2 df.leftSB df.rightSB df.mvs ada adb
 		return : object [swBar : Math.min Stroke : df.adviceStroke 2]
 
-	# Left and right split bowls are 180°-paired: a flat top on the left
-	# is a flat bottom on the right, and vice versa.
 	define [CyrEfSplitRing kind] : function [df y2 y3 ada adb] : glyph-proc
 		include : VBar.m df.middle y2 y3 df.mvs
 		local subDf : df.slice 3 2 OX
@@ -242,12 +240,12 @@ glyph-block Letter-Greek-Phi : begin
 	select-variant 'cyrl/Ef' 0x424 (follow -- 'grek/Phi')
 	select-variant 'cyrl/Ef.BGR' (follow -- 'grek/Phi')
 
-	create-glyph "latn/phiTailless.cursive" : glyph-proc
+	create-glyph 'latn/phiTailless.cursive' : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		include : LowerPhiCursiveRing df 0 XH df.smallArchDepthA df.smallArchDepthB
 
-	create-glyph "latn/phiTailless.neohellenic" : glyph-proc
+	create-glyph 'latn/phiTailless.neohellenic' : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.e
 		include : [PhiRing false] df 0 XH df.smallArchDepthA df.smallArchDepthB
@@ -255,7 +253,7 @@ glyph-block Letter-Greek-Phi : begin
 	select-variant 'latn/phiTailless' 0x2C77 (follow -- 'grek/phiScript')
 
 	define PhiBaseSerifConfig : object
-		""          false
+		''          false
 		baseSerifed true
 
 	define DescPhiBodyConfig : object
@@ -273,11 +271,11 @@ glyph-block Letter-Greek-Phi : begin
 
 	define StraightPhiConfig : SuffixCfg.weave
 		object # height
-			""            Ascender
+			''            Ascender
 			shortNeck     yShortNeck1
 			shorterNeck   yShorterNeck
 		object # serifs
-			""            false
+			''            false
 			baseSerifed   true
 
 	create-glyph : glyph-proc
@@ -295,7 +293,7 @@ glyph-block Letter-Greek-Phi : begin
 
 	create-glyph 'latn/phi' 0x278 : glyph-proc
 		local df : include : DivFrame para.advanceScaleM 3
-		include [refer-glyph "grek/phi.straight"] AS_BASE ALSO_METRICS
+		include [refer-glyph 'grek/phi.straight'] AS_BASE ALSO_METRICS
 
 		if SLAB : begin
 			include : tagged 'serifMT' : HSerif.mt df.middle Ascender  MidJutCenter
@@ -327,7 +325,7 @@ glyph-block Letter-Greek-Phi : begin
 
 	define CyrlLowerEfConfig : SuffixCfg.weave
 		object # bowl
-			""                    { [PhiRing true]                  para.advanceScaleM  }
+			''                    { [PhiRing true]                  para.advanceScaleM  }
 			splitBowl             { [CyrEfSplitRing 'toothed']      para.advanceScaleMM }
 			splitBowlFlatTop      { [CyrEfSplitRing 'flatTop']      para.advanceScaleMM }
 			splitBowlFlatBottom   { [CyrEfSplitRing 'flatBot']      para.advanceScaleMM }

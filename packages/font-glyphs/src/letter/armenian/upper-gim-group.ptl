@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -16,7 +16,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 	define highBarPos XH
 	define jut Jut
 
-	do "Gim"
+	do 'Gim'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Gim.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -36,7 +36,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 					include sf.rb.full
 		local GimPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 } } [Object.entries GimPositionedSerifs] : do
@@ -47,7 +47,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				if p0 : include : if (p0 === 1) sf.rb.outer sf.rb.full
 		select-variant 'armn/Gim' 0x533
 
-	do "Zhe"
+	do 'Zhe'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Zhe.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -65,7 +65,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 					include sf.rt.full
 		local ZhePositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 } } [Object.entries ZhePositionedSerifs] : do
@@ -94,7 +94,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 					include sf.rt.inner
 		local zhePositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 		foreach { suffix { p0 } } [Object.entries zhePositionedSerifs] : do

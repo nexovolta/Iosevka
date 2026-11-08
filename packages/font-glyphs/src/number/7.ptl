@@ -1,7 +1,7 @@
 $$include '../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix clamp fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -86,7 +86,7 @@ glyph-block Digits-Seven : begin
 
 	# Inner/outer of the stem at the serif top, from the same edges as the body.
 	define [SevenFootEdges body top] : match body
-		[Just "straight"] : begin
+		[Just 'straight'] : begin
 			# Straight stem is widths.rhs down the outer edge; ink falls inward.
 			# Sample at y = Stroke so the serif centers on the visible junction.
 			local yTop : top - Stroke
@@ -96,12 +96,12 @@ glyph-block Digits-Seven : begin
 			local xOuter : mix xOuter0 RightSB t
 			local xInner : mix (xOuter0 - thick) (RightSB - thick) t
 			object xInner xOuter
-		([Just "bend"] || [Just "curly"]) : begin
+		([Just 'bend'] || [Just 'curly']) : begin
 			# Knot is widths.rhs heading down, so it is the outer edge.
 			local xOuter SevenBendKnotX
 			local xInner : xOuter - [HSwToV Stroke]
 			object xInner xOuter
-		[Just "verticalTop"] : begin
+		[Just 'verticalTop'] : begin
 			local swH : HSwToV Stroke
 			local t : Stroke / [SevenVerticalTopYShoulder top]
 			local xInner : mix SevenXLeft (RightSB - swH) t
@@ -125,7 +125,7 @@ glyph-block Digits-Seven : begin
 	define [SevenCrossbarY top] : mix 0 (top - QuarterStroke) 0.5
 
 	define [SevenStemEdges body top y] : match body
-		[Just "straight"] : begin
+		[Just 'straight'] : begin
 			local yTop : top - Stroke
 			local t : clamp 0 1 : y / yTop
 			local xOuter0 SevenStraightInnerX
@@ -133,20 +133,20 @@ glyph-block Digits-Seven : begin
 			local xOuter : mix xOuter0 RightSB t
 			local xInner : mix (xOuter0 - thick) (RightSB - thick) t
 			object xInner xOuter
-		[Just "bend"] : begin
+		[Just 'bend'] : begin
 			local yTop : top - Stroke
 			local t : clamp 0 1 : y / yTop
 			local thick : Stroke * [DiagCor yTop (RightSB - SevenBendKnotX)]
 			local xOuter : mix SevenBendKnotX RightSB t
 			local xInner : xOuter - thick
 			object xInner xOuter
-		[Just "curly"] : begin
+		[Just 'curly'] : begin
 			local t : clamp 0 1 : y / top
 			local thick : Stroke * [DiagCor top (RightSB - SevenBendKnotX)]
 			local xOuter : mix SevenBendKnotX RightSB t
 			local xInner : xOuter - thick
 			object xInner xOuter
-		[Just "square"] : begin
+		[Just 'square'] : begin
 			local swH : HSwToV Stroke
 			local yShoulder : SevenSquareYShoulder top
 			local yFoot : SevenSquareYFoot top
@@ -154,7 +154,7 @@ glyph-block Digits-Seven : begin
 			local xInner : mix SevenXLeft (RightSB - swH) t
 			local xOuter : mix (SevenXLeft + swH) RightSB t
 			object xInner xOuter
-		[Just "verticalTop"] : begin
+		[Just 'verticalTop'] : begin
 			local swH : HSwToV Stroke
 			local yShoulder : SevenVerticalTopYShoulder top
 			local t : clamp 0 1 : y / yShoulder
@@ -191,7 +191,7 @@ glyph-block Digits-Seven : begin
 			baseSerifed           [BottomSerif body]
 			fullSerifed           [FullSerif body]
 		function [body] : object # crossbar
-			""                    nothing
+			''                    nothing
 			crossbar              [CrossbarOnStem body]
 
 	foreach { suffix { Body Serif Crossbar } } [Object.entries SevenConfig] : do

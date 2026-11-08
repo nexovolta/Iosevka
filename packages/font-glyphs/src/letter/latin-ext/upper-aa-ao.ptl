@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [maskOffBits] from "@iosevka/util/mask-bit"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [maskOffBits] from '@iosevka/util/mask-bit'
 
 glyph-module
 
@@ -19,7 +19,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		local xShift : df.middle - [mix b.xMin b.xMax 0.5]
 		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
 
-	do "A glyphs"
+	do 'A glyphs'
 		glyph-block-import Letter-Latin-Upper-A : AShape AConfig
 
 		define [AHalfShape pShift df top fStraightBar slabKind] : begin
@@ -38,7 +38,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		define SLAB-RIGHT   4
 
 		define ALetters : object
-			""   { 0xA732 para.advanceScaleMM 'capital' CAP }
+			''   { 0xA732 para.advanceScaleMM 'capital' CAP }
 			smcp { null   para.advanceScaleM  'e'       XH  }
 
 		foreach { prefix { code adws mk height } } [Object.entries ALetters] : do
@@ -109,8 +109,8 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 								with-transform [ApparentTranslate topSerifGap 0] [refer-glyph leftMask]
 							with-transform [ApparentTranslate (OX - TINY) 0] [refer-glyph rightMask]
 
-	do "AO"
-		derive-multi-part-glyphs-baked 'AO' 0xA734 { "AA/left" "AA/left/mask" "AO/O" }
+	do 'AO'
+		derive-multi-part-glyphs-baked 'AO' 0xA734 { 'AA/left' 'AA/left/mask' 'AO/O' }
 			function [srcs gr] : glyph-proc
 				define df : DivFrame para.advanceScaleMM 3.5
 				define topSerifGap : Math.max (0.1 * (df.rightSB - df.leftSB)) : AdviceStroke 6
@@ -118,7 +118,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include [refer-glyph left] AS_BASE ALSO_METRICS
 				include : difference [refer-glyph right] [refer-glyph leftMask]
 
-	do "U subglyphs"
+	do 'U subglyphs'
 		glyph-block-import Letter-Latin-U : UShapeGroup CapitalUConfigT
 
 		define df : DivFrame para.advanceScaleMM 3.5
@@ -132,10 +132,10 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 		select-variant 'AU/U'
 
-	do "AU"
+	do 'AU'
 		select-variant 'AU/A'      (follow -- 'A')
 		select-variant 'AU/A/mask' (follow -- 'A')
-		derive-multi-part-glyphs-baked 'AU' 0xA736 { "AU/A" "AU/A/mask" "AU/U" }
+		derive-multi-part-glyphs-baked 'AU' 0xA736 { 'AU/A' 'AU/A/mask' 'AU/U' }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				local { subDf shift } : SubDfAndShift 1 df
@@ -145,7 +145,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include : difference [refer-glyph right]
 					intersection [refer-glyph mask] [MaskLeft (subDf.width / 2 + shift)]
 
-	do "AV"
+	do 'AV'
 		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs VCornerHalfWidth
 
 		define dfAV : DivFrame para.advanceScaleMM 3.5
@@ -154,9 +154,9 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		define shiftAV : subDfAV.rightSB - subDfAV.middle
 
 		define AVVConfig : object
-			straightSerifless  { true  0 }
-			curlySerifless     { false 0 }
-			squareTopSerifless { true  1 }
+			straightSerifless   { true   0 }
+			curlySerifless      { false  0 }
+			squareTopSerifless  { true   1 }
 
 		foreach { suffix { fStraightBar fSquareTop } } [Object.entries AVVConfig] : do
 			create-glyph "AV/V.\(suffix)" : glyph-proc
@@ -168,7 +168,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					eject-contour 'strokeDown'
 
 		select-variant 'AV/V' (follow -- 'V/sansSerif')
-		derive-multi-part-glyphs-baked 'AV' 0xA738 { "AA/left" "AV/V" }
+		derive-multi-part-glyphs-baked 'AV' 0xA738 { 'AA/left' 'AV/V' }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capital
@@ -177,7 +177,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include [refer-glyph right]
 				include : CenterDigraphInFrame df
 
-		derive-multi-part-glyphs-baked 'AVBar' 0xA73A { "AA/left" "AV/V" }
+		derive-multi-part-glyphs-baked 'AVBar' 0xA73A { 'AA/left' 'AV/V' }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capital
@@ -196,7 +196,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include : HOverlayBar xLeft xRight yOverlay
 				include : CenterDigraphInFrame df
 
-	do "AY"
+	do 'AY'
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
@@ -217,7 +217,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 							include sf.rt.full
 
 		select-variant 'AY/Y' (follow -- 'y/nonCursive')
-		derive-multi-part-glyphs-baked 'AY' 0xA73C { "AA/left" "AY/Y" }
+		derive-multi-part-glyphs-baked 'AY' 0xA73C { 'AA/left' 'AY/Y' }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5
 				include : df.markSet.capDesc
@@ -226,7 +226,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 				include [refer-glyph right]
 				include : CenterDigraphInFrame df
 
-	do "Rha"
+	do 'Rha'
 		glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 		glyph-block-import Letter-Latin-Upper-P : PShape PConfig
 		glyph-block-import Letter-Latin-X : XConfig XLetterForm XSerifs
@@ -267,4 +267,4 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 		select-variant 'cyrl/Rha/Er' (follow -- 'P')
 		select-variant 'cyrl/Rha/Kha'
-		derive-multi-part-glyphs-baked 'cyrl/Rha' 0x516 { "cyrl/Rha/Er" "cyrl/Rha/Kha" } BuildRha
+		derive-multi-part-glyphs-baked 'cyrl/Rha' 0x516 { 'cyrl/Rha/Er' 'cyrl/Rha/Kha' } BuildRha

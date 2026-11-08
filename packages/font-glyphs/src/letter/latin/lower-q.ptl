@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -121,21 +121,21 @@ glyph-block Letter-Latin-Lower-Q : begin
 
 	define QConfig : SuffixCfg.weave
 		object # ear
-			""                    EaredBody
+			''                    EaredBody
 			flatTop               FlatTopBody
 			earlessCorner         EarlessCornerBody
 			earlessRounded        EarlessRoundedBody
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded') : return : object
-				""         ""
+				''         ''
 			return : object
-				""         ""
-				topCut     "topCut"
+				''         ''
+				topCut     'topCut'
 		function [ear cut] : object # bowl
-			""        false
+			''        false
 			flatBowl  true
 		function [ear cut bowl] : object
-			""                 TERMINAL-NORMAL
+			''                 TERMINAL-NORMAL
 			tailed             TERMINAL-TAILED
 			diagonalTailed     TERMINAL-DIAG
 		object # serifs
@@ -207,8 +207,8 @@ glyph-block Letter-Latin-Lower-Q : begin
 
 	alias 'cyrl/qa' 0x51B 'q'
 
-	select-variant "q/hookTopBase" (shapeFrom -- 'q')
-	derive-glyphs 'qHookTop' 0x2A0 "q/hookTopBase" : function [src gr] : glyph-proc
+	select-variant 'q/hookTopBase' (shapeFrom -- 'q')
+	derive-glyphs 'qHookTop' 0x2A0 'q/hookTopBase' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : VBar.r RightSB 0 XH
 		include : TopHook.toRight.rBarOuter RightSB 0 XH

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -260,15 +260,15 @@ glyph-block Letter-Latin-Upper-B : begin
 	create-glyph : glyph-proc
 		include : MarkSet.e
 		local stroke : AdviceStroke2 2 3 (XH - 0)
-		create-forked-glyph "smcpB.roundedTopSerifless"                          : RoundedTopShape            XH stroke false false
-		create-forked-glyph "smcpB.roundedTopUnilateralBottomSerifed"            : RoundedTopShape            XH stroke false true
-		create-forked-glyph "smcpB.roundedTopInterruptedSerifless"               : RoundedTopShapeInterrupted XH stroke false false
-		create-forked-glyph "smcpB.roundedTopInterruptedUnilateralBottomSerifed" : RoundedTopShapeInterrupted XH stroke false true
+		create-forked-glyph 'smcpB.roundedTopSerifless'                          : RoundedTopShape            XH stroke false false
+		create-forked-glyph 'smcpB.roundedTopUnilateralBottomSerifed'            : RoundedTopShape            XH stroke false true
+		create-forked-glyph 'smcpB.roundedTopInterruptedSerifless'               : RoundedTopShapeInterrupted XH stroke false false
+		create-forked-glyph 'smcpB.roundedTopInterruptedUnilateralBottomSerifed' : RoundedTopShapeInterrupted XH stroke false true
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
-		create-forked-glyph "smcpB.roundedTopTall"            : RoundedTopShapeBGR            Ascender stroke false false
-		create-forked-glyph "smcpB.roundedTopInterruptedTall" : RoundedTopShapeBGRInterrupted Ascender stroke false false
+		create-forked-glyph 'smcpB.roundedTopTall'            : RoundedTopShapeBGR            Ascender stroke false false
+		create-forked-glyph 'smcpB.roundedTopInterruptedTall' : RoundedTopShapeBGRInterrupted Ascender stroke false false
 
 	define [CursiveCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift] : glyph-proc
 		local bowl : mix stroke top barPos
@@ -349,13 +349,13 @@ glyph-block Letter-Latin-Upper-B : begin
 	create-glyph : glyph-proc
 		include : MarkSet.e
 		local stroke : AdviceStroke2 2 3 (XH - 0)
-		create-forked-glyph "smcpB.cursive"            : CursiveShape            XH stroke false false
-		create-forked-glyph "smcpB.cursiveInterrupted" : CursiveShapeInterrupted XH stroke false false
+		create-forked-glyph 'smcpB.cursive'            : CursiveShape            XH stroke false false
+		create-forked-glyph 'smcpB.cursiveInterrupted' : CursiveShapeInterrupted XH stroke false false
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
-		create-forked-glyph "smcpB.cursiveTall"            : CursiveShape            Ascender stroke false false
-		create-forked-glyph "smcpB.cursiveInterruptedTall" : CursiveShapeInterrupted Ascender stroke false false
+		create-forked-glyph 'smcpB.cursiveTall'            : CursiveShape            Ascender stroke false false
+		create-forked-glyph 'smcpB.cursiveInterruptedTall' : CursiveShapeInterrupted Ascender stroke false false
 
 	define [BOverlayBar top bp] : begin
 		local stroke : AdviceStroke2 2 3 (top - 0)
@@ -571,8 +571,8 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	select-variant 'grek/beta' 0x3B2
 
-	alias 'grek/beta.UPPH' null "grek/beta.standard"
-	derive-composites 'latn/beta' 0xA7B5 "grek/beta.standard" : NeedSlab SLAB
+	alias 'grek/beta.UPPH' null 'grek/beta.standard'
+	derive-composites 'latn/beta' 0xA7B5 'grek/beta.standard' : NeedSlab SLAB
 		NeedNotItalic [SerifFrame.fromDf [DivFrame 1] XH Descender].lb.fullSide
 
 	derive-glyphs 'latn/betaPalatalHook' 0x1DF3B 'latn/beta' : lambda [src gr] : glyph-proc

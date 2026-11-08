@@ -1,7 +1,7 @@
 ### Punctuation symbols
 $$include '../../meta/macros.ptl'
 
-import [mix clamp SuffixCfg] from "@iosevka/util"
+import [mix clamp SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -19,7 +19,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		include : CenterInkInFrame df
 		set currentGlyph.gizmo originalGizmo
 
-	do "Exclamation"
+	do 'Exclamation'
 		glyph-block-import Letter-Shared : CreateTurnedLetter
 		glyph-block-import Letter-Shared-Shapes : RetroflexHook
 
@@ -116,7 +116,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				y -- 0
 				yAttach -- DotRadius
 
-	do "Question"
+	do 'Question'
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothShape QuestionRevSmoothShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerShape QuestionRevCornerShape
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionCornerFlatShape QuestionRevCornerFlatShape
@@ -125,12 +125,12 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape
 
 		define HookConfig : object
-			smooth              { QuestionSmoothShape            QuestionRevSmoothShape }
-			corner              { QuestionCornerShape            QuestionRevCornerShape }
-			cornerFlatHooked    { QuestionCornerFlatShape        QuestionRevCornerFlatShape }
-			smoothFlatHooked    { QuestionSmoothFlatHookedShape  QuestionRevSmoothFlatHookedShape }
-			cornerCornerHooked  { QuestionCornerCornerHookedShape QuestionRevCornerCornerHookedShape }
-			smoothCornerHooked  { QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape }
+			smooth              { QuestionSmoothShape              QuestionRevSmoothShape }
+			corner              { QuestionCornerShape              QuestionRevCornerShape }
+			cornerFlatHooked    { QuestionCornerFlatShape          QuestionRevCornerFlatShape }
+			smoothFlatHooked    { QuestionSmoothFlatHookedShape    QuestionRevSmoothFlatHookedShape }
+			cornerCornerHooked  { QuestionCornerCornerHookedShape  QuestionRevCornerCornerHookedShape }
+			smoothCornerHooked  { QuestionSmoothCornerHookedShape  QuestionRevSmoothCornerHookedShape }
 
 		define Config : SuffixCfg.dotWeave DotVariants HookConfig
 		foreach { suffix { { DrawAt kdr overshoot } { Body RevBody } } } [Object.entries Config] : do

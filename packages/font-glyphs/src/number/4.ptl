@@ -1,7 +1,7 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -84,19 +84,19 @@ glyph-block Digits-Four : begin
 
 	define FourConfig : SuffixCfg.weave
 		object # body
-			"closed"   FourClosedShape
-			"semiOpen" FourSemiOpenShape
-			"open"     FourOpenShape
+			'closed'   FourClosedShape
+			'semiOpen' FourSemiOpenShape
+			'open'     FourOpenShape
 		object # crossing
-			"nonCrossing" false
-			"crossing"    true
+			'nonCrossing' false
+			'crossing'    true
 		object # slab
-			"serifless" false
-			"serifed"   true
+			'serifless' false
+			'serifed'   true
 		object # diagonal bar
-			""                        0
-			"diagonalCrossbar"        1
-			"diagonalCrossbarFalling" (-1)
+			''                        0
+			'diagonalCrossbar'        1
+			'diagonalCrossbarFalling' (-1)
 
 	foreach { suffix { body crossing slab diag } } [pairs-of FourConfig] : do
 		create-glyph "four.lnum.\(suffix)" : glyph-proc

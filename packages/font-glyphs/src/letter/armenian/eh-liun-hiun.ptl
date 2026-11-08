@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -17,7 +17,7 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 	define highBarPos XH
 	define jut Jut
 
-	do "Eh"
+	do 'Eh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Eh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -30,11 +30,11 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 					include : composite-proc sf.lt.full sf.lb.outer
 		local EhPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries EhPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/Eh.\(suffix)" : glyph-proc
@@ -58,11 +58,11 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 					if [not para.isItalic] : include sf.lb.outer
 		local ehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries ehPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/eh.\(suffix)" : glyph-proc
@@ -73,7 +73,7 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 				if p1 : include sf.lb.outer
 		select-variant 'armn/eh' 0x567
 
-	do "Liun"
+	do 'Liun'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Liun.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleF
@@ -85,11 +85,11 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 					include : composite-proc sf.lt.full sf.lb.outer
 		local LiunPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries LiunPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/Liun.\(suffix)" : glyph-proc
@@ -111,7 +111,7 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 				if fSerif : include : HSerif.lt xMiddle XH Jut df.mvs
 		local liunPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topCenterFull 2
 		foreach { suffix { p0 } } [Object.entries liunPositionedSerifs] : do
 			if (p0) : create-glyph "armn/liun.\(suffix)" : glyph-proc
@@ -121,7 +121,7 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 				if p0 : include : HSerif.mt xMiddle XH Jut df.mvs
 		select-variant 'armn/liun' 0x56C
 
-	do "Hiun"
+	do 'Hiun'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Hiun.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -133,11 +133,11 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 					include : composite-proc sf.lt.full sf.lb.full
 		local HiunPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 		foreach { suffix { p0 p1 } } [Object.entries HiunPositionedSerifs] : do
@@ -161,11 +161,11 @@ glyph-block Letter-Armenian-Eh-Liun-Hiun : begin
 						include sf.lb.full
 		local hiunPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 		foreach { suffix { p0 p1 } } [Object.entries hiunPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/hiun.\(suffix)" : glyph-proc

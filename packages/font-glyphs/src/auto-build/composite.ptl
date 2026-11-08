@@ -1,10 +1,10 @@
 ###### Automatic builds
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [getGrMesh AnyCv AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant] from "@iosevka/glyph/relation"
-import [hashGeometry] from "@iosevka/geometry"
-import [Transform] from "@iosevka/geometry/transform"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [getGrMesh AnyCv AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant] from '@iosevka/glyph/relation'
+import [hashGeometry] from '@iosevka/geometry'
+import [Transform] from '@iosevka/geometry/transform'
 extern Map
 extern Set
 
@@ -24,7 +24,7 @@ glyph-block Autobuild-Enclosure-Shared : begin
 	glyph-block-export CircNameNoCheck
 	define [CircNameNoCheck unicode prefix parts suffix] : begin
 		local baseName : prefix + '{' + unicode + '}{' + [parts.join '}{'] + '}'
-		return : if suffix (baseName + "." + suffix) baseName
+		return : if suffix (baseName + '.' + suffix) baseName
 
 	glyph-block-export CircName
 	define [CircName unicode prefix parts suffix] : begin
@@ -47,7 +47,7 @@ glyph-block Autobuild-Enclosure-Shared : begin
 	define [MapPartNameWithWidthSuffix parts suffix] : begin
 		local results {}
 		foreach part [items-of parts] : begin
-			local partNameWithSuffix : if suffix (part + "." + suffix) part
+			local partNameWithSuffix : if suffix (part + '.' + suffix) part
 			if [query-glyph partNameWithSuffix] : results.push partNameWithSuffix
 			: else : results.push part
 		return results
@@ -453,11 +453,11 @@ glyph-block AutoBuild-Enclosure : begin
 
 
 	define [createCircledGlyphs digits demands]
-		EnclosureT "circle" CircledBuilder StandardInners digits 1 demands CircleEnclosureShape
+		EnclosureT 'circle' CircledBuilder StandardInners digits 1 demands CircleEnclosureShape
 	define [createBackslashCircledGlyphs digits demands]
-		EnclosureT "circle-slashed" CircledBuilder StandardInners digits 1 demands BackslashCircleEnclosureShape
+		EnclosureT 'circle-slashed' CircledBuilder StandardInners digits 1 demands BackslashCircleEnclosureShape
 	define [createItalicCircledGlyphs digits demands]
-		EnclosureT "circle-italic" CircledBuilder ItalicInners digits 1 demands CircleEnclosureShape
+		EnclosureT 'circle-italic' CircledBuilder ItalicInners digits 1 demands CircleEnclosureShape
 	define [CircleEnclosureShape digits ww gap] : glyph-proc
 		define [object width sw top bot left right archDepthA archDepthB] : CircleDimens digits ww
 		set-width width
@@ -909,7 +909,7 @@ glyph-block AutoBuild-Enclosure : begin
 	define [digitNoSuffix d] : return ''
 	define [digitSansSerifSuffix d] : if ((d >= 1 && d <= 5) || d == 7) '/sansSerif' ''
 
-	do "Single-digit circled"
+	do 'Single-digit circled'
 		local compositions : list
 			list 0xA9    {'C'}                       WideWidth2
 			list 0x2117  {'P'}                       WideWidth2
@@ -927,17 +927,17 @@ glyph-block AutoBuild-Enclosure : begin
 		foreach [j : range 0 26] : compositions.push {(0x24D0 + j) {[glyphStore.queryNameByUnicode (['a'.charCodeAt 0] + j)]} WideWidth1 0.5 (XH/2)}
 		createCircledGlyphs 1 compositions
 
-	do "Single-digit backslash-circled"
+	do 'Single-digit backslash-circled'
 		createBackslashCircledGlyphs 1 : list
 			list 0x1F10F {'dollar'} WideWidth2
 			list 0x1F16E {'C'}      WideWidth2
 
-	do "Single-digit italic circled"
+	do 'Single-digit italic circled'
 		createItalicCircledGlyphs 1 : list
 			list 0x1F12B {'C'} WideWidth1
 			list 0x1F12C {'R'} WideWidth1
 
-	do "Double-digit circled"
+	do 'Double-digit circled'
 		local compositions : list
 			list null    {'sp1'} WideWidth1
 			list 0x2789  {'one/sansSerif.lnum' 'zero.lnum'} WideWidth1
@@ -949,12 +949,12 @@ glyph-block AutoBuild-Enclosure : begin
 		foreach [j : range 36 till 50] : compositions.push : list (0x32B1 + j - 36) [digitGlyphNames j] WideWidth1
 		createCircledGlyphs 2 compositions
 
-	do "Single-letter inset circled"
+	do 'Single-letter inset circled'
 		local compositions : list
 		foreach [j : range 0 26] : compositions.push {(0x1F150 + j) {[glyphStore.queryNameByUnicode (['A'.charCodeAt 0] + j)]} WideWidth1}
 		createInsetCircledGlyphs 1 compositions
 
-	do "Single-digit inset circled"
+	do 'Single-digit inset circled'
 		local compositions : list
 			list 0x24FF  {'zero.lnum'} WideWidth1
 			list 0x1F10C {'zero.lnum'} WideWidth1 # We don't have serifs for digit 0, so make an alias here
@@ -962,20 +962,20 @@ glyph-block AutoBuild-Enclosure : begin
 		foreach [j : range 1 till 9] : compositions.push : list (0x278A + j - 1) [digitGlyphNames j digitSansSerifSuffix] WideWidth1
 		createDecomposableInsetCircledGlyphs 1 compositions
 
-	do "Double-digit inset circled"
+	do 'Double-digit inset circled'
 		local compositions : list
-			list 0x2793 { "one/sansSerif.lnum" "zero.lnum" } WideWidth1
+			list 0x2793 { 'one/sansSerif.lnum' 'zero.lnum' } WideWidth1
 		foreach [j : range 10 till 10] : compositions.push : list (0x2776 + j - 1)  [digitGlyphNames j] WideWidth1
 		foreach [j : range 11 till 20] : compositions.push : list (0x24EB + j - 11) [digitGlyphNames j] WideWidth1
 		createDecomposableInsetCircledGlyphs 2 compositions
 
-	do "Single-digit boxed"
+	do 'Single-digit boxed'
 		local compositions {}
 		foreach [j : range 0 26] : compositions.push {(0x1F130 + j) {[glyphStore.queryNameByUnicode (['A'.charCodeAt 0] + j)]} WideWidth1}
 		compositions.push : list 0x1F1A5 {'d'} WideWidth1
 		createBoxedGlyphs 1 compositions
 
-	do "Double-digit boxed"
+	do 'Double-digit boxed'
 		createBoxedGlyphs 2 : list
 			list 0x1F14A {'H' 'V'} WideWidth1
 			list 0x1F14B {'M' 'V'} WideWidth1
@@ -993,7 +993,7 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F19F {'eight.lnum' 'K'} WideWidth1
 			list 0x1F1A6 {'H' 'C'} WideWidth1
 
-	do "Triple-digit boxed"
+	do 'Triple-digit boxed'
 		createBoxedGlyphs 3 : list
 			list 0x1F14E {'P' 'P' 'V'} WideWidth1
 			list 0x1F195 {'N' 'E' 'W'} WideWidth1
@@ -1007,23 +1007,23 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F1AB {'U' 'H' 'D'} WideWidth1
 			list 0x1F1AC {'V' 'O' 'D'} WideWidth1
 
-	do "Quadruple-digit boxed"
+	do 'Quadruple-digit boxed'
 		createBoxedGlyphs 4 : list
 			list 0x1F192 {'C' 'O' 'O' 'L'} WideWidth1
 			list 0x1F193 {'F' 'R' 'E' 'E'} WideWidth1
 			list 0x1F1A2 {'two.lnum' 'two.lnum' 'period' 'two.lnum'} WideWidth1
 			list 0x1F1A4 {'one.lnum' 'two.lnum' 'zero.lnum' 'P'} WideWidth1
 
-	do "Triple-digit two-row boxed"
+	do 'Triple-digit two-row boxed'
 		createTwoRowBoxedGlyphs 3 : list
 			list 0x1F19C { 'two.lnum' 'N' 'D' 'S' 'C' 'R' } WideWidth1
 			list 0x1F1A8 { 'H' 'I' 'hyphen' 'R' 'E' 'S' } WideWidth1
 
-	do "Quadruple-digit two-row boxed"
+	do 'Quadruple-digit two-row boxed'
 		createTwoRowBoxedGlyphs 4 : list
 			list 0x1F1A9 { 'L' 'O' 'S' 'S' 'L' 'E' 'S' 'S' } WideWidth1
 
-	do "ARIB STD B24 speed signs"
+	do 'ARIB STD B24 speed signs'
 		createAribSpeedSignGlyphs 2 : list
 			list 0x3248 {'one.lnum' 'zero.lnum'} WideWidth1
 			list 0x3249 {'two.lnum' 'zero.lnum'} WideWidth1
@@ -1034,11 +1034,11 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x324E {'seven.lnum' 'zero.lnum'} WideWidth1
 			list 0x324F {'eight.lnum' 'zero.lnum'} WideWidth1
 
-	do "Diamond"
+	do 'Diamond'
 		createDiamondGlyphs 1 : list
 			list 0x2BD1 {'question'} WideWidth2
 
-	do "Playing cards"
+	do 'Playing cards'
 		# Here we always construct the two-digit cards to ensure that all digit and suit glyphs
 		# are aligned across all cards.
 		local compositions : list
@@ -1073,7 +1073,7 @@ glyph-block AutoBuild-Enclosure : begin
 			compositions.push : list (0x1F0D0 + j) [[digitGlyphNames j].concat {'sp1' 'clubSuit'         'zwsp'}] WideWidth4
 		createPlayingCardGlyphs 2 compositions
 
-	do "Single-digit trump cards"
+	do 'Single-digit trump cards'
 		createTrumpCardGlyphs 1 : list
 			list 0x1F0BF {'vShadeStar.NWID'} WideWidth4
 			list 0x1F0CF {'blackStar.NWID'} WideWidth4
@@ -1083,7 +1083,7 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F0E5 {'V'} WideWidth4
 			list 0x1F0EA {'X'} WideWidth4
 
-	do "Double-digit trump cards"
+	do 'Double-digit trump cards'
 		createTrumpCardGlyphs 2 : list
 			list 0x1F0E2 {'I' 'I'} WideWidth4
 			list 0x1F0E4 {'I' 'V'} WideWidth4
@@ -1093,7 +1093,7 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F0EF {'X' 'V'} WideWidth4
 			list 0x1F0F4 {'X' 'X'} WideWidth4
 
-	do "Triple-digit trump cards"
+	do 'Triple-digit trump cards'
 		createTrumpCardGlyphs 3 : list
 			list 0x1F0E3 {'I' 'I' 'I'} WideWidth4
 			list 0x1F0E7 {'V' 'I' 'I'} WideWidth4
@@ -1103,17 +1103,17 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F0F3 {'X' 'I' 'X'} WideWidth4
 			list 0x1F0F5 {'X' 'X' 'I'} WideWidth4
 
-	do "Quadruple-digit trump cards"
+	do 'Quadruple-digit trump cards'
 		createTrumpCardGlyphs 4 : list
 			list 0x1F0E8 {'V' 'I' 'I' 'I'} WideWidth4
 			list 0x1F0ED {'X' 'I' 'I' 'I'} WideWidth4
 			list 0x1F0F1 {'X' 'V' 'I' 'I'} WideWidth4
 
-	do "Quintuple-digit trump cards"
+	do 'Quintuple-digit trump cards'
 		createTrumpCardGlyphs 5 : list
 			list 0x1F0F2 {'X' 'V' 'I' 'I' 'I'} WideWidth4
 
-	do "Playing card back"
+	do 'Playing card back'
 		createPlayingCardBackGlyphs 1 : list
 			list 0x1F0A0 {'sp1'} WideWidth4
 
@@ -1123,24 +1123,24 @@ glyph-block AutoBuild-Enclosure : begin
 	# 	foreach [j : range 0 26] : compositions.push {(0x1F1E6 + j) {[glyphStore.queryNameByUnicode (['A'.charCodeAt 0] + j)]} WideWidth1}
 	# 	createDashedBoxedGlyphs 1 compositions
 
-	do "Triple-digit dashed-boxed"
+	do 'Triple-digit dashed-boxed'
 		createDashedBoxedGlyphs 3 : list
 			list 0xFFFC {'O' 'B' 'J/noDescend'} WideWidth1
 
-	do "Single-digit inset boxed"
+	do 'Single-digit inset boxed'
 		local compositions {}
 		foreach [j : range 0 26] : compositions.push {(0x1F170 + j) {[glyphStore.queryNameByUnicode (['A'.charCodeAt 0] + j)]} WideWidth1}
 		createInsetBoxedGlyphs 1 compositions
 
-	do "Single-digit inset diamond"
+	do 'Single-digit inset diamond'
 		createInsetDiamondGlyphs 1 : list
-			list 0xFFFD { "question" } WideWidth2
+			list 0xFFFD { 'question' } WideWidth2
 
-	do "Single-digit inset triangle"
+	do 'Single-digit inset triangle'
 		createInsetTriangleGlyphs 1 : list
-			list 0x26A0 { "exclam" } WideWidth2
+			list 0x26A0 { 'exclam' } WideWidth2
 
-	do "Double-digit inset boxed"
+	do 'Double-digit inset boxed'
 		createDecomposableInsetBoxedGlyphs 2 : list
 			list 0x1F18B {'I' 'C'} WideWidth1
 			list 0x1F18C {'P' 'A'} WideWidth1
@@ -1148,55 +1148,55 @@ glyph-block AutoBuild-Enclosure : begin
 			list 0x1F18E {'A' 'B'} WideWidth1
 			list 0x1F18F {'W' 'C'} WideWidth1
 
-	do "Single-digit negative square"
+	do 'Single-digit negative square'
 		createCrossInsetBoxedGlyphs 1 : list
-			list 0x1F18A { "P" } WideWidth1
+			list 0x1F18A { 'P' } WideWidth1
 
-	do "Single-digit inset mosaic"
+	do 'Single-digit inset mosaic'
 		local compositions {}
-		compositions.push { 0x1FBB1 { [[glyphStore.queryNameByUnicode (0x2714)].replace [regex '.WWID$'] ".NWID"] } WideWidth4 }
-		compositions.push { 0x1FBB4 { [[glyphStore.queryNameByUnicode (0x21B2)].replace [regex '.WWID$'] ".NWID"] } WideWidth4 }
-		compositions.push { 0x1FBC4 { "question" } WideWidth4 }
+		compositions.push { 0x1FBB1 { [[glyphStore.queryNameByUnicode (0x2714)].replace [regex '.WWID$'] '.NWID'] } WideWidth4 }
+		compositions.push { 0x1FBB4 { [[glyphStore.queryNameByUnicode (0x21B2)].replace [regex '.WWID$'] '.NWID'] } WideWidth4 }
+		compositions.push { 0x1FBC4 { 'question' } WideWidth4 }
 		createInsetMosaicGlyphs 1 compositions
 
-	do "Single-digit double circled"
+	do 'Single-digit double circled'
 		local compositions {}
 		foreach [j : range 1 till 9] : compositions.push : list (0x24F5 + j - 1) [digitGlyphNames j] WideWidth1
 		createDoubleCircledGlyphs 1 compositions
 
-	do "Double-digit double circled"
+	do 'Double-digit double circled'
 		local compositions {}
 		foreach [j : range 10 till 10] : compositions.push : list (0x24F5 + j - 1) [digitGlyphNames j] WideWidth1
 		createDoubleCircledGlyphs 2 compositions
 
-	do "Single-digit braced"
+	do 'Single-digit braced'
 		local compositions {}
 		foreach [j : range 1 till 9] : compositions.push : list (0x2474 + j - 1) [digitGlyphNames j] WideWidth1
 		foreach [j : range 0 26] : compositions.push {(0x249C  + j) {[glyphStore.queryNameByUnicode (['a'.charCodeAt 0] + j)]} WideWidth1 0.5 (XH/2)}
 		foreach [j : range 0 26] : compositions.push {(0x1F110 + j) {[glyphStore.queryNameByUnicode (['A'.charCodeAt 0] + j)]} WideWidth1}
 		createBracedGlyphs 1 compositions
 
-	do "Double-digit braced"
+	do 'Double-digit braced'
 		local compositions {}
 		foreach [j : range 10 till 20] : compositions.push : list (0x2474 + j - 1) [digitGlyphNames j] WideWidth1
 		createBracedGlyphs 2 compositions
 
-	do "Single-digit hex braced"
+	do 'Single-digit hex braced'
 		createHexBracedGlyphs 1 : list
 			list 0x1F12A {'S'} WideWidth1
 
-	do "Single-digit dotted"
+	do 'Single-digit dotted'
 		local compositions : list
 			list 0x1F100 {'zero.lnum' 'period'} WideWidth1
 		foreach [j : range 1 till 9] : compositions.push : list (0x2488 + j - 1) [[digitGlyphNames j].concat {'period'}] WideWidth1
 		createDottedGlyphs 1 compositions
 
-	do "Single-digit comma"
+	do 'Single-digit comma'
 		local compositions {}
 		foreach [j : range 0 till 9] : compositions.push : list (0x1F101 + j) [[digitGlyphNames j].concat {'comma'}] WideWidth1
 		createDottedGlyphs 1 compositions
 
-	do "Double-digit dotted"
+	do 'Double-digit dotted'
 		local compositions : list
 		foreach [j : range 10 till 20] : compositions.push : list (0x2488 + j - 1) [[digitGlyphNames j].concat {'period'}] WideWidth1
 		createDottedGlyphs 2 compositions
@@ -1346,45 +1346,45 @@ glyph-block Autobuild-Fractions : begin
 		list 0x2106 { 'c' 'u' }
 
 	createControlPictures2 : list
-		list 0xE0A1 {"L" "N"}
-		list 0xE0A3 {"C" "N"}
-		list 0x2408 {"B" "S"}
-		list 0x2409 {"H" "T"}
-		list 0x240A {"L" "F"}
-		list 0x240B {"V" "T"}
-		list 0x240C {"F" "F"}
-		list 0x240D {"C" "R"}
-		list 0x240E {"S" "O"}
-		list 0x240F {"S" "I"}
-		list 0x2419 {"E" "M"}
-		list 0x241C {"F" "S"}
-		list 0x241D {"G" "S"}
-		list 0x241E {"R" "S"}
-		list 0x241F {"U" "S"}
-		list 0x2420 {"S" "P"}
-		list 0x2424 {"N" "L"}
+		list 0xE0A1 {'L' 'N'}
+		list 0xE0A3 {'C' 'N'}
+		list 0x2408 {'B' 'S'}
+		list 0x2409 {'H' 'T'}
+		list 0x240A {'L' 'F'}
+		list 0x240B {'V' 'T'}
+		list 0x240C {'F' 'F'}
+		list 0x240D {'C' 'R'}
+		list 0x240E {'S' 'O'}
+		list 0x240F {'S' 'I'}
+		list 0x2419 {'E' 'M'}
+		list 0x241C {'F' 'S'}
+		list 0x241D {'G' 'S'}
+		list 0x241E {'R' 'S'}
+		list 0x241F {'U' 'S'}
+		list 0x2420 {'S' 'P'}
+		list 0x2424 {'N' 'L'}
 
 	createControlPictures3 : list
-		list 0x2400 {"N" "U" "L"}
-		list 0x2401 {"S" "O" "H"}
-		list 0x2402 {"S" "T" "X"}
-		list 0x2403 {"E" "T" "X"}
-		list 0x2404 {"E" "O" "T"}
-		list 0x2405 {"E" "N" "Q"}
-		list 0x2406 {"A" "C" "K"}
-		list 0x2407 {"B" "E" "L"}
-		list 0x2410 {"D" "L" "E"}
-		list 0x2411 {"D" "C" "one.lnum"}
-		list 0x2412 {"D" "C" "two.lnum"}
-		list 0x2413 {"D" "C" "three.lnum"}
-		list 0x2414 {"D" "C" "four.lnum"}
-		list 0x2415 {"N" "A" "K"}
-		list 0x2416 {"S" "Y" "N"}
-		list 0x2417 {"E" "T" "B"}
-		list 0x2418 {"C" "A" "N"}
-		list 0x241A {"S" "U" "B"}
-		list 0x241B {"E" "S" "C"}
-		list 0x2421 {"D" "E" "L"}
+		list 0x2400 {'N' 'U' 'L'}
+		list 0x2401 {'S' 'O' 'H'}
+		list 0x2402 {'S' 'T' 'X'}
+		list 0x2403 {'E' 'T' 'X'}
+		list 0x2404 {'E' 'O' 'T'}
+		list 0x2405 {'E' 'N' 'Q'}
+		list 0x2406 {'A' 'C' 'K'}
+		list 0x2407 {'B' 'E' 'L'}
+		list 0x2410 {'D' 'L' 'E'}
+		list 0x2411 {'D' 'C' 'one.lnum'}
+		list 0x2412 {'D' 'C' 'two.lnum'}
+		list 0x2413 {'D' 'C' 'three.lnum'}
+		list 0x2414 {'D' 'C' 'four.lnum'}
+		list 0x2415 {'N' 'A' 'K'}
+		list 0x2416 {'S' 'Y' 'N'}
+		list 0x2417 {'E' 'T' 'B'}
+		list 0x2418 {'C' 'A' 'N'}
+		list 0x241A {'S' 'U' 'B'}
+		list 0x241B {'E' 'S' 'C'}
+		list 0x2421 {'D' 'E' 'L'}
 
 glyph-block AutoBuild-Accented-Equal : begin
 	glyph-block-import CommonShapes
@@ -1443,37 +1443,37 @@ glyph-block AutoBuild-Accented-Equal : begin
 		applyRelations jobs.relApplications
 
 	createAccentedOp 'equal' 7 0.4 0 aboveMarkBot : list
-		list 0x225e {"m"}
-		list 0x225F {"question"}
+		list 0x225e {'m'}
+		list 0x225F {'question'}
 	createAccentedOp 'equal' 5 0.8 0 aboveMarkBot : list
-		list 0x2258 {"symbolMidTie"}
+		list 0x2258 {'symbolMidTie'}
 	createAccentedOp 'equal' 7 0.5 0 (aboveMarkBot - (SymbolMid - XH / 2)) : list
-		list 0x2259 {"triangularWedge.NWID"}
-		list 0x225a {"triangularVee.NWID"}
-		list 0x225b {"blackStar.NWID"}
-		list 0x225c {"whiteTriangleUp.NWID"}
-		list 0x2a6e {"opAsterisk"}
+		list 0x2259 {'triangularWedge.NWID'}
+		list 0x225a {'triangularVee.NWID'}
+		list 0x225b {'blackStar.NWID'}
+		list 0x225c {'whiteTriangleUp.NWID'}
+		list 0x2a6e {'opAsterisk'}
 	createAccentedOp 'sqrt' 5 0.5 (Width * (-0.25)) [mix OperBot OperTop 0.6] : list
-		list 0x221b {"three.lnum"}
-		list 0x221c {"four.lnum"}
+		list 0x221b {'three.lnum'}
+		list 0x221c {'four.lnum'}
 	createAccentedOp 'equal' 8 0.3 0 aboveMarkBot : list
-		list 0x225d {"d" "e" "f"}
+		list 0x225d {'d' 'e' 'f'}
 	createAccentedOp 'markDemoBaseSpace' 6 0.40 0 (aboveMarkBot - (CAP * 0.40 - XH * 0.40)) : list
-		list 0xAE    {"R" "combRingCap/adwsN"}
+		list 0xAE    {'R' 'combRingCap/adwsN'}
 	createAccentedOp 'markDemoBaseSpace' 6 0.45 0 (aboveMarkBot - (CAP * 0.45 - XH * 0.45)) : list
-		list 0x2122  {"T" "M"}
-		list 0x2120  {"S" "M"}
-		list 0x1F16A {"M" "C"}
-		list 0x1F16B {"M" "D"}
-		list 0x1F16C {"M" "R"}
+		list 0x2122  {'T' 'M'}
+		list 0x2120  {'S' 'M'}
+		list 0x1F16A {'M' 'C'}
+		list 0x1F16B {'M' 'D'}
+		list 0x1F16C {'M' 'R'}
 	createAccentedOp 'insertSignBase' 6 0.5 0 (0.625 * XH) : list
-		list 0x2380 {"a"}
+		list 0x2380 {'a'}
 	createAccentedOp 'underscoreSignBase' 6 0.5 0 (SymbolMid - 0.25 * XH) : list
-		list 0x2381 {"a" "ellipsis.NWID"}
+		list 0x2381 {'a' 'ellipsis.NWID'}
 	createAccentedOp 'BrokenUnderscoreSignBase' 6 0.5 0 (SymbolMid - 0.25 * XH) : list
-		list 0x2382 {"a" "a"}
+		list 0x2382 {'a' 'a'}
 	createAccentedOp 'correctionSignBase' 6 0.5 0 (SymbolMid - 0.25 * XH) : list
-		list 0x2383 {"a"}
+		list 0x2383 {'a'}
 
 glyph-block Autobuild-Ligatures : begin
 	glyph-block-import CommonShapes
@@ -1682,7 +1682,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 
 	define [createPhoneticLigatures tfm prefix adws mockNParts _shrink kKern demands] : begin
 		local { ww0 wwM shrink kern } : PhoneticDimensions tfm adws mockNParts _shrink kKern
-		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix "" demands
+		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix '' demands
 
 		# Preserve live esh and ezh selectors in the non-decomposable digraphs.
 		local eshPrime : para.variants.primes.get 'lower-esh'
@@ -1696,7 +1696,7 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 				local target : gr.get right
 				if (target && target !== parts.1) : begin
 					local toParts : list parts.0 target
-					local toGn : CircNameNoCheck unicode prefix toParts ""
+					local toGn : CircNameNoCheck unicode prefix toParts ''
 					jobs.nonDecomposable.push { toGn null toParts mak }
 					jobs.relApplications.push { gr gn toGn }
 
@@ -1914,12 +1914,12 @@ glyph-block Autobuild-Grouped-Digits : begin
 			include : intersection
 				HBar.b 0 Width (Descender * 0.75) [AdviceStroke 4]
 				glyph-proc
-					include : refer-glyph "denseShade.WWID"
+					include : refer-glyph 'denseShade.WWID'
 					include : Translate (Width * (-0.5)) 0
 			include : Translate (-Width) 0
 
 		foreach [gid : items-of numberGlyphIDs] : foreach [nd : items-of {0 1 2 3 4 5 6}]
-			create-glyph (gid + ".nd" + nd) : glyph-proc
+			create-glyph (gid + '.nd' + nd) : glyph-proc
 				include : refer-glyph gid
 				if (nd >= 3 && nd <= 5) : begin
 					include : with-transform [Translate Width 0] : refer-glyph '.nd-shade'

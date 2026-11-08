@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -161,9 +161,9 @@ glyph-block Letter-Cyrillic-De : begin
 			cursive     BODY-CURSIVE
 		function [body] : begin
 			if (body === 'cursive') : return : object
-				""    true
+				''    true
 			return : object
-				""        true
+				''        true
 				legless   false
 		object
 			serifless     SERIF-NONE
@@ -246,8 +246,8 @@ glyph-block Letter-Cyrillic-De : begin
 				include : CyrDweTick bodyType de XH asc
 
 			define cyrSoftDeDf : DivFrame para.advanceScaleM 3
-			DefineDeSelectorGlyph "cyrl/DeSoft" suffix cyrSoftDeDf 'capital'
-			DefineDeSelectorGlyph "cyrl/deSoft" suffix cyrSoftDeDf 'e'
+			DefineDeSelectorGlyph 'cyrl/DeSoft' suffix cyrSoftDeDf 'capital'
+			DefineDeSelectorGlyph 'cyrl/deSoft' suffix cyrSoftDeDf 'e'
 			foreach { suffixGhe cyrSoftDeVSlab } [Object.entries CyrSoftDeGheConfig] : do
 				create-glyph "cyrl/DeSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
@@ -262,8 +262,8 @@ glyph-block Letter-Cyrillic-De : begin
 			select-variant "cyrl/DeSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 			select-variant "cyrl/deSoft.\(suffix)" (follow -- 'cyrl/enghe/ghe')
 
-			DefineDeSelectorGlyph "cyrl/Dzze" suffix [DivFrame 1] 'capital'
-			DefineDeSelectorGlyph "cyrl/dzze.upright" suffix [DivFrame 1] 'e'
+			DefineDeSelectorGlyph 'cyrl/Dzze' suffix [DivFrame 1] 'capital'
+			DefineDeSelectorGlyph 'cyrl/dzze.upright' suffix [DivFrame 1] 'e'
 			foreach { suffixZe { { desc } { styTop styBot } } } [Object.entries ZeConfig] : do
 				define [DzzeDescenderShape de ada adb] : begin
 					local df : DivFrame 1

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix clamp fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -148,15 +148,15 @@ glyph-block Letter-Latin-Lower-D : begin
 			toothlessRounded          ToothlessRoundedBody
 		function [tooth] : begin
 			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessCornerRTB' || tooth === 'toothlessRounded') : return : object
-				""         ""
+				''         ''
 			return : object
-				""         ""
+				''         ''
 				bottomCut  'bottomCut'
 		function [tooth cut] : begin
 			if (tooth === 'tailed') : return : object
-				""  false
+				''  false
 			return : object
-				""        false
+				''        false
 				flatBowl  true
 		object # serifs
 			serifless                { null     null      }
@@ -237,7 +237,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		y     -- 0
 
 	link-reduced-variant 'd/rTailBase' 'd'
-	derive-glyphs 'dRTail' 0x256 "d/rTailBase" : function [src gr] : glyph-proc
+	derive-glyphs 'dRTail' 0x256 'd/rTailBase' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : RetroflexHook.rExt RightSB 0
 		include : LeaningAnchor.Below.VBar.r RightSB
@@ -249,7 +249,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		y     -- 0
 
 	link-reduced-variant 'dHookTop/rTailBase' 'dHookTop'
-	derive-glyphs 'dHookTopRTail' 0x1D91 "dHookTop/rTailBase" : function [src gr] : glyph-proc
+	derive-glyphs 'dHookTopRTail' 0x1D91 'dHookTop/rTailBase' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : RetroflexHook.rExt RightSB 0
 		include : LeaningAnchor.Below.VBar.r RightSB
@@ -291,20 +291,20 @@ glyph-block Letter-Latin-Lower-D : begin
 				terminalSlopeAdj -- 0.25
 		include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- m) (bot -- 0) (top -- Ascender) (sw -- sw)
 
-	create-glyph "dCurlyTail.toothedSerifless" : glyph-proc
+	create-glyph 'dCurlyTail.toothedSerifless' : glyph-proc
 		include : DCurlyTailBody ''
 		local sw : AdviceStroke 2.75
 		local fine : AdviceStroke 4
 		local rinner : clamp (Width * 0.065) (XH * 0.05) (fine * 0.35)
 		local m : Math.min RightSB (Width - rinner * 2 - fine - OX)
-		create-forked-glyph "dCurlyTail.toothedTopSerifed" : HSerif.lt (m - [HSwToV sw]) Ascender SideJut sw
+		create-forked-glyph 'dCurlyTail.toothedTopSerifed' : HSerif.lt (m - [HSwToV sw]) Ascender SideJut sw
 
-	create-glyph "dCurlyTail.toothedTopCutSerifless" : glyph-proc
+	create-glyph 'dCurlyTail.toothedTopCutSerifless' : glyph-proc
 		include : DCurlyTailBody 'topCut'
 
 	select-variant 'dCurlyTail' 0x221
 
-	create-glyph "cyrl/djeKomi.toothlessRoundedSerifless" : glyph-proc
+	create-glyph 'cyrl/djeKomi.toothlessRoundedSerifless' : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.b
 
@@ -339,7 +339,7 @@ glyph-block Letter-Latin-Lower-D : begin
 		if SLAB : begin
 			local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
 			include sf2.rt.full
-		create-forked-glyph "cyrl/djeKomi.toothlessRoundedTopSerifed" : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) Ascender SideJut df.mvs
+		create-forked-glyph 'cyrl/djeKomi.toothlessRoundedTopSerifed' : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) Ascender SideJut df.mvs
 
 	alias 'cyrl/deKomi' 0x501 'd'
 	select-variant 'cyrl/djeKomi' 0x503

@@ -1,8 +1,8 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Box] from "@iosevka/geometry/box"
-import [Transform] from "@iosevka/geometry/transform"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
+import [Transform] from '@iosevka/geometry/transform'
 
 glyph-module
 
@@ -63,7 +63,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 		(Width * vScalar - sb) + 0.5 * (MosaicWidth - Width * vScalar)
 
 
-	do "Top-down Vehicles"
+	do 'Top-down Vehicles'
 		define scaffold : object
 		set scaffold.xWheelFront : 1.5 / 9
 		set scaffold.xWheel      : 1 / 9
@@ -126,7 +126,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : Car squareBox 0 0 1 0 (3 / 9)
 
 
-	do "Stick Man"
+	do 'Stick Man'
 		define [StickManScaffold box _sw] : begin
 			local baseHeight : uiTop - uiBot
 			local height : box.top - box.bottom
@@ -221,7 +221,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : StickManDressBody scaffold 0 0
 
 
-	do "Snake Head"
+	do 'Snake Head'
 		define eyeSize : Geom.Size / 8
 		define mouthWidth : Geom.Size / 3
 		define eyeOffset mouthWidth
@@ -265,25 +265,25 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 							3 : corner (midX + mouthWidth) Geom.Bot
 					glyph-proc
 
-		create-glyph [MangleName "snakeHeadLeftOpen"] [MangleUnicode 0x1CC70] : glyph-proc
+		create-glyph [MangleName 'snakeHeadLeftOpen'] [MangleUnicode 0x1CC70] : glyph-proc
 			include : SnakeHead 2 1
-		create-glyph [MangleName "snakeHeadUpOpen"] [MangleUnicode 0x1CC71] : glyph-proc
+		create-glyph [MangleName 'snakeHeadUpOpen'] [MangleUnicode 0x1CC71] : glyph-proc
 			include : SnakeHead 1 1
-		create-glyph [MangleName "snakeHeadRightOpen"] [MangleUnicode 0x1CC72] : glyph-proc
+		create-glyph [MangleName 'snakeHeadRightOpen'] [MangleUnicode 0x1CC72] : glyph-proc
 			include : SnakeHead 0 1
-		create-glyph [MangleName "snakeHeadDownOpen"] [MangleUnicode 0x1CC73] : glyph-proc
+		create-glyph [MangleName 'snakeHeadDownOpen'] [MangleUnicode 0x1CC73] : glyph-proc
 			include : SnakeHead 3 1
-		create-glyph [MangleName "snakeHeadLeftClosed"] [MangleUnicode 0x1CC74] : glyph-proc
+		create-glyph [MangleName 'snakeHeadLeftClosed'] [MangleUnicode 0x1CC74] : glyph-proc
 			include : SnakeHead 2 0
-		create-glyph [MangleName "snakeHeadUpClosed"] [MangleUnicode 0x1CC75] : glyph-proc
+		create-glyph [MangleName 'snakeHeadUpClosed'] [MangleUnicode 0x1CC75] : glyph-proc
 			include : SnakeHead 1 0
-		create-glyph [MangleName "snakeHeadRightClosed"] [MangleUnicode 0x1CC76] : glyph-proc
+		create-glyph [MangleName 'snakeHeadRightClosed'] [MangleUnicode 0x1CC76] : glyph-proc
 			include : SnakeHead 0 0
-		create-glyph [MangleName "snakeHeadDownClosed"] [MangleUnicode 0x1CC77] : glyph-proc
+		create-glyph [MangleName 'snakeHeadDownClosed'] [MangleUnicode 0x1CC77] : glyph-proc
 			include : SnakeHead 3 0
 
 
-	do "Energy Waves"
+	do 'Energy Waves'
 		define [LeftEnergyWave top bottom left right] : glyph-proc
 			local midX : mix left right 0.5
 			local midY : mix top bottom 0.5
@@ -308,21 +308,21 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 					curl [mix left right 0.9] [mix top bottom 0.9]
 					corner right [mix top bottom 0.9]
 
-		create-glyph [MangleName "energyWaveLeft"] [MangleUnicode 0x1CC78] : glyph-proc
+		create-glyph [MangleName 'energyWaveLeft'] [MangleUnicode 0x1CC78] : glyph-proc
 			set-width MosaicWidth
 			include : LeftEnergyWave Geom.Top Geom.Bot Geom.Left Geom.Right
-		create-glyph [MangleName "energyWaveUp"] [MangleUnicode 0x1CC79] : glyph-proc
+		create-glyph [MangleName 'energyWaveUp'] [MangleUnicode 0x1CC79] : glyph-proc
 			set-width MosaicWidth
 			include : WithD4Transform midX 3 0 : lambda [] : LeftEnergyWave Geom.Top Geom.Bot Geom.Left Geom.Right
-		create-glyph [MangleName "energyWaveRight"] [MangleUnicode 0x1CC7A] : glyph-proc
+		create-glyph [MangleName 'energyWaveRight'] [MangleUnicode 0x1CC7A] : glyph-proc
 			set-width MosaicWidth
 			include : WithD4Transform midX 2 0 : lambda [] : LeftEnergyWave Geom.Top Geom.Bot Geom.Left Geom.Right
-		create-glyph [MangleName "energyWaveDown"] [MangleUnicode 0x1CC7B] : glyph-proc
+		create-glyph [MangleName 'energyWaveDown'] [MangleUnicode 0x1CC7B] : glyph-proc
 			set-width MosaicWidth
 			include : WithD4Transform midX 1 0 : lambda [] : LeftEnergyWave Geom.Top Geom.Bot Geom.Left Geom.Right
 
 
-	do "Rifle"
+	do 'Rifle'
 		define scaffold : object
 		set scaffold.postLength : 1 / 6
 		set scaffold.postOffset : 1 / 9
@@ -357,7 +357,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : WithD4Transform midX 3 0 : lambda [] : RightRifle smallVBox
 
 
-	do "Rocket"
+	do 'Rocket'
 		define scaffold : object
 		set scaffold.width : 1 / 2
 		set scaffold.baseHeight : 1 / 4
@@ -400,7 +400,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : WithD4Transform midX 3 0 : lambda [] : RightRocket smallVBox
 
 
-	do "Bomb"
+	do 'Bomb'
 		define scaffold : object
 		set scaffold.tailX 0.3
 		set scaffold.bodyX 0.15
@@ -443,7 +443,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : WithD4Transform midX 3 0 : lambda [] : RightBomb smallVBox
 
 
-	do "Frog"
+	do 'Frog'
 		define scaffold : object
 		set scaffold.bodyX  1
 		set scaffold.bodyY  0.9
@@ -482,7 +482,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 			include : UpFrog squareBox : D4Transform midX 2 0
 
 
-	do "Moon Lander"
+	do 'Moon Lander'
 		define scaffold : object
 		set scaffold.tipSize     0.2
 		set scaffold.headWidth   0.8
@@ -541,6 +541,6 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 					corner [mix left right (0.5 + scaffold.windowTopWidth / 2)] windowTop
 					corner [mix left right (0.5 - scaffold.windowTopWidth / 2)] windowTop
 
-		create-glyph [MangleName "moonLander"] [MangleUnicode 0x1CDF5] : glyph-proc
+		create-glyph [MangleName 'moonLander'] [MangleUnicode 0x1CDF5] : glyph-proc
 			set-width MosaicWidth
 			include : Moonlander top bottom left right graphicSw

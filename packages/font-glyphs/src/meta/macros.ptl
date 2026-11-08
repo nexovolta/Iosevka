@@ -1,18 +1,18 @@
 ### Autoarg macro
-define-operator "--" 890 'right' : syntax-rules
-	`(@l -- @r) [atom l] : dirty `[new $NamedParameterPair$ @{".quote" [formOf l]} @r]
-	`(@{".quote" l} -- @r) : dirty `[new $NamedParameterPair$ @l @r]
+define-operator '--' 890 'right' : syntax-rules
+	`(@l -- @r) [atom l] : dirty `[new $NamedParameterPair$ @{'.quote' [formOf l]} @r]
+	`(@{'.quote' l} -- @r) : dirty `[new $NamedParameterPair$ @l @r]
 
 ### Arbitrary pair operator
-define-operator "~>" 880 'right' : syntax-rules
+define-operator '~>' 880 'right' : syntax-rules
 	`(@l ~> @r) `{.left @l .right @r}
 
 ### The operator indicating a "delay" for the knot controls. Equivalent to a call to [decor@].
-define-operator prefix "~~~"  : syntax-rules
+define-operator prefix '~~~'  : syntax-rules
 	`(~~~ @x) : dirty `[decor@ @x]
 
 ### Exponentiation operator
-define-operator "**" 150 "right" : syntax-rules
+define-operator '**' 150 'right' : syntax-rules
 	`(@l ** @r) `[Math.pow @l @r]
 
 ### Macro for identity match
@@ -56,20 +56,20 @@ define-macro lift-@ : syntax-rules
 		# {".unquote" {".quote" literal}} (indicating @literal)
 		# Return the string representation of the identifier or the literal, or null if neither
 		define [isUnquote form] : match form
-			{".unquote" {".quote" lit}} : String lit
-			{".unquote" ident} [atom ident] : String ident
+			{'.unquote' {'.quote' lit}} : String lit
+			{'.unquote' ident} [atom ident] : String ident
 			otherwise null
 
 		# Detect whether a form is {".operatorPiece" x "=" ...} where x matches isUnquote
 		# Return the RHS when the form is a match, or null if not
 		define [isUnquoteAssign form] : match form
-			{".operatorPiece" lhs "=" rhs} : begin
+			{'.operatorPiece' lhs '=' rhs} : begin
 				local unquoteId : isUnquote lhs
 				if unquoteId : return {unquoteId rhs}
 				else : return null
-			{".operatorPiece" lhs "=" :: rhs} : begin
+			{'.operatorPiece' lhs '=' :: rhs} : begin
 				local unquoteId : isUnquote lhs
-				if unquoteId : return {unquoteId {".operatorPiece" :: rhs}}
+				if unquoteId : return {unquoteId {'.operatorPiece' :: rhs}}
 				else : return null
 			otherwise null
 
@@ -162,29 +162,29 @@ define-macro $$InitFlexParameters$$ : syntax-rules
 			match [formOf $pf]
 				pf [atom pf] : begin
 					declarations.push `[local @pf]
-					indexAssigns.push `[set @pf : fallback @pf (@tb).(@{".quote" j})]
+					indexAssigns.push `[set @pf : fallback @pf (@tb).(@{'.quote' j})]
 					set name pf
 				`[@pf] : begin
 					declarations.push `[local @pf]
-					indexAssigns.push `[set @pf : fallback @pf (@tb).(@{".quote" j})]
+					indexAssigns.push `[set @pf : fallback @pf (@tb).(@{'.quote' j})]
 					set name pf
 				`[@decl @dflt] : begin
 					declarations.push `[local @decl]
-					indexAssigns.push `[set @decl : fallback @decl (@tb).(@{".quote" j}) @dflt]
+					indexAssigns.push `[set @decl : fallback @decl (@tb).(@{'.quote' j}) @dflt]
 					set name decl
 				`(@decl -- @dflt) : begin
 					declarations.push `[local @decl]
-					indexAssigns.push `[set @decl : fallback @decl (@tb).(@{".quote" j}) @dflt]
+					indexAssigns.push `[set @decl : fallback @decl (@tb).(@{'.quote' j}) @dflt]
 					set name decl
-				{".operatorPiece" :: items} : match [opSegToRegular items [scopeOf $pf]]
+				{'.operatorPiece' :: items} : match [opSegToRegular items [scopeOf $pf]]
 					`(@decl -- @dflt) : begin
 						declarations.push `[local @decl]
-						indexAssigns.push `[set @decl : fallback @decl (@tb).(@{".quote" j}) @dflt]
+						indexAssigns.push `[set @decl : fallback @decl (@tb).(@{'.quote' j}) @dflt]
 						set name decl
-					____ : throw : new Error "Invalid postulation syntax"
-				____ : throw : new Error "Invalid postulation syntax"
+					____ : throw : new Error 'Invalid postulation syntax'
+				____ : throw : new Error 'Invalid postulation syntax'
 
-			namedAssigns.push `[if (@t && @t <@ $NamedParameterPair$ && @t.left == @{".quote" name})
+			namedAssigns.push `[if (@t && @t <@ $NamedParameterPair$ && @t.left == @{'.quote' name})
 				[set @name @t.right]]
 			inc j
 
@@ -334,7 +334,7 @@ define-macro glyph-block-import : syntax-rules
 			lambda [x] true
 
 		local blockName : formOf _blockName
-		local blockNameForm {".quote" blockName}
+		local blockNameForm {'.quote' blockName}
 		if allExports.(blockName)
 			dirty `[define [object @::[allExports.(blockName).filter vartiableFilter]] : $Capture$.$Exec$.glyphBlockStore.(@blockNameForm).resolve]
 			dirty `[$Capture$.$Exec$.glyphBlockStore.(@blockNameForm).resolve]
@@ -379,7 +379,7 @@ define-macro glyph-block : syntax-rules
 		local variableSet : Object.create null
 		define [traceBody form] : piecewise
 			(form <@ Array) : form.forEach traceBody
-			([typeof form] === "string") : set variableSet.(form) true
+			([typeof form] === 'string') : set variableSet.(form) true
 
 		traceBody body
 		traceBody `[$NamedParameterPair$ $GlyphSaveSink$ $Exec$]

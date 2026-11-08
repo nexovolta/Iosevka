@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix SuffixCfg fallback] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix SuffixCfg fallback] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -55,13 +55,13 @@ glyph-block Letter-Latin-Z : begin
 		include : tagged 'strokeTop' : HBar.t SB RightSB XH
 		include : tagged 'strokeMiddle' : ExtLineRhsToLhs SB [if (mode == MODE-ZSWASH) 0 Stroke] RightSB (XH - Stroke) [VSwToH Stroke]
 		if [DisplayBottomStroke mode] : include : tagged 'strokeBottom' : HBar.b SB RightSB 0
-		set-base-anchor "trailing" RightSB 0
+		set-base-anchor 'trailing' RightSB 0
 
 	define [SmallZCurlyShape mode] : glyph-proc
 		include : tagged 'strokeTop' : HBar.t SB (RightSB - [HSwToV Stroke]) XH
 		include : tagged 'strokeMiddle' : XStrand false SLAB SB 0 RightSB XH 0.125 0.4 0.36
 		if [DisplayBottomStroke mode] : include : tagged 'strokeBottom' : HBar.b (SB + [HSwToV Stroke]) RightSB 0
-		set-base-anchor "trailing" RightSB 0
+		set-base-anchor 'trailing' RightSB 0
 
 	define [ZCursiveShapeImpl top mode] : glyph-proc
 		define hookTerminalWidth : AdviceStroke 3.5
@@ -130,7 +130,7 @@ glyph-block Letter-Latin-Z : begin
 					curl SB                                   (1    * yTailDepth)
 
 		if (mode != MODE-ZDESC) : begin
-			set-base-anchor "trailing" (RightSB - 0.55 * xHookDepth) 0
+			set-base-anchor 'trailing' (RightSB - 0.55 * xHookDepth) 0
 
 	define [ZCursiveShape      mode] : ZCursiveShapeImpl CAP mode
 	define [SmallZCursiveShape mode] : ZCursiveShapeImpl XH  mode
@@ -185,7 +185,7 @@ glyph-block Letter-Latin-Z : begin
 					curl (SB + 0.62 * yFootHeight * (RightSB - SB) / (top - Stroke)) (0.62 * yFootHeight)
 
 		if (mode != MODE-ZDESC) : begin
-			set-base-anchor "trailing" (RightSB - 0.55 * xHookDepth) 0
+			set-base-anchor 'trailing' (RightSB - 0.55 * xHookDepth) 0
 
 	define [ZSemiCursiveShape      mode] : ZSemiCursiveShapeImpl CAP mode
 	define [SmallZSemiCursiveShape mode] : ZSemiCursiveShapeImpl XH  mode
@@ -247,13 +247,13 @@ glyph-block Letter-Latin-Z : begin
 			cursive      { ZCursiveShape       SmallZCursiveShape       NoBottomStrokeMask    }
 			semiCursive  { ZSemiCursiveShape   SmallZSemiCursiveShape   NoBottomStrokeMask    }
 		object # Serifs
-			""            { ZSerifless     } # for Cursive
+			''            { ZSerifless     } # for Cursive
 			serifless     { ZSerifless     }
 			serifed       { ZStdSerifs     }
 			bottomSerifed { ZMotionSerifsB }
 			topSerifed    { ZMotionSerifsT }
 		object # overlay
-			""                     { null       }
+			''                     { null       }
 			withCrossBar           { DBarOver   }
 			withHorizontalCrossBar { HBar.mOver }
 

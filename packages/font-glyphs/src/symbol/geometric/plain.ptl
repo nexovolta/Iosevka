@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -130,7 +130,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 			include : ConvexWhitePolygonImpl fn props
 
 
-	do "Square and Half-square triangle"
+	do 'Square and Half-square triangle'
 		define [SquareShape cx cy size] : spiro-outline
 			corner (cx - size) (cy + size)
 			corner (cx + size) (cy + size)
@@ -227,7 +227,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		SquareOverlap 'overlapWBSquare' 0x2BBB 0 0 1
 		SquareOverlap 'overlapBBSquare' 0x2BBC 0 1 1
 
-	do "Rectangle"
+	do 'Rectangle'
 		define [HoriRectangleFill cx cy r] : spiro-outline
 			corner (cx - r) (cy + r / 1.5)
 			corner (cx + r) (cy + r / 1.5)
@@ -274,7 +274,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 
 		ConvexWhitePolygon TrapeziumFill 'whiteTrapezium' 0x23E2
 
-	do "Triangles"
+	do 'Triangles'
 		define triangleOvershoot : 0.7 * [Math.sqrt 3]
 		define [TriangleUpFill cx cy size] : spiro-outline
 			corner cx (cy + size)
@@ -384,7 +384,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		StdBlackShape TriangularWedgeFill 'triangularWedge' null
 		StdBlackShape TriangularVeeFill   'triangularVee'   null
 
-	do "Diamond"
+	do 'Diamond'
 		define [DiamondFill cx cy size] : spiro-outline
 			corner cx (cy + size)
 			corner (cx + size) cy
@@ -411,7 +411,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 
 		StdGeomTargetShape DiamondFill 'diamondTarget' 0x1F79C Size.Oblique
 
-	do "Lozenge"
+	do 'Lozenge'
 		define [LozengeFill cx cy size] : spiro-outline
 			corner cx (cy + size)
 			corner (cx + size * 2 / 3) cy
@@ -434,7 +434,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 
 		ConvexPolygonWhiteContainingBlackShape LozengeFill 'whiteLozengeContainingBlackSmallLozenge' 0x1F7A0 [Object.assign {.} Size.SmallInner Size.Oblique]
 
-	do "Square-lozenge"
+	do 'Square-lozenge'
 		define [SquareLozengeShape cx cy size] : begin
 			define p 0.7
 			return : spiro-outline
@@ -452,7 +452,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		StdWhiteShape SquareLozengeShape 'rotatedWhiteFourPointedCusp' 0x2BCF Size.MediumOblique
 		StdBlackShape SquareLozengeShape 'rotatedBlackFourPointedCusp' 0x2BCD Size.MediumOblique
 
-	do "Diamond-lozenge"
+	do 'Diamond-lozenge'
 		define [DiamondLazongeShape cx cy size] : begin
 			define p 0.7
 			return : spiro-outline
@@ -485,7 +485,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		StdBlackShape DiamondLazongeShape 'lightFourPointedBlackCusp' 0x2BCC Size.Oblique
 		StdWhiteShape DiamondLazongeShape 'whiteFourPointedBlackCusp' 0x2BCE Size.ObliqueSA
 
-	do "Circle"
+	do 'Circle'
 		define [CircleShape cx cy size] : spiro-outline
 			g4 (cx - size) cy
 			arcvh.superness 2
@@ -558,7 +558,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 				refer-glyph : MangleName 'blackCircle'
 				spiro-outline [corner (Geom.MidX - Geom.Size) (Geom.MidY - Geom.Size)] [corner Geom.MidX Geom.MidY] [corner (Geom.MidX + Geom.Size) (Geom.MidY - Geom.Size)]
 
-	do "Ellipse"
+	do 'Ellipse'
 		define [EllipseFillT kx ky] : lambda  [cx cy r s] : begin
 			define rOrig : r + s
 			return : spiro-outline
@@ -577,7 +577,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		StdBlackShape [EllipseFillT (2/3) 1] 'blackLongEllipse' 0x2B2E
 		StdWhiteShape [EllipseFillT (2/3) 1] 'whiteLongEllipse' 0x2B2F
 
-	do "Regular Polygon"
+	do 'Regular Polygon'
 		define [RegularPolygonFill sides skip overflow phase] : lambda [cx cy size] : begin
 			local corners {}
 			foreach [j : range 0 sides] : begin
@@ -618,7 +618,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 				with-transform [Translate 0   offset ] : refer-glyph : MangleName 'whiteTriangleUp'
 				with-transform [Translate 0 (-offset)] : refer-glyph : MangleName 'whiteTriangleDown'
 
-	do "Other Stars"
+	do 'Other Stars'
 		define [CurlyEdgeStar sides shrink overflow phase] : lambda [cx cy size] : begin
 			local corners {}
 			foreach [j : range 0 sides] : begin
@@ -636,7 +636,7 @@ glyph-block Symbol-Geometric-Plain : for-width-kinds WideWidth1
 		StdBlackShape [CurlyEdgeStar 4  0.6  1.1  0] 'blackFourPointedStar' 0x2726
 		StdWhiteShape [CurlyEdgeStar 4  0.6  1.1  0] 'whiteFourPointedStar' 0x2727 [PentagramSw 5]
 
-	do "Arrow head"
+	do 'Arrow head'
 		define [RightArrowHeadShape cx cy size] : spiro-outline
 			corner (cx - size)       (cy + size)
 			corner (cx + size)        cy

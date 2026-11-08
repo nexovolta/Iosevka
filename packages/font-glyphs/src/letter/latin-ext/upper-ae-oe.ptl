@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 
 	define [AEOEStroke df top] : df.adviceThinnerStroke2 3 3 top
 
-	do "A subglyphs"
+	do 'A subglyphs'
 		define BODY-CURLY      0
 		define BODY-STRAIGHT   1
 		define BODY-ROUND-TOP  2
@@ -155,7 +155,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		select-variant 'smcpAE/smcpA/full'    (shapeFrom -- 'smcpAE/smcpA') (follow -- 'AE/E.serifless/A')
 		select-variant 'smcpAE/smcpA/reduced' (shapeFrom -- 'smcpAE/smcpA') (follow -- 'AE/E.topLeftSerifed/A')
 
-	do "O subglyphs"
+	do 'O subglyphs'
 		glyph-block-import Letter-Shared-Shapes : OBarRight
 
 		define [OEOHalf df top] : glyph-proc
@@ -174,18 +174,18 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 				ada   -- [ArchDepthAOf archDepth mockWidth]
 				adb   -- [ArchDepthBOf archDepth mockWidth]
 
-		create-glyph "OE/O" : glyph-proc
+		create-glyph 'OE/O' : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
 			set-base-anchor 'cvDecompose' 0 0
 			include : OEOHalf df CAP
-		create-glyph "smcpOE/smcpO" : glyph-proc
+		create-glyph 'smcpOE/smcpO' : glyph-proc
 			define df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.e
 			set-base-anchor 'cvDecompose' 0 0
 			include : OEOHalf df XH
 
-	do "Ya subglyphs"
+	do 'Ya subglyphs'
 		glyph-block-import Letter-Latin-Upper-R : RevRShape RevRConfig
 
 		foreach { suffix { legShape fGap { slabs doLegSlab doTail } } } [Object.entries RevRConfig] : do
@@ -208,7 +208,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 
 		select-variant 'cyrl/YaYe/Ya'
 
-	do "E subglyphs"
+	do 'E subglyphs'
 		glyph-block-import Letter-Shared-Metrics : EFVJutLength EFMidBarPosY
 
 		define SLAB-NONE    0
@@ -254,14 +254,14 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 				define df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital
 				include : AEEHalf df CAP slabKind
-				DependentSelector.set currentGlyph : if (suffix === "serifless" || suffix === "capped") 'full' 'reduced'
+				DependentSelector.set currentGlyph : if (suffix === 'serifless' || suffix === 'capped') 'full' 'reduced'
 			create-glyph "smcpAE/smcpE.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
 				include : AEEHalf df XH slabKind
-				DependentSelector.set currentGlyph : if (suffix === "serifless" || suffix === "capped") 'full' 'reduced'
+				DependentSelector.set currentGlyph : if (suffix === 'serifless' || suffix === 'capped') 'full' 'reduced'
 
-			if (suffix !== "topLeftSerifed" && suffix !== "topLeftSerifedCapped") : begin
+			if (suffix !== 'topLeftSerifed' && suffix !== 'topLeftSerifedCapped') : begin
 				create-glyph "OE/E.\(suffix)" : glyph-proc
 					define df : DivFrame para.advanceScaleMM 3
 					set-width 0
@@ -286,8 +286,8 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		full    'smcpAE/smcpA/full'
 		reduced 'smcpAE/smcpA/reduced'
 
-	derive-composites "OE"     0x152 'OE/O'         'OE/E'
-	derive-composites "smcpOE" 0x276 'smcpOE/smcpO' 'smcpOE/smcpE'
+	derive-composites 'OE'     0x152 'OE/O'         'OE/E'
+	derive-composites 'smcpOE' 0x276 'smcpOE/smcpO' 'smcpOE/smcpE'
 
 	alias 'cyrl/AYe' 0x4D4 'AE'
-	derive-composites "cyrl/YaYe" 0x518 'cyrl/YaYe/Ya' 'OE/E'
+	derive-composites 'cyrl/YaYe' 0x518 'cyrl/YaYe/Ya' 'OE/E'

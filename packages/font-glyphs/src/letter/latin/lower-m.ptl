@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg joinCamel] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg joinCamel] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -290,30 +290,30 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-export SmallMConfig
 	define SmallMConfig : SuffixCfg.weave
 		object
-			""                             { SmallMArches                        0 }
-			"flatTop"                      { FlatTopSmallMShape                  0 }
-			"earlessSingleArch"            { EarlessSingleArchSmallMShape         1 }
-			"earlessRoundedSingleArch"     { EarlessRoundedSingleArchSmallMShape  1 }
-			"earlessCornerDoubleArch"      { EarlessCornerDoubleArchSmallMShape   1 }
-			"earlessRoundedDoubleArch"     { EarlessRoundedDoubleArchSmallMShape  1 }
+			''                             { SmallMArches                        0 }
+			'flatTop'                      { FlatTopSmallMShape                  0 }
+			'earlessSingleArch'            { EarlessSingleArchSmallMShape         1 }
+			'earlessRoundedSingleArch'     { EarlessRoundedSingleArchSmallMShape  1 }
+			'earlessCornerDoubleArch'      { EarlessCornerDoubleArchSmallMShape   1 }
+			'earlessRoundedDoubleArch'     { EarlessRoundedDoubleArchSmallMShape  1 }
 		function [ear] : begin
 			if (ear === 'earlessSingleArch' || ear === 'earlessRoundedSingleArch' || ear === 'earlessCornerDoubleArch' || ear === 'earlessRoundedDoubleArch') : return : object
-				""         ""
+				''         ''
 			return : object
-				""         ""
-				topCut     "topCut"
+				''         ''
+				topCut     'topCut'
 		object
-			""                             { 0 }
-			"shortLeg"                     { 1 }
+			''                             { 0 }
+			'shortLeg'                     { 1 }
 		object
-			""                             { 0 }
-			"tailed"                       { 1 }
+			''                             { 0 }
+			'tailed'                       { 1 }
 		object
-			"serifless"                    { no-shape   }
-			"serifed"                      { FullSerifs }
-			"topLeftSerifed"               { LtSerifs   }
-			"bottomRightSerifed"           { RbSerifs   }
-			"topLeftAndBottomRightSerifed" { LtRbSerifs }
+			'serifless'                    { no-shape   }
+			'serifed'                      { FullSerifs }
+			'topLeftSerifed'               { LtSerifs   }
+			'bottomRightSerifed'           { RbSerifs   }
+			'topLeftAndBottomRightSerifed' { LtRbSerifs }
 
 	foreach { suffix { { Body earless } cut { shortLeg } { tailed } { Serifs } } } [pairs-of SmallMConfig] : do
 		define [mShapeBody df top _sw _ada _adb] : begin
@@ -468,12 +468,12 @@ glyph-block Letter-Latin-Lower-M : begin
 			toothlessRoundedSingleArch   { EarlessRoundedSingleArchSmallMShape  1 0 }
 		function [body] : begin
 			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded' || body === 'toothlessRoundedSingleArch') : return : object
-				""         ""
+				''         ''
 			return : object
-				""         ""
-				bottomCut  "bottomCut"
+				''         ''
+				bottomCut  'bottomCut'
 		object # stem
-			""                 { 0 }
+			''                 { 0 }
 			shortStem          { 1 }
 		function [body cut stem] : object # serifs
 			serifless          { no-shape   no-shape           }

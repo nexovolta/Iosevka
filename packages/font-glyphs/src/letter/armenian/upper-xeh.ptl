@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -12,7 +12,7 @@ glyph-block Letter-Armenian-Upper-Xeh : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
 
-	do "Xeh"
+	do 'Xeh'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Xeh.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
@@ -30,18 +30,18 @@ glyph-block Letter-Armenian-Upper-Xeh : begin
 						include sf2.rt.outer
 		local XehPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topLeftMotion 1
 				topLeftFull 2
 			object
-				"" 0
+				'' 0
 				topCenterFull 2
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 				topRightFull 2
 			object
-				"" 0
+				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
 		foreach { suffix { p0 p1 p2 p3 } } [Object.entries XehPositionedSerifs] : do

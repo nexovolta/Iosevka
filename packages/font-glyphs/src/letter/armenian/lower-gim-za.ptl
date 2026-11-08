@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -12,7 +12,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 	glyph-block-import Letter-Shared-Shapes : OBarRight SerifFrame
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
-	do "Gim"
+	do 'Gim'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/gim.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -34,10 +34,10 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 						composite-proc sf.rt.outer sf.rb.fullSide
 		local gimPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 p1 } } [Object.entries gimPositionedSerifs] : do
@@ -49,7 +49,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 				if p1 : include : if (p1 === 1) sf.rb.outer sf.rb.fullSide
 		select-variant 'armn/gim' 0x563
 
-	do "Za"
+	do 'Za'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/za.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -70,7 +70,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 					include sf.rt.outer
 		local zaPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				topRightMotion 1
 		foreach { suffix { p0 } } [Object.entries zaPositionedSerifs] : do
 			if (p0) : create-glyph "armn/za.\(suffix)" : glyph-proc

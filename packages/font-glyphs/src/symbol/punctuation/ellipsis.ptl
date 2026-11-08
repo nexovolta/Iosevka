@@ -1,7 +1,7 @@
 ### Punctuation symbols
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
+import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
@@ -31,7 +31,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 		local [yp p] : mix (bottom + radius) (top - radius) p
 		foreach [j : range 0 nDots] : include : DrawAt xMid [yp (j / (nDots - 1))] (radius - overshoot)
 
-	for-width-kinds WideWidth1 "Ellipsis"
+	for-width-kinds WideWidth1 'Ellipsis'
 		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		# Dot-shape-only glyphs (no density axis)
 		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
@@ -160,8 +160,8 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 			local radius : kDotRadius * [EllipsisDotRadius 7 (ParenTop - ParenBot)]
 			include : VNDotShape 6 DrawAt radius overshoot df.middle ParenBot ParenTop
 
-	select-variant "triColon"  0x205D (follow -- 'punctuationDot')
-	select-variant "quadColon" 0x205E (follow -- 'punctuationDot')
-	select-variant "mathTriColon" 0x2AF6 (follow -- 'punctuationDot')
-	select-variant "mathQuadColon" 0x2999 (follow -- 'punctuationDot')
-	select-variant "vSixDots" 0x2E3D (follow -- 'punctuationDot')
+	select-variant 'triColon'  0x205D (follow -- 'punctuationDot')
+	select-variant 'quadColon' 0x205E (follow -- 'punctuationDot')
+	select-variant 'mathTriColon' 0x2AF6 (follow -- 'punctuationDot')
+	select-variant 'mathQuadColon' 0x2999 (follow -- 'punctuationDot')
+	select-variant 'vSixDots' 0x2E3D (follow -- 'punctuationDot')

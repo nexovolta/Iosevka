@@ -1,7 +1,7 @@
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Box] from "@iosevka/geometry/box"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
 
 glyph-module
 
@@ -16,7 +16,7 @@ glyph-block Mark-Overlay : begin
 	define tildeHeight : 0.75 * (aboveMarkTop - aboveMarkBot)
 	define tildeHalfWidth : markExtend + [HSwToV : 0.4 * Stroke]
 
-	do "Overlay on stems"
+	do 'Overlay on stems'
 		create-glyph 'tildeOver' 0x334 : glyph-proc
 			set-width 0
 			set-mark-anchor 'overlay' markMiddle (XH / 2) markMiddle (XH / 2)
@@ -164,7 +164,7 @@ glyph-block Mark-Overlay : begin
 				flat (-markExtend) (-markExtend)
 				curl (+markExtend) (+markExtend)
 
-	do "Strikes on entire letter on blank (bowl)"
+	do 'Strikes on entire letter on blank (bowl)'
 		create-glyph 'hStrike' : glyph-proc
 			set-width 0
 			set-mark-anchor 'strike' markMiddle (XH / 2) markMiddle (XH / 2)
@@ -235,7 +235,7 @@ glyph-block Mark-Overlay : begin
 				rightEnd  --  (markMiddle + (Width * para.advanceScaleMM) / 2)
 				hs        --  (OverlayStroke / 2)
 
-	do "Slashes"
+	do 'Slashes'
 		define fine    : AdviceStroke 6
 		define fineDbl : AdviceStroke 7
 
@@ -327,7 +327,7 @@ glyph-block Mark-Overlay : begin
 				flat (markMiddle - dx) ((XH / 2) - dy)
 				curl (markMiddle + dx) ((XH / 2) + dy)
 
-	do "Arrow overlays"
+	do 'Arrow overlays'
 		glyph-block-import Symbol-Arrow-Shared : ArrowDims
 
 		for-width-kinds WideWidth1
@@ -505,7 +505,7 @@ glyph-block Mark-Overlay : begin
 		include : VBar.m 0 (-ext) (+ext) swV
 		include : HBar.t (-markExtend) (+markExtend) (+ext) swH
 
-	do "Half-XH marks for spacing modifiers"
+	do 'Half-XH marks for spacing modifiers'
 		define ext : Math.min markExtend (aboveMarkTop - aboveMarkBot)
 
 		create-glyph 'leftTackOver' : glyph-proc
@@ -601,9 +601,9 @@ glyph-block Mark-Overlay : begin
 		define parenOverBot : parenOverMid - parenOverHalfH
 		define parenOverDepth : markExtend * 0.25
 		define CombiningParenOverlayConfig : object
-			normal       { 0    1 }
-			largeContour { 0.25 0.75 }
-			flatArc      { 0.5  0.75 }
+			normal        { 0     1 }
+			largeContour  { 0.25  0.75 }
+			flatArc       { 0.5   0.75 }
 
 		foreach { suffix { kOut kCurl } } [Object.entries CombiningParenOverlayConfig] : do
 			create-glyph "leftParenOver.\(suffix)" : glyph-proc
@@ -640,7 +640,7 @@ glyph-block Mark-Overlay : begin
 		select-variant 'rightParenOver' (follow -- 'parenRight')
 		select-variant 'parenOver' 0x1ABE (follow -- 'parenLeft')
 
-	do "Inner dots"
+	do 'Inner dots'
 		glyph-block-export InnerDot
 		define [InnerDot x y kHeight fRound kdr _space _adws] : begin
 			local space : fallback _space : InnerDot.spaceOfDf [DivFrame 1]

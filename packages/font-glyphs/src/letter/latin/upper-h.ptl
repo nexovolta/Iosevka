@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -218,7 +218,7 @@ glyph-block Letter-Latin-Upper-H : begin
 	define HConfig : SuffixCfg.combine
 		SuffixCfg.weave
 			object # tail
-				""                          false
+				''                          false
 				tailed                      true
 			function [tail] : object # serifs
 				serifless                   SLAB-NONE
@@ -240,7 +240,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			diagonalCrossbarFalling { false SLAB-NONE (-1) }
 		SuffixCfg.weave
 			object
-				"" false
+				'' false
 			function [tail] : object
 				topLeftSerifed             SLAB-TL
 				topLeftBottomRightSerifed  SLAB-TL-BR
@@ -295,8 +295,8 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		define enGheDf : DivFrame para.advanceScaleM 3
 
-		DefineSelectorGlyph "cyrl/EnGhe" suffix enGheDf 'capital'
-		DefineSelectorGlyph "cyrl/enghe" suffix enGheDf 'e'
+		DefineSelectorGlyph 'cyrl/EnGhe' suffix enGheDf 'capital'
+		DefineSelectorGlyph 'cyrl/enghe' suffix enGheDf 'e'
 
 		foreach { suffixGhe serifGhe } [Object.entries EnGheGheConfig] : do
 			create-glyph "cyrl/EnGhe.\(suffix).\(suffixGhe)" : glyph-proc
@@ -314,7 +314,7 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		define hwairDf : DivFrame para.advanceScaleMM 3
 
-		DefineSelectorGlyph "Hwair" suffix hwairDf 'capital'
+		DefineSelectorGlyph 'Hwair' suffix hwairDf 'capital'
 
 		foreach { suffixV serifV } [Object.entries HwairVConfig] : do
 			create-glyph "Hwair.\(suffix).\(suffixV)" : glyph-proc
@@ -336,7 +336,7 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		create-glyph "HHookLeft.\(suffix)" : glyph-proc
 			include [refer-glyph "H.\(suffix)"] AS_BASE ALSO_METRICS
-			eject-contour "serifLT"
+			eject-contour 'serifLT'
 			include : LeftHook SB CAP
 
 		create-glyph "Heng.\(suffix)" : glyph-proc

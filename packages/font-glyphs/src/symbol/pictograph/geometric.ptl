@@ -1,8 +1,8 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [Box] from "@iosevka/geometry/box"
-import [Transform] from "@iosevka/geometry/transform"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
+import [Transform] from '@iosevka/geometry/transform'
 
 glyph-module
 
@@ -22,7 +22,7 @@ glyph-block Symbol-Pictograph-Geometric : for-width-kinds WideWidth4
 
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 
-	do "Square Spiral"
+	do 'Square Spiral'
 		define directions : list
 			* {.dx   1  .dy   0  .heading Rightward}
 			* {.dx   0  .dy   1  .heading Upward}
@@ -47,65 +47,65 @@ glyph-block Symbol-Pictograph-Geometric : for-width-kinds WideWidth4
 				set x1 x2
 				set y1 y2
 
-		create-glyph [MangleName "squareSpiralFromTopLeft"] [MangleUnicode 0x1CC7C] : glyph-proc
+		create-glyph [MangleName 'squareSpiralFromTopLeft'] [MangleUnicode 0x1CC7C] : glyph-proc
 			set-width MosaicWidth
 			include : SquareSpiral Geom.Left Geom.Top 3
-		create-glyph [MangleName "squareSpiralFromTopRight"] [MangleUnicode 0x1CC7D] : glyph-proc
+		create-glyph [MangleName 'squareSpiralFromTopRight'] [MangleUnicode 0x1CC7D] : glyph-proc
 			set-width MosaicWidth
 			include : SquareSpiral Geom.Right Geom.Top 2
-		create-glyph [MangleName "squareSpiralFromBottomRight"] [MangleUnicode 0x1CC7E] : glyph-proc
+		create-glyph [MangleName 'squareSpiralFromBottomRight'] [MangleUnicode 0x1CC7E] : glyph-proc
 			set-width MosaicWidth
 			include : SquareSpiral Geom.Right Geom.Bot 1
-		create-glyph [MangleName "squareSpiralFromBottomLeft"] [MangleUnicode 0x1CC7F] : glyph-proc
+		create-glyph [MangleName 'squareSpiralFromBottomLeft'] [MangleUnicode 0x1CC7F] : glyph-proc
 			set-width MosaicWidth
 			include : SquareSpiral Geom.Left Geom.Bot 0
 
-	do "Ladder"
-		create-glyph [MangleName "vertLadder"] [MangleUnicode 0x1CC84] : glyph-proc
+	do 'Ladder'
+		create-glyph [MangleName 'vertLadder'] [MangleUnicode 0x1CC84] : glyph-proc
 			set-width MosaicWidth
 			include : HShade 8 top bottom Geom.Left Geom.Right
 			include : VBar.l Geom.Left bottom top GeometryStroke
 			include : VBar.r Geom.Right bottom top GeometryStroke
 
-		create-glyph [MangleName "horiLadder"] [MangleUnicode 0x1CC85] : glyph-proc
+		create-glyph [MangleName 'horiLadder'] [MangleUnicode 0x1CC85] : glyph-proc
 			set-width MosaicWidth
 			include : VShade (4 * MosaicWidthScalar) Geom.Top Geom.Bot left right
 			include : HBar.b left right Geom.Bot GeometryStroke
 			include : HBar.t left right Geom.Top GeometryStroke
 
 
-	do "Striped Triangles"
+	do 'Striped Triangles'
 		define stripes : 2 + 2 * MosaicWidthScalar
 		define coTop : mix Geom.Top Geom.Bot (0 - 1 / (2 * stripes))
 		define coBot : mix Geom.Top Geom.Bot (1 + 1 / (2 * stripes))
 		define coLeft : mix Geom.Left Geom.Right (0 - 1 / (2 * stripes))
 		define coRight : mix Geom.Left Geom.Right (1 + 1 / (2 * stripes))
 
-		create-glyph [MangleName "stripedTriangleLeft"] [MangleUnicode 0x1CC80] : glyph-proc
+		create-glyph [MangleName 'stripedTriangleLeft'] [MangleUnicode 0x1CC80] : glyph-proc
 			set-width MosaicWidth
 			include : intersection
-				refer-glyph : MangleName "blackTriangleLeft"
+				refer-glyph : MangleName 'blackTriangleLeft'
 				VShade stripes top bottom coLeft coRight
 
-		create-glyph [MangleName "stripedTriangleUp"] [MangleUnicode 0x1CC81] : glyph-proc
+		create-glyph [MangleName 'stripedTriangleUp'] [MangleUnicode 0x1CC81] : glyph-proc
 			set-width MosaicWidth
 			include : intersection
-				refer-glyph : MangleName "blackTriangleUp"
+				refer-glyph : MangleName 'blackTriangleUp'
 				HShade stripes coTop coBot left right
 
-		create-glyph [MangleName "stripedTriangleRight"] [MangleUnicode 0x1CC82] : glyph-proc
+		create-glyph [MangleName 'stripedTriangleRight'] [MangleUnicode 0x1CC82] : glyph-proc
 			set-width MosaicWidth
 			include : intersection
-				refer-glyph : MangleName "blackTriangleRight"
+				refer-glyph : MangleName 'blackTriangleRight'
 				VShade stripes top bottom coLeft coRight
 
-		create-glyph [MangleName "stripedTriangleDown"] [MangleUnicode 0x1CC83] : glyph-proc
+		create-glyph [MangleName 'stripedTriangleDown'] [MangleUnicode 0x1CC83] : glyph-proc
 			set-width MosaicWidth
 			include : intersection
-				refer-glyph : MangleName "blackTriangleDown"
+				refer-glyph : MangleName 'blackTriangleDown'
 				HShade stripes coTop coBot left right
 
-	do "Horizontal Zigzag"
+	do 'Horizontal Zigzag'
 		glyph-block-import Shared-Symbol-Shapes : HZigzag
 
 		create-glyph [MangleName 'horiZigzag'] [MangleUnicode 0x1CEB0] : glyph-proc

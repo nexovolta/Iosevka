@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix clamp fallback] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix clamp fallback] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -291,33 +291,33 @@ glyph-block Letter-Latin-Ezh : begin
 				include : VSerif.dr xTopRight top jutTop (VJutStroke * (stroke / Stroke))
 
 	define LegacyEzhConfig : object
-		straightSerifless  { false false }
-		straightTopSerifed { false true  }
-		cursive            { true  false }
+		straightSerifless   { false  false }
+		straightTopSerifed  { false  true }
+		cursive             { true   false }
 
 	define PhoneticEzhHooks : list 'serifless' 'serifed' 'inwardSerifed' 'flatHook' 'cornerHook'
 
 	define EzhConfig : object
-		straightSerifless { false false 'serifless' }
-		straightTopSerifed { false true 'serifless' }
-		straightHookSerifedSerifless { false false 'serifed' }
-		straightHookSerifedTopSerifed { false true 'serifed' }
-		straightHookInwardSerifedSerifless { false false 'inwardSerifed' }
-		straightHookInwardSerifedTopSerifed { false true 'inwardSerifed' }
-		straightHookFlatSerifless { false false 'flatHook' }
-		straightHookFlatTopSerifed { false true 'flatHook' }
-		straightHookCornerSerifless { false false 'cornerHook' }
-		straightHookCornerTopSerifed { false true 'cornerHook' }
-		cursiveSerifless { true false 'serifless' }
-		cursiveTopSerifed { true true 'serifless' }
-		cursiveHookSerifedSerifless { true false 'serifed' }
-		cursiveHookSerifedTopSerifed { true true 'serifed' }
-		cursiveHookInwardSerifedSerifless { true false 'inwardSerifed' }
-		cursiveHookInwardSerifedTopSerifed { true true 'inwardSerifed' }
-		cursiveHookFlatSerifless { true false 'flatHook' }
-		cursiveHookFlatTopSerifed { true true 'flatHook' }
-		cursiveHookCornerSerifless { true false 'cornerHook' }
-		cursiveHookCornerTopSerifed { true true 'cornerHook' }
+		straightSerifless                    { false  false  'serifless' }
+		straightTopSerifed                   { false  true   'serifless' }
+		straightHookSerifedSerifless         { false  false  'serifed' }
+		straightHookSerifedTopSerifed        { false  true   'serifed' }
+		straightHookInwardSerifedSerifless   { false  false  'inwardSerifed' }
+		straightHookInwardSerifedTopSerifed  { false  true   'inwardSerifed' }
+		straightHookFlatSerifless            { false  false  'flatHook' }
+		straightHookFlatTopSerifed           { false  true   'flatHook' }
+		straightHookCornerSerifless          { false  false  'cornerHook' }
+		straightHookCornerTopSerifed         { false  true   'cornerHook' }
+		cursiveSerifless                     { true   false  'serifless' }
+		cursiveTopSerifed                    { true   true   'serifless' }
+		cursiveHookSerifedSerifless          { true   false  'serifed' }
+		cursiveHookSerifedTopSerifed         { true   true   'serifed' }
+		cursiveHookInwardSerifedSerifless    { true   false  'inwardSerifed' }
+		cursiveHookInwardSerifedTopSerifed   { true   true   'inwardSerifed' }
+		cursiveHookFlatSerifless             { true   false  'flatHook' }
+		cursiveHookFlatTopSerifed            { true   true   'flatHook' }
+		cursiveHookCornerSerifless           { true   false  'cornerHook' }
+		cursiveHookCornerTopSerifed          { true   true   'cornerHook' }
 
 	define LyoghCasualTopConfig : object
 		topTailed  'tailed'
@@ -498,9 +498,9 @@ glyph-block Letter-Latin-Ezh : begin
 
 	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
 		if [not fSerifed] : begin
-			DefineSelectorGlyph "lyogh"          suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph "lyoghCurlyTail" suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph "lyoghRTail"     suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lyogh'          suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lyoghCurlyTail' suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lyoghRTail'     suffix [DivFrame 1] 'bp'
 
 			create-glyph "lyogh.\(suffix).serifless" : glyph-proc
 				set-width 0
@@ -694,8 +694,8 @@ glyph-block Letter-Latin-Ezh : begin
 					refSw   -- fine
 					maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
 
-			DefineSelectorGlyph "lyogh/phoneticRight"      suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph "lyoghRTail/phoneticRight" suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lyogh/phoneticRight'      suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lyoghRTail/phoneticRight' suffix [DivFrame 1] 'bp'
 
 			create-glyph "lyogh/phoneticRight.\(suffix).serifless" : glyph-proc
 				set-width 0
@@ -864,7 +864,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local choices {.}
 		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
 			foreach hookStyle [items-of PhoneticEzhHooks] : begin
-				local selector : suffix + "." + hookStyle
+				local selector : suffix + '.' + hookStyle
 				DefineSelectorGlyph name selector [DivFrame 1] 'bp'
 				set choices.(selector) "\(name)/hook.\(selector)"
 		select-multi-dimensional-variant "\(name)/selector" (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
@@ -886,11 +886,10 @@ glyph-block Letter-Latin-Ezh : begin
 	CreateSelectorVariants 'lyoghCurlyTail' 0x1DF67 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 	CreateSelectorVariants 'lyoghRTail'     0x1DF05 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 
-	do "TZ"
+	do 'TZ'
 		glyph-block-import Letter-Latin-Upper-T : TConfig TShape
 		glyph-block-import Letter-Latin-Lower-T : SmallTConfig
 
-		# Draw on a 1.5em MM frame, then compress to the family advance in monospace.
 		define tzAdws 1.5
 		define [TzFitAdvance] : glyph-proc
 			if (para.advanceScaleMM < tzAdws) : begin
@@ -950,7 +949,7 @@ glyph-block Letter-Latin-Ezh : begin
 		select-variant 'TZ/ezh' (follow -- 'ezh/phoneticRight')
 		select-variant 'tz/ezh' (follow -- 'ezh/phoneticRight')
 
-		derive-multi-part-glyphs 'TZ' 0xA728 { "TZ/T" "TZ/ezh" } : function [srcs gr] : glyph-proc
+		derive-multi-part-glyphs 'TZ' 0xA728 { 'TZ/T' 'TZ/ezh' } : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
 			include : df.markSet.p
 			define { te ezhg } srcs
@@ -958,7 +957,7 @@ glyph-block Letter-Latin-Ezh : begin
 			include [refer-glyph ezhg]
 			include : TzFitAdvance
 
-		derive-multi-part-glyphs 'tz' 0xA729 { "tz/t" "tz/ezh" } : function [srcs gr] : glyph-proc
+		derive-multi-part-glyphs 'tz' 0xA729 { 'tz/t' 'tz/ezh' } : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
 			include : df.markSet.bp
 			define { te ezhg } srcs
@@ -979,7 +978,7 @@ glyph-block Letter-Latin-Ezh : begin
 	alias 'cyrl/abk/Dze' 0x4E0 'Ezh'
 	alias 'cyrl/abk/dze' 0x4E1 'ezh'
 
-	do "Visigothic Z"
+	do 'Visigothic Z'
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
 
 		define FLAT-CONNECTION 3

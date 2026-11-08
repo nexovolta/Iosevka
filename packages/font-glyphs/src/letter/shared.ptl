@@ -1,10 +1,10 @@
 $$include '../meta/macros.ptl'
 
-import [mix clamp fallback] from "@iosevka/util"
-import [FunctionInterpolator] from "@iosevka/geometry/spiro-control"
-import [Dotless CvDecompose] from "@iosevka/glyph/relation"
-import [RightDependentTrigger RightDependentLink DependentSelector] from "@iosevka/glyph/relation"
-import [DesignParameters] from "../meta/aesthetics.mjs"
+import [mix clamp fallback] from '@iosevka/util'
+import [FunctionInterpolator] from '@iosevka/geometry/spiro-control'
+import [Dotless CvDecompose] from '@iosevka/glyph/relation'
+import [RightDependentTrigger RightDependentLink DependentSelector] from '@iosevka/glyph/relation'
+import [DesignParameters] from '../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -254,7 +254,7 @@ glyph-block Letter-Shared-Shapes : begin
 			local yOuter : [if ltr YSmoothMidR YSmoothMidL] top args.bottom
 
 			return : list
-				Arch.[if ltr "lhs" "rhs"] args.bottom (sw -- args.fine) (swBefore -- args.swBefore)
+				Arch.[if ltr 'lhs' 'rhs'] args.bottom (sw -- args.fine) (swBefore -- args.swBefore)
 				g4 args.xOuter yOuter
 				if args.flat
 				: then : list
@@ -264,7 +264,7 @@ glyph-block Letter-Shared-Shapes : begin
 					local terminalDeltaY 0.01
 					local terminalDeltaX : terminalDeltaY * args.terminalSlopeAdj * ([mix before.x args.xOuter 0.5] - args.x2) / (top - args.y2)
 					list
-						Arch.[if ltr "lhs" "rhs"] top (sw -- args.fine)
+						Arch.[if ltr 'lhs' 'rhs'] top (sw -- args.fine)
 							mockPost  -- {.x [mix args.x2 args.xOuter 0.33] .y args.bottom}
 							blendPost -- {}
 						g2 (args.x2 + terminalDeltaX) (args.y2 + terminalDeltaY)
@@ -1167,7 +1167,7 @@ glyph-block Letter-Shared-Shapes : begin
 			define dxDepth : (depth - 0.25 * sw) * (+dSinAngle)
 			define dyDepth : (depth - 0.25 * sw) * (-dCosAngle)
 			return : list
-				g4.[if (sign > 0) "right" "left"].mid
+				g4.[if (sign > 0) 'right' 'left'].mid
 					cx + sign * dxTurn
 					cy + O + fine
 					[if (sign > 0) widths.rhs widths.lhs] fine
@@ -1390,7 +1390,7 @@ glyph-block Letter-Shared-Shapes : begin
 				sw     -- sw
 				yExtension -- yExtension
 
-	do "Descender shapes"
+	do 'Descender shapes'
 		define [xLinkStroke xLink x yAttach sw refSw] : begin
 			return : if (xLink == nothing) [no-shape] : HBar.b
 				Math.min xLink : x - [HSwToV : 0.5 * sw]
@@ -1674,7 +1674,7 @@ glyph-block Letter-Shared-Shapes : begin
 				g4.down.end (x - LeftHook.extension) (y - HookX) [heading Downward]
 		set LeftHook.extension [Math.max (Width * 0.2) ([AdviceStroke 4.25] * 1.5)]
 
-	do "Belt overlays"
+	do 'Belt overlays'
 		define [BeltOverlayAt x y] : begin
 			local fine : AdviceStroke 4.5
 			local r : XH * 0.05
@@ -1692,7 +1692,7 @@ glyph-block Letter-Shared-Shapes : begin
 		define [BeltOverlay top xMiddle] : BeltOverlayAt xMiddle (0.5 * top)
 		set BeltOverlay.at BeltOverlayAt
 
-	do "Letter bar overlays"
+	do 'Letter bar overlays'
 		glyph-block-export LetterBarOverlay LetterObliqueBarOverlay
 		define [BarOverlayImpl] : with-params [barFunc x y space refSw pXInSw sw] : begin
 			local {xLeftSpace xRightSpace} space

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -556,7 +556,7 @@ glyph-block Letter-Latin-W : begin
 
 		# Serifs
 		function [body] : if (body == 'cyrlOmega')
-			then : object [""  SERIFS-CYRL-OMEGA]
+			then : object [''  SERIFS-CYRL-OMEGA]
 			else : object
 				serifless              SERIFS-NONE
 				motionSerifed          SERIFS-MOTION
@@ -673,7 +673,7 @@ glyph-block Letter-Latin-W : begin
 
 	local bakedH BakedHDigraphSuffix
 	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
-		if (hSuffix === bakedH) : create-glyph "latn/wh/h" : glyph-proc
+		if (hSuffix === bakedH) : create-glyph 'latn/wh/h' : glyph-proc
 			local L : WhLayout
 			include : with-transform [ApparentTranslate L.shift 0] : HDigraphBody L.hDf L.sw HSerifs false fFlatHump fTailed
 

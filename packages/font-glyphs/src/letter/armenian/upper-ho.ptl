@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [DependentSelector] from "@iosevka/glyph/relation"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [DependentSelector] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -11,7 +11,7 @@ glyph-block Letter-Armenian-Upper-Ho : begin
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmenianSerifConfig
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 
-	do "Ho"
+	do 'Ho'
 		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Ho.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
@@ -44,7 +44,7 @@ glyph-block Letter-Armenian-Upper-Ho : begin
 					include sf.rb.full
 		local HoPositionedSerifs : SuffixCfg.weave
 			object
-				"" 0
+				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
 		foreach { suffix { p0 } } [Object.entries HoPositionedSerifs] : do

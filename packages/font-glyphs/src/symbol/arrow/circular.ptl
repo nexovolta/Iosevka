@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [BezToContoursSink] from "@iosevka/geometry/curve-util"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
 
 glyph-module
 
@@ -118,7 +118,7 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 	create-glyph [MangleName 'ccwOpenCircleArrowTriangle'] [MangleUnicode 0x2B6F] : glyph-proc
 		include : OpenCircleArrow Arrow.Head.trigShape true  false
 
-	do "Curving and semicircular arrows"
+	do 'Curving and semicircular arrows'
 		local sw : AdviceStroke 4
 		local sz : Math.max (headSize * 0.9) (sw * 2)
 		local left : mix arrowMidX arrowSB 0.85
@@ -207,7 +207,7 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 		create-glyph [MangleName 'lowerRightSemicircleClockwise'] [MangleUnicode 0x293E] : LowerCircleArc 1
 		create-glyph [MangleName 'lowerLeftSemicircleAnticlockwise'] [MangleUnicode 0x293F] : LowerCircleArc (-1)
 
-	do "Black curved arrows"
+	do 'Black curved arrows'
 		define [BlackCurvedArrow] : glyph-proc
 			set-width MosaicWidth
 			local w : [Math.min (arrowRSB - arrowSB) (arrowTop - arrowBot)] * 0.9

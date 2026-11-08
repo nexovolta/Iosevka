@@ -1,8 +1,8 @@
 ### Punctuation symbols
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [DesignParameters] from "../../meta/aesthetics.mjs"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [DesignParameters] from '../../meta/aesthetics.mjs'
 
 glyph-module
 
@@ -251,11 +251,11 @@ glyph-block Symbol-Punctuation-Small : begin
 	select-variant 'comma/asDiacritic' (follow -- 'diacriticComma')
 	select-variant 'revComma/asDiacritic' (follow -- 'diacriticComma')
 
-	turned "turnComma.round"  null "comma.round"  [DivFrame para.advanceScaleI].middle PeriodRadius
-	turned "turnComma.square" null "comma.square" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
-	turned "turnComma.diamond" null "comma.diamond" [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
-	turned "turnComma.prime"  null "comma.prime"  [DivFrame para.advanceScaleI].middle PeriodRadius
-	turned "turnComma.tick"   null "comma.tick"   [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.round'  null 'comma.round'  [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.square' null 'comma.square' [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
+	turned 'turnComma.diamond' null 'comma.diamond' [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
+	turned 'turnComma.prime'  null 'comma.prime'  [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.tick'   null 'comma.tick'   [DivFrame para.advanceScaleI].middle PeriodRadius
 	foreach suffix { 'hexagon' 'corner' 'bottomCut' } : do
 		turned "turnComma.\(suffix)" null "comma.\(suffix)" [DivFrame para.advanceScaleI].middle (PeriodRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar])
 	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationComma')
@@ -392,9 +392,9 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : DrawAt (RightSB - radius) (XH * 0.25) (kDotRadius * radius - overshoot)
 
 	create-glyph 'doubleStackedComma.prime' : glyph-proc
-		include [refer-glyph "comma.prime"] AS_BASE ALSO_METRICS
+		include [refer-glyph 'comma.prime'] AS_BASE ALSO_METRICS
 		include : with-transform [ApparentTranslate 0 (XH - 2 * PeriodRadius)] : composite-proc
-			refer-glyph "comma.prime"
+			refer-glyph 'comma.prime'
 
 	create-glyph 'doubleStackedComma.tick' : glyph-proc
 		local commaBounds nothing
@@ -402,7 +402,7 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : refer-glyph 'comma.tick'
 			set commaBounds : include : MeasureGlyphBounds
 		local shift : Math.max (XH - 2 * PeriodRadius) (commaBounds.yMax - commaBounds.yMin + 0.1 * PeriodRadius)
-		include [refer-glyph "comma.tick"] AS_BASE ALSO_METRICS
+		include [refer-glyph 'comma.tick'] AS_BASE ALSO_METRICS
 		include : with-transform [ApparentTranslate 0 shift] : refer-glyph 'comma.tick'
 
 	foreach suffix { 'corner' 'bottomCut' } : do
@@ -427,18 +427,18 @@ glyph-block Symbol-Punctuation-Small : begin
 				include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
 		create-glyph "semicolon.\(dotSuffix).prime" : glyph-proc
-			include [refer-glyph "comma.prime"] AS_BASE ALSO_METRICS
+			include [refer-glyph 'comma.prime'] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
 		create-glyph "revSemicolon.\(dotSuffix).prime" : glyph-proc
-			include [refer-glyph "revComma.prime"] AS_BASE ALSO_METRICS
+			include [refer-glyph 'revComma.prime'] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
 		create-glyph "semicolon.\(dotSuffix).tick" : glyph-proc
-			include [refer-glyph "comma.tick"] AS_BASE ALSO_METRICS
+			include [refer-glyph 'comma.tick'] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 		create-glyph "revSemicolon.\(dotSuffix).tick" : glyph-proc
-			include [refer-glyph "revComma.tick"] AS_BASE ALSO_METRICS
+			include [refer-glyph 'revComma.tick'] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
 		foreach suffix { 'corner' 'bottomCut' } : do
@@ -479,7 +479,7 @@ glyph-block Symbol-Punctuation-Small : begin
 
 	turned 'turnSemicolon' 0x2E35 'semicolon' [DivFrame para.advanceScaleI].middle (XH / 2)
 
-	do "Stenographic full stop, medieval comma, punctus elevatus"
+	do 'Stenographic full stop, medieval comma, punctus elevatus'
 		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
 			create-glyph "stenographicFullStop.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI

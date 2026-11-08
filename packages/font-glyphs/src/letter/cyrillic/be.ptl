@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -11,11 +11,11 @@ glyph-block Letter-Cyrillic-Be : begin
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos YeriUpper RevYeriUpper
 
 	define BeConfig : object
-		serifless        { false false false }
-		topSerifed       { false true  false }
-		bilateralSerifed { true  true  false }
-		motionSerifed    { false true  true  }
-		fullSerifed      { true  true  true  }
+		serifless         { false  false  false }
+		topSerifed        { false  true   false }
+		bilateralSerifed  { true   true   false }
+		motionSerifed     { false  true   true }
+		fullSerifed       { true   true   true }
 
 	foreach { suffix { doSerifLT doSerifRT doSerifLB } } [Object.entries BeConfig] : do
 		create-glyph "cyrl/Be.\(suffix)" : glyph-proc

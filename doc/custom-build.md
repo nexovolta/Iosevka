@@ -283,8 +283,9 @@ The `tittle`, `diacritic-dot`, `punctuation-dot`, and `braille-dot` selectors
 support `hexagon`. The `diacritic-comma` and `punctuation-comma` selectors
 independently support `hexagon`, `corner`, and `bottom-cut`; horn diacritics
 follow `diacritic-comma`, with `bottom-cut` sharing the diagonally cut tick horn.
-The `capital-latin-upsilon` selector supports `serifless` and `serifed` for
-both `Ʊ` and `ʊ`.
+The `capital-latin-upsilon` and `latin-upsilon` selectors independently control
+`Ʊ` and `ʊ`; both support `serifless` and `serifed`. This split shifts the
+OpenType feature tags assigned to subsequent selectors.
 
 <!-- BEGIN Section-Cherry-Picking-Styles -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->

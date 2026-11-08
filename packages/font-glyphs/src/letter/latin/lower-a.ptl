@@ -1,8 +1,8 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
-import [Vec2] from "@iosevka/geometry/point"
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
+import [Vec2] from '@iosevka/geometry/point'
 
 glyph-module
 
@@ -344,8 +344,8 @@ glyph-block Letter-Latin-Lower-A : begin
 			doubleStoreyHookFlat          HOOK-FLAT
 			doubleStoreyHookCorner        HOOK-CORNER
 		function [hook] : object # cut
-			""         ""
-			bottomCut  "bottomCut"
+			''         ''
+			bottomCut  'bottomCut'
 		function [hook cut] : begin
 			if (cut === 'bottomCut') : return : object
 				serifless { DoubleStorey.Serifless RevDoubleStorey.Serifless RightSB }
@@ -359,7 +359,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				toothlessRounded    { DoubleStorey.ToothlessRounded    RevDoubleStorey.ToothlessRounded    null               }
 
 	define DoubleStoreyDiagConfig : SuffixCfg.weave DoubleStoreyConfig : object
-		""         0
+		''         0
 		diagonalBar        0.5
 		diagonalBarFalling (-0.5)
 		curvedBarRising    CURVED-BAR-RISING
@@ -381,7 +381,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : body df [fallback _hookStyle hookStyle] nothing cut diag
 
 		create-glyph "aSwash.\(suffix)" : glyph-proc
-			local baseSuffix : if (body === DoubleStorey.Tailed) [suffix.replace "Tailed" "Serifless"] suffix
+			local baseSuffix : if (body === DoubleStorey.Tailed) [suffix.replace 'Tailed' 'Serifless'] suffix
 			include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifRB'
 			include : RetroflexHook.rExt RightSB 0
@@ -445,7 +445,7 @@ glyph-block Letter-Latin-Lower-A : begin
 		set-base-anchor 'overlay' (middle - OX) [mix 0 top OverlayPos]
 		set-base-anchor 'strike'  (middle - OX) [mix 0 top 0.5]
 
-	create-glyph "a.crossing" : glyph-proc
+	create-glyph 'a.crossing' : glyph-proc
 		local df : include : DivFrame 1
 		include : df.markSet.e
 		include : CrossingBody df XH
@@ -620,12 +620,12 @@ glyph-block Letter-Latin-Lower-A : begin
 			singleStoreyEarlessRounded { SingleStorey.EarlessRoundedBody RevSingleStorey.EarlessRoundedBody }
 		function [ear] : begin
 			if (ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
-				""         ""
-				bottomCut  "bottomCut"
+				''         ''
+				bottomCut  'bottomCut'
 			return : object
-				""         ""
-				topCut     "topCut"
-				bottomCut  "bottomCut"
+				''         ''
+				topCut     'topCut'
+				bottomCut  'bottomCut'
 		function [ear cut] : begin
 			if (cut === 'bottomCut') : return : object
 				serifless { SingleStorey.SeriflessBar RevSingleStorey.SeriflessBar }
@@ -654,7 +654,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : df.markSet.e
 			include : revBody df XH revBar cut
 		create-glyph "aSwash.\(suffix)" : glyph-proc
-			local baseSuffix : if (bar === SingleStorey.TailedBar || bar === SingleStorey.TailedSerifedBar) [suffix.replace [if (bar === SingleStorey.TailedBar) "Tailed" "TailedSerifed"] "Serifless"] suffix
+			local baseSuffix : if (bar === SingleStorey.TailedBar || bar === SingleStorey.TailedSerifedBar) [suffix.replace [if (bar === SingleStorey.TailedBar) 'Tailed' 'TailedSerifed'] 'Serifless'] suffix
 			include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifRB'
 			include : RetroflexHook.rExt RightSB 0
@@ -696,8 +696,8 @@ glyph-block Letter-Latin-Lower-A : begin
 	orthographic-slab SLAB 'aScript' 0x251
 	CreateTurnedLetter 'turnaScript' 0x252 'aScript' HalfAdvance (XH / 2)
 
-	alias 'aScript.UPPH' null "a.crossing"
-	CreateTurnedLetter 'turnaScript.UPPH' null "a.crossing" HalfAdvance (XH / 2)
+	alias 'aScript.UPPH' null 'a.crossing'
+	CreateTurnedLetter 'turnaScript.UPPH' null 'a.crossing' HalfAdvance (XH / 2)
 
 	select-variant 'aScriptRetroflexHook.slab.upright' (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.slab.upright')
 	select-variant 'aScriptRetroflexHook.slab.italic'  (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.slab.italic')

@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback slY] from "@iosevka/util"
+import [mix fallback slY] from '@iosevka/util'
 
 glyph-module
 
@@ -24,7 +24,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 			g2.ru.mid (@xL = deco.left) (@yT - DecoSizeY) [change-pen M]
 			Arch.rhs (sw -- S.thick) (blendPre -- null) (@yT = deco.top) 0.4
 			match mode
-				[Just "P"] : list
+				[Just 'P'] : list
 					flat (@xLB = body.left) [mix @yT @yB 0.375]
 					virt  @xLB              (@yB = body.bot)
 					curl  @xLB               Descender
@@ -61,7 +61,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 		local box : S.box CAP 0 df.leftSB df.rightSB
 		local { body deco } : deriveBoxes box
 
-		local leftStroke : include : StartStroke "P" box S 1
+		local leftStroke : include : StartStroke 'P' box S 1
 
 		local rightStroke : include : difference
 			lift-@ : fraktur-stroke S

@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from "@iosevka/util"
-import [MathSansSerif] from "@iosevka/glyph/relation"
+import [mix fallback SuffixCfg] from '@iosevka/util'
+import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -170,12 +170,12 @@ glyph-block Letter-Latin-Lower-G : begin
 			doubleStoreyOpenCornerHook     { true  true  false true }
 			doubleStoreyDisjointCornerHook { false true  true  true }
 		object # ear
-			""              "standard"
-			earlessRounded  "earlessRounded"
-			earlessCorner   "earlessCorner"
-			flatBowl        "flatBowl"
-			flatBowlSerifed "flatBowlSerifed"
-			topCut          "topCut"
+			''              'standard'
+			earlessRounded  'earlessRounded'
+			earlessCorner   'earlessCorner'
+			flatBowl        'flatBowl'
+			flatBowlSerifed 'flatBowlSerifed'
+			topCut          'topCut'
 
 	foreach { suffix { { fOpen fFlat fDisjoint fCorner } ear } } [Object.entries DoubleStoreyConfig] : do
 		create-glyph "g.\(suffix)" : DoubleStoreyGShape fOpen fFlat fDisjoint ear fCorner
@@ -213,10 +213,10 @@ glyph-block Letter-Latin-Lower-G : begin
 		set-base-anchor 'strike'  Middle [mix (yTopBot - O) XH 0.5]
 
 	create-glyph 'g.doubleCircle' : GDoubleCircleGlyph false
-	derive-composites "gStroke.doubleCircle" null "g.doubleCircle" [OverlayW obwDoubleStorey]
+	derive-composites 'gStroke.doubleCircle' null 'g.doubleCircle' [OverlayW obwDoubleStorey]
 
 	create-glyph 'g.doubleCircleDisjoint' : GDoubleCircleGlyph true
-	derive-composites "gStroke.doubleCircleDisjoint" null "g.doubleCircleDisjoint" [OverlayW obwDoubleStorey]
+	derive-composites 'gStroke.doubleCircleDisjoint' null 'g.doubleCircleDisjoint' [OverlayW obwDoubleStorey]
 
 	define SingleStorey : namespace
 		export : define [BentHookT sink df yTop offset sw _ada _adb] : begin
@@ -371,7 +371,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			singleStoreyFlatHook  { SingleStorey.FlatHook             0                      }
 			singleStoreyCornerHook { SingleStorey.CornerHook           0                      }
 		object # bowl
-			""                    false
+			''                    false
 			flatBowl              true
 		object # ear/serif
 			serifless             { SingleStorey.SeriflessBody        0                      }
@@ -481,7 +481,7 @@ glyph-block Letter-Latin-Lower-G : begin
 	alias 'cyrl/deLongLeg.italic' null [if SLAB 'gScript.slab.italic' 'gScript.sans']
 
 	select-variant 'g/hookTopBase' (shapeFrom -- 'g')
-	derive-glyphs 'gHookTop' 0x260 "g/hookTopBase" : function [src gr] : glyph-proc
+	derive-glyphs 'gHookTop' 0x260 'g/hookTopBase' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : TopHook.toRight.rBarOuter RightSB 0 XH
 		include : LeaningAnchor.Above.VBar.r RightSB

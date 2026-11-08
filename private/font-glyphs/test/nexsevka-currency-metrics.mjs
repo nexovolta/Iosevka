@@ -12,8 +12,10 @@ export const nexsevkaMetricOverride = {
 	accentStackOffset: 234,
 	leading: 1250,
 	parenSize: 902,
-	dotSize: "blend(weight, [260, 98], [303, 104], [389, 113], [537, 125], [609, 133], [780, 150], [905, 166])",
-	periodSize: "blend(weight, [260, 123], [303, 133], [389, 152], [537, 172], [609, 181], [780, 201], [905, 221])",
+	dotSize:
+		"blend(weight, [260, 98], [303, 104], [389, 113], [537, 125], [609, 133], [780, 150], [905, 166])",
+	periodSize:
+		"blend(weight, [260, 123], [303, 133], [389, 152], [537, 172], [609, 181], [780, 201], [905, 221])",
 	onumZeroHeightRatio: 1,
 	essRatio: 1,
 	archDepth: 192,

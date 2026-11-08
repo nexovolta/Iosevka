@@ -1,15 +1,15 @@
 ###### Automatic builds
 $$include '../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from "@iosevka/util"
-import [getGrTree IsSuperscript IsSubscript AnyCvOrCherryPicking] from "@iosevka/glyph/relation"
-import [AnyLocalizedForm DotlessOrNot CvDecompose MathSansSerif] from "@iosevka/glyph/relation"
-import [Texture Joining] from "@iosevka/glyph/relation"
-import [BooleanGeometry StrokeGeometry] from "@iosevka/geometry"
-import [NumeratorForm DenominatorForm] from "@iosevka/glyph/relation"
-import [Transform] from "@iosevka/geometry/transform"
+import [mix linreg clamp fallback] from '@iosevka/util'
+import [getGrTree IsSuperscript IsSubscript AnyCvOrCherryPicking] from '@iosevka/glyph/relation'
+import [AnyLocalizedForm DotlessOrNot CvDecompose MathSansSerif] from '@iosevka/glyph/relation'
+import [Texture Joining] from '@iosevka/glyph/relation'
+import [BooleanGeometry StrokeGeometry] from '@iosevka/geometry'
+import [NumeratorForm DenominatorForm] from '@iosevka/glyph/relation'
+import [Transform] from '@iosevka/geometry/transform'
 
-import as JobsData from "./transformed-jobs-data.mjs"
+import as JobsData from './transformed-jobs-data.mjs'
 
 extern Map
 extern Set
@@ -158,7 +158,7 @@ glyph-block Autobuild-Transformed : begin
 				include : ToSuperscript (currentGlyph.advanceWidth / Width)
 				IsSuperscript.set currentGlyph
 
-	createItalicSuperscripts "italsup" null JobsData.ItalicSuperscript
+	createItalicSuperscripts 'italsup' null JobsData.ItalicSuperscript
 
 	# Subscripts
 	define [createSubscripts prefix gr _records] : begin
@@ -465,7 +465,7 @@ glyph-block Autobuild-Transformed-Mathematical : begin
 	# Math fraktur
 	define [CreateMathBoldFraktur base letters] : begin
 		local jobs {}
-		foreach j [range 0 letters.length] : jobs.push { (base + j) ("frak/" + letters.(j)) }
+		foreach j [range 0 letters.length] : jobs.push { (base + j) ('frak/' + letters.(j)) }
 		createMathDerivedSeriesImpl 'frakbf' ForkTfm.Bold jobs
 
 	CreateMathBoldFraktur 0x1D56C UpperLatin
