@@ -17,7 +17,7 @@ const variantData = read("variants");
 const hooks = ["serifless", "serifed", "inward-serifed", "flat-hooked", "corner-hooked"];
 await Geom.Init();
 
-for (const [weight, slope] of [[120, "upright"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
+for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
 	test(`ezh digraph hook selectors at ${weight} ${slope}`, () => {
 		const argv = {
 			shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
@@ -50,7 +50,25 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [420, "italic
 			});
 			assert.equal(new Set(shapes).size, hooks.length, `${name}: hook choices must remain distinct`);
 		}
-		for (const cp of [0x1ba, 0xa763, 0x1df05, 0x1df18]) {
+		for (const cp of [0x292, 0xa763, 0x1df18]) {
+			const glyph = glyphStore.queryByUnicode(cp);
+			for (const body of ["straight", "cursive"]) for (const top of ["serifless", "top-serifed"]) {
+				const shapes = hooks.map(hook => {
+					const name = prime.variants.get(`${body}-${hook}-${top}`).get(glyph);
+					assert.ok(name, `U+${cp.toString(16)}: missing ${body} ${hook} ${top}`);
+					const contours = outline(byName(name));
+					assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
+					const exteriors = contours.filter(c => c.reduce((sum, p, i) => {
+						const q = c[(i + 1) % c.length];
+						return sum + p.x * q.y - q.x * p.y;
+					}, 0) < 0);
+					assert.equal(exteriors.length, 1, `${name}: detached contour`);
+					return JSON.stringify(contours);
+				});
+				assert.equal(new Set(shapes).size, hooks.length, `U+${cp.toString(16)}: hook choices must differ`);
+			}
+		}
+		for (const cp of [0x1ba, 0x1d9a, 0x1df05]) {
 			const glyph = glyphStore.queryByUnicode(cp);
 			const shapes = hooks.map(hook => {
 				const name = prime.variants.get(`straight-${hook}-serifless`).get(glyph);
@@ -60,6 +78,24 @@ for (const [weight, slope] of [[120, "upright"], [420, "upright"], [420, "italic
 		}
 		for (const cp of [0x292, 0x1ba, 0xa763, 0x26e, 0x1df05, 0x1d9a, 0x1df18]) {
 			assert.ok(outline(glyphStore.queryByUnicode(cp)).length, `U+${cp.toString(16)}`);
+		}
+		for (const cp of [0x292, 0x1ba, 0x1d9a, 0x1df18, 0xa763]) {
+			const glyph = glyphStore.queryByUnicode(cp);
+			const shape = key => {
+				const name = prime.variants.get(key).get(glyph);
+				assert.ok(name, `U+${cp.toString(16)}: missing ${key}`);
+				return JSON.stringify(outline(byName(name)));
+			};
+			const straight = shape("straight-serifless-serifless");
+			const cursive = shape("cursive-serifless-serifless");
+			const serifed = shape("straight-serifless-top-serifed");
+			if (cp === 0xa763) {
+				assert.equal(straight, cursive, "visigothic ezh must keep its own top");
+				assert.equal(straight, serifed, "visigothic ezh must not inherit ezh top serifs");
+			} else {
+				assert.notEqual(straight, cursive, `U+${cp.toString(16)}: cursive top missing`);
+				assert.notEqual(straight, serifed, `U+${cp.toString(16)}: top serif missing`);
+			}
 		}
 	});
 }
