@@ -420,10 +420,20 @@ glyph-block Letter-Latin-Long-S : begin
 		y -- 0
 		yOverflow -- Stroke
 
-	CreateEshHooked 'eshPalatalHook' 0x1D8B 'eshHookBase' : PalatalHook.l
-		x -- (Middle - (HookX + QuarterStroke))
-		y -- 0
-		yOverflow -- Stroke
+	derive-multi-part-glyphs 'eshPalatalHook' 0x1D8B { 'esh' } : function [srcs] : glyph-proc
+		local base : query-glyph srcs.0
+		local stem : base.gizmo.unapply base.baseAnchors.overlay
+		include base AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		include : union
+			refer-glyph srcs.0
+			PalatalHook.r
+				x       -- (stem.x + RightSB - Middle)
+				y       -- 0
+				xLink   -- stem.x
+				refSw   -- [AdviceStroke 3]
+				maskOut -- [intersection [MaskBelow 0] [MaskLeft : stem.x + [HSwToV : HalfStroke + [AdviceStroke 12]]]]
+		include : NarrowEsh
 
 	define [EshCurlyTailShape upper] : begin
 		local fine : AdviceStroke 3.5
