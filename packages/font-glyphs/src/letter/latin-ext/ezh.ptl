@@ -8,7 +8,7 @@ glyph-module
 glyph-block Letter-Latin-Ezh : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
+	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph CreateDependentComposite
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : CurlyTail SerifedArcEnd InwardSlabArcEnd ArcEndSerif PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
@@ -295,6 +295,8 @@ glyph-block Letter-Latin-Ezh : begin
 		straightTopSerifed { false true  }
 		cursive            { true  false }
 
+	define PhoneticEzhHooks : list 'serifless' 'serifed' 'inwardSerifed' 'flatHook' 'cornerHook'
+
 	define EzhConfig : object
 		straightSerifless { false false 'serifless' }
 		straightTopSerifed { false true 'serifless' }
@@ -475,7 +477,7 @@ glyph-block Letter-Latin-Ezh : begin
 			define ezh : Ezh subDf XH Descender
 				fCursive  -- fCursive
 				fSerifed  -- fSerifed
-				hookStyle  -- hookStyle
+				hookStyle  -- 'serifless'
 				pyMidLeft -- [if fCursive 0.50 0.55]
 				stroke    -- stroke
 				hook      -- SHook
@@ -799,6 +801,75 @@ glyph-block Letter-Latin-Ezh : begin
 
 			select-variant "lyoghRTail/phoneticRight.\(suffix)" (follow -- 'lyogh/l')
 
+	define [LyoghSelectedBar df x top sw topSuffix] : glyph-proc
+		if LyoghCasualTopConfig.(topSuffix)
+			include : LyoghBarWithCasualTop x top sw LyoghCasualTopConfig.(topSuffix) df
+		: else : begin
+			include : VBar.l x 0 top sw
+			if (topSuffix === 'hooky') : include : tagged 'serifLT' : HSerif.lt x top SideJut sw
+			if LyoghRightSerifSuffixes.includes topSuffix : include : LyoghHookyRight x top sw
+
+	define [LyoghSelectedHook hookStyle topSuffix fCursive phonetic] : glyph-proc
+		set-width 0
+		set-mark-anchor 'cvDecompose' 0 0
+		local gap : if phonetic (0.5 * (SB - 0) + [HSwToV QuarterStroke]) 0
+		local df : if phonetic [DivFrame ((Width - gap) / Width) 2 1] [DivFrame 1]
+		local stroke : df.adviceStroke2 2 3 (XH - Descender)
+		local origBar : if phonetic [df.adviceStroke 2] Stroke
+		define yogh : Ezh df XH Descender
+			fCursive  -- fCursive
+			hookStyle -- hookStyle
+			pxMidLeft -- [if phonetic [Math.max 0.40 : ([HSwToV origBar] + [Math.max (Width / 32) : AdviceStroke 24]) / (df.rightSB - df.leftSB)] 0.40]
+			pyMidLeft -- [if fCursive 0.50 0.55]
+			stroke    -- stroke
+			hook      -- SHook
+			origBar   -- origBar
+			ada       -- [if phonetic [df.archDepthAOf SmallArchDepth stroke] SmallArchDepthA]
+			adb       -- [if phonetic [df.archDepthBOf SmallArchDepth stroke] SmallArchDepthB]
+		include : with-transform [Translate gap 0] : composite-proc
+			yogh.Shape
+			LyoghSelectedBar df df.leftSB Ascender origBar topSuffix
+		if phonetic : include : HBar.t (SB - SideJut) (df.leftSB + gap - O) XH
+
+	local lyoghTopSuffixes { 'serifless' 'hooky' }
+	foreach topSuffix [items-of LyoghRightSerifSuffixes] : lyoghTopSuffixes.push topSuffix
+	foreach topSuffix [Object.keys LyoghCasualTopConfig] : lyoghTopSuffixes.push topSuffix
+	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
+		foreach hookStyle [items-of PhoneticEzhHooks] : begin
+			create-glyph "ezh/phoneticRight.\(suffix).\(hookStyle)" : glyph-proc
+				if (hookStyle === 'serifless')
+					include [refer-glyph "ezh/phoneticRight.\(suffix)"] AS_BASE ALSO_METRICS
+				: else : begin
+					include : MarkSet.p
+					define ezh : Ezh [DivFrame 1] XH Descender
+						fCursive  -- fCursive
+						hookStyle -- hookStyle
+						pxMidLeft -- (4/15)
+						pyMidLeft -- [if fCursive 0.50 0.55]
+						stroke    -- [AdviceStroke2 2 3 (XH - Descender)]
+						hook      -- SHook
+						ada       -- SmallArchDepthA
+						adb       -- SmallArchDepthB
+					include : ezh.Shape
+			foreach name { 'lyogh' 'lyogh/phoneticRight' } : begin
+				foreach topSuffix [items-of lyoghTopSuffixes] : do
+					create-glyph "\(name)/hook.\(suffix).\(hookStyle).\(topSuffix)" : glyph-proc
+						if (hookStyle === 'serifless')
+							include [refer-glyph "\(name).\(suffix).\(topSuffix)"] AS_BASE ALSO_METRICS
+						: else
+							include : LyoghSelectedHook hookStyle topSuffix fCursive (name === 'lyogh/phoneticRight')
+				select-variant "\(name)/hook.\(suffix).\(hookStyle)" (follow -- 'lyogh/l')
+
+	define [SelectLyoghHooks name unicode] : begin
+		local choices {.}
+		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
+			foreach hookStyle [items-of PhoneticEzhHooks] : begin
+				local selector : suffix + "." + hookStyle
+				DefineSelectorGlyph name selector [DivFrame 1] 'bp'
+				set choices.(selector) "\(name)/hook.\(selector)"
+		select-multi-dimensional-variant "\(name)/selector" (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+		CreateDependentComposite name unicode "\(name)/selector" choices
+
 	select-variant 'Ezh'     0x1B7
 	select-variant 'revEzh'  0x1B8  (follow -- 'Ezh')
 	select-variant 'smcpEzh' 0x1D23 (follow -- 'Ezh')
@@ -811,7 +882,7 @@ glyph-block Letter-Latin-Ezh : begin
 	select-variant 'ezhRTail'       0x1D9A  (follow -- 'ezh')
 	select-variant 'ezhPalatalHook' 0x1DF18 (follow -- 'ezh')
 
-	CreateSelectorVariants 'lyogh'          0x26E   [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
+	SelectLyoghHooks 'lyogh' 0x26E
 	CreateSelectorVariants 'lyoghCurlyTail' 0x1DF67 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 	CreateSelectorVariants 'lyoghRTail'     0x1DF05 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 
@@ -897,12 +968,12 @@ glyph-block Letter-Latin-Ezh : begin
 				intersection [refer-glyph te] [MaskAbove (XH - Stroke - TINY)]
 			include : TzFitAdvance
 
-	select-variant 'ezh/phoneticRight'
+	select-multi-dimensional-variant 'ezh/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
 	select-variant 'ezhCurlyTail/phoneticRight'   (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhRTail/phoneticRight'       (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhPalatalHook/phoneticRight' (follow -- 'ezh/phoneticRight')
 
-	CreateSelectorVariants 'lyogh/phoneticRight'      null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
+	SelectLyoghHooks 'lyogh/phoneticRight' null
 	CreateSelectorVariants 'lyoghRTail/phoneticRight' null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 
 	alias 'cyrl/abk/Dze' 0x4E0 'Ezh'
@@ -950,7 +1021,7 @@ glyph-block Letter-Latin-Ezh : begin
 							ada  -- SmallArchDepthA
 							adb  -- SmallArchDepthB
 						define z : Ezh [DivFrame 1] XH Descender
-							hookStyle -- hookStyle
+							hookStyle -- 'serifless'
 							fCursive -- fCursive
 							pyMidLeft -- 0.55
 							stroke    -- stroke

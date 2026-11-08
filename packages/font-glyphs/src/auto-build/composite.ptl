@@ -1684,12 +1684,15 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 		local { ww0 wwM shrink kern } : PhoneticDimensions tfm adws mockNParts _shrink kKern
 		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix "" demands
 
-		# Hooked tesh keeps its attachment but follows lower-esh's free terminal.
+		# Preserve live esh and ezh selectors in the non-decomposable digraphs.
 		local eshPrime : para.variants.primes.get 'lower-esh'
 		local eshTag eshPrime.tag
-		foreach { gn unicode parts mak } [items-of : jobs.nonDecomposable.slice 0] : if (unicode === 0x1DF17 || unicode === 0x1DF1C) : begin
+		local ezhPrime : para.variants.primes.get 'lower-ezh'
+		local ezhTag ezhPrime.tag
+		foreach { gn unicode parts mak } [items-of : jobs.nonDecomposable.slice 0] : if (unicode === 0x1DF17 || unicode === 0x1DF1C || unicode === 0x02A4 || unicode === 0x1DF20) : begin
 			local right : query-glyph parts.1
-			foreach gr [items-of : AnyCv.query right] : if (gr.tag === eshTag) : begin
+			local targetTag : if (unicode === 0x1DF17 || unicode === 0x1DF1C) eshTag ezhTag
+			foreach gr [items-of : AnyCv.query right] : if (gr.tag === targetTag) : begin
 				local target : gr.get right
 				if (target && target !== parts.1) : begin
 					local toParts : list parts.0 target
