@@ -78,7 +78,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		select-variant 'wigglyExclamDown' 0x2E61 (follow -- 'punctuationDot')
 		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
 			create-glyph "medievalExclam.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleI
+				local df : include : DivFrame 1
 				local dr : DotRadius * kdr
 				local slope medievalSlashSlope
 				local sw Stroke
@@ -181,7 +181,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		foreach { dotSuffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
 			foreach tildeSuffix [items-of AsciiTildeSuffixes] : do
 				create-glyph "medievalQuestion.\(dotSuffix).\(tildeSuffix)" : glyph-proc
-					local df : include : DivFrame para.advanceScaleI
+					local df : include : DivFrame 1
 					local dr : DotRadius * kdr
 					local slope medievalSlashSlope
 					local angle : Math.atan2 1 slope
