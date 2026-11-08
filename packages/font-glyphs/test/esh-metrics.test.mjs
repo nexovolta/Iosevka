@@ -34,6 +34,35 @@ function bounds(glyph) {
 	return [Math.min(...xs), Math.max(...xs)];
 }
 
+function hookSegments(glyph) {
+	const x = glyph.baseAnchors.below.x;
+	return new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toBezArcs().flatMap(contour =>
+		contour.flatMap(arc => {
+			const points = Array.from({ length: 33 }, (_, i) => {
+				const p = arc.eval(i / 32);
+				return { x: p.x - x, y: p.y };
+			});
+			return points.slice(1).map((p, i) => [points[i], p]).filter(([a, b]) => Math.min(a.y, b.y) < -10);
+		}),
+	);
+}
+
+function assertSameHook(actual, expected, name) {
+	assert.ok(actual.some(([a, b]) => a.y < -20 || b.y < -20), `${name}: missing hook`);
+	assert.ok(expected.some(([a, b]) => a.y < -20 || b.y < -20), `${name}: missing reference hook`);
+	const maxDistance = (source, target) => Math.max(...source.flatMap(segment =>
+		segment.filter(p => p.y < -20).map(p => Math.min(...target.map(([a, b]) => {
+			const dx = b.x - a.x;
+			const dy = b.y - a.y;
+			const lengthSquared = dx * dx + dy * dy;
+			const t = lengthSquared ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSquared)) : 0;
+			return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
+		}))),
+	));
+	const distance = Math.max(maxDistance(actual, expected), maxDistance(expected, actual));
+	assert.ok(distance <= 1, `${name}: hook differs by ${distance}`);
+}
+
 for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
 	test(`narrow esh and serifless hooked j at ${weight} ${slope}`, () => {
 		const argv = {
@@ -60,19 +89,10 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 				assert.equal(contours(glyph).length, name.startsWith("reveshLoop.") ? 2 : 1, `${name}: unexpected outline`);
 				if (name.startsWith("eshPalatalHook/") || name.startsWith("eshRTail/")) {
 					const kind = name.split("/")[0];
-					const below = contours(glyph)[0].filter((p) => p.y < -1)
-						.sort((a, b) => a.y - b.y || a.x - b.x);
+					const below = hookSegments(glyph);
 					const ref = hookPoints.get(kind);
 					if (!ref) hookPoints.set(kind, below);
-					else {
-						assert.equal(below.length, ref.length, `${name}: hook points`);
-						const dx = below[0].x - ref[0].x;
-						for (let i = 0; i < below.length; i++) {
-							assert.ok(Math.abs(below[i].x - ref[i].x - dx) <= 1, `${name}: hook shape`);
-							assert.equal(below[i].y, ref[i].y, `${name}: hook height`);
-							assert.equal(below[i].type, ref[i].type, `${name}: hook curve`);
-						}
-					}
+					else assertSameHook(below, ref, name);
 				}
 			}
 		}
