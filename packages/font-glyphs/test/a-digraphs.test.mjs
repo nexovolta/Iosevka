@@ -9,6 +9,7 @@ import { buildGlyphs } from "@iosevka/font-glyphs";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
+import * as TypoGeom from "typo-geom";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const read = (name) =>
@@ -23,6 +24,28 @@ const suffixes = [
 ];
 await Geom.Init();
 
+function assertRightStrokesPreserved(glyphStore) {
+	const byName = name => glyphStore.queryByNameEnsured(name);
+	for (const [component, composite] of [["av/vRight", "av"], ["ay/yRight", "ay"]]) {
+		const right = byName(component);
+		const mask = byName("av/aMask");
+		const joined = byName(composite);
+		const outsideMask = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Difference, [right.geometry, mask.geometry]);
+		assert.ok(outsideMask.toBezArcs().length, `${component}: missing right stroke`);
+		const missing = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Difference, [outsideMask, joined.geometry]);
+		const area = geometry => geometry.toBezArcs().reduce((total, contour) => {
+			const pts = contour.flatMap(arc => Array.from({ length: 16 }, (_, i) => arc.eval(i / 16)));
+			return total + Math.abs(pts.reduce((sum, p, i) => {
+				const q = pts[(i + 1) % pts.length];
+				return sum + p.x * q.y - q.x * p.y;
+			}, 0)) / 2;
+		}, 0);
+		const missingArea = area(missing);
+		const expectedArea = area(outsideMask);
+		assert.ok(missingArea <= expectedArea * 0.001, `${component}: missing ${missingArea} of ${expectedArea} right-stroke area`);
+	}
+}
+
 for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
 	test(`a digraphs at ${weight} ${slope}`, () => {
 		const argv = {
@@ -35,6 +58,7 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
 		const byName = (name) => glyphStore.queryByNameEnsured(name);
 		const contours = (glyph) => new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+		assertRightStrokesPreserved(glyphStore);
 		const leftBars = new Set();
 		const rightBars = new Set();
 		for (const bar of ["", "CurvedBarRising", "CurvedBarFalling", "DiagonalBar", "DiagonalBarFalling"]) {
@@ -73,7 +97,7 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 for (const [weight, width, slope, a, v, y] of [
 	[120, 350, "italic", "double-storey-hook-flat-serifless-curved-bar-falling", "curly-serifless", "curly-serifless"],
 	[420, 500, "upright", "double-storey-hook-corner-toothless-corner-curved-bar-rising", "square-top-serifless", "straight-turn-serifless"],
-	[920, 500, "italic", "double-storey-hook-flat-toothless-rounded-curved-bar-rising", "straight-serifless", "curly-turn-serifless"],
+	[920, 350, "italic", "double-storey-hook-flat-toothless-rounded-curved-bar-rising", "straight-serifless", "curly-turn-serifless"],
 ]) {
 	test(`masked av/ay variants at ${weight} ${width} ${slope}`, () => {
 		const argv = {
@@ -84,6 +108,7 @@ for (const [weight, width, slope, a, v, y] of [
 		const para = init(data, argv);
 		Variant.apply(variantData, para, argv);
 		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		assertRightStrokesPreserved(glyphStore);
 		for (const cp of [0xa739, 0xa73b, 0xa73d]) {
 			const glyph = glyphStore.queryByUnicode(cp);
 			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();

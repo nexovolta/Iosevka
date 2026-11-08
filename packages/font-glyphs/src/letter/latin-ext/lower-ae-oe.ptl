@@ -227,6 +227,9 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					if [not fSquareTop] : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
 					include : NeedSlab SLAB : VSerifs subDfVY fStraightBar XH dfVY.mvs
 					eject-contour 'serifLT'
+			create-glyph "av/vRight.\(suffix)" : glyph-proc
+				include : refer-glyph "av/v.\(suffix)"
+				eject-contour 'strokeDown'
 
 		define slabAutoY { false SLAB false }
 		foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
@@ -238,6 +241,9 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 						include : NeedSlab SLAB : glyph-proc
 							local sf : SerifFrame.fromDf subDfVY XH Descender
 							include sf.rt.full
+				create-glyph "ay/yRight.\(suffix)" : glyph-proc
+					include : refer-glyph "ay/y.\(suffix)"
+					eject-contour 'leftHalf'
 
 	do "c subglyphs"
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
@@ -455,6 +461,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
 	select-variant "av/v" (follow -- 'v/sansSerif')
 	select-variant "ay/y" (follow -- 'y/nonCursive')
+	select-variant "av/vRight" (follow -- 'v/sansSerif')
+	select-variant "ay/yRight" (follow -- 'y/nonCursive')
 
 	glyph-block-import Letter-Latin-Lower-A : DoubleStorey
 	define [AvAyJoinX df] : begin
@@ -463,30 +471,35 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	define [AvAyRightShift df] : begin
 		local { subDf shift0 } : SubDfAndShift 1 df 0
 		return : shift0 - [HSwToV : df.mvs * [AvAyOverlapK]]
-	define [AvAyClipRight df mask src] : glyph-proc
+	define [AvAyClipRight df mask src rightStroke] : glyph-proc
 		local aSub : df.slice 3 2
-		include : difference [refer-glyph src]
-			union
-				refer-glyph mask
-				intersection
-					MaskAbove (XH - [DoubleStorey.SmoothB aSub])
-					MaskLeft (aSub.rightSB + [HSwToV df.mvs])
+		define [overlapMask] : intersection
+			refer-glyph mask
+			with-transform [ApparentTranslate (-[HSwToV : 0.125 * df.mvs]) 0] [refer-glyph mask]
+		include : union
+			difference [refer-glyph src]
+				union
+					overlapMask
+					intersection
+						MaskAbove (XH - [DoubleStorey.SmoothB aSub])
+						MaskLeft (aSub.rightSB + [HSwToV df.mvs])
+			difference [refer-glyph rightStroke] [overlapMask]
 
-	derive-multi-part-glyphs-baked 'av' 0xA739 { "av/a" "av/v" "av/aMask" }
+	derive-multi-part-glyphs-baked 'av' 0xA739 { "av/a" "av/v" "av/aMask" "av/vRight" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			define { left right mask } srcs
+			define { left right mask rightStroke } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
-			include : AvAyClipRight df mask right
-	derive-multi-part-glyphs-baked 'ay' 0xA73D { "ay/a" "ay/y" "av/aMask" }
+			include : AvAyClipRight df mask right rightStroke
+	derive-multi-part-glyphs-baked 'ay' 0xA73D { "ay/a" "ay/y" "av/aMask" "ay/yRight" }
 		function [srcs gr] : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			define { left right mask } srcs
+			define { left right mask rightStroke } srcs
 			include [refer-glyph left] AS_BASE ALSO_METRICS
 			include : df.markSet.p
-			include : AvAyClipRight df mask right
+			include : AvAyClipRight df mask right rightStroke
 	derive-glyphs 'avBar' 0xA73B 'av' : function [src sel] : glyph-proc
 		define df : DivFrame para.advanceScaleMM 3
 		local { subDf } : SubDfAndShift 1 df 0
