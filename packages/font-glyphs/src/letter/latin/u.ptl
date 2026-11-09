@@ -123,6 +123,8 @@ glyph-block Letter-Latin-U : begin
 	define UUpper : UShapeGroup ArchDepthA ArchDepthB
 	define ULower : UShapeGroup SmallArchDepthA SmallArchDepthB
 
+	define [OffsetUSerif serif offset] : if offset [with-transform [Translate offset 0] serif] serif
+
 	glyph-block-export USerifs
 	define USerifs : namespace
 		export : define [BottomRight df top _sw] : glyph-proc
@@ -136,9 +138,10 @@ glyph-block Letter-Latin-U : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			include sf.lb.outer
 
-		export : define [Toothless df top _sw] : begin
+		export : define [Toothless df top _sw _offset] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
-			return : composite-proc sf.lt.full sf.rt.full
+			local offset : fallback _offset 0
+			return : composite-proc [OffsetUSerif sf.lt.full offset] [OffsetUSerif sf.rt.full (-offset)]
 
 		export : define [SmallToothless df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
@@ -160,9 +163,10 @@ glyph-block Letter-Latin-U : begin
 			include : SmallToothless df top _sw
 			include : BottomLeft     df top _sw
 
-		export : define [BilateralMotion df top _sw] : begin
+		export : define [BilateralMotion df top _sw _offset] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
-			return : composite-proc sf.lt.outer sf.rt.outer
+			local offset : fallback _offset 0
+			return : composite-proc [OffsetUSerif sf.lt.outer offset] [OffsetUSerif sf.rt.outer (-offset)]
 
 		export : define [BilateralMotionInnerRt df top _sw] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
@@ -180,9 +184,9 @@ glyph-block Letter-Latin-U : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
 			return sf.lt.inner
 
-		export : define [MotionToothless df top _sw] : begin
+		export : define [MotionToothless df top _sw _offset] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
-			return sf.lt.outer
+			return : OffsetUSerif sf.lt.outer [fallback _offset 0]
 
 		export : define [MotionToothed df top _sw] : glyph-proc
 			include : MotionToothless df top _sw
@@ -269,7 +273,7 @@ glyph-block Letter-Latin-U : begin
 				include : VBar.l (df.leftSB + OX) (joinY - Stroke * 0.025) CAP Stroke
 				include : VBar.r (df.rightSB - OX) (joinY - Stroke * 0.025) CAP Stroke
 				include qBottom
-				include : uSlabs df CAP Stroke
+				include : uSlabs df CAP Stroke OX
 				include : df.markSet.capDesc
 				if (qTail !== no-shape) : begin
 					local tailSw : if (qSuffix === 'verticalCrossing' || qSuffix === 'crossingCurlyTailed' || qSuffix === 'hookyCrossing') qSw Stroke

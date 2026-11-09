@@ -257,16 +257,11 @@ glyph-block Letter-Latin-Upper-Q : begin
 			include : tailShape df XH swTailInner
 
 		create-glyph "QSideways.\(suffix)" : glyph-proc
-			local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
 			include : PointingTo Width XH Width 0 : function [] : glyph-proc
-				if (suffix === 'openStraightTailed')
-				: then : begin
-					include : refer-glyph "Q.\(suffix)"
-					include : Ungizmo
-					include : Scale (XH / Width) (RightSB / CAP)
-				: else : begin
-					include : body      df RightSB Stroke
-					include : tailShape df RightSB swTailInner
+				local source : query-glyph "smcpQ.\(suffix)"
+				include : refer-glyph "smcpQ.\(suffix)"
+				include [source.gizmo.inverse]
+				include : Scale (XH / Width) (RightSB / XH)
 				include : Translate 0 (SB / 2)
 
 	select-variant 'Q' 'Q'

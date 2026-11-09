@@ -8,6 +8,7 @@ import * as Toml from "@iarna/toml";
 import { buildGlyphs } from "@iosevka/font-glyphs";
 import { CreateWeightControl } from "@iosevka/font-kits/weight-control";
 import * as Geom from "@iosevka/geometry";
+import { Transform } from "@iosevka/geometry/transform";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 import * as TypoGeom from "typo-geom";
@@ -40,7 +41,7 @@ function rectangle(left, right, bottom, top) {
 }
 
 for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
-	test(`capital Q and U tails at ${weight} ${slope}`, () => {
+	test(`capital Q and U+1DF7A tails at ${weight} ${slope}`, () => {
 		const argv = {
 			shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 			featureControl: { noCvSs: false },
@@ -58,7 +59,7 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		const uBody = glyphStore.queryByUnicode(0x55);
 		const two = glyphStore.queryByUnicode(0x32);
 		assert.ok(q && u && uBody);
-		const upperMask = rectangle(-10000, 10000, para.cap / 2 + para.stroke, 10000);
+		const upperMask = rectangle(-10000, 10000, para.cap * 0.8, 10000);
 		const lowerMask = rectangle(-10000, 10000, -10000, para.cap / 2 - para.stroke);
 
 		const angle = para.slopeAngle * Math.PI / 180;
@@ -94,6 +95,23 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 				assert.ok(qBounds.every((x, i) => Math.abs(x - uBounds[i]) < 0.5),
 					`${suffix}: U stem does not align with Q contour`);
 			}
+		}
+
+		for (const variant of qPrime.variants.values()) {
+			const suffix = variant.get(q).split(".").pop();
+			const sourceQ = byName(`smcpQ.${suffix}`);
+			const sidewaysQ = byName(`QSideways.${suffix}`);
+			const sidewaysTransform = Transform.Combine(
+				sourceQ.gizmo.inverse(),
+				Transform.Scale(Math.round(para.xHeight) / width, (width - sb) / Math.round(para.xHeight)),
+				Transform.Translate(0, sb / 2),
+				new Transform(0, -1, 1, 0, width, 0),
+				sidewaysQ.gizmo,
+			);
+			const expectedSideways = Geom.TransformedGeometry.create(sidewaysTransform, sourceQ.geometry);
+			const sidewaysDifference = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Xor,
+				[sidewaysQ.geometry, expectedSideways]);
+			assert.ok(area(sidewaysDifference) < 1, `${suffix}: sideways Q must use the unskewed small-cap Q`);
 		}
 
 		const innerStroke = Math.min(AdviceStroke(4), AdviceStroke(3.5),
@@ -176,20 +194,29 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 			assert.equal(seen.size, newKeys.length, `${label}: variants must differ`);
 		}
 
-		const uVariants = [...uPrime.variants.values()].filter(v => v.get(u) && v.get(uBody));
+		const uVariants = [...uPrime.variants.values()].filter(v => v.get(uBody));
 		assert.ok(uVariants.length > 5);
 		for (const uVariant of uVariants) {
+			assert.ok(uVariant.get(u), `${uVariant.key}: missing U+1DF7A variant`);
 			const selectedU = byName(uVariant.get(u));
 			const bodyName = uVariant.get(uBody);
 			let roundedBodyName = bodyName.replace(/^U\.(toothed|tailed)(BottomCut)?/, "U.toothlessRounded");
 			roundedBodyName = roundedBodyName.replace(/BottomRightSerifed$/, "Serifless");
 			const selectedBody = byName(roundedBodyName);
-			const plainBodyName = roundedBodyName.replace(/(BilateralMotionSerifed|BottomRightSerifed|MotionSerifed|Serifed)$/, "Serifless");
-			const serifInk = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Intersection, [
-				new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Difference, [
-					selectedBody.geometry, byName(plainBodyName).geometry,
-				]),
-				upperMask,
+			const centerAt = y => width / 2 + Math.tan(angle) * (y - Math.round(para.symbolMid));
+			const splitY = para.cap * 0.8;
+			const leftHalf = new Geom.ContourSetGeometry([[
+				{ type: 0, x: -10000, y: splitY },
+				{ type: 0, x: -10000, y: 10000 },
+				{ type: 0, x: centerAt(10000), y: 10000 },
+				{ type: 0, x: centerAt(splitY), y: splitY },
+			]]);
+			const rightHalf = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Difference, [upperMask, leftHalf]);
+			const expectedTop = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Union, [
+				Geom.TransformedGeometry.create(Transform.Translate(para.overshootx, 0),
+					new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Intersection, [selectedBody.geometry, leftHalf])),
+				Geom.TransformedGeometry.create(Transform.Translate(-para.overshootx, 0),
+					new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Intersection, [selectedBody.geometry, rightHalf])),
 			]);
 			for (const qVariant of qPrime.variants.values()) {
 				const name = qVariant.get(selectedU);
@@ -204,8 +231,9 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 				}, 0) < 0);
 				const expectedExteriors = ["open-swash", "open-straight-tailed", "detached-tailed", "detached-bend-tailed"].includes(qVariant.key) ? 2 : 1;
 				assert.equal(exteriors.length, expectedExteriors, `${name}: detached from U body`);
-				const missingSerifs = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Difference, [serifInk, glyph.geometry]);
-				assert.ok(area(missingSerifs) < 1, `${name}: selected U serifs were lost`);
+				const actualTop = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Intersection, [glyph.geometry, upperMask]);
+				const topDifference = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Xor, [expectedTop, actualTop]);
+				assert.ok(area(topDifference) < 1, `${name}: U stems or serifs are misaligned (${area(topDifference)})`);
 				if (!qVariant.key.includes("crossing")) {
 					const selectedQ = byName(qVariant.get(q));
 					const lowerQ = new Geom.BooleanGeometry(TypoGeom.Boolean.ClipType.Intersection, [selectedQ.geometry, lowerMask]);
