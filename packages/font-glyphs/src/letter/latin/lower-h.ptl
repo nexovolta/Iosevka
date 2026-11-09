@@ -113,12 +113,12 @@ glyph-block Letter-Latin-Lower-H : begin
 			straight false
 			tailed   true
 		object # serifs
-			serifless      {null               false  }
-			serifed        {SmallHSerifs       true   }
-			motionSerifed  {SmallHMotionSerifs true   }
-			topLeftSerifed {SmallHTopLeftSerif true   }
+			serifless      {null                false}
+			serifed        {SmallHSerifs        true }
+			motionSerifed  {SmallHMotionSerifs  true }
+			topLeftSerifed {SmallHTopLeftSerif  true }
 
-	foreach {suffix {fFlatHump fTailed {Serifs fHasTopSerif    } } } [Object.entries HConfig] : do
+	foreach {suffix {fFlatHump fTailed {Serifs fHasTopSerif}}} [Object.entries HConfig] : do
 		create-glyph "h.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			set-base-anchor 'overlay' Middle (XH / 2)
@@ -190,8 +190,8 @@ glyph-block Letter-Latin-Lower-H : begin
 	alias 'cyrl/shhaDescender' 0x527  'hDescender'
 	select-variant 'cyrl/hwe'  0xA695 (follow -- 'hHookTop') (shapeFrom -- 'hHookTop')
 
-	derive-multi-part-glyphs 'hDot' 0x1E23 {'h' 'dotAbove'  } : lambda [srcs gr] : glyph-proc
-		local {base mark  } srcs
+	derive-multi-part-glyphs 'hDot' 0x1E23 {'h' 'dotAbove'} : lambda [srcs gr] : glyph-proc
+		local {base mark} srcs
 		include : refer-glyph mark
 		include : Translate (Width + [HSwToV HalfStroke]) 0
 		include [refer-glyph base] AS_BASE ALSO_METRICS

@@ -145,10 +145,10 @@ glyph-block Letter-Latin-Lower-B : begin
 			''        false
 			flatBowl  true
 		object # serifs
-			serifless       {no-shape   false   }
-			motionSerifed   {LTSerifs   true    }
-			bottomSerifed   {LBSerifs   false   }
-			serifed         {FullSerifs true    }
+			serifless     {no-shape    false}
+			motionSerifed {LTSerifs    true }
+			bottomSerifed {LBSerifs    false}
+			serifed       {FullSerifs  true }
 
 	define [BBowlKind Body] : begin
 		if (Body === FlatBottomBody) : return 'flatBottom'
@@ -158,7 +158,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	glyph-block-export BConfig BBowlKind
 
-	foreach {suffix {Body cut fFlat {Serifs doST    } } } [Object.entries BConfig] : do
+	foreach {suffix {Body cut fFlat {Serifs doST}}} [Object.entries BConfig] : do
 		local yOverlay : mix XH (Ascender - [if doST Stroke 0]) 0.5
 		create-glyph "b.\(suffix)" : glyph-proc
 			include : MarkSet.b
@@ -277,8 +277,8 @@ glyph-block Letter-Latin-Lower-B : begin
 			y -- 0
 			yAttach -- attach.y
 
-	derive-multi-part-glyphs 'bDot' 0x1E03 {'b' 'dotAbove'  } : lambda [srcs gr] : glyph-proc
-		local {base mark  } srcs
+	derive-multi-part-glyphs 'bDot' 0x1E03 {'b' 'dotAbove'} : lambda [srcs gr] : glyph-proc
+		local {base mark} srcs
 		include : refer-glyph mark
 		include : Translate (Width + [HSwToV HalfStroke]) 0
 		include [refer-glyph base] AS_BASE

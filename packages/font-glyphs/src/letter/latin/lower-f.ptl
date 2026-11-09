@@ -36,8 +36,8 @@ glyph-block Letter-Latin-Lower-F : begin
 		__              : balanced + 0
 
 	define [FCrossBarPos df sym xDefaultLeft xDefaultRight] : match sym
-		[Just SYM-LEFT] {([FBarLeftPos df sym 0] + TanSlope * Stroke) ([xSmallFCrossRefT df] + LongJut * [Math.sqrt df.adws])  }
-		__              {(xDefaultLeft + 0) (xDefaultRight + 0)  }
+		[Just SYM-LEFT] {([FBarLeftPos df sym 0] + TanSlope * Stroke) ([xSmallFCrossRefT df] + LongJut * [Math.sqrt df.adws])}
+		__              {(xDefaultLeft + 0) (xDefaultRight + 0)}
 
 	define [FAsymTopHookExtra df sym barLeft barLeftRef xCrossRight _hookScale] : match sym
 		[Just SYM-LEFT] : begin
@@ -79,7 +79,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		HookStart (Ascender - offset) (sw -- sw)
 		flat (barleft + offset) (Ascender - ArchDepthA * 0.8)
 		[if offset corner curl] (barleft + offset) 0 [heading Downward]
-		if offset {[corner (df.rightSB + RBalance2 - (OX - O) - offset + [fallback _hookExtra 0]) 0]  } {}
+		if offset {[corner (df.rightSB + RBalance2 - (OX - O) - offset + [fallback _hookExtra 0]) 0]} {}
 
 	define [SmallFDownExtension barLeft] : VBar.l barLeft [mix 0 Descender 0.9] TINY
 
@@ -116,7 +116,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local balancedBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
 		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
-		local {xCrossLeft xCrossRight  } : FCrossBarPos df sym df.leftSB [mix df.leftSB df.rightSB m]
+		local {xCrossLeft xCrossRight} : FCrossBarPos df sym df.leftSB [mix df.leftSB df.rightSB m]
 
 		local hookExtra : FAsymTopHookExtra df sym barLeft barLeft0 xCrossRight
 		local topHookRight : if (sym === SYM-LEFT) xCrossRight (df.rightSB + barLeft - barLeft0 + hookExtra)
@@ -148,7 +148,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			HookStart (Ascender - offset) (sw -- sw) (swTerminal -- swTerminal)
 			flat (barleft + offset) (Ascender - ArchDepthA * 0.8)
 			[if offset corner curl] (barleft + offset) 0 [heading Downward]
-			if offset {[corner (hookRight - offset) 0]  } {}
+			if offset {[corner (hookRight - offset) 0]} {}
 
 	define [NarrowStdFShape df m bh counterHook sym] : glyph-proc
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
@@ -163,7 +163,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local stdCrossRight : mix df.leftSB df.rightSB m
 		local narrowCrossRight : mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]
 		local narrowCrossLeft : mix df.leftSB barLeft [mix 0.5 0.375 pAdaptive]
-		local {xCrossLeft xCrossRight  } : FCrossBarPos df sym narrowCrossLeft narrowCrossRight
+		local {xCrossLeft xCrossRight} : FCrossBarPos df sym narrowCrossLeft narrowCrossRight
 
 		local hookExtra : FAsymTopHookExtra df sym barLeft barLeft0 xCrossRight hookScale
 		local topHookRight : if (sym === SYM-LEFT) xCrossRight ([mix barLeft (df.rightSB + barLeft - barLeft0 + hookExtra) 0.75])
@@ -208,7 +208,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barLeft : FBarLeftPos df sym balancedBarLeft
 		local barRight : barLeft + [HSwToV Stroke]
 		local hd : FlatHookDepth df
-		local {xCrossLeft xCrossRight  } : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
+		local {xCrossLeft xCrossRight} : FCrossBarPos df sym crossLeft (crossRight + crossBarExt)
 		local topHookRight : if (sym === SYM-LEFT) xCrossRight (crossRight + topHookExt)
 		local xTip : topHookRight + [if fCorner ([CornerHookOffset Stroke] + [CornerHookOutset Stroke]) 0]
 
@@ -236,24 +236,24 @@ glyph-block Letter-Latin-Lower-F : begin
 
 	define SmallFConfig : SuffixCfg.weave
 		object # body
-			''                                {StandardFShape      dfN  }
-			narrow                            {NarrowStdFShape     dfF  }
-			flatHook                          {[NarrowFShape 0]    dfF  }
-			flatHookCLC1                      {[NarrowFShape 1]    dfF  }
-			flatHookCLC2                      {[NarrowFShape 2]    dfF  }
-			flatHookCLC3                      {[NarrowFShape 3]    dfF  }
-			flatHookCLC4                      {[NarrowFShape 4]    dfF  }
-			cornerHook                        {[NarrowFShape 0 true] dfF  }
-			cornerHookCLC1                    {[NarrowFShape 1 true] dfF  }
-			cornerHookCLC2                    {[NarrowFShape 2 true] dfF  }
-			cornerHookCLC3                    {[NarrowFShape 3 true] dfF  }
-			cornerHookCLC4                    {[NarrowFShape 4 true] dfF  }
+			''             {StandardFShape         dfN}
+			narrow         {NarrowStdFShape        dfF}
+			flatHook       {[NarrowFShape 0]       dfF}
+			flatHookCLC1   {[NarrowFShape 1]       dfF}
+			flatHookCLC2   {[NarrowFShape 2]       dfF}
+			flatHookCLC3   {[NarrowFShape 3]       dfF}
+			flatHookCLC4   {[NarrowFShape 4]       dfF}
+			cornerHook     {[NarrowFShape 0 true]  dfF}
+			cornerHookCLC1 {[NarrowFShape 1 true]  dfF}
+			cornerHookCLC2 {[NarrowFShape 2 true]  dfF}
+			cornerHookCLC3 {[NarrowFShape 3 true]  dfF}
+			cornerHookCLC4 {[NarrowFShape 4 true]  dfF}
 		function [body] : object # hooks
-			serifless                         {[if body pNarrowFSide 0.95]    CH-NONE          'b'   }
-			serifed                           {[if body pNarrowFSide 0.95]    CH-SERIF         'b'   }
-			extended                          {[if body pNarrowFSide 0.95]    CH-EXTENSION     'bp'  }
-			tailed                            {[if body pNarrowFSide 1.00]    CH-HOOK          'bp'  }
-			diagonalTailed                    {[if body pNarrowFSide 1.00]    CH-DIAGONAL-HOOK 'bp'  }
+			serifless      {[if body pNarrowFSide 0.95]  CH-NONE           'b' }
+			serifed        {[if body pNarrowFSide 0.95]  CH-SERIF          'b' }
+			extended       {[if body pNarrowFSide 0.95]  CH-EXTENSION      'bp'}
+			tailed         {[if body pNarrowFSide 1.00]  CH-HOOK           'bp'}
+			diagonalTailed {[if body pNarrowFSide 1.00]  CH-DIAGONAL-HOOK  'bp'}
 		object # symmetry
 			''                                SYM-BALANCED
 			asymmetric                        SYM-LEFT
@@ -262,7 +262,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			crossbarAtXHeight                 XH
 			crossbarAtHalfAscenderHeight      ([mix 0 Ascender 0.5] + HalfStroke)
 
-	foreach {suffix {{Body df    } {pBar ch mk  } sym yBar } } [Object.entries SmallFConfig] : do
+	foreach {suffix {{Body df} {pBar ch mk} sym yBar}} [Object.entries SmallFConfig] : do
 		create-glyph "f.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.(mk)
@@ -310,7 +310,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
 		local barLeft : FBarLeftPos dfF sym balancedBarLeft
-		local {xCrossLeft xCrossRight  } : FCrossBarPos dfF sym dfF.leftSB [mix dfF.leftSB dfF.rightSB pBar]
+		local {xCrossLeft xCrossRight} : FCrossBarPos dfF sym dfF.leftSB [mix dfF.leftSB dfF.rightSB pBar]
 		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight
 		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) (dfF.rightSB + RBalance2 - (OX - O) + hookExtra)
 		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
@@ -325,7 +325,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local stdCrossRight : mix dfF.leftSB dfF.rightSB pBar
 		local narrowCrossRight : mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]
 		local narrowCrossLeft : mix dfF.leftSB barLeft [mix 0.5 0.375 pAdaptive]
-		local {xCrossLeft xCrossRight  } : FCrossBarPos dfF sym narrowCrossLeft narrowCrossRight
+		local {xCrossLeft xCrossRight} : FCrossBarPos dfF sym narrowCrossLeft narrowCrossRight
 		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight hookScale
 		local hookRight : mix barLeft0 (dfF.rightSB + RBalance2 - (OX - O) + hookExtra) hookScale
 		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) hookRight
@@ -340,7 +340,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local kern : (dfLeft.width - dfLeft.rightSB) + dfEng.leftSB
 		local xEngPart : dfLeft.width - kern
 
-		local {barLeft0 barLeft00 hookExtra tipX0  } : if fNarrow
+		local {barLeft0 barLeft00 hookExtra tipX0} : if fNarrow
 			FengTrillNarrowHook dfLeft pBar ch sym
 			FengTrillStdHook dfLeft pBar ch sym
 		local barLeft barLeft0
@@ -401,14 +401,14 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-export FengTrillConfig
 	define FengTrillConfig : SuffixCfg.weave
 		object # body : rounded only
-			''                                {StandardFShape  false  }
-			narrow                            {NarrowStdFShape true   }
+			''     {StandardFShape   false}
+			narrow {NarrowStdFShape  true }
 		function [body] : object # tail
-			serifless                         {[if body pNarrowFSide 0.95]    CH-NONE           }
-			serifed                           {[if body pNarrowFSide 0.95]    CH-SERIF          }
-			extended                          {[if body pNarrowFSide 0.95]    CH-EXTENSION      }
-			tailed                            {[if body pNarrowFSide 1.00]    CH-HOOK           }
-			diagonalTailed                    {[if body pNarrowFSide 1.00]    CH-DIAGONAL-HOOK  }
+			serifless      {[if body pNarrowFSide 0.95]  CH-NONE         }
+			serifed        {[if body pNarrowFSide 0.95]  CH-SERIF        }
+			extended       {[if body pNarrowFSide 0.95]  CH-EXTENSION    }
+			tailed         {[if body pNarrowFSide 1.00]  CH-HOOK         }
+			diagonalTailed {[if body pNarrowFSide 1.00]  CH-DIAGONAL-HOOK}
 		object # symmetry
 			''                                SYM-BALANCED
 			asymmetric                        SYM-LEFT
@@ -417,7 +417,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			crossbarAtXHeight                 XH
 			crossbarAtHalfAscenderHeight      ([mix 0 Ascender 0.5] + HalfStroke)
 
-	foreach {suffix {{Body fNarrow    } {pBar ch  } sym yBar } } [Object.entries FengTrillConfig] : do
+	foreach {suffix {{Body fNarrow} {pBar ch} sym yBar}} [Object.entries FengTrillConfig] : do
 		create-glyph "fengTrillDesign.\(suffix)" : glyph-proc
 			include : FengTrillShape Body fNarrow pBar ch yBar sym
 

@@ -639,29 +639,29 @@ glyph-block Letter-Latin-K : begin
 			symmetricConnectedKH [KLegs.Symmetric [AdviceStroke 6] Descender]
 			symmetricConnectedVB [KLegs.Symmetric CyrlVbGap]
 		function [body] : object # serifs
-			serifless                          {0 0 0  }
-			topLeftSerifed                     {2 0 SLAB-TL  }
-			bottomRightSerifed                 {0 0 SLAB-BR  }
-			topLeftAndBottomRightSerifed       {2 0 [bitOr SLAB-TL SLAB-BR]  }
-			topRightInnerSerifed               {0 0 SLAB-TR-L  }
-			topLeftAndTopRightInnerSerifed     {2 0 [bitOr SLAB-TL SLAB-TR-L]  }
-			topRightSerifed                    {0 0 SLAB-TR-R  }
-			topLeftAndTopRightSerifed          {2 0 [bitOr SLAB-TL SLAB-TR-R]  }
-			topRightMiddleSerifed                {0 0 [bitOr SLAB-TR-L SLAB-TR-R]  }
-			topLeftAndTopRightMiddleSerifed      {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]  }
-			topRightInnerAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L SLAB-BR]  }
-			topLeftAndTopRightInnerAndBottomRightSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]  }
-			topRightAndBottomRightSerifed      {0 0 [bitOr SLAB-TR-R SLAB-BR]  }
-			triSerifed                         {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]  }
-			topRightMiddleAndBottomRightSerifed  {0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]  }
-			topLeftAndTopRightMiddleAndBottomRightSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]  }
-			serifedKappa                       {2 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]  }
+			serifless                                     {0  0  0                                                          }
+			topLeftSerifed                                {2  0  SLAB-TL                                                    }
+			bottomRightSerifed                            {0  0  SLAB-BR                                                    }
+			topLeftAndBottomRightSerifed                  {2  0  [bitOr SLAB-TL SLAB-BR]                                    }
+			topRightInnerSerifed                          {0  0  SLAB-TR-L                                                  }
+			topLeftAndTopRightInnerSerifed                {2  0  [bitOr SLAB-TL SLAB-TR-L]                                  }
+			topRightSerifed                               {0  0  SLAB-TR-R                                                  }
+			topLeftAndTopRightSerifed                     {2  0  [bitOr SLAB-TL SLAB-TR-R]                                  }
+			topRightMiddleSerifed                         {0  0  [bitOr SLAB-TR-L SLAB-TR-R]                                }
+			topLeftAndTopRightMiddleSerifed               {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]                }
+			topRightInnerAndBottomRightSerifed            {0  0  [bitOr SLAB-TR-L SLAB-BR]                                  }
+			topLeftAndTopRightInnerAndBottomRightSerifed  {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]                  }
+			topRightAndBottomRightSerifed                 {0  0  [bitOr SLAB-TR-R SLAB-BR]                                  }
+			triSerifed                                    {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
+			topRightMiddleAndBottomRightSerifed           {0  0  [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]                }
+			topLeftAndTopRightMiddleAndBottomRightSerifed {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+			serifedKappa                                  {2  1  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
 			serifed : match body
-				[Just 'symmetricConnectedKH']  {1 1 [bitOr SLAB-TL SLAB-TR-R]  }
-				__                             {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]  }
+				[Just 'symmetricConnectedKH']  {1 1 [bitOr SLAB-TL SLAB-TR-R]}
+				__                             {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]}
 			fullSerifed : match body
-				[Just 'symmetricConnectedKH']  {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]  }
-				__                             {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]  }
+				[Just 'symmetricConnectedKH']  {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]}
+				__                             {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
 
 	define [UpperKLTSerif top swRef xBarLeft slabType _swSerif] : begin
 		local swSerif : fallback _swSerif swRef
@@ -738,7 +738,7 @@ glyph-block Letter-Latin-K : begin
 				no-shape
 
 	# Main building
-	foreach {suffix {LegsImpl {slabLT slabLB slabLegs  } } } [pairs-of UpperKConfig] : do
+	foreach {suffix {LegsImpl {slabLT slabLB slabLegs}}} [pairs-of UpperKConfig] : do
 		define fStraightBar : LegsImpl !== KLegs.Curly
 
 		define [KBaseShape sw top attachment] : glyph-proc
@@ -763,7 +763,7 @@ glyph-block Letter-Latin-K : begin
 				x     -- (SB + [KBalance slabLT fStraightBar])
 				bot   -- XH
 				top   -- (CAP - [if slabLT Stroke 0])
-				space -- {0 [mix SB RightSB 0.75]  }
+				space -- {0 [mix SB RightSB 0.75]}
 
 		create-glyph "KBar.\(suffix)" : glyph-proc
 			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
@@ -840,26 +840,26 @@ glyph-block Letter-Latin-K : begin
 			roundedConnected    KLegs.RoundedConnected
 			rounded             KLegs.Rounded
 		object # serifs
-			serifless                     {0 0 0  }
-			topLeftSerifed                {1 0 SLAB-TL  }
-			bottomRightSerifed            {0 0 SLAB-BR  }
-			topLeftAndBottomRightSerifed  {1 0 [bitOr SLAB-TL SLAB-BR]  }
-			topRightInnerSerifed          {0 0 SLAB-TR-L  }
-			topLeftAndTopRightInnerSerifed {1 0 [bitOr SLAB-TL SLAB-TR-L]  }
-			topRightSerifed               {0 0 SLAB-TR-R  }
-			topLeftAndTopRightSerifed     {1 0 [bitOr SLAB-TL SLAB-TR-R]  }
-			topRightMiddleSerifed           {0 0 [bitOr SLAB-TR-L SLAB-TR-R]  }
-			topLeftAndTopRightMiddleSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]  }
-			topRightInnerAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L SLAB-BR]  }
-			topLeftAndTopRightInnerAndBottomRightSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]  }
-			topRightAndBottomRightSerifed {0 0 [bitOr SLAB-TR-R SLAB-BR]  }
-			triSerifed                    {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]  }
-			topRightMiddleAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]  }
-			topLeftAndTopRightMiddleAndBottomRightSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]  }
-			serifed                       {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]  }
-			fullSerifed                   {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]  }
+			serifless                                     {0  0  0                                                          }
+			topLeftSerifed                                {1  0  SLAB-TL                                                    }
+			bottomRightSerifed                            {0  0  SLAB-BR                                                    }
+			topLeftAndBottomRightSerifed                  {1  0  [bitOr SLAB-TL SLAB-BR]                                    }
+			topRightInnerSerifed                          {0  0  SLAB-TR-L                                                  }
+			topLeftAndTopRightInnerSerifed                {1  0  [bitOr SLAB-TL SLAB-TR-L]                                  }
+			topRightSerifed                               {0  0  SLAB-TR-R                                                  }
+			topLeftAndTopRightSerifed                     {1  0  [bitOr SLAB-TL SLAB-TR-R]                                  }
+			topRightMiddleSerifed                         {0  0  [bitOr SLAB-TR-L SLAB-TR-R]                                }
+			topLeftAndTopRightMiddleSerifed               {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]                }
+			topRightInnerAndBottomRightSerifed            {0  0  [bitOr SLAB-TR-L SLAB-BR]                                  }
+			topLeftAndTopRightInnerAndBottomRightSerifed  {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]                  }
+			topRightAndBottomRightSerifed                 {0  0  [bitOr SLAB-TR-R SLAB-BR]                                  }
+			triSerifed                                    {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
+			topRightMiddleAndBottomRightSerifed           {0  0  [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]                }
+			topLeftAndTopRightMiddleAndBottomRightSerifed {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+			serifed                                       {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
+			fullSerifed                                   {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
 
-	foreach {suffix {LegsImpl {slabLT slabLB slabLegs  } } } [pairs-of LowerKConfig] : do
+	foreach {suffix {LegsImpl {slabLT slabLB slabLegs}}} [pairs-of LowerKConfig] : do
 		define fStraightBar : LegsImpl !== KLegs.Curly
 
 		define [kBaseShape attachment] : glyph-proc
@@ -980,8 +980,8 @@ glyph-block Letter-Latin-K : begin
 
 	select-variant 'turnk' 0x29E (follow -- 'k')
 
-	derive-multi-part-glyphs 'kDot' null {'k' 'dotAbove'  } : lambda [srcs gr] : glyph-proc
-		local {base mark  } srcs
+	derive-multi-part-glyphs 'kDot' null {'k' 'dotAbove'} : lambda [srcs gr] : glyph-proc
+		local {base mark} srcs
 		include : refer-glyph mark
 		include : Translate (Width + [HSwToV HalfStroke]) 0
 		include [refer-glyph base] AS_BASE
