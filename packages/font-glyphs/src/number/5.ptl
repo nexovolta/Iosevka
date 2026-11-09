@@ -65,7 +65,8 @@ glyph-block Digits-Five : begin
 
 		local boxTop : new Box t2 0 xLeft RightSB
 		local boxBot : new Box t2 0 SB RightSB
-		local ArcTop : bowlTopArcC boxTop
+		local topArc : if broken Flat bowlTopArcC
+		local ArcTop : topArc boxTop
 			sw      -- sw
 			barSw   -- sw
 			hook    -- (AHook * (top / CAP))
@@ -83,7 +84,7 @@ glyph-block Digits-Five : begin
 					ArcBot.hookEndL
 				local firstKnot fiveStroke.rhsKnots.0
 				local oblCor : Math.hypot 1 obl
-				local xVBar : firstKnot.x - oblCor * [HSwToV sw] + [if (bowlTopArcC === Flat) [HSwToV : 0.5 * sw] 0]
+				local xVBar : firstKnot.x - oblCor * [HSwToV sw] + [if (topArc === Flat) [HSwToV : 0.5 * sw] 0]
 				local xVBarOffset : (top - firstKnot.y) * obl
 				include : HBar.t [if zt SB (xVBar + xVBarOffset)] xRight top sw
 				include : union
@@ -99,14 +100,16 @@ glyph-block Digits-Five : begin
 							widths.rhs (oblCor * sw)
 							flat  xVBar                firstKnot.y [heading Upward]
 							flat (xVBar + xVBarOffset) top         [heading Upward]
-				if broken : include : dispiro
-					widths.rhs (oblCor * sw)
-					flat (xVBar - obl * 1.4 * sw) (firstKnot.y - 1.4 * sw) [heading Upward]
-					flat (xVBar + obl * 0.5 * sw) (firstKnot.y + 0.5 * sw) [heading Upward]
+				if broken : include : intersection
+					MaskAbove (t2 / 2 + t2 * kGap)
+					dispiro
+						widths.rhs (oblCor * sw)
+						flat (xVBar - obl * 1.4 * sw) (firstKnot.y - 1.4 * sw) [heading Upward]
+						flat (xVBar + obl * 0.5 * sw) (firstKnot.y + 0.5 * sw) [heading Upward]
 				if bbd : begin
 					local boxTop2 : boxTop.pad TINY
 					local boxBot2 : boxBot.pad TINY
-					local ArcTop2 : bowlTopArcC boxTop2
+					local ArcTop2 : topArc boxTop2
 						sw      -- sw
 						barSw   -- sw
 						hook    -- (AHook * (top / CAP))
