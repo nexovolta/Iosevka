@@ -17,16 +17,12 @@ glyph-block Letter-Latin-Sigmoid-S : begin
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
 
-	# Full Latin S as the spine. The lower terminal is extended to the S
-	# crossing like the inner curl of an asymmetric 8 (clipped to the spine).
-	# Outlines are built in design space; italic is the gizmo skew of that.
 	glyph-block-export SigmoidSShape
 	define [SigmoidSShape top styTop hook _ess _pCurl] : begin
 		local df : DivFrame 1
 		local sw : df.adviceStroke2 2 3 top
 		local fine : df.adviceStroke2 3 4 top
 		local ess : [fallback _ess EssUpper] * (sw / Stroke)
-		# sign 0: no TanSlope sag; italic is the gizmo skew of upright.
 		local archDepth : AdviceSArchDepth top 0 sw
 		local l : df.leftSB + OX
 		local r : df.rightSB - OX
