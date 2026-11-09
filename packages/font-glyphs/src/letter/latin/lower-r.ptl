@@ -754,8 +754,6 @@ glyph-block Letter-Latin-Lower-R : begin
 		eject-contour 'strokeL'
 		eject-contour 'earTail'
 
-	# Flat-top extra hook: same TR arc as the body, no stem. Curl into the first
-	# hook's flat top so the join is a clip, not a vertical cap / T-junction.
 	define [FlatTopExtraHook df _sw] : glyph-proc
 		define [object rBarLeftX rHookRightX rHookDepthY] : RDim df RMode.Half
 		local sw : fallback _sw : Stroke * [StrokeWidthBlend 0.8 0.6]
@@ -812,7 +810,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : PalatalHook.r (x -- pos.x) (y -- pos.y) (xLink -- attach.x)
 
 		create-glyph "rDouble.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM
+			local df : include : DivFrame 1
 			include : df.markSet.e
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
@@ -832,7 +830,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleM
+			local df : include : DivFrame 1
 			include : df.markSet.e
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
@@ -864,8 +862,6 @@ glyph-block Letter-Latin-Lower-R : begin
 			local df : include : DivFrame 1
 			include : df.markSet.e
 			define [object rBarLeftX] : RDim df RMode.HalfStretch
-			# Stem at center; each hook fills half the cell (stretched to SB).
-			# Skip r top serifs so they do not collide with the hooks.
 			if (Body === HalfRShape.FlatTop)
 			: then : include : TShape df XH false doBS
 			: else : begin
@@ -938,13 +934,13 @@ glyph-block Letter-Latin-Lower-R : begin
 		serifedAsymmetric              { true   true   0.5  false }
 		centerSerifed                  { true   true   1.0  false }
 		centerShortSerifed             { true   true   0.5  false }
-		reverseHooky                   { false  true   1.0  true }
-		sshaped                        { true   true   1.0  true }
-		sshapedAsymmetric              { true   true   0.5  true }
+		reverseHooky                   { false  true   1.0  true  }
+		sshaped                        { true   true   1.0  true  }
+		sshapedAsymmetric              { true   true   0.5  true  }
 		hookyBottomLeft                { true   false  0.0  false }
-		topRightSerifed                { true   true   1.0  true }
-		topRightBaseSerifed            { true   true   1.0  true }
-		topRightBaseSerifedAsymmetric  { true   true   0.5  true }
+		topRightSerifed                { true   true   1.0  true  }
+		topRightBaseSerifed            { true   true   1.0  true  }
+		topRightBaseSerifedAsymmetric  { true   true   0.5  true  }
 		tailed                         { false  false  0.0  false }
 		tailedSerifed                  { false  true   1.0  false }
 		diagonalTailed                 { false  false  0.0  false }
