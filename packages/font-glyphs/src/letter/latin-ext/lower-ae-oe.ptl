@@ -201,9 +201,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	define [AvAyOverlapK] : mix 0.3 0.08 [AvAyHeavyT]
 
 	do 'v and y subglyphs for av/ay'
-		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs VMotionSerifs VTopRightMotionSerifs VBilateralMotionSerifs
+		glyph-block-import Letter-Latin-V : VShape VShapeOutline VSquareTopShape VSquareTopOutline VSerifs VMotionSerifs VTopRightMotionSerifs VBilateralMotionSerifs
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
-		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
 		define dfVY : DivFrame para.advanceScaleMM 3
 		define { subDfVY shiftVY0 } : SubDfAndShift 1 dfVY 0
@@ -239,22 +238,28 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			create-glyph "av/vRight.\(suffix)" : glyph-proc
 				include : refer-glyph "av/v.\(suffix)"
 				eject-contour 'strokeDown'
+			create-glyph "av/vMask.\(suffix)" : glyph-proc
+				include : with-transform [ApparentTranslate shiftVY 0]
+					if fSquareTop [VSquareTopOutline subDfVY XH dfVY.mvs] [VShapeOutline subDfVY fStraightBar XH (sw -- dfVY.mvs)]
 
 		foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
 			if [not fSquareTop] : begin
-				local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
-				local ySlabKind { false doSlabBottom doSlabMotion doSlabTopRightMotion }
+				local { doSlabBottom doSlabMotion } slabKind
+				local ySlabKind { false doSlabBottom doSlabMotion false }
 				create-glyph "ay/y.\(suffix)" : glyph-proc
 					local YShape : NonCursiveYShapeT straightBar bottomShape ySlabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
+					local YSerifs : NonCursiveYShapeT straightBar bottomShape slabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
 					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
 						include : YShape.SmallYShape XH Descender
+						include : YShape.SmallYWholeRightHalfShape XH Descender
 						eject-contour 'serifLT'
-						if doSlabTop : begin
-							local sf : SerifFrame.fromDf subDfVY XH Descender
-							include sf.rt.full
+						include : YSerifs.SmallYRightTopSerifs XH Descender
 				create-glyph "ay/yRight.\(suffix)" : glyph-proc
-					include : refer-glyph "ay/y.\(suffix)"
-					eject-contour 'leftHalf'
+					local YShape : NonCursiveYShapeT straightBar bottomShape ySlabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
+					local YSerifs : NonCursiveYShapeT straightBar bottomShape slabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
+					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
+						include : YShape.SmallYWholeRightHalfShape XH Descender
+						include : YSerifs.SmallYRightTopSerifs XH Descender
 
 	do 'c subglyphs'
 		glyph-block-import Letter-Latin-C : CLetterForm CConfig
@@ -473,6 +478,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant 'av/v' (follow -- 'v')
 	select-variant 'ay/y' (follow -- 'y/nonCursive')
 	select-variant 'av/vRight' (follow -- 'v')
+	select-variant 'av/vMask' (follow -- 'v')
 	select-variant 'ay/yRight' (follow -- 'y/nonCursive')
 
 	glyph-block-import Letter-Latin-Lower-A : DoubleStorey
@@ -517,7 +523,9 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		local xJoin : AvAyJoinX df
 		local barY : [mix 0 XH DesignParameters.aBarPos] + df.mvs * DesignParameters.aBarStrokeAdj
 		include [refer-glyph src] AS_BASE ALSO_METRICS
-		include : HBar.m xJoin ([AvAyRightShift df] + subDf.rightSB) barY df.mvs
+		include : intersection
+			HBar.m xJoin ([AvAyRightShift df] + subDf.width) barY df.mvs
+			refer-glyph 'av/vMask'
 	derive-composites 'uo' 0xAB63 'uo/u' 'uo/o'
 
 	CreateTurnedLetter 'turnae' 0x1D02 'ae' HalfAdvance (XH / 2) [DivFrame para.advanceScaleMM 3]

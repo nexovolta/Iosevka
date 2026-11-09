@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
 	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookEnd
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
-	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull VExtendedLtFull
+	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull VExtendedRtInner VExtendedLtFull
 
 	define SLAB-NONE             { false false false false }
 	define SLAB-AUTO             { SLAB  SLAB  false false }
@@ -247,6 +247,20 @@ glyph-block Letter-Latin-Lower-Y : begin
 						rightSh.baseKnots top bottom
 					* leftSplitMask
 
+			if doSlabBottom : include : right.baseSerif top bottom
+
+		export : define [SmallYRightTopSerifs top bottom] : glyph-proc
+			local me : Metrics TS-NONE SHRINK-NONE
+			local sf : SerifFrame top bottom sb me.yrstroker (swRef -- sw) (swSerif -- sw)
+			if doSlabTop : include : VExtendedRtFull sf
+			if doSlabTopRightMotion : include : VExtendedRtInner sf
+
+		export : define [SmallYWholeRightHalfShape top bottom] : glyph-proc
+			local right : RightHalf TS-NONE SHRINK-NONE
+			include : right.ogonekAttach top bottom
+			include : tagged 'rightHalf' : dispiro
+				right.topKnots top bottom
+				right.baseKnots top bottom
 			if doSlabBottom : include : right.baseSerif top bottom
 
 		export : define [SmallYShape top bottom yShCutoff] : glyph-proc
