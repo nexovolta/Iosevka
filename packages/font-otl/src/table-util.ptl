@@ -70,7 +70,7 @@ class LayoutTable
 		if [not a.name] : throw : new Error 'Invalid lookup'
 		if [not b.name] : throw : new Error 'Invalid lookup'
 
-		this.lookupDep.push { a.name b.name }
+		this.lookupDep.push {a.name b.name}
 
 	public [beginBlock] : begin
 		return : object
@@ -80,19 +80,19 @@ class LayoutTable
 		local currentLookupNames : new Set : Object.keys this.lookups
 		foreach existing rec.existingLookupNames : foreach current currentLookupNames
 			if (![IsUtilityLookupId existing] && ![IsUtilityLookupId current] && ![rec.existingLookupNames.has current])
-				this.lookupDep.push { existing current }
+				this.lookupDep.push {existing current}
 
 	public [endBlockAtFront rec] : begin
 		local currentLookupNames : new Set : Object.keys this.lookups
 		foreach existing rec.existingLookupNames : foreach current currentLookupNames
 			if (![IsUtilityLookupId existing] && ![IsUtilityLookupId current] && ![rec.existingLookupNames.has current])
-				this.lookupDep.push { current existing }
+				this.lookupDep.push {current existing}
 
 	public [finalize] : begin
 		local lns : new Set : Object.keys this.lookups
 		foreach [front lns] : foreach [rear lns]
 			if (![IsUtilityLookupId front] && [IsUtilityLookupId rear])
-				this.lookupDep.push { front rear }
+				this.lookupDep.push {front rear}
 
 		set this.lookupOrder : toposort this.lookupDep
 		foreach [{key lang} : pairs-of this.languages] : begin
@@ -216,14 +216,14 @@ export : define [FinalizeTable table] : begin
 export : define [UkMapToLookup m] : begin
 	local l {}
 	local r {}
-	foreach { k v } [Object.entries m] : begin
+	foreach {k v} [Object.entries m] : begin
 		l.push k
 		r.push v
-	return { .left l .right r }
+	return {.left l .right r}
 
 export : define [UkLigatureToLookup data mapper] : begin
 	local substitutions {}
-	foreach { from to } [items-of data] : begin
+	foreach {from to} [items-of data] : begin
 		local allFound true
 		local fromGlyphNames {}
 		local toGlyph null

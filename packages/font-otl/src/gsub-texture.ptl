@@ -10,26 +10,26 @@ export : define [buildGsubTexture gsub glyphStore markGlyphs cvs] : begin
 	local rec : gsub.beginBlock
 
 	define txtr : gsub.addCommonFeature : gsub.createFeature 'TXTR'
-	define { chain-rule reverse-rule } : gsub.ChainRuleBuilder
+	define {chain-rule reverse-rule} : gsub.ChainRuleBuilder
 	define look-around null
 
-	local extLFrom  { }
-	local extRFrom  { }
-	local extLRFrom { }
-	local extLTo    { }
-	local extRTo    { }
-	local extLRTo   { }
+	local extLFrom  {}
+	local extRFrom  {}
+	local extLRFrom {}
+	local extLTo    {}
+	local extRTo    {}
+	local extLRTo   {}
 
-	local shrLFrom  { }
-	local shrRFrom  { }
-	local shrLRFrom { }
-	local shrLTo    { }
-	local shrRTo    { }
-	local shrLRTo   { }
+	local shrLFrom  {}
+	local shrRFrom  {}
+	local shrLRFrom {}
+	local shrLTo    {}
+	local shrRTo    {}
+	local shrLRTo   {}
 
 	local anyInfluence : new Set
 
-	foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
+	foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
 		local extL : Texture.ExtL.get g
 		local extR : Texture.ExtR.get g
 		local extLR : Texture.ExtLR.get g
@@ -89,7 +89,7 @@ export : define [buildGsubTexture gsub glyphStore markGlyphs cvs] : begin
 			.type 'gsub_multiple'
 			.substitutions {.}
 
-		foreach { gn glyph } [glyphStore.namedEntries] : begin
+		foreach {gn glyph} [glyphStore.namedEntries] : begin
 			local parts : CvDecompose.get glyph
 			if parts : begin
 				local influenced : anyInfluence.has gn

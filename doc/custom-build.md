@@ -215,6 +215,7 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
   - `underscore-underscore-underscore`: Make 3 or more contiguous underscores (like `___` and `____`) connected.
   - `hash-hash`: Make 2 or more contiguous hash signs (number signs) (like `##`, `###` and `####`) connected.
   - `hash-hash-hash`: Make 3 or more contiguous hash signs (number signs) (like `##` and `###`) connected.
+  - `thin-backslash`: Render odd backslashes in each consecutive run thin and even backslashes normally.
   - `logic`: Enable ligation for `/\` and `\/`.
   - `llgg`: Enable ligation for `<<`, `>>` and other angle-bracket chaining.
   - `llggeq`: Enable ligation for `<<=`, `>>=` as shift operator.
@@ -225,6 +226,11 @@ Subsection `ligations` is used to customize the ligation set assigned to `calt` 
   - `markdown-checkboxes`: Enable ligation for Markdown checkboxes like `- [ ]` and `- [x]`.
 
 <!-- END Section-Cherry-Picking-Ligation-Sets -->
+
+`thin-backslash` is enabled in the default `calt` and discretionary ligation sets. It adjusts
+spacing alongside `|`, `/`, `.`, `!`, `:`, `,`, and `;`, but replaces `/\` and `\/` logic
+ligatures involving backslashes. Use `disables = ["thin-backslash"]` to retain those ligatures,
+or disable both `calt` and `dlig` when shaping.
 
 #### Configuring Character Variants
 

@@ -85,16 +85,16 @@ define [buildGPOS para glyphStore markGlyphs] : begin
 
 # GDEF
 define [buildGDEF para glyphStore markGlyphs] : begin
-	local GDEF { .glyphClassDef {.} .markAttachClassDef {.} .markGlyphSets {} }
+	local GDEF {.glyphClassDef {.} .markAttachClassDef {.} .markGlyphSets {}}
 
-	foreach { gn glyph } [glyphStore.namedEntries] : piecewise
+	foreach {gn glyph} [glyphStore.namedEntries] : piecewise
 		[markGlyphs.all.has gn] : set GDEF.glyphClassDef.(gn) GDEF_MARK
 		[[regex '_'].test gn]   : set GDEF.glyphClassDef.(gn) GDEF_LIGATURE
 		true                    : set GDEF.glyphClassDef.(gn) GDEF_SIMPLE
 
 	local n 1
 	local m : new Map
-	foreach { gn clsStr } markGlyphs.markAttachClassDef : begin
+	foreach {gn clsStr} markGlyphs.markAttachClassDef : begin
 		local clsNum : m.get clsStr
 		if [not clsNum] : begin
 			set clsNum n
@@ -113,7 +113,7 @@ export : define [buildOtl para glyphStore] : begin
 	Gr.linkSuffixPairGr glyphStore 'lnum' 'onum' Gr.Lnum Gr.Onum
 	Gr.linkSuffixGr     glyphStore 'aplForm'     Gr.AplForm
 
-	local markGlyphs { .all [new Set] .markAttachClassDef [new Map] .markGlyphSets {} }
+	local markGlyphs {.all [new Set] .markAttachClassDef [new Map] .markGlyphSets {}}
 	local GPOS : buildGPOS para glyphStore markGlyphs
 	local GDEF : buildGDEF para glyphStore markGlyphs
 	local GSUB : buildGSUB para glyphStore markGlyphs

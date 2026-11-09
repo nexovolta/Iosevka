@@ -11,10 +11,10 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markStroke markExtend
 
-	glyph-block-export slashDefautLeft
+	glyph-block-export slashDefaultLeft
 	glyph-block-export slashDefaultRight
 
-	define slashDefautLeft   : SB      + HalfStroke
+	define slashDefaultLeft   : SB      + HalfStroke
 	define slashDefaultRight : RightSB - HalfStroke
 
 	define flex-params [SlashShape] : glyph-proc
@@ -33,7 +33,7 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 			corner (l - [HSwToV : 0.5 * cor * w]) b
 
 	create-glyph 'slash' '/' : glyph-proc
-		include : SlashShape slashDefautLeft slashDefaultRight
+		include : SlashShape slashDefaultLeft slashDefaultRight
 
 	alias 'solidus'      0x2044 'slash'
 	alias 'fractionBar'  null   'slash'
@@ -42,12 +42,12 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 	create-glyph 'doubleSlash' 0x2AFD : glyph-proc
 		define w : AdviceStroke 3
 		define b : Math.max w : Width * 0.15
-		include : SlashShape (slashDefautLeft - b) (slashDefaultRight - b) nothing nothing w
-		include : SlashShape (slashDefautLeft + b) (slashDefaultRight + b) nothing nothing w
+		include : SlashShape (slashDefaultLeft - b) (slashDefaultRight - b) nothing nothing w
+		include : SlashShape (slashDefaultLeft + b) (slashDefaultRight + b) nothing nothing w
 
 	create-glyph 'slash.left' : glyph-proc
 		Joining.set currentGlyph Joining.Classes.Right
-		include : SlashShape slashDefautLeft Width
+		include : SlashShape slashDefaultLeft Width
 
 	create-glyph 'slash.right' : glyph-proc
 		Joining.set currentGlyph Joining.Classes.Left
@@ -56,10 +56,10 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 	create-glyph 'slantedParallel' : glyph-proc
 		define w : AdviceStroke 3
 		define b : Math.max w : Width * 0.15
-		include : SlashShape (slashDefautLeft - b) (slashDefaultRight - b) TackTop TackBot w
-		include : SlashShape (slashDefautLeft + b) (slashDefaultRight + b) TackTop TackBot w
+		include : SlashShape (slashDefaultLeft - b) (slashDefaultRight - b) TackTop TackBot w
+		include : SlashShape (slashDefaultLeft + b) (slashDefaultRight + b) TackTop TackBot w
 
-	local backslashWidth : (slashDefaultRight - slashDefautLeft) * (1 + TanSlope * 2)
+	local backslashWidth : (slashDefaultRight - slashDefaultLeft) * (1 + TanSlope * 2)
 	define flex-params [BackslashShape] : glyph-proc
 		local-parameter : l
 		local-parameter : r
@@ -75,8 +75,11 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 			corner (r + [HSwToV : 0.5 * cor * w]) b
 			corner (r - [HSwToV : 0.5 * cor * w]) b
 
-	create-glyph 'backslash' '\' : glyph-proc
-		include : BackslashShape slashDefautLeft slashDefaultRight
+	create-glyph 'backslash' "\\" : glyph-proc
+		include : BackslashShape slashDefaultLeft slashDefaultRight
+
+	create-glyph 'backslash.thin' : glyph-proc
+		include : BackslashShape slashDefaultLeft slashDefaultRight (w -- (Stroke / 2))
 
 	alias 'mathSetMinus'  0x2216 'backslash'
 	alias 'mathBackslash' 0x29F5 'backslash'
@@ -84,9 +87,9 @@ glyph-block Symbol-Punctuation-Slashes-And-Number-Sign : begin
 	define MosaicTop    fontMetrics.os2.sTypoAscender
 	define MosaicBottom fontMetrics.os2.sTypoDescender
 	create-glyph 'bigSolidus' 0x29F8 : glyph-proc
-		include : SlashShape slashDefautLeft slashDefaultRight MosaicTop MosaicBottom
+		include : SlashShape slashDefaultLeft slashDefaultRight MosaicTop MosaicBottom
 	create-glyph 'bigBackslash' 0x29F9 : glyph-proc
-		include : BackslashShape slashDefautLeft slashDefaultRight MosaicTop MosaicBottom
+		include : BackslashShape slashDefaultLeft slashDefaultRight MosaicTop MosaicBottom
 
 	create-glyph 'slashOverbar' 0x29F6 : glyph-proc
 		include : refer-glyph 'slash'

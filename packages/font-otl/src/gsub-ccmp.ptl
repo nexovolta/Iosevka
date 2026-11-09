@@ -40,7 +40,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 		local verticalOverlay : glyphStore.queryNameByUnicode 0x20D2
 		local negatedInfinity : glyphStore.queryByUnicode 0x29DE
 		if (infinity && verticalOverlay && negatedInfinity) : begin
-			foreach gr [items-of { Nwid Wwid }] : begin
+			foreach gr [items-of {Nwid Wwid}] : begin
 				local from : gr.get infinity
 				local to : gr.get negatedInfinity
 				if (from && to && [glyphStore.queryByName from] && [glyphStore.queryByName to]) : begin
@@ -58,7 +58,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 		define dotlessFrom         {}
 		define dotlessTo           {}
 
-		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.'): begin
+		foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.'): begin
 			if g.baseAnchors.lf             : groupLF.push gn
 			if g.baseAnchors.grekUpperTonos : groupGrekUpperTonos.push gn
 			if [Dotless.get g] : begin
@@ -90,18 +90,18 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 		export-lookup : gsub.createLookup : object
 			.type 'gsub_multiple'
 			.substitutions : object
-				'parenAbove' { 'leftParenAbove' 'rightParenAbove' }
-				'doubleParenAbove' { 'leftDoubleParenAbove' 'rightDoubleParenAbove' }
-				'brackAbove' { 'leftBrackAbove' 'rightBrackAbove' }
-				'parenBelow' { 'leftParenBelow' 'rightParenBelow' }
-				'parenOver' { 'leftParenOver' 'rightParenOver' }
+				'parenAbove' {'leftParenAbove' 'rightParenAbove'}
+				'doubleParenAbove' {'leftDoubleParenAbove' 'rightDoubleParenAbove'}
+				'brackAbove' {'leftBrackAbove' 'rightBrackAbove'}
+				'parenBelow' {'leftParenBelow' 'rightParenBelow'}
+				'parenOver' {'leftParenOver' 'rightParenOver'}
 
 	Ccmp-Group 'Tie Mark Transform' : begin
 		define TieMarkFrom         {}
 		define TieMarkTo           {}
 		define TieGlyphs           {}
 
-		foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
+		foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
 			if [TieGlyph.get g] : TieGlyphs.push gid
 			if [TieMark.get g] : begin
 				TieMarkFrom.push gid
@@ -134,7 +134,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 	Ccmp-Group 'IJ-Acute composites' : begin
 		local substitutions {}
-		foreach { gn g } [glyphStore.namedEntries] : begin
+		foreach {gn g} [glyphStore.namedEntries] : begin
 			local nldVariant : NLDAcuteVariant.get g
 			if nldVariant : substitutions.push
 				object [from : list gn 'acuteAbove'] [to nldVariant]
@@ -145,7 +145,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 	Ccmp-Group 'DZ-Caron composites' : begin
 		local substitutions {}
-		foreach { gn g } [glyphStore.namedEntries] : begin
+		foreach {gn g} [glyphStore.namedEntries] : begin
 			local hbsVariant : HBSCaronVariant.get g
 			if hbsVariant : substitutions.push
 				object [from : list gn 'caronAbove'] [to hbsVariant]
@@ -159,20 +159,20 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 			list 'above' 'leaningAbove'
 			list 'below' 'leaningBelow'
 
-		foreach { mkCenter mkLeaning } [items-of LeaningAnchorMap] : begin
+		foreach {mkCenter mkLeaning} [items-of LeaningAnchorMap] : begin
 			local basesToConsider {}
 			local markFrom        {}
 			local markTo          {}
 			local markSpacer      {}
 			local splitMapping    {}
 
-			foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
+			foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 				if (![markGlyphs.all.has gn] && g.baseAnchors.(mkLeaning)) : basesToConsider.push gn
 				if (g.markAnchors.(mkCenter) && [LeaningMark.get g] && [LeaningMarkSpacer.get g]) : begin
 					markFrom.push       gn
 					markTo.push         [LeaningMark.get g]
 					markSpacer.push     [LeaningMarkSpacer.get g]
-					splitMapping.push   { gn {[LeaningMarkSpacer.get g] [LeaningMark.get g]} }
+					splitMapping.push   {gn {[LeaningMarkSpacer.get g] [LeaningMark.get g]}}
 
 			define lookupTurnMarkIntoLeaningAndSpacer : gsub.createLookup : object
 				.type 'gsub_multiple'
@@ -183,7 +183,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				.ignoreGlyphs [filterMarkByClassNegated markGlyphs mkCenter]
 				.rules : list
 					object
-						.match         { [basesToConsider.concat markSpacer] markFrom }
+						.match         {[basesToConsider.concat markSpacer] markFrom}
 						.inputBegins   1
 						.inputEnds     2
 						.apply         {{.at 1 .lookup lookupTurnMarkIntoLeaningAndSpacer}}
@@ -192,7 +192,7 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 		define superscripts        {}
 		define subscripts          {}
 
-		foreach { gn g } [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
+		foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 			if [IsSuperscript.get g] : superscripts.push gn
 			if [IsSubscript.get g]   : subscripts.push gn
 
@@ -328,9 +328,9 @@ export : define [buildCCMPPostCvSs gsub ccmp glyphStore markGlyphs] : begin
 	local anyMark : Array.from markGlyphs.all
 	local rec : gsub.beginBlock
 
-	define triggerGlyphs_Normal { }
-	define triggerGlyphs_Y      { }
-	foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.'): begin
+	define triggerGlyphs_Normal {}
+	define triggerGlyphs_Y      {}
+	foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.'): begin
 		if g.baseAnchors.trailing : piecewise
 			[OgonekTrY.get g] : triggerGlyphs_Y.push      gid
 			true              : triggerGlyphs_Normal.push gid
@@ -347,12 +347,12 @@ export : define [buildCCMPPostCvSs gsub ccmp glyphStore markGlyphs] : begin
 		.ignoreGlyphs [filterMarkByClassNegated markGlyphs 'below']
 		.rules : list
 			object
-				.match { triggerGlyphs_Y [Object.keys UnicodeKnowledge.ogonekBelowToTRTf_Y] }
+				.match {triggerGlyphs_Y [Object.keys UnicodeKnowledge.ogonekBelowToTRTf_Y]}
 				.inputBegins   1
 				.inputEnds     2
 				.apply         {{.at 1 .lookup ogonekSpacerY}}
 			object
-				.match { triggerGlyphs_Normal [Object.keys UnicodeKnowledge.ogonekBelowToTRTf] }
+				.match {triggerGlyphs_Normal [Object.keys UnicodeKnowledge.ogonekBelowToTRTf]}
 				.inputBegins   1
 				.inputEnds     2
 				.apply         {{.at 1 .lookup ogonekSpacerNormal}}
@@ -363,10 +363,10 @@ define [objectIsNotEmpty obj] : obj && [Object.keys obj].length
 
 define [filterMarkByClass markGlyphs c] : begin
 	local marks {}
-	foreach { gn m } markGlyphs.markAttachClassDef : if (m == c) : marks.push gn
+	foreach {gn m} markGlyphs.markAttachClassDef : if (m == c) : marks.push gn
 	return marks
 
 define [filterMarkByClassNegated markGlyphs c] : begin
 	local marks {}
-	foreach { gn m } markGlyphs.markAttachClassDef : if (m != c) : marks.push gn
+	foreach {gn m} markGlyphs.markAttachClassDef : if (m != c) : marks.push gn
 	return marks

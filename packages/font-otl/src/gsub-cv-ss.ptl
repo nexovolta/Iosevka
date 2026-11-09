@@ -101,7 +101,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 			cvs.set prime.tag cvLookupManager
 
 	do 'Build decomposition lookups'
-		foreach { gn glyph } [glyphStore.namedEntries] : begin
+		foreach {gn glyph} [glyphStore.namedEntries] : begin
 			local parts : CvDecompose.get glyph
 			if parts : foreach part [items-of parts] : begin
 				local gPart : glyphStore.queryByNameEnsured part
@@ -116,7 +116,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 
 			define decomp : composition.decompose para para.variants.selectorTree
 			local ssGrs {}
-			foreach { prime pv } [items-of decomp] : if (pv.tag && pv.rank) : begin
+			foreach {prime pv} [items-of decomp] : if (pv.tag && pv.rank) : begin
 				ssGrs.push pv
 				local dl [cvs.get pv.tag].decompositionLookup
 				if dl : feature.addLookup dl
@@ -133,7 +133,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 				if (subst && subst != gn) : begin
 					if (gr.tag && gr.rank) : begin
 						local cvAlt : [cvs.get gr.tag].createAlternateSubst
-						if [not cvAlt.substitutions.(gn)] : set cvAlt.substitutions.(gn) { }
+						if [not cvAlt.substitutions.(gn)] : set cvAlt.substitutions.(gn) {}
 						set cvAlt.substitutions.(gn).(gr.rank - 1) : glyphStore.ensureExists subst
 					if [grSetUsedBySs.has gr] : begin
 						local cvSingle : [cvs.get gr.tag].createSingleSubstFor gr.rank
@@ -161,7 +161,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 		foreach cv [items-of sortedCvs] : begin
 			if cv.altrenatesLookup : begin
 				local st cv.altrenatesLookup.substitutions
-				foreach { k v } [pairs-of st] : foreach idx [range 0 v.length] : if [not v.(idx)]
+				foreach {k v} [pairs-of st] : foreach idx [range 0 v.length] : if [not v.(idx)]
 					set v.(idx) k
 			cv.linkDeps
 

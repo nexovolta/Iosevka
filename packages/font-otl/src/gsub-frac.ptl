@@ -7,13 +7,13 @@ export : define [buildFrac gsub glyphStore] : begin
 	local rec : gsub.beginBlock
 
 	define frac : gsub.addCommonFeature : gsub.createFeature 'frac'
-	define { chain-rule reverse-rule } : gsub.ChainRuleBuilder
+	define {chain-rule reverse-rule} : gsub.ChainRuleBuilder
 
-	define digitSet { }
-	define numSet   { }
-	define denSet   { }
+	define digitSet {}
+	define numSet   {}
+	define denSet   {}
 
-	foreach { gid g } [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
+	foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
 		local numForm : NumeratorForm.get   g
 		local denForm : DenominatorForm.get g
 		if (numForm && denForm) : begin

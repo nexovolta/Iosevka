@@ -14,7 +14,7 @@ define ident : lambda [t] : t.map : lambda [x] x
 export : define [buildLigations gsub para plm] : begin
 	# Initialize features
 	define features : new Map
-	foreach [ { featureTag } : pairs-of plm] : begin
+	foreach [ {featureTag} : pairs-of plm] : begin
 		local feature : gsub.addCommonFeature : gsub.createFeature featureTag
 		features.set featureTag feature
 
@@ -28,7 +28,7 @@ define [DoLigGroupT gsub plm features] : function [F] : begin
 	define [deDupe lookupsToPush] : begin
 		local h : JSON.stringify lookupsToPush
 		local g : deDupeGroups.get h
-		if g : return { false g }
+		if g : return {false g}
 
 		# We now actually push the lookups
 
@@ -45,12 +45,12 @@ define [DoLigGroupT gsub plm features] : function [F] : begin
 		gsub.endBlock rec
 
 		deDupeGroups.set h results
-		return { true results }
+		return {true results}
 
 	# Execute body function F, collect lookups and add them into the GSUB
-	foreach [ { featureTag groups } : pairs-of plm] : begin
+	foreach [ {featureTag groups} : pairs-of plm] : begin
 		define feature : features.get featureTag
-		define { fUnique lookups } : deDupe : DoFeatureLigGroup gsub feature groups F
+		define {fUnique lookups} : deDupe : DoFeatureLigGroup gsub feature groups F
 		foreach lookup [items-of lookups] : feature.addLookup lookup
 
 define [DoFeatureLigGroup gsub feature groups F] : begin
@@ -89,7 +89,7 @@ define-macro LigGroup : syntax-rules
 ###################################################################################################
 
 define [buildLigationsImpl gsub para $LigGroup$] : begin
-	define { chain-rule reverse-rule } : gsub.ChainRuleBuilder
+	define {chain-rule reverse-rule} : gsub.ChainRuleBuilder
 
 	define less {'less'}
 	define lessAndEquiv {'less' 'less.lig.shift0' 'less.lig.shift0.anti'}
@@ -100,7 +100,7 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 
 	define hyphen {'hyphen'}
 	define equal {'equal'}
-	define anyStraightRod { 'hyphen' 'equal' }
+	define anyStraightRod {'hyphen' 'equal'}
 	define anyWave {'asciiTilde' 'asciiTilde.high' 'asciiTilde.mid' 'asciiTilde.low' 'asciiTilde.compact' 'asciiTilde.compactMid' 'asciiTilde.compactLow' 'asciiTilde.highShort' 'asciiTilde.midShort' 'asciiTilde.lowShort' 'asciiTilde.compactShort' 'asciiTilde.compactMidShort' 'asciiTilde.compactLowShort' 'asciiTilde.highTall' 'asciiTilde.midTall' 'asciiTilde.lowTall' 'asciiTilde.compactTall' 'asciiTilde.compactMidTall' 'asciiTilde.compactLowTall'}
 	define tildeSelValue ([if para.variantSelector.asciiTilde para.variantSelector.asciiTilde ''] + '')
 	define tildeCenteredGlyph ('asciiTilde.' + [if [tildeSelValue.startsWith 'compact'] 'compactLow' 'low'] + [if [tildeSelValue.endsWith 'Short'] 'Short' [if [tildeSelValue.endsWith 'Tall'] 'Tall' '']])
@@ -135,8 +135,8 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 	LigGroup 'Operator centering' : if [hasLG 'center-ops'] : begin
 		define triggerL {}
 		define triggerR {}
-		define skipL    { 'slash' 'backslash' 'at' 'ampersand' 'percent' 'numberSign' }
-		define skipR    { 'slash' 'backslash' 'at' 'ampersand' 'percent' 'numberSign' }
+		define skipL    {'slash' 'backslash' 'at' 'ampersand' 'percent' 'numberSign'}
+		define skipR    {'slash' 'backslash' 'at' 'ampersand' 'percent' 'numberSign'}
 
 		if [hasLG 'center-op-trigger-plus-minus-l'] : triggerL.push 'plus' 'minus' 'hyphen'
 		if [hasLG 'center-op-trigger-plus-minus-r'] : triggerR.push 'plus' 'minus' 'hyphen'
@@ -226,10 +226,19 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 				{'asterisk/sMid/ligComment'} ~> look-around
 				{'asterisk' 'asterisk/slashBot'}  ~> [just 'asterisk/sMid/ligComment']
 
+	LigGroup 'Thin Backslash' : if [hasLG 'thin-backslash'] : begin
+		CreateLigationLookup : list
+			chain-rule
+				backslash ~> {'backslash.thin'}
+		CreateLigationLookup : list
+			chain-rule
+				{'backslash.thin'} ~> look-around
+				{'backslash.thin'} ~> backslash
+
 	LigGroup 'Kern Dotty' : if [hasLG 'kern-dotty'] : begin
 		define dottyPunctuationSets : list
-			list { 'period' 'period/mid' } { 'colon' 'colon/mid' 'question' 'exclam' }
-			list { 'comma' }               { 'semicolon' }
+			list {'period' 'period/mid'} {'colon' 'colon/mid' 'question' 'exclam'}
+			list {'comma'}               {'semicolon'}
 		define dottyConnected : list
 			list
 				* 'equal'
@@ -251,8 +260,10 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 				* 'ampersand'
 				* 'slash'
 				* 'bar'
+				* 'backslash'
+				* 'backslash.thin'
 
-		foreach { dpShort dpTall } [items-of dottyPunctuationSets] : begin
+		foreach {dpShort dpTall} [items-of dottyPunctuationSets] : begin
 			define dp : {}.concat dpShort dpTall
 			define dLeft      : [lsx 'dLeft']  dp
 			define dRight     : [lsx 'dRight'] dp
@@ -639,21 +650,21 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 
 			# console.log featureName rodCls kindLeftMid kindRightMid
 
-			foreach [{ lBar kl envL } : items-of kindLeftMid] : begin
-				foreach [{ rBar kr envR } : items-of kindRightMid] : begin
+			foreach [{lBar kl envL} : items-of kindLeftMid] : begin
+				foreach [{rBar kr envR} : items-of kindRightMid] : begin
 					if (!lBar || !rBar) : begin
 						rods.push : chain-rule	# < - >
 							envL   ~> look-around
 							rodCls ~> [CRod "\(kl)\(kr)"]
 							envR   ~> look-around
 
-			foreach [{ lBar kl envL } : items-of kindLeftMid] : begin
+			foreach [{lBar kl envL} : items-of kindLeftMid] : begin
 				if (!lBar) : begin
 					rods.push : chain-rule	# < -
 						envL   ~> look-around
 						rodCls ~> [CRod "\(kl)f"]
 
-			foreach [{ rBar kr envR } : items-of kindRightMid] : begin
+			foreach [{rBar kr envR} : items-of kindRightMid] : begin
 				if (!rBar) : begin
 					rods.push : chain-rule	# - >
 						rodCls ~> [CRod "f\(kr)"]
@@ -745,10 +756,10 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 				greater    ~> [lsx 'shiftN0h']
 
 		# Cancel alternates of < and > shapes if there are more after them
-		local lAll  { 'less'    'less.lig.shift0h'    'less.lig.shiftN0h'    }
-		local lNeut { 'less'    'less'                'less'                 }
-		local gAll  { 'greater' 'greater.lig.shift0h' 'greater.lig.shiftN0h' }
-		local gNeut { 'greater' 'greater'             'greater'              }
+		local lAll  {'less'    'less.lig.shift0h'    'less.lig.shiftN0h'}
+		local lNeut {'less'    'less'                'less'}
+		local gAll  {'greater' 'greater.lig.shift0h' 'greater.lig.shiftN0h'}
+		local gNeut {'greater' 'greater'             'greater'}
 		local lgAll  : lAll.concat  gAll
 		local lgNeut : lNeut.concat gNeut
 		CreateLigationLookup : list
@@ -784,10 +795,10 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 	# /\ and \/
 	LigGroup 'logical' : if [hasLG 'logic'] : begin
 		CreateLigationLookup : list
-			chain-rule
+			if [not : hasLG 'thin-backslash'] : chain-rule
 				slash          ~> [csx 'left']
 				backslash      ~> [csx 'right']
-			chain-rule
+			if [not : hasLG 'thin-backslash'] : chain-rule
 				backslash      ~> [csx 'left']
 				slash          ~> [csx 'right']
 			chain-rule
@@ -1000,13 +1011,13 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 
 	# +++++++++
 	define ChainingConfig : object
-		'plus'   { 'plus'        'plus' }
-		'minus'  { 'hyphen'      'hyphen' }
-		'tilde'  { 'asciiTilde'  'wave' }
+		'plus'  {'plus'        'plus'  }
+		'minus' {'hyphen'      'hyphen'}
+		'tilde' {'asciiTilde'  'wave'  }
 
-	foreach { gr { gnFrom gnTo } } [Object.entries ChainingConfig] : begin
-		define [sfx suffix] : [lsx suffix] { gnTo }
-		define [src]          { gnFrom }
+	foreach {gr {gnFrom gnTo}} [Object.entries ChainingConfig] : begin
+		define [sfx suffix] : [lsx suffix] {gnTo}
+		define [src]          {gnFrom}
 
 		LigGroup "Chaining \(gr)" : if [hasLG "\(gr)-\(gr)-\(gr)"] : begin
 			CreateLigationLookup : list
@@ -1089,7 +1100,7 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 				{'numberSign'}    ~> [if [hasLG 'hash-hash'] [csx 'jr'] advance]
 
 	LigGroup 'Kern Bars' : if [hasLG 'kern-bars'] : foreach chBar [items-of anyBar] : begin
-		define dp           { chBar }
+		define dp : if (chBar === 'backslash' && [hasLG 'thin-backslash']) {chBar 'backslash.thin'} {chBar}
 		define dLeft      : [lsx 'dLeft']  dp
 		define dRight     : [lsx 'dRight'] dp
 		define dLeftHalf  : [lsx 'dLeftHalf']  dp
@@ -1125,6 +1136,29 @@ define [buildLigationsImpl gsub para $LigGroup$] : begin
 			chain-rule
 				dRight ~> dRightHalf
 				dLeft  ~> dLeftHalf
+
+	LigGroup 'Kern Backslash Neighbors' : if ([hasLG 'thin-backslash'] && [hasLG 'kern-bars']) : begin
+		define bs {'backslash' 'backslash.thin'}
+		define neighbors {'bar' 'slash' 'period' 'exclam' 'colon' 'comma' 'semicolon'}
+		CreateLigationLookup : list
+			chain-rule
+				[[lsx 'dLeft'] bs] ~> [lsx 'dMid']
+				neighbors          ~> [lsx 'dLeftHalf']
+			chain-rule
+				[[lsx 'dLeftHalf'] bs] ~> [lsx 'dMid']
+				neighbors              ~> [lsx 'dLeftHalf']
+			chain-rule
+				neighbors           ~> [lsx 'dRightHalf']
+				[[lsx 'dRight'] bs] ~> [lsx 'dMid']
+			chain-rule
+				neighbors               ~> [lsx 'dRightHalf']
+				[[lsx 'dRightHalf'] bs] ~> [lsx 'dMid']
+			chain-rule
+				bs        ~> [lsx 'dRightHalf']
+				neighbors ~> [lsx 'dLeftHalf']
+			chain-rule
+				neighbors ~> [lsx 'dRightHalf']
+				bs        ~> [lsx 'dLeftHalf']
 
 	LigGroup 'Markdown Checkboxes' : if [hasLG 'markdown-checkboxes'] : begin
 		# Transform [ ], [x] and [X] after `* `, `- ` or `+ ` into checkboxes

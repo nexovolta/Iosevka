@@ -18,7 +18,7 @@ define MarkInteractions : new Map : list
 	list 'overlayBraceL' {'overlayBraceL'}
 	list 'overlayBraceR' {'overlayBraceR'}
 
-define MkmkStackingLimit : new Set { 'above' 'below' }
+define MkmkStackingLimit : new Set {'above' 'below'}
 
 export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 	define validMarkClasses : new Set MarkClasses
@@ -37,7 +37,7 @@ export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 		local markLookup : ensureLookup gpos mark cls
 		local mkmkLookup : ensureLookup gpos mkmk cls
 
-		foreach { gn glyph } [glyphStore.namedEntries] : begin
+		foreach {gn glyph} [glyphStore.namedEntries] : begin
 			if glyph.markAnchors.(cls) : begin
 				markGlyphs.all.add gn
 				markGlyphs.markAttachClassDef.set gn cls
@@ -49,7 +49,7 @@ export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 		local markLookup : ensureLookup gpos mark cls
 		local mkmkLookup : ensureLookup gpos mkmk cls
 
-		foreach { gn glyph } [glyphStore.namedEntries] : begin
+		foreach {gn glyph} [glyphStore.namedEntries] : begin
 			local anchor glyph.baseAnchors.(cls)
 			if ([not anchor] && (cls === 'overlayBraceL' || cls === 'overlayBraceR'))
 				set anchor : SynthesizeOverlayBrace glyph [if (cls === 'overlayBraceL') 'L' 'R']
@@ -61,12 +61,12 @@ export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 	foreach markLookup [mark.lookupMap.values] : foreach mkmkLookup [mkmk.lookupMap.values]
 		gpos.setDependency markLookup mkmkLookup
 
-	foreach { cls lookup } mkmk.lookupMap : begin
-		local interactionMarkSet : new Set ([MarkInteractions.get cls] || { cls })
+	foreach {cls lookup} mkmk.lookupMap : begin
+		local interactionMarkSet : new Set ([MarkInteractions.get cls] || {cls})
 
 		local includeSet : new Set
 		local ignoreSet : new Set
-		foreach { gn c } markGlyphs.markAttachClassDef : if [interactionMarkSet.has c]
+		foreach {gn c} markGlyphs.markAttachClassDef : if [interactionMarkSet.has c]
 			then : includeSet.add gn
 			else : ignoreSet.add gn
 
