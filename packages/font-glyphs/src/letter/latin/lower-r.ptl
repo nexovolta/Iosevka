@@ -810,7 +810,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : PalatalHook.r (x -- pos.x) (y -- pos.y) (xLink -- attach.x)
 
 		create-glyph "rDouble.\(suffix)" : glyph-proc
-			local df : include : DivFrame 1
+			local df : include : DivFrame para.advanceScaleF
 			include : df.markSet.e
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
@@ -830,7 +830,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			set-base-anchor 'overlay' df.middle [mix 0 XH 0.5]
 
 		create-glyph "rDoubleCrossedTail.\(suffix)" : glyph-proc
-			local df : include : DivFrame 1
+			local df : include : DivFrame para.advanceScaleF
 			include : df.markSet.e
 			local dfHalf : if (Body === HalfRShape.FlatTop) [DivFrame para.advanceScaleI] [doubleRHalfDf df.width Body]
 
