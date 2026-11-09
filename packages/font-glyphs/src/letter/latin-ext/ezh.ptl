@@ -35,6 +35,7 @@ glyph-block Letter-Latin-Ezh : begin
 		local-parameter : fFlatHook     -- false
 		local-parameter : fCornerHook   -- false
 		local-parameter : hookStyle     -- 'serifless'
+		local-parameter : cornerHookInset -- 0
 		local-parameter : pxTopRight    -- 0.925
 		local-parameter : pxMidLeft     -- 0.200
 		local-parameter : pyMidLeft     -- 0.550
@@ -155,7 +156,7 @@ glyph-block Letter-Latin-Ezh : begin
 							~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
 						[Just TERMINAL-CORNER] : list
 							g4 xArcMid yArcMid
-							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
+							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke) (endInset -- cornerHookInset)].hookEndL]
 						__ : list
 							g4 xArcMid yArcMid
 							match hookStyle
@@ -496,6 +497,33 @@ glyph-block Letter-Latin-Ezh : begin
 				refSw   -- fine
 				maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
 
+	define [PhoneticEzhPalatal fCursive fSerifed hookStyle] : glyph-proc
+		include : MarkSet.p
+		local stroke : AdviceStroke2 2 3 (XH - Descender)
+		define ezh : Ezh [DivFrame 1] XH Descender
+			fCursive  -- fCursive
+			fSerifed  -- fSerifed
+			hookStyle -- hookStyle
+			cornerHookInset -- [Math.min [HSwToV : 1.5 * stroke] : 0.25 * (RightSB - SB)]
+			pxMidLeft -- (4/15)
+			pyMidLeft -- [if fCursive 0.50 0.55]
+			stroke    -- stroke
+			hook      -- SHook
+			ada       -- SmallArchDepthA
+			adb       -- SmallArchDepthB
+		include : ezh.Shape
+		define [object xArcTop yArcTop xArcMid yArcMid] : ezh.Dim
+		local fine : Math.min stroke : AdviceStroke 3
+		local pos {.x ([mix 0 Width (4/3)] - SB) .y 0}
+		local attach {.x [mix xArcMid xArcTop : arcvh.xFromY : clamp 0 1 : ([Math.max fine : yArcMid + fine / 2] - yArcMid) / (yArcTop - yArcMid)] .y [Math.max 0 : yArcMid - fine / 2]}
+		include : PalatalHook.r
+			x       -- pos.x
+			y       -- pos.y
+			xLink   -- attach.x
+			yAttach -- attach.y
+			refSw   -- fine
+			maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
+
 	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
 		if [not fSerifed] : begin
 			DefineSelectorGlyph 'lezh'          suffix [DivFrame 1] 'bp'
@@ -669,30 +697,7 @@ glyph-block Letter-Latin-Ezh : begin
 					yAttach -- (Descender + SHook)
 					refSw   -- stroke
 
-			create-glyph "ezhPalatalHook/phoneticRight.\(suffix)" : glyph-proc
-				include : MarkSet.p
-				local stroke : AdviceStroke2 2 3 (XH - Descender)
-				define ezh : Ezh [DivFrame 1] XH Descender
-					fCursive  -- fCursive
-					fSerifed  -- fSerifed
-					pxMidLeft -- (4/15)
-					pyMidLeft -- [if fCursive 0.50 0.55]
-					stroke    -- stroke
-					hook      -- SHook
-					ada       -- SmallArchDepthA
-					adb       -- SmallArchDepthB
-				include : ezh.Shape
-				define [object xArcTop yArcTop xArcMid yArcMid] : ezh.Dim
-				local fine : Math.min stroke : AdviceStroke 3
-				local pos {.x ([mix 0 Width (4/3)] - SB) .y 0}
-				local attach {.x [mix xArcMid xArcTop : arcvh.xFromY : clamp 0 1 : ([Math.max fine : yArcMid + fine / 2] - yArcMid) / (yArcTop - yArcMid)] .y [Math.max 0 : yArcMid - fine / 2]}
-				include : PalatalHook.r
-					x       -- pos.x
-					y       -- pos.y
-					xLink   -- attach.x
-					yAttach -- attach.y
-					refSw   -- fine
-					maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
+			create-glyph "ezhPalatalHook/phoneticRight.\(suffix)" : PhoneticEzhPalatal fCursive fSerifed 'serifless'
 
 			DefineSelectorGlyph 'lezh/phoneticRight'      suffix [DivFrame 1] 'bp'
 			DefineSelectorGlyph 'lezhRTail/phoneticRight' suffix [DivFrame 1] 'bp'
@@ -819,6 +824,7 @@ glyph-block Letter-Latin-Ezh : begin
 		define yogh : Ezh df XH Descender
 			fCursive  -- fCursive
 			hookStyle -- hookStyle
+			cornerHookInset -- [Math.min [HSwToV : origBar + stroke] : 0.25 * (df.rightSB - df.leftSB)]
 			pxMidLeft -- [if phonetic [Math.max 0.40 : ([HSwToV origBar] + [Math.max (Width / 32) : AdviceStroke 24]) / (df.rightSB - df.leftSB)] 0.40]
 			pyMidLeft -- [if fCursive 0.50 0.55]
 			stroke    -- stroke
@@ -844,6 +850,7 @@ glyph-block Letter-Latin-Ezh : begin
 					define ezh : Ezh [DivFrame 1] XH Descender
 						fCursive  -- fCursive
 						hookStyle -- hookStyle
+						cornerHookInset -- [Math.min [HSwToV : 1.5 * [AdviceStroke2 2 3 (XH - Descender)]] : 0.25 * (RightSB - SB)]
 						pxMidLeft -- (4/15)
 						pyMidLeft -- [if fCursive 0.50 0.55]
 						stroke    -- [AdviceStroke2 2 3 (XH - Descender)]
@@ -851,6 +858,7 @@ glyph-block Letter-Latin-Ezh : begin
 						ada       -- SmallArchDepthA
 						adb       -- SmallArchDepthB
 					include : ezh.Shape
+			create-glyph "ezhPalatalHook/phoneticRight.\(suffix).\(hookStyle)" : PhoneticEzhPalatal fCursive fSerifed hookStyle
 			foreach name { 'lezh' 'lezh/phoneticRight' } : begin
 				foreach topSuffix [items-of lezhTopSuffixes] : do
 					create-glyph "\(name)/hook.\(suffix).\(hookStyle).\(topSuffix)" : glyph-proc
@@ -912,7 +920,7 @@ glyph-block Letter-Latin-Ezh : begin
 				set-base-anchor 'cvDecompose' 0 0
 				include : Style.Body subDf sym top 0
 
-		define [TzEzhGlyph xJoin fSerifed] : glyph-proc
+		define [TzEzhGlyph xJoin fSerifed hookStyle] : glyph-proc
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
 			local df : DivFrame tzAdws 3
@@ -922,6 +930,8 @@ glyph-block Letter-Latin-Ezh : begin
 			define ezh : Ezh ezhDf XH Descender
 				fCursive  -- false
 				fSerifed  -- fSerifed
+				hookStyle -- hookStyle
+				cornerHookInset -- [Math.min [HSwToV : origBar + stroke] : 0.25 * (ezhDf.rightSB - ezhDf.leftSB)]
 				pxMidLeft -- [Math.max 0.40 : ([HSwToV origBar] + [Math.max (Width / 32) : AdviceStroke 24]) / (ezhDf.rightSB - ezhDf.leftSB)]
 				pyMidLeft -- (55 / 100)
 				stroke    -- stroke
@@ -933,21 +943,22 @@ glyph-block Letter-Latin-Ezh : begin
 				include : ezh.Shape
 
 		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
-			create-glyph "TZ/ezh.\(suffix)" : glyph-proc
-				local df : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
-				# Meet T at the right of its stem, like Times: top bar does not pass through T.
-				include : TzEzhGlyph (subDf.middle + [HSwToV HalfStroke]) fSerifed
-			create-glyph "tz/ezh.\(suffix)" : glyph-proc
-				local df : DivFrame tzAdws 3
-				local subDf : df.slice 3 2
-				local xBarLeft : subDf.middle - subDf.adws * (subDf.adws * TBalance) - [HSwToV HalfStroke]
-				include : TzEzhGlyph (xBarLeft + [HSwToV Stroke]) fSerifed
+			foreach hookStyle [items-of PhoneticEzhHooks] : do
+				create-glyph "TZ/ezh.\(suffix).\(hookStyle)" : glyph-proc
+					local df : DivFrame tzAdws 3
+					local subDf : df.slice 3 2
+					# Meet T at the right of its stem, like Times: top bar does not pass through T.
+					include : TzEzhGlyph (subDf.middle + [HSwToV HalfStroke]) fSerifed hookStyle
+				create-glyph "tz/ezh.\(suffix).\(hookStyle)" : glyph-proc
+					local df : DivFrame tzAdws 3
+					local subDf : df.slice 3 2
+					local xBarLeft : subDf.middle - subDf.adws * (subDf.adws * TBalance) - [HSwToV HalfStroke]
+					include : TzEzhGlyph (xBarLeft + [HSwToV Stroke]) fSerifed hookStyle
 
 		select-variant 'TZ/T' (follow -- 'T')
 		select-variant 'tz/t' (follow -- 't')
-		select-variant 'TZ/ezh' (follow -- 'ezh/phoneticRight')
-		select-variant 'tz/ezh' (follow -- 'ezh/phoneticRight')
+		select-multi-dimensional-variant 'TZ/ezh' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+		select-multi-dimensional-variant 'tz/ezh' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
 
 		derive-multi-part-glyphs 'TZ' 0xA728 { 'TZ/T' 'TZ/ezh' } : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
@@ -970,7 +981,7 @@ glyph-block Letter-Latin-Ezh : begin
 	select-multi-dimensional-variant 'ezh/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
 	select-variant 'ezhCurlyTail/phoneticRight'   (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhRTail/phoneticRight'       (follow -- 'ezh/phoneticRight')
-	select-variant 'ezhPalatalHook/phoneticRight' (follow -- 'ezh/phoneticRight')
+	select-multi-dimensional-variant 'ezhPalatalHook/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
 
 	SelectLezhHooks 'lezh/phoneticRight' null
 	CreateSelectorVariants 'lezhRTail/phoneticRight' null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')

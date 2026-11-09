@@ -324,7 +324,7 @@ glyph-block Letter-Arc-Hook : begin
 			corner xOut (y - dirStub * depth) wStub
 			corner xOut y wCorner
 
-	define [MakeCornerHook] : with-params [l r t b [sw Stroke] [hook Hook]] : namespace
+	define [MakeCornerHook] : with-params [l r t b [sw Stroke] [hook Hook] [endInset 0]] : namespace
 		local box : new Box t b l r
 		local flatHook : MakeFlatHook l r t b (sw -- sw)
 		local fh : MakeCornerHookBase l r t b (sw -- sw)
@@ -364,10 +364,12 @@ glyph-block Letter-Arc-Hook : begin
 				curl [Math.min (xGuardR - w - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookEndL] : begin
+			local flatX : Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw
+			local endX : Math.min (flatHook.xLHook + endInset) (flatX - 0.5 * w)
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
-				flat [Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw] box.b [widths.rhs.heading sw Leftward]
-				~~~ [CornerHookEnd flatHook.xLHook box.b depth sw (-1) 1]
+				flat flatX box.b [widths.rhs.heading sw Leftward]
+				~~~ [CornerHookEnd [if endInset endX flatHook.xLHook] box.b depth sw (-1) 1]
 		export : define [hookEndR] : begin
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness

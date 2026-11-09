@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -9,27 +9,72 @@ import { buildGlyphs } from "@iosevka/font-glyphs";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
+import { getParametersT } from "../../font/src/param/index.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const read = name => Toml.parse(readFileSync(path.join(paramsDir, `${name}.toml`), "utf8"));
 const data = Object.assign({}, ...["parameters", "shape-weight", "shape-width", "shape-slope"].map(read));
 const variantData = read("variants");
 const hooks = ["serifless", "serifed", "inward-serifed", "flat-hooked", "corner-hooked"];
+const digraphs = [0x26e, 0x2a4, 0x1df20, 0x1df12, 0xa728, 0xa729];
+const makePara = await getParametersT({ paramsDir });
+function svgPath(contours) {
+	return contours.map(c => {
+		assert.equal(c[0].type, 0);
+		let d = `M${c[0].x},${c[0].y}`;
+		for (let i = 1; i < c.length; i++) {
+			const p = c[i], q = c[(i + 1) % c.length];
+			if (p.type === 0) d += `L${p.x},${p.y}`;
+			else if (p.type === 1 && q.type === 2) {
+				const r = c[(i + 2) % c.length];
+				assert.equal(r.type, 0);
+				d += `C${p.x},${p.y} ${q.x},${q.y} ${r.x},${r.y}`;
+				i += 2;
+			} else if (p.type === 3 && q.type === 0) {
+				d += `Q${p.x},${p.y} ${q.x},${q.y}`;
+				i++;
+			} else if (p.type === 3 && q.type === 3) {
+				d += `Q${p.x},${p.y} ${(p.x + q.x) / 2},${(p.y + q.y) / 2}`;
+			} else throw new Error(`Unexpected point type ${p.type}`);
+		}
+		return `${d}Z`;
+	}).join("");
+}
 await Geom.Init();
 
 for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
 	test(`ezh digraph hook selectors at ${weight} ${slope}`, () => {
 		const argv = {
 			shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			menu: { family: "Ezh Digraph QA", version: "34.9.0", width: 5, slope, weight: 400 },
 			featureControl: { noCvSs: false },
 			variants: { design: { "lower-ezh": "straight-flat-hooked-serifless", "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
 		};
-		const para = init(data, argv);
-		Variant.apply(variantData, para, argv);
-		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		const para = makePara(argv);
+		const { glyphStore } = buildGlyphs(para);
 		const byName = name => glyphStore.queryByNameEnsured(name);
 		const outline = glyph => new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 		const prime = para.variants.primes.get("lower-ezh");
+		const proof = [`<text x="15" y="24">Lower ezh hook variants — ${weight} ${slope}</text>`];
+		for (const [col, cp] of digraphs.entries()) {
+			proof.push(`<text x="${215 + col * 125}" y="48">U+${cp.toString(16).toUpperCase()}</text>`);
+			const glyph = glyphStore.queryByUnicode(cp);
+			assert.ok(glyph, `missing U+${cp.toString(16)}`);
+			const shapes = hooks.map((hook, row) => {
+				const name = prime.variants.get(`straight-${hook}-serifless`).get(glyph);
+				assert.ok(name, `U+${cp.toString(16)}: missing ${hook}`);
+				const contours = outline(byName(name));
+				assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
+				proof.push(`<path d="${svgPath(contours)}" transform="translate(${215 + col * 125} ${row * 135 + 160}) scale(.13 -.13)"/>`);
+				return JSON.stringify(contours);
+			});
+			assert.equal(new Set(shapes).size, hooks.length, `U+${cp.toString(16)}: hook choices must differ`);
+		}
+		if (process.env.QA_PROOF_DIR) {
+			hooks.forEach((hook, row) => proof.push(`<text x="15" y="${row * 135 + 100}">${hook}</text>`));
+			writeFileSync(path.join(process.env.QA_PROOF_DIR, `ezh-digraph-hooks-${weight}-${slope}.svg`),
+				`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760"><rect width="100%" height="100%" fill="white"/><g font-family="sans-serif" font-size="13">${proof.join("\n")}</g></svg>`);
+		}
 		for (const name of ["lezh", "lezh/phoneticRight"]) {
 			const original = byName(`${name}.straightSerifless.serifless`);
 			const unchanged = byName(`${name}/hook.straightSerifless.serifless.serifless`);
