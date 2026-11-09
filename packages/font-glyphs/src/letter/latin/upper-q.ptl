@@ -2,7 +2,6 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
 
-
 glyph-module
 
 glyph-block Letter-Latin-Upper-Q : begin
@@ -10,6 +9,7 @@ glyph-block Letter-Latin-Upper-Q : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-O
+	glyph-block-import Digits-Three-Top : ThreeFlatTopEtTop
 
 	define TailDepth : 0 - Hook
 
@@ -29,7 +29,7 @@ glyph-block Letter-Latin-Upper-Q : begin
 			flat [Arch.adjust-x.bot df.middle] 0
 			curl tailRB 0
 
-	define [QOpenSwashyBody df top] : glyph-proc
+	define [QOpenSwashBody df top straight] : glyph-proc
 		define fine : AdviceStroke 3.5
 		define xLB0 : mix df.leftSB df.rightSB (1 / 16)
 		define xLB : xLB0 + [HSwToV : 0.6 * fine]
@@ -58,18 +58,24 @@ glyph-block Letter-Latin-Upper-Q : begin
 				[mix yLB yMBArc 4] + notchOffset
 			MaskRightLine df.middle 0 df.middle top 2
 		# OShape to Swash stroke
-		include : dispiro
-			flat (df.leftSB + OX) [mix yRingStart top 0.5] [widths.rhs.heading Stroke Upward]
-			curl (df.leftSB + OX) (top - ArchDepthA)
-			Arch.rhs top
-			flat (df.rightSB - OX) (top - ArchDepthB)
-			curl (df.rightSB - OX) ArchDepthA
-			alsoThru.g2 0.5 0.8 [widths.rhs : 0.9 * [mix Stroke fine 0.25]]
-			g2 xMBArc yMBArc [widths.rhs : 0.8 * [mix Stroke fine 0.5]]
-			alsoThru.g2 0.55 0.35 [widths.rhs : 0.9 * [mix Stroke fine 0.75]]
-			g2 xLB yLB [widths.rhs fine]
-		# Final Swash stroke
 		include : difference
+			dispiro
+				flat (df.leftSB + OX) [mix yRingStart top 0.5] [widths.rhs.heading Stroke Upward]
+				curl (df.leftSB + OX) (top - ArchDepthA)
+				Arch.rhs top
+				flat (df.rightSB - OX) (top - ArchDepthB)
+				curl (df.rightSB - OX) ArchDepthA
+				alsoThru.g2 0.5 0.8 [widths.rhs : 0.9 * [mix Stroke fine 0.25]]
+				g2 xMBArc yMBArc [widths.rhs : 0.8 * [mix Stroke fine 0.5]]
+				alsoThru.g2 0.55 0.35 [widths.rhs : 0.9 * [mix Stroke fine 0.75]]
+				g2 xLB yLB [widths.rhs fine]
+			if straight
+			: then : union [MaskBelow yLB] [MaskLeft xLB0]
+			: else : no-shape
+		# Final Swash stroke
+		if straight
+		: then : include : HBar.b xLB0 xRB0 yLB Stroke
+		: else : include : difference
 			dispiro
 				g2 xLB yLB [widths.lhs (fine * CThin)]
 				g2.right.mid [mix xLB xRB (1 / 4)] (yLB - Descender / 4 - Stroke * (1 / 16)) [widths.lhs.heading (fine * CThin) {.x (TanSlope + tailSlope) .y 1}]
@@ -78,6 +84,28 @@ glyph-block Letter-Latin-Upper-Q : begin
 				archv
 				g2 xRB0 [mix Descender xLB 0.5] [widths.lhs.heading fine Upward]
 			MaskLeft xLB
+
+	define [QOpenSwashyBody df top sw] : QOpenSwashBody df top false
+
+	define [QBrokenThreeTail df top sw] : glyph-proc
+		local bottom : [mix 0 Descender (31 / 32)] + O
+		local xLB : mix df.leftSB df.rightSB (1 / 16)
+		local xRB : mix df.rightSB df.width 0.7
+		local neckTop : Math.min (top * 0.6) [Math.max ArchDepthA (Stroke * 1.4)]
+		include : difference
+			new-glyph : glyph-proc
+				include : ThreeFlatTopEtTop (neckTop - bottom) sw 0 sw nothing xLB xRB
+				include : FlipAround [mix xLB xRB 0.5] ((neckTop - bottom) / 2)
+				include : Translate 0 bottom
+			union
+				new-glyph : glyph-proc
+					include : OShapeOutline top 0 df.leftSB df.rightSB sw ArchDepthA ArchDepthB
+					include : Translate 0 [Math.max 1 : sw * 0.025]
+				intersection
+					MaskRight (df.rightSB - OX - [HSwToV Stroke])
+					MaskAbove (bottom + sw)
+
+	define [QOpenStraightBody df top sw] : QOpenSwashBody df top true
 
 	# Tails
 	define [QStraightTail df] : begin
@@ -131,6 +159,17 @@ glyph-block Letter-Latin-Upper-Q : begin
 			VBar.m df.middle [mix Descender HalfStroke 1.75] 0 sw
 			VBar.m df.middle 0 TailDepth
 
+	define [QVerticalTail df top sw] : VBar.m df.middle TailDepth HalfStroke Stroke
+
+	define [QHookyTail df top sw] : union
+		VBar.m df.middle TailDepth HalfStroke Stroke
+		HBar.b (df.middle - [HSwToV HalfStroke]) (df.middle + HookX) TailDepth Stroke
+
+	define [QHookyCrossingTail df top sw] : union
+		VBar.m df.middle 0 [mix Descender HalfStroke 1.75] sw
+		VBar.m df.middle TailDepth 0 Stroke
+		HBar.b (df.middle - [HSwToV HalfStroke]) (df.middle + HookX) TailDepth Stroke
+
 	define detachedTailGap : Math.max ((-0.25) * Descender) : AdviceStroke 12
 	define yObliqueTailStart : 0 - detachedTailGap - Stroke * 0.875
 	define yObliqueTailEnd : [mix 0 Descender 0.75] - HalfStroke
@@ -175,13 +214,16 @@ glyph-block Letter-Latin-Upper-Q : begin
 				g2 xRB0 [mix Descender xLB 0.5] [widths.lhs.heading fine Upward]
 			MaskLeft xLB
 
+	define [QStraightSwashTail df top sw] : QBrokenThreeTail df top sw
+
 	###################################
 
 	glyph-block-export QInnerDiagSw
 	define QInnerDiagSw : AdviceStroke 4
 
-	define QInnerVertSw : Math.min VJutStroke : VSwToH : 0.5 * ((RightSB - SB) - [HSwToV : 2 * Stroke])
+	define QInnerVertSw : Math.min [AdviceStroke 4] VJutStroke : VSwToH : 0.5 * ((RightSB - SB) - [HSwToV : 2 * Stroke])
 
+	glyph-block-export QConfig
 	define QConfig : object
 		straight             { QStdBody               Stroke            QStraightTail       'capDesc'  'p' }
 		curlyTailed          { QStdBody               Stroke            QCurlyTail          'capDesc'  'p' }
@@ -194,7 +236,11 @@ glyph-block Letter-Latin-Upper-Q : begin
 		detachedBendTailed   { QStdBody               Stroke            QDetachedBendTail   'capDesc'  'p' }
 		openSwash            { QOpenSwashyBody        Stroke            no-shape            'capDesc'  'p' }
 		closedSwash          { QStdBody               Stroke            QSwashyTail         'capDesc'  'p' }
-
+		hookyCrossing        { QStdBody               QInnerVertSw      QHookyCrossingTail  'capDesc'  'p' }
+		hooky                { QStdBody               Stroke            QHookyTail          'capDesc'  'p' }
+		vertical             { QStdBody               Stroke            QVerticalTail       'capDesc'  'p' }
+		openStraightTailed   { QOpenStraightBody      Stroke            no-shape            'capDesc'  'p' }
+		closedStraightTailed { QStdBody               Stroke            QStraightSwashTail  'capDesc'  'p' }
 
 	foreach { suffix { body swTailInner tailShape mkCapital mkSmcp } } [Object.entries QConfig] : do
 		create-glyph "Q.\(suffix)" : glyph-proc
@@ -213,8 +259,14 @@ glyph-block Letter-Latin-Upper-Q : begin
 		create-glyph "QSideways.\(suffix)" : glyph-proc
 			local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
 			include : PointingTo Width XH Width 0 : function [] : glyph-proc
-				include : body      df RightSB Stroke
-				include : tailShape df RightSB swTailInner
+				if (suffix === 'openStraightTailed')
+				: then : begin
+					include : refer-glyph "Q.\(suffix)"
+					include : Ungizmo
+					include : Scale (XH / Width) (RightSB / CAP)
+				: else : begin
+					include : body      df RightSB Stroke
+					include : tailShape df RightSB swTailInner
 				include : Translate 0 (SB / 2)
 
 	select-variant 'Q' 'Q'

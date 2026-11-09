@@ -16,7 +16,7 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender CyrCurlDescender
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook TopHook
-	glyph-block-import Letter-Latin-Upper-Q : QCurlyTail
+	glyph-block-import Letter-Latin-Upper-Q : QCurlyTail QConfig
 
 	define [URightBar x bot top sw cut] : begin
 		local y : StemCutY bot top [fallback cut '']
@@ -251,15 +251,29 @@ glyph-block Letter-Latin-U : begin
 			include [refer-glyph "U.\(suffix)"] AS_BASE ALSO_METRICS
 			include : SetGrekUpperTonos [if fSlabLT (-SideJut) 0]
 
-		create-glyph "URTail.\(suffix)" : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.capDesc
-			include : Base  df CAP Stroke nothing nothing cut
-			include : Slabs df CAP Stroke
-			eject-contour 'serifRB'
-			include : if xRB
-				RetroflexHook.rExt xRB 0 (yAttach -- yRB)
-				QCurlyTail df
+		foreach { qSuffix { qBody qSw qTail qMark qSmcpMark } } [Object.entries QConfig] : do
+			create-glyph "URTail.\(suffix).\(qSuffix)" : glyph-proc
+				local df : include : DivFrame 1
+				local uSlabs : piecewise
+					(Slabs === USerifs.BottomRight)   no-shape
+					(Slabs === USerifs.Toothed)       USerifs.Toothless
+					(Slabs === USerifs.MotionToothed) USerifs.MotionToothless
+					true                              Slabs
+				local joinY : CAP / 2
+				local qBottom : new-glyph : glyph-proc
+					include : intersection
+						qBody df CAP Stroke
+						MaskBelow (joinY + Stroke * 0.025)
+				set-base-anchor 'strike' df.middle (CAP / 2)
+				set-base-anchor 'overlay' df.middle (CAP / 2)
+				include : VBar.l (df.leftSB + OX) (joinY - Stroke * 0.025) CAP Stroke
+				include : VBar.r (df.rightSB - OX) (joinY - Stroke * 0.025) CAP Stroke
+				include qBottom
+				include : uSlabs df CAP Stroke
+				include : df.markSet.capDesc
+				if (qTail !== no-shape) : begin
+					local tailSw : if (qSuffix === 'verticalCrossing' || qSuffix === 'crossingCurlyTailed' || qSuffix === 'hookyCrossing') qSw Stroke
+					include : qTail df CAP tailSw
 
 		create-glyph "smcpU.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -483,7 +497,7 @@ glyph-block Letter-Latin-U : begin
 	link-reduced-variant 'U/sansSerif' 'U' MathSansSerif
 	select-variant 'U/withTonos' (follow -- 'U')
 	select-variant 'smcpU' 0x1D1C (follow -- 'U')
-	select-variant 'URTail' 0x1DF7A
+	select-multi-dimensional-variant 'URTail' 0x1DF7A (follows -- { 'U' 'Q' })
 	select-variant 'uCap' (shapeFrom -- 'U') (follow -- 'u')
 	select-variant 'UReversed' 0x1DF7E
 

@@ -6,9 +6,41 @@ import [Box] from '@iosevka/geometry/box'
 
 glyph-module
 
+glyph-block Digits-Three-Top : begin
+	glyph-block-import CommonShapes
+
+	glyph-block-export ThreeFlatTopEtGeom ThreeFlatTopEtTop
+	define [ThreeFlatTopEtGeom top _yEndIdeal _sw _angle _left _right] : begin
+		local sw : fallback _sw Stroke
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local kFall : Math.tan ([fallback _angle 50] * Math.PI / 180)
+		local yBarBot : top - sw
+		local cor : sw * [DiagCor kFall 1]
+		local yEndIdeal : Math.min (yBarBot - sw / 2) : fallback _yEndIdeal : mix 0 top 0.42
+		local xEnd : Math.max (left + cor) : right - (yBarBot - yEndIdeal) / kFall
+		local yEnd : yBarBot - (right - xEnd) * kFall
+		return : object kFall yBarBot cor xEnd yEnd
+
+	define [ThreeFlatTopEtTop top _swEnd _yEndIdeal _sw _angle _left _right] : glyph-proc
+		local sw : fallback _sw Stroke
+		local left : fallback _left SB
+		local right : fallback _right RightSB
+		local swEnd : fallback _swEnd sw
+		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top _yEndIdeal sw _angle left right
+		include : union
+			HBar.t left right top sw
+			intersection
+				Rect yBarBot (yEnd - 2 * sw) left right
+				dispiro
+					widths.rhs sw
+					flat right yBarBot
+					curl xEnd yEnd [widths.rhs swEnd]
+
 glyph-block Digits-Three : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Digits-Three-Top : ThreeFlatTopEtGeom ThreeFlatTopEtTop
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
 	glyph-block-import Letter-Latin-C : CLetterForm
@@ -81,29 +113,6 @@ glyph-block Digits-Three : begin
 			lowerEndY    -- lowerEndY
 		include : ezh.Shape
 		if (hookStyle === HOOK-SLAB) : include : ArcEndSerif.L SB 0 Stroke Hook
-
-	define [ThreeFlatTopEtGeom top _yEndIdeal _sw _angle] : begin
-		local sw : fallback _sw Stroke
-		local kFall : Math.tan ([fallback _angle 50] * Math.PI / 180)
-		local yBarBot : top - sw
-		local cor : sw * [DiagCor kFall 1]
-		local yEndIdeal : Math.min (yBarBot - sw / 2) : fallback _yEndIdeal : mix 0 top 0.42
-		local xEnd : Math.max (SB + cor) : RightSB - (yBarBot - yEndIdeal) / kFall
-		local yEnd : yBarBot - (RightSB - xEnd) * kFall
-		return : object kFall yBarBot cor xEnd yEnd
-
-	define [ThreeFlatTopEtTop top _swEnd _yEndIdeal _sw _angle] : glyph-proc
-		local sw : fallback _sw Stroke
-		local swEnd : fallback _swEnd sw
-		local [object yBarBot xEnd yEnd] : ThreeFlatTopEtGeom top _yEndIdeal sw _angle
-		include : union
-			HBar.t SB RightSB top sw
-			intersection
-				Rect yBarBot (yEnd - 2 * sw) SB RightSB
-				dispiro
-					widths.rhs sw
-					flat RightSB yBarBot
-					curl xEnd yEnd [widths.rhs swEnd]
 
 	define [ThreeFlatTopBrokenShape top serif hookStyle _sw lowerEnd lowerEndY _angle] : glyph-proc
 		local sw : fallback _sw Stroke
