@@ -9,7 +9,7 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markMiddle
-	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors LeaningAnchor
+	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors LeaningAnchor TurnMarks
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateDependentComposite
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : CurlyTail SerifedArcStart SerifedArcEnd
@@ -202,6 +202,16 @@ glyph-block Letter-Latin-C : begin
 			local lf : CLetterForm [DivFrame 1] styTop styBot XH 0
 			include : lf.revFull
 
+		create-glyph "OOpen.\(suffix)" : glyph-proc
+			include [refer-glyph "C.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2)
+			include : TurnMarks (currentGlyph.advanceWidth / 2) (CAP / 2)
+
+		create-glyph "smcpOOpen.\(suffix)" : glyph-proc
+			include [refer-glyph "smcpC.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround (currentGlyph.advanceWidth / 2) (XH / 2)
+			include : TurnMarks (currentGlyph.advanceWidth / 2) (XH / 2)
+
 		create-glyph "CHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
@@ -247,8 +257,31 @@ glyph-block Letter-Latin-C : begin
 				adb -- SmallArchDepthB
 			include : lf.revFull
 
+		create-glyph "oOpen.\(suffix)" : glyph-proc
+			include [refer-glyph "c.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround (currentGlyph.advanceWidth / 2) (XH / 2)
+			include : TurnMarks (currentGlyph.advanceWidth / 2) (XH / 2)
+
+		create-glyph "oOpen/descBase.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			local lf : CLetterForm [DivFrame 1] (styTop || SLAB-CLASSICAL) styBot XH 0
+				ada -- SmallArchDepthA
+				adb -- SmallArchDepthB
+			include : union [lf.base] [lf.botSerif]
+				VBar.r RightSB (XH - [ArcStartSerifDepth Hook]) XH [ArcStartSerifWidth Stroke]
+			include : FlipAround (currentGlyph.advanceWidth / 2) (XH / 2)
+			include : TurnMarks (currentGlyph.advanceWidth / 2) (XH / 2)
+
 		create-glyph "revcSlash.\(suffix)" : glyph-proc
 			include [refer-glyph "revc.\(suffix)"] AS_BASE ALSO_METRICS
+			local fine : 0.5 * OverlayStroke
+			include : dispiro
+				widths.center (2 * fine)
+				flat (SB      + O + fine) [mix XH 0 1.05]
+				curl (RightSB - O - fine) [mix 0 XH 1.05]
+
+		create-glyph "oOpenSlash.\(suffix)" : glyph-proc
+			include [refer-glyph "oOpen.\(suffix)"] AS_BASE ALSO_METRICS
 			local fine : 0.5 * OverlayStroke
 			include : dispiro
 				widths.center (2 * fine)
@@ -262,6 +295,16 @@ glyph-block Letter-Latin-C : begin
 			include : PointingTo Width XH Width 0 : function [] : glyph-proc
 				local lf : CLetterForm df styTop styBot RightSB 0 (hook -- (Hook * p))
 				include : lf.revFull
+				include : Translate 0 (SB / 2)
+
+		create-glyph "oOpenSideways.\(suffix)" : glyph-proc
+			local df : DivFrame (XH / Width) 2 ((XH * 0.1) / SB)
+			include : df.markSet.e
+			local p : mix 1 (0.5 * (Width / HalfUPM)) 0.5
+			include : PointingTo Width XH Width 0 : function [] : glyph-proc
+				local lf : CLetterForm df styTop styBot RightSB 0 (hook -- (Hook * p))
+				include : lf.full
+				include : FlipAround df.middle (RightSB / 2)
 				include : Translate 0 (SB / 2)
 
 		create-glyph "cHookTop.\(suffix)" : glyph-proc
@@ -541,13 +584,13 @@ glyph-block Letter-Latin-C : begin
 	select-variant 'c/descBase'
 	select-variant 'romanSixLateForm' 0x2185 (follow -- 'C/descBase')
 
-	select-variant 'OOpen'      0x186  (shapeFrom -- 'revC')
-	select-variant 'oOpen'      0x254  (shapeFrom -- 'revc')
-	select-variant 'smcpOOpen'  0x1D10 (shapeFrom -- 'smcpRevC')  (follow -- 'OOpen')
-	select-variant 'oOpenSlash' 0xAB3F (shapeFrom -- 'revcSlash') (follow -- 'oOpen')
-	select-variant 'oOpenSideways' 0x1D12 (shapeFrom -- 'revcSideways') (follow -- 'oOpen')
+	select-variant 'OOpen'      0x186  (follow -- 'C')
+	select-variant 'oOpen'      0x254  (follow -- 'c')
+	select-variant 'smcpOOpen'  0x1D10 (follow -- 'OOpen')
+	select-variant 'oOpenSlash' 0xAB3F (follow -- 'oOpen')
+	select-variant 'oOpenSideways' 0x1D12 (follow -- 'oOpen')
 
-	select-variant 'oOpen/descBase' (shapeFrom -- 'revc')
+	select-variant 'oOpen/descBase' (follow -- 'oOpen')
 	derive-composites 'oOpenRetroflexHook' 0x1D97 'oOpen/descBase'
 		RetroflexHook.l SB 0 (yAttach -- DToothlessRise)
 
