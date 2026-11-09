@@ -197,13 +197,11 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : ApparentTranslate shift 0
 				eject-contour 'serifLT'
 
-	# Keep Regular's 0.3 overlap; ease v/y right at heavy so the
-	# left stroke still meets the stem.
 	define [AvAyHeavyT] : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 	define [AvAyOverlapK] : mix 0.3 0.08 [AvAyHeavyT]
 
 	do 'v and y subglyphs for av/ay'
-		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs
+		glyph-block-import Letter-Latin-V : VShape VSquareTopShape VSerifs VMotionSerifs VTopRightMotionSerifs VBilateralMotionSerifs
 		glyph-block-import Letter-Latin-Lower-Y : NonCursiveYShapeT NonCursiveYConfig
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
@@ -211,34 +209,48 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define { subDfVY shiftVY0 } : SubDfAndShift 1 dfVY 0
 		define shiftVY : shiftVY0 - [HSwToV : dfVY.mvs * [AvAyOverlapK]]
 
-		define avVConfig : object
-			straightSerifless   { true   0 }
-			curlySerifless      { false  0 }
-			squareTopSerifless  { true   1 }
-			cursiveSerifless    { true   0 }
+			define [AvVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
 
-		foreach { suffix { fStraightBar fSquareTop } } [Object.entries avVConfig] : do
-			create-glyph "av/v.\(suffix)" : glyph-proc
-				include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
-					# The two square-top strokes otherwise meet only at a point.
+			define avVConfig : SuffixCfg.weave
+				object # body
+					straight     { true   0 }
+					curly        { false  0 }
+					squareTop    { true   1 }
+					cursive      { true   0 }
+				object # serifs
+					''                    AvVAutoSerifs
+					serifless             no-shape
+					motionSerifed         VMotionSerifs
+					topRightMotionSerifed VTopRightMotionSerifs
+					bilateralMotionSerifed VBilateralMotionSerifs
+					serifed               VSerifs
+
+			foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries avVConfig] : do
+				local fSerifStraight : if fSquareTop 0 fStraightBar
+				local SerifShape : if [suffix.startsWith 'cursive'] no-shape Serifs
+				create-glyph "av/v.\(suffix)" : glyph-proc
+					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
 					if fSquareTop : include : union
 						VSquareTopShape subDfVY XH dfVY.mvs
 						Rect (dfVY.mvs / 8) 0 (subDfVY.middle - [HSwToV : dfVY.mvs / 4]) (subDfVY.middle + [HSwToV : dfVY.mvs / 4])
 					if [not fSquareTop] : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
-					include : NeedSlab SLAB : VSerifs subDfVY fStraightBar XH dfVY.mvs
+					include : SerifShape subDfVY fSerifStraight XH dfVY.mvs
 					eject-contour 'serifLT'
 			create-glyph "av/vRight.\(suffix)" : glyph-proc
 				include : refer-glyph "av/v.\(suffix)"
 				eject-contour 'strokeDown'
 
-		define slabAutoY { false SLAB false }
 		foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
 			if [not fSquareTop] : begin
+				local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+				local ySlabKind { false doSlabBottom doSlabMotion doSlabTopRightMotion }
 				create-glyph "ay/y.\(suffix)" : glyph-proc
-					local YShape : NonCursiveYShapeT straightBar bottomShape slabAutoY 0 subDfVY.width subDfVY.leftSB dfVY.mvs
+					local YShape : NonCursiveYShapeT straightBar bottomShape ySlabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
 					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
 						include : YShape.SmallYShape XH Descender
-						include : NeedSlab SLAB : glyph-proc
+						eject-contour 'leftHalf'
+						eject-contour 'serifLT'
+						if doSlabTop : begin
 							local sf : SerifFrame.fromDf subDfVY XH Descender
 							include sf.rt.full
 				create-glyph "ay/yRight.\(suffix)" : glyph-proc
@@ -459,9 +471,9 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'ue' 0x1D6B 'ue/u' 'ae/e'
 	derive-composites 'ao' 0xA735 'ao/a' 'ao/o'
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
-	select-variant 'av/v' (follow -- 'v/sansSerif')
+	select-variant 'av/v' (follow -- 'v')
 	select-variant 'ay/y' (follow -- 'y/nonCursive')
-	select-variant 'av/vRight' (follow -- 'v/sansSerif')
+	select-variant 'av/vRight' (follow -- 'v')
 	select-variant 'ay/yRight' (follow -- 'y/nonCursive')
 
 	glyph-block-import Letter-Latin-Lower-A : DoubleStorey
