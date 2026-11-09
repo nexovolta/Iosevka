@@ -30,7 +30,7 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		const byName = name => glyphStore.queryByNameEnsured(name);
 		const outline = glyph => new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 		const prime = para.variants.primes.get("lower-ezh");
-		for (const name of ["lyogh", "lyogh/phoneticRight"]) {
+		for (const name of ["lezh", "lezh/phoneticRight"]) {
 			const original = byName(`${name}.straightSerifless.serifless`);
 			const unchanged = byName(`${name}/hook.straightSerifless.serifless.serifless`);
 			assert.deepEqual(outline(unchanged), outline(original), `${name}: default shape changed`);
@@ -39,7 +39,7 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		}
 
 		assert.deepEqual(outline(byName("ezh/phoneticRight")), outline(byName("ezh/phoneticRight.straightSerifless.flatHook")));
-		for (const name of ["ezh", "lyogh", "ezh/phoneticRight", "lyogh/phoneticRight"]) {
+		for (const name of ["ezh", "lezh", "ezh/phoneticRight", "lezh/phoneticRight"]) {
 			const glyph = byName(name);
 			const shapes = hooks.map(hook => {
 				const variantName = prime.variants.get(`straight-${hook}-serifless`).get(glyph);
@@ -114,7 +114,7 @@ test("ezh hooks preserve independent z body and l top choices", () => {
 		return new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 	};
 	assert.deepEqual(outline("ezh/phoneticRight"), outline("ezh/phoneticRight.cursive.flatHook"));
-	for (const name of ["lyogh", "lyogh/phoneticRight"]) {
+	for (const name of ["lezh", "lezh/phoneticRight"]) {
 		assert.deepEqual(outline(name), outline(`${name}/hook.cursive.flatHook.hooky`));
 	}
 });

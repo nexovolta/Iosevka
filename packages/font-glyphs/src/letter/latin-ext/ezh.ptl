@@ -319,13 +319,13 @@ glyph-block Letter-Latin-Ezh : begin
 		cursiveHookCornerSerifless           { true   false  'cornerHook' }
 		cursiveHookCornerTopSerifed          { true   true   'cornerHook' }
 
-	define LyoghCasualTopConfig : object
+	define LezhCasualTopConfig : object
 		topTailed  'tailed'
 		topFlat    'flat'
 		topSemi    'semi'
 		topDiag    'diagonal'
 
-	define [LyoghBarWithCasualTop xLeft top sw kind _df] : glyph-proc
+	define [LezhBarWithCasualTop xLeft top sw kind _df] : glyph-proc
 		local df : fallback _df [DivFrame 1]
 		local xMiddle : xLeft + [HSwToV : 0.5 * sw]
 		local yJoin : mix 0 top 0.5
@@ -334,11 +334,11 @@ glyph-block Letter-Latin-Ezh : begin
 			MaskAbove (yJoin + 0.5 * sw)
 		include : CasualTop df top xMiddle kind sw
 
-	define [LyoghHookyRight xLeft top _sw] : begin
+	define [LezhHookyRight xLeft top _sw] : begin
 		local sw : fallback _sw Stroke
 		tagged 'serifRT' : HSerif.rt (xLeft + [HSwToV sw]) top SideJut sw
 
-	define LyoghRightSerifSuffixes : list 'reverseHooky' 'sshaped' 'topRightSerifed' 'topRightBaseSerifed' 'topRightBaseSerifedAsymmetric'
+	define LezhRightSerifSuffixes : list 'reverseHooky' 'sshaped' 'topRightSerifed' 'topRightBaseSerifed' 'topRightBaseSerifedAsymmetric'
 
 	foreach { suffix { fCursive fSerifed hookStyle } } [pairs-of EzhConfig] : do
 		create-glyph "Ezh.\(suffix)" : glyph-proc
@@ -498,11 +498,11 @@ glyph-block Letter-Latin-Ezh : begin
 
 	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
 		if [not fSerifed] : begin
-			DefineSelectorGlyph 'lyogh'          suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph 'lyoghCurlyTail' suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph 'lyoghRTail'     suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lezh'          suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lezhCurlyTail' suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lezhRTail'     suffix [DivFrame 1] 'bp'
 
-			create-glyph "lyogh.\(suffix).serifless" : glyph-proc
+			create-glyph "lezh.\(suffix).serifless" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				define yogh : Ezh [DivFrame 1] XH Descender
@@ -517,12 +517,12 @@ glyph-block Letter-Latin-Ezh : begin
 					adb       -- SmallArchDepthB
 				include : yogh.Shape
 				include : VBar.l SB 0 Ascender
-				create-forked-glyph "lyogh.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
-				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
-					create-forked-glyph "lyogh.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
+				create-forked-glyph "lezh.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
+					create-forked-glyph "lezh.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
-				create-glyph "lyogh.\(suffix).\(topSuffix)" : glyph-proc
+			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+				create-glyph "lezh.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
 					define yogh : Ezh [DivFrame 1] XH Descender
@@ -536,11 +536,11 @@ glyph-block Letter-Latin-Ezh : begin
 						ada       -- SmallArchDepthA
 						adb       -- SmallArchDepthB
 					include : yogh.Shape
-					include : LyoghBarWithCasualTop SB Ascender Stroke kind
+					include : LezhBarWithCasualTop SB Ascender Stroke kind
 
-			select-variant "lyogh.\(suffix)" (follow -- 'lyogh/l')
+			select-variant "lezh.\(suffix)" (follow -- 'lezh/l')
 
-			create-glyph "lyoghCurlyTail.\(suffix).serifless" : glyph-proc
+			create-glyph "lezhCurlyTail.\(suffix).serifless" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				define yogh : Ezh [DivFrame 1] XH Descender
@@ -556,12 +556,12 @@ glyph-block Letter-Latin-Ezh : begin
 					terminal  -- TERMINAL-CURL
 				include : yogh.Shape
 				include : VBar.l SB 0 Ascender
-				create-forked-glyph "lyoghCurlyTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
-				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
-					create-forked-glyph "lyoghCurlyTail.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
+				create-forked-glyph "lezhCurlyTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
+					create-forked-glyph "lezhCurlyTail.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
-				create-glyph "lyoghCurlyTail.\(suffix).\(topSuffix)" : glyph-proc
+			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+				create-glyph "lezhCurlyTail.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
 					define yogh : Ezh [DivFrame 1] XH Descender
@@ -576,11 +576,11 @@ glyph-block Letter-Latin-Ezh : begin
 						adb       -- SmallArchDepthB
 						terminal  -- TERMINAL-CURL
 					include : yogh.Shape
-					include : LyoghBarWithCasualTop SB Ascender Stroke kind
+					include : LezhBarWithCasualTop SB Ascender Stroke kind
 
-			select-variant "lyoghCurlyTail.\(suffix)" (follow -- 'lyogh/l')
+			select-variant "lezhCurlyTail.\(suffix)" (follow -- 'lezh/l')
 
-			create-glyph "lyoghRTail.\(suffix).serifless" : glyph-proc
+			create-glyph "lezhRTail.\(suffix).serifless" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				define yogh : Ezh [DivFrame 1] XH 0
@@ -597,12 +597,12 @@ glyph-block Letter-Latin-Ezh : begin
 				include : yogh.Shape
 				include : VBar.l SB 0 Ascender
 				include : RetroflexHook.lExt SB 0
-				create-forked-glyph "lyoghRTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
-				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
-					create-forked-glyph "lyoghRTail.\(suffix).\(rightSuffix)" : LyoghHookyRight SB Ascender
+				create-forked-glyph "lezhRTail.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
+					create-forked-glyph "lezhRTail.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
-				create-glyph "lyoghRTail.\(suffix).\(topSuffix)" : glyph-proc
+			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+				create-glyph "lezhRTail.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
 					define yogh : Ezh [DivFrame 1] XH 0
@@ -617,10 +617,10 @@ glyph-block Letter-Latin-Ezh : begin
 						adb       -- SmallArchDepthB
 						terminal  -- TERMINAL-DESC
 					include : yogh.Shape
-					include : LyoghBarWithCasualTop SB Ascender Stroke kind
+					include : LezhBarWithCasualTop SB Ascender Stroke kind
 					include : RetroflexHook.lExt SB 0
 
-			select-variant "lyoghRTail.\(suffix)" (follow -- 'lyogh/l')
+			select-variant "lezhRTail.\(suffix)" (follow -- 'lezh/l')
 
 			create-glyph "ezh/phoneticRight.\(suffix)" : glyph-proc
 				include : MarkSet.p
@@ -694,10 +694,10 @@ glyph-block Letter-Latin-Ezh : begin
 					refSw   -- fine
 					maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
 
-			DefineSelectorGlyph 'lyogh/phoneticRight'      suffix [DivFrame 1] 'bp'
-			DefineSelectorGlyph 'lyoghRTail/phoneticRight' suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lezh/phoneticRight'      suffix [DivFrame 1] 'bp'
+			DefineSelectorGlyph 'lezhRTail/phoneticRight' suffix [DivFrame 1] 'bp'
 
-			create-glyph "lyogh/phoneticRight.\(suffix).serifless" : glyph-proc
+			create-glyph "lezh/phoneticRight.\(suffix).serifless" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				local gap : 0.5 * (SB - 0) + [HSwToV QuarterStroke]
@@ -718,12 +718,12 @@ glyph-block Letter-Latin-Ezh : begin
 					yogh.Shape
 					VBar.l subDf.leftSB 0 Ascender origBar
 				include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
-				create-forked-glyph "lyogh/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
-				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
-					create-forked-glyph "lyogh/phoneticRight.\(suffix).\(rightSuffix)" : LyoghHookyRight (subDf.leftSB + gap) Ascender origBar
+				create-forked-glyph "lezh/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
+				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
+					create-forked-glyph "lezh/phoneticRight.\(suffix).\(rightSuffix)" : LezhHookyRight (subDf.leftSB + gap) Ascender origBar
 
-			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
-				create-glyph "lyogh/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
+			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+				create-glyph "lezh/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
 					local gap : 0.5 * (SB - 0) + [HSwToV QuarterStroke]
@@ -742,12 +742,12 @@ glyph-block Letter-Latin-Ezh : begin
 						adb       -- [subDf.archDepthBOf SmallArchDepth stroke]
 					include : with-transform [Translate gap 0] : composite-proc
 						yogh.Shape
-						LyoghBarWithCasualTop subDf.leftSB Ascender origBar kind subDf
+						LezhBarWithCasualTop subDf.leftSB Ascender origBar kind subDf
 					include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
 
-			select-variant "lyogh/phoneticRight.\(suffix)" (follow -- 'lyogh/l')
+			select-variant "lezh/phoneticRight.\(suffix)" (follow -- 'lezh/l')
 
-			create-glyph "lyoghRTail/phoneticRight.\(suffix).serifless" : glyph-proc
+			create-glyph "lezhRTail/phoneticRight.\(suffix).serifless" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				local gap : 0.5 * (SB - 0) + [HSwToV QuarterStroke]
@@ -770,12 +770,12 @@ glyph-block Letter-Latin-Ezh : begin
 					VBar.l subDf.leftSB 0 Ascender origBar
 					RetroflexHook.lExt subDf.leftSB 0 (sw -- origBar)
 				include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
-				create-forked-glyph "lyoghRTail/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
-				foreach rightSuffix [items-of LyoghRightSerifSuffixes] : do
-					create-forked-glyph "lyoghRTail/phoneticRight.\(suffix).\(rightSuffix)" : LyoghHookyRight (subDf.leftSB + gap) Ascender origBar
+				create-forked-glyph "lezhRTail/phoneticRight.\(suffix).hooky" : tagged 'serifLT' : HSerif.lt (subDf.leftSB + gap) Ascender SideJut origBar
+				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
+					create-forked-glyph "lezhRTail/phoneticRight.\(suffix).\(rightSuffix)" : LezhHookyRight (subDf.leftSB + gap) Ascender origBar
 
-			foreach { topSuffix kind } [Object.entries LyoghCasualTopConfig] : do
-				create-glyph "lyoghRTail/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
+			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+				create-glyph "lezhRTail/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
 					local gap : 0.5 * (SB - 0) + [HSwToV QuarterStroke]
@@ -795,21 +795,21 @@ glyph-block Letter-Latin-Ezh : begin
 						terminal  -- TERMINAL-DESC
 					include : with-transform [Translate gap 0] : composite-proc
 						yogh.Shape
-						LyoghBarWithCasualTop subDf.leftSB Ascender origBar kind subDf
+						LezhBarWithCasualTop subDf.leftSB Ascender origBar kind subDf
 						RetroflexHook.lExt subDf.leftSB 0 (sw -- origBar)
 					include : HBar.t (SB - SideJut) (subDf.leftSB + gap - O) XH
 
-			select-variant "lyoghRTail/phoneticRight.\(suffix)" (follow -- 'lyogh/l')
+			select-variant "lezhRTail/phoneticRight.\(suffix)" (follow -- 'lezh/l')
 
-	define [LyoghSelectedBar df x top sw topSuffix] : glyph-proc
-		if LyoghCasualTopConfig.(topSuffix)
-			include : LyoghBarWithCasualTop x top sw LyoghCasualTopConfig.(topSuffix) df
+	define [LezhSelectedBar df x top sw topSuffix] : glyph-proc
+		if LezhCasualTopConfig.(topSuffix)
+			include : LezhBarWithCasualTop x top sw LezhCasualTopConfig.(topSuffix) df
 		: else : begin
 			include : VBar.l x 0 top sw
 			if (topSuffix === 'hooky') : include : tagged 'serifLT' : HSerif.lt x top SideJut sw
-			if LyoghRightSerifSuffixes.includes topSuffix : include : LyoghHookyRight x top sw
+			if LezhRightSerifSuffixes.includes topSuffix : include : LezhHookyRight x top sw
 
-	define [LyoghSelectedHook hookStyle topSuffix fCursive phonetic] : glyph-proc
+	define [LezhSelectedHook hookStyle topSuffix fCursive phonetic] : glyph-proc
 		set-width 0
 		set-mark-anchor 'cvDecompose' 0 0
 		local gap : if phonetic (0.5 * (SB - 0) + [HSwToV QuarterStroke]) 0
@@ -828,12 +828,12 @@ glyph-block Letter-Latin-Ezh : begin
 			adb       -- [if phonetic [df.archDepthBOf SmallArchDepth stroke] SmallArchDepthB]
 		include : with-transform [Translate gap 0] : composite-proc
 			yogh.Shape
-			LyoghSelectedBar df df.leftSB Ascender origBar topSuffix
+			LezhSelectedBar df df.leftSB Ascender origBar topSuffix
 		if phonetic : include : HBar.t (SB - SideJut) (df.leftSB + gap - O) XH
 
-	local lyoghTopSuffixes { 'serifless' 'hooky' }
-	foreach topSuffix [items-of LyoghRightSerifSuffixes] : lyoghTopSuffixes.push topSuffix
-	foreach topSuffix [Object.keys LyoghCasualTopConfig] : lyoghTopSuffixes.push topSuffix
+	local lezhTopSuffixes { 'serifless' 'hooky' }
+	foreach topSuffix [items-of LezhRightSerifSuffixes] : lezhTopSuffixes.push topSuffix
+	foreach topSuffix [Object.keys LezhCasualTopConfig] : lezhTopSuffixes.push topSuffix
 	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
 		foreach hookStyle [items-of PhoneticEzhHooks] : begin
 			create-glyph "ezh/phoneticRight.\(suffix).\(hookStyle)" : glyph-proc
@@ -851,16 +851,16 @@ glyph-block Letter-Latin-Ezh : begin
 						ada       -- SmallArchDepthA
 						adb       -- SmallArchDepthB
 					include : ezh.Shape
-			foreach name { 'lyogh' 'lyogh/phoneticRight' } : begin
-				foreach topSuffix [items-of lyoghTopSuffixes] : do
+			foreach name { 'lezh' 'lezh/phoneticRight' } : begin
+				foreach topSuffix [items-of lezhTopSuffixes] : do
 					create-glyph "\(name)/hook.\(suffix).\(hookStyle).\(topSuffix)" : glyph-proc
 						if (hookStyle === 'serifless')
 							include [refer-glyph "\(name).\(suffix).\(topSuffix)"] AS_BASE ALSO_METRICS
 						: else
-							include : LyoghSelectedHook hookStyle topSuffix fCursive (name === 'lyogh/phoneticRight')
-				select-variant "\(name)/hook.\(suffix).\(hookStyle)" (follow -- 'lyogh/l')
+							include : LezhSelectedHook hookStyle topSuffix fCursive (name === 'lezh/phoneticRight')
+				select-variant "\(name)/hook.\(suffix).\(hookStyle)" (follow -- 'lezh/l')
 
-	define [SelectLyoghHooks name unicode] : begin
+	define [SelectLezhHooks name unicode] : begin
 		local choices {.}
 		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
 			foreach hookStyle [items-of PhoneticEzhHooks] : begin
@@ -882,9 +882,9 @@ glyph-block Letter-Latin-Ezh : begin
 	select-variant 'ezhRTail'       0x1D9A  (follow -- 'ezh')
 	select-variant 'ezhPalatalHook' 0x1DF18 (follow -- 'ezh')
 
-	SelectLyoghHooks 'lyogh' 0x26E
-	CreateSelectorVariants 'lyoghCurlyTail' 0x1DF67 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
-	CreateSelectorVariants 'lyoghRTail'     0x1DF05 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
+	SelectLezhHooks 'lezh' 0x26E
+	CreateSelectorVariants 'lezhCurlyTail' 0x1DF67 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
+	CreateSelectorVariants 'lezhRTail'     0x1DF05 [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 
 	do 'TZ'
 		glyph-block-import Letter-Latin-Upper-T : TConfig TShape
@@ -972,8 +972,8 @@ glyph-block Letter-Latin-Ezh : begin
 	select-variant 'ezhRTail/phoneticRight'       (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhPalatalHook/phoneticRight' (follow -- 'ezh/phoneticRight')
 
-	SelectLyoghHooks 'lyogh/phoneticRight' null
-	CreateSelectorVariants 'lyoghRTail/phoneticRight' null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
+	SelectLezhHooks 'lezh/phoneticRight' null
+	CreateSelectorVariants 'lezhRTail/phoneticRight' null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
 
 	alias 'cyrl/abk/Dze' 0x4E0 'Ezh'
 	alias 'cyrl/abk/dze' 0x4E1 'ezh'
