@@ -364,8 +364,12 @@ glyph-block Letter-Arc-Hook : begin
 				curl [Math.min (xGuardR - w - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookEndL] : begin
-			local flatX : Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw
-			local endX : Math.min (flatHook.xLHook + endInset) (flatX - 0.5 * w)
+			local originalFlatX : Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw
+			local endX : Math.min (flatHook.xLHook + endInset) (originalFlatX - 0.5 * w)
+			local italicClearance : if para.isItalic ([CornerHookOffset sw] + [Math.max 0 : TanSlope * sw]) 0
+			# Leave room for the inner corner without forcing the tangent past the bowl.
+			local flatLimit : Math.max (endX + w) (box.r - 1.25 * w)
+			local flatX : if endInset [Math.max originalFlatX : Math.min (endX + w + italicClearance) flatLimit] originalFlatX
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat flatX box.b [widths.rhs.heading sw Leftward]

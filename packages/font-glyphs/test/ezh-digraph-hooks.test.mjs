@@ -40,6 +40,32 @@ function svgPath(contours) {
 		return `${d}Z`;
 	}).join("");
 }
+function assertCornerHookDoesNotFold(contours, bottom, name) {
+	let checked = 0;
+	for (const contour of contours) {
+		for (let i = 0; i < contour.length; i++) {
+			const at = offset => contour[(i + offset + contour.length) % contour.length];
+			const before = at(-1), outer = at(0), topLeft = at(1), topRight = at(2);
+			if ([before, outer, topLeft, topRight].some(p => p.type !== 0)) continue;
+			if (Math.abs(outer.y - bottom) > 1 || Math.abs(before.y - outer.y) > 1) continue;
+			if (before.x <= outer.x + 2 || topLeft.y <= outer.y + 2) continue;
+			if (Math.abs(topRight.y - topLeft.y) > 1 || topRight.x <= topLeft.x + 2) continue;
+			const shear = (topLeft.x - outer.x) / (topLeft.y - outer.y);
+			const innerX = topRight.x - shear * topRight.y;
+			let lastY = topRight.y;
+			for (let j = 3; j < contour.length; j++) {
+				const point = at(j);
+				if (point.x - shear * point.y > innerX + 2) {
+					assert.ok(point.y >= lastY - 1, `${name}: corner-hook inner contour folds downward ${JSON.stringify({ topRight, point, lastY, shear })}`);
+					checked++;
+					break;
+				}
+				lastY = point.y;
+			}
+		}
+	}
+	assert.ok(checked, `${name}: corner-hook terminal not found`);
+}
 await Geom.Init();
 
 for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright"], [420, "italic"], [920, "upright"], [920, "italic"]]) {
@@ -65,10 +91,28 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 				assert.ok(name, `U+${cp.toString(16)}: missing ${hook}`);
 				const contours = outline(byName(name));
 				assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
+				if (hook === "corner-hooked") {
+					assertCornerHookDoesNotFold(contours, para.descender, name);
+					assert.ok(contours.every(c => c.some(p => p.y >= 0)), `${name}: isolated contour below baseline`);
+				}
 				proof.push(`<path d="${svgPath(contours)}" transform="translate(${215 + col * 125} ${row * 135 + 160}) scale(.13 -.13)"/>`);
 				return JSON.stringify(contours);
 			});
 			assert.equal(new Set(shapes).size, hooks.length, `U+${cp.toString(16)}: hook choices must differ`);
+		}
+		if (weight === 420 && slope === "upright") {
+			for (const name of ["TZ/ezh.straightSerifless.cornerHook", "tz/ezh.straightSerifless.cornerHook"]) {
+				const contours = outline(byName(name));
+				const points = contours.flat();
+				const width = Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x));
+				const nose = Math.max(0, ...contours.flatMap(contour => contour.map((point, i) => {
+					const next = contour[(i + 1) % contour.length];
+					return point.type === 0 && next.type === 0 && Math.abs(point.y - next.y) < 1
+						&& point.y > 0.2 * para.xHeight && point.y < 0.5 * para.xHeight
+						? Math.abs(point.x - next.x) : 0;
+				})));
+				assert.ok(nose >= 0.2 * width, `${name}: ezh bend is too short (${nose} / ${width})`);
+			}
 		}
 		if (process.env.QA_PROOF_DIR) {
 			hooks.forEach((hook, row) => proof.push(`<text x="15" y="${row * 135 + 100}">${hook}</text>`));
