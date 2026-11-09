@@ -45,15 +45,25 @@ function assertCornerHookDoesNotFold(contours, bottom, name) {
 	for (const contour of contours) {
 		for (let i = 0; i < contour.length; i++) {
 			const at = offset => contour[(i + offset + contour.length) % contour.length];
-			const before = at(-1), outer = at(0), topLeft = at(1), topRight = at(2);
-			if ([before, outer, topLeft, topRight].some(p => p.type !== 0)) continue;
+			const before = at(-1), outer = at(0);
+			if ([before, outer].some(p => p.type !== 0)) continue;
 			if (Math.abs(outer.y - bottom) > 1 || Math.abs(before.y - outer.y) > 1) continue;
-			if (before.x <= outer.x + 2 || topLeft.y <= outer.y + 2) continue;
+			if (before.x <= outer.x + 2) continue;
+			let topIndex = 1;
+			while (topIndex + 1 < contour.length && at(topIndex).type === 0 && at(topIndex + 1).type === 0
+				&& at(topIndex + 1).y > at(topIndex).y + 1) topIndex++;
+			const topLeft = at(topIndex), topRight = at(topIndex + 1);
+			if (topLeft.type !== 0 || topRight.type !== 0 || topLeft.y <= outer.y + 2) continue;
 			if (Math.abs(topRight.y - topLeft.y) > 1 || topRight.x <= topLeft.x + 2) continue;
 			const shear = (topLeft.x - outer.x) / (topLeft.y - outer.y);
+			for (let j = 1; j < topIndex; j++) {
+				const point = at(j);
+				assert.ok(Math.abs(point.x - outer.x - shear * (point.y - outer.y)) <= 1.5,
+					`${name}: corner-hook terminal has a kink`);
+			}
 			const innerX = topRight.x - shear * topRight.y;
 			let lastY = topRight.y;
-			for (let j = 3; j < contour.length; j++) {
+			for (let j = topIndex + 2; j < contour.length; j++) {
 				const point = at(j);
 				if (point.x - shear * point.y > innerX + 2) {
 					assert.ok(point.y >= lastY - 1, `${name}: corner-hook inner contour folds downward ${JSON.stringify({ topRight, point, lastY, shear })}`);
@@ -65,6 +75,26 @@ function assertCornerHookDoesNotFold(contours, bottom, name) {
 		}
 	}
 	assert.ok(checked, `${name}: corner-hook terminal not found`);
+}
+function straightIntersections(contours, y) {
+	const intersections = [];
+	for (const contour of contours) for (let i = 0; i < contour.length; i++) {
+		const p = contour[i], q = contour[(i + 1) % contour.length];
+		if (p.type !== 0 || q.type !== 0 || !((p.y <= y && q.y > y) || (q.y <= y && p.y > y))) continue;
+		intersections.push(p.x + (q.x - p.x) * (y - p.y) / (q.y - p.y));
+	}
+	intersections.sort((a, b) => a - b);
+	return intersections;
+}
+function stemWidth(contours, y, name) {
+	const intersections = straightIntersections(contours, y);
+	assert.equal(intersections.length, 2, `${name}: expected one straight stem at y=${y}, got ${intersections}`);
+	return intersections[1] - intersections[0];
+}
+function rightmostDiagonalWidth(contours, y, name) {
+	const intersections = straightIntersections(contours, y);
+	assert.ok(intersections.length >= 2, `${name}: ezh diagonal not found`);
+	return intersections.at(-1) - intersections.at(-2);
 }
 await Geom.Init();
 
@@ -82,18 +112,56 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 		const outline = glyph => new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 		const prime = para.variants.primes.get("lower-ezh");
 		const proof = [`<text x="15" y="24">Lower ezh hook variants — ${weight} ${slope}</text>`];
+		{
+			const y = para.xHeight + (para.ascender - para.xHeight) * (weight === 120 ? 0.7 : 0.15);
+			const dezhWidth = stemWidth(outline(glyphStore.queryByUnicode(0x2a4)), y, "dezh");
+			for (const cp of [0xa728, 0xa729]) {
+				const glyph = glyphStore.queryByUnicode(cp);
+				const contours = outline(glyph);
+				const width = stemWidth(contours, y, `U+${cp.toString(16)}`);
+				assert.ok(width >= 0.85 * dezhWidth && width <= 1.15 * dezhWidth,
+					`U+${cp.toString(16)}: stem ${width} differs from dezh ${dezhWidth}`);
+				if (weight === 120) {
+					const diagonalY = 0.8 * para.xHeight;
+					const dezhDiagonal = rightmostDiagonalWidth(outline(glyphStore.queryByUnicode(0x2a4)), diagonalY, "dezh");
+					const diagonal = rightmostDiagonalWidth(contours, diagonalY, `U+${cp.toString(16)}`);
+					assert.ok(diagonal >= 0.8 * dezhDiagonal && diagonal <= 1.2 * dezhDiagonal,
+						`U+${cp.toString(16)}: diagonal ${diagonal} differs from dezh ${dezhDiagonal}`);
+				}
+				assert.equal(glyph.advanceWidth, para.width * para.advanceScaleMM);
+			}
+		}
 		for (const [col, cp] of digraphs.entries()) {
 			proof.push(`<text x="${215 + col * 125}" y="48">U+${cp.toString(16).toUpperCase()}</text>`);
 			const glyph = glyphStore.queryByUnicode(cp);
 			assert.ok(glyph, `missing U+${cp.toString(16)}`);
+			let flatHookLeft;
 			const shapes = hooks.map((hook, row) => {
 				const name = prime.variants.get(`straight-${hook}-serifless`).get(glyph);
 				assert.ok(name, `U+${cp.toString(16)}: missing ${hook}`);
 				const contours = outline(byName(name));
 				assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
+				if (cp === 0xa728 || cp === 0xa729) {
+					const exteriors = contours.filter(c => c.reduce((sum, p, i) => {
+						const q = c[(i + 1) % c.length];
+						return sum + p.x * q.y - q.x * p.y;
+					}, 0) < 0);
+					assert.equal(exteriors.length, 1, `${name}: detached contour`);
+				}
 				if (hook === "corner-hooked") {
 					assertCornerHookDoesNotFold(contours, para.descender, name);
 					assert.ok(contours.every(c => c.some(p => p.y >= 0)), `${name}: isolated contour below baseline`);
+				}
+				if (slope === "italic" && (hook === "flat-hooked" || hook === "corner-hooked")) {
+					const bottomPoints = contours.flat().filter(p => p.type === 0 && Math.abs(p.y - para.descender) <= 1);
+					assert.ok(bottomPoints.length, `${name}: missing bottom hook`);
+					const left = Math.min(...bottomPoints.map(p => p.x));
+					if (hook === "flat-hooked") flatHookLeft = left;
+					else {
+						const inset = left - flatHookLeft;
+						const maxInset = para.width * 0.04 + para.stroke * (cp === 0x26e ? 0.55 : 0.35);
+						assert.ok(inset >= 0 && inset <= maxInset, `${name}: italic corner hook is too short (${inset} > ${maxInset})`);
+					}
 				}
 				proof.push(`<path d="${svgPath(contours)}" transform="translate(${215 + col * 125} ${row * 135 + 160}) scale(.13 -.13)"/>`);
 				return JSON.stringify(contours);
@@ -118,6 +186,13 @@ for (const [weight, slope] of [[120, "upright"], [120, "italic"], [420, "upright
 			hooks.forEach((hook, row) => proof.push(`<text x="15" y="${row * 135 + 100}">${hook}</text>`));
 			writeFileSync(path.join(process.env.QA_PROOF_DIR, `ezh-digraph-hooks-${weight}-${slope}.svg`),
 				`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760"><rect width="100%" height="100%" fill="white"/><g font-family="sans-serif" font-size="13">${proof.join("\n")}</g></svg>`);
+			const comparison = [0xa728, 0xa729, 0x2a4, 0x292].map((cp, col) => {
+				const x = 35 + col * 260;
+				return `<text x="${x}" y="35">U+${cp.toString(16).toUpperCase()}</text>` +
+					`<path d="${svgPath(outline(glyphStore.queryByUnicode(cp)))}" transform="translate(${x} 405) scale(.43 -.43)"/>`;
+			}).join("\n");
+			writeFileSync(path.join(process.env.QA_PROOF_DIR, `tz-stroke-comparison-${weight}-${slope}.svg`),
+				`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="535"><rect width="100%" height="100%" fill="white"/><g font-family="sans-serif" font-size="18"><text x="35" y="65">TZ / tz / dezh / ezh — ${weight} ${slope}</text>${comparison}</g></svg>`);
 		}
 		for (const name of ["lezh", "lezh/phoneticRight"]) {
 			const original = byName(`${name}.straightSerifless.serifless`);
@@ -207,3 +282,38 @@ test("ezh hooks preserve independent z body and l top choices", () => {
 		assert.deepEqual(outline(name), outline(`${name}/hook.cursive.flatHook.hooky`));
 	}
 });
+
+for (const spacing of ["term", "quasi-proportional"]) {
+	test(`TZ and tz preserve T variants with ${spacing} spacing`, () => {
+		const argv = {
+			shape: { serifs: "sans", spacing, weight: 920, width: 500, slope: "italic", slopeAngle: 9.4 },
+			featureControl: { noCvSs: false },
+			variants: { design: { "lower-ezh": "straight-corner-hooked-serifless", "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		};
+		const para = init(data, argv);
+		Variant.apply(variantData, para, argv);
+		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		for (const [cp, primeName, keys] of [
+			[0xa728, "capital-t", ["serifless", "motion-serifed", "serifed", "base-serifed"]],
+			[0xa729, "t", ["bent-hook", "narrow-bent-hook", "flat-hooked", "corner-hooked", "diagonal-tailed", "hookless", "bent-hook-asymmetric"]],
+		]) {
+			const glyph = glyphStore.queryByUnicode(cp);
+			const prime = para.variants.primes.get(primeName);
+			const shapes = keys.map(key => {
+				const name = prime.variants.get(key).get(glyph);
+				assert.ok(name, `U+${cp.toString(16)}: missing ${key}`);
+				const variant = glyphStore.queryByNameEnsured(name);
+				const contours = new Geom.SimplifyGeometry(variant.geometry, variant.gizmo, true).toContours();
+				assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
+				const exteriors = contours.filter(c => c.reduce((sum, p, i) => {
+					const q = c[(i + 1) % c.length];
+					return sum + p.x * q.y - q.x * p.y;
+				}, 0) < 0);
+				assert.equal(exteriors.length, 1, `${name}: detached contour`);
+				assert.equal(variant.advanceWidth, para.width * para.advanceScaleMM);
+				return JSON.stringify(contours);
+			});
+			assert.ok(new Set(shapes).size > 1, `U+${cp.toString(16)}: T variants do not change the glyph`);
+		}
+	});
+}

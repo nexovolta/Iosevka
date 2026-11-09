@@ -20,23 +20,24 @@ glyph-block Letter-Latin-Upper-T : begin
 	define [TLeftX  df] : df.leftSB  + 0.75 * OX
 	define [TRightX df] : df.rightSB - 0.75 * OX
 	glyph-block-export TShape
-	define [TShape df top doTopSerifs doBottomSerif fBottomSerifRightHalfOnly fShortSerifs] : glyph-proc
-		include : tagged 'strokeV' : VBar.m df.middle 0 top
+	define [TShape df top doTopSerifs doBottomSerif fBottomSerifRightHalfOnly fShortSerifs _sw] : glyph-proc
+		local sw : fallback _sw Stroke
+		include : tagged 'strokeV' : VBar.m df.middle 0 top sw
 
 		local l : TLeftX  df
 		local r : TRightX df
 
-		include : tagged 'strokeLT' : HBar.t l df.middle top
-		include : tagged 'strokeRT' : HBar.t df.middle r top
+		include : tagged 'strokeLT' : HBar.t l df.middle top sw
+		include : tagged 'strokeRT' : HBar.t df.middle r top sw
 
 		if doTopSerifs : begin
-			local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - l)
-			local topJut : if fShortSerifs [mix Stroke VJut 0.5] VJut
+			local swVJut : Math.min (VJutStroke * sw / Stroke) : VSwToH : 0.625 * ((df.middle - [HSwToV : 0.5 * sw]) - l)
+			local topJut : if fShortSerifs [mix sw VJut 0.5] VJut
 			include : tagged 'serifRT' : VSerif.dr r top topJut swVJut
 			include : tagged 'serifLT' : VSerif.dl l top topJut swVJut
 		if doBottomSerif : begin
 			local botJut : if fShortSerifs SideJut MidJutCenter
-			include : tagged 'serifMB' : HSerif.[if fBottomSerifRightHalfOnly 'rb' 'mb'] df.middle 0 botJut
+			include : tagged 'serifMB' : HSerif.[if fBottomSerifRightHalfOnly 'rb' 'mb'] df.middle 0 botJut sw
 
 	define [CyrKomiTjeShape df top doTopSerifs doBottomSerif] : glyph-proc
 		local sw : df.adviceThinnerStroke 2.75

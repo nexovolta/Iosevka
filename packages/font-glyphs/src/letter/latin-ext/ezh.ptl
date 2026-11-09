@@ -156,7 +156,7 @@ glyph-block Letter-Latin-Ezh : begin
 							~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
 						[Just TERMINAL-CORNER] : list
 							g4 xArcMid yArcMid
-							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke) (endInset -- cornerHookInset)].hookEndL]
+							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke) (endInset -- [if para.isItalic (0.5 * cornerHookInset) cornerHookInset])].hookEndL]
 						__ : list
 							g4 xArcMid yArcMid
 							match hookStyle
@@ -898,11 +898,11 @@ glyph-block Letter-Latin-Ezh : begin
 		glyph-block-import Letter-Latin-Upper-T : TConfig TShape
 		glyph-block-import Letter-Latin-Lower-T : SmallTConfig
 
-		define tzAdws 1.5
-		define [TzFitAdvance] : glyph-proc
-			if (para.advanceScaleMM < tzAdws) : begin
-				include : ScaleAround 0 0 (para.advanceScaleMM / tzAdws) 1
-				set-width (para.advanceScaleMM * Width)
+		define tzAdws : Math.min para.advanceScaleMM 1.5
+		# Match crowded phonetic stems without horizontally scaling their outlines.
+		define [TzStroke df] : if (tzAdws < 1.5) [df.adviceStroke 3.75] Stroke
+		# Keep the crossbar joined after outline coordinates are rounded.
+		define [TzJoinOverlap df] : Math.max 4 : 0.05 * [HSwToV : TzStroke df]
 
 		foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
 			create-glyph "TZ/T.\(suffix)" : glyph-proc
@@ -910,7 +910,7 @@ glyph-block Letter-Latin-Ezh : begin
 				local subDf : df.slice 3 2
 				include : df.markSet.p
 				set-base-anchor 'cvDecompose' 0 0
-				include : TShape subDf CAP doST doSB
+				include : TShape subDf CAP doST doSB nothing nothing [TzStroke df]
 
 		foreach { suffix { { tDf Style } sym top } } [pairs-of SmallTConfig] : do
 			create-glyph "tz/t.\(suffix)" : glyph-proc
@@ -918,15 +918,15 @@ glyph-block Letter-Latin-Ezh : begin
 				local subDf : df.slice 3 2
 				include : df.markSet.b
 				set-base-anchor 'cvDecompose' 0 0
-				include : Style.Body subDf sym top 0
+				include : Style.Body subDf sym top 0 [TzStroke df] true
 
 		define [TzEzhGlyph xJoin fSerifed hookStyle] : glyph-proc
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
 			local df : DivFrame tzAdws 3
 			local ezhDf : DivFrame ((df.width - xJoin) / Width) 2
-			local origBar : AdviceStroke 2
 			local stroke : ezhDf.adviceStroke2 2 3 (XH - Descender)
+			local origBar : if (tzAdws < 1.5) stroke : AdviceStroke 2
 			define ezh : Ezh ezhDf XH Descender
 				fCursive  -- false
 				fSerifed  -- fSerifed
@@ -948,12 +948,12 @@ glyph-block Letter-Latin-Ezh : begin
 					local df : DivFrame tzAdws 3
 					local subDf : df.slice 3 2
 					# Meet T at the right of its stem, like Times: top bar does not pass through T.
-					include : TzEzhGlyph (subDf.middle + [HSwToV HalfStroke]) fSerifed hookStyle
+					include : TzEzhGlyph (subDf.middle + [HSwToV : 0.5 * [TzStroke df]] - [TzJoinOverlap df]) fSerifed hookStyle
 				create-glyph "tz/ezh.\(suffix).\(hookStyle)" : glyph-proc
 					local df : DivFrame tzAdws 3
 					local subDf : df.slice 3 2
 					local xBarLeft : subDf.middle - subDf.adws * (subDf.adws * TBalance) - [HSwToV HalfStroke]
-					include : TzEzhGlyph (xBarLeft + [HSwToV Stroke]) fSerifed hookStyle
+					include : TzEzhGlyph (xBarLeft + [HSwToV : TzStroke df] - [TzJoinOverlap df]) fSerifed hookStyle
 
 		select-variant 'TZ/T' (follow -- 'T')
 		select-variant 'tz/t' (follow -- 't')
@@ -966,17 +966,12 @@ glyph-block Letter-Latin-Ezh : begin
 			define { te ezhg } srcs
 			include [refer-glyph te]
 			include [refer-glyph ezhg]
-			include : TzFitAdvance
 
 		derive-multi-part-glyphs 'tz' 0xA729 { 'tz/t' 'tz/ezh' } : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
 			include : df.markSet.bp
 			define { te ezhg } srcs
-			# t's crossbar wins where it overlaps ezh's top bar (Times tz).
-			include [refer-glyph te]
-			include : difference [refer-glyph ezhg]
-				intersection [refer-glyph te] [MaskAbove (XH - Stroke - TINY)]
-			include : TzFitAdvance
+			include : union [refer-glyph te] [refer-glyph ezhg]
 
 	select-multi-dimensional-variant 'ezh/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
 	select-variant 'ezhCurlyTail/phoneticRight'   (follow -- 'ezh/phoneticRight')
