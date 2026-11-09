@@ -20,7 +20,6 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	define [MotionSerif x top bot] : SerifLT x top bot
 	define [FullSerifs x top bot] : composite-proc [SerifLT x top bot] [SerifLB x top bot]
 
-	# Thorn's single bowl sits in the middle of the stem, not from the cap.
 	define [yThornBowlBot top] : mix 0 top 0.19
 	define [yThornBowlTop top] : top - [yThornBowlBot top]
 
@@ -70,11 +69,11 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		include : LeaningAnchor.Below.VBar.l SB
 
 	define Config : object
-		serifless     { no-shape    }
-		motionSerifed { MotionSerif }
-		serifed       { FullSerifs  }
+		serifless     {no-shape     }
+		motionSerifed {MotionSerif  }
+		serifed       {FullSerifs   }
 
-	foreach { suffix { Serifs } } [Object.entries Config] : do
+	foreach {suffix {Serifs   } } [Object.entries Config] : do
 		create-glyph "ThornDouble.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DoubleThornShape xThornStem 0 CAP [yThornBowlBot CAP] [yThornBowlTop CAP]
@@ -92,16 +91,16 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 
 	define ThornDoubleLowerConfig : SuffixCfg.weave
 		object # body
-			''               { CLOSED-STEM     CLOSED-STEM }
-			flatTop          { FLAT-CONNECTION CLOSED-STEM }
-			flatBottom       { CLOSED-STEM     FLAT-CONNECTION }
-			flatTopAndBottom { FLAT-CONNECTION FLAT-CONNECTION }
+			''               {CLOSED-STEM     CLOSED-STEM  }
+			flatTop          {FLAT-CONNECTION CLOSED-STEM  }
+			flatBottom       {CLOSED-STEM     FLAT-CONNECTION  }
+			flatTopAndBottom {FLAT-CONNECTION FLAT-CONNECTION  }
 		object # serifs
-			serifless     { no-shape    }
-			motionSerifed { MotionSerif }
-			serifed       { FullSerifs  }
+			serifless     {no-shape     }
+			motionSerifed {MotionSerif  }
+			serifed       {FullSerifs   }
 
-	foreach { suffix { {slabTop slabBot} { Serifs } } } [Object.entries ThornDoubleLowerConfig] : do
+	foreach {suffix {{slabTop slabBot  } {Serifs  } } } [Object.entries ThornDoubleLowerConfig] : do
 		create-glyph "thornDouble.\(suffix)" : glyph-proc
 			include : MarkSet.bp
 			include : DoubleThornLowerShape SB Descender Ascender 0 XH SHook SmallArchDepthA SmallArchDepthB slabTop slabBot

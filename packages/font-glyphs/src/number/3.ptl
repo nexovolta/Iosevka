@@ -144,7 +144,6 @@ glyph-block Digits-Three : begin
 		if serif : begin
 			local serifX : SB + (OX - O)
 			local serifInnerX : serifX + [HSwToV VJutStroke]
-			# Keep a shallower diagonal from closing the space beneath the serif.
 			local maxSerifLength : Math.max 0 : top - (yBarBot - (RightSB - [HSwToV cor] - serifInnerX) * kFall) - [AdviceStroke 12]
 			local serifLength : if _angle [Math.min VJut maxSerifLength] VJut
 			include : VSerif.dl serifX top serifLength
@@ -154,11 +153,11 @@ glyph-block Digits-Three : begin
 	define [ThreeFlatHookBrokenTop top serif sw lowerEnd lowerEndY angle] : ThreeFlatTopBrokenShape top serif HOOK-FLAT sw lowerEnd lowerEndY angle
 
 	define ThreeBodyConfig : object
-		rounded        { HOOK-ROUND   HOOK-ROUND }
-		flatHooked     { HOOK-FLAT    HOOK-FLAT }
-		cornerHooked   { HOOK-CORNER  HOOK-CORNER }
-		inwardSerifed  { HOOK-INWARD  HOOK-INWARD }
-		serifedHooked  { HOOK-SLAB    HOOK-SLAB }
+		rounded        {HOOK-ROUND   HOOK-ROUND  }
+		flatHooked     {HOOK-FLAT    HOOK-FLAT  }
+		cornerHooked   {HOOK-CORNER  HOOK-CORNER  }
+		inwardSerifed  {HOOK-INWARD  HOOK-INWARD  }
+		serifedHooked  {HOOK-SLAB    HOOK-SLAB  }
 
 	define ThreeArcTypes : object
 		Rounded HOOK-ROUND
@@ -166,11 +165,11 @@ glyph-block Digits-Three : begin
 		CornerHook HOOK-CORNER
 		InwardSerifed HOOK-INWARD
 		Serifed HOOK-SLAB
-	foreach { topName topStyle } [pairs-of ThreeArcTypes] : begin
-		foreach { bottomName bottomStyle } [pairs-of ThreeArcTypes] : begin
+	foreach {topName topStyle  } [pairs-of ThreeArcTypes] : begin
+		foreach {bottomName bottomStyle  } [pairs-of ThreeArcTypes] : begin
 			set ThreeBodyConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
 
-	foreach { suffix { topStyle bottomStyle } } [pairs-of ThreeBodyConfig] : do
+	foreach {suffix {topStyle bottomStyle   } } [pairs-of ThreeBodyConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : ThreeShapeHooked CAP topStyle bottomStyle
@@ -181,18 +180,18 @@ glyph-block Digits-Three : begin
 
 	define ThreeFlatTopConfig : SuffixCfg.weave
 		object
-			flatTop       { ThreeFlatTopShape }
-			flatTopBroken { ThreeFlatTopBrokenShape }
+			flatTop       {ThreeFlatTopShape  }
+			flatTopBroken {ThreeFlatTopBrokenShape  }
 		object
-			''      { false }
-			serifed { true }
+			''      {false  }
+			serifed {true  }
 		object
-			''          { HOOK-ROUND }
-			flatHook    { HOOK-FLAT }
-			cornerHook  { HOOK-CORNER }
-			serifedHook { HOOK-SLAB }
+			''          {HOOK-ROUND  }
+			flatHook    {HOOK-FLAT  }
+			cornerHook  {HOOK-CORNER  }
+			serifedHook {HOOK-SLAB  }
 
-	foreach { suffix { { Shape } { fSerif } { hookStyle } } } [pairs-of ThreeFlatTopConfig] : do
+	foreach {suffix {{Shape    } {fSerif  } {hookStyle  } } } [pairs-of ThreeFlatTopConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : Shape CAP fSerif hookStyle

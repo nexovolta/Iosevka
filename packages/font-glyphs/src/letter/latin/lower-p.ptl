@@ -138,10 +138,10 @@ glyph-block Letter-Latin-Lower-P : begin
 			''        false
 			flatBowl  true
 		object # serifs
-			serifless           { no-shape     false false }
-			motionSerifed       { MotionSerif  true  false }
-			bottomSerifed       { BottomSerif  false true  }
-			serifed             { FullSerifs   true  true  }
+			serifless           {no-shape     false false  }
+			motionSerifed       {MotionSerif  true  false  }
+			bottomSerifed       {BottomSerif  false true   }
+			serifed             {FullSerifs   true  true   }
 
 	define [PBowlKind Body] : begin
 		if (Body === FlatTopBody) : return 'flatTop'
@@ -151,7 +151,7 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	glyph-block-export PBowlKind
 
-	foreach { suffix { Body cut fFlat {Serifs doTS doBS} }} [Object.entries PConfig] : do
+	foreach {suffix {Body cut fFlat {Serifs doTS doBS  } }} [Object.entries PConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
 
 		create-glyph "p.\(suffix)" : glyph-proc
@@ -190,7 +190,6 @@ glyph-block Letter-Latin-Lower-P : begin
 			local swA : df.adviceThinnerStroke2 2 3 XH 0.65
 			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
-			# Body 66% of small-m width; left flourish 33%.
 			local bodyK : 0.66 * df.adws
 			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
@@ -221,7 +220,6 @@ glyph-block Letter-Latin-Lower-P : begin
 			local swA : df.adviceThinnerStroke2 2 3 XH 0.65
 			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
-			# Body 66% of W width; left tail 33%, same packing as pFlourish.
 			local bodyK : 0.66 * df.adws
 			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
@@ -231,7 +229,6 @@ glyph-block Letter-Latin-Lower-P : begin
 			local adb : subDf.smallArchDepthB + 0
 			local fine : ShoulderFine * (sw / Stroke)
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
-				# Flat bowl bottom (no tooth/spur): bar continues straight into the upward tail.
 				if (Body === EarlessRoundedBody) : begin
 					include : tagged 'bowl' : if fFlat
 						then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
@@ -271,7 +268,6 @@ glyph-block Letter-Latin-Lower-P : begin
 			local xTip : xHookL - hookWidth
 			local xTurn : xHookL + turnNeed
 			local adaHook : Math.min (SmallArchDepthA * 0.55) [Math.max (hookDrop + 0.35 * sw) (0.28 * (XH - yBarTop))]
-			# Flat bar collinear with the p's bottom stroke; tail curls up and hooks outward.
 			include : HBar.b xTurn (xStem + ink) 0 sw
 			include : intersection [MaskLeft (xStem + 0.5 * ink)] : dispiro
 				widths.rhs sw
@@ -304,11 +300,11 @@ glyph-block Letter-Latin-Lower-P : begin
 			flatBottom         SmallThornFlatBottomBody
 			flatTopAndBottom   SmallThornFlatTopAndBottomBody
 		object # serifs
-			serifless       { no-shape     false false }
-			motionSerifed   { MotionSerif  true  false }
-			serifed         { FullSerifs   true  true  }
+			serifless       {no-shape     false false  }
+			motionSerifed   {MotionSerif  true  false  }
+			serifed         {FullSerifs   true  true   }
 
-	foreach { suffix { Body {Serifs doTS doBS} }} [Object.entries ThornConfig] : do
+	foreach {suffix {Body {Serifs doTS doBS  } }} [Object.entries ThornConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
 
 		create-glyph "thorn.\(suffix)" : glyph-proc

@@ -23,7 +23,6 @@ glyph-block Letter-Latin-Lower-G : begin
 			flat l currentGlyph.baseAnchors.overlay.y
 			curl r currentGlyph.baseAnchors.overlay.y
 
-	# overlay bar width for double-storey g
 	define obwDoubleStorey : Math.min ((XH - Descender) * (1 / 6) - Stroke * (2 / 3)) : AdviceStroke 5
 
 	glyph-block-export DoubleStoreyLowerHook
@@ -162,13 +161,13 @@ glyph-block Letter-Latin-Lower-G : begin
 
 	define DoubleStoreyConfig : SuffixCfg.weave
 		object # hook/openness
-			doubleStoreyClosed           { false false false }
-			doubleStoreyOpen             { true  false false }
-			doubleStoreyOpenFlatHook     { true  true  false }
-			doubleStoreyDisjoint         { false false true  }
-			doubleStoreyDisjointFlatHook { false true  true  }
-			doubleStoreyOpenCornerHook     { true  true  false true }
-			doubleStoreyDisjointCornerHook { false true  true  true }
+			doubleStoreyClosed           {false false false  }
+			doubleStoreyOpen             {true  false false  }
+			doubleStoreyOpenFlatHook     {true  true  false  }
+			doubleStoreyDisjoint         {false false true   }
+			doubleStoreyDisjointFlatHook {false true  true   }
+			doubleStoreyOpenCornerHook     {true  true  false true  }
+			doubleStoreyDisjointCornerHook {false true  true  true  }
 		object # ear
 			''              'standard'
 			earlessRounded  'earlessRounded'
@@ -177,7 +176,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			flatBowlSerifed 'flatBowlSerifed'
 			topCut          'topCut'
 
-	foreach { suffix { { fOpen fFlat fDisjoint fCorner } ear } } [Object.entries DoubleStoreyConfig] : do
+	foreach {suffix {{fOpen fFlat fDisjoint fCorner    } ear } } [Object.entries DoubleStoreyConfig] : do
 		create-glyph "g.\(suffix)" : DoubleStoreyGShape fOpen fFlat fDisjoint ear fCorner
 		derive-composites "gStroke.\(suffix)" null "g.\(suffix)" [OverlayW obwDoubleStorey]
 
@@ -228,7 +227,7 @@ glyph-block Letter-Latin-Lower-G : begin
 				curl (df.rightSB - offset) (Descender + ada)
 				HookEnd (Descender + offset) (sw -- sw)
 				g4   (df.leftSB  + offset) (Descender + SHook)
-				if (sink == spiro-outline) { [corner df.leftSB XH] } {}
+				if (sink == spiro-outline) {[corner df.leftSB XH]  } {}
 
 		export : define [BentHook df y0 _ada _adb] : BentHookT dispiro df y0 0 df.mvs _ada _adb
 		export : define [FlatHook df y0 _ada _adb] : begin
@@ -367,23 +366,23 @@ glyph-block Letter-Latin-Lower-G : begin
 
 	define SingleStoreyConfig : SuffixCfg.weave
 		object # hook
-			singleStoreyBentHook  { SingleStorey.BentHook             SHook                  }
-			singleStoreyFlatHook  { SingleStorey.FlatHook             0                      }
-			singleStoreyCornerHook { SingleStorey.CornerHook           0                      }
+			singleStoreyBentHook   {SingleStorey.BentHook             SHook                   }
+			singleStoreyFlatHook   {SingleStorey.FlatHook             0                       }
+			singleStoreyCornerHook {SingleStorey.CornerHook           0                       }
 		object # bowl
-			''                    false
-			flatBowl              true
+			''                     false
+			flatBowl               true
 		object # ear/serif
-			serifless             { SingleStorey.SeriflessBody        0                      }
-			serifed               { SingleStorey.SerifedBody          0                      }
-			topCut                { SingleStorey.TopCutBody           HalfStroke             }
-			flatTopSerifless      { SingleStorey.FlatTopSeriflessBody 0                      }
-			flatTopSerifed        { SingleStorey.FlatTopSerifedBody   0                      }
-			earlessCorner         { SingleStorey.EarlessCornerBody    DToothlessRise         }
-			earlessCornerHTB      { SingleStorey.EarlessCornerBody    0                      }
-			earlessRounded        { SingleStorey.EarlessRoundedBody   (XH - SmallArchDepthA) }
+			serifless              {SingleStorey.SeriflessBody        0                       }
+			serifed                {SingleStorey.SerifedBody          0                       }
+			topCut                 {SingleStorey.TopCutBody           HalfStroke              }
+			flatTopSerifless       {SingleStorey.FlatTopSeriflessBody 0                       }
+			flatTopSerifed         {SingleStorey.FlatTopSerifedBody   0                       }
+			earlessCorner          {SingleStorey.EarlessCornerBody    DToothlessRise          }
+			earlessCornerHTB       {SingleStorey.EarlessCornerBody    0                       }
+			earlessRounded         {SingleStorey.EarlessRoundedBody   (XH - SmallArchDepthA)  }
 
-	foreach { suffix { { hookShape hookEnd } fFlat { bodyShape hookStart } } } [Object.entries SingleStoreyConfig] : do
+	foreach {suffix {{hookShape hookEnd    } fFlat {bodyShape hookStart  } } } [Object.entries SingleStoreyConfig] : do
 		create-glyph "g.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
@@ -406,7 +405,7 @@ glyph-block Letter-Latin-Lower-G : begin
 				x     -- RightSB
 				top   -- 0
 				bot   -- (Descender + Stroke)
-				space -- { [if hookEnd (SB + [HSwToV Stroke]) 0] Width }
+				space -- {[if hookEnd (SB + [HSwToV Stroke]) 0] Width  }
 
 		create-glyph "gPalatalHook.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 1

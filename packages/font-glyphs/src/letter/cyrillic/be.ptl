@@ -11,13 +11,13 @@ glyph-block Letter-Cyrillic-Be : begin
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos YeriUpper RevYeriUpper
 
 	define BeConfig : object
-		serifless         { false  false  false }
-		topSerifed        { false  true   false }
-		bilateralSerifed  { true   true   false }
-		motionSerifed     { false  true   true }
-		fullSerifed       { true   true   true }
+		serifless         {false  false  false  }
+		topSerifed        {false  true   false  }
+		bilateralSerifed  {true   true   false  }
+		motionSerifed     {false  true   true   }
+		fullSerifed       {true   true   true   }
 
-	foreach { suffix { doSerifLT doSerifRT doSerifLB } } [Object.entries BeConfig] : do
+	foreach {suffix {doSerifLT doSerifRT doSerifLB   } } [Object.entries BeConfig] : do
 		create-glyph "cyrl/Be.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local stroke : AdviceStroke2 2 3 CAP
@@ -25,7 +25,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			include : HBar.t (SB - O) [mix SB RightSB 0.9] CAP stroke
 			if doSerifLT : include : tagged 'serifLT' : HSerif.lt SB CAP SideJut stroke
 			if doSerifRT : begin
-				local { jutTop jutBot jutMid } : EFVJutLength CAP 0 YeriBarPos stroke
+				local {jutTop jutBot jutMid  } : EFVJutLength CAP 0 YeriBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				include : tagged 'serifRT' : VSerif.dr [mix SB RightSB 0.9] CAP jutTop swVJut
 			if doSerifLB : include : tagged 'serifLB' : HSerif.lb SB 0 SideJut stroke
@@ -37,7 +37,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			include : HBar.t [mix SB RightSB 0.1] (RightSB + O) CAP stroke
 			if doSerifLT : include : tagged 'serifRT' : HSerif.rt RightSB CAP SideJut stroke
 			if doSerifRT : begin
-				local { jutTop jutBot jutMid } : EFVJutLength CAP 0 YeriBarPos stroke
+				local {jutTop jutBot jutMid  } : EFVJutLength CAP 0 YeriBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				include : tagged 'serifLT' : VSerif.dl [mix SB RightSB 0.1] CAP jutTop swVJut
 			if doSerifLB : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut stroke
@@ -57,7 +57,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			flatside.rd RightSB 0 yRingTop ada adb
 			Arch.rhs 0
 			flatside.lu SB      0 yRingTop ada adb
-			alsoThruThem { { 0.30 0.85 } { 0.65 0.925 } } important g4
+			alsoThruThem {{0.30 0.85   } {0.65 0.925  } } important g4
 			g4   (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
 
 	define [FlatTopBody] : glyph-proc
@@ -72,7 +72,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			flatside.rd RightSB 0 yRingTop ada adb
 			Arch.rhs 0
 			flatside.lu SB      0 yRingTop ada adb
-			alsoThruThem { { 0.30 0.85 } { 0.65 0.925 } } important g4
+			alsoThruThem {{0.30 0.85   } {0.65 0.925  } } important g4
 			g4   (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
 
 	define BeSmallConfig : SuffixCfg.weave
@@ -80,7 +80,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			standard  StandardBody
 			flatTop   FlatTopBody
 
-	foreach { suffix { Body } } [Object.entries BeSmallConfig] : do
+	foreach {suffix {Body   } } [Object.entries BeSmallConfig] : do
 		create-glyph "cyrl/be.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			include : Body

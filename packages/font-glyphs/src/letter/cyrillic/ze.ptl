@@ -22,26 +22,26 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 	glyph-block-import Digits-Three : ThreeFlatHookTop ThreeFlatHookBrokenTop
 
-	define SLAB-NONE       0
-	define SLAB-CLASSICAL  1
-	define SLAB-INWARD     2
-	define FLAT-CONNECTION 3
-	define OPEN-HALF       4
-	define OPEN-VERTICAL   5
-	define CLOSED-CIRCLE   6
-	define CLOSED-ROUND    7
-	define CLOSED-STEM     8
-	define SLAB-FLAT-HOOK  9
+	define SLAB-NONE        0
+	define SLAB-CLASSICAL   1
+	define SLAB-INWARD      2
+	define FLAT-CONNECTION  3
+	define OPEN-HALF        4
+	define OPEN-VERTICAL    5
+	define CLOSED-CIRCLE    6
+	define CLOSED-ROUND     7
+	define CLOSED-STEM      8
+	define SLAB-FLAT-HOOK   9
 	define SLAB-CORNER-HOOK 10
 
-	define KSI-SHAPE-ROUNDED    0
-	define KSI-SHAPE-FLAT-TOP   1
-	define KSI-SHAPE-FLAT-HOOK  2
-	define KSI-SHAPE-CORNER-HOOK 3
-	define KSI-SHAPE-INWARD-SERIFED 4
-	define KSI-SHAPE-SERIFED-HOOK 5
-	define KSI-SHAPE-FLAT-TOP-BROKEN 6
-	define KSI-SHAPE-FLAT-TOP-SERIFED 7
+	define KSI-SHAPE-ROUNDED                 0
+	define KSI-SHAPE-FLAT-TOP                1
+	define KSI-SHAPE-FLAT-HOOK               2
+	define KSI-SHAPE-CORNER-HOOK             3
+	define KSI-SHAPE-INWARD-SERIFED          4
+	define KSI-SHAPE-SERIFED-HOOK            5
+	define KSI-SHAPE-FLAT-TOP-BROKEN         6
+	define KSI-SHAPE-FLAT-TOP-SERIFED        7
 	define KSI-SHAPE-FLAT-TOP-BROKEN-SERIFED 8
 
 	define KSI-TAIL-CURLY                 0
@@ -314,10 +314,6 @@ glyph-block Letter-Cyrillic-Ze : begin
 
 		export : define [TresilloUpperShape] : begin
 			define [object stroke midx midy fine] : Dim
-			# Clip reverse-C at xJoin (HookStart cannot terminate on the top
-			# at Regular+). Chevron arms share that vertical and the waist
-			# vertical; Leftward terminals make every join a vertical bevel.
-			# xJoin sits left of the hook so a C curve remains before the serif.
 			local yBar : midy + 0.5 * stroke
 			local middle : mix left right 0.5
 			local xJoin : mix left right : StrokeWidthBlend 0.64 0.48
@@ -365,26 +361,26 @@ glyph-block Letter-Cyrillic-Ze : begin
 				__ : glyph-proc
 
 	define ZeSerifConfig : object
-		serifless                          { SLAB-NONE         SLAB-NONE }
-		bottomSerifed                      { SLAB-NONE         SLAB-CLASSICAL }
-		bottomInwardSerifed                { SLAB-NONE         SLAB-INWARD }
-		unilateralSerifed                  { SLAB-CLASSICAL    SLAB-NONE }
-		bilateralSerifed                   { SLAB-CLASSICAL    SLAB-CLASSICAL }
-		unilateralInwardSerifed            { SLAB-INWARD       SLAB-NONE }
-		bilateralInwardSerifed             { SLAB-INWARD       SLAB-INWARD }
-		hybridSerifed1                     { SLAB-INWARD       SLAB-CLASSICAL }
-		flatHook                           { SLAB-FLAT-HOOK    SLAB-FLAT-HOOK }
-		topFlatHook                        { SLAB-FLAT-HOOK    SLAB-NONE }
-		bottomSerifedFlatHook              { SLAB-FLAT-HOOK    SLAB-CLASSICAL }
-		bottomInwardSerifedFlatHook        { SLAB-FLAT-HOOK    SLAB-INWARD }
-		unilateralSerifedFlatHook          { SLAB-CLASSICAL    SLAB-FLAT-HOOK }
-		unilateralInwardSerifedFlatHook    { SLAB-INWARD       SLAB-FLAT-HOOK }
-		cornerHook                         { SLAB-CORNER-HOOK  SLAB-CORNER-HOOK }
-		topCornerHook                      { SLAB-CORNER-HOOK  SLAB-NONE }
-		bottomSerifedCornerHook            { SLAB-CORNER-HOOK  SLAB-CLASSICAL }
-		bottomInwardSerifedCornerHook      { SLAB-CORNER-HOOK  SLAB-INWARD }
-		unilateralSerifedCornerHook        { SLAB-CLASSICAL    SLAB-CORNER-HOOK }
-		unilateralInwardSerifedCornerHook  { SLAB-INWARD       SLAB-CORNER-HOOK }
+		serifless                          {SLAB-NONE         SLAB-NONE  }
+		bottomSerifed                      {SLAB-NONE         SLAB-CLASSICAL  }
+		bottomInwardSerifed                {SLAB-NONE         SLAB-INWARD  }
+		unilateralSerifed                  {SLAB-CLASSICAL    SLAB-NONE  }
+		bilateralSerifed                   {SLAB-CLASSICAL    SLAB-CLASSICAL  }
+		unilateralInwardSerifed            {SLAB-INWARD       SLAB-NONE  }
+		bilateralInwardSerifed             {SLAB-INWARD       SLAB-INWARD  }
+		hybridSerifed1                     {SLAB-INWARD       SLAB-CLASSICAL  }
+		flatHook                           {SLAB-FLAT-HOOK    SLAB-FLAT-HOOK  }
+		topFlatHook                        {SLAB-FLAT-HOOK    SLAB-NONE  }
+		bottomSerifedFlatHook              {SLAB-FLAT-HOOK    SLAB-CLASSICAL  }
+		bottomInwardSerifedFlatHook        {SLAB-FLAT-HOOK    SLAB-INWARD  }
+		unilateralSerifedFlatHook          {SLAB-CLASSICAL    SLAB-FLAT-HOOK  }
+		unilateralInwardSerifedFlatHook    {SLAB-INWARD       SLAB-FLAT-HOOK  }
+		cornerHook                         {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK  }
+		topCornerHook                      {SLAB-CORNER-HOOK  SLAB-NONE  }
+		bottomSerifedCornerHook            {SLAB-CORNER-HOOK  SLAB-CLASSICAL  }
+		bottomInwardSerifedCornerHook      {SLAB-CORNER-HOOK  SLAB-INWARD  }
+		unilateralSerifedCornerHook        {SLAB-CLASSICAL    SLAB-CORNER-HOOK  }
+		unilateralInwardSerifedCornerHook  {SLAB-INWARD       SLAB-CORNER-HOOK  }
 
 	define ZeArcTypes : object
 		Rounded SLAB-NONE
@@ -392,18 +388,18 @@ glyph-block Letter-Cyrillic-Ze : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
-	foreach { topName topStyle } [pairs-of ZeArcTypes] : begin
-		foreach { bottomName bottomStyle } [pairs-of ZeArcTypes] : begin
+	foreach {topName topStyle  } [pairs-of ZeArcTypes] : begin
+		foreach {bottomName bottomStyle  } [pairs-of ZeArcTypes] : begin
 			set ZeSerifConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
 
 	define ZeHeightConfig : object
-		''    { 0          'capital'  'e' }
-		tall  { Descender  'capDesc'  'p' }
+		''    {0          'capital'  'e'  }
+		tall  {Descender  'capDesc'  'p'  }
 
 	glyph-block-export ZeConfig
 	define ZeConfig : SuffixCfg.weave ZeHeightConfig ZeSerifConfig
 
-	foreach { suffix { { bottom mkCap mkXH } { slabTop slabBot } } } [Object.entries ZeConfig] : do
+	foreach {suffix {{bottom mkCap mkXH    } {slabTop slabBot  } } } [Object.entries ZeConfig] : do
 		create-glyph "cyrl/Ze.\(suffix)" : glyph-proc
 			include : MarkSet.(mkCap)
 			local ze : CyrZe slabTop slabBot CAP bottom
@@ -668,7 +664,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 		straightTailSharpCorner KSI-TAIL-STRAIGHT-SHARP-CORNER
 		diagonalTailSharpCorner KSI-TAIL-DIAGONAL-SHARP-CORNER
 
-	foreach { topSuffix shape } [Object.entries KsiTopConfig] : foreach { tailSuffix tail } [Object.entries KsiTailConfig] : do
+	foreach {topSuffix shape  } [Object.entries KsiTopConfig] : foreach {tailSuffix tail  } [Object.entries KsiTailConfig] : do
 		local slabTop : match shape
 			[Just KSI-SHAPE-FLAT-HOOK] SLAB-FLAT-HOOK
 			[Just KSI-SHAPE-CORNER-HOOK] SLAB-CORNER-HOOK
@@ -706,14 +702,14 @@ glyph-block Letter-Cyrillic-Ze : begin
 				([Just KSI-TAIL-STRAIGHT] || [Just KSI-TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
 				__ : begin [glyph-proc]
 
-	select-multi-dimensional-variant 'cyrl/Ksi/base' (follows -- { 'cyrl/ksi/top' 'cyrl/ksi/tail' })
-	select-multi-dimensional-variant 'cyrl/ksi/base' (follows -- { 'cyrl/ksi/top' 'cyrl/ksi/tail' })
+	select-multi-dimensional-variant 'cyrl/Ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'  })
+	select-multi-dimensional-variant 'cyrl/ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'  })
 
 	select-variant 'Tresillo' 0xA72A (follow -- 'C')
 	select-variant 'tresillo' 0xA72B (follow -- 'c')
 
-	derive-multi-part-glyphs 'cyrl/Dhe.BSH' null { 'cyrl/Ze' 'invCommaBelow' } : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+	derive-multi-part-glyphs 'cyrl/Dhe.BSH' null {'cyrl/Ze' 'invCommaBelow'  } : lambda [srcs gr] : glyph-proc
+		local {base mark  } srcs
 		define baseGlyph : query-glyph base
 		include : with-transform
 			ApparentTranslate
@@ -723,8 +719,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 		include [refer-glyph base] AS_BASE ALSO_METRICS
 		include : ExtendBelowBaseAnchors (baseGlyph.baseAnchors.below.y - AccentHeight)
 
-	derive-multi-part-glyphs 'cyrl/dhe.BSH' null { 'cyrl/ze' 'invCommaBelow' } : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+	derive-multi-part-glyphs 'cyrl/dhe.BSH' null {'cyrl/ze' 'invCommaBelow'  } : lambda [srcs gr] : glyph-proc
+		local {base mark  } srcs
 		define baseGlyph : query-glyph base
 		include : with-transform
 			ApparentTranslate
@@ -889,7 +885,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 					tailed        SingleStorey.TailedBar
 					tailedSerifed SingleStorey.TailedSerifedBar
 
-		foreach { suffix { body cut bar } } [Object.entries SingleStoreyConfig] : do
+		foreach {suffix {body cut bar   } } [Object.entries SingleStoreyConfig] : do
 			create-glyph "AeVolapuk/base.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
@@ -1036,13 +1032,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 					([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
 					__                                       USerifs.SmallToothless
 
-		foreach { suffix { Base cut Slabs } } [Object.entries UeVolapukConfig] : do
+		foreach {suffix {Base cut Slabs   } } [Object.entries UeVolapukConfig] : do
 			create-glyph "UeVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
 				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB cut
 
-		foreach { suffix { Base cut Slabs } } [Object.entries ueVolapukConfig] : do
+		foreach {suffix {Base cut Slabs   } } [Object.entries ueVolapukConfig] : do
 			create-glyph "ueVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e

@@ -18,7 +18,6 @@ glyph-block Letter-Latin-Lower-B : begin
 	define SLAB-NONE      0
 	define SLAB-FLAT-HOOK 4
 
-	# Always flat at the top (C joins here). Bottom follows the `b` spur variant.
 	define [FlourishFlatTopKnots left right top sw] : list
 		arcvh
 		flat [Arch.adjust-x.top [mix left (right - OX) 0.5] (sw -- sw)] top
@@ -27,7 +26,6 @@ glyph-block Letter-Latin-Lower-B : begin
 	define [FlourishBowl] : with-params [Body top bot left right sw ada adb] : begin
 		local fine : ShoulderFine * (sw / Stroke)
 		if (Body === ToothedBody) : begin
-			# Toothed / bottom-cut spur at the baseline; flourish is always flat at XH.
 			return : OBarLeft.earlessCorner
 				rise  -- 0
 				top   -- top
@@ -53,7 +51,6 @@ glyph-block Letter-Latin-Lower-B : begin
 				Arch.lhs bot (sw -- sw)
 				flatside.ru right bot top ada adb
 				FlourishFlatTopKnots left right top sw
-		# FlatBottomBody (and flat-bowl): both ends flat into the stem.
 		return : dispiro
 			widths.lhs sw
 			flat (left + TINY) bot [heading Rightward]
@@ -148,10 +145,10 @@ glyph-block Letter-Latin-Lower-B : begin
 			''        false
 			flatBowl  true
 		object # serifs
-			serifless       { no-shape   false  }
-			motionSerifed   { LTSerifs   true   }
-			bottomSerifed   { LBSerifs   false  }
-			serifed         { FullSerifs true   }
+			serifless       {no-shape   false   }
+			motionSerifed   {LTSerifs   true    }
+			bottomSerifed   {LBSerifs   false   }
+			serifed         {FullSerifs true    }
 
 	define [BBowlKind Body] : begin
 		if (Body === FlatBottomBody) : return 'flatBottom'
@@ -161,7 +158,7 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	glyph-block-export BConfig BBowlKind
 
-	foreach { suffix { Body cut fFlat { Serifs doST } } } [Object.entries BConfig] : do
+	foreach {suffix {Body cut fFlat {Serifs doST    } } } [Object.entries BConfig] : do
 		local yOverlay : mix XH (Ascender - [if doST Stroke 0]) 0.5
 		create-glyph "b.\(suffix)" : glyph-proc
 			include : MarkSet.b
@@ -218,7 +215,6 @@ glyph-block Letter-Latin-Lower-B : begin
 			local swA : df.adviceThinnerStroke2 2 3 (Ascender - Descender) 0.65
 			local swB : df.adviceThinnerStroke 2.75 0.75
 			local sw : Math.min swA swB
-			# Body 66% of small-m width; left flourish 33%.
 			local bodyK : 0.66 * df.adws
 			local subDf : DivFrame bodyK 2
 			local shift : df.width - subDf.width
@@ -242,7 +238,6 @@ glyph-block Letter-Latin-Lower-B : begin
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
 				include : LeaningAnchor.Above.VBar.l xLeft
 			local xStem : xLeft + shift
-			# C on a 1-em frame so the bowl, not the flourish, keeps m-width in Aile/Etoile.
 			local cDf : DivFrame [Math.min 1 df.adws]
 			local lf : CLetterForm cDf SLAB-NONE SLAB-FLAT-HOOK XH Descender
 				ada -- [cDf.archDepthAOf SmallArchDepth sw]
@@ -282,8 +277,8 @@ glyph-block Letter-Latin-Lower-B : begin
 			y -- 0
 			yAttach -- attach.y
 
-	derive-multi-part-glyphs 'bDot' 0x1E03 { 'b' 'dotAbove' } : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+	derive-multi-part-glyphs 'bDot' 0x1E03 {'b' 'dotAbove'  } : lambda [srcs gr] : glyph-proc
+		local {base mark  } srcs
 		include : refer-glyph mark
 		include : Translate (Width + [HSwToV HalfStroke]) 0
 		include [refer-glyph base] AS_BASE

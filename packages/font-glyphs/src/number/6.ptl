@@ -13,7 +13,6 @@ glyph-block Digits-Six : begin
 
 	glyph-block-export StraightBarSixShape
 
-	# Bowl outer top is locked at 60% of the digit height.
 	define [SixBowlOTop charTop] : 0.6 * charTop
 
 	define [SixBowlArches oTop] : begin
@@ -25,7 +24,6 @@ glyph-block Digits-Six : begin
 			yMiddleA : YSmoothMidL oTop 0 ada adb
 			yMiddleB : YSmoothMidR oTop 0 ada adb
 
-	# Round bowl only, outer top locked at oTop. Stem / hook are unioned on separately.
 	define [SixRoundBowl oTop] : glyph-proc
 		local arches : SixBowlArches oTop
 		include : dispiro
@@ -38,7 +36,6 @@ glyph-block Digits-Six : begin
 			flat (SB + OX) (arches.yMiddleA + TINY) [heading Upward]
 			curl (SB + OX) oTop [heading Upward]
 
-	# Stem from the bowl top, flattening into a top-right terminal.
 	define [SixFlatHookFromBowl] : with-params [top oTop [xStem : SB + OX] [sw Stroke] [fCorner false]] : glyph-proc
 		local fh : MakeFlatHook SB RightSB top 0 (sw -- sw)
 		local midShift : (RightSB - SB) * (-0.05)
@@ -54,8 +51,6 @@ glyph-block Digits-Six : begin
 				list
 					corner fh.xRHook top
 
-	# Bowl only: b toothless-rounded left stem + round bottom, with b's flat-top
-	# (earlessCorner rise 0) into the stem. The 6 stem is drawn separately from oTop up.
 	define [SixFlatBowlOBar] : with-params [oTop [left SB] [right RightSB] [sw Stroke]] : glyph-proc
 		local arches : SixBowlArches oTop
 		include : dispiro
@@ -67,7 +62,6 @@ glyph-block Digits-Six : begin
 			flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] oTop
 			curl (left + TINY) oTop [heading Leftward]
 
-	# Rounded top-right terminal of a closed 6, or the same with an inward serif.
 	define [SixHookTerminal top inward slabHook] : if slabHook
 		SerifedArcEnd.LtrLhs (RightSB - OX) top Stroke Hook
 		if inward
@@ -78,7 +72,6 @@ glyph-block Digits-Six : begin
 				HookEnd top
 				g4 (RightSB - OX) (top - Hook)
 
-	# Original closed-6 stem/hook, starting at the top of the bowl.
 	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false] [slabHook false]] : glyph-proc
 		include : dispiro
 			widths.rhs
@@ -136,7 +129,6 @@ glyph-block Digits-Six : begin
 		if (inward && [not flatBowl]) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
 		if (slabHook && [not flatBowl]) : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
 
-	# Horizontal-ended parallelogram; italic shear keeps constant width.
 	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
 		local swH : HSwToV sw
 		return : spiro-outline
@@ -145,7 +137,6 @@ glyph-block Digits-Six : begin
 			corner (xTopL + swH) yTop
 			corner xTopL         yTop
 
-	# xTerminalMix 0.6 = original diagonal bar; 0 = vertical continuation of the left stem.
 	glyph-block-export StraightBarSixShape
 	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6] [flatBowl false]] : glyph-proc
 		local oTop : SixBowlOTop charTop
@@ -227,7 +218,7 @@ glyph-block Digits-Six : begin
 			''        false
 			flatBowl  true
 
-	foreach { suffix { Body fFlatBowl } } [Object.entries SixConfig] : do
+	foreach {suffix {Body fFlatBowl   } } [Object.entries SixConfig] : do
 		create-glyph "six.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : Body fFlatBowl

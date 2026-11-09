@@ -213,7 +213,6 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		local hd : FlatHookDepth df
 		local xHook : fallback xLeft : df.leftSB - [HSwToV : 0.25 * stroke]
-		# Keep enough room for the hook turn so a flat bar remains before the dip.
 		local xTurn : Math.min (xHook + hd.x - [HSwToV : 0.5 * stroke]) [mix xHook xClip 0.55]
 		local yBar : yBarBottom + 0.5 * stroke
 		local flourish : intersection [MaskLeft xClip] : dispiro
@@ -228,7 +227,6 @@ glyph-block Letter-Latin-Lower-E : begin
 			local yFlourishBot : yBarBottom + stroke - Hook
 			if (yFlourishBot < 0) : include : ExtendBelowBaseAnchors yFlourishBot
 
-	# Left FlatHook flourish from ae75e19 (e / P / B / p).
 	glyph-block-export EFlourishHook
 	define flex-params [EFlourishHook] : glyph-proc
 		local-parameter : df
@@ -290,39 +288,39 @@ glyph-block Letter-Latin-Lower-E : begin
 
 	glyph-block-export SmallEConfig
 	define SmallEConfig : object
-		flatCrossbar            { SmallEShape         RevSmallEShape         SLAB-NONE }
-		rounded                 { SmallERoundedShape  RevSmallERoundedShape  SLAB-NONE }
-		flatCrossbarFlatHook    { SmallEShape         RevSmallEShape         SLAB-FLAT-HOOK }
-		flatCrossbarCornerHook  { SmallEShape         RevSmallEShape         SLAB-CORNER-HOOK }
-		roundedFlatHook         { SmallERoundedShape  RevSmallERoundedShape  SLAB-FLAT-HOOK }
-		roundedCornerHook       { SmallERoundedShape  RevSmallERoundedShape  SLAB-CORNER-HOOK }
-		diagonalCrossbar                   { SmallEShape  RevSmallEShape  SLAB-NONE         0.5 }
-		diagonalCrossbarFalling            { SmallEShape  RevSmallEShape  SLAB-NONE         (-0.5) }
-		diagonalCrossbarFlatHook           { SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    1 }
-		diagonalCrossbarCornerHook         { SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1 }
-		diagonalCrossbarFallingFlatHook    { SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1) }
-		diagonalCrossbarFallingCornerHook  { SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1) }
+		flatCrossbar            {SmallEShape         RevSmallEShape         SLAB-NONE  }
+		rounded                 {SmallERoundedShape  RevSmallERoundedShape  SLAB-NONE  }
+		flatCrossbarFlatHook    {SmallEShape         RevSmallEShape         SLAB-FLAT-HOOK  }
+		flatCrossbarCornerHook  {SmallEShape         RevSmallEShape         SLAB-CORNER-HOOK  }
+		roundedFlatHook         {SmallERoundedShape  RevSmallERoundedShape  SLAB-FLAT-HOOK  }
+		roundedCornerHook       {SmallERoundedShape  RevSmallERoundedShape  SLAB-CORNER-HOOK  }
+		diagonalCrossbar                   {SmallEShape  RevSmallEShape  SLAB-NONE         0.5  }
+		diagonalCrossbarFalling            {SmallEShape  RevSmallEShape  SLAB-NONE         (-0.5)  }
+		diagonalCrossbarFlatHook           {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    1  }
+		diagonalCrossbarCornerHook         {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1  }
+		diagonalCrossbarFallingFlatHook    {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1)  }
+		diagonalCrossbarFallingCornerHook  {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1)  }
 
 	glyph-block-export SchwaConfig
 	define SchwaConfig : object
-		flatCrossbar            { SmallEShape         RevSmallEShape         SLAB-NONE }
-		flatCrossbarSerifed     { SmallEShape         RevSmallEShape         SLAB-CLASSICAL }
-		flatCrossbarFlatHook    { SmallEShape         RevSmallEShape         SLAB-FLAT-HOOK }
-		flatCrossbarCornerHook  { SmallEShape         RevSmallEShape         SLAB-CORNER-HOOK }
-		rounded                 { SmallERoundedShape  RevSmallERoundedShape  SLAB-NONE }
-		roundedSerifed          { SmallERoundedShape  RevSmallERoundedShape  SLAB-CLASSICAL }
-		roundedFlatHook         { SmallERoundedShape  RevSmallERoundedShape  SLAB-FLAT-HOOK }
-		roundedCornerHook       { SmallERoundedShape  RevSmallERoundedShape  SLAB-CORNER-HOOK }
-		diagonalCrossbar                   { SmallEShape  RevSmallEShape  SLAB-NONE         0.5 }
-		diagonalCrossbarFalling            { SmallEShape  RevSmallEShape  SLAB-NONE         (-0.5) }
-		diagonalCrossbarSerifed            { SmallEShape  RevSmallEShape  SLAB-CLASSICAL    0.5 }
-		diagonalCrossbarFallingSerifed     { SmallEShape  RevSmallEShape  SLAB-CLASSICAL    (-0.5) }
-		diagonalCrossbarFlatHook           { SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    1 }
-		diagonalCrossbarCornerHook         { SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1 }
-		diagonalCrossbarFallingFlatHook    { SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1) }
-		diagonalCrossbarFallingCornerHook  { SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1) }
+		flatCrossbar            {SmallEShape         RevSmallEShape         SLAB-NONE  }
+		flatCrossbarSerifed     {SmallEShape         RevSmallEShape         SLAB-CLASSICAL  }
+		flatCrossbarFlatHook    {SmallEShape         RevSmallEShape         SLAB-FLAT-HOOK  }
+		flatCrossbarCornerHook  {SmallEShape         RevSmallEShape         SLAB-CORNER-HOOK  }
+		rounded                 {SmallERoundedShape  RevSmallERoundedShape  SLAB-NONE  }
+		roundedSerifed          {SmallERoundedShape  RevSmallERoundedShape  SLAB-CLASSICAL  }
+		roundedFlatHook         {SmallERoundedShape  RevSmallERoundedShape  SLAB-FLAT-HOOK  }
+		roundedCornerHook       {SmallERoundedShape  RevSmallERoundedShape  SLAB-CORNER-HOOK  }
+		diagonalCrossbar                   {SmallEShape  RevSmallEShape  SLAB-NONE         0.5  }
+		diagonalCrossbarFalling            {SmallEShape  RevSmallEShape  SLAB-NONE         (-0.5)  }
+		diagonalCrossbarSerifed            {SmallEShape  RevSmallEShape  SLAB-CLASSICAL    0.5  }
+		diagonalCrossbarFallingSerifed     {SmallEShape  RevSmallEShape  SLAB-CLASSICAL    (-0.5)  }
+		diagonalCrossbarFlatHook           {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    1  }
+		diagonalCrossbarCornerHook         {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1  }
+		diagonalCrossbarFallingFlatHook    {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1)  }
+		diagonalCrossbarFallingCornerHook  {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1)  }
 
-	foreach { suffix { Body RevBody tailSlab diag } } [Object.entries SmallEConfig] : do
+	foreach {suffix {Body RevBody tailSlab diag   } } [Object.entries SmallEConfig] : do
 		create-glyph "e.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : Body [DivFrame 1] XH
@@ -451,7 +449,7 @@ glyph-block Letter-Latin-Lower-E : begin
 	define rhoticDf : DivFrame para.advanceScaleM 1
 	alias 'schwa.UPPH' null 'turne'
 
-	foreach { suffix { Body RevBody terminalSlab diag } } [Object.entries SchwaConfig] : do
+	foreach {suffix {Body RevBody terminalSlab diag   } } [Object.entries SchwaConfig] : do
 
 		DefineSelectorGlyph 'Schwa' suffix [DivFrame 1] 'capital'
 		DefineSelectorGlyph 'schwa' suffix [DivFrame 1] 'e'

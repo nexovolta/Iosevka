@@ -18,7 +18,6 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	define [YConnectT top bowlFloor] : mix bowlFloor (top - HalfStroke) 0.375
 	define [BowlFloor top stemBot] : Math.max stemBot : Math.max (top * 0.3) (DotSize * 1.5)
 
-	# Question-mark bodies, parameterized so letters can extend the stem to the baseline.
 	glyph-block-export QuestionSmoothShape QuestionRevSmoothShape
 	glyph-block-export QuestionCornerShape QuestionRevCornerShape
 	glyph-block-export QuestionCornerFlatShape QuestionRevCornerFlatShape
@@ -166,7 +165,6 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
 			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
 
-	# Existing letter ʔ construction — default `smooth` so the current shape is unchanged.
 	define [SmoothLetterShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
 		local adb : AdviceGlottalStopArchDepth top (+1)
@@ -211,7 +209,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothCornerHooked QuestionRevSmoothCornerHookedShape
 
 	define [CreateGlottalFamily gn marks top hook Bodies] : begin
-		foreach { suffix Impl } [Object.entries Bodies] : do
+		foreach {suffix Impl  } [Object.entries Bodies] : do
 			create-glyph "\(gn).\(suffix)" : glyph-proc
 				include : marks
 				include : Impl top 0 SB RightSB hook

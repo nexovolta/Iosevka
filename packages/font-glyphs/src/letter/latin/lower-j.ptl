@@ -105,14 +105,11 @@ glyph-block Letter-Latin-Lower-J : begin
 				DiagTail.L xMiddle Descender [DiagTail.StdDepth df Stroke] Stroke
 			set-base-anchor 'trailing' (xMiddle - [HSwToV HalfStroke]) Descender
 
-		# Crossed/curly tail (U+029D). Stem matches BentHook; the hook is CurlyTail.
 		export : define [CurlyTailBody df top xMiddle] : glyph-proc
 			local fine : AdviceStroke 3.5
 			set-base-anchor 'below' [mix (xMiddle - [HSwToV HalfStroke] - LongJut) xMiddle 0.5] Descender
 			include : JCurlyTailShape xMiddle top (df.rightSB + [HSwToV : 0.5 * fine] + JBalance)
 
-		# Keep the existing j bottom (stem + descender) and stack a casual top
-		# in the upper half of x-height, replacing the i-stem that Casual would draw.
 		export : define [WithCasualTop kind Body] : lambda [df top xMiddle] : glyph-proc
 			local yJoin : mix 0 top 0.5
 			include : difference
@@ -143,93 +140,93 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : LeaningAnchor.Above.At [mix df.middle xMiddle (7/8)]
 
 	define JBaseConfig : object
-		'bentHookSerifless'                 { JBody.BentHook                                          JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1 }
-		'bentHookShortSerifed'              { JBody.BentHook                                          JSerifs.Short        XMiddleT.BentHook           JMarks.Serifless  1 }
-		'bentHookSerifed'                   { JBody.BentHook                                          JSerifs.Long         XMiddleT.BentHook           JMarks.Serifed    1 }
-		'narrowBentHookSerifless'           { JBody.NarrowBentHook                                    JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'narrowBentHookShortSerifed'        { JBody.NarrowBentHook                                    JSerifs.Short        XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'narrowBentHookSerifed'             { JBody.NarrowBentHook                                    JSerifs.Long         XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF }
-		'diagonalTailedSerifless'           { JBody.DiagonalTailed                                    JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'diagonalTailedShortSerifed'        { JBody.DiagonalTailed                                    JSerifs.Short        XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'diagonalTailedSerifed'             { JBody.DiagonalTailed                                    JSerifs.Long         XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI }
-		'straightSerifless'                 { JBody.Straight                                          JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'straightShortSerifed'              { JBody.Straight                                          JSerifs.Short        XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'straightSerifed'                   { JBody.Straight                                          JSerifs.Long         XMiddleT.StraightSerifed    JMarks.Serifed    para.advanceScaleI }
-		'flatHookSerifless'                 { JBody.FlatHook                                          JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'cornerHookSerifless'               { JBody.CornerHook                                        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'flatHookShortSerifed'              { JBody.FlatHook                                          JSerifs.Short        XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'cornerHookShortSerifed'            { JBody.CornerHook                                        JSerifs.Short        XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'flatHookSerifed'                   { JBody.FlatHook                                          JSerifs.Long         XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI }
-		'cornerHookSerifed'                 { JBody.CornerHook                                        JSerifs.Long         XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI }
-		'bentHookReverseHooky'              { JBody.BentHook                                          JSerifs.Right        XMiddleT.BentHook           JMarks.Serifed    1 }
-		'bentHookShortReverseHooky'         { JBody.BentHook                                          JSerifs.RightShort   XMiddleT.BentHook           JMarks.Serifless  1 }
-		'bentHookCenterSerifed'             { JBody.BentHook                                          JSerifs.Center       XMiddleT.BentHook           JMarks.Serifed    1 }
-		'bentHookCenterShortSerifed'        { JBody.BentHook                                          JSerifs.CenterShort  XMiddleT.BentHook           JMarks.Serifless  1 }
-		'narrowBentHookReverseHooky'        { JBody.NarrowBentHook                                    JSerifs.Right        XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF }
-		'narrowBentHookShortReverseHooky'   { JBody.NarrowBentHook                                    JSerifs.RightShort   XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'narrowBentHookCenterSerifed'       { JBody.NarrowBentHook                                    JSerifs.Center       XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF }
-		'narrowBentHookCenterShortSerifed'  { JBody.NarrowBentHook                                    JSerifs.CenterShort  XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'diagonalTailedReverseHooky'        { JBody.DiagonalTailed                                    JSerifs.Right        XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI }
-		'diagonalTailedShortReverseHooky'   { JBody.DiagonalTailed                                    JSerifs.RightShort   XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'diagonalTailedCenterSerifed'       { JBody.DiagonalTailed                                    JSerifs.Center       XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI }
-		'diagonalTailedCenterShortSerifed'  { JBody.DiagonalTailed                                    JSerifs.CenterShort  XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'straightReverseHooky'              { JBody.Straight                                          JSerifs.Right        XMiddleT.StraightReverse    JMarks.Serifed    para.advanceScaleI }
-		'straightShortReverseHooky'         { JBody.Straight                                          JSerifs.RightShort   XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'straightCenterSerifed'             { JBody.Straight                                          JSerifs.Center       XMiddleT.StraightSerifless  JMarks.Serifed    para.advanceScaleI }
-		'straightCenterShortSerifed'        { JBody.Straight                                          JSerifs.CenterShort  XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'flatHookReverseHooky'              { JBody.FlatHook                                          JSerifs.Right        XMiddleT.FlatHookReverse    JMarks.Serifed    para.advanceScaleI }
-		'cornerHookReverseHooky'            { JBody.CornerHook                                        JSerifs.Right        XMiddleT.FlatHookReverse    JMarks.Serifed    para.advanceScaleI }
-		'flatHookShortReverseHooky'         { JBody.FlatHook                                          JSerifs.RightShort   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'cornerHookShortReverseHooky'       { JBody.CornerHook                                        JSerifs.RightShort   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'flatHookCenterSerifed'             { JBody.FlatHook                                          JSerifs.Center       XMiddleT.FlatHookSerifless  JMarks.Serifed    para.advanceScaleI }
-		'cornerHookCenterSerifed'           { JBody.CornerHook                                        JSerifs.Center       XMiddleT.FlatHookSerifless  JMarks.Serifed    para.advanceScaleI }
-		'flatHookCenterShortSerifed'        { JBody.FlatHook                                          JSerifs.CenterShort  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'cornerHookCenterShortSerifed'      { JBody.CornerHook                                        JSerifs.CenterShort  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topTailedBentHook'                 { [JBody.WithCasualTop 'tailed'    JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1 }
-		'topFlatBentHook'                   { [JBody.WithCasualTop 'flat'      JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1 }
-		'topSemiBentHook'                   { [JBody.WithCasualTop 'semi'      JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1 }
-		'topDiagBentHook'                   { [JBody.WithCasualTop 'diagonal'  JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1 }
-		'topTailedStraight'                 { [JBody.WithCasualTop 'tailed'    JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topFlatStraight'                   { [JBody.WithCasualTop 'flat'      JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topSemiStraight'                   { [JBody.WithCasualTop 'semi'      JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topDiagStraight'                   { [JBody.WithCasualTop 'diagonal'  JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topTailedFlatHook'                 { [JBody.WithCasualTop 'tailed'    JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topTailedCornerHook'               { [JBody.WithCasualTop 'tailed'    JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topFlatFlatHook'                   { [JBody.WithCasualTop 'flat'      JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topFlatCornerHook'                 { [JBody.WithCasualTop 'flat'      JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topSemiFlatHook'                   { [JBody.WithCasualTop 'semi'      JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topSemiCornerHook'                 { [JBody.WithCasualTop 'semi'      JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topDiagFlatHook'                   { [JBody.WithCasualTop 'diagonal'  JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topDiagCornerHook'                 { [JBody.WithCasualTop 'diagonal'  JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII }
-		'topTailedDiagonalTailed'           { [JBody.WithCasualTop 'tailed'    JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'topFlatDiagonalTailed'             { [JBody.WithCasualTop 'flat'      JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'topSemiDiagonalTailed'             { [JBody.WithCasualTop 'semi'      JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'topDiagDiagonalTailed'             { [JBody.WithCasualTop 'diagonal'  JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI }
-		'topTailedNarrowBentHook'           { [JBody.WithCasualTop 'tailed'    JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'topFlatNarrowBentHook'             { [JBody.WithCasualTop 'flat'      JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'topSemiNarrowBentHook'             { [JBody.WithCasualTop 'semi'      JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
-		'topDiagNarrowBentHook'             { [JBody.WithCasualTop 'diagonal'  JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF }
+		'bentHookSerifless'                 {JBody.BentHook                                          JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1  }
+		'bentHookShortSerifed'              {JBody.BentHook                                          JSerifs.Short        XMiddleT.BentHook           JMarks.Serifless  1  }
+		'bentHookSerifed'                   {JBody.BentHook                                          JSerifs.Long         XMiddleT.BentHook           JMarks.Serifed    1  }
+		'narrowBentHookSerifless'           {JBody.NarrowBentHook                                    JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'narrowBentHookShortSerifed'        {JBody.NarrowBentHook                                    JSerifs.Short        XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'narrowBentHookSerifed'             {JBody.NarrowBentHook                                    JSerifs.Long         XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF  }
+		'diagonalTailedSerifless'           {JBody.DiagonalTailed                                    JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'diagonalTailedShortSerifed'        {JBody.DiagonalTailed                                    JSerifs.Short        XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'diagonalTailedSerifed'             {JBody.DiagonalTailed                                    JSerifs.Long         XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI  }
+		'straightSerifless'                 {JBody.Straight                                          JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'straightShortSerifed'              {JBody.Straight                                          JSerifs.Short        XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'straightSerifed'                   {JBody.Straight                                          JSerifs.Long         XMiddleT.StraightSerifed    JMarks.Serifed    para.advanceScaleI  }
+		'flatHookSerifless'                 {JBody.FlatHook                                          JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'cornerHookSerifless'               {JBody.CornerHook                                        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'flatHookShortSerifed'              {JBody.FlatHook                                          JSerifs.Short        XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'cornerHookShortSerifed'            {JBody.CornerHook                                        JSerifs.Short        XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'flatHookSerifed'                   {JBody.FlatHook                                          JSerifs.Long         XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookSerifed'                 {JBody.CornerHook                                        JSerifs.Long         XMiddleT.FlatHookSerifed    JMarks.Serifed    para.advanceScaleI  }
+		'bentHookReverseHooky'              {JBody.BentHook                                          JSerifs.Right        XMiddleT.BentHook           JMarks.Serifed    1  }
+		'bentHookShortReverseHooky'         {JBody.BentHook                                          JSerifs.RightShort   XMiddleT.BentHook           JMarks.Serifless  1  }
+		'bentHookCenterSerifed'             {JBody.BentHook                                          JSerifs.Center       XMiddleT.BentHook           JMarks.Serifed    1  }
+		'bentHookCenterShortSerifed'        {JBody.BentHook                                          JSerifs.CenterShort  XMiddleT.BentHook           JMarks.Serifless  1  }
+		'narrowBentHookReverseHooky'        {JBody.NarrowBentHook                                    JSerifs.Right        XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF  }
+		'narrowBentHookShortReverseHooky'   {JBody.NarrowBentHook                                    JSerifs.RightShort   XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'narrowBentHookCenterSerifed'       {JBody.NarrowBentHook                                    JSerifs.Center       XMiddleT.NarrowBentHook     JMarks.Serifed    para.advanceScaleF  }
+		'narrowBentHookCenterShortSerifed'  {JBody.NarrowBentHook                                    JSerifs.CenterShort  XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'diagonalTailedReverseHooky'        {JBody.DiagonalTailed                                    JSerifs.Right        XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI  }
+		'diagonalTailedShortReverseHooky'   {JBody.DiagonalTailed                                    JSerifs.RightShort   XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'diagonalTailedCenterSerifed'       {JBody.DiagonalTailed                                    JSerifs.Center       XMiddleT.DiagonalTailed     JMarks.Serifed    para.advanceScaleI  }
+		'diagonalTailedCenterShortSerifed'  {JBody.DiagonalTailed                                    JSerifs.CenterShort  XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'straightReverseHooky'              {JBody.Straight                                          JSerifs.Right        XMiddleT.StraightReverse    JMarks.Serifed    para.advanceScaleI  }
+		'straightShortReverseHooky'         {JBody.Straight                                          JSerifs.RightShort   XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'straightCenterSerifed'             {JBody.Straight                                          JSerifs.Center       XMiddleT.StraightSerifless  JMarks.Serifed    para.advanceScaleI  }
+		'straightCenterShortSerifed'        {JBody.Straight                                          JSerifs.CenterShort  XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'flatHookReverseHooky'              {JBody.FlatHook                                          JSerifs.Right        XMiddleT.FlatHookReverse    JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookReverseHooky'            {JBody.CornerHook                                        JSerifs.Right        XMiddleT.FlatHookReverse    JMarks.Serifed    para.advanceScaleI  }
+		'flatHookShortReverseHooky'         {JBody.FlatHook                                          JSerifs.RightShort   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'cornerHookShortReverseHooky'       {JBody.CornerHook                                        JSerifs.RightShort   XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'flatHookCenterSerifed'             {JBody.FlatHook                                          JSerifs.Center       XMiddleT.FlatHookSerifless  JMarks.Serifed    para.advanceScaleI  }
+		'cornerHookCenterSerifed'           {JBody.CornerHook                                        JSerifs.Center       XMiddleT.FlatHookSerifless  JMarks.Serifed    para.advanceScaleI  }
+		'flatHookCenterShortSerifed'        {JBody.FlatHook                                          JSerifs.CenterShort  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'cornerHookCenterShortSerifed'      {JBody.CornerHook                                        JSerifs.CenterShort  XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topTailedBentHook'                 {[JBody.WithCasualTop 'tailed'    JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1  }
+		'topFlatBentHook'                   {[JBody.WithCasualTop 'flat'      JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1  }
+		'topSemiBentHook'                   {[JBody.WithCasualTop 'semi'      JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1  }
+		'topDiagBentHook'                   {[JBody.WithCasualTop 'diagonal'  JBody.BentHook]        JSerifs.None         XMiddleT.BentHook           JMarks.Serifless  1  }
+		'topTailedStraight'                 {[JBody.WithCasualTop 'tailed'    JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topFlatStraight'                   {[JBody.WithCasualTop 'flat'      JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topSemiStraight'                   {[JBody.WithCasualTop 'semi'      JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topDiagStraight'                   {[JBody.WithCasualTop 'diagonal'  JBody.Straight]        JSerifs.None         XMiddleT.StraightSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topTailedFlatHook'                 {[JBody.WithCasualTop 'tailed'    JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topTailedCornerHook'               {[JBody.WithCasualTop 'tailed'    JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topFlatFlatHook'                   {[JBody.WithCasualTop 'flat'      JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topFlatCornerHook'                 {[JBody.WithCasualTop 'flat'      JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topSemiFlatHook'                   {[JBody.WithCasualTop 'semi'      JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topSemiCornerHook'                 {[JBody.WithCasualTop 'semi'      JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topDiagFlatHook'                   {[JBody.WithCasualTop 'diagonal'  JBody.FlatHook]        JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topDiagCornerHook'                 {[JBody.WithCasualTop 'diagonal'  JBody.CornerHook]      JSerifs.None         XMiddleT.FlatHookSerifless  JMarks.Serifless  para.advanceScaleII  }
+		'topTailedDiagonalTailed'           {[JBody.WithCasualTop 'tailed'    JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'topFlatDiagonalTailed'             {[JBody.WithCasualTop 'flat'      JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'topSemiDiagonalTailed'             {[JBody.WithCasualTop 'semi'      JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'topDiagDiagonalTailed'             {[JBody.WithCasualTop 'diagonal'  JBody.DiagonalTailed]  JSerifs.None         XMiddleT.DiagonalTailed     JMarks.Serifless  para.advanceScaleI  }
+		'topTailedNarrowBentHook'           {[JBody.WithCasualTop 'tailed'    JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'topFlatNarrowBentHook'             {[JBody.WithCasualTop 'flat'      JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'topSemiNarrowBentHook'             {[JBody.WithCasualTop 'semi'      JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
+		'topDiagNarrowBentHook'             {[JBody.WithCasualTop 'diagonal'  JBody.NarrowBentHook]  JSerifs.None         XMiddleT.NarrowBentHook     JMarks.Serifless  para.advanceScaleF  }
 
 	define JTopStageConfig : object
-		'topSerifless'           { JSerifs.None         nothing     'none'    false }
-		'topHooky'               { JSerifs.Long         nothing     'left'    true }
-		'topHookyShort'          { JSerifs.Short        nothing     'left'    false }
-		'topReverseHooky'        { JSerifs.Right        nothing     'right'   true }
-		'topReverseHookyShort'   { JSerifs.RightShort   nothing     'right'   false }
-		'topCenterSerifed'       { JSerifs.Center       nothing     'center'  true }
-		'topCenterShortSerifed'  { JSerifs.CenterShort  nothing     'center'  false }
-		'topTailed'              { JSerifs.None         'tailed'    'none'    false }
-		'topFlatTailed'          { JSerifs.None         'flat'      'none'    false }
-		'topSemiTailed'          { JSerifs.None         'semi'      'none'    false }
-		'topDiagonalTailed'      { JSerifs.None         'diagonal'  'none'    false }
+		'topSerifless'           {JSerifs.None         nothing     'none'    false  }
+		'topHooky'               {JSerifs.Long         nothing     'left'    true  }
+		'topHookyShort'          {JSerifs.Short        nothing     'left'    false  }
+		'topReverseHooky'        {JSerifs.Right        nothing     'right'   true  }
+		'topReverseHookyShort'   {JSerifs.RightShort   nothing     'right'   false  }
+		'topCenterSerifed'       {JSerifs.Center       nothing     'center'  true  }
+		'topCenterShortSerifed'  {JSerifs.CenterShort  nothing     'center'  false  }
+		'topTailed'              {JSerifs.None         'tailed'    'none'    false  }
+		'topFlatTailed'          {JSerifs.None         'flat'      'none'    false  }
+		'topSemiTailed'          {JSerifs.None         'semi'      'none'    false  }
+		'topDiagonalTailed'      {JSerifs.None         'diagonal'  'none'    false  }
 
 	define JBottomStageConfig : object
-		'BottomBentHook'        { JBody.BentHook        XMiddleT.BentHook           1 }
-		'BottomStraight'        { JBody.Straight        XMiddleT.StraightSerifless  para.advanceScaleII }
-		'BottomFlatHook'        { JBody.FlatHook        XMiddleT.FlatHookSerifless  para.advanceScaleII }
-		'BottomCornerHook'      { JBody.CornerHook      XMiddleT.FlatHookSerifless  para.advanceScaleII }
-		'BottomDiagonalTailed'  { JBody.DiagonalTailed  XMiddleT.DiagonalTailed     para.advanceScaleI }
-		'BottomNarrowBentHook'  { JBody.NarrowBentHook  XMiddleT.NarrowBentHook     para.advanceScaleF }
+		'BottomBentHook'        {JBody.BentHook        XMiddleT.BentHook           1  }
+		'BottomStraight'        {JBody.Straight        XMiddleT.StraightSerifless  para.advanceScaleII  }
+		'BottomFlatHook'        {JBody.FlatHook        XMiddleT.FlatHookSerifless  para.advanceScaleII  }
+		'BottomCornerHook'      {JBody.CornerHook      XMiddleT.FlatHookSerifless  para.advanceScaleII  }
+		'BottomDiagonalTailed'  {JBody.DiagonalTailed  XMiddleT.DiagonalTailed     para.advanceScaleI  }
+		'BottomNarrowBentHook'  {JBody.NarrowBentHook  XMiddleT.NarrowBentHook     para.advanceScaleF  }
 
 	define [JStageXMiddle bottomName defaultXMiddleT topPosition topHasLongSerif] : begin
 		if (bottomName === 'BottomStraight') : begin
@@ -241,35 +238,35 @@ glyph-block Letter-Latin-Lower-J : begin
 		return defaultXMiddleT
 
 	define [JStageVariantConfig top bottomName bottom] : begin
-		local { topSerifs topTail topPosition topHasLongSerif } top
-		local { bottomBody defaultXMiddleT adws } bottom
+		local {topSerifs topTail topPosition topHasLongSerif  } top
+		local {bottomBody defaultXMiddleT adws  } bottom
 		local Body : if topTail [JBody.WithCasualTop topTail bottomBody] bottomBody
 		local Marks : if topHasLongSerif JMarks.Serifed JMarks.Serifless
 		local xMiddleT : JStageXMiddle bottomName defaultXMiddleT topPosition topHasLongSerif
 		local wideSerif : topHasLongSerif && (bottomName === 'BottomStraight' || bottomName === 'BottomFlatHook' || bottomName === 'BottomCornerHook')
 		local advanceScale : if wideSerif para.advanceScaleI adws
-		return { Body topSerifs xMiddleT Marks advanceScale }
+		return {Body topSerifs xMiddleT Marks advanceScale  }
 
 	define [JStageConfig] : Object.fromEntries : [Object.entries JTopStageConfig].flatMap : lambda [top]
 		[Object.entries JBottomStageConfig].map : lambda [bottom] : begin
-			return { "\(top.0)\(bottom.0)" [JStageVariantConfig top.1 bottom.0 bottom.1] }
+			return {"\(top.0)\(bottom.0)" [JStageVariantConfig top.1 bottom.0 bottom.1]  }
 
 	define JConfig : Object.assign JBaseConfig [JStageConfig]
 
 	define JCurlyTailConfig : object
-		'bentHookSerifless'     { JBody.CurlyTailBody                                    JSerifs.None         JMarks.Serifless }
-		'bentHookSerifed'       { JBody.CurlyTailBody                                    JSerifs.Long         JMarks.Serifless }
-		'bentHookShortSerifed'  { JBody.CurlyTailBody                                    JSerifs.Short        JMarks.Serifless }
-		'reverseHooky'          { JBody.CurlyTailBody                                    JSerifs.Right        JMarks.Serifless }
-		'reverseHookyShort'     { JBody.CurlyTailBody                                    JSerifs.RightShort   JMarks.Serifless }
-		'centerSerifed'         { JBody.CurlyTailBody                                    JSerifs.Center       JMarks.Serifless }
-		'centerShortSerifed'    { JBody.CurlyTailBody                                    JSerifs.CenterShort  JMarks.Serifless }
-		'topTailed'             { [JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless }
-		'topFlat'               { [JBody.WithCasualTop 'flat'      JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless }
-		'topSemi'               { [JBody.WithCasualTop 'semi'      JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless }
-		'topDiag'               { [JBody.WithCasualTop 'diagonal'  JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless }
+		'bentHookSerifless'     {JBody.CurlyTailBody                                    JSerifs.None         JMarks.Serifless  }
+		'bentHookSerifed'       {JBody.CurlyTailBody                                    JSerifs.Long         JMarks.Serifless  }
+		'bentHookShortSerifed'  {JBody.CurlyTailBody                                    JSerifs.Short        JMarks.Serifless  }
+		'reverseHooky'          {JBody.CurlyTailBody                                    JSerifs.Right        JMarks.Serifless  }
+		'reverseHookyShort'     {JBody.CurlyTailBody                                    JSerifs.RightShort   JMarks.Serifless  }
+		'centerSerifed'         {JBody.CurlyTailBody                                    JSerifs.Center       JMarks.Serifless  }
+		'centerShortSerifed'    {JBody.CurlyTailBody                                    JSerifs.CenterShort  JMarks.Serifless  }
+		'topTailed'             {[JBody.WithCasualTop 'tailed'    JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless  }
+		'topFlat'               {[JBody.WithCasualTop 'flat'      JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless  }
+		'topSemi'               {[JBody.WithCasualTop 'semi'      JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless  }
+		'topDiag'               {[JBody.WithCasualTop 'diagonal'  JBody.CurlyTailBody]  JSerifs.None         JMarks.Serifless  }
 
-	foreach { suffix { Body Serifs xMiddleT Marks adws } } [Object.entries JConfig] : do
+	foreach {suffix {Body Serifs xMiddleT Marks adws   } } [Object.entries JConfig] : do
 		local df : DivFrame adws
 		local xMiddle : xMiddleT df
 
@@ -286,7 +283,7 @@ glyph-block Letter-Latin-Lower-J : begin
 			include : LetterBarOverlay.m currentGlyph.baseAnchors.overlay.x (XH / 2) (space -- {0  df.width})
 			include : CenterInkInFrame df
 
-	foreach { suffix _ } [Object.entries JConfig] : do
+	foreach {suffix _  } [Object.entries JConfig] : do
 		local key : suffix.toLowerCase
 		local bottom ''
 		if [key.includes 'diagonaltailed'] : set bottom 'BottomDiagonalTailed'
@@ -316,7 +313,7 @@ glyph-block Letter-Latin-Lower-J : begin
 	alias 'grek/yot' 0x3F3 'j'
 	alias 'cyrl/je'  0x458 'j'
 
-	foreach { suffix { Body Serifs Marks } } [Object.entries JCurlyTailConfig] : do
+	foreach {suffix {Body Serifs Marks   } } [Object.entries JCurlyTailConfig] : do
 		local df : DivFrame 1
 		local xMiddle : XMiddleT.BentHook df
 		create-glyph "dotlessjCurlyTail.\(suffix)" : glyph-proc

@@ -69,8 +69,6 @@ glyph-block Letter-Latin-Insular-G : begin
 	CreateTurnedLetter 'turnGInsular' 0xA77E 'GInsular' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'turngInsular' 0xA77F 'gInsular' HalfAdvance [mix Descender XH 0.5]
 
-	# After invert, italic skew leaves the S visually off the bar; shift it
-	# in gizmo space so its bounds sit on Middle.
 	define [CenterSigmoidItalic] : glyph-proc
 		local xMin 0x7fffffff
 		local xMax : 0 - 0x7fffffff
@@ -92,7 +90,6 @@ glyph-block Letter-Latin-Insular-G : begin
 		local xShift : xTarget - xMid
 		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
 
-	# Closed insular G: T-bar over an inverted sigmoid S.
 	define [ClosedInsularGShape top bot styBot] : glyph-proc
 		local yCut : top - HalfStroke
 		local barPad : 6 / 100 * (RightSB - SB)
@@ -105,7 +102,7 @@ glyph-block Letter-Latin-Insular-G : begin
 				if para.isItalic : include : CenterSigmoidItalic
 			MaskBelow yCut
 
-	foreach { suffix { _ styBot } } [Object.entries SConfig] : do
+	foreach {suffix {_ styBot   } } [Object.entries SConfig] : do
 		create-glyph "GInsularClosed.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : ClosedInsularGShape CAP 0 styBot
