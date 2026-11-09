@@ -15,13 +15,13 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
 	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull VExtendedRtInner VExtendedLtFull
 
-	define SLAB-NONE             { false false false false }
-	define SLAB-AUTO             { SLAB  SLAB  false false }
-	define SLAB-ALL              { true  true  false false }
-	define SLAB-MOTION           { false false true  false }
-	define SLAB-TOP-RIGHT-MOTION { false false false true  }
-	define SLAB-BILATERAL-MOTION { false false true  true  }
-	define SLAB-CURSIVE-MOTION   { true  true  true  false }
+	define SLAB-NONE             {false false false false}
+	define SLAB-AUTO             {SLAB  SLAB  false false}
+	define SLAB-ALL              {true  true  false false}
+	define SLAB-MOTION           {false false true  false}
+	define SLAB-TOP-RIGHT-MOTION {false false false true}
+	define SLAB-BILATERAL-MOTION {false false true  true}
+	define SLAB-CURSIVE-MOTION   {true  true  true  false}
 
 	define TS-NONE       0
 	define TS-HOOK-RIGHT 1
@@ -41,7 +41,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 
 	glyph-block-export NonCursiveYShapeT NonCursiveYConfig
 	define [NonCursiveYShapeT straightBar bottomShape slabKind _l _r _sb _sw] : namespace
-		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+		local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
 
 		local l : fallback _l 0
 		local r : fallback _r Width
@@ -340,7 +340,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 		include : Regizmo
 
 	define [SquareTopYShape slabKind bottomShape top bot] : glyph-proc
-		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+		local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
 		local yVertex : if (bot < 0) 0 : mix bot top 0.4
 		# Centered stroke on `bot` would hang half a stroke below the metric.
 		local yHook : bot + HalfStroke
@@ -424,9 +424,9 @@ glyph-block Letter-Latin-Lower-Y : begin
 
 	define NonCursiveYConfig : SuffixCfg.weave
 		object # body
-			straight      { true  false }
-			curly         { false false }
-			squareTop     { true  true  }
+			straight  {true   false}
+			curly     {false  false}
+			squareTop {true   true }
 		object # hook
 			''            BS-STRAIGHT
 			turn          BS-TURN
@@ -439,7 +439,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			topRightMotionSerifed  SLAB-TOP-RIGHT-MOTION
 			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
-	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
+	foreach {suffix {{straightBar fSquareTop} bottomShape slabKind}} [Object.entries NonCursiveYConfig] : do
 		define Shapes : NonCursiveYShapeT straightBar bottomShape slabKind
 
 		create-glyph "y.\(suffix)" : glyph-proc
@@ -519,7 +519,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 		squareTopMotionSerifed SLAB-MOTION
 		squareTopSerifed       SLAB-ALL
 
-	foreach { suffix slabKind } [Object.entries UeSquareConfig] : do
+	foreach {suffix slabKind} [Object.entries UeSquareConfig] : do
 		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : SquareTopYShape slabKind BS-STRAIGHT XH Descender
@@ -577,7 +577,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				CornerHookEnd xTerminal bottom [CornerHookDepth hd.y Stroke] Stroke (-1) 1
 
 		export : define [Serifs top slabKind] : glyph-proc
-			local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+			local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
 			local sf : SerifFrame.fromDf [DivFrame 1] top 0
 			if doSlabTop : begin
 				include sf.lt.outer
@@ -592,9 +592,9 @@ glyph-block Letter-Latin-Lower-Y : begin
 			''        false
 			flatHump  true
 		object # hook
-			''        { CursiveYShape.Hook     SHook }
-			flatHook  { CursiveYShape.FlatHook 0     }
-			cornerHook { CursiveYShape.CornerHook 0   }
+			''         {CursiveYShape.Hook        SHook}
+			flatHook   {CursiveYShape.FlatHook    0    }
+			cornerHook {CursiveYShape.CornerHook  0    }
 		object # serifs
 			serifless              SLAB-NONE
 			serifed                SLAB-ALL
@@ -602,7 +602,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			topRightMotionSerifed  SLAB-TOP-RIGHT-MOTION
 			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
-	foreach { suffix { _ fFlatHump { hookShape hookEnd } slabKind } } [Object.entries CursiveYConfig] : do
+	foreach {suffix {_ fFlatHump {hookShape hookEnd} slabKind}} [Object.entries CursiveYConfig] : do
 		create-glyph "y.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
@@ -648,7 +648,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 				x     -- RightSB
 				top   -- 0
 				bot   -- (Descender + Stroke)
-				space -- { [if hookEnd (SB + [HSwToV Stroke]) 0] Width }
+				space -- {[if hookEnd (SB + [HSwToV Stroke]) 0] Width}
 
 		if (slabKind === SLAB-NONE) : begin
 			create-glyph "grek/lambda.\(suffix)" : glyph-proc
@@ -700,7 +700,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 		include : FlipAround Middle (XH / 2)
 		include : BeltOverlay.at Middle XH
 
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "yDotBelow/dotBelow.\(suffix)" : glyph-proc
 			set-mark-anchor 'yBelowDot' 0 0 0 belowMarkStack
 			include : DrawAt 0 (-AccentStackOffset) (DotRadius * kdr)

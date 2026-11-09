@@ -141,10 +141,10 @@ glyph-block Letter-Latin-Upper-G : begin
 
 	define GConfig : SuffixCfg.weave
 		object # body
-			toothed          { BODY-TOOTHED           0              }
-			flatBottom       { BODY-TOOTHLESS-CORNER  0              }
-			toothlessCorner  { BODY-TOOTHLESS-CORNER  DToothlessRise }
-			toothlessRounded { BODY-TOOTHLESS-ROUNDED ArchDepthA     }
+			toothed          {BODY-TOOTHED            0             }
+			flatBottom       {BODY-TOOTHLESS-CORNER   0             }
+			toothlessCorner  {BODY-TOOTHLESS-CORNER   DToothlessRise}
+			toothlessRounded {BODY-TOOTHLESS-ROUNDED  ArchDepthA    }
 		object # slab
 			serifless        SLAB-NONE
 			flatHook         SLAB-FLAT-HOOK
@@ -160,7 +160,7 @@ glyph-block Letter-Latin-Upper-G : begin
 			diagonalCrossbarCapped        CROSSBAR-DIAG-CAPPED
 			diagonalCrossbarFallingCapped CROSSBAR-DIAG-CAPPED-F
 
-	foreach { suffix { { bodyType rise } slabType crossbarType } } [Object.entries GConfig] : begin
+	foreach {suffix {{bodyType rise} slabType crossbarType}} [Object.entries GConfig] : begin
 		create-glyph "G.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : GShape CAP bodyType crossbarType slabType rise
@@ -182,7 +182,7 @@ glyph-block Letter-Latin-Upper-G : begin
 				x     -- RightSB
 				bot   -- Stroke
 				top   -- ([mix 0 CAP GBarPos] - [boolePn crossbarType] * HalfStroke)
-				space -- { (SB + [HSwToV Stroke]) Width }
+				space -- {(SB + [HSwToV Stroke]) Width}
 
 	select-variant 'G' 'G'
 	link-reduced-variant 'G/sansSerif' 'G' MathSansSerif
@@ -199,13 +199,13 @@ glyph-block Letter-Latin-Upper-G : begin
 		glyph-block-import Letter-Shared-Shapes : SerifFrame
 
 		define Config : object
-			serifless               { SLAB-NONE      }
-			topFlatHook             { SLAB-FLAT-HOOK }
-			topCornerHook           { SLAB-CORNER-HOOK }
-			unilateralSerifed       { SLAB-CLASSICAL }
-			unilateralInwardSerifed { SLAB-INWARD    }
+			serifless               {SLAB-NONE       }
+			topFlatHook             {SLAB-FLAT-HOOK  }
+			topCornerHook           {SLAB-CORNER-HOOK}
+			unilateralSerifed       {SLAB-CLASSICAL  }
+			unilateralInwardSerifed {SLAB-INWARD     }
 
-		foreach { suffix { slabType } } [Object.entries Config] : begin
+		foreach {suffix {slabType}} [Object.entries Config] : begin
 			create-glyph "cyrl/SjeKomi.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				include : GShape CAP BODY-TOOTHLESS-ROUNDED CROSSBAR-NONE slabType ArchDepthA

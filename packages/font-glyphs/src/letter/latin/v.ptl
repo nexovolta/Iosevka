@@ -318,9 +318,9 @@ glyph-block Letter-Latin-V : begin
 
 	define VStandardConfig : SuffixCfg.weave
 		object # body
-			straight              { true  0 }
-			curly                 { false 0 }
-			squareTop             { true  1 }
+			straight  {true   0}
+			curly     {false  0}
+			squareTop {true   1}
 		object # serifs
 			''                    VAutoSerifs
 			serifless             no-shape
@@ -329,7 +329,7 @@ glyph-block Letter-Latin-V : begin
 			bilateralMotionSerifed VBilateralMotionSerifs
 			serifed               VSerifs
 
-	foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries VStandardConfig] : do
+	foreach {suffix {{fStraightBar fSquareTop} Serifs}} [Object.entries VStandardConfig] : do
 		local fSerifStraight : if fSquareTop 0 fStraightBar
 		create-glyph "V.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -432,10 +432,10 @@ glyph-block Letter-Latin-V : begin
 	set VCursiveShape.xBarPos : function [k] : mix SB RightSB k
 
 	define VCursiveConfig : object
-		cursiveSerifless  { (1/24)  false }
-		cursiveSerifed    { (1/16)  true }
+		cursiveSerifless {(1/24)  false}
+		cursiveSerifed   {(1/16)  true }
 
-	foreach { suffix { pxBar fDoSerif } } [Object.entries VCursiveConfig] : do
+	foreach {suffix {pxBar fDoSerif}} [Object.entries VCursiveConfig] : do
 		create-glyph "v.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : VCursiveShape pxBar XH Stroke

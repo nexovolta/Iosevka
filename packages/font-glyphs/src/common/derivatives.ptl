@@ -67,7 +67,7 @@ glyph-block Common-Derivatives : begin
 				if variant.nonDeriving : variant.setPreventDeriving g
 
 	glyph-block-export select-multi-dimensional-variant
-	define [select-multi-dimensional-variant] : with-params [name unicode [shapeFrom name] [follows { name }]] : begin
+	define [select-multi-dimensional-variant] : with-params [name unicode [shapeFrom name] [follows {name}]] : begin
 		if [not : glyph-is-needed name] : return nothing
 
 		local atlases {}
@@ -101,7 +101,7 @@ glyph-block Common-Derivatives : begin
 
 			g.addVariantForRecursiveBuild fromGlyph
 
-			if para.enableCvSs : foreach { i atlas } [atlases.entries] : begin
+			if para.enableCvSs : foreach {i atlas} [atlases.entries] : begin
 				foreach cv [items-of atlas.allVariants] : begin
 					local alterProduct : product.alter i cv
 					local dstName : shapeFrom + '.' + alterProduct.combinedSuffix
@@ -131,9 +131,9 @@ glyph-block Common-Derivatives : begin
 			return : this.variants.map (v => v.suffix) :.join '.'
 
 	define [cartesianProductOfAtlases atlases] : begin
-		if (atlases.length === 0) : return { [new CVariantProduct {}] }
+		if (atlases.length === 0) : return {[new CVariantProduct {}]}
 
-		local { firstAtlas :: restAtlases } atlases
+		local {firstAtlas :: restAtlases} atlases
 		local restProduct : cartesianProductOfAtlases restAtlases
 
 		local product {}
@@ -145,9 +145,9 @@ glyph-block Common-Derivatives : begin
 
 	define [produceAlternationsOfProduct atlases product] : begin
 		local alternations {}
-		foreach { i atlas } [atlases.entries] : begin
+		foreach {i atlas} [atlases.entries] : begin
 			foreach cv [items-of atlas.allVariants] : begin
-				alternations.push { i cv }
+				alternations.push {i cv}
 		return alternations
 
 	define CvAtlasQueryCache : new Map
@@ -164,7 +164,7 @@ glyph-block Common-Derivatives : begin
 			allVariants         {}
 
 		foreach selector [items-of allSelectors]
-			foreach { kPrime prime } para.variants.primes
+			foreach {kPrime prime} para.variants.primes
 				foreach variant [prime.variants.values] : begin
 					local suffix : variant.resolveFor para selector
 					local isPrimary : selector === primarySelector
@@ -183,7 +183,7 @@ glyph-block Common-Derivatives : begin
 		if ([typeof selector] === 'string') : return selector
 		return : selector.resolveMain
 	define [resolveAllSelectors selector] : begin
-		if ([typeof selector] === 'string') : return { selector }
+		if ([typeof selector] === 'string') : return {selector}
 		return : selector.resolveAll
 
 	glyph-block-export conditional-follow
@@ -195,7 +195,7 @@ glyph-block Common-Derivatives : begin
 			set this.f1 f1
 			set this.f2 f2
 		public [resolveMain] : return : if this.c this.f1 this.f2
-		public [resolveAll] : return { this.f1 this.f2 }
+		public [resolveAll] : return {this.f1 this.f2}
 
 	###############################################################################################
 	###### Variant-selection reductions, used in math letters
@@ -227,7 +227,7 @@ glyph-block Common-Derivatives : begin
 		local mesh : getGrMesh gnSources Query query-glyph
 
 		# Build related derivatives
-		foreach { gr from to } [items-of mesh] : begin
+		foreach {gr from to} [items-of mesh] : begin
 			local key : keyOfGnList to
 			if [not : linksGnMap.has key] : begin
 				local gnDerivedTo : Fn to gr from
@@ -237,7 +237,7 @@ glyph-block Common-Derivatives : begin
 				if (gSource && gDerivedTo) : gSource.addVariantForRecursiveBuild gDerivedTo
 
 		# Link related derivatives
-		foreach { gr from to } [items-of mesh] : begin
+		foreach {gr from to} [items-of mesh] : begin
 			local gndFrom : linksGnMap.get [keyOfGnList from]
 			local gndTo   : linksGnMap.get [keyOfGnList to]
 			if (gndFrom && gndTo && [query-glyph gndFrom] && [query-glyph gndTo]) : begin
@@ -251,7 +251,7 @@ glyph-block Common-Derivatives : begin
 	define [derive-glyphs dstGid dstUnicode srcGid Fn] : begin
 		if [not : glyph-is-needed dstGid] : return nothing
 
-		DeriveMeshT { srcGid } AnyDerivingCv : function [gns gr] : begin
+		DeriveMeshT {srcGid} AnyDerivingCv : function [gns gr] : begin
 			local gn gns.0
 			local gnDst : if [not gr] dstGid "\(dstGid)/derive{\(gn)}"
 			local unicodeDst : if [not gr] dstUnicode null

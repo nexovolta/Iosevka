@@ -56,7 +56,7 @@ glyph-block Letter-Greek-Pi : begin
 		motionSerifed SERIF-MOTION
 		serifed       SERIF-ALL
 
-	foreach { suffix serifType } [Object.entries PeConfig] : do
+	foreach {suffix serifType} [Object.entries PeConfig] : do
 		create-glyph "grek/Pi.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : PiShape [DivFrame 1] CAP 0 (shrinkRate -- 0) (serifType -- serifType)
@@ -69,7 +69,7 @@ glyph-block Letter-Greek-Pi : begin
 	select-variant 'grek/smcpPi' 0x1D28 (follow -- 'grek/Pi')
 	CreateTurnedLetter 'amalg' 0x2A3F 'grek/Pi' HalfAdvance (CAP / 2)
 
-	foreach { suffix serifType } [Object.entries PeConfig] : do
+	foreach {suffix serifType} [Object.entries PeConfig] : do
 		create-glyph "cyrl/Pe.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : PiShape [DivFrame 1] CAP 0 (shrinkRate -- 0) (serifType -- serifType)
@@ -88,14 +88,14 @@ glyph-block Letter-Greek-Pi : begin
 
 	define SmallPiConfig : SuffixCfg.weave
 		object # body
-			''             { SmallPiShrink false }
-			smallCapital   { 0             SLAB  }
+			''           {SmallPiShrink  false}
+			smallCapital {0              SLAB }
 		object # tail
 			tailless         TERMINAL-STRAIGHT
 			tailed           TERMINAL-TAILED
 			diagonalTailed   TERMINAL-DIAGONAL
 
-	foreach { suffix { { shrink slab } tail } } [pairs-of SmallPiConfig] : do
+	foreach {suffix {{shrink slab} tail}} [pairs-of SmallPiConfig] : do
 		create-glyph "grek/pi.\(suffix)" : glyph-proc
 			define df : include : DivFrame 1
 			include : df.markSet.e
@@ -118,7 +118,7 @@ glyph-block Letter-Greek-Pi : begin
 					composite-proc sf.lt.outer sf.rt.outer sf.lb.full  sf.rb.full
 					composite-proc sf.lt.outer sf.rt.outer sf.lb.outer sf.rb.outer
 
-	foreach { suffix serifType } [Object.entries PeConfig] : do
+	foreach {suffix serifType} [Object.entries PeConfig] : do
 		create-glyph "cyrl/PeMidHook.\(suffix)" : glyph-proc
 			define df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capDesc

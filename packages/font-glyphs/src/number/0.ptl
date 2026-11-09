@@ -125,31 +125,31 @@ glyph-block Digits-Zero : begin
 			'oval'    Oval
 			'diamond' Diamond
 		object # overlay/cutout
-			'unslashed'                    { null                 null       }
-			'slashed'                      { ZeroSlash            null       }
-			'reverseSlashed'               { ZeroRevSlash         null       }
-			'tallSlashed'                  { ZeroTallSlash        null       }
-			'tallReverseSlashed'           { ZeroTallRevSlash     null       }
-			'dotted'                       { ZeroDotShape         null       }
-			'longDotted'                   { ZeroLongDotShape     null       }
-			'slashedSplit'                 { ZeroSlash            InsetShape }
-			'reverseSlashedSplit'          { ZeroRevSlash         InsetShape }
-			'brokenSlash'                  { BrokenTallSlash      null       }
-			'brokenReverseSlash'           { BrokenTallRevSlash   null       }
-			'brokenVerticalBar'            { BrokenVerticalBar    null       }
-			'slashedCutout'                { CutoutSlash          Cutout     }
-			'reverseSlashedCutout'         { CutoutRevSlash       Cutout     }
-			'tallSlashedCutout'            { CutoutTallSlash      Cutout     }
-			'tallReverseSlashedCutout'     { CutoutTallRevSlash   Cutout     }
-			'verticalBarCutout'            { CutoutVerticalBar    Cutout     }
-			'topRightCutout'               { TopRightCutoutSlash  Cutout     }
+			'unslashed'                {null                 null      }
+			'slashed'                  {ZeroSlash            null      }
+			'reverseSlashed'           {ZeroRevSlash         null      }
+			'tallSlashed'              {ZeroTallSlash        null      }
+			'tallReverseSlashed'       {ZeroTallRevSlash     null      }
+			'dotted'                   {ZeroDotShape         null      }
+			'longDotted'               {ZeroLongDotShape     null      }
+			'slashedSplit'             {ZeroSlash            InsetShape}
+			'reverseSlashedSplit'      {ZeroRevSlash         InsetShape}
+			'brokenSlash'              {BrokenTallSlash      null      }
+			'brokenReverseSlash'       {BrokenTallRevSlash   null      }
+			'brokenVerticalBar'        {BrokenVerticalBar    null      }
+			'slashedCutout'            {CutoutSlash          Cutout    }
+			'reverseSlashedCutout'     {CutoutRevSlash       Cutout    }
+			'tallSlashedCutout'        {CutoutTallSlash      Cutout    }
+			'tallReverseSlashedCutout' {CutoutTallRevSlash   Cutout    }
+			'verticalBarCutout'        {CutoutVerticalBar    Cutout    }
+			'topRightCutout'           {TopRightCutoutSlash  Cutout    }
 
 	define Heights : object
-		'lnum' { CAP        [function [] : MarkSet.capital] }
-		'onum' { OnumHeight [function [] : OnumMarks.e]     }
+		'lnum' {CAP         [function [] : MarkSet.capital]}
+		'onum' {OnumHeight  [function [] : OnumMarks.e]    }
 
-	foreach { suffix { Outline {Overlay Postproc} } } [pairs-of ZeroConfig] : begin
-		foreach { infix { height Marks } } [pairs-of Heights] : begin
+	foreach {suffix {Outline {Overlay Postproc}}} [pairs-of ZeroConfig] : begin
+		foreach {infix {height Marks}} [pairs-of Heights] : begin
 			create-glyph "zero.\(infix).\(suffix)" : glyph-proc
 				include : Marks
 				local zeroShape : Outline.Shape height

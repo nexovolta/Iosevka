@@ -585,7 +585,7 @@ glyph-block Mark-Overlay : begin
 			include : with-transform [ApparentTranslate (-markMiddle) (-aboveMarkMid)]
 				refer-glyph 'cyrl/kavykaAbove'
 
-		foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 			create-glyph "cyrl/kavykaWithDotOver.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'overlay' 0 0 0 0
@@ -601,11 +601,11 @@ glyph-block Mark-Overlay : begin
 		define parenOverBot : parenOverMid - parenOverHalfH
 		define parenOverDepth : markExtend * 0.25
 		define CombiningParenOverlayConfig : object
-			normal        { 0     1 }
-			largeContour  { 0.25  0.75 }
-			flatArc       { 0.5   0.75 }
+			normal       {0     1   }
+			largeContour {0.25  0.75}
+			flatArc      {0.5   0.75}
 
-		foreach { suffix { kOut kCurl } } [Object.entries CombiningParenOverlayConfig] : do
+		foreach {suffix {kOut kCurl}} [Object.entries CombiningParenOverlayConfig] : do
 			create-glyph "leftParenOver.\(suffix)" : glyph-proc
 				set-width 0
 				local depth : parenOverDepth * kCurl
@@ -674,7 +674,7 @@ glyph-block Mark-Overlay : begin
 			include : InnerDot (-offset) 0 kHeight2 fRound kdr space adws
 			include : InnerDot (+offset) 0 kHeight2 fRound kdr space adws
 
-		foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 			create-glyph "innerDot.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'slash' 0 0 0 0

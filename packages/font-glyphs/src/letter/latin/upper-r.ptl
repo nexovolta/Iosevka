@@ -264,13 +264,13 @@ glyph-block Letter-Latin-Upper-R : begin
 			''                             false
 			open                           true
 		object # serifs
-			serifless                    { null                 false }
-			topLeftSerifed               { PShape.SlabMotion    false }
-			bottomRightSerifed           { null                 true  }
-			topLeftAndBottomRightSerifed { PShape.SlabMotion    true  }
-			serifed                      { PShape.SlabSymmetric true  }
+			serifless                    {null                  false}
+			topLeftSerifed               {PShape.SlabMotion     false}
+			bottomRightSerifed           {null                  true }
+			topLeftAndBottomRightSerifed {PShape.SlabMotion     true }
+			serifed                      {PShape.SlabSymmetric  true }
 
-	foreach { suffix { legShape fGap { slabs doLegSlab } } } [Object.entries RConfig] : do
+	foreach {suffix {legShape fGap {slabs doLegSlab}}} [Object.entries RConfig] : do
 		define fStraightLeg : (legShape === RLegShape.Straight) || (legShape === RLegShape.StraightBroken)
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
 		define swCap : AdviceStroke2 2 3 CAP
@@ -342,7 +342,7 @@ glyph-block Letter-Latin-Upper-R : begin
 			include : RShape legShape XH (sw -- swXH) (slab -- slabs) (legSlab -- doLegSlab) (open -- fGap) (legBottom -- Descender)
 
 		if (!slabs && !fGap) : begin
-			foreach zeSuffix [items-of { 'serifless' 'unilateralSerifed' 'unilateralInwardSerifed' 'topFlatHook' 'topCornerHook' }] : do
+			foreach zeSuffix [items-of {'serifless' 'unilateralSerifed' 'unilateralInwardSerifed' 'topFlatHook' 'topCornerHook'}] : do
 				create-glyph "RRotunda.\(suffix).\(zeSuffix)" : glyph-proc
 					include : MarkSet.capital
 					local bp : 0.9 * PShape.BarPos
@@ -378,18 +378,18 @@ glyph-block Letter-Latin-Upper-R : begin
 			''                                false
 			open                              true
 		object # serifs/tail
-			serifless                       { null                       false false }
-			topRightSerifed                 { RevPShape.SlabMotion       false false }
-			bottomLeftSerifed               { null                       true  false }
-			topRightAndBottomLeftSerifed    { RevPShape.SlabMotion       true  false }
-			bottomLeftAndBottomRightSerifed { RevPShape.SlabMotionBottom true  false }
-			serifed                         { RevPShape.SlabSymmetric    true  false }
+			serifless                       {null                        false  false}
+			topRightSerifed                 {RevPShape.SlabMotion        false  false}
+			bottomLeftSerifed               {null                        true   false}
+			topRightAndBottomLeftSerifed    {RevPShape.SlabMotion        true   false}
+			bottomLeftAndBottomRightSerifed {RevPShape.SlabMotionBottom  true   false}
+			serifed                         {RevPShape.SlabSymmetric     true   false}
 			# Tailed variants (Cyrillic lower ya)
-			tailedSerifless                 { null                       false true  }
-			tailedBottomLeftSerifed         { null                       true  true  }
-			tailedSerifed                   { RevPShape.SlabMotion       true  true  }
+			tailedSerifless                 {null                        false  true }
+			tailedBottomLeftSerifed         {null                        true   true }
+			tailedSerifed                   {RevPShape.SlabMotion        true   true }
 
-	foreach { suffix { legShape fGap { slabs doLegSlab doTail } } } [Object.entries RevRConfig] : do
+	foreach {suffix {legShape fGap {slabs doLegSlab doTail}}} [Object.entries RevRConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP
 		define swXH  : AdviceStroke2 2 3 XH
 
@@ -414,8 +414,8 @@ glyph-block Letter-Latin-Upper-R : begin
 	select-variant 'Yr'           0x1A6  (follow -- 'R')
 	select-variant 'smcpRLongLeg' 0xAB46 (follow -- 'R')
 
-	select-multi-dimensional-variant 'RRotunda' 0xA75A (follows -- { 'RRotunda' 'cyrl/Ze/topSerif' })
-	select-multi-dimensional-variant 'rRotunda' 0xA75B (follows -- { 'RRotunda' 'cyrl/ze/topSerif' })
+	select-multi-dimensional-variant 'RRotunda' 0xA75A (follows -- {'RRotunda' 'cyrl/Ze/topSerif'})
+	select-multi-dimensional-variant 'rRotunda' 0xA75B (follows -- {'RRotunda' 'cyrl/ze/topSerif'})
 
 	select-variant 'currency/indianRupeeSign' 0x20B9 (follow -- 'RRotunda')
 

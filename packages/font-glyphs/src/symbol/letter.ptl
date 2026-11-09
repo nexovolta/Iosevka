@@ -73,16 +73,16 @@ glyph-block Symbol-Currency : begin
 	define TOP-INWARD-SERIFED  2
 
 	define SterlingConfig : object
-		serifless               { 0  TOP-SERIFLESS       false  false }
-		serifed                 { 1  TOP-SERIFLESS       false  false }
-		seriflessSerifed        { 0  TOP-SERIFED         false  false }
-		serifedSerifed          { 1  TOP-SERIFED         false  false }
-		seriflessInwardSerifed  { 0  TOP-INWARD-SERIFED  false  false }
-		serifedInwardSerifed    { 1  TOP-INWARD-SERIFED  false  false }
-		seriflessFlatHook       { 0  TOP-SERIFLESS       true   false }
-		serifedFlatHook         { 1  TOP-SERIFLESS       true   false }
-		seriflessCornerHook     { 0  TOP-SERIFLESS       false  true }
-		serifedCornerHook       { 1  TOP-SERIFLESS       false  true }
+		serifless              {0  TOP-SERIFLESS       false  false}
+		serifed                {1  TOP-SERIFLESS       false  false}
+		seriflessSerifed       {0  TOP-SERIFED         false  false}
+		serifedSerifed         {1  TOP-SERIFED         false  false}
+		seriflessInwardSerifed {0  TOP-INWARD-SERIFED  false  false}
+		serifedInwardSerifed   {1  TOP-INWARD-SERIFED  false  false}
+		seriflessFlatHook      {0  TOP-SERIFLESS       true   false}
+		serifedFlatHook        {1  TOP-SERIFLESS       true   false}
+		seriflessCornerHook    {0  TOP-SERIFLESS       false  true }
+		serifedCornerHook      {1  TOP-SERIFLESS       false  true }
 
 	define xSterlingBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 	define [SterlingFootKnots xBarLeft fRial] : if fRial
@@ -120,7 +120,7 @@ glyph-block Symbol-Currency : begin
 			if (topSerif === TOP-SERIFED) : include : ArcStartSerif.R hookEndX CAP Stroke Hook
 			if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR hookEndX CAP Stroke Hook
 
-	foreach { suffix { serifGrade topSerif fFlatHook fCornerHook } } [Object.entries SterlingConfig] : do
+	foreach {suffix {serifGrade topSerif fFlatHook fCornerHook}} [Object.entries SterlingConfig] : do
 		create-glyph "currency/sterlingSign.\(suffix)" : glyph-proc
 			set-width Width
 			include : SterlingBaseShape serifGrade topSerif fFlatHook fCornerHook false
@@ -135,7 +135,7 @@ glyph-block Symbol-Currency : begin
 	select-variant 'currency/sterlingSign'   0xA3
 	select-variant 'currency/liraSymbolSign' 0x20A4 (follow -- 'currency/sterlingSign')
 
-	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+	foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 		create-glyph "currency/euroCurrencySign.\(suffix)" : glyph-proc
 			set-width Width
 			include : MarkSet.capital
@@ -231,7 +231,7 @@ glyph-block Symbol-Currency : begin
 		include : HBar.t xLeft (0.3 * Width + Middle) XH Stroke
 		include : with-transform [ApparentTranslate (0.3 * Width) 0] : refer-glyph 't/pack75'
 
-	foreach { suffix { styTop _ } } [Object.entries SConfig] : do
+	foreach {suffix {styTop _}} [Object.entries SConfig] : do
 		create-glyph "currency/spesmiloSign.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
@@ -416,10 +416,10 @@ glyph-block Symbol-Currency : begin
 		include : union body [HBar.m SB RightSB (CAP * 0.48) Stroke]
 
 	define TurkLiraConfig : object
-		serifless { 0 }
-		serifed   { 1 }
+		serifless {0}
+		serifed   {1}
 
-	foreach { suffix { serifGrade } } [Object.entries TurkLiraConfig] : do
+	foreach {suffix {serifGrade}} [Object.entries TurkLiraConfig] : do
 		create-glyph "currency/turkishLiraSign.\(suffix)" : glyph-proc
 			set-width Width
 			include : MarkSet.capital
@@ -602,7 +602,7 @@ glyph-block Symbol-Letter : begin
 
 		define kOnLStemY 0.66
 
-		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+		foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 			create-glyph "letterLike/centreLineSymbol.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				set-width Width
@@ -624,7 +624,7 @@ glyph-block Symbol-Letter : begin
 
 		select-variant 'letterLike/centreLineSymbol' 0x2104 (follow -- 'c')
 
-		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+		foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 			create-glyph "letterLike/capitulum.\(suffix)" : glyph-proc
 				set-width Width
 				local sw : Math.min [AdviceStroke 6] (Width * 0.055)

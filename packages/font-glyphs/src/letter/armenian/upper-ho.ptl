@@ -12,7 +12,7 @@ glyph-block Letter-Armenian-Upper-Ho : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 
 	do 'Ho'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Ho.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
@@ -47,7 +47,7 @@ glyph-block Letter-Armenian-Upper-Ho : begin
 				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
-		foreach { suffix { p0 } } [Object.entries HoPositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries HoPositionedSerifs] : do
 			if (p0) : create-glyph "armn/Ho.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/Ho.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1

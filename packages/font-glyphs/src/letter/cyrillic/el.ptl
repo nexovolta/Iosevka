@@ -179,10 +179,10 @@ glyph-block Letter-Cyrillic-El : begin
 
 	define ElCapConfig : SuffixCfg.weave
 		object
-			standard    { BODY-STRAIGHT     false false }
-			triangular  { BODY-LAMBDA-TRI   true  false }
-			curly       { BODY-LAMBDA-CURLY false false }
-			square      { BODY-LAMBDA-SQUARE true  true  }
+			standard   {BODY-STRAIGHT       false  false}
+			triangular {BODY-LAMBDA-TRI     true   false}
+			curly      {BODY-LAMBDA-CURLY   false  false}
+			square     {BODY-LAMBDA-SQUARE  true   true }
 		object
 			serifless     SERIF-NONE
 			motionSerifed SERIF-MOTION
@@ -190,11 +190,11 @@ glyph-block Letter-Cyrillic-El : begin
 
 	define ElConfig : SuffixCfg.weave
 		object
-			standard    { BODY-STRAIGHT     false false }
-			triangular  { BODY-LAMBDA-TRI   true  false }
-			curly       { BODY-LAMBDA-CURLY false false }
-			square      { BODY-LAMBDA-SQUARE true  true  }
-			tailed      { BODY-TAILED       false false }
+			standard   {BODY-STRAIGHT       false  false}
+			triangular {BODY-LAMBDA-TRI     true   false}
+			curly      {BODY-LAMBDA-CURLY   false  false}
+			square     {BODY-LAMBDA-SQUARE  true   true }
+			tailed     {BODY-TAILED         false  false}
 		object
 			serifless     SERIF-NONE
 			motionSerifed SERIF-MOTION
@@ -204,7 +204,7 @@ glyph-block Letter-Cyrillic-El : begin
 		serifless       false
 		topRightSerifed true
 
-	foreach { suffix { { bodyType fBarStraight fSquareBottom } serifType } } [Object.entries ElConfig] : do
+	foreach {suffix {{bodyType fBarStraight fSquareBottom} serifType}} [Object.entries ElConfig] : do
 		local fTailed : bodyType === BODY-TAILED
 
 		if [not fTailed] : begin
@@ -223,7 +223,7 @@ glyph-block Letter-Cyrillic-El : begin
 
 			define cyrSoftElCapDf : DivFrame para.advanceScaleM 3
 			DefineSelectorGlyph 'cyrl/ElSoft' suffix cyrSoftElCapDf 'capital'
-			foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
+			foreach {suffixGhe cyrSoftElVSlab} [Object.entries CyrSoftElGheConfig] : do
 				create-glyph "cyrl/ElSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -284,7 +284,7 @@ glyph-block Letter-Cyrillic-El : begin
 
 		define cyrSoftElDf : DivFrame para.advanceScaleM 3
 		DefineSelectorGlyph 'cyrl/elSoft' suffix cyrSoftElDf 'e'
-		foreach { suffixGhe cyrSoftElVSlab } [Object.entries CyrSoftElGheConfig] : do
+		foreach {suffixGhe cyrSoftElVSlab} [Object.entries CyrSoftElGheConfig] : do
 			create-glyph "cyrl/elSoft.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0

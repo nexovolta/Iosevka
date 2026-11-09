@@ -33,18 +33,18 @@ glyph-block Letter-Latin-Vend : begin
 
 	define VendConfig : SuffixCfg.weave
 		object # body
-			straight              { true  0 }
-			curly                 { false 0 }
-			squareTop             { true  1 }
+			straight  {true   0}
+			curly     {false  0}
+			squareTop {true   1}
 		object # serifs
-			''                    { VendVAutoSerifs    VendAutoStemSerif }
-			serifless              { no-shape                 no-shape }
-			motionSerifed          { VMotionSerifs            VendMotionStemSerif }
-			topRightMotionSerifed  { VTopRightMotionSerifs    no-shape }
-			bilateralMotionSerifed { VBilateralMotionSerifs   VendMotionStemSerif }
-			serifed                { VSerifs                  VendFullStemSerif }
+			''                     {VendVAutoSerifs         VendAutoStemSerif  }
+			serifless              {no-shape                no-shape           }
+			motionSerifed          {VMotionSerifs           VendMotionStemSerif}
+			topRightMotionSerifed  {VTopRightMotionSerifs   no-shape           }
+			bilateralMotionSerifed {VBilateralMotionSerifs  VendMotionStemSerif}
+			serifed                {VSerifs                 VendFullStemSerif  }
 
-	foreach { suffix { { fStraightBar fSquareTop } { VSlabs StemSlab } } } [Object.entries VendConfig] : do
+	foreach {suffix {{fStraightBar fSquareTop} {VSlabs StemSlab}}} [Object.entries VendConfig] : do
 		local fSerifStraight : if fSquareTop 0 fStraightBar
 		create-glyph "Vend.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -60,10 +60,10 @@ glyph-block Letter-Latin-Vend : begin
 			include : StemSlab XH Descender
 
 	define VendCursiveConfig : object
-		cursiveSerifless  { (1/24)  false }
-		cursiveSerifed    { (1/16)  true }
+		cursiveSerifless {(1/24)  false}
+		cursiveSerifed   {(1/16)  true }
 
-	foreach { suffix { pxBar fDoSerif } } [Object.entries VendCursiveConfig] : do
+	foreach {suffix {pxBar fDoSerif}} [Object.entries VendCursiveConfig] : do
 		create-glyph "vend.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : VendCursiveBody Descender XH pxBar

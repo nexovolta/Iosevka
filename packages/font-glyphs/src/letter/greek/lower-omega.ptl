@@ -55,15 +55,15 @@ glyph-block Letter-Greek-Lower-Omega : begin
 				include : GenericLowerOmegaShape df top terminal
 
 	define OmegaConfig : object
-		round                              { 'round'     'round' }
-		almostFlatTop                      { 'round'     'almost' }
-		flatTop                            { 'round'     'flat' }
-		broad                              { 'broad'     'round' }
-		broadAlmostFlatTop                 { 'broad'     'almost' }
-		broadFlatTop                       { 'broad'     'flat' }
-		roundedVerticalSides               { 'vertical'  'round' }
-		roundedVerticalSidesAlmostFlatTop  { 'vertical'  'almost' }
-		roundedVerticalSidesFlatTop        { 'vertical'  'flat' }
+		round                             {'round'     'round' }
+		almostFlatTop                     {'round'     'almost'}
+		flatTop                           {'round'     'flat'  }
+		broad                             {'broad'     'round' }
+		broadAlmostFlatTop                {'broad'     'almost'}
+		broadFlatTop                      {'broad'     'flat'  }
+		roundedVerticalSides              {'vertical'  'round' }
+		roundedVerticalSidesAlmostFlatTop {'vertical'  'almost'}
+		roundedVerticalSidesFlatTop       {'vertical'  'flat'  }
 
 	# Omega with the middle masked out, plus an inverted rams horn loop in the gap.
 	define [LowerOmegaWithLoopShape df top body terminal] : glyph-proc
@@ -140,7 +140,7 @@ glyph-block Letter-Greek-Lower-Omega : begin
 			flat (df.middle + [HSwToV : stroke / 2 - fine]) y3 [widths.rhs.heading fine Upward]
 			curl (df.middle + [HSwToV : stroke / 2 - fine]) y4 [heading Upward]
 
-	foreach { suffix { body terminal } } [Object.entries OmegaConfig] : do
+	foreach {suffix {body terminal}} [Object.entries OmegaConfig] : do
 		create-glyph "latn/Omega.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital

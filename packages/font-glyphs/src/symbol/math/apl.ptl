@@ -209,8 +209,8 @@ glyph-block Symbol-Math-APL : begin
 	create-glyph 0x2346 : composite-proc : Overlay [refer-glyph 'arrowRight.NWID'] [refer-glyph 'apl/bar']
 
 	# Circled
-	derive-multi-part-glyphs 'uni235F' 0x235F { 'mathO/outline' 'opAsterisk.penta' 'mathO' } : function [srcs sel] : glyph-proc
-		local { outline asterisk mathO } srcs
+	derive-multi-part-glyphs 'uni235F' 0x235F {'mathO/outline' 'opAsterisk.penta' 'mathO'} : function [srcs sel] : glyph-proc
+		local {outline asterisk mathO} srcs
 		include : union [refer-glyph mathO] : intersection [refer-glyph outline] [refer-glyph asterisk]
 
 	# Underlined
@@ -226,9 +226,9 @@ glyph-block Symbol-Math-APL : begin
 		difference   [refer-glyph srcs.0] [refer-glyph 'overlayTildeOperatorAboveMask']
 		intersection [refer-glyph srcs.1] [refer-glyph 'overlayTildeOperatorAboveMask']
 
-	derive-multi-part-glyphs 'uni236B' 0x236B { 'nabla.aplThin' 'nabla.aplForm' } DeriveTiledOverlay
-	derive-multi-part-glyphs 'uni2371' 0x2371 { 'vee/aplThin'   'vee'           } DeriveTiledOverlay
-	derive-multi-part-glyphs 'uni2372' 0x2372 { 'wedge/aplThin' 'wedge'         } DeriveTiledOverlay
+	derive-multi-part-glyphs 'uni236B' 0x236B {'nabla.aplThin' 'nabla.aplForm'} DeriveTiledOverlay
+	derive-multi-part-glyphs 'uni2371' 0x2371 {'vee/aplThin'   'vee'} DeriveTiledOverlay
+	derive-multi-part-glyphs 'uni2372' 0x2372 {'wedge/aplThin' 'wedge'} DeriveTiledOverlay
 
 	# APL uses White Circle and Arrows as operators, this function links them as APL form
 	# and fixes Unicode assignments

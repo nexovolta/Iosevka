@@ -25,7 +25,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			g4 (df.middle - d + fine / 2 + offset) (bottom + d * (1 + TanSlope * 0.5)) [widths.center fine]
 			quadControls 0 0.3 16
 			[if fMask corner g4] (df.rightSB - O - offset - [HSwToV : 0.5 * df.mvs]) top [widths.center.heading df.mvs Upward]
-			if fMask { [close] } {}
+			if fMask {[close]} {}
 
 		return : object fine d
 
@@ -86,14 +86,14 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		triangleBottom true
 	define GammaUpperConfig : SuffixCfg.weave GammaUpperBodyConfig GammaUpperSerifConfig
 
-	foreach { suffix { triangleBottom Serifs } } [Object.entries GammaUpperConfig] : do
+	foreach {suffix {triangleBottom Serifs}} [Object.entries GammaUpperConfig] : do
 		create-glyph "latn/Gamma.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : if triangleBottom [df.markSet.capital] [df.markSet.capDesc]
 			include : if triangleBottom [LatinGammaTriangleShape df CAP Descender] [LatinGammaShape df CAP Descender]
 			include : Serifs df CAP Descender
 
-	foreach { suffix Serifs } [Object.entries GammaLowerSerifConfig] : do
+	foreach {suffix Serifs} [Object.entries GammaLowerSerifConfig] : do
 		create-glyph "latn/gamma.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
@@ -189,10 +189,6 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		include : RamsHornShape df XH 0 true
 		include : FlipAround df.middle (XH / 2)
 
-	# One stroke: inverted rams horn (left stub + top loop) continuing through
-	# the pinch into a flat-hook 5-like bowl on the baseline.
-	# Quasi-proportional families use a monospace cell (HalfUPM), not Width.
-	# Tall like b/h/l: ascender height, near-normal stroke for a one-cell letter.
 	define [UmLoopKnots middle rInner lInner top yJoin yPinch fine coFine sw d k1] : list
 		g4 middle yPinch [widths.rhs coFine]
 		g4.down.mid [mix middle rInner k1] ([mix top yJoin 0.7] - d) [widths.rhs fine]
@@ -224,7 +220,6 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local adaFive : ArchDepthAClamped yFiveTop yPinch df.archDepthA df.archDepthB
 		local adbFive : ArchDepthBClamped yFiveTop yPinch df.archDepthA df.archDepthB
 
-		# Hook back sits near the ramshorn loop, not the far sidebearing.
 		local xHook : mix df.middle lInner 0.52
 		local xFiveR : mix rExt df.middle 0.08
 		local xTopCurl : Math.min (xFiveR - 0.28 * (xFiveR - xHook)) : Arch.adjust-x.top df.middle sw

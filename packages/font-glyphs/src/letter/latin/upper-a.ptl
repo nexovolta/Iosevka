@@ -154,7 +154,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			diagonalBar        0.5
 			diagonalBarFalling (-0.5)
 
-	foreach { suffix { bodyShape slabKind diag } } [Object.entries AConfig] : do
+	foreach {suffix {bodyShape slabKind diag}} [Object.entries AConfig] : do
 		local fBarStraight : (bodyShape === BODY-STRAIGHT) || (bodyShape === BODY-SQUARE-BOTTOM)
 		local fSlabTop : maskBits slabKind SLAB-TOP
 		local fSlabBot : maskBits slabKind [bitOr SLAB-LEFT SLAB-RIGHT]
@@ -228,7 +228,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			include : HOverlayBar [mix 0 SB 0.5] [mix Width RightSB 0.5] (yBar - HalfStroke + OverlayStroke / 2)
 			include : HOverlayBar [mix 0 SB 0.5] [mix Width RightSB 0.5] [mix yBar CAP 0.25]
 
-	foreach { suffix { bodyShape slabKind diag } } [Object.entries AConfig] : do
+	foreach {suffix {bodyShape slabKind diag}} [Object.entries AConfig] : do
 		if (bodyShape === BODY-ROUND-TOP) : create-glyph "ARoundTop.\(suffix)" : glyph-proc
 			include [refer-glyph "A.\(suffix)"] AS_BASE ALSO_METRICS
 
@@ -255,7 +255,7 @@ glyph-block Letter-Latin-Upper-A : begin
 			Ellipse.Outline.AtDimens top (top - 2 * radius) df.leftSB (df.leftSB + 2 * radius)
 			Ellipse.Outline.AtDimens top (top - 2 * radius) (df.rightSB - 2 * radius) df.rightSB
 
-	foreach { suffix { rounded slabKind diag } } [Object.entries RoundSquareTopConfig] : do
+	foreach {suffix {rounded slabKind diag}} [Object.entries RoundSquareTopConfig] : do
 		create-glyph "ARoundTop.\(suffix)" : glyph-proc
 			local df : DivFrame 1
 			local yBar : AShape.BarPos BODY-ROUND-TOP slabKind CAP

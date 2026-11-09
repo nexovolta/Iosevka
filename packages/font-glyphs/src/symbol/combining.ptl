@@ -37,7 +37,7 @@ glyph-block Symbols-Combining-Cyrillic-Numeric : begin
 				g2.left.mid mcx (mcy + SmallMarkSize) [heading Leftward]
 				g2.down.end (mcx - SmallMarkSize) mcy [heading Downward]
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		create-glyph "cyrl/millions.\(suffix)"
 			CyrillicStdRingShape : function [cx cy r angle] : glyph-proc
 				define mcx : cx + r * [archv.sCos angle]
@@ -180,18 +180,18 @@ glyph-block Symbols-Combining-Mathematical : begin
 				corner (tipX - ux * head + uy * head) (endY - uy * head - ux * head)
 				close
 
-	foreach { gn unicode ccw } {
-		{ 'combSymbol/anticlockwiseArrowAbove' 0x20D4 true }
-		{ 'combSymbol/clockwiseArrowAbove' 0x20D5 false }
+	foreach {gn unicode ccw} {
+		{'combSymbol/anticlockwiseArrowAbove' 0x20D4 true}
+		{'combSymbol/clockwiseArrowAbove' 0x20D5 false}
 	} : do
 		create-glyph gn unicode : glyph-proc
 			set-width 0
 			include : StdAnchors.extraWide
 			include : RotationArrowAbove ccw
 
-	foreach { gn unicode ccw } {
-		{ 'combSymbol/clockwiseRingOverlay' 0x20D9 false }
-		{ 'combSymbol/anticlockwiseRingOverlay' 0x20DA true }
+	foreach {gn unicode ccw} {
+		{'combSymbol/clockwiseRingOverlay' 0x20D9 false}
+		{'combSymbol/anticlockwiseRingOverlay' 0x20DA true}
 	} : do
 		create-glyph gn unicode : glyph-proc
 			include : OverlayAnchors true
@@ -226,11 +226,11 @@ glyph-block Symbols-Combining-Mathematical : begin
 			RingAt (l + radius * 0.25) (bot + radius * 0.25) cr
 			RingAt (r - radius * 0.25) (bot + radius * 0.25) cr
 
-	foreach { gn unicode Shape innerInset } {
-		{ 'combSymbol/enclosingDiamond' 0x20DF Diamond (sw * Math.SQRT2) }
-		{ 'combSymbol/enclosingScreen' 0x20E2 Screen sw }
-		{ 'combSymbol/enclosingKeycap' 0x20E3 Keycap sw }
-		{ 'combSymbol/enclosingTriangle' 0x20E4 Triangle (sw * 1.6) }
+	foreach {gn unicode Shape innerInset} {
+		{'combSymbol/enclosingDiamond' 0x20DF Diamond (sw * Math.SQRT2)}
+		{'combSymbol/enclosingScreen' 0x20E2 Screen sw}
+		{'combSymbol/enclosingKeycap' 0x20E3 Keycap sw}
+		{'combSymbol/enclosingTriangle' 0x20E4 Triangle (sw * 1.6)}
 	} : do
 		create-glyph gn unicode : glyph-proc
 			include : OverlayAnchors true

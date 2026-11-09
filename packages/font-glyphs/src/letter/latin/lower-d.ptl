@@ -159,14 +159,14 @@ glyph-block Letter-Latin-Lower-D : begin
 				''        false
 				flatBowl  true
 		object # serifs
-			serifless                { null     null      }
-			topSerifed               { TopSerif null      }
-			bottomSerifed            { null     BaseSerif }
-			serifed                  { TopSerif BaseSerif }
+			serifless     {null      null     }
+			topSerifed    {TopSerif  null     }
+			bottomSerifed {null      BaseSerif}
+			serifed       {TopSerif  BaseSerif}
 
 	glyph-block-export DConfig
 
-	foreach { suffix { Body cut fFlat { topSerif bottomSerif } } } [Object.entries DConfig] : do
+	foreach {suffix {Body cut fFlat {topSerif bottomSerif}}} [Object.entries DConfig] : do
 		local yOverlay : mix XH (Ascender - [if topSerif Stroke 0]) 0.5
 
 		do
@@ -258,7 +258,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	CreateAccentedComposition 'dWedge' null 'd' 'caronAbove'
 
 	derive-multi-part-glyphs 'dDot' 0x1E0B {'d' 'dotAbove'} : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+		local {base mark} srcs
 		include : refer-glyph mark
 		include : Translate (Width - [HSwToV HalfStroke]) 0
 		include [refer-glyph base] AS_BASE

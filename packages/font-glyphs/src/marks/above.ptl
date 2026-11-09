@@ -159,7 +159,7 @@ glyph-block Mark-Above : begin
 	### Above marks
 
 	#### Dot/Ring Marks
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "dotAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : StdAnchors.narrow
@@ -282,7 +282,7 @@ glyph-block Mark-Above : begin
 			arcvh
 			g4.left.end    markMiddle             (aboveMarkMid - radiusOut) [heading Leftward]
 
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "dieresisRingAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : StdAnchors.extraWide
@@ -385,7 +385,7 @@ glyph-block Mark-Above : begin
 		include : DiagStroke (m2 - markStress) aboveMarkBot (m2 + markExtend) aboveMarkTop (2 * fine) (2 * stress)
 		include : DiagStroke (m3 - markStress) aboveMarkBot (m3 + markExtend) aboveMarkTop (2 * fine) (2 * stress)
 
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "graveDotAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : StdAnchors.wide
@@ -845,7 +845,7 @@ glyph-block Mark-Above : begin
 		define z3 : currentGlyph.gizmo.apply : object [x : mix leftEnd rightEnd (1 - tildeWaveX)] [y : mix tbot ttop (1 - tildeWaveY)]
 		define z4 : currentGlyph.gizmo.apply : object [x : mix leftEnd rightEnd 1]                [y : mix tbot ttop 1]
 
-		return { z1 z2 z3 z4 }
+		return {z1 z2 z3 z4}
 
 	# Compact tilde: vertical stems at both ends joined by a small S wave.
 	define tildeSelectorValue ([fallback para.variantSelector.asciiTilde ''] + '')
@@ -919,7 +919,7 @@ glyph-block Mark-Above : begin
 		: else : include : TildeShapeBezier tt tb leftEnd rightEnd hs hsLeft
 
 	define [TildeShapeBezier] : with-params [ttop tbot leftEnd rightEnd hs hsLeft] : glyph-proc
-		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
+		define {z1 z2 z3 z4} : include : TildeKnots ttop tbot leftEnd rightEnd hs
 		define bone : new Arcs.Bez3 z1 z2 z3 z4
 		local hs0 : fallback hsLeft hs
 
@@ -933,7 +933,7 @@ glyph-block Mark-Above : begin
 	# Slash from (xTop, yTop) into the tilde's left end; one stroke, no tail past the tilde.
 	glyph-block-export IsBelowShape
 	define [IsBelowShape] : with-params [xTop yTop ttop tbot leftEnd rightEnd hs hsJoin] : glyph-proc
-		define { z1 z2 z3 z4 } : include : TildeKnots ttop tbot leftEnd rightEnd hs
+		define {z1 z2 z3 z4} : include : TildeKnots ttop tbot leftEnd rightEnd hs
 		define pTop : currentGlyph.gizmo.apply : object [x : 0 + xTop] [y : 0 + yTop]
 		define p1 : object [x : mix pTop.x z1.x (1 / 3)] [y : mix pTop.y z1.y (1 / 3)]
 		define p2 : object [x : mix pTop.x z1.x (2 / 3)] [y : mix pTop.y z1.y (2 / 3)]
@@ -969,14 +969,14 @@ glyph-block Mark-Above : begin
 		local abc : mixZ ab bc t
 		local bcd : mixZ bc cd t
 		local j   : mixZ abc bcd t
-		return { p0 ab abc j bcd cd p3 }
+		return {p0 ab abc j bcd cd p3}
 
 	glyph-block-export WigglyLineShape
 	define [WigglyLineShape] : with-params [ttop tbot width hs] : glyph-proc
 		define [designPt z] : currentGlyph.gizmo.unapply z
 		define [framePt z] : currentGlyph.gizmo.apply z
 
-		define { _z1 _z2 _z3 _z4 } : include : TildeKnots
+		define {_z1 _z2 _z3 _z4} : include : TildeKnots
 			ttop     -- ttop
 			tbot     -- tbot
 			leftEnd  -- (markMiddle - 0.75 * width)
@@ -1006,9 +1006,9 @@ glyph-block Mark-Above : begin
 			if ((tPlus  > 0.5) && (tPlus  < 1)) : set tTrough tPlus
 			if ((tMinus > 0.5) && (tMinus < 1)) : set tTrough tMinus
 
-		define { l0 l1 l2 j _r1 _r2 _r3 } : splitBez z1 z2 z3 z4 tTrough
+		define {l0 l1 l2 j _r1 _r2 _r3} : splitBez z1 z2 z3 z4 tTrough
 		local tDown : tPeak / tTrough
-		define { _u0 _u1 _u2 peak d1 d2 d3 } : splitBez l0 l1 l2 j tDown
+		define {_u0 _u1 _u2 peak d1 d2 d3} : splitBez l0 l1 l2 j tDown
 
 		local pPrime : flipZX peak j.x
 		local dxDown : pPrime.x - peak.x
@@ -1102,14 +1102,14 @@ glyph-block Mark-Above : begin
 			rightEnd -- (markMiddle + markExtend * 1.5)
 			hs       -- markHalfStroke
 
-	define TildeStretchList : list { '' 1 } { 'Short' 0.7 } { 'Tall' 1.3 }
-	define TildePositionList : list { 'high' 'High' 0 } { 'mid' 'Mid' ((SymbolMid - XH - AccentStackOffset) / 2) } { 'low' 'Low' (SymbolMid - XH - AccentStackOffset) }
+	define TildeStretchList : list {'' 1} {'Short' 0.7} {'Tall' 1.3}
+	define TildePositionList : list {'high' 'High' 0} {'mid' 'Mid' ((SymbolMid - XH - AccentStackOffset) / 2)} {'low' 'Low' (SymbolMid - XH - AccentStackOffset)}
 
 	glyph-block-export AsciiTildeSuffixes
 	define AsciiTildeSuffixes {}
-	foreach { stretchName kStretch } [items-of TildeStretchList] : do
-		foreach { posName posCap dyPos } [items-of TildePositionList] : do
-			foreach isCompact { false true } : do
+	foreach {stretchName kStretch} [items-of TildeStretchList] : do
+		foreach {posName posCap dyPos} [items-of TildePositionList] : do
+			foreach isCompact {false true} : do
 				local posAffix : if (isCompact && posName === 'high') '' posCap
 				local suffix : if isCompact ('compact' + posAffix + stretchName) (posName + stretchName)
 				AsciiTildeSuffixes.push suffix
@@ -1155,7 +1155,7 @@ glyph-block Mark-Above : begin
 		define FarLeft  : mix Width 0 4
 		define FarAbove : mix 0 CAP 4
 
-		define { z1 z2 z3 z4 } : include : OverlayTildeT TildeKnots (1/3) [AdviceStroke 4]
+		define {z1 z2 z3 z4} : include : OverlayTildeT TildeKnots (1/3) [AdviceStroke 4]
 		define arcs : list : list
 			new Arcs.Bez3 z1 z2 z3 z4
 			new Arcs.StraightSegment               z4                 [Point.withX  z4       FarRight]
@@ -1190,7 +1190,7 @@ glyph-block Mark-Above : begin
 				flat (markMiddle + markExtend * 0.2) [mix tbot ttop 1.5]
 				curl (markMiddle - markExtend * 0.2) [mix ttop tbot 1.5]
 
-		foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 			create-forked-glyph "tildedotdotAbove.\(suffix)" : glyph-proc
 				include : StdAnchors.impl 'above' 0.25 1
 				local r : 0.75 * DotRadius * (fine / HalfStroke)
@@ -1227,7 +1227,7 @@ glyph-block Mark-Above : begin
 		include : dispiro
 			widths.center (markFine * 2)
 			g2 (markMiddle - markFine * 0.5) aboveMarkBot [heading Upward]
-			alsoThruThem { { 0.9 0.36 } { 0.1 0.64 } } [heading Upward]
+			alsoThruThem {{0.9 0.36} {0.1 0.64}} [heading Upward]
 			g2 (markMiddle + markFine * 0.5) aboveMarkTop [heading Upward]
 
 	#### Macron/Overline Marks
@@ -1401,7 +1401,7 @@ glyph-block Mark-Above : begin
 			archv
 			g4.up.end                                      rightEnd      aboveMarkTop [heading Upward]
 
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "candrabinduAbove.\(suffix)" : glyph-proc
 			set-width 0
 			local fine : AdviceStroke 6.5
@@ -1523,7 +1523,7 @@ glyph-block Mark-Above : begin
 		include : ApparentTranslate 0 (DotRadius * 0.3)
 		include : SetCommaStackAnchor
 
-	foreach suffix { 'hexagon' 'corner' 'bottomCut' } : do
+	foreach suffix {'hexagon' 'corner' 'bottomCut'} : do
 		create-glyph "commaAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : StdAnchors.narrow
@@ -1593,7 +1593,7 @@ glyph-block Mark-Above : begin
 		include : StdAnchors.narrow
 		include : SetCommaStackAnchor
 
-	foreach suffix { 'round' 'square' 'diamond' 'hexagon' 'corner' 'bottomCut' 'prime' 'tick' } : do
+	foreach suffix {'round' 'square' 'diamond' 'hexagon' 'corner' 'bottomCut' 'prime' 'tick'} : do
 		create-glyph "revCommaAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : with-transform [ScaleAround markMiddle 0 (-1) 1] : refer-glyph "commaAbove.\(suffix)"
@@ -1654,7 +1654,7 @@ glyph-block Mark-Above : begin
 
 	alias 'koronisAbove' 0x343 'commaAbove'
 
-	foreach { suffix { DrawAt kdr } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kdr}} [Object.entries DotVariants] : do
 		create-glyph "dialytikaTonosAbove.\(suffix)" : glyph-proc
 			set-width 0
 			include : with-transform [ApparentTranslate 0 ((-0.125) * (aboveMarkTop - aboveMarkBot))] : refer-glyph "dialytikaAbove.\(suffix)"

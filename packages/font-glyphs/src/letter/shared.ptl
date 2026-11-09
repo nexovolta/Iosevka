@@ -42,11 +42,11 @@ glyph-block Letter-Shared : begin
 
 	glyph-block-export CreateAccentedComposition
 	define [CreateAccentedComposition dst u srcGid accentGid]
-		CreateMultiAccentedComposition dst u srcGid { accentGid }
+		CreateMultiAccentedComposition dst u srcGid {accentGid}
 
 	glyph-block-export CreateMultiAccentedComposition
 	define [CreateMultiAccentedComposition dst u gnSrc gnAccents]
-		derive-multi-part-glyphs dst u { gnSrc :: gnAccents } : function [gns gr] : glyph-proc
+		derive-multi-part-glyphs dst u {gnSrc :: gnAccents} : function [gns gr] : glyph-proc
 			local glyphParts : gns.map : function [gn] : query-glyph gn
 			TransformGlyphCompositionSequence glyphParts
 
@@ -60,8 +60,8 @@ glyph-block Letter-Shared : begin
 
 	glyph-block-export CreateCommaCaronComposition
 	define [CreateCommaCaronComposition dst u sourceGid offset]
-		derive-multi-part-glyphs dst u { sourceGid 'commaTR' } : function [gns gr] : glyph-proc
-			local { base comma } gns
+		derive-multi-part-glyphs dst u {sourceGid 'commaTR'} : function [gns gr] : glyph-proc
+			local {base comma} gns
 			define baseGlyph : query-glyph base
 			define commaOffset : fallback offset : (Width / 2) * ((baseGlyph.advanceWidth / Width * 2) ** (2/3))
 			include : refer-glyph comma
@@ -70,9 +70,9 @@ glyph-block Letter-Shared : begin
 
 	glyph-block-export CreateDependentComposite
 	define [CreateDependentComposite gidDst unicode gidPart1 gidPart2Map] : begin
-		local sourceGidList { gidPart1 }
+		local sourceGidList {gidPart1}
 		local keyToIndexMap {.}
-		foreach { key g } [pairs-of gidPart2Map] : begin
+		foreach {key g} [pairs-of gidPart2Map] : begin
 			set keyToIndexMap.(key) sourceGidList.length
 			sourceGidList.push g
 
@@ -173,7 +173,7 @@ glyph-block Letter-Shared-Metrics : begin
 		local coJutTop : (height - (barPos - stroke / 2)) - jutTop
 		local coJutBot : (0      + (barPos + stroke / 2)) - jutBot
 		local jutMid : mix (stroke / 2) ([Math.min VJut coJutTop coJutBot] - stroke / 2) 0.5
-		return { jutTop jutBot jutMid }
+		return {jutTop jutBot jutMid}
 
 glyph-block Letter-Shared-Shapes : begin
 	glyph-block-import CommonShapes
@@ -351,7 +351,7 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define [mask] : begin
 			local a : Array.prototype.slice.call arguments 0
 			return : spiro-outline
-				knots.apply null [a.concat { (fMask -- true) }]
+				knots.apply null [a.concat {(fMask -- true)}]
 
 		export : define flex-params [earlessCorner] : begin
 			local-parameter : left
@@ -421,7 +421,7 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define [mask] : begin
 			local a : Array.prototype.slice.call arguments 0
 			return : spiro-outline
-				knots.apply null [a.concat { (fMask -- true) }]
+				knots.apply null [a.concat {(fMask -- true)}]
 
 		export : define flex-params [toothlessCorner] : begin
 			local-parameter : left
@@ -1321,7 +1321,7 @@ glyph-block Letter-Shared-Shapes : begin
 			widths.lhs sw
 			flat ztop.x ztop.y [heading Downward]
 			curl xmid [mix ztop.y (zbot.y + sw / 2 + TailY) 0.75]
-			alsoThruThem { { 0.2 0.76 } { 0.3 0.85 } { 0.5 0.94 } }
+			alsoThruThem {{0.2 0.76} {0.3 0.85} {0.5 0.94}}
 			straight.left.end zbot.x (zbot.y + sw) [heading Leftward]
 
 	glyph-block-export UpwardHookShape
@@ -1345,7 +1345,7 @@ glyph-block Letter-Shared-Shapes : begin
 			widths.center sw
 			flat mid (y + rise) [heading Downward]
 			curl mid (y + [if doHook 0 (rise - 1)]) [heading Downward]
-			if doHook { [HookEnd (y - rise) (sw -- sw)] } { [arcvh] }
+			if doHook {[HookEnd (y - rise) (sw -- sw)]} {[arcvh]}
 			g4 (right - [if doHook sw 0]) (y - [if doHook (rise * 0.5) rise]) [if doHook nothing [heading Rightward]]
 
 	# Generic "connected" vertical hooks
@@ -1712,7 +1712,7 @@ glyph-block Letter-Shared-Shapes : begin
 			local sw1 : Math.min sw
 				1.25 * (top - bot) * (0 + py)
 				1.25 * (top - bot) * (1 - py)
-			return { y sw1 }
+			return {y sw1}
 
 		define [LetterBarOverlay] : with-params [x y space refSw pXInSw sw] : begin
 			return : BarOverlayImpl HOverlayBar x y space refSw pXInSw sw
@@ -1728,11 +1728,11 @@ glyph-block Letter-Shared-Shapes : begin
 				return : (base) x y (space -- space) (refSw -- refSw) (pXInSw -- 1) (sw -- sw)
 
 			set base.l.in : function [] : with-params [x bot top [py 0.5] [space {0 Width}] [refSw Stroke] [sw OverlayStroke]] : begin
-				local { y sw1 } : calcYAndSw bot top py sw
+				local {y sw1} : calcYAndSw bot top py sw
 				return : (base) x y (space -- space) (refSw -- refSw) (pXInSw -- 0) (sw -- sw1)
 			set base.m.in : function [] : with-params [x bot top [py 0.5] [space {0 Width}] [refSw Stroke] [sw OverlayStroke]] : begin
-				local { y sw1 } : calcYAndSw bot top py sw
+				local {y sw1} : calcYAndSw bot top py sw
 				return : (base) x y (space -- space) (refSw -- refSw) (pXInSw -- 0.5) (sw -- sw1)
 			set base.r.in : function [] : with-params [x bot top [py 0.5] [space {0 Width}] [refSw Stroke] [sw OverlayStroke]] : begin
-				local { y sw1 } : calcYAndSw bot top py sw
+				local {y sw1} : calcYAndSw bot top py sw
 				return : (base) x y (space -- space) (refSw -- refSw) (pXInSw -- 1) (sw -- sw1)

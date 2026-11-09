@@ -211,22 +211,22 @@ glyph-block Letter-Latin-S : begin
 
 	glyph-block-export SConfig
 	define SConfig : object
-		serifless                          { SLAB-NONE         SLAB-NONE }
-		flatHook                           { SLAB-FLAT-HOOK    SLAB-FLAT-HOOK }
-		cornerHook                         { SLAB-CORNER-HOOK  SLAB-CORNER-HOOK }
-		unilateralSerifed                  { SLAB-CLASSICAL    SLAB-NONE }
-		bilateralSerifed                   { SLAB-CLASSICAL    SLAB-CLASSICAL }
-		unilateralInwardSerifed            { SLAB-INWARD       SLAB-NONE }
-		bilateralInwardSerifed             { SLAB-INWARD       SLAB-INWARD }
+		serifless                         {SLAB-NONE         SLAB-NONE       }
+		flatHook                          {SLAB-FLAT-HOOK    SLAB-FLAT-HOOK  }
+		cornerHook                        {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK}
+		unilateralSerifed                 {SLAB-CLASSICAL    SLAB-NONE       }
+		bilateralSerifed                  {SLAB-CLASSICAL    SLAB-CLASSICAL  }
+		unilateralInwardSerifed           {SLAB-INWARD       SLAB-NONE       }
+		bilateralInwardSerifed            {SLAB-INWARD       SLAB-INWARD     }
 
-		bottomSerifed                      { SLAB-NONE         SLAB-CLASSICAL }
-		hybridSerifed1                     { SLAB-INWARD       SLAB-CLASSICAL }
-		unilateralSerifedFlatHook          { SLAB-CLASSICAL    SLAB-FLAT-HOOK }
-		unilateralInwardSerifedFlatHook    { SLAB-INWARD       SLAB-FLAT-HOOK }
-		bottomSerifedFlatHook              { SLAB-FLAT-HOOK    SLAB-CLASSICAL }
-		unilateralSerifedCornerHook        { SLAB-CLASSICAL    SLAB-CORNER-HOOK }
-		unilateralInwardSerifedCornerHook  { SLAB-INWARD       SLAB-CORNER-HOOK }
-		bottomSerifedCornerHook            { SLAB-CORNER-HOOK  SLAB-CLASSICAL }
+		bottomSerifed                     {SLAB-NONE         SLAB-CLASSICAL  }
+		hybridSerifed1                    {SLAB-INWARD       SLAB-CLASSICAL  }
+		unilateralSerifedFlatHook         {SLAB-CLASSICAL    SLAB-FLAT-HOOK  }
+		unilateralInwardSerifedFlatHook   {SLAB-INWARD       SLAB-FLAT-HOOK  }
+		bottomSerifedFlatHook             {SLAB-FLAT-HOOK    SLAB-CLASSICAL  }
+		unilateralSerifedCornerHook       {SLAB-CLASSICAL    SLAB-CORNER-HOOK}
+		unilateralInwardSerifedCornerHook {SLAB-INWARD       SLAB-CORNER-HOOK}
+		bottomSerifedCornerHook           {SLAB-CORNER-HOOK  SLAB-CLASSICAL  }
 
 	define SArcTypes : object
 		Rounded SLAB-NONE
@@ -234,14 +234,14 @@ glyph-block Letter-Latin-S : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
-	foreach { topName topStyle } [pairs-of SArcTypes] : begin
-		foreach { bottomName bottomStyle } [pairs-of SArcTypes] : begin
+	foreach {topName topStyle} [pairs-of SArcTypes] : begin
+		foreach {bottomName bottomStyle} [pairs-of SArcTypes] : begin
 			set SConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
 
 	define DfUpper : DivFrame 1
 	define DfLower : DivFrame 1
 
-	foreach { suffix { doTS doBS } } [Object.entries SConfig] : do
+	foreach {suffix {doTS doBS}} [Object.entries SConfig] : do
 		local fDesc : doTS !== doBS
 
 		create-glyph "S.\(suffix)" : glyph-proc
@@ -489,7 +489,7 @@ glyph-block Letter-Latin-S : begin
 		local df : include DfUpper
 		include : df.markSet.capital
 		define theta : Math.PI / 4
-		foreach sign [items-of { (+1) (-1) }] : begin
+		foreach sign [items-of {(+1) (-1)}] : begin
 			include : SStrokeAlt
 				df        -- df
 				top       -- CAP
@@ -515,7 +515,7 @@ glyph-block Letter-Latin-S : begin
 		local df : include DfLower
 		include : df.markSet.e
 		define theta : Math.PI / 5
-		foreach sign [items-of { (+1) (-1) }] : begin
+		foreach sign [items-of {(+1) (-1)}] : begin
 			include : SStrokeAlt
 				df        -- df
 				top       -- XH
@@ -546,10 +546,10 @@ glyph-block Letter-Latin-S : begin
 			through     1
 			interrupted 2
 		object # height
-			''         { 0.05 0.95 (Descender / 2) 'std' }
-			'cap'      { 0.12 0.88  0              'cap' }
+			''    {0.05  0.95  (Descender / 2)  'std'}
+			'cap' {0.12  0.88  0                'cap'}
 
-	foreach { suffix { sl fillType { kBot kTop overflow selector } } } [pairs-of DollarConfig] : do
+	foreach {suffix {sl fillType {kBot kTop overflow selector}}} [pairs-of DollarConfig] : do
 		define [xBot df] : mix df.leftSB df.rightSB (0.5 - sl)
 		define [xTop df] : mix df.leftSB df.rightSB (0.5 + sl)
 		define bot : mix 0 CAP kBot

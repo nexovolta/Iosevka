@@ -13,10 +13,10 @@ glyph-block Letter-Armenian-Upper-Xeh : begin
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
 
 	do 'Xeh'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Xeh.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
-				local { subDf shift } : SubDfAndShift 1 df
+				local {subDf shift} : SubDfAndShift 1 df
 				include : df.markSet.capital
 				include : VBar.l df.leftSB 0 CAP df.mvs
 				include : HBar.t df.leftSB df.middle XH df.mvs
@@ -44,7 +44,7 @@ glyph-block Letter-Armenian-Upper-Xeh : begin
 				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
-		foreach { suffix { p0 p1 p2 p3 } } [Object.entries XehPositionedSerifs] : do
+		foreach {suffix {p0 p1 p2 p3}} [Object.entries XehPositionedSerifs] : do
 			if (p0 || p1 || p2 || p3) : create-glyph "armn/Xeh.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/Xeh.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame para.advanceScaleMM 3

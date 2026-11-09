@@ -64,7 +64,7 @@ glyph-block Digits-Two : begin
 			alsoThru.g2.withOffset 0.5 ([StrokeWidthBlend 0.425 0.4 sw] * [linreg 500 1 700 0.95 width]) 0 (0.25 * (offsetU - offsetD)) [widths.center sw]
 			flat (left + offsetD) 1 [widths.heading sw 0 Downward]
 			[if (sink == spiro-outline) corner curl] (left + offsetD) 0 [heading Downward]
-			if (sink == spiro-outline) { [corner (left - offsetU) 0] } {}
+			if (sink == spiro-outline) {[corner (left - offsetU) 0]} {}
 
 	define [TwoShape top slab hookStyle _left _right _sw _hook _width] : glyph-proc
 		local left : fallback _left SB
@@ -138,7 +138,7 @@ glyph-block Digits-Two : begin
 			serifless false
 			serifed   true
 
-	foreach { suffix { fStraight hookStyle fSlab } } [pairs-of TwoHookedConfig] : do
+	foreach {suffix {fStraight hookStyle fSlab}} [pairs-of TwoHookedConfig] : do
 		local Shape : if fStraight TwoStraightNeckShape TwoShape
 		create-glyph "two.lnum.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -202,7 +202,7 @@ glyph-block Digits-Two : begin
 				serifless false
 				serifed   true
 
-		foreach { suffix { fStraight hookStyle fSlab } } [pairs-of RumTwoConfig] : do
+		foreach {suffix {fStraight hookStyle fSlab}} [pairs-of RumTwoConfig] : do
 			create-glyph "RumRotunda.\(suffix)" : glyph-proc
 				include : MarkSet.capDesc
 				include : RumRotundaShape CAP fStraight fSlab hookStyle

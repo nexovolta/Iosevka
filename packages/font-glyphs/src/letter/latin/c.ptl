@@ -148,28 +148,28 @@ glyph-block Letter-Latin-C : begin
 
 	glyph-block-export CConfig
 	define CConfig : object
-		serifless                          { SLAB-NONE         SLAB-NONE }
-		flatHook                           { SLAB-FLAT-HOOK    SLAB-FLAT-HOOK }
-		cornerHook                         { SLAB-CORNER-HOOK  SLAB-CORNER-HOOK }
-		topFlatHook                        { SLAB-FLAT-HOOK    SLAB-NONE }
-		topCornerHook                      { SLAB-CORNER-HOOK  SLAB-NONE }
-		bottomFlatHook                     { SLAB-NONE         SLAB-FLAT-HOOK }
-		bottomCornerHook                   { SLAB-NONE         SLAB-CORNER-HOOK }
-		bottomSerifed                      { SLAB-NONE         SLAB-CLASSICAL }
-		bottomInwardSerifed                { SLAB-NONE         SLAB-INWARD }
-		unilateralSerifed                  { SLAB-CLASSICAL    SLAB-NONE }
-		bilateralSerifed                   { SLAB-CLASSICAL    SLAB-CLASSICAL }
-		unilateralInwardSerifed            { SLAB-INWARD       SLAB-NONE }
-		bilateralInwardSerifed             { SLAB-INWARD       SLAB-INWARD }
-		hybridSerifed1                     { SLAB-INWARD       SLAB-CLASSICAL }
-		unilateralSerifedFlatHook          { SLAB-CLASSICAL    SLAB-FLAT-HOOK }
-		unilateralInwardSerifedFlatHook    { SLAB-INWARD       SLAB-FLAT-HOOK }
-		bottomSerifedFlatHook              { SLAB-FLAT-HOOK    SLAB-CLASSICAL }
-		bottomInwardSerifedFlatHook        { SLAB-FLAT-HOOK    SLAB-INWARD }
-		unilateralSerifedCornerHook        { SLAB-CLASSICAL    SLAB-CORNER-HOOK }
-		unilateralInwardSerifedCornerHook  { SLAB-INWARD       SLAB-CORNER-HOOK }
-		bottomSerifedCornerHook            { SLAB-CORNER-HOOK  SLAB-CLASSICAL }
-		bottomInwardSerifedCornerHook      { SLAB-CORNER-HOOK  SLAB-INWARD }
+		serifless                         {SLAB-NONE         SLAB-NONE       }
+		flatHook                          {SLAB-FLAT-HOOK    SLAB-FLAT-HOOK  }
+		cornerHook                        {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK}
+		topFlatHook                       {SLAB-FLAT-HOOK    SLAB-NONE       }
+		topCornerHook                     {SLAB-CORNER-HOOK  SLAB-NONE       }
+		bottomFlatHook                    {SLAB-NONE         SLAB-FLAT-HOOK  }
+		bottomCornerHook                  {SLAB-NONE         SLAB-CORNER-HOOK}
+		bottomSerifed                     {SLAB-NONE         SLAB-CLASSICAL  }
+		bottomInwardSerifed               {SLAB-NONE         SLAB-INWARD     }
+		unilateralSerifed                 {SLAB-CLASSICAL    SLAB-NONE       }
+		bilateralSerifed                  {SLAB-CLASSICAL    SLAB-CLASSICAL  }
+		unilateralInwardSerifed           {SLAB-INWARD       SLAB-NONE       }
+		bilateralInwardSerifed            {SLAB-INWARD       SLAB-INWARD     }
+		hybridSerifed1                    {SLAB-INWARD       SLAB-CLASSICAL  }
+		unilateralSerifedFlatHook         {SLAB-CLASSICAL    SLAB-FLAT-HOOK  }
+		unilateralInwardSerifedFlatHook   {SLAB-INWARD       SLAB-FLAT-HOOK  }
+		bottomSerifedFlatHook             {SLAB-FLAT-HOOK    SLAB-CLASSICAL  }
+		bottomInwardSerifedFlatHook       {SLAB-FLAT-HOOK    SLAB-INWARD     }
+		unilateralSerifedCornerHook       {SLAB-CLASSICAL    SLAB-CORNER-HOOK}
+		unilateralInwardSerifedCornerHook {SLAB-INWARD       SLAB-CORNER-HOOK}
+		bottomSerifedCornerHook           {SLAB-CORNER-HOOK  SLAB-CLASSICAL  }
+		bottomInwardSerifedCornerHook     {SLAB-CORNER-HOOK  SLAB-INWARD     }
 
 	define CArcTypes : object
 		Rounded SLAB-NONE
@@ -177,11 +177,11 @@ glyph-block Letter-Latin-C : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
-	foreach { topName topStyle } [pairs-of CArcTypes] : begin
-		foreach { bottomName bottomStyle } [pairs-of CArcTypes] : begin
+	foreach {topName topStyle} [pairs-of CArcTypes] : begin
+		foreach {bottomName bottomStyle} [pairs-of CArcTypes] : begin
 			set CConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
 
-	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+	foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 		create-glyph "C.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local lf : CLetterForm [DivFrame 1] styTop styBot CAP 0
@@ -337,7 +337,7 @@ glyph-block Letter-Latin-C : begin
 				HBar.m xMidBarLeft ((df.rightSB - OX) + O) (top / 2) sw
 
 			if fMidSerif : begin
-				local { jutTop jutBot jutMid } : EFVJutLength top 0 0.5 sw
+				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
 				local swVJut : Math.min (VJutStroke * (sw / Stroke))
@@ -358,7 +358,7 @@ glyph-block Letter-Latin-C : begin
 				HBar.m ((df.leftSB + OX) - O) xMidBarRight (top / 2) sw
 
 			if fMidSerif : begin
-				local { jutTop jutBot jutMid } : EFVJutLength top 0 0.5 sw
+				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
 				local swVJut : Math.min (VJutStroke * (sw / Stroke))
@@ -400,7 +400,7 @@ glyph-block Letter-Latin-C : begin
 		define DiagCfg : object
 			DiagonalCrossbar        1
 			DiagonalCrossbarFalling (-1)
-		foreach { dsuf dval0 } [Object.entries DiagCfg] : do
+		foreach {dsuf dval0} [Object.entries DiagCfg] : do
 			local fullDiagonal : (styTop == SLAB-FLAT-HOOK && styBot == SLAB-FLAT-HOOK) || (styTop == SLAB-CORNER-HOOK && styBot == SLAB-CORNER-HOOK)
 			local dval : if fullDiagonal dval0 (dval0 * 0.5)
 			create-glyph "cyrl/E.\(suffix)\(dsuf)" : glyph-proc
@@ -468,18 +468,18 @@ glyph-block Letter-Latin-C : begin
 			no-shape
 
 	define KoppaConfig : object
-		serifless                 { SLAB-NONE         false }
-		baseSerifed               { SLAB-NONE         true }
-		flatHook                  { SLAB-FLAT-HOOK    false }
-		flatHookBaseSerifed       { SLAB-FLAT-HOOK    true }
-		cornerHook                { SLAB-CORNER-HOOK  false }
-		cornerHookBaseSerifed     { SLAB-CORNER-HOOK  true }
-		inwardSerifed             { SLAB-INWARD       false }
-		inwardSerifedBaseSerifed  { SLAB-INWARD       true }
-		serifed                   { SLAB-CLASSICAL    false }
-		serifedBaseSerifed        { SLAB-CLASSICAL    true }
+		serifless                {SLAB-NONE         false}
+		baseSerifed              {SLAB-NONE         true }
+		flatHook                 {SLAB-FLAT-HOOK    false}
+		flatHookBaseSerifed      {SLAB-FLAT-HOOK    true }
+		cornerHook               {SLAB-CORNER-HOOK  false}
+		cornerHookBaseSerifed    {SLAB-CORNER-HOOK  true }
+		inwardSerifed            {SLAB-INWARD       false}
+		inwardSerifedBaseSerifed {SLAB-INWARD       true }
+		serifed                  {SLAB-CLASSICAL    false}
+		serifedBaseSerifed       {SLAB-CLASSICAL    true }
 
-	foreach { suffix { styTop fBaseSerif } } [Object.entries KoppaConfig] : do
+	foreach {suffix {styTop fBaseSerif}} [Object.entries KoppaConfig] : do
 		create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			local lf : CLetterForm [DivFrame 1] styTop SLAB-NONE CAP 0
@@ -585,8 +585,8 @@ glyph-block Letter-Latin-C : begin
 			VBar.m [Arch.adjust-x.bot Middle] desc (O + Stroke) VJutStroke
 			OShapeOutline.NoOvershoot CAP 0 SB RightSB Stroke ArchDepthA ArchDepthB
 
-	derive-multi-part-glyphs 'cyrl/The.BSH' null { 'cyrl/Es' 'invCommaBelow' } : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+	derive-multi-part-glyphs 'cyrl/The.BSH' null {'cyrl/Es' 'invCommaBelow'} : lambda [srcs gr] : glyph-proc
+		local {base mark} srcs
 		include : with-transform
 			ApparentTranslate
 				[Arch.adjust-x.bot Middle] - markMiddle
@@ -605,8 +605,8 @@ glyph-block Letter-Latin-C : begin
 			VBar.m [Arch.adjust-x.bot Middle] desc (O + Stroke) VJutStroke
 			OShapeOutline.NoOvershoot XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
 
-	derive-multi-part-glyphs 'cyrl/the.BSH' null { 'cyrl/es' 'invCommaBelow' } : lambda [srcs gr] : glyph-proc
-		local { base mark } srcs
+	derive-multi-part-glyphs 'cyrl/the.BSH' null {'cyrl/es' 'invCommaBelow'} : lambda [srcs gr] : glyph-proc
+		local {base mark} srcs
 		include : with-transform
 			ApparentTranslate
 				[Arch.adjust-x.bot Middle] - markMiddle
@@ -646,10 +646,10 @@ glyph-block Letter-Latin-C : begin
 			through     1
 			interrupted 2
 		object # height
-			''         { 0 XH (Descender / 2) (XH - Descender / 2)   'std' }
-			'cap'      { (CAP / 2 - XH / 2) (CAP / 2 + XH / 2) 0 CAP 'cap' }
+			''    {0                   XH                  (Descender / 2)  (XH - Descender / 2)  'std'}
+			'cap' {(CAP / 2 - XH / 2)  (CAP / 2 + XH / 2)  0                CAP                   'cap'}
 
-	foreach { suffix { sl fillType { bMask tMask bot top selector }}} [pairs-of CentConfig] : do
+	foreach {suffix {sl fillType {bMask tMask bot top selector}}} [pairs-of CentConfig] : do
 		define [xBot df] : mix df.leftSB df.rightSB (0.5 - sl)
 		define [xTop df] : mix df.leftSB df.rightSB (0.5 + sl)
 

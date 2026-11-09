@@ -70,10 +70,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			return : dispiro
 				Polyline [widths.center sw]
 					points -- {
-						{ dim.inside dim.top }
-						{ dim.outside [mix dim.top dim.mid 0.25] }
-						{ dim.outside [mix dim.bottom dim.mid 0.25] }
-						{ dim.inside dim.bottom }
+						{dim.inside dim.top}
+						{dim.outside [mix dim.top dim.mid 0.25]}
+						{dim.outside [mix dim.bottom dim.mid 0.25]}
+						{dim.inside dim.bottom}
 					}
 
 	define LargeContourDp : object
@@ -130,7 +130,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			'largeContour' LargeContourShape
 			'flatArc'      FlatArcShape
 
-		foreach { suffix shape } [pairs-of SimpleParenConfig] : begin
+		foreach {suffix shape} [pairs-of SimpleParenConfig] : begin
 			create-glyph "parenLeft.\(suffix)" : shape [DivFrame 1]
 			create-glyph "doubleParenLeft.\(suffix)" : glyph-proc
 				local df : DivFrame 1 3
@@ -684,10 +684,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		do 'Curly'
 			define CurlyBraceConfig : object
-				curly              { 0     0 }
-				curlyFlatBoundary  { 0.25  0.05 }
+				curly             {0     0   }
+				curlyFlatBoundary {0.25  0.05}
 
-			foreach { suffix { pFlatIn pFlatOut } } [Object.entries CurlyBraceConfig] : do
+			foreach {suffix {pFlatIn pFlatOut}} [Object.entries CurlyBraceConfig] : do
 				create-glyph "braceLeft.\(suffix)" : Brace.CurlyShape Stroke pFlatIn pFlatOut
 				turned "braceRight.\(suffix)" null "braceLeft.\(suffix)" Middle SymbolMid
 

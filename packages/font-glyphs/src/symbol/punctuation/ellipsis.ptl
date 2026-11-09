@@ -34,7 +34,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 	for-width-kinds WideWidth1 'Ellipsis'
 		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		# Dot-shape-only glyphs (no density axis)
-		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 			create-glyph "\[MangleName 'oneDotLeader'].\(suffix)" : glyph-proc
 				local width : MosaicWidth * [mix para.advanceScaleI para.advanceScaleII (MosaicWidthScalar - 1)]
 				set-width width
@@ -55,7 +55,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 
 		# Ellipsis glyphs: {dotShape} × {density}
 		# Leaf glyphs named: ellipsis.{dotSuffix}.{densitySuffix}
-		foreach { dotSuffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+		foreach {dotSuffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 			# Normal density: full MosaicWidth, dots at 1/6–5/6
 			create-glyph "\[MangleName 'ellipsis'].\(dotSuffix).normal" : glyph-proc
 				set-width MosaicWidth
@@ -125,17 +125,17 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 					set-width mathWidth
 
 		select-multi-dimensional-variant [MangleName 'ellipsis']    [MangleUnicode 0x2026]
-			follows -- { 'punctuationDot' 'ellipsisDensity' }
+			follows -- {'punctuationDot' 'ellipsisDensity'}
 		select-multi-dimensional-variant [MangleName 'mathCDots']   [MangleUnicode 0x22EF]
-			follows -- { 'punctuationDot' 'ellipsisDensity' }
+			follows -- {'punctuationDot' 'ellipsisDensity'}
 		select-multi-dimensional-variant [MangleName 'mathCVDots']  [MangleUnicode 0x22EE]
-			follows -- { 'punctuationDot' 'ellipsisDensity' }
+			follows -- {'punctuationDot' 'ellipsisDensity'}
 		select-multi-dimensional-variant [MangleName 'mathCD1Dots'] [MangleUnicode 0x22F1]
-			follows -- { 'punctuationDot' 'ellipsisDensity' }
+			follows -- {'punctuationDot' 'ellipsisDensity'}
 		select-multi-dimensional-variant [MangleName 'mathCD2Dots'] [MangleUnicode 0x22F0]
-			follows -- { 'punctuationDot' 'ellipsisDensity' }
+			follows -- {'punctuationDot' 'ellipsisDensity'}
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		define radius : kDotRadius * [EllipsisDotRadius 3 XH]
 
 		create-glyph "triColon.\(suffix)" : glyph-proc

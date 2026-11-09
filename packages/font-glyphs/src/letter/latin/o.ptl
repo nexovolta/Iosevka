@@ -64,7 +64,7 @@ glyph-block Letter-Latin-O : begin
 		include : DotAt df.middle (XH - df.mvs / 2) rBroadOn
 
 	derive-multi-part-glyphs 'OHorn' 0x01A0 {'O' 'longHorn'} : function [srcs gr] : glyph-proc
-		local { base horn } srcs
+		local {base horn} srcs
 		include : MarkSet.capital
 		include : HornBaseAnchor RightSB CAP (Width / 2) (ArchDepthB) 0.5
 		include : difference
@@ -75,7 +75,7 @@ glyph-block Letter-Latin-O : begin
 		include : refer-glyph base
 
 	derive-multi-part-glyphs 'oHorn' 0x01A1 {'o' 'longHorn'} : function [srcs gr] : glyph-proc
-		local { base horn } srcs
+		local {base horn} srcs
 		include : MarkSet.e
 		include : HornBaseAnchor RightSB XH (Width / 2) (ArchDepthB) 0.5
 		include : difference
@@ -151,7 +151,7 @@ glyph-block Letter-Latin-O : begin
 		diagonalCrossbar        1
 		diagonalCrossbarFalling (-1)
 
-	foreach { suffix diag } [Object.entries OBarConfig] : do
+	foreach {suffix diag} [Object.entries OBarConfig] : do
 		create-glyph "OBar.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local stroke : AdviceStroke2 2 3 CAP

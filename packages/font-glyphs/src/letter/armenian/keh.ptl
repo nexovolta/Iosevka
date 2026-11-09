@@ -17,7 +17,7 @@ glyph-block Letter-Armenian-Keh : begin
 	define jut Jut
 
 	do "K'eh"
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Keh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
@@ -44,7 +44,7 @@ glyph-block Letter-Armenian-Keh : begin
 				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
-		foreach { suffix { p0 } } [Object.entries KehPositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries KehPositionedSerifs] : do
 			if (p0) : create-glyph "armn/Keh.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/Keh.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1
@@ -52,7 +52,7 @@ glyph-block Letter-Armenian-Keh : begin
 				if p0 : include : if (p0 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/Keh' 0x554
 
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/keh.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.p
@@ -81,7 +81,7 @@ glyph-block Letter-Armenian-Keh : begin
 				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
-		foreach { suffix { p0 p1 } } [Object.entries kehPositionedSerifs] : do
+		foreach {suffix {p0 p1}} [Object.entries kehPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/keh.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/keh.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1

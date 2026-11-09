@@ -139,15 +139,15 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 					baseSerifed SLAB-BASE
 					triSerifed  SLAB-TRI
 			object # round-top variants
-				roundTopSerifless   { BODY-ROUND-TOP SLAB-NONE }
-				roundTopBaseSerifed { BODY-ROUND-TOP SLAB-BASE }
+				roundTopSerifless   {BODY-ROUND-TOP SLAB-NONE}
+				roundTopBaseSerifed {BODY-ROUND-TOP SLAB-BASE}
 
 		define AConfig : SuffixCfg.weave ABodyConfig : object
 			''                 0
 			diagonalBar        0.5
 			diagonalBarFalling (-0.5)
 
-		foreach { suffix { { bodyShape slabKind } diag } } [Object.entries AConfig] : do
+		foreach {suffix {{bodyShape slabKind} diag}} [Object.entries AConfig] : do
 			create-glyph "AE/A.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital
@@ -196,7 +196,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 	do 'Ya subglyphs'
 		glyph-block-import Letter-Latin-Upper-R : RevRShape RevRConfig
 
-		foreach { suffix { legShape fGap { slabs doLegSlab doTail } } } [Object.entries RevRConfig] : do
+		foreach {suffix {legShape fGap {slabs doLegSlab doTail}}} [Object.entries RevRConfig] : do
 			if (!slabs && !doTail) : begin
 				create-glyph "cyrl/YaYe/Ya.\(suffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleMM 3
@@ -231,7 +231,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 
 			local xMidBarRight : df.rightSB - sw / 4
 			local yBar : EFMidBarPosY top 0
-			local { jutTop jutBot jutMid } : EFVJutLength top 0 nothing sw
+			local {jutTop jutBot jutMid} : EFVJutLength top 0 nothing sw
 
 			# E half
 			include : VBar.l eLeft 0 top sw
@@ -250,14 +250,14 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 					include : VSerif.mr xMidBarRight yBar jutMid swVJut
 
 		define EConfig : object
-			serifless            { SLAB-NONE   }
-			topLeftSerifed       { SLAB-MOTION }
-			serifed              { SLAB-ALL    }
-			serifedCapped        { SLAB-CAPPED }
-			capped               { SLAB-MID    }
-			topLeftSerifedCapped { SLAB-MID    }
+			serifless            {SLAB-NONE  }
+			topLeftSerifed       {SLAB-MOTION}
+			serifed              {SLAB-ALL   }
+			serifedCapped        {SLAB-CAPPED}
+			capped               {SLAB-MID   }
+			topLeftSerifedCapped {SLAB-MID   }
 
-		foreach { suffix { slabKind } } [Object.entries EConfig] : do
+		foreach {suffix {slabKind}} [Object.entries EConfig] : do
 			create-glyph "AE/E.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital

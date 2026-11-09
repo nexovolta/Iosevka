@@ -145,8 +145,8 @@ glyph-block Letter-Latin-Upper-N : begin
 
 	define NConfig : SuffixCfg.weave
 		object # body
-			standard     { BODY-SYMMETRIC  4 }
-			asymmetric   { BODY-ASYMMETRIC 3 }
+			standard   {BODY-SYMMETRIC   4}
+			asymmetric {BODY-ASYMMETRIC  3}
 		object # slab
 			''             SLAB-AUTO
 			serifless      SLAB-NONE
@@ -157,8 +157,8 @@ glyph-block Letter-Latin-Upper-N : begin
 
 	define CyrIConfig : SuffixCfg.weave
 		object # body
-			standard     { BODY-SYMMETRIC  4 }
-			asymmetric   { BODY-ASYMMETRIC 3 }
+			standard   {BODY-SYMMETRIC   4}
+			asymmetric {BODY-ASYMMETRIC  3}
 		object # slab
 			serifless      SLAB-NONE
 			motionSerifed  SLAB-CYR-I-MOTION
@@ -166,7 +166,7 @@ glyph-block Letter-Latin-Upper-N : begin
 			topRightMotionSerifed SLAB-TOP-RIGHT
 			bilateralMotionSerifed SLAB-BILATERAL-MOTION
 
-	foreach { suffix { { bodyType crDiag } slabType } } [Object.entries NConfig] : do
+	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries NConfig] : do
 		create-glyph "N.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : NShape [DivFrame 1] CAP bodyType slabType
@@ -228,7 +228,7 @@ glyph-block Letter-Latin-Upper-N : begin
 	CreateAccentedComposition 'NAcute'    0x143 'N' 'acuteAbove'
 	CreateAccentedComposition 'NAcute.PLK' null 'N' 'kreskaAbove'
 
-	foreach { suffix { { bodyType crDiag } slabType } } [Object.entries CyrIConfig] : do
+	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries CyrIConfig] : do
 		create-glyph "cyrl/I.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : RevNShape [DivFrame 1] CAP bodyType slabType

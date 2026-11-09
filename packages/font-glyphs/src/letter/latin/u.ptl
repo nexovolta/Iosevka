@@ -220,11 +220,11 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
 		object # body
-			toothed          { shapeGroup.Toothed          RightSB            0              }
-			tailed           { shapeGroup.Tailed          (RightSB + SideJut) 0              }
-			flatBottom       { shapeGroup.FlatBottom       RightSB            0              }
-			toothlessCorner  { shapeGroup.ToothlessCorner  RightSB            DToothlessRise }
-			toothlessRounded { shapeGroup.ToothlessRounded null               null           }
+			toothed          {shapeGroup.Toothed           RightSB              0             }
+			tailed           {shapeGroup.Tailed            (RightSB + SideJut)  0             }
+			flatBottom       {shapeGroup.FlatBottom        RightSB              0             }
+			toothlessCorner  {shapeGroup.ToothlessCorner   RightSB              DToothlessRise}
+			toothlessRounded {shapeGroup.ToothlessRounded  null                 null          }
 		function [body] : begin
 			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
 				''         ''
@@ -232,17 +232,17 @@ glyph-block Letter-Latin-U : begin
 				''         ''
 				bottomCut  'bottomCut'
 		function [body cut] : object # serifs
-			serifless                { no-shape                false }
-			bottomRightSerifed       { USerifs.BottomRight     false }
-			bilateralMotionSerifed   { USerifs.BilateralMotion true  }
+			serifless              {no-shape                 false}
+			bottomRightSerifed     {USerifs.BottomRight      false}
+			bilateralMotionSerifed {USerifs.BilateralMotion  true }
 			motionSerifed : match body
-				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') { USerifs.MotionToothless true } { USerifs.MotionToothed true }]
-				__                                        { USerifs.MotionToothless true  }
+				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') {USerifs.MotionToothless true} {USerifs.MotionToothed true}]
+				__                                        {USerifs.MotionToothless true}
 			serifed : match body
-				([Just 'toothed'] || [Just 'flatBottom']) { USerifs.Toothed         true  }
-				__                                        { USerifs.Toothless       true  }
+				([Just 'toothed'] || [Just 'flatBottom']) {USerifs.Toothed         true}
+				__                                        {USerifs.Toothless       true}
 
-	foreach { suffix { { Base xRB yRB } cut { Slabs fSlabLT } } } [Object.entries : CapitalUConfigT UUpper] : do
+	foreach {suffix {{Base xRB yRB} cut {Slabs fSlabLT}}} [Object.entries : CapitalUConfigT UUpper] : do
 		local revBody : ReversedUBody UUpper Base suffix
 		local revSlabs : ReversedUSerifs Slabs
 		create-glyph "U.\(suffix)" : glyph-proc
@@ -255,7 +255,7 @@ glyph-block Letter-Latin-U : begin
 			include [refer-glyph "U.\(suffix)"] AS_BASE ALSO_METRICS
 			include : SetGrekUpperTonos [if fSlabLT (-SideJut) 0]
 
-		foreach { qSuffix { qBody qSw qTail qMark qSmcpMark } } [Object.entries QConfig] : do
+		foreach {qSuffix {qBody qSw qTail qMark qSmcpMark}} [Object.entries QConfig] : do
 			create-glyph "URTail.\(suffix).\(qSuffix)" : glyph-proc
 				local df : include : DivFrame 1
 				local uSlabs : piecewise
@@ -293,12 +293,12 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
 		object # tooth
-			toothed          { shapeGroup.Toothed          RightSB            0              }
-			tailed           { shapeGroup.Tailed          (RightSB + SideJut) 0              }
-			flatBottom       { shapeGroup.FlatBottom       RightSB            0              }
-			toothlessCorner  { shapeGroup.ToothlessCorner  RightSB            DToothlessRise }
-			toothlessRounded { shapeGroup.ToothlessRounded null               null           }
-			descBase         { shapeGroup.Toothed          RightSB            0              }
+			toothed          {shapeGroup.Toothed           RightSB              0             }
+			tailed           {shapeGroup.Tailed            (RightSB + SideJut)  0             }
+			flatBottom       {shapeGroup.FlatBottom        RightSB              0             }
+			toothlessCorner  {shapeGroup.ToothlessCorner   RightSB              DToothlessRise}
+			toothlessRounded {shapeGroup.ToothlessRounded  null                 null          }
+			descBase         {shapeGroup.Toothed           RightSB              0             }
 		function [tooth] : begin
 			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
 				''         ''
@@ -319,7 +319,7 @@ glyph-block Letter-Latin-U : begin
 
 	# The u of the ou digraph follows u, drawn in a narrower frame
 	define OuU : UShapeGroup (SmallArchDepthA * 0.75 * [DivFrame para.advanceScaleM 3].adws) (SmallArchDepthB * 0.75 * [DivFrame para.advanceScaleM 3].adws)
-	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT OuU] : do
+	foreach {suffix {{Base xRB yRB} cut Slabs}} [Object.entries : SmallUConfigT OuU] : do
 		create-glyph "latn/ou.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
@@ -340,7 +340,7 @@ glyph-block Letter-Latin-U : begin
 				eject-contour 'serifLT'
 			include : HBar.t [mix df.leftSB xO 0.5] (uDf.leftSB + shift + hsw) XH (0.88 * sw)
 
-	foreach { suffix { { Base xRB yRB } cut Slabs } } [Object.entries : SmallUConfigT ULower] : do
+	foreach {suffix {{Base xRB yRB} cut Slabs}} [Object.entries : SmallUConfigT ULower] : do
 		local revBody : ReversedUBody ULower Base suffix
 		local revSlabs : ReversedUSerifs Slabs
 		define [UBase df top sw fHL fSL] : Base df top sw fHL fSL cut
@@ -501,7 +501,7 @@ glyph-block Letter-Latin-U : begin
 	link-reduced-variant 'U/sansSerif' 'U' MathSansSerif
 	select-variant 'U/withTonos' (follow -- 'U')
 	select-variant 'smcpU' 0x1D1C (follow -- 'U')
-	select-multi-dimensional-variant 'URTail' 0x1DF7A (follows -- { 'U' 'Q' })
+	select-multi-dimensional-variant 'URTail' 0x1DF7A (follows -- {'U' 'Q'})
 	select-variant 'uCap' (shapeFrom -- 'U') (follow -- 'u')
 	select-variant 'UReversed' 0x1DF7E
 

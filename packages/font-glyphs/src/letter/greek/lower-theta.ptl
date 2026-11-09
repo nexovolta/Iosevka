@@ -20,11 +20,11 @@ glyph-block Letter-Greek-Lower-Theta : begin
 	define Diamond : ThetaShapeBase DiamondShapeT
 
 	define ThetaConfig : object
-		'capsule'  { Capsule  [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB] }
-		'oval'     { Oval     [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB] }
-		'diamond'  { Diamond  null }
+		'capsule' {Capsule  [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB]}
+		'oval'    {Oval     [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB]}
+		'diamond' {Diamond  null                                                          }
 
-	foreach { suffix { ShapeBase y0R } } [pairs-of ThetaConfig] : begin
+	foreach {suffix {ShapeBase y0R}} [pairs-of ThetaConfig] : begin
 		create-glyph "grek/theta.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			include : ShapeBase.Shape Ascender

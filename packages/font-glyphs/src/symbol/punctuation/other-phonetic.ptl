@@ -134,7 +134,7 @@ glyph-block Symbol-Other-Phonetic : begin
 		list 'departingToneYang' 0x2EB  0    0.5  0.5
 		list 'beginHighTone'     0x2F9  0.6  1    1.0
 		list 'beginLowTone'      0x2FB  0    0.4  0
-	foreach { name code a b pos } [items-of DepartingToneConfig] : begin
+	foreach {name code a b pos} [items-of DepartingToneConfig] : begin
 		create-glyph name code : glyph-proc
 			include : ToneCorner true a b pos
 
@@ -218,7 +218,7 @@ glyph-block Symbol-Other-Phonetic : begin
 	local EnteringToneConfig : list
 		list 'endHighTone'       0x2FA  0.6  1    1.0
 		list 'endLowTone'        0x2FC  0    0.4  0
-	foreach { name code a b pos } [items-of EnteringToneConfig] : begin
+	foreach {name code a b pos} [items-of EnteringToneConfig] : begin
 		create-glyph name code : glyph-proc
 			include : ToneCorner false a b pos
 
@@ -262,7 +262,7 @@ glyph-block Symbol-Other-Phonetic : begin
 			foreach contour [items-of : source.geometry.toContours] : foreach point [items-of contour] : begin
 				set bottom : Math.min bottom point.y
 				set top : Math.max top point.y
-			return { bottom top }
+			return {bottom top}
 		local probe : TranspositionSource (sw / 2)
 		local {probeBot probeTop} : TranspositionBounds probe
 		local probeScale : (CAP - bot) / (probeTop - probeBot)
@@ -277,7 +277,7 @@ glyph-block Symbol-Other-Phonetic : begin
 	local DblToneConfig : list
 		list 'stressAndHighTone'     0xA720  0.6  1    1.0
 		list 'stressAndLowTone'      0xA721  0    0.4  0
-	foreach { name code a b pos } [items-of DblToneConfig] : begin
+	foreach {name code a b pos} [items-of DblToneConfig] : begin
 		create-glyph name code : glyph-proc
 			local df : include : DivFrame 1 3.75
 			local fine : OperatorStroke * df.mvs / Stroke

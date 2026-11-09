@@ -377,14 +377,14 @@ glyph-block Letter-Latin-W : begin
 	define [VYShape df top straightBar bottomShape slabKind] : glyph-proc
 		# Y -> W configs
 		local wBodyType : if straightBar FORM-STRAIGHT FORM-CURLY
-		local { doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion } slabKind
+		local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
 		local wSlabType : if doSlabTop SERIFS-ALL-OUTER : if (doSlabMotion && doSlabTopRightMotion) SERIFS-BILATERAL-MOTION : if doSlabMotion SERIFS-MOTION : if doSlabTopRightMotion SERIFS-TOP-RIGHT-MOTION SERIFS-NONE
 		local dim : WDim df top wBodyType wSlabType MIDH-TOP
 
 		local r df.width
 		local l : mix r dim.xBot2 2
 
-		local YShape : NonCursiveYShapeT straightBar bottomShape { false doSlabBottom false } l r (l + df.leftSB) df.mvs
+		local YShape : NonCursiveYShapeT straightBar bottomShape {false doSlabBottom false} l r (l + df.leftSB) df.mvs
 		local YShapeRight : YShape.RightHalf 0 1 # = TS-NONE SHRINK-INNER
 		include : YShape.SmallYShape top Descender df.mvs
 
@@ -524,35 +524,35 @@ glyph-block Letter-Latin-W : begin
 	define WConfig : SuffixCfg.weave
 		# Body
 		object
-			straight                           { WShapeImpl   WHookRightShape   FORM-STRAIGHT         MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
-			straightAlmostFlatTop              { WShapeImpl   WHookRightShape   FORM-STRAIGHT         MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
-			straightFlatTop                    { WShapeImpl   WHookRightShape   FORM-STRAIGHT         MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
-			straightAsymmetric                 { WShapeImpl   WHookRightShape   FORM-ASYMMETRIC              MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			straightReverseAsymmetric          { WReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-ASYMMETRIC       MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			straightDoubleV                    { WShapeImpl   WHookRightShape   FORM-DOUBLE-V                MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			straightVerticalSides              { WVertSides   WVSHookRightShape FORM-VERTICAL         MIDH-OTHER      para.advanceScaleM  para.advanceScaleT  }
-			straightVerticalSidesAlmostFlatTop { WVertSides   WVSHookRightShape FORM-VERTICAL         MIDH-ALMOST-TOP para.advanceScaleM  para.advanceScaleT  }
-			straightVerticalSidesFlatTop       { WVertSides   WVSHookRightShape FORM-VERTICAL         MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			roundedVerticalSides               { WRounded     WHookRightRounded FORM-CURLY            MIDH-OTHER      para.advanceScaleMM para.advanceScaleMM }
-			roundedVerticalSidesAlmostFlatTop  { WRounded     WHookRightRounded FORM-CURLY            MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM }
-			roundedVerticalSidesFlatTop        { WRounded     WHookRightRounded FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleMM }
-			roundedSingleArch                  { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-OTHER      para.advanceScaleMM para.advanceScaleMM }
-			roundedSingleArchAlmostFlatTop     { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM }
-			roundedSingleArchFlatTop           { WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-TOP        para.advanceScaleMM para.advanceScaleMM }
-			curly                              { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
-			curlyAlmostFlatTop                 { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
-			curlyFlatTop                       { WShapeImpl   WHookRightShape   FORM-CURLY            MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
-			curlyAsymmetric                    { WShapeImpl   WHookRightShape   FORM-CURLY-ASYMMETRIC        MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			curlyReverseAsymmetric             { WReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-CURLY-ASYMMETRIC MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			squareTop                          { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-OTHER      para.advanceScaleM  para.advanceScaleM  }
-			squareTopAlmostFlatTop             { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM  }
-			squareTopFlatTop                   { WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT         MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
-			squareTopAsymmetric                { WSquareTopShape WSquareTopHookRightShape FORM-ASYMMETRIC       MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			squareTopReverseAsymmetric         { WSquareTopReverseAsymmetricShape WSquareTopHookRightReverseAsymmetricShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
-			squareTopDoubleV                   { WSquareTopShape WSquareTopHookRightShape FORM-DOUBLE-V         MIDH-TOP        para.advanceScaleM  para.advanceScaleT  }
-			cursive                            { WCursiveImpl WHookRightCursive FORM-CURSIVE          MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
-			cursiveFlatTop                     { WCursiveImpl WHookRightCursive FORM-CURSIVE          MIDH-TOP        para.advanceScaleMM para.advanceScaleM  }
-			cyrlOmega                          { WShapeImpl   WHookRightShape   FORM-CYRL-OMEGA       MIDH-OTHER      para.advanceScaleMM para.advanceScaleM  }
+			straight                           {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
+			straightAlmostFlatTop              {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
+			straightFlatTop                    {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
+			straightAsymmetric                 {WShapeImpl                        WHookRightShape                            FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			straightReverseAsymmetric          {WReverseAsymmetricShape           WHookRightReverseAsymmetricShape           FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			straightDoubleV                    {WShapeImpl                        WHookRightShape                            FORM-DOUBLE-V          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			straightVerticalSides              {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-OTHER       para.advanceScaleM   para.advanceScaleT }
+			straightVerticalSidesAlmostFlatTop {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-ALMOST-TOP  para.advanceScaleM   para.advanceScaleT }
+			straightVerticalSidesFlatTop       {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			roundedVerticalSides               {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-OTHER       para.advanceScaleMM  para.advanceScaleMM}
+			roundedVerticalSidesAlmostFlatTop  {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleMM}
+			roundedVerticalSidesFlatTop        {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleMM}
+			roundedSingleArch                  {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-OTHER       para.advanceScaleMM  para.advanceScaleMM}
+			roundedSingleArchAlmostFlatTop     {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleMM}
+			roundedSingleArchFlatTop           {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleMM}
+			curly                              {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
+			curlyAlmostFlatTop                 {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
+			curlyFlatTop                       {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
+			curlyAsymmetric                    {WShapeImpl                        WHookRightShape                            FORM-CURLY-ASYMMETRIC  MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			curlyReverseAsymmetric             {WReverseAsymmetricShape           WHookRightReverseAsymmetricShape           FORM-CURLY-ASYMMETRIC  MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			squareTop                          {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
+			squareTopAlmostFlatTop             {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
+			squareTopFlatTop                   {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
+			squareTopAsymmetric                {WSquareTopShape                   WSquareTopHookRightShape                   FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			squareTopReverseAsymmetric         {WSquareTopReverseAsymmetricShape  WSquareTopHookRightReverseAsymmetricShape  FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			squareTopDoubleV                   {WSquareTopShape                   WSquareTopHookRightShape                   FORM-DOUBLE-V          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
+			cursive                            {WCursiveImpl                      WHookRightCursive                          FORM-CURSIVE           MIDH-OTHER       para.advanceScaleMM  para.advanceScaleM }
+			cursiveFlatTop                     {WCursiveImpl                      WHookRightCursive                          FORM-CURSIVE           MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
+			cyrlOmega                          {WShapeImpl                        WHookRightShape                            FORM-CYRL-OMEGA        MIDH-OTHER       para.advanceScaleMM  para.advanceScaleM }
 
 		# Serifs
 		function [body] : if (body == 'cyrlOmega')
@@ -581,7 +581,7 @@ glyph-block Letter-Latin-W : begin
 					[Just 'cursiveFlatTop']               SERIFS-MOTION
 					__                                    SERIFS-ALL
 
-	foreach { suffix { {implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType } } [pairs-of WConfig] : do
+	foreach {suffix {{implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType}} [pairs-of WConfig] : do
 		create-glyph "W.\(suffix)" : glyph-proc
 			local df : include : DivFrame adwsUpper 3
 			include : df.markSet.capital
@@ -672,12 +672,12 @@ glyph-block Letter-Latin-W : begin
 		return : object df hDf sw shift wDf
 
 	local bakedH BakedHDigraphSuffix
-	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+	foreach {hSuffix {fFlatHump fTailed HSerifs}} [Object.entries HDigraphConfig] : do
 		if (hSuffix === bakedH) : create-glyph 'latn/wh/h' : glyph-proc
 			local L : WhLayout
 			include : with-transform [ApparentTranslate L.shift 0] : HDigraphBody L.hDf L.sw HSerifs false fFlatHump fTailed
 
-	foreach { suffix { { implT hookRightImplT bodyType midHClass adwsUpper adwsLower } slabType } } [pairs-of WConfig] : do
+	foreach {suffix {{implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType}} [pairs-of WConfig] : do
 		create-glyph "latn/wh.\(suffix)" : glyph-proc
 			local L : WhLayout
 			set-width L.df.width
@@ -689,7 +689,7 @@ glyph-block Letter-Latin-W : begin
 
 	select-variant 'latn/wh' 0x1DF65 (follow -- 'w')
 	# VY
-	foreach { suffix { { straightBar fSquareTop } bottomShape slabKind } } [Object.entries NonCursiveYConfig] : do
+	foreach {suffix {{straightBar fSquareTop} bottomShape slabKind}} [Object.entries NonCursiveYConfig] : do
 		if [not fSquareTop] : begin
 			create-glyph "VY.\(suffix)" : glyph-proc
 				local df : include : DivFrame adwsLower 3

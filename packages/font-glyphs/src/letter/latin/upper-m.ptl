@@ -158,8 +158,8 @@ glyph-block Letter-Latin-Upper-M : begin
 				smallCyrl     SLAB-SMALL-CYRILLIC
 				serifed       SLAB-FULL
 		object # Greek San variants
-			grekCapitalSan { false BODY-SAN       MID-HANGING SLAB-AUTO }
-			grekSmallSan   { false BODY-SAN-SMALL MID-HANGING SLAB-NONE }
+			grekCapitalSan {false  BODY-SAN        MID-HANGING  SLAB-AUTO}
+			grekSmallSan   {false  BODY-SAN-SMALL  MID-HANGING  SLAB-NONE}
 
 	define CyrSoftEmGheConfig : object
 		serifless       false
@@ -190,7 +190,7 @@ glyph-block Letter-Latin-Upper-M : begin
 				__                nothing
 			else nothing
 
-	foreach { suffix { slanted bodyKind midKind slab } } [Object.entries MConfig] : do
+	foreach {suffix {slanted bodyKind midKind slab}} [Object.entries MConfig] : do
 		define form : MFormOf bodyKind midKind
 		define middleYExt : MMiddleYExtOf bodyKind midKind
 
@@ -226,7 +226,7 @@ glyph-block Letter-Latin-Upper-M : begin
 		DefineSelectorGlyph 'cyrl/EmSoft' suffix cyrSoftEmDf 'capital'
 		DefineSelectorGlyph 'cyrl/emSoft' suffix cyrSoftemDf 'e'
 
-		foreach { suffixGhe cyrSoftEmVSlab } [Object.entries CyrSoftEmGheConfig] : do
+		foreach {suffixGhe cyrSoftEmVSlab} [Object.entries CyrSoftEmGheConfig] : do
 			create-glyph "cyrl/EmSoft.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -261,7 +261,7 @@ glyph-block Letter-Latin-Upper-M : begin
 			motionSerifed SLAB-MOTION
 			smallCyrl     SLAB-SMALL-CYRILLIC
 
-	foreach { suffix { slanted bodyKind midKind tailed slab } } [Object.entries EmConfig] : do
+	foreach {suffix {slanted bodyKind midKind tailed slab}} [Object.entries EmConfig] : do
 		if (!tailed || !slanted) : begin
 			define form : MFormOf bodyKind midKind
 			define middleYExt : MMiddleYExtOf bodyKind midKind

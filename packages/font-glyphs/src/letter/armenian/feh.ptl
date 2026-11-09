@@ -30,7 +30,7 @@ glyph-block Letter-Armenian-Feh : begin
 			HookEnd bot (sw -- sw)
 			g4 (df.leftSB + OX) (bot + hook)
 
-	foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+	foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 		create-glyph "armn/Feh.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
@@ -46,7 +46,7 @@ glyph-block Letter-Armenian-Feh : begin
 		object
 			'' 0
 			topCenterMotion 1
-	foreach { suffix { p0 } } [Object.entries FehPositionedSerifs] : do
+	foreach {suffix {p0}} [Object.entries FehPositionedSerifs] : do
 		if (p0) : create-glyph "armn/Feh.\(suffix)" : glyph-proc
 			include [refer-glyph 'armn/Feh.serifless'] AS_BASE ALSO_METRICS
 			local df : DivFrame para.advanceScaleM 3
@@ -55,7 +55,7 @@ glyph-block Letter-Armenian-Feh : begin
 			if p0 : include sf.mt.right
 	select-variant 'armn/Feh' 0x556
 
-	foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+	foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 		create-glyph "armn/feh.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.bp
@@ -71,7 +71,7 @@ glyph-block Letter-Armenian-Feh : begin
 		object
 			'' 0
 			bottomCenterFull 2
-	foreach { suffix { p0 } } [Object.entries fehPositionedSerifs] : do
+	foreach {suffix {p0}} [Object.entries fehPositionedSerifs] : do
 		if (p0) : create-glyph "armn/feh.\(suffix)" : glyph-proc
 			include [refer-glyph 'armn/feh.serifless'] AS_BASE ALSO_METRICS
 			local df : DivFrame para.advanceScaleM 3

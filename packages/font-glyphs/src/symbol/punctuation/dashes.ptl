@@ -24,13 +24,13 @@ glyph-block Symbol-Punctuation-Dashes : begin
 
 		glyph-block-export UnderScoreConfig
 		define UnderScoreConfig : object
-			aboveBaseline { 0         }
-			high          { (-Stroke) }
-			low           { Descender }
+			aboveBaseline {0        }
+			high          {(-Stroke)}
+			low           {Descender}
 
 		define joiningOverlap : (-Width) / 6
 
-		foreach { suffix { yBar } } [Object.entries UnderScoreConfig] : do
+		foreach {suffix {yBar}} [Object.entries UnderScoreConfig] : do
 			create-glyph "underscore.\(suffix)" : HBar.b SB RightSB yBar
 			create-glyph "doubleUnderscore.\(suffix)" : composite-proc
 				HBar.b SB RightSB  yBar
@@ -190,7 +190,7 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		set-width w
 		include : HBar.m 0 w SymbolMid
 
-	derive-multi-part-glyphs 'hyphenDieresis' 0x2E1A { 'figureDash' 'dieresisAbove'}
+	derive-multi-part-glyphs 'hyphenDieresis' 0x2E1A {'figureDash' 'dieresisAbove'}
 		function [src sel] : composite-proc
 			refer-glyph src.0
 			MarkSet.plus
@@ -206,7 +206,7 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local ringR : 0.07 * W
 		define [LowerHalf] : glyph-proc
 			include : HBar.m (df.middle - 0.5 * W) (df.middle + 0.5 * W) yC sw
-			foreach { len off } [items-of { {0.72 88} {0.45 176} {0.18 258} }] : do
+			foreach {len off} [items-of {{0.72 88} {0.45 176} {0.18 258}}] : do
 				include : HBar.m (df.middle - 0.5 * len * W) (df.middle + 0.5 * len * W) (yC - off * u) sw
 			local ringY : yC - ringR + 0.5 * sw
 			include : difference [DotAt df.middle ringY ringR] [DotAt df.middle ringY (ringR - sw)]

@@ -100,13 +100,13 @@ glyph-block Letter-Latin-Yogh : begin
 			g4 (SB + [HSwToV : 0.1 * stroke]) (bot + O)
 
 	define Config : object
-		serifless               { SLAB-NONE      }
-		topFlatHook             { SLAB-FLAT-HOOK }
-		topCornerHook           { SLAB-CORNER-HOOK }
-		unilateralSerifed       { SLAB-CLASSICAL }
-		unilateralInwardSerifed { SLAB-INWARD    }
+		serifless               {SLAB-NONE       }
+		topFlatHook             {SLAB-FLAT-HOOK  }
+		topCornerHook           {SLAB-CORNER-HOOK}
+		unilateralSerifed       {SLAB-CLASSICAL  }
+		unilateralInwardSerifed {SLAB-INWARD     }
 
-	foreach { suffix { slabTop } } [Object.entries Config] : do
+	foreach {suffix {slabTop}} [Object.entries Config] : do
 		create-glyph "Yogh.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : YoghShape slabTop CAP 0 OverlayPos

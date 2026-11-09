@@ -171,7 +171,7 @@ glyph-block Letter-Latin-Ezh : begin
 
 			if fSerifed : begin
 				local serifTop : if fOunceTop [fallback ounceTop top] top
-				local { jutTop jutBot jutMid } : EFVJutLength serifTop bottom pyMidLeft stroke nothing hook
+				local {jutTop jutBot jutMid} : EFVJutLength serifTop bottom pyMidLeft stroke nothing hook
 				include : VSerif.dl xTopLeft serifTop jutTop (VJutStroke * (stroke / Stroke))
 
 	glyph-block-export RevEzh
@@ -288,37 +288,37 @@ glyph-block Letter-Latin-Ezh : begin
 			if (terminal === TERMINAL-HOOK && hookStyle === 'inwardSerifed') : include : ArcEndSerif.InwardR RightSB bottom stroke hook
 
 			if fSerifed : begin
-				local { jutTop jutBot jutMid } : EFVJutLength top bottom pyMidRight stroke nothing hook
+				local {jutTop jutBot jutMid} : EFVJutLength top bottom pyMidRight stroke nothing hook
 				include : VSerif.dr xTopRight top jutTop (VJutStroke * (stroke / Stroke))
 
 	define LegacyEzhConfig : object
-		straightSerifless   { false  false }
-		straightTopSerifed  { false  true }
-		cursive             { true   false }
+		straightSerifless  {false  false}
+		straightTopSerifed {false  true }
+		cursive            {true   false}
 
 	define PhoneticEzhHooks : list 'serifless' 'serifed' 'inwardSerifed' 'flatHook' 'cornerHook'
 
 	define EzhConfig : object
-		straightSerifless                    { false  false  'serifless' }
-		straightTopSerifed                   { false  true   'serifless' }
-		straightHookSerifedSerifless         { false  false  'serifed' }
-		straightHookSerifedTopSerifed        { false  true   'serifed' }
-		straightHookInwardSerifedSerifless   { false  false  'inwardSerifed' }
-		straightHookInwardSerifedTopSerifed  { false  true   'inwardSerifed' }
-		straightHookFlatSerifless            { false  false  'flatHook' }
-		straightHookFlatTopSerifed           { false  true   'flatHook' }
-		straightHookCornerSerifless          { false  false  'cornerHook' }
-		straightHookCornerTopSerifed         { false  true   'cornerHook' }
-		cursiveSerifless                     { true   false  'serifless' }
-		cursiveTopSerifed                    { true   true   'serifless' }
-		cursiveHookSerifedSerifless          { true   false  'serifed' }
-		cursiveHookSerifedTopSerifed         { true   true   'serifed' }
-		cursiveHookInwardSerifedSerifless    { true   false  'inwardSerifed' }
-		cursiveHookInwardSerifedTopSerifed   { true   true   'inwardSerifed' }
-		cursiveHookFlatSerifless             { true   false  'flatHook' }
-		cursiveHookFlatTopSerifed            { true   true   'flatHook' }
-		cursiveHookCornerSerifless           { true   false  'cornerHook' }
-		cursiveHookCornerTopSerifed          { true   true   'cornerHook' }
+		straightSerifless                   {false  false  'serifless'    }
+		straightTopSerifed                  {false  true   'serifless'    }
+		straightHookSerifedSerifless        {false  false  'serifed'      }
+		straightHookSerifedTopSerifed       {false  true   'serifed'      }
+		straightHookInwardSerifedSerifless  {false  false  'inwardSerifed'}
+		straightHookInwardSerifedTopSerifed {false  true   'inwardSerifed'}
+		straightHookFlatSerifless           {false  false  'flatHook'     }
+		straightHookFlatTopSerifed          {false  true   'flatHook'     }
+		straightHookCornerSerifless         {false  false  'cornerHook'   }
+		straightHookCornerTopSerifed        {false  true   'cornerHook'   }
+		cursiveSerifless                    {true   false  'serifless'    }
+		cursiveTopSerifed                   {true   true   'serifless'    }
+		cursiveHookSerifedSerifless         {true   false  'serifed'      }
+		cursiveHookSerifedTopSerifed        {true   true   'serifed'      }
+		cursiveHookInwardSerifedSerifless   {true   false  'inwardSerifed'}
+		cursiveHookInwardSerifedTopSerifed  {true   true   'inwardSerifed'}
+		cursiveHookFlatSerifless            {true   false  'flatHook'     }
+		cursiveHookFlatTopSerifed           {true   true   'flatHook'     }
+		cursiveHookCornerSerifless          {true   false  'cornerHook'   }
+		cursiveHookCornerTopSerifed         {true   true   'cornerHook'   }
 
 	define LezhCasualTopConfig : object
 		topTailed  'tailed'
@@ -341,7 +341,7 @@ glyph-block Letter-Latin-Ezh : begin
 
 	define LezhRightSerifSuffixes : list 'reverseHooky' 'sshaped' 'topRightSerifed' 'topRightBaseSerifed' 'topRightBaseSerifedAsymmetric'
 
-	foreach { suffix { fCursive fSerifed hookStyle } } [pairs-of EzhConfig] : do
+	foreach {suffix {fCursive fSerifed hookStyle}} [pairs-of EzhConfig] : do
 		create-glyph "Ezh.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			define ezh : Ezh [DivFrame 1] CAP 0
@@ -524,7 +524,7 @@ glyph-block Letter-Latin-Ezh : begin
 			refSw   -- fine
 			maskOut -- [intersection [MaskBelow attach.y] [MaskLeft attach.x]]
 
-	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
+	foreach {suffix {fCursive fSerifed}} [pairs-of LegacyEzhConfig] : do
 		if [not fSerifed] : begin
 			DefineSelectorGlyph 'lezh'          suffix [DivFrame 1] 'bp'
 			DefineSelectorGlyph 'lezhCurlyTail' suffix [DivFrame 1] 'bp'
@@ -549,7 +549,7 @@ glyph-block Letter-Latin-Ezh : begin
 				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
 					create-forked-glyph "lezh.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+			foreach {topSuffix kind} [Object.entries LezhCasualTopConfig] : do
 				create-glyph "lezh.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -588,7 +588,7 @@ glyph-block Letter-Latin-Ezh : begin
 				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
 					create-forked-glyph "lezhCurlyTail.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+			foreach {topSuffix kind} [Object.entries LezhCasualTopConfig] : do
 				create-glyph "lezhCurlyTail.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -629,7 +629,7 @@ glyph-block Letter-Latin-Ezh : begin
 				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
 					create-forked-glyph "lezhRTail.\(suffix).\(rightSuffix)" : LezhHookyRight SB Ascender
 
-			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+			foreach {topSuffix kind} [Object.entries LezhCasualTopConfig] : do
 				create-glyph "lezhRTail.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -727,7 +727,7 @@ glyph-block Letter-Latin-Ezh : begin
 				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
 					create-forked-glyph "lezh/phoneticRight.\(suffix).\(rightSuffix)" : LezhHookyRight (subDf.leftSB + gap) Ascender origBar
 
-			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+			foreach {topSuffix kind} [Object.entries LezhCasualTopConfig] : do
 				create-glyph "lezh/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -779,7 +779,7 @@ glyph-block Letter-Latin-Ezh : begin
 				foreach rightSuffix [items-of LezhRightSerifSuffixes] : do
 					create-forked-glyph "lezhRTail/phoneticRight.\(suffix).\(rightSuffix)" : LezhHookyRight (subDf.leftSB + gap) Ascender origBar
 
-			foreach { topSuffix kind } [Object.entries LezhCasualTopConfig] : do
+			foreach {topSuffix kind} [Object.entries LezhCasualTopConfig] : do
 				create-glyph "lezhRTail/phoneticRight.\(suffix).\(topSuffix)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -837,10 +837,10 @@ glyph-block Letter-Latin-Ezh : begin
 			LezhSelectedBar df df.leftSB Ascender origBar topSuffix
 		if phonetic : include : HBar.t (SB - SideJut) (df.leftSB + gap - O) XH
 
-	local lezhTopSuffixes { 'serifless' 'hooky' }
+	local lezhTopSuffixes {'serifless' 'hooky'}
 	foreach topSuffix [items-of LezhRightSerifSuffixes] : lezhTopSuffixes.push topSuffix
 	foreach topSuffix [Object.keys LezhCasualTopConfig] : lezhTopSuffixes.push topSuffix
-	foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
+	foreach {suffix {fCursive fSerifed}} [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
 		foreach hookStyle [items-of PhoneticEzhHooks] : begin
 			create-glyph "ezh/phoneticRight.\(suffix).\(hookStyle)" : glyph-proc
 				if (hookStyle === 'serifless')
@@ -859,7 +859,7 @@ glyph-block Letter-Latin-Ezh : begin
 						adb       -- SmallArchDepthB
 					include : ezh.Shape
 			create-glyph "ezhPalatalHook/phoneticRight.\(suffix).\(hookStyle)" : PhoneticEzhPalatal fCursive fSerifed hookStyle
-			foreach name { 'lezh' 'lezh/phoneticRight' } : begin
+			foreach name {'lezh' 'lezh/phoneticRight'} : begin
 				foreach topSuffix [items-of lezhTopSuffixes] : do
 					create-glyph "\(name)/hook.\(suffix).\(hookStyle).\(topSuffix)" : glyph-proc
 						if (hookStyle === 'serifless')
@@ -870,12 +870,12 @@ glyph-block Letter-Latin-Ezh : begin
 
 	define [SelectLezhHooks name unicode] : begin
 		local choices {.}
-		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
+		foreach {suffix {fCursive fSerifed}} [pairs-of LegacyEzhConfig] : if [not fSerifed] : begin
 			foreach hookStyle [items-of PhoneticEzhHooks] : begin
 				local selector : suffix + '.' + hookStyle
 				DefineSelectorGlyph name selector [DivFrame 1] 'bp'
 				set choices.(selector) "\(name)/hook.\(selector)"
-		select-multi-dimensional-variant "\(name)/selector" (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+		select-multi-dimensional-variant "\(name)/selector" (follows -- {'ezh/phoneticRight' 'ezh/phoneticHook'})
 		CreateDependentComposite name unicode "\(name)/selector" choices
 
 	select-variant 'Ezh'     0x1B7
@@ -899,12 +899,10 @@ glyph-block Letter-Latin-Ezh : begin
 		glyph-block-import Letter-Latin-Lower-T : SmallTConfig
 
 		define tzAdws : Math.min para.advanceScaleMM 1.5
-		# Match crowded phonetic stems without horizontally scaling their outlines.
 		define [TzStroke df] : if (tzAdws < 1.5) [df.adviceStroke 3.75] Stroke
-		# Keep the crossbar joined after outline coordinates are rounded.
 		define [TzJoinOverlap df] : Math.max 4 : 0.05 * [HSwToV : TzStroke df]
 
-		foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
+		foreach {suffix {adws doST doSB}} [Object.entries TConfig] : do
 			create-glyph "TZ/T.\(suffix)" : glyph-proc
 				local df : include : DivFrame tzAdws 3
 				local subDf : df.slice 3 2
@@ -912,7 +910,7 @@ glyph-block Letter-Latin-Ezh : begin
 				set-base-anchor 'cvDecompose' 0 0
 				include : TShape subDf CAP doST doSB nothing nothing [TzStroke df]
 
-		foreach { suffix { { tDf Style } sym top } } [pairs-of SmallTConfig] : do
+		foreach {suffix {{tDf Style} sym top}} [pairs-of SmallTConfig] : do
 			create-glyph "tz/t.\(suffix)" : glyph-proc
 				local df : include : DivFrame tzAdws 3
 				local subDf : df.slice 3 2
@@ -942,12 +940,11 @@ glyph-block Letter-Latin-Ezh : begin
 			include : with-transform [ApparentTranslate (xJoin - ezhDf.leftSB) 0] : glyph-proc
 				include : ezh.Shape
 
-		foreach { suffix { fCursive fSerifed } } [pairs-of LegacyEzhConfig] : do
+		foreach {suffix {fCursive fSerifed}} [pairs-of LegacyEzhConfig] : do
 			foreach hookStyle [items-of PhoneticEzhHooks] : do
 				create-glyph "TZ/ezh.\(suffix).\(hookStyle)" : glyph-proc
 					local df : DivFrame tzAdws 3
 					local subDf : df.slice 3 2
-					# Meet T at the right of its stem, like Times: top bar does not pass through T.
 					include : TzEzhGlyph (subDf.middle + [HSwToV : 0.5 * [TzStroke df]] - [TzJoinOverlap df]) fSerifed hookStyle
 				create-glyph "tz/ezh.\(suffix).\(hookStyle)" : glyph-proc
 					local df : DivFrame tzAdws 3
@@ -957,26 +954,26 @@ glyph-block Letter-Latin-Ezh : begin
 
 		select-variant 'TZ/T' (follow -- 'T')
 		select-variant 'tz/t' (follow -- 't')
-		select-multi-dimensional-variant 'TZ/ezh' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
-		select-multi-dimensional-variant 'tz/ezh' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+		select-multi-dimensional-variant 'TZ/ezh' (follows -- {'ezh/phoneticRight' 'ezh/phoneticHook'})
+		select-multi-dimensional-variant 'tz/ezh' (follows -- {'ezh/phoneticRight' 'ezh/phoneticHook'})
 
-		derive-multi-part-glyphs 'TZ' 0xA728 { 'TZ/T' 'TZ/ezh' } : function [srcs gr] : glyph-proc
+		derive-multi-part-glyphs 'TZ' 0xA728 {'TZ/T' 'TZ/ezh'} : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
 			include : df.markSet.p
-			define { te ezhg } srcs
+			define {te ezhg} srcs
 			include [refer-glyph te]
 			include [refer-glyph ezhg]
 
-		derive-multi-part-glyphs 'tz' 0xA729 { 'tz/t' 'tz/ezh' } : function [srcs gr] : glyph-proc
+		derive-multi-part-glyphs 'tz' 0xA729 {'tz/t' 'tz/ezh'} : function [srcs gr] : glyph-proc
 			local df : include : DivFrame tzAdws 3
 			include : df.markSet.bp
-			define { te ezhg } srcs
+			define {te ezhg} srcs
 			include : union [refer-glyph te] [refer-glyph ezhg]
 
-	select-multi-dimensional-variant 'ezh/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+	select-multi-dimensional-variant 'ezh/phoneticRight' (follows -- {'ezh/phoneticRight' 'ezh/phoneticHook'})
 	select-variant 'ezhCurlyTail/phoneticRight'   (follow -- 'ezh/phoneticRight')
 	select-variant 'ezhRTail/phoneticRight'       (follow -- 'ezh/phoneticRight')
-	select-multi-dimensional-variant 'ezhPalatalHook/phoneticRight' (follows -- { 'ezh/phoneticRight' 'ezh/phoneticHook' })
+	select-multi-dimensional-variant 'ezhPalatalHook/phoneticRight' (follows -- {'ezh/phoneticRight' 'ezh/phoneticHook'})
 
 	SelectLezhHooks 'lezh/phoneticRight' null
 	CreateSelectorVariants 'lezhRTail/phoneticRight' null [Object.keys LegacyEzhConfig] (follow -- 'ezh/phoneticRight')
@@ -989,9 +986,9 @@ glyph-block Letter-Latin-Ezh : begin
 
 		define FLAT-CONNECTION 3
 
-		foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+		foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 			if [not styBot] : begin
-				foreach { ezhSuffix { fCursive fSerifed hookStyle } } [pairs-of EzhConfig] : do
+				foreach {ezhSuffix {fCursive fSerifed hookStyle}} [pairs-of EzhConfig] : do
 					create-glyph "ZVisigothic.\(suffix).\(ezhSuffix)" : glyph-proc
 						include : MarkSet.capital
 						local stroke : AdviceStroke2 2 3 (XH - 0)
@@ -1042,5 +1039,5 @@ glyph-block Letter-Latin-Ezh : begin
 								include : z.Shape
 								eject-contour 'strokeTop'
 
-		select-multi-dimensional-variant 'ZVisigothic' 0xA762 (follows -- { 'C/topSerif' 'Ezh' })
-		select-multi-dimensional-variant 'zVisigothic' 0xA763 (follows -- { 'c/topSerif' 'ezh' })
+		select-multi-dimensional-variant 'ZVisigothic' 0xA762 (follows -- {'C/topSerif' 'Ezh'})
+		select-multi-dimensional-variant 'zVisigothic' 0xA763 (follows -- {'c/topSerif' 'ezh'})

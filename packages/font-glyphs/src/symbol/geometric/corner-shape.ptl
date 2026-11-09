@@ -27,7 +27,7 @@ glyph-block Symbol-Geometric-Corner-Shape: begin
 			list 0x231E SymbolMid ptBotFar (-MosaicWidth) (MosaicWidth / 2)
 			list 0x231F SymbolMid ptBotFar (MosaicWidth / 2) (2 * MosaicWidth)
 
-		foreach { unicode t b l r } [items-of CornerShapeConfig] : begin
+		foreach {unicode t b l r} [items-of CornerShapeConfig] : begin
 			create-glyph [MangleName : NameUni unicode] [MangleUnicode unicode] : glyph-proc
 				set-width MosaicWidth
 				include : intersection
@@ -45,11 +45,11 @@ glyph-block Symbol-Geometric-Corner-Shape: begin
 		define hRight MosaicWidth
 
 		define cropKH : 0.3 * [Math.sqrt (1 / MosaicWidthScalar)]
-		define H_LEFT  { 0 (0 + cropKH) }
-		define H_RIGHT { (1 - cropKH) 1 }
+		define H_LEFT  {0 (0 + cropKH)}
+		define H_RIGHT {(1 - cropKH) 1}
 		define cropKV : cropKH * MosaicWidth / (vTop - vBot)
-		define V_BOTTOM { (0 - cropKV) 0 }
-		define V_TOP    { 1 (1 + cropKV) }
+		define V_BOTTOM {(0 - cropKV) 0}
+		define V_TOP    {1 (1 + cropKV)}
 
 		define CropConfig : list
 			#   Unicode  hPos hRg        vPos          vRg
@@ -58,7 +58,7 @@ glyph-block Symbol-Geometric-Corner-Shape: begin
 			list 0x230E  1    H_RIGHT    (1 - cropKH)  V_TOP
 			list 0x230F  1    H_LEFT     cropKH        V_TOP
 
-		foreach { unicode hPos hRg vPos vRg } [items-of CropConfig] : begin
+		foreach {unicode hPos hRg vPos vRg} [items-of CropConfig] : begin
 			create-glyph [MangleName : NameUni unicode] [MangleUnicode unicode] : glyph-proc
 				set-width MosaicWidth
 				include : HBar.m

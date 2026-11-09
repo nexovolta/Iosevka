@@ -139,15 +139,15 @@ glyph-block Letter-Latin-Lower-Q : begin
 			tailed             TERMINAL-TAILED
 			diagonalTailed     TERMINAL-DIAG
 		object # serifs
-			serifless           { null        null         }
-			motionSerifed       { RtSerif     null         }
-			bottomSerifed       { null        RbSerif      }
-			motionBottomSerifed { null        RbSerifOuter }
-			serifed             { RtSerif     RbSerif      }
+			serifless           {null     null        }
+			motionSerifed       {RtSerif  null        }
+			bottomSerifed       {null     RbSerif     }
+			motionBottomSerifed {null     RbSerifOuter}
+			serifed             {RtSerif  RbSerif     }
 
 	glyph-block-export QConfig
 
-	foreach { suffix { Body cut fFlat terminal { sRT sRB } } } [Object.entries QConfig] : do
+	foreach {suffix {Body cut fFlat terminal {sRT sRB}}} [Object.entries QConfig] : do
 		create-glyph "q.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : Body terminal [DivFrame 1] XH Descender fFlat cut

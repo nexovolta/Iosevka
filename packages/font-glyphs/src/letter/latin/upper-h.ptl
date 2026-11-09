@@ -123,7 +123,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-TL-BR]      : begin          sf.lt.outer
 			[Just SLAB-TAILED]     : composite-proc sf.lt.fullSide sf.lb.fullSide
 			[Just SLAB-ALL]        : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
-				local { jutTop jutBot jutMid } : EFVJutLength top 0 HBarPos stroke
+				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				include : VSerif.mr xRight (barPos + rise / 2) jutMid swVJut
 			__                     : glyph-proc
@@ -160,7 +160,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-TL-BR]      : begin                         sf.rb.outer
 			[Just SLAB-TAILED]     : begin          sf.rt.fullSide
 			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
-				local { jutTop jutBot jutMid } : EFVJutLength top 0 HBarPos stroke
+				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				include : VSerif.ml xLeft (barPos - rise / 2) jutMid swVJut
 			__                     : glyph-proc
@@ -235,9 +235,9 @@ glyph-block Letter-Latin-Upper-H : begin
 				topRightMotionSerifed       SLAB-TR
 				bilateralMotionSerifed      SLAB-BILATERAL-MOTION
 		object
-			serifedExceptBottomRight { false SLAB-TAILED }
-			diagonalCrossbar        { false SLAB-NONE 1 }
-			diagonalCrossbarFalling { false SLAB-NONE (-1) }
+			serifedExceptBottomRight {false SLAB-TAILED}
+			diagonalCrossbar        {false SLAB-NONE 1}
+			diagonalCrossbarFalling {false SLAB-NONE (-1)}
 		SuffixCfg.weave
 			object
 				'' false
@@ -260,7 +260,7 @@ glyph-block Letter-Latin-Upper-H : begin
 		roundedSerifless false
 		roundedSerifed   true
 
-	foreach { suffix { fTailed slabType diag } } [Object.entries HConfig] : do
+	foreach {suffix {fTailed slabType diag}} [Object.entries HConfig] : do
 		create-glyph "H.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : HShape [DivFrame 1] CAP slabType fTailed nothing diag
@@ -298,7 +298,7 @@ glyph-block Letter-Latin-Upper-H : begin
 		DefineSelectorGlyph 'cyrl/EnGhe' suffix enGheDf 'capital'
 		DefineSelectorGlyph 'cyrl/enghe' suffix enGheDf 'e'
 
-		foreach { suffixGhe serifGhe } [Object.entries EnGheGheConfig] : do
+		foreach {suffixGhe serifGhe} [Object.entries EnGheGheConfig] : do
 			create-glyph "cyrl/EnGhe.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -316,7 +316,7 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		DefineSelectorGlyph 'Hwair' suffix hwairDf 'capital'
 
-		foreach { suffixV serifV } [Object.entries HwairVConfig] : do
+		foreach {suffixV serifV} [Object.entries HwairVConfig] : do
 			create-glyph "Hwair.\(suffix).\(suffixV)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0

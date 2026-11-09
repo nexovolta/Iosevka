@@ -929,14 +929,14 @@ glyph-block CommonShapes : begin
 	glyph-block-export HexagonDotScalar DotVariants
 	define HexagonDotScalar : SquareDotScalar * 1.12
 	define DotVariants : object
-		round   { DotAt     1               O }
-		square  { SquareAt  SquareDotScalar 0 }
-		diamond { DiamondAt SquareDotScalar 0 }
-		hexagon { HexagonAt HexagonDotScalar 0 }
+		round   {DotAt      1                 O}
+		square  {SquareAt   SquareDotScalar   0}
+		diamond {DiamondAt  SquareDotScalar   0}
+		hexagon {HexagonAt  HexagonDotScalar  0}
 
 	glyph-block-export WithDotVariants
 	define [WithDotVariants name unicode F] : begin
-		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 			create-glyph "\(name).\(suffix)" : F DrawAt kDotRadius overshoot
 		select-variant name unicode (follow -- 'punctuationDot')
 
@@ -972,7 +972,7 @@ glyph-block CommonShapes : begin
 		local midPoint : lOffset.mix rOffset 0.5
 		local refPoint : Point.translated midPoint args.x args.y
 
-		return : corner refPoint.x refPoint.y [widths.center.heading 1 { .x (lOffset.x - rOffset.x) .y (lOffset.y - rOffset.y) }]
+		return : corner refPoint.x refPoint.y [widths.center.heading 1 {.x (lOffset.x - rOffset.x) .y (lOffset.y - rOffset.y)}]
 
 	glyph-block-export sharp-corner
 	define [sharp-corner] : with-params [x y [contrast HVContrast] [upright 0]] : begin

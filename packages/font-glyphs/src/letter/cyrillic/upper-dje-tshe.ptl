@@ -12,12 +12,12 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos
 
 	define HConfig : object
-		serifless                  { false  false  false }
-		topLeftSerifed             { true   false  false }
-		topLeftBottomRightSerifed  { true   false  true }
-		serifed                    { true   true   true }
+		serifless                 {false  false  false}
+		topLeftSerifed            {true   false  false}
+		topLeftBottomRightSerifed {true   false  true }
+		serifed                   {true   true   true }
 
-	foreach { suffix { doSerifLT doSerifLB doSerifRB } } [pairs-of HConfig] : do
+	foreach {suffix {doSerifLT doSerifLB doSerifRB}} [pairs-of HConfig] : do
 		define fMotion : (doSerifLT || doSerifRB) && !doSerifLB
 		define df : DivFrame para.advanceScaleT 2
 		define sw : df.adviceThinnerStroke2 2.75 3 CAP
@@ -59,7 +59,7 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 
 			include : HBar.t xTopBarLeft xTopBarRight CAP sw
 			if doSerifLT : begin
-				local { jutTop jutBot jutMid } : EFVJutLength CAP 0 YeriBarPos sw
+				local {jutTop jutBot jutMid} : EFVJutLength CAP 0 YeriBarPos sw
 				local swVJut : Math.min
 					VJutStroke * (sw / Stroke)
 					VSwToH : 0.625 * (xMidBarLeft - xTopBarLeft)
@@ -96,7 +96,7 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 
 			include : HBar.t xTopBarLeft xTopBarRight CAP sw
 			if doSerifLT : begin
-				local { jutTop jutBot jutMid } : EFVJutLength CAP 0 YeriBarPos sw
+				local {jutTop jutBot jutMid} : EFVJutLength CAP 0 YeriBarPos sw
 				local swVJut : Math.min
 					VJutStroke * (sw / Stroke)
 					VSwToH : 0.625 * (xMidBarLeft - xTopBarLeft)

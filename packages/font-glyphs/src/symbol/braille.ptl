@@ -24,7 +24,7 @@ glyph-block Symbol-Braille : begin
 		foreach [bit : range 0 8] : if [maskBit byte bit] : dots.push (bit + 1)
 		return : if suffix "braille\[dots.join ''].\(suffix)" "braille\[dots.join '']"
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		define [BrailleYCoord y] (SymbolMid + y * offsetY)
 
 		### Computed Braille Patterns
@@ -61,7 +61,7 @@ glyph-block Symbol-Braille : begin
 			list 1 OneHalf
 			list 2 TwoHalves
 
-		foreach { stage F } [items-of stageConfig] : begin
+		foreach {stage F} [items-of stageConfig] : begin
 			foreach [byte : range 1 256] : if (stage == [brailleBuildStage byte]) : begin
 				create-glyph [brailleGlyphName byte suffix] : glyph-proc
 					include : ForceUpright

@@ -570,43 +570,43 @@ glyph-block Letter-Latin-X : begin
 	define XConfig : SuffixCfg.combine
 		SuffixCfg.weave # standard variants
 			object # body
-				straight                { STROKE-STRAIGHT       STROKE-STRAIGHT       }
-				curly                   { STROKE-CURLY          STROKE-CURLY          }
-				hShaped                 { STROKE-H-SHAPED            STROKE-H-SHAPED            }
-				hShapedCurly            { STROKE-H-SHAPED-CURLY      STROKE-H-SHAPED-CURLY      }
-				straightTouching        { STROKE-STRAIGHT-TOUCHING  STROKE-STRAIGHT-TOUCHING  }
-				rounded                 { STROKE-ROUNDED STROKE-ROUNDED }
+				straight         {STROKE-STRAIGHT           STROKE-STRAIGHT         }
+				curly            {STROKE-CURLY              STROKE-CURLY            }
+				hShaped          {STROKE-H-SHAPED           STROKE-H-SHAPED         }
+				hShapedCurly     {STROKE-H-SHAPED-CURLY     STROKE-H-SHAPED-CURLY   }
+				straightTouching {STROKE-STRAIGHT-TOUCHING  STROKE-STRAIGHT-TOUCHING}
+				rounded          {STROKE-ROUNDED            STROKE-ROUNDED          }
 			object # height
-				''                      { 0         'capital' 'e' }
-				descending              { Descender 'capDesc' 'p' }
+				''         {0          'capital'  'e'}
+				descending {Descender  'capDesc'  'p'}
 			object # serifs
-				serifless               { null                        false }
-				unilateralMotionSerifed { XSerifs.UnilateralMotion    false }
-				topRightMotionSerifed   { XSerifs.TopRightMotion      false }
-				bilateralMotionSerifed  { XSerifs.BilateralMotion     false }
-				bilateralTopMotionSerifed { XSerifs.BilateralTopMotion false }
-				serifed                 { XSerifs.Full                true  }
-				grekLowerChiSerifed     { XSerifs.GrekLowerChi     true  }
+				serifless               {null                        false}
+				unilateralMotionSerifed {XSerifs.UnilateralMotion    false}
+				topRightMotionSerifed   {XSerifs.TopRightMotion      false}
+				bilateralMotionSerifed  {XSerifs.BilateralMotion     false}
+				bilateralTopMotionSerifed {XSerifs.BilateralTopMotion false}
+				serifed                 {XSerifs.Full                true}
+				grekLowerChiSerifed     {XSerifs.GrekLowerChi     true}
 		SuffixCfg.weave # semi-chancery variants
 			object # body
-				semiChanceryStraight    { STROKE-STRAIGHT STROKE-CHANCERY }
-				semiChanceryCurly       { STROKE-CURLY    STROKE-CHANCERY }
+				semiChanceryStraight {STROKE-STRAIGHT  STROKE-CHANCERY}
+				semiChanceryCurly    {STROKE-CURLY     STROKE-CHANCERY}
 			object # height
-				''                      { 0         'capital' 'e' }
-				descending              { Descender 'capDesc' 'p' }
+				''         {0          'capital'  'e'}
+				descending {Descender  'capDesc'  'p'}
 			object # serifs
-				serifless               { null                 false }
-				serifed                 { XSerifs.SemiChancery true  }
+				serifless {null                  false}
+				serifed   {XSerifs.SemiChancery  true }
 		object # chancery variants
-			chancery              { { STROKE-CHANCERY STROKE-CHANCERY } { 0         'capital' 'e' } { null false } }
-			chanceryDescending    { { STROKE-CHANCERY STROKE-CHANCERY } { Descender 'capDesc' 'p' } { null false } }
-			roundedChancery       { { STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY } { 0 'capital' 'e' } { null false } }
-			roundedChanceryDescending { { STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY } { Descender 'capDesc' 'p' } { null false } }
+			chancery              {{STROKE-CHANCERY STROKE-CHANCERY} {0         'capital' 'e'} {null false}}
+			chanceryDescending    {{STROKE-CHANCERY STROKE-CHANCERY} {Descender 'capDesc' 'p'} {null false}}
+			roundedChancery       {{STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY} {0 'capital' 'e'} {null false}}
+			roundedChanceryDescending {{STROKE-ROUNDED-CHANCERY STROKE-ROUNDED-CHANCERY} {Descender 'capDesc' 'p'} {null false}}
 		object # cursive variants
-			cursive               { { STROKE-CURSIVE  STROKE-CURSIVE  } { 0         'capital' 'e' } { null false } }
-			cursiveDescending     { { STROKE-CURSIVE  STROKE-CURSIVE  } { Descender 'capDesc' 'p' } { null false } }
+			cursive           {{STROKE-CURSIVE  STROKE-CURSIVE}  {0         'capital' 'e'}  {null false}}
+			cursiveDescending {{STROKE-CURSIVE  STROKE-CURSIVE}  {Descender 'capDesc' 'p'}  {null false}}
 
-	foreach { suffix { { stroke1 stroke2 } { bottom mkCap mkXH } { serifShape fMaskBase } } } [Object.entries XConfig] : do
+	foreach {suffix {{stroke1 stroke2} {bottom mkCap mkXH} {serifShape fMaskBase}}} [Object.entries XConfig] : do
 		define [letterShape df top bot turn tension _sw] : glyph-proc
 			local lf : XLetterForm [df.bodyBox top bot] stroke1 stroke2 turn tension _sw
 			include : WithSerifOverflowMask fMaskBase [df.bodyBox top bot] : lf.base fMaskBase

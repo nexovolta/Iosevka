@@ -47,7 +47,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 
 		if SLAB : begin
 			local swVJut : Math.min (VJutStroke * (stroke / Stroke)) : VSwToH : 0.625 * (xYeriLeft - xCrossbarLeftSym)
-			local { jutTop jutBot jutMid } : EFVJutLength yCrossbarPos 0 ([mix 0 top pBar] / yCrossbarPos) stroke
+			local {jutTop jutBot jutMid} : EFVJutLength yCrossbarPos 0 ([mix 0 top pBar] / yCrossbarPos) stroke
 			include : tagged 'serifDL' : VSerif.dl xCrossbarLeft  yCrossbarPos jutTop swVJut
 			include : tagged 'serifDR' : VSerif.dr xCrossbarRight yCrossbarPos jutTop swVJut
 
@@ -103,7 +103,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			hBarRight -- (df.middle + [HSwToV : 0.5 * df.mvs])
 			hBarY     -- (top - df.mvs / 2)
 
-	foreach { suffix { Uc Lc BGRc } } [pairs-of YeriConfig] : do
+	foreach {suffix {Uc Lc BGRc}} [pairs-of YeriConfig] : do
 		create-glyph "cyrl/Yat.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 2
 			include : df.markSet.capital
@@ -166,7 +166,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 
 			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
 
-	foreach { suffix { Uc Lc BGRc } } [pairs-of YeriConfig] : do
+	foreach {suffix {Uc Lc BGRc}} [pairs-of YeriConfig] : do
 		create-glyph "cyrl/YatIotated.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital

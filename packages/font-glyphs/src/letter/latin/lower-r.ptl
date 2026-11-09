@@ -44,19 +44,19 @@ glyph-block Letter-Latin-Lower-R : begin
 		local strokeA   : mix strokeBar stroke 0.5
 		local fine      : fallback _fine : ShoulderFine * (strokeA / Stroke)
 		local sign      : Math.sign : fallback _sign (+1)
-		local { rBalanceMultiplier rHookMultiplier rHookSwMultiplier rSerifLeftExtender } : match shapeMode
-			[Just RMode.Standard]          {  1                 1       (1 / 2)  (1 / 3) }
-			[Just RMode.StandardSerifed]   { (4 / 3)           (2 / 3)  (3 / 4)  (2 / 3) }
-			[Just RMode.NarrowHook]        {  1                 1       (1 / 2)  (1 / 3) }
-			[Just RMode.NarrowHookSerifed] { (4 / 3)           (2 / 3)  (3 / 4)  (2 / 3) }
-			[Just RMode.Hookless]          { (2 * df.adws - 1)  0        0       (1 / 3) }
-			[Just RMode.HooklessSerifed]   { (2 * df.adws - 1)  0        0       (1 / 3) }
-			[Just RMode.CornerHook]        { (5 / 8)            0        0       (1 / 3) }
-			[Just RMode.CornerHookSerifed] { (4 / 3)            0        0       (2 / 3) }
-			[Just RMode.Earless]           {  1                 1       (1 / 2)  (1 / 3) }
-			[Just RMode.EarlessSerifed]    { (4 / 3)            1       (1 / 2)  (2 / 3) }
-			[Just RMode.Half]              {  1                 0        0        0      }
-			[Just RMode.HalfStretch]       {  1                 1       (1 / 2)   0      }
+		local {rBalanceMultiplier rHookMultiplier rHookSwMultiplier rSerifLeftExtender} : match shapeMode
+			[Just RMode.Standard]          {1                  1        (1 / 2)  (1 / 3)}
+			[Just RMode.StandardSerifed]   {(4 / 3)            (2 / 3)  (3 / 4)  (2 / 3)}
+			[Just RMode.NarrowHook]        {1                  1        (1 / 2)  (1 / 3)}
+			[Just RMode.NarrowHookSerifed] {(4 / 3)            (2 / 3)  (3 / 4)  (2 / 3)}
+			[Just RMode.Hookless]          {(2 * df.adws - 1)  0        0        (1 / 3)}
+			[Just RMode.HooklessSerifed]   {(2 * df.adws - 1)  0        0        (1 / 3)}
+			[Just RMode.CornerHook]        {(5 / 8)            0        0        (1 / 3)}
+			[Just RMode.CornerHookSerifed] {(4 / 3)            0        0        (2 / 3)}
+			[Just RMode.Earless]           {1                  1        (1 / 2)  (1 / 3)}
+			[Just RMode.EarlessSerifed]    {(4 / 3)            1        (1 / 2)  (2 / 3)}
+			[Just RMode.Half]              {1                  0        0        0      }
+			[Just RMode.HalfStretch]       {1                  1        (1 / 2)  0      }
 
 		export : local rBarLeftX : match shapeMode
 			[Just RMode.Half] : mix df.leftSB (df.middle - [HSwToV : 0.5 * strokeBar] - [IBalance2 df]) rBalanceMultiplier
@@ -419,24 +419,24 @@ glyph-block Letter-Latin-Lower-R : begin
 			tailed           'tailed'
 		function [ear] : begin
 			if (!ear || ear === 'diagonalTailed' || ear === 'flatTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
-				''            { SmallRShape.Standard         dfN RMode.Standard   RMode.StandardSerifed   }
-				hookless      { SmallRShape.Hookless         dfN RMode.Hookless   RMode.HooklessSerifed   }
-				cornerHooked  { SmallRShape.CornerHook       dfN RMode.CornerHook RMode.CornerHookSerifed }
-				compact       { SmallRShape.Hookless         dfF RMode.Hookless   RMode.HooklessSerifed   }
-				narrowHook    { SmallRShape.Standard         dfF RMode.NarrowHook RMode.NarrowHookSerifed }
+				''                         {SmallRShape.Standard        dfN  RMode.Standard    RMode.StandardSerifed  }
+				hookless                   {SmallRShape.Hookless        dfN  RMode.Hookless    RMode.HooklessSerifed  }
+				cornerHooked               {SmallRShape.CornerHook      dfN  RMode.CornerHook  RMode.CornerHookSerifed}
+				compact                    {SmallRShape.Hookless        dfF  RMode.Hookless    RMode.HooklessSerifed  }
+				narrowHook                 {SmallRShape.Standard        dfF  RMode.NarrowHook  RMode.NarrowHookSerifed}
 				# `rFlap` variants
-				earlessRoundedHookless     { SmallRShape.HooklessFlap   dfN RMode.Hookless   RMode.HooklessSerifed   }
-				earlessRoundedCornerHooked { SmallRShape.CornerHookFlap dfN RMode.CornerHook RMode.CornerHookSerifed }
-				earlessRoundedCompact      { SmallRShape.HooklessFlap   dfF RMode.Hookless   RMode.HooklessSerifed   }
-				earlessRoundedNarrowHook   { SmallRShape.EarlessRounded dfF RMode.NarrowHook RMode.NarrowHookSerifed }
+				earlessRoundedHookless     {SmallRShape.HooklessFlap    dfN  RMode.Hookless    RMode.HooklessSerifed  }
+				earlessRoundedCornerHooked {SmallRShape.CornerHookFlap  dfN  RMode.CornerHook  RMode.CornerHookSerifed}
+				earlessRoundedCompact      {SmallRShape.HooklessFlap    dfF  RMode.Hookless    RMode.HooklessSerifed  }
+				earlessRoundedNarrowHook   {SmallRShape.EarlessRounded  dfF  RMode.NarrowHook  RMode.NarrowHookSerifed}
 			if (ear === 'flatTop') : return : object
-				''            { SmallRShape.FlatTop          dfN RMode.Earless    RMode.EarlessSerifed    }
+				''            {SmallRShape.FlatTop          dfN RMode.Earless    RMode.EarlessSerifed}
 			if (ear === 'earlessCorner') : return : object
-				''            { SmallRShape.EarlessCorner    dfN RMode.Earless    RMode.EarlessSerifed    }
+				''            {SmallRShape.EarlessCorner    dfN RMode.Earless    RMode.EarlessSerifed}
 			if (ear === 'earlessCornerHTB') : return : object
-				''            { SmallRShape.EarlessCornerHTB dfN RMode.Earless    RMode.EarlessSerifed    }
+				''            {SmallRShape.EarlessCornerHTB dfN RMode.Earless    RMode.EarlessSerifed}
 			return : object
-				''            { SmallRShape.EarlessRounded   dfN RMode.Earless    RMode.EarlessSerifed    }
+				''            {SmallRShape.EarlessRounded   dfN RMode.Earless    RMode.EarlessSerifed}
 		function [ear body] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessCornerHTB' || ear === 'earlessRounded') : return : object
 				''         ''
@@ -446,12 +446,12 @@ glyph-block Letter-Latin-Lower-R : begin
 				''         ''
 				topCut     'topCut'
 		object # Serifs
-			serifless        { false false }
-			topSerifed       { true  false }
-			baseSerifed      { false true  }
-			serifed          { true  true  }
+			serifless   {false  false}
+			topSerifed  {true   false}
+			baseSerifed {false  true }
+			serifed     {true   true }
 
-	foreach { suffix { ear { BaseBody df modeSans modeSerifed } cut { doTS doBS } } } [pairs-of SmallRConfig] : do
+	foreach {suffix {ear {BaseBody df modeSans modeSerifed} cut {doTS doBS}}} [pairs-of SmallRConfig] : do
 		define mode : if (doTS || doBS) modeSerifed modeSans
 		define Body : if (ear === 'diagonal' || ear === 'flat' || ear === 'semi' || ear === 'tailed') [RTailedEar ear BaseBody] BaseBody
 
@@ -646,8 +646,8 @@ glyph-block Letter-Latin-Lower-R : begin
 			intersection [MaskAbove yHookBot] [MaskBelow yHookTop] [MaskLeft xStemRight] : LFlapLOverlay lGn xShift
 
 	link-reduced-variant 'lFlap/r' 'r'
-	derive-multi-part-glyphs 'lFlap' 0x1DF11 { 'l' 'lFlap/r' } : lambda [srcs gr] : glyph-proc
-		local { l r } srcs
+	derive-multi-part-glyphs 'lFlap' 0x1DF11 {'l' 'lFlap/r'} : lambda [srcs gr] : glyph-proc
+		local {l r} srcs
 		local df : DivFrame 1
 		include : df.markSet.b
 
@@ -743,10 +743,10 @@ glyph-block Letter-Latin-Lower-R : begin
 				''         ''
 				topCut     'topCut'
 		object # Serifs
-			serifless      { false false }
-			topSerifed     { true  false }
-			baseSerifed    { false true  }
-			serifed        { true  true  }
+			serifless   {false  false}
+			topSerifed  {true   false}
+			baseSerifed {false  true }
+			serifed     {true   true }
 
 	define [HalfRHookOnly Body df _mode] : glyph-proc
 		local md : fallback _mode RMode.Half
@@ -793,7 +793,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			MaskBelow (XH - rArchDepthA)
 			MaskRight rBarLeftX
 
-	foreach { suffix { Body cut { doTS doBS } } } [pairs-of HalfRConfig] : do
+	foreach {suffix {Body cut {doTS doBS}}} [pairs-of HalfRConfig] : do
 		create-glyph "rHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : df.markSet.e
@@ -898,11 +898,11 @@ glyph-block Letter-Latin-Lower-R : begin
 		narrowHookWidth true
 
 	define PigtailRBodies : object
-		standard     { SmallRShape.Standard   SmallRevRShape.Standard   [PigtailNarrowHookMode RMode.Standard]   }
-		hookless     { SmallRShape.Hookless   SmallRevRShape.Hookless   [PigtailNarrowHookMode RMode.Hookless]   }
-		cornerHooked { SmallRShape.CornerHook SmallRevRShape.CornerHook [PigtailNarrowHookMode RMode.CornerHook] }
-		narrowHook   { SmallRShape.Standard   SmallRevRShape.Standard   [PigtailNarrowHookMode RMode.Standard]   }
-		half         { HalfRShape.Standard    SmallRevRShape.Half       [PigtailNarrowHookMode RMode.Half]       }
+		standard     {SmallRShape.Standard    SmallRevRShape.Standard    [PigtailNarrowHookMode RMode.Standard]  }
+		hookless     {SmallRShape.Hookless    SmallRevRShape.Hookless    [PigtailNarrowHookMode RMode.Hookless]  }
+		cornerHooked {SmallRShape.CornerHook  SmallRevRShape.CornerHook  [PigtailNarrowHookMode RMode.CornerHook]}
+		narrowHook   {SmallRShape.Standard    SmallRevRShape.Standard    [PigtailNarrowHookMode RMode.Standard]  }
+		half         {HalfRShape.Standard     SmallRevRShape.Half        [PigtailNarrowHookMode RMode.Half]      }
 
 	define [PigtailAttachHook Body md fRev xStem _doTS] : glyph-proc
 		local doTS : fallback _doTS false
@@ -924,31 +924,31 @@ glyph-block Letter-Latin-Lower-R : begin
 	# { doTS doBS kJut fRight } keyed by selector.dotlessi.
 	# Bottom serifs ride the flipped r stem; bottom tails yield to the pigtail hook.
 	define DotlessIPigtailConfig : object
-		serifless                      { false  false  0.0  false }
-		hooky                          { false  true   1.0  false }
-		hookyBottom                    { true   false  0.0  false }
-		zshaped                        { true   true   1.0  false }
-		zshapedAsymmetric              { true   true   0.5  false }
-		baseSerifed                    { true   false  0.0  false }
-		serifed                        { true   true   1.0  false }
-		serifedAsymmetric              { true   true   0.5  false }
-		centerSerifed                  { true   true   1.0  false }
-		centerShortSerifed             { true   true   0.5  false }
-		reverseHooky                   { false  true   1.0  true  }
-		sshaped                        { true   true   1.0  true  }
-		sshapedAsymmetric              { true   true   0.5  true  }
-		hookyBottomLeft                { true   false  0.0  false }
-		topRightSerifed                { true   true   1.0  true  }
-		topRightBaseSerifed            { true   true   1.0  true  }
-		topRightBaseSerifedAsymmetric  { true   true   0.5  true  }
-		tailed                         { false  false  0.0  false }
-		tailedSerifed                  { false  true   1.0  false }
-		diagonalTailed                 { false  false  0.0  false }
-		serifedDiagonalTailed          { false  true   1.0  false }
-		flatTailed                     { false  false  0.0  false }
-		serifedFlatTailed              { false  true   1.0  false }
-		semiTailed                     { false  false  0.0  false }
-		serifedSemiTailed              { false  true   1.0  false }
+		serifless                     {false  false  0.0  false}
+		hooky                         {false  true   1.0  false}
+		hookyBottom                   {true   false  0.0  false}
+		zshaped                       {true   true   1.0  false}
+		zshapedAsymmetric             {true   true   0.5  false}
+		baseSerifed                   {true   false  0.0  false}
+		serifed                       {true   true   1.0  false}
+		serifedAsymmetric             {true   true   0.5  false}
+		centerSerifed                 {true   true   1.0  false}
+		centerShortSerifed            {true   true   0.5  false}
+		reverseHooky                  {false  true   1.0  true }
+		sshaped                       {true   true   1.0  true }
+		sshapedAsymmetric             {true   true   0.5  true }
+		hookyBottomLeft               {true   false  0.0  false}
+		topRightSerifed               {true   true   1.0  true }
+		topRightBaseSerifed           {true   true   1.0  true }
+		topRightBaseSerifedAsymmetric {true   true   0.5  true }
+		tailed                        {false  false  0.0  false}
+		tailedSerifed                 {false  true   1.0  false}
+		diagonalTailed                {false  false  0.0  false}
+		serifedDiagonalTailed         {false  true   1.0  false}
+		flatTailed                    {false  false  0.0  false}
+		serifedFlatTailed             {false  true   1.0  false}
+		semiTailed                    {false  false  0.0  false}
+		serifedSemiTailed             {false  true   1.0  false}
 
 	define PigtailCasualTopConfig : object
 		doubleTailed      'tailed'
@@ -967,9 +967,9 @@ glyph-block Letter-Latin-Lower-R : begin
 		BottomDiagonalTailed false
 
 	define PigtailStageConfig : object
-	foreach { topSuffix { topSerifs topTail } } [Object.entries ILTopStageConfig] : do
-		foreach { bottomSuffix doBottomSerif } [Object.entries PigtailStageBottomSerif] : do
-			set PigtailStageConfig.("\(topSuffix)\(bottomSuffix)") { topSerifs topTail doBottomSerif }
+	foreach {topSuffix {topSerifs topTail}} [Object.entries ILTopStageConfig] : do
+		foreach {bottomSuffix doBottomSerif} [Object.entries PigtailStageBottomSerif] : do
+			set PigtailStageConfig.("\(topSuffix)\(bottomSuffix)") {topSerifs topTail doBottomSerif}
 
 	define [PigtailUprightStem iSuffix Body md] : glyph-proc
 		local df : include dfF
@@ -989,7 +989,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
 		: else : begin
 			if stage : begin
-				local { topSerifs topTail doBottomSerif } stage
+				local {topSerifs topTail doBottomSerif} stage
 				local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook]
 				include : dimSerif.setTurnedMarks XH 0 doBottomSerif false
 				local xStem : [fallback dimSerif.rBarRightX 0] - [HSwToV HalfStroke]
@@ -997,7 +997,7 @@ glyph-block Letter-Latin-Lower-R : begin
 				include : PigtailAttachHook Body md false xStem doBottomSerif
 				include : topSerifs df XH 0 xStem
 			: else : begin
-				local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
+				local {doTS doBS kJut fRight} : fallback DotlessIPigtailConfig.(iSuffix) {false false 0.0 false}
 				local mode : if doTS RMode.NarrowHookSerifed RMode.NarrowHook
 				local dimSerif : RDim df mode
 				include : dimSerif.setTurnedMarks XH 0 doTS false
@@ -1033,7 +1033,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			set-base-anchor 'overlay' xStem [mix 0 XH 0.5]
 		: else : begin
 			if stage : begin
-				local { topSerifs topTail doBottomSerif } stage
+				local {topSerifs topTail doBottomSerif} stage
 				local dimSerif : RDim df [if doBottomSerif RMode.NarrowHookSerifed RMode.NarrowHook] nothing nothing nothing (-1)
 				include : dimSerif.setInvertedMarks XH 0 doBottomSerif false
 				local xStem : [fallback dimSerif.rBarLeftX 0] + [HSwToV HalfStroke]
@@ -1041,7 +1041,7 @@ glyph-block Letter-Latin-Lower-R : begin
 				include : PigtailAttachHook RevBody md true xStem doBottomSerif
 				include : topSerifs df XH 0 xStem
 			: else : begin
-				local { doTS doBS kJut fRight } : fallback DotlessIPigtailConfig.(iSuffix) { false false 0.0 false }
+				local {doTS doBS kJut fRight} : fallback DotlessIPigtailConfig.(iSuffix) {false false 0.0 false}
 				local mode : if (doTS || doBS) RMode.NarrowHookSerifed RMode.NarrowHook
 				local dimSerif : RDim df mode nothing nothing nothing (-1)
 				include : dimSerif.setInvertedMarks XH 0 doTS doBS
@@ -1059,15 +1059,15 @@ glyph-block Letter-Latin-Lower-R : begin
 						: then : include : tagged 'serifRT' : HSerif.rt xStem XH Jut
 						: else : include : tagged 'serifRB' : HSerif.lt xStem XH jut
 
-	foreach { rSuffix { Body RevBody md } } [Object.entries PigtailRBodies] : do
+	foreach {rSuffix {Body RevBody md}} [Object.entries PigtailRBodies] : do
 		foreach iSuffix [items-of : Object.keys : Object.assign {.} DotlessIPigtailConfig PigtailCasualTopConfig PigtailStageConfig] : do
 			create-glyph "dotlessiPigtail.upright.\(rSuffix).\(iSuffix)" : glyph-proc
 				include : PigtailUprightStem iSuffix Body md
 			create-glyph "dotlessiPigtail.italic.\(rSuffix).\(iSuffix)" : glyph-proc
 				include : PigtailItalicStem iSuffix RevBody md
 
-	select-multi-dimensional-variant 'dotlessiPigtail.upright' (follows -- { 'dotlessiPigtail/r' 'dotlessi' })
-	select-multi-dimensional-variant 'dotlessiPigtail.italic'  (follows -- { 'dotlessiPigtail/r' 'dotlessi' })
+	select-multi-dimensional-variant 'dotlessiPigtail.upright' (follows -- {'dotlessiPigtail/r' 'dotlessi'})
+	select-multi-dimensional-variant 'dotlessiPigtail.italic'  (follows -- {'dotlessiPigtail/r' 'dotlessi'})
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarRight
 	define [BBRShape df md] : glyph-proc

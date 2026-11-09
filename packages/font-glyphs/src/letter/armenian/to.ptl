@@ -17,7 +17,7 @@ glyph-block Letter-Armenian-To : begin
 	define jut Jut
 
 	do "T'o"
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/To.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleT
 				include : df.markSet.capital
@@ -43,7 +43,7 @@ glyph-block Letter-Armenian-To : begin
 				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
-		foreach { suffix { p0 } } [Object.entries ToPositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries ToPositionedSerifs] : do
 			if (p0) : create-glyph "armn/To.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/To.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame para.advanceScaleT
@@ -51,7 +51,7 @@ glyph-block Letter-Armenian-To : begin
 				if p0 : include : if (p0 === 1) sf.lb.outer sf.lb.full
 		select-variant 'armn/To' 0x539
 
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/to.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleT
 				include : df.markSet.p
@@ -81,7 +81,7 @@ glyph-block Letter-Armenian-To : begin
 				'' 0
 				bottomLeftMotion 1
 				bottomLeftFull 2
-		foreach { suffix { p0 p1 } } [Object.entries toPositionedSerifs] : do
+		foreach {suffix {p0 p1}} [Object.entries toPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/to.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/to.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame para.advanceScaleT

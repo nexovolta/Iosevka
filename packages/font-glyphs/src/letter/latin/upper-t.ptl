@@ -60,7 +60,7 @@ glyph-block Letter-Latin-Upper-T : begin
 			sw     -- sw
 
 		if doTopSerifs : begin
-			local { jutTop jutBot jutMid } : EFVJutLength top 0 (0.5 - (sw / 2 - HalfStroke) / top) sw
+			local {jutTop jutBot jutMid} : EFVJutLength top 0 (0.5 - (sw / 2 - HalfStroke) / top) sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : tagged 'serifRT' : VSerif.dr xTopBarRight top jutTop swVJut
 			include : tagged 'serifLT' : VSerif.dl xTopBarLeft  top jutTop swVJut
@@ -87,7 +87,7 @@ glyph-block Letter-Latin-Upper-T : begin
 			sw     -- sw
 
 		if doTopSerifs : begin
-			local { jutTop jutBot jutMid } : EFVJutLength top 0 (HBarPos - (sw / 4 + O) / top) sw
+			local {jutTop jutBot jutMid} : EFVJutLength top 0 (HBarPos - (sw / 4 + O) / top) sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : tagged 'serifRT' : VSerif.dr xTopBarRight top jutTop swVJut
 			include : tagged 'serifLT' : VSerif.dl xTopBarLeft  top jutTop swVJut
@@ -124,12 +124,12 @@ glyph-block Letter-Latin-Upper-T : begin
 
 	glyph-block-export TConfig
 	define TConfig : object
-		serifless      { 1                   false  false  false }
-		motionSerifed  { para.advanceScaleT  true   false  false }
-		serifed        { para.advanceScaleT  true   true   false }
-		baseSerifed    { para.advanceScaleT  true   true   true }
+		serifless     {1                   false  false  false}
+		motionSerifed {para.advanceScaleT  true   false  false}
+		serifed       {para.advanceScaleT  true   true   false}
+		baseSerifed   {para.advanceScaleT  true   true   true }
 
-	foreach { suffix { adws doST doSB fShort } } [Object.entries TConfig] : do
+	foreach {suffix {adws doST doSB fShort}} [Object.entries TConfig] : do
 		create-glyph "T.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include : df.markSet.capital
@@ -219,7 +219,7 @@ glyph-block Letter-Latin-Upper-T : begin
 		DefineSelectorGlyph 'cyrl/Tsse' suffix [DivFrame adws] 'capDesc'
 		DefineSelectorGlyph 'cyrl/tsse' suffix [DivFrame adws] 'p'
 
-		foreach { suffixEs { styTop styBot } } [Object.entries CConfig] : do
+		foreach {suffixEs {styTop styBot}} [Object.entries CConfig] : do
 			define [TsseDescenderShape df ada adb] : begin
 				local teLeft : df.middle - [HSwToV HalfStroke]
 				local esLeft : teLeft - 0.5 * (SB - 0) + O * 2 - (RightSB - SB) * [StrokeWidthBlend 0.05 0.06]
@@ -269,7 +269,7 @@ glyph-block Letter-Latin-Upper-T : begin
 	select-variant 'T' 'T'
 	link-reduced-variant 'T/sansSerif' 'T' MathSansSerif
 
-	foreach { suffix { adws doST doSB fShort } } [Object.entries TConfig] : do
+	foreach {suffix {adws doST doSB fShort}} [Object.entries TConfig] : do
 		create-glyph "smcpICap.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include : df.markSet.capital

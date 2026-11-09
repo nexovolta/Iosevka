@@ -197,7 +197,7 @@ glyph-block Letter-Greek-Phi : begin
 		serifless false
 		serifed   true
 
-	foreach { suffix fSerif } [Object.entries PhiCapSerifConfig] : do
+	foreach {suffix fSerif} [Object.entries PhiCapSerifConfig] : do
 		create-glyph "grek/Phi.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
@@ -260,8 +260,8 @@ glyph-block Letter-Greek-Phi : begin
 		cursive     LowerPhiCursiveRing
 		neohellenic [PhiRing false]
 
-	foreach { bodySuffix Ring } [Object.entries DescPhiBodyConfig] : do
-		foreach { serifSuffix fBase } [Object.entries PhiBaseSerifConfig] : do
+	foreach {bodySuffix Ring} [Object.entries DescPhiBodyConfig] : do
+		foreach {serifSuffix fBase} [Object.entries PhiBaseSerifConfig] : do
 			create-glyph "grek/phi.\([joinCamel bodySuffix serifSuffix])" : glyph-proc
 				local df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.p
@@ -282,7 +282,7 @@ glyph-block Letter-Greek-Phi : begin
 		local df : include : DivFrame para.advanceScaleM 3
 		include : df.markSet.bp
 		local dim : include : [PhiRing false] df 0 XH df.smallArchDepthA df.smallArchDepthB
-		foreach { suffix { top fBase } } [Object.entries StraightPhiConfig] : do
+		foreach {suffix {top fBase}} [Object.entries StraightPhiConfig] : do
 			create-forked-glyph "grek/phi.\([joinCamel 'straight' suffix])" : glyph-proc
 				include : StraightBar df Descender 0 XH top dim.swBar
 				if fBase : include : MbSerif df Descender dim.swBar
@@ -325,19 +325,19 @@ glyph-block Letter-Greek-Phi : begin
 
 	define CyrlLowerEfConfig : SuffixCfg.weave
 		object # bowl
-			''                    { [PhiRing true]                  para.advanceScaleM  }
-			splitBowl             { [CyrEfSplitRing 'toothed']      para.advanceScaleMM }
-			splitBowlFlatTop      { [CyrEfSplitRing 'flatTop']      para.advanceScaleMM }
-			splitBowlFlatBottom   { [CyrEfSplitRing 'flatBot']      para.advanceScaleMM }
-			splitBowlFlat         { [CyrEfSplitRing 'flatTB']       para.advanceScaleMM }
+			''                  {[PhiRing true]              para.advanceScaleM }
+			splitBowl           {[CyrEfSplitRing 'toothed']  para.advanceScaleMM}
+			splitBowlFlatTop    {[CyrEfSplitRing 'flatTop']  para.advanceScaleMM}
+			splitBowlFlatBottom {[CyrEfSplitRing 'flatBot']  para.advanceScaleMM}
+			splitBowlFlat       {[CyrEfSplitRing 'flatTB']   para.advanceScaleMM}
 		object # bar
-			serifless             { StraightBar        null    null    }
-			topSerifed            { StraightBar        MtSerif null    }
-			serifed               { StraightBar        MtSerif MbSerif }
-			cursive               { [CursiveBar false] null    null    }
-			diagonalTailedCursive { [CursiveBar true]  null    null    }
+			serifless             {StraightBar         null     null   }
+			topSerifed            {StraightBar         MtSerif  null   }
+			serifed               {StraightBar         MtSerif  MbSerif}
+			cursive               {[CursiveBar false]  null     null   }
+			diagonalTailedCursive {[CursiveBar true]   null     null   }
 
-	foreach { suffix { { Bowl adws } { Bar sMT sMB } } } [Object.entries CyrlLowerEfConfig] : do
+	foreach {suffix {{Bowl adws} {Bar sMT sMB}}} [Object.entries CyrlLowerEfConfig] : do
 		create-glyph "cyrl/ef.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws 3
 			include : df.markSet.bp

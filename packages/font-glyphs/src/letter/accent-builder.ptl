@@ -39,7 +39,7 @@ glyph-block Letter-Accent-Builder : begin
 
 		# Handle mark combinations (Greek)
 		substParts parts
-			input     -- { markComposition.matchFirst markComposition.matchSecond }
+			input     -- {markComposition.matchFirst markComposition.matchSecond}
 			replace   -- markComposition.production
 
 		# Handle upper Greek Tonos marks
@@ -89,7 +89,7 @@ glyph-block Letter-Accent-Builder : begin
 		if [ignore parts.(igl)] : return null
 		if [not : input.0 parts.(igl)] : return null
 
-		local m { igl }
+		local m {igl}
 
 		# Check input
 		local iglInput : igl + 1
@@ -132,7 +132,7 @@ glyph-block Letter-Accent-Builder : begin
 
 	define [markSubst uk] : begin
 		local mapping : new Map
-		foreach { k v } [Object.entries uk] : begin
+		foreach {k v} [Object.entries uk] : begin
 			local gFrom : query-glyph k
 			local gTo : query-glyph v
 			mapping.set gFrom gTo
@@ -145,14 +145,14 @@ glyph-block Letter-Accent-Builder : begin
 
 	define [markSplit uk] : begin
 		local mapping : new Map
-		foreach { k v } [Object.entries uk] : begin
+		foreach {k v} [Object.entries uk] : begin
 			local gFrom : query-glyph k
 			local gsTo : v.map query-glyph
 			mapping.set gFrom gsTo
 
 		define [matcher g] : mapping.has g
 		define [ignore g] : g && g.markAnchors && [Object.keys g.markAnchors].length && ![matcher g]
-		define [production g] : [mapping.get g] || { g }
+		define [production g] : [mapping.get g] || {g}
 
 		return : object matcher ignore production
 
@@ -161,7 +161,7 @@ glyph-block Letter-Accent-Builder : begin
 		local second : new Set
 		local mapping : new Map
 
-		foreach { { k1 k2 } v } [items-of uk] : begin
+		foreach {{k1 k2} v} [items-of uk] : begin
 			local g1 : query-glyph k1
 			local g2 : query-glyph k2
 			local g3 : query-glyph v
@@ -179,10 +179,10 @@ glyph-block Letter-Accent-Builder : begin
 		define [matchSecond g] : second.has g
 		define [production g1 g2] : begin
 			local mm : mapping.get g1
-			if [not mm] : return { g1 g2 }
+			if [not mm] : return {g1 g2}
 			local g3 : mm.get g2
-			if [not g3] : return { g1 g2 }
-			return { g3 }
+			if [not g3] : return {g1 g2}
+			return {g3}
 
 		return : object matchFirst matchSecond production
 
@@ -195,5 +195,5 @@ glyph-block Letter-Accent-Builder : begin
 	define [produceLeaningMark gnSuppressAnchor] : function [g] : begin
 		local spacer : query-glyph : LeaningMarkSpacer.get g
 		local alternative : query-glyph : LeaningMark.get g
-		if (spacer && alternative) : return { spacer alternative }
-		return { [query-glyph gnSuppressAnchor] g }
+		if (spacer && alternative) : return {spacer alternative}
+		return {[query-glyph gnSuppressAnchor] g}

@@ -208,7 +208,7 @@ glyph-block Letter-Cyrillic-Che : begin
 			topRightMotionSerifed  SERIFS.RT
 			bilateralMotionSerifed SERIFS.BILATERAL
 
-	foreach { suffix { fFlatHump slabType } } [Object.entries CheCapConfig] : do
+	foreach {suffix {fFlatHump slabType}} [Object.entries CheCapConfig] : do
 		create-glyph "cyrl/Che.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Below.VBar.r RightSB
@@ -230,12 +230,12 @@ glyph-block Letter-Cyrillic-Che : begin
 	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
 
 	define TcheConfig : object
-		serifless      { false  false }
-		motionSerifed  { true   false }
+		serifless     {false  false}
+		motionSerifed {true   false}
 
-	foreach { suffixChe { fFlatHump slabType } } [Object.entries CheCapConfig] : do
+	foreach {suffixChe {fFlatHump slabType}} [Object.entries CheCapConfig] : do
 		DefineSelectorGlyph 'cyrl/Tche' suffixChe [DivFrame para.advanceScaleT] 'capital'
-		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
+		foreach {suffixTe {doST doSB}} [Object.entries TcheConfig] : do
 			create-glyph "cyrl/Tche.\(suffixChe).\(suffixTe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -257,20 +257,20 @@ glyph-block Letter-Cyrillic-Che : begin
 			''        false
 			flatHump  true
 		object # body
-			standard { BODY.STRAIGHT }
-			tailed   { BODY.TAILED }
+			standard {BODY.STRAIGHT}
+			tailed   {BODY.TAILED  }
 		function [hump body] : object # serifs
-			serifless { SERIFS.NONE SERIFS.NONE }
+			serifless {SERIFS.NONE SERIFS.NONE}
 			motionSerifed : match body
-				[Just 'standard'] { SERIFS.TL-BR SERIFS.TL-BR }
-				__                { SERIFS.TL    SERIFS.TL }
+				[Just 'standard'] {SERIFS.TL-BR  SERIFS.TL-BR}
+				__                {SERIFS.TL     SERIFS.TL   }
 			serifed : match body
-				[Just 'standard'] { SERIFS.ALL SERIFS.ALL-BGR }
-				__                { SERIFS.TOP SERIFS.TOP-BGR }
-			topRightMotionSerifed { SERIFS.RT SERIFS.RT }
-			bilateralMotionSerifed { SERIFS.BILATERAL SERIFS.BILATERAL-BGR }
+				[Just 'standard'] {SERIFS.ALL  SERIFS.ALL-BGR}
+				__                {SERIFS.TOP  SERIFS.TOP-BGR}
+			topRightMotionSerifed  {SERIFS.RT         SERIFS.RT           }
+			bilateralMotionSerifed {SERIFS.BILATERAL  SERIFS.BILATERAL-BGR}
 
-	foreach { suffix { fFlatHump { body } { slabType slabTypeBGR } } } [pairs-of CheConfig] : do
+	foreach {suffix {fFlatHump {body} {slabType slabTypeBGR}}} [pairs-of CheConfig] : do
 		create-glyph "cyrl/che.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.r RightSB
@@ -302,7 +302,7 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		DefineSelectorGlyph 'cyrl/tche.upright' suffix cyrTcheDf 'e'
 
-		foreach { suffixTe { doST doSB } } [Object.entries TcheConfig] : do
+		foreach {suffixTe {doST doSB}} [Object.entries TcheConfig] : do
 			create-glyph "cyrl/tche.upright.\(suffix).\(suffixTe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0

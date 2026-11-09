@@ -27,7 +27,7 @@ glyph-block Letter-Cyrillic-Tje : begin
 		include : HBar.t xTopBarLeft xTopBarRight top sw
 
 		if slabTop : begin
-			local { jutTop jutBot jutMid } : EFVJutLength top 0 YeriBarPos sw
+			local {jutTop jutBot jutMid} : EFVJutLength top 0 YeriBarPos sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : VSerif.dl xTopBarLeft  top jutTop swVJut
 			include : VSerif.dr xTopBarRight top jutTop swVJut
@@ -43,7 +43,7 @@ glyph-block Letter-Cyrillic-Tje : begin
 			stroke -- sw
 			fSlab  -- false
 
-	foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
+	foreach {suffix {adws doST doSB}} [Object.entries TConfig] : do
 		create-glyph "cyrl/Tje/leftHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.capital
@@ -60,7 +60,7 @@ glyph-block Letter-Cyrillic-Tje : begin
 			include : with-transform [ApparentTranslate xOffsetMid 0]
 				LeftHalf subDf XH [CyrTjeStroke df XH] doST doSB
 
-	foreach { suffix { Uc Lc BGRc } } [Object.entries YeriConfig] : do
+	foreach {suffix {Uc Lc BGRc}} [Object.entries YeriConfig] : do
 		create-glyph "cyrl/Tje/rightHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.capital

@@ -13,7 +13,7 @@ glyph-block Letter-Armenian-Aliases : begin
 	alias 'armn/Oh'    0x555 'O'
 	alias 'armn/oh'    0x585 'o'
 
-	foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+	foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 		alias "armn/Piur.\(suffix)" null "grek/Phi.\(suffix)"
 		alias "armn/yi.\(suffix)" null : if fSerif 'dotlessj.flatHookShortSerifed' 'dotlessj.flatHookSerifless'
 		alias "armn/co.\(suffix)" null : if fSerif 'g.singleStoreyFlatHookSerifed' 'g.singleStoreyFlatHookSerifless'
@@ -25,7 +25,7 @@ glyph-block Letter-Armenian-Aliases : begin
 		object
 			'' 0
 			bottomCenterFull 2
-	foreach { suffix { p0 p1 } } [Object.entries PiurPositionedSerifs] : do
+	foreach {suffix {p0 p1}} [Object.entries PiurPositionedSerifs] : do
 		if (p0 || p1) : create-glyph "armn/Piur.\(suffix)" : glyph-proc
 			include [refer-glyph 'armn/Piur.serifless'] AS_BASE ALSO_METRICS
 			local df : DivFrame para.advanceScaleM 3

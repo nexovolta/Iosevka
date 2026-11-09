@@ -32,7 +32,7 @@ glyph-block AutoBuild-Accents : begin
 
 	local goalCodes : range 0x0000 0x1FFFF
 	foreach code goalCodes : if [not : glyphStore.queryByUnicode code] : do
-		local parts    { }
+		local parts    {}
 		local allFound true
 
 		local customDecomp   UnicodeKnowledge.decompOverrides.(code)
@@ -59,7 +59,7 @@ glyph-block AutoBuild-Accents : begin
 		if (allFound && parts.length) : begin
 			local glyphName : NameUni code
 			TransformGlyphCompositionSequence parts
-			set foundDecompositions.(glyphName) { glyphName code parts }
+			set foundDecompositions.(glyphName) {glyphName code parts}
 
 	local s_goalName  nothing
 	local s_code      nothing
@@ -82,7 +82,7 @@ glyph-block AutoBuild-Accents : begin
 				eject-contour 'serifRB'
 				set nonTrivial true
 		if ([not nonTrivial] && [AnyDerivingCv.query s_parts.0]) : begin
-			local decomposeParts { }
+			local decomposeParts {}
 			foreach part [items-of s_parts] : recursivelyDecompose part decomposeParts
 			CvDecompose.set currentGlyph decomposeParts
 
@@ -102,7 +102,7 @@ glyph-block AutoBuild-Accents : begin
 		return false
 
 	foreach [_id : items-of : Object.keys foundDecompositions] : do
-		local { glyphName code parts } foundDecompositions.(_id)
+		local {glyphName code parts} foundDecompositions.(_id)
 		local saved : RootGlyphProc glyphName code parts
 		if saved : begin
 			define part0Name : glyphStore.queryNameOf parts.0
@@ -112,7 +112,7 @@ glyph-block AutoBuild-Accents : begin
 			local dstTree {}
 			local targetNameMap  {.}
 			set targetNameMap.(part0Name) glyphName
-			local tree : getGrTree part0Name { DotlessOrNot AnyDerivingCv } query-glyph
+			local tree : getGrTree part0Name {DotlessOrNot AnyDerivingCv} query-glyph
 			foreach [{gr origBase relBase} : items-of tree] : begin
 				local origGN targetNameMap.(origBase)
 				if [not origGN] : throw : new Error 'Unreachable'

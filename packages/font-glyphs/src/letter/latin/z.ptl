@@ -242,22 +242,22 @@ glyph-block Letter-Latin-Z : begin
 
 	define ZConfig : SuffixCfg.weave
 		object # Body
-			straight     { ZBaseShape          SmallZBaseShape          NoBottomStrokeMask    }
-			curly        { ZCurlyShape         SmallZCurlyShape         CurlyBottomStrokeMask }
-			cursive      { ZCursiveShape       SmallZCursiveShape       NoBottomStrokeMask    }
-			semiCursive  { ZSemiCursiveShape   SmallZSemiCursiveShape   NoBottomStrokeMask    }
+			straight    {ZBaseShape         SmallZBaseShape         NoBottomStrokeMask   }
+			curly       {ZCurlyShape        SmallZCurlyShape        CurlyBottomStrokeMask}
+			cursive     {ZCursiveShape      SmallZCursiveShape      NoBottomStrokeMask   }
+			semiCursive {ZSemiCursiveShape  SmallZSemiCursiveShape  NoBottomStrokeMask   }
 		object # Serifs
-			''            { ZSerifless     } # for Cursive
-			serifless     { ZSerifless     }
-			serifed       { ZStdSerifs     }
-			bottomSerifed { ZMotionSerifsB }
-			topSerifed    { ZMotionSerifsT }
+			''            {ZSerifless    } # for Cursive
+			serifless     {ZSerifless    }
+			serifed       {ZStdSerifs    }
+			bottomSerifed {ZMotionSerifsB}
+			topSerifed    {ZMotionSerifsT}
 		object # overlay
-			''                     { null       }
-			withCrossBar           { DBarOver   }
-			withHorizontalCrossBar { HBar.mOver }
+			''                     {null      }
+			withCrossBar           {DBarOver  }
+			withHorizontalCrossBar {HBar.mOver}
 
-	foreach { suffix { { capital small bsMask } { serifs } { slash } } } [pairs-of ZConfig] : do
+	foreach {suffix {{capital small bsMask} {serifs} {slash}}} [pairs-of ZConfig] : do
 		create-glyph "Z.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : capital MODE-Z

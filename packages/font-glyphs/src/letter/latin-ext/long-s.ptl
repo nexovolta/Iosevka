@@ -117,16 +117,16 @@ glyph-block Letter-Latin-Long-S : begin
 
 	# Non-descending variants
 	define SerifSuffixes : object
-		'Serifless'                 { SLAB_SERIFLESS       1.0 }
-		'MiddleSerifed'             { SLAB_MIDDLE          0.5 }
-		'MiddleSerifedXH'           { SLAB_MIDDLE_XH       0.5 }
-		'MiddleSerifedHalfAscender' { SLAB_MIDDLE_HALF_ASC 0.5 }
-		'BottomSerifed'             { SLAB_BOTTOM          0.5 }
-		'DoubleSerifed'             { SLAB_DOUBLE          0.5 }
-		'DoubleSerifedXH'           { SLAB_DOUBLE_XH       0.5 }
-		'DoubleSerifedHalfAscender' { SLAB_DOUBLE_HALF_ASC 0.5 }
+		'Serifless'                 {SLAB_SERIFLESS        1.0}
+		'MiddleSerifed'             {SLAB_MIDDLE           0.5}
+		'MiddleSerifedXH'           {SLAB_MIDDLE_XH        0.5}
+		'MiddleSerifedHalfAscender' {SLAB_MIDDLE_HALF_ASC  0.5}
+		'BottomSerifed'             {SLAB_BOTTOM           0.5}
+		'DoubleSerifed'             {SLAB_DOUBLE           0.5}
+		'DoubleSerifedXH'           {SLAB_DOUBLE_XH        0.5}
+		'DoubleSerifedHalfAscender' {SLAB_DOUBLE_HALF_ASC  0.5}
 
-	foreach { suffix { serifStyle pShift } } [Object.entries SerifSuffixes] : do
+	foreach {suffix {serifStyle pShift}} [Object.entries SerifSuffixes] : do
 		create-glyph "longs.bentHook\(suffix)" : glyph-proc
 			include : MarkSet.b
 			local m : Middle - JBalance - [HSwToV HalfStroke]
@@ -155,12 +155,12 @@ glyph-block Letter-Latin-Long-S : begin
 
 	# Descending and Tailed variants
 	define SerifSuffixesDescending : object
-		'Serifless'                 { SLAB_SERIFLESS       1.0 }
-		'MiddleSerifed'             { SLAB_MIDDLE          0.5 }
-		'MiddleSerifedXH'           { SLAB_MIDDLE_XH       0.5 }
-		'MiddleSerifedHalfAscender' { SLAB_MIDDLE_HALF_ASC 0.5 }
+		'Serifless'                 {SLAB_SERIFLESS        1.0}
+		'MiddleSerifed'             {SLAB_MIDDLE           0.5}
+		'MiddleSerifedXH'           {SLAB_MIDDLE_XH        0.5}
+		'MiddleSerifedHalfAscender' {SLAB_MIDDLE_HALF_ASC  0.5}
 
-	foreach { suffix { serifStyle pShift } } [Object.entries SerifSuffixesDescending] : do
+	foreach {suffix {serifStyle pShift}} [Object.entries SerifSuffixesDescending] : do
 		create-glyph "longs.flatHookDescending\(suffix)" : glyph-proc
 			include : MarkSet.bp
 			local m : Middle - pShift * (JBalance + [HSwToV HalfStroke])
@@ -290,7 +290,7 @@ glyph-block Letter-Latin-Long-S : begin
 		flatTailed     'flat'
 		diagonalTailed 'diagonal'
 		tailed         'tailed'
-	foreach { suffix kind } [pairs-of EshTailConfig] : do
+	foreach {suffix kind} [pairs-of EshTailConfig] : do
 		create-glyph "esh.\(suffix)" : glyph-proc
 			include : MarkSet.bp
 			include : with-transform [ScaleAround Middle 0 (-1) 1]
@@ -387,7 +387,7 @@ glyph-block Letter-Latin-Long-S : begin
 		flatTailed 'flat'
 		diagonalTailed 'diagonal'
 		tailed 'tailed'
-	foreach { suffix kind } [pairs-of EshRelatedConfig] : do
+	foreach {suffix kind} [pairs-of EshRelatedConfig] : do
 		create-glyph "eshBaseline.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			local join : Ascender / 2
@@ -408,7 +408,7 @@ glyph-block Letter-Latin-Long-S : begin
 	select-variant 'eshHookBase' (follow -- 'esh')
 
 	define [CreateEshHooked name unicode source hook] : begin
-		derive-multi-part-glyphs name unicode { source } : function [srcs] : glyph-proc
+		derive-multi-part-glyphs name unicode {source} : function [srcs] : glyph-proc
 			local base : refer-glyph srcs.0
 			include base AS_BASE ALSO_METRICS
 			currentGlyph.clearGeometry
@@ -420,7 +420,7 @@ glyph-block Letter-Latin-Long-S : begin
 		y -- 0
 		yOverflow -- Stroke
 
-	derive-multi-part-glyphs 'eshPalatalHook' 0x1D8B { 'esh' } : function [srcs] : glyph-proc
+	derive-multi-part-glyphs 'eshPalatalHook' 0x1D8B {'esh'} : function [srcs] : glyph-proc
 		local base : query-glyph srcs.0
 		local stem : base.gizmo.unapply base.baseAnchors.overlay
 		include base AS_BASE ALSO_METRICS
@@ -480,7 +480,7 @@ glyph-block Letter-Latin-Long-S : begin
 			flat Middle (Ascender - fine * 1.5) [widths.center.heading Stroke Downward]
 			curl Middle bot [heading Downward]
 
-	foreach { suffix kind } [pairs-of EshRelatedConfig] : do
+	foreach {suffix kind} [pairs-of EshRelatedConfig] : do
 		create-glyph "eshCurlyTail.\(suffix)" : glyph-proc
 			include [refer-glyph 'eshCurlyTail.compact'] AS_BASE ALSO_METRICS
 			currentGlyph.clearGeometry

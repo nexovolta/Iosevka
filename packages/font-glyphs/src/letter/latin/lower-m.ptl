@@ -226,7 +226,7 @@ glyph-block Letter-Latin-Lower-M : begin
 				Arch.rhs top (sw -- sw) (blendPre -- {})
 				flat (xMidBarRightSide - offset) [Math.max (top - adb) (mbot + TINY)] [heading Downward]
 				[if (sink == dispiro) curl corner] (xMidBarRightSide - offset) mbot [heading Downward]
-				if (sink == spiro-outline) { [corner (df.leftSB - offset) 0 ] } { }
+				if (sink == spiro-outline) {[corner (df.leftSB - offset) 0 ]} {}
 		define [rightKnots sink] : begin
 			local xMidBarLeftSide : df.middle - [HSwToV : 0.5 * sw]
 			return : sink
@@ -290,12 +290,12 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-export SmallMConfig
 	define SmallMConfig : SuffixCfg.weave
 		object
-			''                             { SmallMArches                        0 }
-			'flatTop'                      { FlatTopSmallMShape                  0 }
-			'earlessSingleArch'            { EarlessSingleArchSmallMShape         1 }
-			'earlessRoundedSingleArch'     { EarlessRoundedSingleArchSmallMShape  1 }
-			'earlessCornerDoubleArch'      { EarlessCornerDoubleArchSmallMShape   1 }
-			'earlessRoundedDoubleArch'     { EarlessRoundedDoubleArchSmallMShape  1 }
+			''                         {SmallMArches                         0}
+			'flatTop'                  {FlatTopSmallMShape                   0}
+			'earlessSingleArch'        {EarlessSingleArchSmallMShape         1}
+			'earlessRoundedSingleArch' {EarlessRoundedSingleArchSmallMShape  1}
+			'earlessCornerDoubleArch'  {EarlessCornerDoubleArchSmallMShape   1}
+			'earlessRoundedDoubleArch' {EarlessRoundedDoubleArchSmallMShape  1}
 		function [ear] : begin
 			if (ear === 'earlessSingleArch' || ear === 'earlessRoundedSingleArch' || ear === 'earlessCornerDoubleArch' || ear === 'earlessRoundedDoubleArch') : return : object
 				''         ''
@@ -303,19 +303,19 @@ glyph-block Letter-Latin-Lower-M : begin
 				''         ''
 				topCut     'topCut'
 		object
-			''                             { 0 }
-			'shortLeg'                     { 1 }
+			''         {0}
+			'shortLeg' {1}
 		object
-			''                             { 0 }
-			'tailed'                       { 1 }
+			''       {0}
+			'tailed' {1}
 		object
-			'serifless'                    { no-shape   }
-			'serifed'                      { FullSerifs }
-			'topLeftSerifed'               { LtSerifs   }
-			'bottomRightSerifed'           { RbSerifs   }
-			'topLeftAndBottomRightSerifed' { LtRbSerifs }
+			'serifless'                    {no-shape  }
+			'serifed'                      {FullSerifs}
+			'topLeftSerifed'               {LtSerifs  }
+			'bottomRightSerifed'           {RbSerifs  }
+			'topLeftAndBottomRightSerifed' {LtRbSerifs}
 
-	foreach { suffix { { Body earless } cut { shortLeg } { tailed } { Serifs } } } [pairs-of SmallMConfig] : do
+	foreach {suffix {{Body earless} cut {shortLeg} {tailed} {Serifs}}} [pairs-of SmallMConfig] : do
 		define [mShapeBody df top _sw _ada _adb] : begin
 			return : mShapeBodyImpl df top Body earless shortLeg tailed Serifs cut _sw _ada _adb
 
@@ -460,12 +460,12 @@ glyph-block Letter-Latin-Lower-M : begin
 
 	define TurnMConfig : SuffixCfg.weave
 		object # body
-			toothed                      { SmallMArches                         0 0 }
-			tailed                       { SmallMArches                         0 1 }
-			flatBottom                   { FlatTopSmallMShape                   0 0 }
-			toothlessCorner              { EarlessCornerDoubleArchSmallMShape   1 0 }
-			toothlessRounded             { EarlessRoundedDoubleArchSmallMShape  1 0 }
-			toothlessRoundedSingleArch   { EarlessRoundedSingleArchSmallMShape  1 0 }
+			toothed                    {SmallMArches                         0  0}
+			tailed                     {SmallMArches                         0  1}
+			flatBottom                 {FlatTopSmallMShape                   0  0}
+			toothlessCorner            {EarlessCornerDoubleArchSmallMShape   1  0}
+			toothlessRounded           {EarlessRoundedDoubleArchSmallMShape  1  0}
+			toothlessRoundedSingleArch {EarlessRoundedSingleArchSmallMShape  1  0}
 		function [body] : begin
 			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded' || body === 'toothlessRoundedSingleArch') : return : object
 				''         ''
@@ -473,20 +473,20 @@ glyph-block Letter-Latin-Lower-M : begin
 				''         ''
 				bottomCut  'bottomCut'
 		object # stem
-			''                 { 0 }
-			shortStem          { 1 }
+			''        {0}
+			shortStem {1}
 		function [body cut stem] : object # serifs
-			serifless          { no-shape   no-shape           }
-			serifed            { FullSerifs SmallTurnedMSerifs }
-			bottomRightSerifed { LtSerifs   LtSerifs           } # The name-shaping mapping is swapped by design
-			bilateralMotionSerifed { CapitalTurnedMBilateralMotionSerifs CapitalTurnedMBilateralMotionSerifs }
-			trilateralMotionSerifed { CapitalTurnedMTrilateralMotionSerifs CapitalTurnedMTrilateralMotionSerifs }
-			topRightMotionSerifed  { LbSerifs LbSerifs }
+			serifless               {no-shape                              no-shape                            }
+			serifed                 {FullSerifs                            SmallTurnedMSerifs                  }
+			bottomRightSerifed      {LtSerifs                              LtSerifs                            } # The name-shaping mapping is swapped by design
+			bilateralMotionSerifed  {CapitalTurnedMBilateralMotionSerifs   CapitalTurnedMBilateralMotionSerifs }
+			trilateralMotionSerifed {CapitalTurnedMTrilateralMotionSerifs  CapitalTurnedMTrilateralMotionSerifs}
+			topRightMotionSerifed   {LbSerifs                              LbSerifs                            }
 			motionSerifed : match body
-				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) [if (cut === 'bottomCut') { RbSerifs RbSerifs } { LtRbSerifs LtRbSerifs }]
-				__                                                             { LtSerifs   LtSerifs   } # The name-shaping mapping is swapped by design
+				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) [if (cut === 'bottomCut') {RbSerifs RbSerifs} {LtRbSerifs LtRbSerifs}]
+				__                                                             {LtSerifs   LtSerifs} # The name-shaping mapping is swapped by design
 
-	foreach { suffix { { Body toothless tailed } cut { shortStem } { USerifs LSerifs } } } [pairs-of TurnMConfig] : do
+	foreach {suffix {{Body toothless tailed} cut {shortStem} {USerifs LSerifs}}} [pairs-of TurnMConfig] : do
 		define [turnMShapeBody df top _sw _ada _adb] : glyph-proc
 			include : turnMShapeBodyImpl df top Body toothless shortStem tailed LSerifs cut _sw _ada _adb
 

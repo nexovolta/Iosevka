@@ -194,7 +194,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			list 0x2BEA 1 0 1
 			list 0x2BEB 0 1 1
 
-		foreach { u lh rh bord } [items-of starParts] : begin
+		foreach {u lh rh bord} [items-of starParts] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				set-width Geom.Width
 				if bord : include [refer-glyph : MangleName 'whiteStar']
@@ -215,7 +215,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			list 0x1F7FA 'whiteSquare' 0 1 1 1
 			list 0x1F7FB 'whiteSquare' 1 1 0 1
 			list 0x1F7FC 'whiteSquare' 1 1 1 1
-		foreach { u frame T L B R } [items-of quarterLineParts] : begin
+		foreach {u frame T L B R} [items-of quarterLineParts] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				local hh : HSwToV : 0.5 * GeometryStroke
 				local hv : GeometryStroke / 2
@@ -233,7 +233,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			list 0x27A2 0 1
 			list 0x27A3 1 0
 
-		foreach { u th bh } [items-of arrowHeadParts] : begin
+		foreach {u th bh} [items-of arrowHeadParts] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				set-width Geom.Width
 				include [refer-glyph : MangleName 'whiteArrowHeadRight']
@@ -552,8 +552,8 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 
 		# Mathematical Triangle Symbols
 		define triangleSideRadius : Geom.Size * 2.1 / [Math.sqrt 3]
-		derive-multi-part-glyphs [MangleName 'whiteTriangleUpDotAbove'] [MangleUnicode 0x29CA] { [MangleName 'whiteTriangleUp'] 'dotAbove' } : lambda [srcs gr] : glyph-proc
-			local { base mark } srcs
+		derive-multi-part-glyphs [MangleName 'whiteTriangleUpDotAbove'] [MangleUnicode 0x29CA] {[MangleName 'whiteTriangleUp'] 'dotAbove'} : lambda [srcs gr] : glyph-proc
+			local {base mark} srcs
 			include : PackMathShape : new-glyph : glyph-proc
 				include : refer-glyph mark
 				include : Translate (Middle + Geom.MidX) (Geom.Top - XH)

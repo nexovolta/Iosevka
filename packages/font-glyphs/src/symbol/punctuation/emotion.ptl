@@ -23,7 +23,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		glyph-block-import Letter-Shared : CreateTurnedLetter
 		glyph-block-import Letter-Shared-Shapes : RetroflexHook
 
-		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr overshoot}} [Object.entries DotVariants] : do
 			local dr : DotRadius * kdr
 			create-glyph "exclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
@@ -35,7 +35,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		select-variant 'exclam' '!' (follow -- 'punctuationDot')
 		select-variant 'exclamDown' 0xA1 (follow -- 'punctuationDot')
 
-		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr overshoot}} [Object.entries DotVariants] : do
 			local dr : DotRadius * kdr
 			create-glyph "wigglyExclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
@@ -76,7 +76,7 @@ glyph-block Symbol-Punctuation-Emotion : begin
 
 		select-variant 'wigglyExclam' 0x2E60 (follow -- 'punctuationDot')
 		select-variant 'wigglyExclamDown' 0x2E61 (follow -- 'punctuationDot')
-		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr overshoot}} [Object.entries DotVariants] : do
 			create-glyph "medievalExclam.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				local dr : DotRadius * kdr
@@ -125,15 +125,15 @@ glyph-block Symbol-Punctuation-Emotion : begin
 		glyph-block-import Letter-Latin-Glottal-Stop : QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape
 
 		define HookConfig : object
-			smooth              { QuestionSmoothShape              QuestionRevSmoothShape }
-			corner              { QuestionCornerShape              QuestionRevCornerShape }
-			cornerFlatHooked    { QuestionCornerFlatShape          QuestionRevCornerFlatShape }
-			smoothFlatHooked    { QuestionSmoothFlatHookedShape    QuestionRevSmoothFlatHookedShape }
-			cornerCornerHooked  { QuestionCornerCornerHookedShape  QuestionRevCornerCornerHookedShape }
-			smoothCornerHooked  { QuestionSmoothCornerHookedShape  QuestionRevSmoothCornerHookedShape }
+			smooth             {QuestionSmoothShape              QuestionRevSmoothShape            }
+			corner             {QuestionCornerShape              QuestionRevCornerShape            }
+			cornerFlatHooked   {QuestionCornerFlatShape          QuestionRevCornerFlatShape        }
+			smoothFlatHooked   {QuestionSmoothFlatHookedShape    QuestionRevSmoothFlatHookedShape  }
+			cornerCornerHooked {QuestionCornerCornerHookedShape  QuestionRevCornerCornerHookedShape}
+			smoothCornerHooked {QuestionSmoothCornerHookedShape  QuestionRevSmoothCornerHookedShape}
 
 		define Config : SuffixCfg.dotWeave DotVariants HookConfig
-		foreach { suffix { { DrawAt kdr overshoot } { Body RevBody } } } [Object.entries Config] : do
+		foreach {suffix {{DrawAt kdr overshoot} {Body RevBody}}} [Object.entries Config] : do
 			create-glyph "question.\(suffix)" : glyph-proc
 				include : Body CAP emotionBottom SB RightSB
 				include : DrawAt Middle (DotRadius * kdr) (DotRadius * kdr - overshoot)
@@ -166,19 +166,19 @@ glyph-block Symbol-Punctuation-Emotion : begin
 				include : FlipAround Middle (XH / 2)
 
 		select-multi-dimensional-variant 'question' '?'
-			follows -- { 'punctuationDot' 'question' }
+			follows -- {'punctuationDot' 'question'}
 		select-multi-dimensional-variant 'questionDown' 0xBF
-			follows -- { 'punctuationDot' 'question' }
+			follows -- {'punctuationDot' 'question'}
 		select-multi-dimensional-variant 'revQuestion' 0x2E2E
-			follows -- { 'punctuationDot' 'question' }
+			follows -- {'punctuationDot' 'question'}
 		select-multi-dimensional-variant 'interrobang' 0x203D
-			follows -- { 'punctuationDot' 'question' }
+			follows -- {'punctuationDot' 'question'}
 		select-multi-dimensional-variant 'gnaborretni' 0x2E18
-			follows -- { 'punctuationDot' 'question' }
+			follows -- {'punctuationDot' 'question'}
 
 		alias 'symbolForSubstituteFormTwo' 0x2426 'revQuestion'
 
-		foreach { dotSuffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+		foreach {dotSuffix {DrawAt kdr overshoot}} [Object.entries DotVariants] : do
 			foreach tildeSuffix [items-of AsciiTildeSuffixes] : do
 				create-glyph "medievalQuestion.\(dotSuffix).\(tildeSuffix)" : glyph-proc
 					local df : include : DivFrame 1
@@ -212,4 +212,4 @@ glyph-block Symbol-Punctuation-Emotion : begin
 					include : CenterMedievalInk df
 
 		select-multi-dimensional-variant 'medievalQuestion' 0x2E54
-			follows -- { 'punctuationDot' 'asciiTilde' }
+			follows -- {'punctuationDot' 'asciiTilde'}

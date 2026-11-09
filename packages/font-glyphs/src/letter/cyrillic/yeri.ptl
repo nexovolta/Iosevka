@@ -279,11 +279,11 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 	glyph-block-export YeriConfig
 	define YeriConfig : object
-		corner   { YeriUpper.Shape         YeriLower.Shape         YeriLowerBGR.Shape }
-		round    { YeriUpper.RoundShape    YeriLower.RoundShape    YeriLowerBGR.RoundShape }
-		cursive  { YeriUpper.CursiveShape  YeriLower.CursiveShape  YeriLowerBGR.CursiveShape }
+		corner  {YeriUpper.Shape         YeriLower.Shape         YeriLowerBGR.Shape       }
+		round   {YeriUpper.RoundShape    YeriLower.RoundShape    YeriLowerBGR.RoundShape  }
+		cursive {YeriUpper.CursiveShape  YeriLower.CursiveShape  YeriLowerBGR.CursiveShape}
 
-	foreach { suffix { Uc Lc BGRc } } [Object.entries YeriConfig] : do
+	foreach {suffix {Uc Lc BGRc}} [Object.entries YeriConfig] : do
 		create-glyph "cyrl/Yeri.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local stroke : AdviceStroke2 2 3 CAP

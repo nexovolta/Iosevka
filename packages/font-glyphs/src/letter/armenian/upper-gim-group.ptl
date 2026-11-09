@@ -17,7 +17,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 	define jut Jut
 
 	do 'Gim'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Gim.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
@@ -39,7 +39,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
-		foreach { suffix { p0 } } [Object.entries GimPositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries GimPositionedSerifs] : do
 			if (p0) : create-glyph "armn/Gim.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/Gim.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1
@@ -48,7 +48,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 		select-variant 'armn/Gim' 0x533
 
 	do 'Zhe'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Zhe.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : dispiro
@@ -68,7 +68,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				'' 0
 				topRightMotion 1
 				topRightFull 2
-		foreach { suffix { p0 } } [Object.entries ZhePositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries ZhePositionedSerifs] : do
 			if (p0) : create-glyph "armn/Zhe.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/Zhe.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1
@@ -76,7 +76,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				if p0 : include : if (p0 === 1) sf.rt.outer sf.rt.full
 		select-variant 'armn/Zhe' 0x53A
 
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/zhe.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.b
@@ -97,7 +97,7 @@ glyph-block Letter-Armenian-Upper-Gim-Group : begin
 				'' 0
 				topRightMotion 1
 				topRightFull 2
-		foreach { suffix { p0 } } [Object.entries zhePositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries zhePositionedSerifs] : do
 			if (p0) : create-glyph "armn/zhe.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/zhe.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1

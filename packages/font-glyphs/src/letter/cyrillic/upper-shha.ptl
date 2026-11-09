@@ -63,9 +63,9 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 		topLeftBottomRightSerifed SLAB-TOP-LEFT-BOTTOM-RIGHT
 		serifed                   SLAB-ALL
 
-	foreach { hSuffix { fFlatHump fTailed hSerifs } } [pairs-of HConfig] : do
+	foreach {hSuffix {fFlatHump fTailed hSerifs}} [pairs-of HConfig] : do
 		DefineSelectorGlyph 'cyrl/Hwe' hSuffix [DivFrame 1] 'capital'
-		foreach { suffix slabType } [pairs-of ShhaConfig] : do
+		foreach {suffix slabType} [pairs-of ShhaConfig] : do
 			create-glyph "cyrl/Hwe.\(hSuffix).\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				include : LeaningAnchor.Above.VBar.l SB
@@ -75,7 +75,7 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 				include : TopHook.toRight.lBarInner SB 0 CAP
 		select-variant "cyrl/Hwe.\(hSuffix)" (follow -- 'hCapHookTop')
 
-	foreach { suffix { fFlatHump slabType } } [pairs-of CheCapConfig] : do
+	foreach {suffix {fFlatHump slabType}} [pairs-of CheCapConfig] : do
 		create-glyph "cyrl/Shha.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Above.VBar.l SB
@@ -98,7 +98,7 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 	do 'Phonotypic TH'
 		glyph-block-import Letter-Latin-Upper-T : TConfig
 
-		foreach { suffix { adws doST doSB } } [Object.entries TConfig] : do
+		foreach {suffix {adws doST doSB}} [Object.entries TConfig] : do
 			define slabType : if (doST && doSB) SLAB-ALL SLAB-NONE
 
 			create-glyph "latn/The.\(suffix)" : glyph-proc
@@ -110,7 +110,7 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 				include : HBar.t (SB - O) xTopRight CAP stroke
 
 				if doST : begin
-					local { jutTop jutBot jutMid } : EFVJutLength CAP 0 YeriBarPos stroke
+					local {jutTop jutBot jutMid} : EFVJutLength CAP 0 YeriBarPos stroke
 					local swVJut : VJutStroke * (stroke / Stroke)
 					include : tagged 'serifRT' : VSerif.dr xTopRight CAP jutTop swVJut
 

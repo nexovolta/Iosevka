@@ -37,12 +37,12 @@ glyph-block Letter-Latin-Upper-I : begin
 
 	glyph-block-export UpperIConfig
 	define UpperIConfig : object
-		'straight'      { para.advanceScaleI   ISerifs.None }
-		'serifless'     { para.advanceScaleII  ISerifs.None }
-		'serifed'       { para.advanceScaleI   ISerifs.Long }
-		'shortSerifed'  { para.advanceScaleII  ISerifs.Short }
+		'straight'     {para.advanceScaleI   ISerifs.None }
+		'serifless'    {para.advanceScaleII  ISerifs.None }
+		'serifed'      {para.advanceScaleI   ISerifs.Long }
+		'shortSerifed' {para.advanceScaleII  ISerifs.Short}
 
-	foreach { suffix { adws Serifs } } [Object.entries UpperIConfig] : do
+	foreach {suffix {adws Serifs}} [Object.entries UpperIConfig] : do
 		create-glyph "I.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include : df.markSet.capital
@@ -81,7 +81,7 @@ glyph-block Letter-Latin-Upper-I : begin
 			local yBar : mix 0 CAP OverlayPos
 			include : HBar.m xMidLeft xMidRight yBar
 			if (Serifs !== ISerifs.None) : begin
-				local { jutTop jutBot jutMid } : EFVJutLength CAP 0 OverlayPos
+				local {jutTop jutBot jutMid} : EFVJutLength CAP 0 OverlayPos
 				local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - xMidLeft)
 				include : VSerif.ml xMidLeft  yBar jutMid swVJut
 				include : VSerif.mr xMidRight yBar jutMid swVJut

@@ -12,7 +12,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	glyph-block-import Symbol-Punctuation-Ellipsis EllipsisDotRadius
 	glyph-block-import Mark-Above : OgonekTickShape MeasureGlyphBounds
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		create-glyph "period.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : DrawAt df.middle (PeriodRadius * kDotRadius) (PeriodRadius * kDotRadius - overshoot)
@@ -195,7 +195,7 @@ glyph-block Symbol-Punctuation-Small : begin
 			local stress : 1.2 * fine
 			include : with-transform [ScaleAround 0 0 (-1) 1] : PrimeShape 0 (2 * rFill - stress / 2) Descender r fine
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		create-glyph "comma.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
 			include : [CommaShape kDotRadius overshoot].(suffix) df.middle 0
@@ -222,23 +222,23 @@ glyph-block Symbol-Punctuation-Small : begin
 		local df : include : DivFrame para.advanceScaleSp
 		include : [RevCommaShape 1 O].prime df.middle 0
 
-	foreach { name scale reversed } {
-		{ 'comma' para.advanceScaleI false }
-		{ 'revComma' para.advanceScaleI true }
-		{ 'comma/asDiacritic' para.advanceScaleSp false }
-		{ 'revComma/asDiacritic' para.advanceScaleSp true }
+	foreach {name scale reversed} {
+		{'comma' para.advanceScaleI false}
+		{'revComma' para.advanceScaleI true}
+		{'comma/asDiacritic' para.advanceScaleSp false}
+		{'revComma/asDiacritic' para.advanceScaleSp true}
 	} : do
 		create-glyph "\(name).tick" : glyph-proc
 			local df : include : DivFrame scale
 			include : with-transform [ScaleAround df.middle 0 [if reversed (-1) 1] 1]
 				[CommaShape 1 O].tick df.middle 0
 
-	foreach suffix { 'corner' 'bottomCut' } : do
-		foreach { name scale reversed } {
-			{ 'comma' para.advanceScaleI false }
-			{ 'revComma' para.advanceScaleI true }
-			{ 'comma/asDiacritic' para.advanceScaleSp false }
-			{ 'revComma/asDiacritic' para.advanceScaleSp true }
+	foreach suffix {'corner' 'bottomCut'} : do
+		foreach {name scale reversed} {
+			{'comma' para.advanceScaleI false}
+			{'revComma' para.advanceScaleI true}
+			{'comma/asDiacritic' para.advanceScaleSp false}
+			{'revComma/asDiacritic' para.advanceScaleSp true}
 		} : do
 			create-glyph "\(name).\(suffix)" : glyph-proc
 				local df : include : DivFrame scale
@@ -256,7 +256,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	turned 'turnComma.diamond' null 'comma.diamond' [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
 	turned 'turnComma.prime'  null 'comma.prime'  [DivFrame para.advanceScaleI].middle PeriodRadius
 	turned 'turnComma.tick'   null 'comma.tick'   [DivFrame para.advanceScaleI].middle PeriodRadius
-	foreach suffix { 'hexagon' 'corner' 'bottomCut' } : do
+	foreach suffix {'hexagon' 'corner' 'bottomCut'} : do
 		turned "turnComma.\(suffix)" null "comma.\(suffix)" [DivFrame para.advanceScaleI].middle (PeriodRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar])
 	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationComma')
 
@@ -269,12 +269,12 @@ glyph-block Symbol-Punctuation-Small : begin
 	derive-composites 'raisedComma.diamond' null 'comma.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedComma.prime'   null 'comma.prime'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedComma.tick'    null 'comma.tick'    [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
-	foreach suffix { 'hexagon' 'corner' 'bottomCut' } : do
+	foreach suffix {'hexagon' 'corner' 'bottomCut'} : do
 		derive-composites "raisedComma.\(suffix)" null "comma.\(suffix)" [ApparentTranslate 0 (XH / 2 - PeriodRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar])]
 	select-variant 'raisedPeriod' 0x2E33 (follow -- 'punctuationDot')
 	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationComma')
 
-	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		create-glyph "colon.\(suffix)" : glyph-proc
 			include [refer-glyph "period.\(suffix)"] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(suffix)"]
@@ -405,7 +405,7 @@ glyph-block Symbol-Punctuation-Small : begin
 		include [refer-glyph 'comma.tick'] AS_BASE ALSO_METRICS
 		include : with-transform [ApparentTranslate 0 shift] : refer-glyph 'comma.tick'
 
-	foreach suffix { 'corner' 'bottomCut' } : do
+	foreach suffix {'corner' 'bottomCut'} : do
 		create-glyph "doubleStackedComma.\(suffix)" : glyph-proc
 			local commaBounds nothing
 			local commaShape : new-glyph : glyph-proc
@@ -441,7 +441,7 @@ glyph-block Symbol-Punctuation-Small : begin
 			include [refer-glyph 'revComma.tick'] AS_BASE ALSO_METRICS
 			include [refer-glyph "xhPeriod.\(dotSuffix)"]
 
-		foreach suffix { 'corner' 'bottomCut' } : do
+		foreach suffix {'corner' 'bottomCut'} : do
 			create-glyph "semicolon.\(dotSuffix).\(suffix)" : glyph-proc
 				include [refer-glyph "comma.\(suffix)"] AS_BASE ALSO_METRICS
 				include [refer-glyph "xhPeriod.\(dotSuffix)"]
@@ -454,9 +454,9 @@ glyph-block Symbol-Punctuation-Small : begin
 	select-variant 'mdfColon' 0xA789 (follow -- 'diacriticDot')
 	select-variant 'mdfRaisedColon' 0x2F8 (follow -- 'diacriticDot')
 	select-multi-dimensional-variant 'semicolon' ';'
-		follows -- { 'punctuationDot' 'punctuationComma' }
+		follows -- {'punctuationDot' 'punctuationComma'}
 	select-multi-dimensional-variant 'revSemicolon' 0x204F
-		follows -- { 'punctuationDot' 'punctuationComma' }
+		follows -- {'punctuationDot' 'punctuationComma'}
 	select-variant 'doubleStackedComma' 0x2E49 (follow -- 'punctuationComma')
 
 	select-variant 'threeDotPunct' 0x2056 (follow -- 'punctuationDot')
@@ -480,7 +480,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	turned 'turnSemicolon' 0x2E35 'semicolon' [DivFrame para.advanceScaleI].middle (XH / 2)
 
 	do 'Stenographic full stop, medieval comma, punctus elevatus'
-		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 			create-glyph "stenographicFullStop.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleI
 				local r : PeriodRadius * kDotRadius
@@ -516,8 +516,8 @@ glyph-block Symbol-Punctuation-Small : begin
 		select-variant 'stenographicFullStop' 0x2E3C (follow -- 'punctuationDot')
 		select-variant 'medievalComma' 0x2E4C (follow -- 'punctuationDot')
 
-		foreach { dotSuffix { DrawAtDot kDotRadiusDot overshootDot } } [Object.entries DotVariants] : do
-			foreach { commaSuffix { DrawAtComma kCommaRadius overshootComma } } [Object.entries DotVariants] : do
+		foreach {dotSuffix {DrawAtDot kDotRadiusDot overshootDot}} [Object.entries DotVariants] : do
+			foreach {commaSuffix {DrawAtComma kCommaRadius overshootComma}} [Object.entries DotVariants] : do
 				create-glyph "punctusElevatus.\(dotSuffix).\(commaSuffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleI
 					local r : PeriodRadius * kCommaRadius
@@ -557,7 +557,7 @@ glyph-block Symbol-Punctuation-Small : begin
 					include : Translate df.middle (XH - 1.2 * r)
 					include : Regizmo
 
-			foreach suffix { 'corner' 'bottomCut' } : do
+			foreach suffix {'corner' 'bottomCut'} : do
 				create-glyph "punctusElevatus.\(dotSuffix).\(suffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleI
 					local r : PeriodRadius * SquareDotScalar
@@ -572,7 +572,7 @@ glyph-block Symbol-Punctuation-Small : begin
 						include : Regizmo
 
 		select-multi-dimensional-variant 'punctusElevatus' 0x2E4E
-			follows -- { 'punctuationDot' 'punctuationComma' }
+			follows -- {'punctuationDot' 'punctuationComma'}
 
 	# Hollow (no CV)
 

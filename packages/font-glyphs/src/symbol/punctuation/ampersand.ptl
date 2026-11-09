@@ -383,7 +383,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		'flatTopSerifless' false
 		'flatTopSerifed'   true
 
-	foreach { suffix fSerifed } [pairs-of EtFlatTopConfig] : do
+	foreach {suffix fSerifed} [pairs-of EtFlatTopConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed
@@ -406,8 +406,8 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		'Serifless' false
 		'Serifed'   true
 
-	foreach { formSuffix form } [pairs-of FlatTopToothForms] : do
-		foreach { serifSuffix fSerifed } [pairs-of FlatTopSerifs] : do
+	foreach {formSuffix form} [pairs-of FlatTopToothForms] : do
+		foreach {serifSuffix fSerifed} [pairs-of FlatTopSerifs] : do
 			create-glyph "ampersand.flatTop\(formSuffix)\(serifSuffix)" : glyph-proc
 				define et : RevEzh CAP 0
 					fSerifed   -- fSerifed
@@ -429,16 +429,16 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 						__ : no-shape
 
 	define FlatTopAndBottomConfig : object
-		'flatTopAndBottomSerifless'                  { FORM-FLAT-BOTTOM        false }
-		'flatTopAndBottomSerifed'                    { FORM-FLAT-BOTTOM        true }
-		'flatTopAndBottomToothedSerifless'           { FORM-TOOTHED            false }
-		'flatTopAndBottomToothedSerifed'             { FORM-TOOTHED            true }
-		'flatTopAndBottomToothlessCornerSerifless'   { FORM-TOOTHLESS-CORNER   false }
-		'flatTopAndBottomToothlessCornerSerifed'     { FORM-TOOTHLESS-CORNER   true }
-		'flatTopAndBottomToothlessRoundedSerifless'  { FORM-TOOTHLESS-ROUNDED  false }
-		'flatTopAndBottomToothlessRoundedSerifed'    { FORM-TOOTHLESS-ROUNDED  true }
+		'flatTopAndBottomSerifless'                 {FORM-FLAT-BOTTOM        false}
+		'flatTopAndBottomSerifed'                   {FORM-FLAT-BOTTOM        true }
+		'flatTopAndBottomToothedSerifless'          {FORM-TOOTHED            false}
+		'flatTopAndBottomToothedSerifed'            {FORM-TOOTHED            true }
+		'flatTopAndBottomToothlessCornerSerifless'  {FORM-TOOTHLESS-CORNER   false}
+		'flatTopAndBottomToothlessCornerSerifed'    {FORM-TOOTHLESS-CORNER   true }
+		'flatTopAndBottomToothlessRoundedSerifless' {FORM-TOOTHLESS-ROUNDED  false}
+		'flatTopAndBottomToothlessRoundedSerifed'   {FORM-TOOTHLESS-ROUNDED  true }
 
-	foreach { suffix { form fSerifed } } [pairs-of FlatTopAndBottomConfig] : do
+	foreach {suffix {form fSerifed}} [pairs-of FlatTopAndBottomConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed

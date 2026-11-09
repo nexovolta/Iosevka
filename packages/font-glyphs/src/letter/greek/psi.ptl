@@ -32,9 +32,9 @@ glyph-block Letter-Greek-Psi : begin
 		if doSerifMB : include : tagged 'serifMB' : HSerif.mb df.middle y1 MidJutCenter
 
 	define PsiCapSerifConfig : object
-		serifless    { false  false  false  false }
-		serifed      { true   true   true   true }
-		baseSerifed  { false  false  false  true }
+		serifless   {false  false  false  false}
+		serifed     {true   true   true   true }
+		baseSerifed {false  false  false  true }
 
 	define [CyrPsiShape fBarStraight fSquareTop] : function [] : with-params [df y1 y2 y3 y4 ada adb doSerifLT doSerifRT doSerifMT doSerifMB] : glyph-proc
 		local fine    : df.adviceThinnerStroke 3.5
@@ -67,11 +67,11 @@ glyph-block Letter-Greek-Psi : begin
 		if doSerifMB : include : tagged 'serifMB' : HSerif.mb df.middle y1 (MidJutCenter - [HSwToV : 0.5 * (Stroke - coarse)]) swSerif
 
 	define VConfig : object
-		straight   { true   0 }
-		curly      { false  0 }
-		squareTop  { true   1 }
+		straight  {true   0}
+		curly     {false  0}
+		squareTop {true   1}
 
-	foreach { suffix { doLT doRT doMT doMB } } [Object.entries PsiCapSerifConfig] : do
+	foreach {suffix {doLT doRT doMT doMB}} [Object.entries PsiCapSerifConfig] : do
 		create-glyph "grek/Psi.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
@@ -94,7 +94,7 @@ glyph-block Letter-Greek-Psi : begin
 			local df : DivFrame para.advanceScaleM 3
 			DefineSelectorGlyph 'cyrl/Psi' suffix df 'capital'
 
-			foreach { suffixV { fBarStraight fSquareTop } } [Object.entries VConfig] : do
+			foreach {suffixV {fBarStraight fSquareTop}} [Object.entries VConfig] : do
 				create-glyph "cyrl/Psi.\(suffix).\(suffixV)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -112,16 +112,16 @@ glyph-block Letter-Greek-Psi : begin
 
 	define GrekLowerPsiConfig : SuffixCfg.weave
 		object # top
-			''                { Ascender     'bp' }
-			shortNeck         { yShortNeck1  'bp' }
-			shorterNeck       { yShorterNeck 'bp' }
-			flatTop           { XH           'p'  }
+			''          {Ascender      'bp'}
+			shortNeck   {yShortNeck1   'bp'}
+			shorterNeck {yShorterNeck  'bp'}
+			flatTop     {XH            'p' }
 		object # serifs
-			serifless         { false false }
-			serifed           { true  false }
-			baseSerifed       { false true  }
+			serifless   {false  false}
+			serifed     {true   false}
+			baseSerifed {false  true }
 
-	foreach { suffix { { top mk } { doLT doMB } } } [Object.entries GrekLowerPsiConfig] : do
+	foreach {suffix {{top mk} {doLT doMB}}} [Object.entries GrekLowerPsiConfig] : do
 		define df : DivFrame para.advanceScaleM 3
 
 		create-glyph "grek/psi.\(suffix)" : glyph-proc
@@ -135,7 +135,7 @@ glyph-block Letter-Greek-Psi : begin
 
 		DefineSelectorGlyph 'cyrl/psi' suffix df mk
 
-		foreach { suffixV { fBarStraight fSquareTop } } [Object.entries VConfig] : do
+		foreach {suffixV {fBarStraight fSquareTop}} [Object.entries VConfig] : do
 			create-glyph "cyrl/psi.\(suffix).\(suffixV)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0

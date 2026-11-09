@@ -54,50 +54,50 @@ glyph-block Symbol-Ligation : begin
 			define zright : cright + SB
 
 			define lk : object
-				f   { SB                      false } # Free end
-				x   { (SB - Width)            false } # !='s bar shape, extension to left
-				y   { (-join - Width)         false } # -!-'s second bar, more to left
-				l   { arrowl                  false } # <-
-				l1  { (arrowl - kern)         false } # <<-
-				lx  { [mix arrowl 0 0.5]      false } # Bar right after <!--'s exclam
-				m   { (0 - RodBarHOffset)     false } # |-
-				j   { (-join)                 false } # >-
-				j1  { (-join - kern)          false } # >>-
-				c   { cleft                   true  } # Connected rod
-				z   { zleft                   true  } # Connected rod
+				f  {SB                   false} # Free end
+				x  {(SB - Width)         false} # !='s bar shape, extension to left
+				y  {(-join - Width)      false} # -!-'s second bar, more to left
+				l  {arrowl               false} # <-
+				l1 {(arrowl - kern)      false} # <<-
+				lx {[mix arrowl 0 0.5]   false} # Bar right after <!--'s exclam
+				m  {(0 - RodBarHOffset)  false} # |-
+				j  {(-join)              false} # >-
+				j1 {(-join - kern)       false} # >>-
+				c  {cleft                true } # Connected rod
+				z  {zleft                true } # Connected rod
 
 			define rk : object
-				f   { RightSB                 false } # Free end
-				p   { (arrowr - Width)        false } # bar in :> when ">" is turned into an arrow
-				r   { arrowr                  false } # ->
-				r1  { (arrowr + kern)         false } # ->>
-				m   { (Width + RodBarHOffset) false } # -|
-				j   { (Width + join)          false } # -<
-				j1  { (Width + join + kern)   false } # -<<
-				c   { cright                  true  } # Connected rods
-				z   { zright                  true  } # Connected rods
+				f  {RightSB                  false} # Free end
+				p  {(arrowr - Width)         false} # bar in :> when ">" is turned into an arrow
+				r  {arrowr                   false} # ->
+				r1 {(arrowr + kern)          false} # ->>
+				m  {(Width + RodBarHOffset)  false} # -|
+				j  {(Width + join)           false} # -<
+				j1 {(Width + join + kern)    false} # -<<
+				c  {cright                   true } # Connected rods
+				z  {zright                   true } # Connected rods
 
 			define result {}
 			foreach [l : items-of : Object.keys lk] : foreach [r : items-of : Object.keys rk]
-				result.push { l r lk.(l) rk.(r) }
+				result.push {l r lk.(l) rk.(r)}
 			return result
 
 		define [HyphenShape l r] : HBar.m l r SymbolMid OperatorStroke
 		define [HyphenShape.joinCap x] : JunctDiamond x SymbolMid OperatorStroke
 
 		define Shapes : object
-			'plus'   { PlusShape   HyphenNotch { arrowExtend arrowheadsKern arrowJ    0 } }
-			'hyphen' { HyphenShape HyphenNotch { arrowExtend arrowheadsKern arrowJ    0 } }
-			'equal'  { EqualShape  EqualHole   { dblExtend   arrowheadsKern dblArrowJ 1 } }
-			'ident'  { IdentShape  IdentHole   { dblExtend   arrowheadsKern dblArrowJ 1 } }
+			'plus'   {PlusShape    HyphenNotch  {arrowExtend arrowheadsKern arrowJ    0}}
+			'hyphen' {HyphenShape  HyphenNotch  {arrowExtend arrowheadsKern arrowJ    0}}
+			'equal'  {EqualShape   EqualHole    {dblExtend   arrowheadsKern dblArrowJ 1}}
+			'ident'  {IdentShape   IdentHole    {dblExtend   arrowheadsKern dblArrowJ 1}}
 
 		define NotchConfig : object
-			'withoutNotch' { false }
-			'withNotch'    { true  }
+			'withoutNotch' {false}
+			'withNotch'    {true }
 
-		foreach { prefix { Shape Notch { extend kern join fDB } } } [Object.entries Shapes] : do
-			foreach { lS rS { left capLeft } { right capRight } } [items-of : ArrowBarConfig extend kern join fDB] : do
-				foreach { suffix { fNotch } } [Object.entries NotchConfig] : do
+		foreach {prefix {Shape Notch {extend kern join fDB}}} [Object.entries Shapes] : do
+			foreach {lS rS {left capLeft} {right capRight}} [items-of : ArrowBarConfig extend kern join fDB] : do
+				foreach {suffix {fNotch}} [Object.entries NotchConfig] : do
 					create-glyph "\(prefix).lig.\(lS)\(rS).\(suffix)" : glyph-proc
 						include : SetJoiningKind lS rS
 						include : difference
@@ -128,24 +128,24 @@ glyph-block Symbol-Ligation : begin
 		define J   (-1 / 8)
 
 		define lk : object
-			l    { LR   (-arrowExtend)                           false }
-			l1   { LR1  (-arrowExtend - arrowheadsKern)          false }
-			f    { F    nothing                                  false }
-			z    { Z    nothing                                  false }
-			c    { C    nothing                                  false }
-			m    { J    (0 - RodBarHOffset)                       true }
-			j    { J    (-arrowJ)                                 true }
-			j1   { J    (-arrowJ - arrowheadsKern)                true }
+			l  {LR   (-arrowExtend)                   false}
+			l1 {LR1  (-arrowExtend - arrowheadsKern)  false}
+			f  {F    nothing                          false}
+			z  {Z    nothing                          false}
+			c  {C    nothing                          false}
+			m  {J    (0 - RodBarHOffset)              true }
+			j  {J    (-arrowJ)                        true }
+			j1 {J    (-arrowJ - arrowheadsKern)       true }
 
 		define rk : object
-			r    { LR   (Width + arrowExtend)                    false }
-			r1   { LR1  (Width + arrowExtend + arrowheadsKern)   false }
-			f    { F    nothing                                  false }
-			z    { Z    nothing                                  false }
-			c    { C    nothing                                  false }
-			m    { J    (Width + RodBarHOffset)                   true }
-			j    { J    (Width + arrowJ)                          true }
-			j1   { J    (Width + arrowJ + arrowheadsKern)         true }
+			r  {LR   (Width + arrowExtend)                   false}
+			r1 {LR1  (Width + arrowExtend + arrowheadsKern)  false}
+			f  {F    nothing                                 false}
+			z  {Z    nothing                                 false}
+			c  {C    nothing                                 false}
+			m  {J    (Width + RodBarHOffset)                 true }
+			j  {J    (Width + arrowJ)                        true }
+			j1 {J    (Width + arrowJ + arrowheadsKern)       true }
 
 		foreach [lS : items-of : Object.keys lk] : foreach [rS : items-of : Object.keys rk] : create-glyph"wave.lig.\(lS)\(rS)" : glyph-proc
 			include : SetJoiningKind lS rS
@@ -256,7 +256,7 @@ glyph-block Symbol-Ligation : begin
 	do 'bottom sign derivatives'
 		glyph-block-import Symbol-Punctuation-Dashes : UnderScoreConfig
 
-		foreach { suffix { yBar } } [Object.entries UnderScoreConfig] : do
+		foreach {suffix {yBar}} [Object.entries UnderScoreConfig] : do
 			# ___ shapes
 			create-glyph "underscore.lig.fc.\(suffix)" : glyph-proc
 				Joining.set currentGlyph Joining.Classes.Left
@@ -296,30 +296,30 @@ glyph-block Symbol-Ligation : begin
 			export : define DotGap : Math.max ((ParenTop - ParenBot) / 8) [AdviceStroke 5]
 
 			export : define PlacementSuffixes : object
-				'1l' { 0   Joining.Classes.Right }
-				'2l' { 1   Joining.Classes.Right }
-				'3l' { 2   Joining.Classes.Right }
-				'4l' { 3   Joining.Classes.Right }
-				'1m' { 0   Joining.Classes.Mid   }
-				'2m' { 1   Joining.Classes.Mid   }
-				'3m' { 2   Joining.Classes.Mid   }
-				'4m' { 3   Joining.Classes.Mid   }
+				'1l' {0  Joining.Classes.Right}
+				'2l' {1  Joining.Classes.Right}
+				'3l' {2  Joining.Classes.Right}
+				'4l' {3  Joining.Classes.Right}
+				'1m' {0  Joining.Classes.Mid  }
+				'2m' {1  Joining.Classes.Mid  }
+				'3m' {2  Joining.Classes.Mid  }
+				'4m' {3  Joining.Classes.Mid  }
 
 			export : define BarShapeSuffixes : object
-				vertical              {  0      false  }
-				slightlySlanted       {  0.375  false  }
-				moreSlanted           {  0.75   false  }
-				verticalDotted        {  0      true   }
-				slightlySlantedDotted {  0.375  true   }
-				moreSlantedDotted     {  0.75   true   }
+				vertical              {0      false}
+				slightlySlanted       {0.375  false}
+				moreSlanted           {0.75   false}
+				verticalDotted        {0      true }
+				slightlySlantedDotted {0.375  true }
+				moreSlantedDotted     {0.75   true }
 
 			export : define [DependentGlyphBuilder src] : glyph-proc
-				local { bar dot } src
+				local {bar dot} src
 				include [refer-glyph bar] AS_BASE ALSO_METRICS
 				local dotted : NeqLigationSlashDotted.get [query-glyph bar]
 				if dotted : include [refer-glyph dot]
 
-		foreach { suffix { DrawAt kdr overshoot } } [Object.entries DotVariants] : do
+		foreach {suffix {DrawAt kdr overshoot}} [Object.entries DotVariants] : do
 			create-glyph "neq/dotPart.\(suffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -327,8 +327,8 @@ glyph-block Symbol-Ligation : begin
 
 		select-variant 'neq/dotPart' (follow -- 'punctuationDot')
 
-		foreach { place { shift joinCls } } [Object.entries Neq.PlacementSuffixes] : do
-			foreach { barSuffix { slope fDotted } } [Object.entries Neq.BarShapeSuffixes] : do
+		foreach {place {shift joinCls}} [Object.entries Neq.PlacementSuffixes] : do
+			foreach {barSuffix {slope fDotted}} [Object.entries Neq.BarShapeSuffixes] : do
 				create-glyph "neq.\(place)/barPart.\(barSuffix)" : glyph-proc
 					define yUp     BgOpTop
 					define yDown : BgOpBot + [if fDotted (2 * Neq.Dr + Neq.DotGap) 0]
@@ -355,8 +355,8 @@ glyph-block Symbol-Ligation : begin
 				follow    -- 'neq.bar-only'
 				shapeFrom -- "neq.\(place)/barPart"
 
-			derive-multi-part-glyphs "neq.allow-dot.\(place)" null { "neq.allow-dot.\(place)/barPart" 'neq/dotPart' } Neq.DependentGlyphBuilder
-			derive-multi-part-glyphs "neq.bar-only.\(place)"  null { "neq.bar-only.\(place)/barPart"  'neq/dotPart' } Neq.DependentGlyphBuilder
+			derive-multi-part-glyphs "neq.allow-dot.\(place)" null {"neq.allow-dot.\(place)/barPart" 'neq/dotPart'} Neq.DependentGlyphBuilder
+			derive-multi-part-glyphs "neq.bar-only.\(place)"  null {"neq.bar-only.\(place)/barPart"  'neq/dotPart'} Neq.DependentGlyphBuilder
 
 	do '<| , |> and <>'
 		glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
@@ -441,10 +441,10 @@ glyph-block Symbol-Ligation : begin
 
 	do 'Chaining Plus (shifted middle bars)'
 		define NotchConfig : object
-			'withoutNotch' { false }
-			'withNotch'    { true  }
+			'withoutNotch' {false}
+			'withNotch'    {true }
 
-		foreach { suffix { fNotch } } [pairs-of NotchConfig] : do
+		foreach {suffix {fNotch}} [pairs-of NotchConfig] : do
 			create-glyph "plus.lig.fc.s.\(suffix)" : glyph-proc
 				Joining.set currentGlyph Joining.Classes.Right
 				include : difference

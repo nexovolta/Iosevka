@@ -171,7 +171,7 @@ glyph-block Letter-Cyrillic-De : begin
 			serifed       SERIF-ALL
 
 	define DeUprightSuffixes {}
-	foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
+	foreach {suffix {bodyType fLegs serifType}} [Object.entries DeConfig] : do
 		if (bodyType !== BODY-CURSIVE) : DeUprightSuffixes.push suffix
 
 	define [DefineDeSelectorGlyph name selector df mk] : begin
@@ -213,7 +213,7 @@ glyph-block Letter-Cyrillic-De : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (xTopBarRightEnd - xJoin)
 			include : VSerif.dr xTopBarRightEnd top VJut swVJut
 
-	foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
+	foreach {suffix {bodyType fLegs serifType}} [Object.entries DeConfig] : do
 		if (bodyType !== BODY-CURSIVE) : begin
 			create-glyph "cyrl/De.\(suffix)" : glyph-proc
 				include : MarkSet.capital
@@ -248,7 +248,7 @@ glyph-block Letter-Cyrillic-De : begin
 			define cyrSoftDeDf : DivFrame para.advanceScaleM 3
 			DefineDeSelectorGlyph 'cyrl/DeSoft' suffix cyrSoftDeDf 'capital'
 			DefineDeSelectorGlyph 'cyrl/deSoft' suffix cyrSoftDeDf 'e'
-			foreach { suffixGhe cyrSoftDeVSlab } [Object.entries CyrSoftDeGheConfig] : do
+			foreach {suffixGhe cyrSoftDeVSlab} [Object.entries CyrSoftDeGheConfig] : do
 				create-glyph "cyrl/DeSoft.\(suffix).\(suffixGhe)" : glyph-proc
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
@@ -264,7 +264,7 @@ glyph-block Letter-Cyrillic-De : begin
 
 			DefineDeSelectorGlyph 'cyrl/Dzze' suffix [DivFrame 1] 'capital'
 			DefineDeSelectorGlyph 'cyrl/dzze.upright' suffix [DivFrame 1] 'e'
-			foreach { suffixZe { { desc } { styTop styBot } } } [Object.entries ZeConfig] : do
+			foreach {suffixZe {{desc} {styTop styBot}}} [Object.entries ZeConfig] : do
 				define [DzzeDescenderShape de ada adb] : begin
 					local df : DivFrame 1
 					local zeRight : [mix df.rightSB df.width 0.5] - O * 2
@@ -377,9 +377,9 @@ glyph-block Letter-Cyrillic-De : begin
 	alias 'cyrl/de.cursiveFlatBowl' null 'cyrl/de.cursiveFlatBowlSerifless'
 	alias 'cyrl/de.italic' null 'cyrl/de.cursiveSerifless'
 
-	foreach hook [items-of { 'BentHook' 'FlatHook' 'CornerHook' }] : do
-		foreach bowl [items-of { '' 'FlatBowl' }] : do
-			foreach ear [items-of { 'Serifless' 'Serifed' 'TopCut' 'FlatTopSerifless' 'FlatTopSerifed' 'EarlessCorner' 'EarlessRounded' }] : do
+	foreach hook [items-of {'BentHook' 'FlatHook' 'CornerHook'}] : do
+		foreach bowl [items-of {'' 'FlatBowl'}] : do
+			foreach ear [items-of {'Serifless' 'Serifed' 'TopCut' 'FlatTopSerifless' 'FlatTopSerifed' 'EarlessCorner' 'EarlessRounded'}] : do
 				alias "cyrl/de.serbian\(hook)\(bowl)\(ear)" null "g.singleStorey\(hook)\(bowl)\(ear)"
 
 	select-variant 'cyrl/de' 0x434
@@ -391,7 +391,7 @@ glyph-block Letter-Cyrillic-De : begin
 
 	CreateAccentedComposition 'cyrl/dwe.italic' null 'cyrl/dwe.italic/base' 'commaTR'
 
-	foreach { suffix { { desc } { styTop styBot } } } [Object.entries ZeConfig] : do
+	foreach {suffix {{desc} {styTop styBot}}} [Object.entries ZeConfig] : do
 		if (desc && (!styTop || styTop == SLAB-FLAT-HOOK || styTop == SLAB-CORNER-HOOK)) : begin
 			create-glyph "cyrl/dzze.italic.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3

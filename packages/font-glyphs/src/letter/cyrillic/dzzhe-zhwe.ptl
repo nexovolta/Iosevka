@@ -36,7 +36,7 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
 			include : CyrDeItalicShape subDf sw
 
-		foreach { suffix { bodyType fLegs serifType } } [Object.entries DeConfig] : do
+		foreach {suffix {bodyType fLegs serifType}} [Object.entries DeConfig] : do
 			if (bodyType !== BODY-CURSIVE) : begin
 				create-glyph "cyrl/Dzzhe/left.\(suffix)" : glyph-proc
 					define df : include : DivFrame [mix 1 para.advanceScaleMM 2] 3.5
@@ -71,7 +71,7 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 				adb    -- adb
 			include : union [ze.Shape] [ze.AutoStartSerifL] [ze.AutoEndSerifL]
 
-		foreach { suffix { { desc } { slabTop slabBot } } } [Object.entries ZeConfig] : do
+		foreach {suffix {{desc} {slabTop slabBot}}} [Object.entries ZeConfig] : do
 			if (!desc) : begin
 				create-glyph "cyrl/Zhwe/left.\(suffix)" : glyph-proc
 					define df : include : DivFrame [mix 1 para.advanceScaleMM 2] 3.5
@@ -119,15 +119,15 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 				CyrDeItalicMask subDf sw
 
 		define ZheConfig : object
-			straight            { Zhe.StraightLegs         SLAB   SLAB }
-			curly               { Zhe.CurlyLegs            SLAB   SLAB }
-			symmetricTouching   { Zhe.TouchingLegs         SLAB   SLAB }
-			symmetricConnected  { Zhe.ConnectingLegs       SLAB   SLAB }
-			inverseConnected    { Zhe.InverseStraightLegs  SLAB   SLAB }
-			roundedConnected    { Zhe.RoundedLegs          SLAB   SLAB }
-			cursive             { Zhe.CursiveLegs          false  SLAB }
+			straight           {Zhe.StraightLegs         SLAB   SLAB}
+			curly              {Zhe.CurlyLegs            SLAB   SLAB}
+			symmetricTouching  {Zhe.TouchingLegs         SLAB   SLAB}
+			symmetricConnected {Zhe.ConnectingLegs       SLAB   SLAB}
+			inverseConnected   {Zhe.InverseStraightLegs  SLAB   SLAB}
+			roundedConnected   {Zhe.RoundedLegs          SLAB   SLAB}
+			cursive            {Zhe.CursiveLegs          false  SLAB}
 
-		foreach { suffix { legShape fSlab fMidSlab } } [Object.entries ZheConfig] : do
+		foreach {suffix {legShape fSlab fMidSlab}} [Object.entries ZheConfig] : do
 			create-glyph "cyrl/Dzzhe/right.\(suffix)" : glyph-proc
 				define df : include : DivFrame [mix 1 para.advanceScaleMM 2] 3.5
 				include : df.markSet.capital

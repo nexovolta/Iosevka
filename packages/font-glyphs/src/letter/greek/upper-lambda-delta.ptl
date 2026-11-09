@@ -23,9 +23,9 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 
 	define LambdaConfig : SuffixCfg.weave
 		object
-			straight     { true  false }
-			curly        { false false }
-			squareBottom { true  true  }
+			straight     {true   false}
+			curly        {false  false}
+			squareBottom {true   true }
 		object
 			serifless    SLAB-NONE
 			topSerifed   SLAB-TOP
@@ -87,7 +87,7 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 				FlipAround df.middle (top / 2)
 			ASerifs df top sw [maskOffBits slabKind SLAB-RIGHT]
 
-	foreach { suffix { { fStraightBar fSquareBottom } slabKind } } [Object.entries LambdaConfig] : do
+	foreach {suffix {{fStraightBar fSquareBottom} slabKind}} [Object.entries LambdaConfig] : do
 
 		create-glyph "grek/Lambda.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -217,15 +217,15 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 
 	define DeltaConfig : SuffixCfg.weave
 		object
-			straight { true  false }
-			curly    { false false }
-			square   { true  true  }
+			straight {true   false}
+			curly    {false  false}
+			square   {true   true }
 		object
 			serifless     SERIF-NONE
 			motionSerifed SERIF-MOTION
 			serifed       SERIF-ALL
 
-	foreach { suffix { { fBarStraight fSquareBottom } serifType } } [Object.entries DeltaConfig] : do
+	foreach {suffix {{fBarStraight fSquareBottom} serifType}} [Object.entries DeltaConfig] : do
 		create-glyph "grek/Delta.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape

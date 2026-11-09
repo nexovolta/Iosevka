@@ -36,7 +36,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 			swRef     -- sw
 			serifType -- serifType
 
-	foreach { suffix serifType } [Object.entries IotationSerifConfig] : do
+	foreach {suffix serifType} [Object.entries IotationSerifConfig] : do
 		create-glyph "cyrl/Yu.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
@@ -74,7 +74,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 		straight  false
 		tailed    true
 
-	foreach { suffix fTailed } [Object.entries YuRevConfig] : do
+	foreach {suffix fTailed} [Object.entries YuRevConfig] : do
 		if [not fTailed] : create-glyph "cyrl/revYu.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
@@ -124,7 +124,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 		return : object df hDf sw shift
 
 	local bakedH BakedHDigraphSuffix
-	foreach { hSuffix { fFlatHump fTailed HSerifs } } [Object.entries HDigraphConfig] : do
+	foreach {hSuffix {fFlatHump fTailed HSerifs}} [Object.entries HDigraphConfig] : do
 		if (hSuffix === bakedH) : begin
 			create-glyph 'latn/chStretched/h' : glyph-proc
 				local L : ChLayout
@@ -147,7 +147,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 				include : LongSLowerHalf (+1) xEsh yMid Descender hookLow Hook sw
 				include : CenterInkInFrame df
 
-	foreach { suffix { styTop styBot } } [Object.entries CConfig] : do
+	foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
 		create-glyph "latn/chStretched.\(suffix)" : glyph-proc
 			local L : ChLayout
 			include : L.df.markSet.b

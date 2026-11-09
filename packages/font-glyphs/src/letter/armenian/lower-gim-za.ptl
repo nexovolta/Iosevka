@@ -13,7 +13,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 	glyph-block-import Letter-Armenian-Shared-Shapes : ArmHBar
 
 	do 'Gim'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/gim.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.p
@@ -40,7 +40,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 				'' 0
 				bottomRightMotion 1
 				bottomRightFull 2
-		foreach { suffix { p0 p1 } } [Object.entries gimPositionedSerifs] : do
+		foreach {suffix {p0 p1}} [Object.entries gimPositionedSerifs] : do
 			if (p0 || p1) : create-glyph "armn/gim.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/gim.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1
@@ -50,7 +50,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 		select-variant 'armn/gim' 0x563
 
 	do 'Za'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/za.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.p
@@ -72,7 +72,7 @@ glyph-block Letter-Armenian-Lower-Gim-Za : begin
 			object
 				'' 0
 				topRightMotion 1
-		foreach { suffix { p0 } } [Object.entries zaPositionedSerifs] : do
+		foreach {suffix {p0}} [Object.entries zaPositionedSerifs] : do
 			if (p0) : create-glyph "armn/za.\(suffix)" : glyph-proc
 				include [refer-glyph 'armn/za.serifless'] AS_BASE ALSO_METRICS
 				local df : DivFrame 1

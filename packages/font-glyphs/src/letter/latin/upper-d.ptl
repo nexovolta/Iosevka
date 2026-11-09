@@ -87,11 +87,11 @@ glyph-block Letter-Latin-Upper-D : begin
 			moreRounded BODY-MORE-ROUNDED
 			diamond     BODY-DIAMOND
 		object # serifs
-			serifless         { false false }
-			unilateralSerifed { true  false }
-			bilateralSerifed  { true  true  }
+			serifless         {false  false}
+			unilateralSerifed {true   false}
+			bilateralSerifed  {true   true }
 
-	foreach { suffix { bodyKind {fSlabTop fSlabBot} } } [Object.entries DConfig] : do
+	foreach {suffix {bodyKind {fSlabTop fSlabBot}}} [Object.entries DConfig] : do
 		local fMotion : fSlabTop && !fSlabBot
 
 		create-glyph "D.\(suffix)" : glyph-proc
@@ -143,7 +143,7 @@ glyph-block Letter-Latin-Upper-D : begin
 	derive-glyphs 'Eth' 0xD0 'D' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.l.in SB Stroke (CAP - Stroke)
-			space -- { 0 (RightSB - [HSwToV Stroke]) }
+			space -- {0 (RightSB - [HSwToV Stroke])}
 	alias 'DStroke'  0x110 'Eth'
 	alias 'africanD' 0x189 'Eth'
 	select-variant 'Dhookleft' 0x18A
@@ -155,7 +155,7 @@ glyph-block Letter-Latin-Upper-D : begin
 	derive-glyphs 'smcpEth' 0x1D06 'smcpD' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.l.in SB Stroke (XH - Stroke)
-			space -- { 0 (RightSB - [HSwToV Stroke]) }
+			space -- {0 (RightSB - [HSwToV Stroke])}
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/D' 0x1D53B : glyph-proc

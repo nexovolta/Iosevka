@@ -10,23 +10,23 @@ glyph-block Letter-Greek-Upper-Xi : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength EFMidBarPosY
 
 	define XiConfig : object
-		serifless         { false  false  false  false  false  false }
-		middleSerifed     { false  false  false  false  true   true }
-		motionSerifed     { true   false  false  true   false  false }
-		topBottomSerifed  { true   true   true   true   false  false }
-		fullSerifed       { true   true   true   true   true   true }
-		diagonalCrossbar                         { false  false  false  false  false  false  1 }
-		diagonalCrossbarMiddleSerifed            { false  false  false  false  true   true   1 }
-		diagonalCrossbarMotionSerifed            { true   false  false  true   false  false  1 }
-		diagonalCrossbarTopBottomSerifed         { true   true   true   true   false  false  1 }
-		diagonalCrossbarFullSerifed              { true   true   true   true   true   true   1 }
-		diagonalCrossbarFalling                  { false  false  false  false  false  false  (-1) }
-		diagonalCrossbarFallingMiddleSerifed     { false  false  false  false  true   true   (-1) }
-		diagonalCrossbarFallingMotionSerifed     { true   false  false  true   false  false  (-1) }
-		diagonalCrossbarFallingTopBottomSerifed  { true   true   true   true   false  false  (-1) }
-		diagonalCrossbarFallingFullSerifed       { true   true   true   true   true   true   (-1) }
+		serifless         {false  false  false  false  false  false}
+		middleSerifed     {false  false  false  false  true   true}
+		motionSerifed     {true   false  false  true   false  false}
+		topBottomSerifed  {true   true   true   true   false  false}
+		fullSerifed       {true   true   true   true   true   true}
+		diagonalCrossbar                         {false  false  false  false  false  false  1}
+		diagonalCrossbarMiddleSerifed            {false  false  false  false  true   true   1}
+		diagonalCrossbarMotionSerifed            {true   false  false  true   false  false  1}
+		diagonalCrossbarTopBottomSerifed         {true   true   true   true   false  false  1}
+		diagonalCrossbarFullSerifed              {true   true   true   true   true   true   1}
+		diagonalCrossbarFalling                  {false  false  false  false  false  false  (-1)}
+		diagonalCrossbarFallingMiddleSerifed     {false  false  false  false  true   true   (-1)}
+		diagonalCrossbarFallingMotionSerifed     {true   false  false  true   false  false  (-1)}
+		diagonalCrossbarFallingTopBottomSerifed  {true   true   true   true   false  false  (-1)}
+		diagonalCrossbarFallingFullSerifed       {true   true   true   true   true   true   (-1)}
 
-	foreach { suffix { serifTL serifTR serifBL serifBR serifML serifMR diag } } [Object.entries XiConfig] : do
+	foreach {suffix {serifTL serifTR serifBL serifBR serifML serifMR diag}} [Object.entries XiConfig] : do
 		create-glyph "grek/Xi.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local xMidLeft  : mix SB RightSB 0.125
@@ -37,7 +37,7 @@ glyph-block Letter-Greek-Upper-Xi : begin
 			include : if diag
 				DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
 				HBar.m xMidLeft xMidRight yBar
-			local { jutTop jutBot jutMid } : EFVJutLength CAP 0
+			local {jutTop jutBot jutMid} : EFVJutLength CAP 0
 			if serifTL : include : VSerif.dl (SB      + OX) CAP  jutTop
 			if serifTR : include : VSerif.dr (RightSB - OX) CAP  jutTop
 			if serifBL : include : VSerif.ul (SB      + OX) 0    jutBot

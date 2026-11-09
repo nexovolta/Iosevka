@@ -14,10 +14,10 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 	define [deriveBoxes box] : begin
 		local body : box.padLeft (+1.50 * DecoSizeX)
 		local deco : box.padLeft (-0.25 * DecoSizeX)
-		return { body deco }
+		return {body deco}
 
 	define [StartStroke mode box profile pRight] : begin
-		local { body deco } : deriveBoxes box
+		local {body deco} : deriveBoxes box
 		return : lift-@ : fraktur-stroke profile
 			g2.ru.start @xL ([deco.yp 0.625] - 2 * F.thick) [change-pen F]
 			~~~ [Wave.vc Wave.LTDecoSize]
@@ -38,7 +38,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 		include : df.markSet.capital
 
 		local box : S.box CAP 0 df.leftSB df.rightSB
-		local { body deco } : deriveBoxes box
+		local {body deco} : deriveBoxes box
 
 		local leftStroke : include : StartStroke 'B' box S 1
 		local rightStroke : include : with-knockout [leftStroke.withPen CutMaskLeft] : union
@@ -59,7 +59,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 		include : df.markSet.capDesc
 
 		local box : S.box CAP 0 df.leftSB df.rightSB
-		local { body deco } : deriveBoxes box
+		local {body deco} : deriveBoxes box
 
 		local leftStroke : include : StartStroke 'P' box S 1
 
@@ -81,7 +81,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 		include : df.markSet.capital
 
 		local box : S.box CAP 0 df.leftSB df.rightSB
-		local { body deco } : deriveBoxes box
+		local {body deco} : deriveBoxes box
 
 		local leftStroke : include : StartStroke 'V' box S 1
 		include : with-knockout [leftStroke.withPen CutMaskLeft] : lift-@ : fraktur-stroke S
@@ -99,7 +99,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 		include : df.markSet.capital
 
 		local box : M.box CAP 0 df.leftSB df.rightSB
-		local { body deco } : deriveBoxes box
+		local {body deco} : deriveBoxes box
 
 		local leftStroke : include : StartStroke 'W' box M 0.5 1
 

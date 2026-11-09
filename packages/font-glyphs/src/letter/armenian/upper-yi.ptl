@@ -13,7 +13,7 @@ glyph-block Letter-Armenian-Upper-Yi : begin
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe
 
 	do 'Yi'
-		foreach { suffix fSerif } [pairs-of ArmenianSerifConfig] : do
+		foreach {suffix fSerif} [pairs-of ArmenianSerifConfig] : do
 			create-glyph "armn/Yi.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
@@ -28,7 +28,7 @@ glyph-block Letter-Armenian-Upper-Yi : begin
 				include : ze.Shape
 				if fSerif : begin
 					define [object stroke midx midy] : ze.Dim
-					local { jutTop jutBot jutMid } : EFVJutLength CAP 0 HBarPos stroke Hook Hook
+					local {jutTop jutBot jutMid} : EFVJutLength CAP 0 HBarPos stroke Hook Hook
 					include : VSerif.ml midx midy jutMid (VJutStroke * (stroke / Stroke))
 		alias 'armn/Yi.middleLeftFull' null 'armn/Yi.serifed'
 		select-variant 'armn/Yi' 0x545

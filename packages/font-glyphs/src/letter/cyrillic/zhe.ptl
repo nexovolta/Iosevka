@@ -228,15 +228,15 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			include : LegSerifs fSlab true df bot top
 
 	define ZheConfig : object
-		straight            { Zhe.StraightLegs         SLAB   SLAB }
-		curly               { Zhe.CurlyLegs            SLAB   SLAB }
-		symmetricTouching   { Zhe.TouchingLegs         SLAB   SLAB }
-		symmetricConnected  { Zhe.ConnectingLegs       SLAB   SLAB }
-		inverseConnected    { Zhe.InverseStraightLegs  SLAB   SLAB }
-		roundedConnected    { Zhe.RoundedLegs          SLAB   SLAB }
-		cursive             { Zhe.CursiveLegs          false  SLAB }
+		straight           {Zhe.StraightLegs         SLAB   SLAB}
+		curly              {Zhe.CurlyLegs            SLAB   SLAB}
+		symmetricTouching  {Zhe.TouchingLegs         SLAB   SLAB}
+		symmetricConnected {Zhe.ConnectingLegs       SLAB   SLAB}
+		inverseConnected   {Zhe.InverseStraightLegs  SLAB   SLAB}
+		roundedConnected   {Zhe.RoundedLegs          SLAB   SLAB}
+		cursive            {Zhe.CursiveLegs          false  SLAB}
 
-	foreach { suffix { legShape fSlab fMidSlab } } [Object.entries ZheConfig] : do
+	foreach {suffix {legShape fSlab fMidSlab}} [Object.entries ZheConfig] : do
 		create-glyph "cyrl/Zhe.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital

@@ -94,9 +94,9 @@ glyph-block Symbol-Pictograph-Checking-Marks : begin
 
 		define HeightConfig : object
 			# suffix    width scale   height scale
-			tall    { 1.00  1.00 }
-			middle  { 0.80  0.75 }
-			short   { 0.55  0.50 }
+			tall   {1.00  1.00}
+			middle {0.80  0.75}
+			short  {0.55  0.50}
 
 		define CharConfig : list
 			#    unicode   sw        side
@@ -107,8 +107,8 @@ glyph-block Symbol-Pictograph-Checking-Marks : begin
 			list 0x2770    xHeavySw  1
 			list 0x2771    xHeavySw  0
 
-		foreach { unicode sw side } [items-of CharConfig] : begin
-			foreach { suffix { widthScale heightScale } } [pairs-of HeightConfig] : begin
+		foreach {unicode sw side} [items-of CharConfig] : begin
+			foreach {suffix {widthScale heightScale}} [pairs-of HeightConfig] : begin
 				create-glyph "\[NameUni unicode].\(suffix)" : glyph-proc
 					local top : mix SymbolMid ParenTop heightScale
 					local bot : mix SymbolMid ParenBot heightScale

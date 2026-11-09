@@ -30,17 +30,17 @@ glyph-block Letter-Greek-Upper-Sigma : begin
 				corner (xMid      + offsetLeft)              yMid
 
 		if (fTop || fBot) : begin
-			local { jutTop jutBot jutMid } : EFVJutLength top bottom pyMid fine
+			local {jutTop jutBot jutMid} : EFVJutLength top bottom pyMid fine
 			if fTop : include : tagged 'serifRT' : VSerif.dr df.rightSB top    jutTop
 			if fBot : include : tagged 'serifRB' : VSerif.ur df.rightSB bottom jutBot
 
 	define SigmaConfig : object
-		serifless      { false  false }
-		topSerifed     { true   false }
-		bottomSerifed  { false  true }
-		fullSerifed    { true   true }
+		serifless     {false  false}
+		topSerifed    {true   false}
+		bottomSerifed {false  true }
+		fullSerifed   {true   true }
 
-	foreach { suffix { fTop fBot } } [Object.entries SigmaConfig] : do
+	foreach {suffix {fTop fBot}} [Object.entries SigmaConfig] : do
 		create-glyph "grek/Sigma.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital

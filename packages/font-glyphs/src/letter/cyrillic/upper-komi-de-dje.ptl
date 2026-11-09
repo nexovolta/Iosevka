@@ -11,11 +11,11 @@ glyph-block Letter-Cyrillic-Upper-Komi-De-Dje : begin
 	glyph-block-import Letter-Cyrillic-Yeri : RevYeriUpper
 
 	define DeConfig : object
-		standardSerifless          { false  false }
-		standardUnilateralSerifed  { true   false }
-		standardBilateralSerifed   { true   true }
+		standardSerifless         {false  false}
+		standardUnilateralSerifed {true   false}
+		standardBilateralSerifed  {true   true }
 
-	foreach { suffix { doST doSB } } [Object.entries DeConfig] : do
+	foreach {suffix {doST doSB}} [Object.entries DeConfig] : do
 		define fMotion : doST && !doSB
 
 		create-glyph "cyrl/DeKomi.\(suffix)" : glyph-proc

@@ -214,7 +214,7 @@ glyph-block Letter-Latin-Upper-P : begin
 			motionSerifed    PShape.SlabMotion
 			serifed          PShape.SlabAsymmetric
 
-	foreach { suffix { fGap slabs } } [Object.entries PConfig] : do
+	foreach {suffix {fGap slabs}} [Object.entries PConfig] : do
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
 		define swCap : AdviceStroke2 2 3 CAP
 		define swXH  : AdviceStroke2 2 3 XH
@@ -364,7 +364,7 @@ glyph-block Letter-Latin-Upper-P : begin
 			x     -- [mix 0 SB PShape.defaultMul]
 			bot   -- ([PBarPosY CAP swCap PShape.BarPos] + swCap)
 			top   -- (CAP - swCap)
-			space -- { 0 (RightSB - [HSwToV swCap]) }
+			space -- {0 (RightSB - [HSwToV swCap])}
 	derive-composites 'PStroke' 0x2C63 'P' 'PStroke/overlay'
 
 	select-variant 'PStrokeBottom' 0xA750 (follow -- 'P')

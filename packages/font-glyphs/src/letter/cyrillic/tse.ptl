@@ -44,7 +44,7 @@ glyph-block Letter-Cyrillic-Tse : begin
 		topRightMotionSerifed  SERIF-TR
 		bilateralMotionSerifed SERIF-BILATERAL
 
-	foreach { suffix serifType } [Object.entries TseConfig] : do
+	foreach {suffix serifType} [Object.entries TseConfig] : do
 		create-glyph "cyrl/Tse.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : CyrTseShape CAP false serifType
@@ -104,10 +104,10 @@ glyph-block Letter-Cyrillic-Tse : begin
 			include : VSerif.dl xTopBarLeft  top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
-	foreach { suffixTse serifType } [Object.entries TseConfig] : do
+	foreach {suffixTse serifType} [Object.entries TseConfig] : do
 		DefineSelectorGlyph 'cyrl/TeTse' suffixTse [DivFrame para.advanceScaleT] 'capital'
 		DefineSelectorGlyph 'cyrl/tetse.upright' suffixTse [DivFrame para.advanceScaleT] 'e'
-		foreach { suffixTe teSerifs } [Object.entries TeBarConfig] : do
+		foreach {suffixTe teSerifs} [Object.entries TeBarConfig] : do
 			create-glyph "cyrl/TeTse.\(suffixTse).\(suffixTe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
@@ -137,7 +137,7 @@ glyph-block Letter-Cyrillic-Tse : begin
 		include : CyrCurlDescender.rSideJut RightSB 0
 		include : CyrTseSerifs top serifType
 
-	foreach { suffix serifType } [Object.entries TseConfig] : do
+	foreach {suffix serifType} [Object.entries TseConfig] : do
 		create-glyph "cyrl/Tswe.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			include : CyrTsweShape CAP serifType
