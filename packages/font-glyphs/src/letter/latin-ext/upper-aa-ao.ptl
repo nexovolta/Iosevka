@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from '@iosevka/util'
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 import [maskOffBits] from '@iosevka/util/mask-bit'
 
 glyph-module
@@ -153,32 +153,32 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		# V's vertex sits on A's right foot so the two right-going diagonals are one line.
 		define shiftAV : subDfAV.rightSB - subDfAV.middle
 
-			define [AVVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
+		define [AVVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
 
-			define AVVConfig : SuffixCfg.weave
-				object # body
-					straight     { true   0 }
-					curly        { false  0 }
-					squareTop    { true   1 }
-				object # serifs
-					''                    AVVAutoSerifs
-					serifless             no-shape
-					motionSerifed         VMotionSerifs
-					topRightMotionSerifed VTopRightMotionSerifs
-					bilateralMotionSerifed VBilateralMotionSerifs
-					serifed               VSerifs
+		define AVVConfig : SuffixCfg.weave
+			object # body
+				straight     { true   0 }
+				curly        { false  0 }
+				squareTop    { true   1 }
+			object # serifs
+				''                    AVVAutoSerifs
+				serifless             no-shape
+				motionSerifed         VMotionSerifs
+				topRightMotionSerifed VTopRightMotionSerifs
+				bilateralMotionSerifed VBilateralMotionSerifs
+				serifed               VSerifs
 
-			foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries AVVConfig] : do
-				local fSerifStraight : if fSquareTop 0 fStraightBar
-				create-glyph "AV/V.\(suffix)" : glyph-proc
-					include : with-transform [ApparentTranslate shiftAV 0] : glyph-proc
-						if fSquareTop : include : VSquareTopShape subDfAV CAP dfAV.mvs
-						if [not fSquareTop] : include : VShape subDfAV fStraightBar CAP (sw -- dfAV.mvs)
-						include : Serifs subDfAV fSerifStraight CAP dfAV.mvs
-						eject-contour 'serifLT'
-						eject-contour 'strokeDown'
+		foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries AVVConfig] : do
+			local fSerifStraight : if fSquareTop 0 fStraightBar
+			create-glyph "AV/V.\(suffix)" : glyph-proc
+				include : with-transform [ApparentTranslate shiftAV 0] : glyph-proc
+					if fSquareTop : include : VSquareTopShape subDfAV CAP dfAV.mvs
+					if [not fSquareTop] : include : VShape subDfAV fStraightBar CAP (sw -- dfAV.mvs)
+					include : Serifs subDfAV fSerifStraight CAP dfAV.mvs
+					eject-contour 'serifLT'
+					eject-contour 'strokeDown'
 
-			select-variant 'AV/V' (follow -- 'V')
+		select-variant 'AV/V' (follow -- 'V')
 		derive-multi-part-glyphs-baked 'AV' 0xA738 { 'AA/left' 'AV/V' }
 			function [srcs gr] : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3.5

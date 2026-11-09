@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from '@iosevka/util'
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -209,27 +209,27 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define { subDfVY shiftVY0 } : SubDfAndShift 1 dfVY 0
 		define shiftVY : shiftVY0 - [HSwToV : dfVY.mvs * [AvAyOverlapK]]
 
-			define [AvVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
+		define [AvVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
 
-			define avVConfig : SuffixCfg.weave
-				object # body
-					straight     { true   0 }
-					curly        { false  0 }
-					squareTop    { true   1 }
-					cursive      { true   0 }
-				object # serifs
-					''                    AvVAutoSerifs
-					serifless             no-shape
-					motionSerifed         VMotionSerifs
-					topRightMotionSerifed VTopRightMotionSerifs
-					bilateralMotionSerifed VBilateralMotionSerifs
-					serifed               VSerifs
+		define avVConfig : SuffixCfg.weave
+			object # body
+				straight     { true   0 }
+				curly        { false  0 }
+				squareTop    { true   1 }
+				cursive      { true   0 }
+			object # serifs
+				''                    AvVAutoSerifs
+				serifless             no-shape
+				motionSerifed         VMotionSerifs
+				topRightMotionSerifed VTopRightMotionSerifs
+				bilateralMotionSerifed VBilateralMotionSerifs
+				serifed               VSerifs
 
-			foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries avVConfig] : do
-				local fSerifStraight : if fSquareTop 0 fStraightBar
-				local SerifShape : if [suffix.startsWith 'cursive'] no-shape Serifs
-				create-glyph "av/v.\(suffix)" : glyph-proc
-					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
+		foreach { suffix { { fStraightBar fSquareTop } Serifs } } [Object.entries avVConfig] : do
+			local fSerifStraight : if fSquareTop 0 fStraightBar
+			local SerifShape : if [suffix.startsWith 'cursive'] no-shape Serifs
+			create-glyph "av/v.\(suffix)" : glyph-proc
+				include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
 					if fSquareTop : include : union
 						VSquareTopShape subDfVY XH dfVY.mvs
 						Rect (dfVY.mvs / 8) 0 (subDfVY.middle - [HSwToV : dfVY.mvs / 4]) (subDfVY.middle + [HSwToV : dfVY.mvs / 4])
@@ -248,7 +248,6 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					local YShape : NonCursiveYShapeT straightBar bottomShape ySlabKind 0 subDfVY.width subDfVY.leftSB dfVY.mvs
 					include : with-transform [ApparentTranslate shiftVY 0] : glyph-proc
 						include : YShape.SmallYShape XH Descender
-						eject-contour 'leftHalf'
 						eject-contour 'serifLT'
 						if doSlabTop : begin
 							local sf : SerifFrame.fromDf subDfVY XH Descender
