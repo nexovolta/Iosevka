@@ -11,8 +11,6 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
 
-	# After overlapping A+V / A+Y, the ink no longer fills the MM frame evenly.
-	# Shift the finished digraph so its bounds sit on the advance midpoint.
 	define [CenterDigraphInFrame df] : glyph-proc
 		local b : include : MeasureGlyphBounds
 		if [not b] : return nothing
@@ -150,7 +148,6 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 		define dfAV : DivFrame para.advanceScaleMM 3.5
 		define { subDfAV shiftAV0 } : SubDfAndShift 1 dfAV
-		# V's vertex sits on A's right foot so the two right-going diagonals are one line.
 		define shiftAV : subDfAV.rightSB - subDfAV.middle
 
 		define [AVVAutoSerifs df fBarStraight top sw] : NeedSlab SLAB : VSerifs df fBarStraight top sw
