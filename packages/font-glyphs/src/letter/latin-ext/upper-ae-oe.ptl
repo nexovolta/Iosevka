@@ -114,6 +114,9 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		define [AEAHalf df bodyShape top slabKind diag] : glyph-proc
 			define sw : AEOEStroke df top
 			define eLeft : df.middle - [HSwToV : 0.25 * sw]
+			define triSerifLen : MidJutSide - [HSwToV : 0.5 * (HalfStroke - sw)]
+			define topSerifLen : [mix MidJutSide LongJut 0.5] - [HSwToV : 0.5 * (Stroke - sw)]
+			define squareTopSerifMin : [HSwToV sw] + 0.75 * Jut
 			include : match bodyShape
 				[Just BODY-CURLY]          : AEAHalfCurly         df top eLeft sw diag
 				[Just BODY-STRAIGHT]       : AEAHalfStraight      df top eLeft sw diag
@@ -123,8 +126,8 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 				([Just SLAB-BASE] || [Just SLAB-TRI]) : HSerif.mb (df.leftSB + [HSwToV : 0.5 * sw]) 0 (Jut - [HSwToV : 0.5 * (Stroke - sw)]) sw
 				__                                    : no-shape
 			include : match slabKind
-				[Just SLAB-TRI] : HSerif.lt eLeft top      (MidJutSide              - [HSwToV : 0.5 * (HalfStroke - sw)]) sw
-				[Just SLAB-TOP] : HSerif.lt eLeft top ([mix MidJutSide LongJut 0.5] - [HSwToV : 0.5 * (Stroke     - sw)]) sw
+				[Just SLAB-TRI] : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max triSerifLen squareTopSerifMin] triSerifLen] sw
+				[Just SLAB-TOP] : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max topSerifLen squareTopSerifMin] topSerifLen] sw
 				__              : no-shape
 
 		define ABodyConfig : SuffixCfg.combine
