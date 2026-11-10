@@ -126,8 +126,16 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 				([Just SLAB-BASE] || [Just SLAB-TRI]) : HSerif.mb (df.leftSB + [HSwToV : 0.5 * sw]) 0 (Jut - [HSwToV : 0.5 * (Stroke - sw)]) sw
 				__                                    : no-shape
 			include : match slabKind
-				[Just SLAB-TRI] : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max triSerifLen squareTopSerifMin] triSerifLen] sw
-				[Just SLAB-TOP] : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max topSerifLen squareTopSerifMin] topSerifLen] sw
+				[Just SLAB-TRI] : begin
+					local serif : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max triSerifLen squareTopSerifMin] triSerifLen] sw
+					if (bodyShape === BODY-SQUARE-BOTTOM)
+						intersection serif [MaskLeftLine (df.leftSB + [HSwToV sw]) (top / 2) eLeft top 2]
+						begin serif
+				[Just SLAB-TOP] : begin
+					local serif : HSerif.lt eLeft top [if (bodyShape === BODY-SQUARE-BOTTOM) [Math.max topSerifLen squareTopSerifMin] topSerifLen] sw
+					if (bodyShape === BODY-SQUARE-BOTTOM)
+						intersection serif [MaskLeftLine (df.leftSB + [HSwToV sw]) (top / 2) eLeft top 2]
+						begin serif
 				__              : no-shape
 
 		define ABodyConfig : SuffixCfg.combine
@@ -228,7 +236,7 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 		define SLAB-CAPPED  3
 		define SLAB-MID     4
 
-		define [AEEHalf df top slabKind] : glyph-proc
+		define [AEEHalf df top slabKind diag] : glyph-proc
 			define sw : AEOEStroke df top
 			define eLeft : df.middle - [HSwToV : 0.25 * sw]
 
@@ -239,7 +247,9 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 			# E half
 			include : VBar.l eLeft 0 top sw
 			include : HBar.t (eLeft - O) df.rightSB   top  sw
-			include : HBar.m (eLeft - O) xMidBarRight yBar sw
+			include : if diag
+				DiagonalHBar (eLeft - O) xMidBarRight yBar (diag * 0.16 * top) sw
+				HBar.m (eLeft - O) xMidBarRight yBar sw
 			include : HBar.b (eLeft - O) df.rightSB   0    sw
 
 			match slabKind
@@ -250,39 +260,51 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 			match slabKind
 				([Just SLAB-CAPPED] || [Just SLAB-MID]) : begin
 					local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.8 * (xMidBarRight - (eLeft + [HSwToV sw]))
-					include : VSerif.mr xMidBarRight yBar jutMid swVJut
+					include : VSerif.mr xMidBarRight (yBar + [if diag (diag * 0.08 * top) 0]) jutMid swVJut
 
 		define EConfig : object
-			serifless            {SLAB-NONE  }
-			topLeftSerifed       {SLAB-MOTION}
-			serifed              {SLAB-ALL   }
-			serifedCapped        {SLAB-CAPPED}
-			capped               {SLAB-MID   }
-			topLeftSerifedCapped {SLAB-MID   }
+			serifless                                   {SLAB-NONE   0 false}
+			topLeftSerifed                              {SLAB-MOTION 0 true }
+			serifed                                     {SLAB-ALL    0 true }
+			serifedCapped                               {SLAB-CAPPED 0 true }
+			capped                                      {SLAB-MID    0 false}
+			topLeftSerifedCapped                        {SLAB-MID    0 true }
+			diagonalCrossbar                            {SLAB-NONE   1 false}
+			diagonalCrossbarTopLeftSerifed              {SLAB-MOTION 1 true }
+			diagonalCrossbarSerifed                     {SLAB-ALL    1 true }
+			diagonalCrossbarSerifedCapped               {SLAB-CAPPED 1 true }
+			diagonalCrossbarCapped                      {SLAB-MID    1 false}
+			diagonalCrossbarTopLeftSerifedCapped        {SLAB-MID    1 true }
+			diagonalCrossbarFalling                     {SLAB-NONE   (-1) false}
+			diagonalCrossbarFallingTopLeftSerifed       {SLAB-MOTION (-1) true }
+			diagonalCrossbarFallingSerifed              {SLAB-ALL    (-1) true }
+			diagonalCrossbarFallingSerifedCapped        {SLAB-CAPPED (-1) true }
+			diagonalCrossbarFallingCapped               {SLAB-MID    (-1) false}
+			diagonalCrossbarFallingTopLeftSerifedCapped {SLAB-MID    (-1) true }
 
-		foreach {suffix {slabKind}} [Object.entries EConfig] : do
+		foreach {suffix {slabKind diag fReduced}} [Object.entries EConfig] : do
 			create-glyph "AE/E.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital
-				include : AEEHalf df CAP slabKind
-				DependentSelector.set currentGlyph : if (suffix === 'serifless' || suffix === 'capped') 'full' 'reduced'
+				include : AEEHalf df CAP slabKind diag
+				DependentSelector.set currentGlyph : if fReduced 'reduced' 'full'
 			create-glyph "smcpAE/smcpE.\(suffix)" : glyph-proc
 				define df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.e
-				include : AEEHalf df XH slabKind
-				DependentSelector.set currentGlyph : if (suffix === 'serifless' || suffix === 'capped') 'full' 'reduced'
+				include : AEEHalf df XH slabKind diag
+				DependentSelector.set currentGlyph : if fReduced 'reduced' 'full'
 
-			if (suffix !== 'topLeftSerifed' && suffix !== 'topLeftSerifedCapped') : begin
+			if (slabKind !== SLAB-MOTION && (!fReduced || slabKind !== SLAB-MID)) : begin
 				create-glyph "OE/E.\(suffix)" : glyph-proc
 					define df : DivFrame para.advanceScaleMM 3
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
-					include : AEEHalf df CAP slabKind
+					include : AEEHalf df CAP slabKind diag
 				create-glyph "smcpOE/smcpE.\(suffix)" : glyph-proc
 					define df : DivFrame para.advanceScaleM 3
 					set-width 0
 					set-mark-anchor 'cvDecompose' 0 0
-					include : AEEHalf df XH slabKind
+					include : AEEHalf df XH slabKind diag
 
 		select-variant 'AE/E'
 		select-variant 'OE/E'
