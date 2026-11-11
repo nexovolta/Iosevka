@@ -117,3 +117,87 @@ test("rotunda variants retain independent leg and case-specific hook relations",
 			assert.equal(cv.get(root), undefined);
 	}
 });
+
+test("Cossic rotunda d and looped long s use the upright outline under italic skew", () => {
+	for (const weight of [120, 420, 920]) {
+		const build = (slope, slopeAngle) => {
+			const argv = {
+				shape: {
+					serifs: "sans",
+					spacing: "term",
+					weight,
+					width: 500,
+					slope,
+					slopeAngle,
+				},
+				featureControl: { noCvSs: false },
+				variants: {
+					design: {
+						"capital-latin-gamma": "serifless",
+						"latin-gamma": "serifless",
+					},
+				},
+			};
+			const para = init(data, argv);
+			Variant.apply(variants, para, argv);
+			return buildGlyphs(para, {
+				blockIsNeeded: () => true,
+				glyphIsNeeded: () => true,
+			}).glyphStore;
+		};
+		const upright = build("upright", 0);
+		const italic = build("italic", 9.4);
+		const zeroSlopeItalic = weight === 420 ? build("italic", 0) : null;
+		const serifs = [
+			"Serifless",
+			"MiddleSerifed",
+			"MiddleSerifedXH",
+			"MiddleSerifedHalfAscender",
+			"BottomSerifed",
+			"DoubleSerifed",
+			"DoubleSerifedXH",
+			"DoubleSerifedHalfAscender",
+		];
+		const names = [
+			...["curlyBar", "straightBar", "closedContour"].map(
+				(suffix) => `dRotundaCrossingLoop.${suffix}`,
+			),
+			...["bentHook", "flatHook", "cornerHook"].flatMap((top) =>
+				[
+					...serifs,
+					...["Descending", "Tailed", "DiagonalTailed"].flatMap((bottom) =>
+						serifs.slice(0, 4).map((serif) => `${bottom}${serif}`),
+					),
+				].map((suffix) => `longsTopLoop.${top}${suffix}`),
+			),
+		];
+		for (const name of names) {
+			const u = upright.queryByNameEnsured(name);
+			const i = italic.queryByNameEnsured(name);
+			const expected = Geom.TransformedGeometry.create(i.gizmo, u.geometry);
+			const contours = (geometry) =>
+				new Geom.SimplifyGeometry(geometry, i.gizmo, true).toContours();
+			const actual = contours(i.geometry);
+			assert.deepEqual(
+				actual,
+				contours(expected),
+				`${name}, weight ${weight}`,
+			);
+			assert.equal(i.advanceWidth, u.advanceWidth, `${name}, weight ${weight}`);
+			if (name.startsWith("dRotundaCrossingLoop."))
+				assert.ok(
+					actual.flat().every((p) => p.y >= data.iosevka.descender - 0.01),
+				);
+			if (zeroSlopeItalic) {
+				const z = zeroSlopeItalic.queryByNameEnsured(name);
+				const zeroContours = (geometry) =>
+					new Geom.SimplifyGeometry(geometry, z.gizmo, true).toContours();
+				assert.deepEqual(
+					zeroContours(z.geometry),
+					zeroContours(u.geometry),
+					`${name}, zero slope`,
+				);
+			}
+		}
+	}
+});

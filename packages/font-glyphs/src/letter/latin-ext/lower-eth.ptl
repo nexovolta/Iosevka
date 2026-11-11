@@ -8,8 +8,8 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : PalatalHook
-	glyph-block-import Letter-Latin-Rams-Horn : PfennigUmShape
-	glyph-block-import Symbol-Punctuation-Ampersand : ClosedRest
+	glyph-block-import Symbol-Punctuation-Ampersand : ClosedRotunda
+	glyph-block-import Recursive-Build : ForkUpright
 
 	define fine ShoulderFine
 
@@ -53,30 +53,24 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	select-variant 'dInsular' 0xA77A (follow -- 'eth')
 	select-variant 'partial'  0x2202 (shapeFrom -- 'dInsular')
 
+	create-glyph 'dRotundaCrossingLoop/uprightSource' : glyph-proc
+		include : MarkSet.p
+		include : ClosedRotunda Descender
+
+	local useUprightSource : para.slopeAngle || para.isItalic || para.isOblique
+	local uprightRotunda
+	if (useUprightSource && [query-glyph 'dRotundaCrossingLoop/uprightSource'])
+		set uprightRotunda : ForkUpright {'dRotundaCrossingLoop/uprightSource'}
+
 	foreach suffix {'curlyBar' 'straightBar' 'closedContour'} : do
 		create-glyph "dRotundaCrossingLoop.\(suffix)" : glyph-proc
-			include : MarkSet.p
-			local df : DivFrame 1
-			local bottom : Descender - CAP * 0.06
-			local span : df.rightSB - df.leftSB
-			local sw : AdviceStroke2 2 3 (Ascender - bottom)
-			local loopScale : 0.625 + [Math.min 0.18 (sw / span * 0.7)]
-			# Blend the ampersand terminal into the descending penny hook.
-			local tailRight : df.middle + 0.26 * span - OX + [HSwToV sw] - sw * [clamp 0 0.30 : StrokeWidthBlend 0 0.30]
-			local joinBottom : 0.15 * XH
-			local joinTop : 0.31 * XH
-			include : union
-				intersection
-					MaskLeftLine tailRight 0 (tailRight + 0.2 * XH) XH 2
-					ClosedRest
-				intersection [MaskBelow (0.5 * XH)]
-					PfennigUmShape df Ascender bottom sw loopScale (0.25 * sw)
-				spiro-outline
-					corner (tailRight - sw) joinBottom
-					corner (tailRight + 0.2 * joinBottom) joinBottom
-					corner (tailRight + 0.2 * joinTop) joinTop
-					corner (tailRight - sw) joinTop
-					close
+			local source : refer-glyph 'dRotundaCrossingLoop/uprightSource'
+			if useUprightSource
+			: then : begin
+				currentGlyph.dependsOn source
+				include [uprightRotunda.queryByName 'dRotundaCrossingLoop/uprightSource'] AS_BASE ALSO_METRICS
+				include [Italify para.slopeAngle] AS_BASE
+			: else : include source AS_BASE ALSO_METRICS
 
 	select-variant 'dRotundaCrossingLoop' 0x1DF93 (follow -- 'eth')
 

@@ -19,6 +19,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Latin-Lower-I : Casual CasualTopBetween CasualBottom
 	glyph-block-import Letter-Latin-Rams-Horn : RamsHornShape
 	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
+	glyph-block-import Recursive-Build : ForkUpright
 
 	define SLAB_SERIFLESS       0
 	define SLAB_BOTTOM          1
@@ -424,12 +425,33 @@ glyph-block Letter-Latin-Long-S : begin
 		'Descending' 'descending'
 		'Tailed' 'tailed'
 		'DiagonalTailed' 'diagonalTailed'
+	local topLoopSourceNames {}
 	foreach topSuffix {'bentHook' 'flatHook' 'cornerHook'} : do
 		foreach {suffix {serifStyle pShift}} [Object.entries SerifSuffixes] : do
-			create-glyph "longsTopLoop.\(topSuffix)\(suffix)" : LongSTopLoop 'nonDescending' serifStyle
+			local name "longsTopLoop/uprightSource.\(topSuffix)\(suffix)"
+			topLoopSourceNames.push name
+			create-glyph name : LongSTopLoop 'nonDescending' serifStyle
 		foreach {suffix {serifStyle pShift}} [Object.entries SerifSuffixesDescending] : do
 			foreach {bottomSuffix bottomStyle} [Object.entries TopLoopBottomStyles] : do
-				create-glyph "longsTopLoop.\(topSuffix)\(bottomSuffix)\(suffix)" : LongSTopLoop bottomStyle serifStyle
+				local name "longsTopLoop/uprightSource.\(topSuffix)\(bottomSuffix)\(suffix)"
+				topLoopSourceNames.push name
+				create-glyph name : LongSTopLoop bottomStyle serifStyle
+
+	local useUprightTopLoops : para.slopeAngle || para.isItalic || para.isOblique
+	local uprightTopLoops
+	if (useUprightTopLoops && [topLoopSourceNames.some : lambda [name] [query-glyph name]])
+		set uprightTopLoops : ForkUpright topLoopSourceNames
+
+	foreach sourceName [items-of topLoopSourceNames] : do
+		local targetName : sourceName.replace 'longsTopLoop/uprightSource.' 'longsTopLoop.'
+		create-glyph targetName : glyph-proc
+			local source : refer-glyph sourceName
+			if useUprightTopLoops
+			: then : begin
+				currentGlyph.dependsOn source
+				include [uprightTopLoops.queryByName sourceName] AS_BASE ALSO_METRICS
+				include [Italify para.slopeAngle] AS_BASE
+			: else : include source AS_BASE ALSO_METRICS
 
 	select-variant 'longsTopLoop' 0x1DF96 (follow -- 'longs')
 

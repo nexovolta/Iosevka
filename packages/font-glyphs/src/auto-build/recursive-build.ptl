@@ -14,6 +14,13 @@ glyph-block Recursive-Build : begin
 		local gs : buildGlyphs ps [$Exec$.dependencyManager.traverseDependencies glyphs]
 		return gs.glyphStore
 
+	define [ForkUpright glyphs] : begin
+		local uprightPara : Object.assign {.} para
+		set uprightPara.slopeAngle 0
+		set uprightPara.isItalic false
+		set uprightPara.isOblique false
+		return : Fork glyphs uprightPara
+
 	define [MiniatureParaT] : with-params [pp crowd scale [sbscale (Width / UPM)] [mono false] [mono2 false] [forceUpright false]] : begin
 		local forkedPara : Object.assign {.} pp
 		forkedPara.stroke = [AdviceStroke crowd : Math.sqrt : clamp 0 1 (HalfUPM / Width)] / scale
@@ -72,7 +79,7 @@ glyph-block Recursive-Build : begin
 		forkedPara.hookx = HookX * p
 		return : Fork glyphs forkedPara
 
-	glyph-block-export Fork Miniature MiniatureParaT Thinner Widen
+	glyph-block-export Fork ForkUpright Miniature MiniatureParaT Thinner Widen
 
 glyph-block Recursive-Build-ParaTfm : begin
 	glyph-block-export ForkTfm

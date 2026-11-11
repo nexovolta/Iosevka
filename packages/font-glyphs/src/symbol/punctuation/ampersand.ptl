@@ -68,8 +68,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			corner [mix xUpperLoopLeft xTerminal 4]            (-yMockUpperLoopLeftBottom)
 			corner [mix xUpperLoopLeft xTerminal 4]            [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 
-	glyph-block-export ClosedRest
-	define [ClosedRest] : union
+	define [ClosedAmpersandBowlLead] : union
 		intersection
 			ClosedAmpersandLead SwAmpersand ClosedTipSw
 			ClosedAmpersandLeadMask
@@ -78,18 +77,46 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				ClosedAmpersandLead SwAmpersand ClosedTipSw
 				ClosedAmpersandLeadMask2 SwAmpersand ClosedIncisedSw
 			ClosedAmpersandLeadMask
+
+	define [ClosedAmpersandBodyKnots] : list
+		g4.left.mid xClosedAmpersandBottom O [widths.rhs.heading SwAmpersand ClosedBottomSlope]
+		archv
+		g4   (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
+		alsoThru 0.5 0.5 [widths.center SwAmpersand]
+		g4   xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
+		Arch.lhs CAP (sw -- SwAmpersand)
+		g4   xUpperLoopLeft yUpperLoopLeft
+
+	glyph-block-export ClosedRest ClosedRotunda
+	define [ClosedRest] : union
+		ClosedAmpersandBowlLead
 		difference
 			dispiro
-				g4.left.mid xClosedAmpersandBottom O [widths.rhs.heading SwAmpersand ClosedBottomSlope]
-				archv
-				g4   (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
-				alsoThru 0.5 0.5 [widths.center SwAmpersand]
-				g4   xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
-				Arch.lhs CAP (sw -- SwAmpersand)
-				g4   xUpperLoopLeft yUpperLoopLeft
+				ClosedAmpersandBodyKnots
 				flat [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 				curl [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 			Rect 0 ((-CAP) * 2) xTerminal (Width * 2)
+
+	define [ClosedRotunda bottom] : begin
+		local hookBottom : bottom + 1.2 * SwAmpersand
+		local xFlat : mix xUpperLoopLeft xTerminal pStraightBar
+		local yFlat : mix yMockUpperLoopLeftBottom 0 pStraightBar
+		local xEnd : mix xUpperLoopLeft xTerminal 2
+		local yEnd : -yMockUpperLoopLeftBottom
+		local slope : (xEnd - xFlat) / (yFlat - yEnd)
+		local xBase : xFlat + slope * yFlat
+		local xHook : xBase + 0.02 * Width
+		return : union
+			intersection
+				MaskLeftLine (xBase + 0.35 * SwAmpersand) 0 (xBase - slope * XH + 0.35 * SwAmpersand) XH 2
+				ClosedAmpersandBowlLead
+			dispiro
+				ClosedAmpersandBodyKnots
+				flat xFlat yFlat
+				curl xBase 0
+				g4 xHook (0.5 * hookBottom)
+				g4 [mix SB RightSB 0.55] hookBottom
+				curl [mix SB RightSB 0.32] (hookBottom + 0.1 * CAP)
 
 	create-glyph 'ampersand.closed' : ClosedRest
 
