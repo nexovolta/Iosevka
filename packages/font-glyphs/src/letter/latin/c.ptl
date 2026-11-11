@@ -355,9 +355,9 @@ glyph-block Letter-Latin-C : begin
 			include [refer-glyph "c.\(suffix)"] AS_BASE ALSO_METRICS
 			include : ExtendBelowBaseAnchors Descender
 			local weightBlend : clamp 0 1 : StrokeWidthBlend 0 1
-			local df : DivFrame [mix 0.65 0.84 weightBlend] 2
+			local df : DivFrame [mix 0.65 0.76 weightBlend] 2
 			local refDf : DivFrame 0.65 2
-			local yTop : XH * [mix (-0.12) (-0.09) weightBlend]
+			local yTop : XH * [mix (-0.12) (-0.06) weightBlend]
 			local yBottom : XH * [mix (-0.51) (-0.54) weightBlend]
 			local sw : Math.min [refDf.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (0.39 * XH)]
 			local loopFine : sw * [mix 1 0.85 weightBlend]
@@ -365,6 +365,10 @@ glyph-block Letter-Latin-C : begin
 			local xArm : df.leftSB + 0.75 * OX + shift
 			local halfWidth : HSwToV : 0.5 * sw
 			local yAttach : Math.max 2 (0.12 * sw)
+			local loopTop : mix yTop yBottom 0.26
+			local loopLeft : mix (df.leftSB + shift) Middle 0.22
+			local loopRight : 2 * Middle - loopLeft
+			local loopInset : HSwToV loopFine
 			include : union
 				spiro-outline
 					corner (Middle - halfWidth) yAttach
@@ -372,8 +376,13 @@ glyph-block Letter-Latin-C : begin
 					corner (xArm + 2 * halfWidth) (yTop - 0.5 * sw)
 					corner xArm (yTop - 0.5 * sw)
 					corner xArm yTop
-				with-transform [Translate shift 0]
-					RamsHornShape df yTop yBottom false false false sw nothing loopFine
+				difference
+					union
+						intersection [MaskAbove [mix loopTop yBottom 0.2]]
+							with-transform [Translate shift 0]
+								RamsHornShape df yTop yBottom false false false sw nothing loopFine nothing 0
+						Ellipse.Outline.AtDimens loopTop yBottom loopLeft loopRight
+					Ellipse.Outline.AtDimens (loopTop - loopFine) (yBottom + loopFine) (loopLeft + loopInset) (loopRight - loopInset)
 
 		create-glyph "cRightLoop.\(suffix)" : glyph-proc
 			local outDf : include : DivFrame [if para.isQuasiProportional para.advanceScaleM 1] 4

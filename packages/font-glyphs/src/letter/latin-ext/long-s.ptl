@@ -58,9 +58,9 @@ glyph-block Letter-Latin-Long-S : begin
 		if fCorner : include : [if (sign > 0) VBar.l VBar.r] xTip bottom (bottom + [CornerHookDepth Hook sw]) sw
 
 	glyph-block-export LongSShape
-	define [LongSShape top bottom hookx hooky fine fCorner] : union
+	define [LongSShape top bottom hookx hooky fine fCorner _bottomCorner] : union
 		LongSUpperHalf (+1) Middle top [mix top bottom 0.5] hookx hooky fine fCorner
-		LongSLowerHalf (+1) Middle [mix top bottom 0.5] bottom hookx hooky fine fCorner
+		LongSLowerHalf (+1) Middle [mix top bottom 0.5] bottom hookx hooky fine [fallback _bottomCorner fCorner]
 
 	define [StandardSerifs m0 fSlab _kSerif] : glyph-proc
 		local m : m0 + [HSwToV HalfStroke]
@@ -212,7 +212,7 @@ glyph-block Letter-Latin-Long-S : begin
 		create-glyph "longs.cornerHookTailed\(suffix)" : glyph-proc
 			include : MarkSet.bp
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
-			include : LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true
+			include : LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true false
 			include : StandardSerifs (Middle - [HSwToV HalfStroke]) serifStyle
 			create-forked-glyph "longsBar.cornerHookTailed\(suffix)" : LongSSymmetricOverlayBar Middle
 
@@ -225,7 +225,7 @@ glyph-block Letter-Latin-Long-S : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			include : union
 				intersection [MaskAbove 0]
-					LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true
+					LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true false
 				SmallFDiagonalTail [DivFrame 1] (Middle - [HSwToV HalfStroke])
 				StandardSerifs (Middle - [HSwToV HalfStroke]) serifStyle
 			create-forked-glyph "longsBar.cornerHookDiagonalTailed\(suffix)" : LongSSymmetricOverlayBar Middle
@@ -272,6 +272,8 @@ glyph-block Letter-Latin-Long-S : begin
 		include : NarrowEsh
 	create-glyph 'esh.cornerHooked' : glyph-proc
 		include [refer-glyph 'longs.cornerHookTailedSerifless'] AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		include : LongSShape Ascender Descender (HookX + QuarterStroke) Hook nothing true
 		include : NarrowEsh
 	create-glyph 'esh.sshaped' : glyph-proc
 		include : MarkSet.bp

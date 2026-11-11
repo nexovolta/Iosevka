@@ -41,7 +41,10 @@ test("corner-hooked f uses only the fi/ffi terminal as the i tittle", () => {
 
 for (const [weight, slope] of [
 	[120, "upright"],
+	[120, "italic"],
+	[420, "upright"],
 	[420, "italic"],
+	[920, "upright"],
 	[920, "italic"],
 ]) {
 	test(`corner-hooked f has a flat bottom hook and generates ligature components at ${weight} ${slope}`, () => {
@@ -80,6 +83,31 @@ for (const [weight, slope] of [
 			belowBaseline("f.cornerHookTailed"),
 			belowBaseline("f.flatHookTailed"),
 		);
+		const tailPoints = (name) =>
+			belowBaseline(name).filter(([, y]) => y < -100);
+		for (const tail of ["Tailed", "DiagonalTailed"]) {
+			for (const serif of [
+				"Serifless",
+				"MiddleSerifed",
+				"MiddleSerifedXH",
+				"MiddleSerifedHalfAscender",
+			]) {
+				for (const prefix of ["longs", "longsBar"]) {
+					assert.deepEqual(
+						tailPoints(`${prefix}.cornerHook${tail}${serif}`),
+						tailPoints(`${prefix}.flatHook${tail}${serif}`),
+						`${prefix} ${tail} ${serif}: bottom hook differs`,
+					);
+				}
+			}
+		}
+		for (const tail of ["Descending", "Tailed", "DiagonalTailed"]) {
+			assert.deepEqual(
+				tailPoints(`eszet.traditionalCornerHook${tail}Serifless`),
+				tailPoints(`eszet.traditionalFlatHook${tail}Serifless`),
+				`eszett ${tail}: top hook affects bottom`,
+			);
+		}
 		for (const name of [
 			"f",
 			"f/compLigLeft1",
