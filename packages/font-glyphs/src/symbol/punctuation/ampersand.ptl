@@ -2,6 +2,9 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
+import [Arcs ShapeConv] from 'typo-geom'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
+import [Vec2] from '@iosevka/geometry/point'
 
 glyph-module
 
@@ -9,6 +12,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-Ezh : RevEzh
+	glyph-block-import Letter-Latin-Rams-Horn : UmShape
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcStart SerifedArcEnd InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
@@ -97,26 +101,138 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				curl [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 			Rect 0 ((-CAP) * 2) xTerminal (Width * 2)
 
+	class RotundaJoinEdge
+		public [new x0 y0 x1 y1 slope0 slope1 curvature1] : begin
+			local dy : y1 - y0
+			local dx : x1 - x0 - slope0 * dy
+			local ds : (slope1 - slope0) * dy
+			local dc : curvature1 * dy * dy
+			set this.x0 x0
+			set this.y0 y0
+			set this.dy dy
+			set this.c1 : slope0 * dy
+			# Match zero curvature at the straight stroke and the um hook's curvature.
+			set this.c3 : 10 * dx - 4 * ds + 0.5 * dc
+			set this.c4 : -15 * dx + 7 * ds - dc
+			set this.c5 : 6 * dx - 3 * ds + 0.5 * dc
+		public [eval t] : new Vec2
+			this.x0 + t * (this.c1 + t * t * (this.c3 + t * (this.c4 + t * this.c5)))
+			this.y0 + t * this.dy
+		public [derivative t] : new Vec2
+			this.c1 + t * t * (3 * this.c3 + t * (4 * this.c4 + t * 5 * this.c5))
+			0 + this.dy
+
 	define [ClosedRotunda bottom] : begin
-		local hookBottom : bottom + 1.2 * SwAmpersand
-		local xFlat : mix xUpperLoopLeft xTerminal pStraightBar
-		local yFlat : mix yMockUpperLoopLeftBottom 0 pStraightBar
-		local xEnd : mix xUpperLoopLeft xTerminal 2
-		local yEnd : -yMockUpperLoopLeftBottom
-		local slope : (xEnd - xFlat) / (yFlat - yEnd)
-		local xBase : xFlat + slope * yFlat
-		local xHook : xBase + 0.02 * Width
-		return : union
-			intersection
-				MaskLeftLine (xBase + 0.35 * SwAmpersand) 0 (xBase - slope * XH + 0.35 * SwAmpersand) XH 2
-				ClosedAmpersandBowlLead
+		local xCross : mix SB RightSB 0.36
+		local yCross : 0.56 * CAP
+		local xFlat : mix SB RightSB 0.11
+		local yFlat : 0.78 * CAP
+		local slope : (xCross - xFlat) / (yFlat - yCross)
+		local xBase : xCross + slope * yCross
+		local yLowerCross : 0.20 * CAP
+		local xLowerCross : xBase - slope * yLowerCross
+		local xOuter : Math.max (RightSB - OX - 0.5 * SwAmpersand) (xLowerCross + 0.12 * Width)
+		local df : DivFrame 1
+		local umTop CAP
+		local umHeight : umTop - bottom
+		local umCross : bottom + 0.42 * umHeight + [clamp (0.15 * 0.58 * umHeight) (0.28 * 0.58 * umHeight) (1.05 * SwAmpersand)]
+		local umJoin : umCross - 0.22 * CAP
+		local yJoinTop : umJoin + 0.12 * CAP
+		local overlap : 0.02 * SwAmpersand
+		# Keep the um's lower hook, excluding its upper loop and left spur.
+		define [UmLower clipY] : difference
+			intersection [MaskBelow clipY]
+				UmShape df umTop bottom df.adws SwAmpersand SwAmpersand 0.625
+			intersection [MaskLeft df.middle] [MaskAbove (bottom + 0.2 * umHeight)]
+		local umPart : new-glyph : UmLower umJoin
+		local umLeft nothing
+		local umRight nothing
+		local umLeftSlope nothing
+		local umRightSlope nothing
+		local umLeftCurvature nothing
+		local umRightCurvature nothing
+		foreach contour [items-of : umPart.geometry.toBezArcs] : foreach arc [items-of contour] : begin
+			local a : umPart.gizmo.unapply arc.a
+			local b : umPart.gizmo.unapply arc.b
+			local c : umPart.gizmo.unapply arc.c
+			local d : umPart.gizmo.unapply arc.d
+			local p nothing
+			local q nothing
+			local r nothing
+			if (([Math.abs (a.y - umJoin)] < 0.01) && (d.y < umJoin - 0.01)) : begin
+				set p a
+				set q b
+				set r c
+			if (([Math.abs (d.y - umJoin)] < 0.01) && (a.y < umJoin - 0.01)) : begin
+				set p d
+				set q c
+				set r b
+			if p : begin
+				local dx : q.x - p.x
+				local dy : q.y - p.y
+				if ([Math.abs dy] < 0.001) : throw : new Error 'Cannot measure rotunda um hook tangent'
+				local tangent : dx / dy
+				local curvature : (2 / 3) * ((r.x - 2 * q.x + p.x) * dy - dx * (r.y - 2 * q.y + p.y)) / (dy * dy * dy)
+				if ((umLeft === nothing) || (p.x < umLeft)) : begin
+					set umLeft p.x
+					set umLeftSlope tangent
+					set umLeftCurvature curvature
+				if ((umRight === nothing) || (p.x > umRight)) : begin
+					set umRight p.x
+					set umRightSlope tangent
+					set umRightCurvature curvature
+		if ((umLeft === nothing) || (umRight === nothing) || (umRight - umLeft < TINY)) : throw : new Error 'Cannot align rotunda um hook'
+		local umSlope : (umLeftSlope + umRightSlope) / 2
+		local umX : xBase - slope * yJoinTop + 0.5 * (umSlope - slope) * (umJoin - yJoinTop)
+		local umShift : umX - (umLeft + umRight) / 2
+		local crossNormalScale : 1 / [Math.sqrt : 1 + slope * slope]
+		local nx : 0.5 * SwAmpersand * HVContrast * crossNormalScale
+		local ny : 0.5 * SwAmpersand * slope * crossNormalScale
+		local lineX : xBase - slope * yJoinTop
+		local joinLeft : new RotundaJoinEdge (lineX - nx - slope * ny) yJoinTop (umLeft + umShift) umJoin (-slope) umLeftSlope umLeftCurvature
+		local joinRight : new RotundaJoinEdge (lineX + nx + slope * ny) yJoinTop (umRight + umShift) umJoin (-slope) umRightSlope umRightCurvature
+		local arcEndY : yCross - 0.2 * SwAmpersand
+		local lineStartY : yCross + 0.1 * SwAmpersand
+		local lineStartX : xBase - slope * lineStartY
+		local lineEndY : yJoinTop - 2 * ny - 2 * overlap
+		local lineEndX : xBase - slope * lineEndY
+		local crossHeading {.x (-HVContrast * crossNormalScale) .y (-slope * crossNormalScale)}
+		define [LowerArc] : dispiro
+			widths.center SwAmpersand
+			flat xCross yCross
+			g4 (SB + OX) (0.24 * CAP)
+			g4 xClosedAmpersandBottom (O + 0.5 * SwAmpersand)
+			curl xLowerCross yLowerCross
+		define [OuterArc] : difference
 			dispiro
-				ClosedAmpersandBodyKnots
-				flat xFlat yFlat
-				curl xBase 0
-				g4 xHook (0.5 * hookBottom)
-				g4 [mix SB RightSB 0.55] hookBottom
-				curl [mix SB RightSB 0.32] (hookBottom + 0.1 * CAP)
+				widths.center SwAmpersand
+				flat (xBase - slope * arcEndY) arcEndY [heading crossHeading]
+				g4 xCross yCross [heading crossHeading]
+				g4 xFlat yFlat
+				g4 [mix SB RightSB 0.40] (CAP - 0.5 * SwAmpersand)
+				g4 xOuter (0.48 * CAP)
+				curl xLowerCross yLowerCross
+			# Clear the arc end where the straight diagonal replaces it.
+			intersection [MaskBelow yCross] [MaskAbove (yJoinTop - overlap)] : spiro-outline
+				corner (-VERY-FAR) (-VERY-FAR)
+				corner (xBase + slope * VERY-FAR + nx + slope * ny - 0.25 * SwAmpersand) (-VERY-FAR)
+				corner (xBase - slope * CAP + nx + slope * ny - 0.25 * SwAmpersand) CAP
+				corner (-VERY-FAR) CAP
+		define [CrossingHook] : union
+			intersection [MaskAbove (yJoinTop - overlap)] : spiro-outline
+				corner (lineStartX - nx) (lineStartY - ny)
+				corner (lineEndX - nx) (lineEndY - ny)
+				corner (lineEndX + nx) (lineEndY + ny)
+				corner (lineStartX + nx) (lineStartY + ny)
+			glyph-proc
+				local cs : new BezToContoursSink currentGlyph.gizmo
+				ShapeConv.transferGenericShapeAsBezier {{joinLeft [new Arcs.Reverted joinRight]}} cs 0.01
+				currentGlyph.includeContours cs.contours
+			with-transform [Translate umShift 0] : UmLower (umJoin + overlap)
+		return : with-transform [Translate (0.075 * Width) 0] : with-transform [Scale 0.85 1] : union
+			LowerArc
+			OuterArc
+			CrossingHook
 
 	create-glyph 'ampersand.closed' : ClosedRest
 

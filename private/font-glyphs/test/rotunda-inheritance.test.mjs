@@ -9,6 +9,7 @@ import { buildGlyphs } from "@iosevka/font-glyphs";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
+import * as TypoGeom from "typo-geom";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const read = (name) =>
@@ -26,6 +27,26 @@ const hooks = [
 	"topCornerHook",
 ];
 await Geom.Init();
+
+function bezierContourArea(arcs) {
+	const quadrature = [
+		[0.5 - Math.sqrt(15) / 10, 5 / 18],
+		[0.5, 4 / 9],
+		[0.5 + Math.sqrt(15) / 10, 5 / 18],
+	];
+	let twiceArea = 0;
+	for (const { a, b, c, d } of arcs) {
+		for (const [t, weight] of quadrature) {
+			const u = 1 - t;
+			const x = u ** 3 * a.x + 3 * u ** 2 * t * b.x + 3 * u * t ** 2 * c.x + t ** 3 * d.x;
+			const y = u ** 3 * a.y + 3 * u ** 2 * t * b.y + 3 * u * t ** 2 * c.y + t ** 3 * d.y;
+			const dx = 3 * (u ** 2 * (b.x - a.x) + 2 * u * t * (c.x - b.x) + t ** 2 * (d.x - c.x));
+			const dy = 3 * (u ** 2 * (b.y - a.y) + 2 * u * t * (c.y - b.y) + t ** 2 * (d.y - c.y));
+			twiceArea += weight * (x * dy - y * dx);
+		}
+	}
+	return Math.abs(twiceArea / 2);
+}
 
 test("rotunda variants retain independent leg and case-specific hook relations", () => {
 	const argv = {
@@ -199,5 +220,54 @@ test("Cossic rotunda d and looped long s use the upright outline under italic sk
 				);
 			}
 		}
+		const mask = new Geom.ContourSetGeometry([[
+			{ type: 0, x: -10000, y: 0.6 * data.iosevka.xHeight },
+			{ type: 0, x: -10000, y: 10000 },
+			{ type: 0, x: 10000, y: 10000 },
+			{ type: 0, x: 10000, y: 0.6 * data.iosevka.xHeight },
+		]]);
+		for (const top of ["bentHook", "flatHook", "cornerHook"]) {
+			for (const serif of ["Serifless", "MiddleSerifedHalfAscender"]) {
+				const head = upright.queryByNameEnsured(`longsTopLoop.${top}${serif}`);
+				for (const bottom of ["Descending", "Tailed", "DiagonalTailed"]) {
+					const other = upright.queryByNameEnsured(`longsTopLoop.${top}${bottom}${serif}`);
+					const clip = (glyph) => new Geom.BooleanGeometry(
+						TypoGeom.Boolean.ClipType.Intersection,
+						[glyph.geometry, mask],
+					);
+					const difference = new Geom.BooleanGeometry(
+						TypoGeom.Boolean.ClipType.Xor,
+						[clip(head), clip(other)],
+					);
+					// Boolean clipping can leave sub-thousandth-unit slivers along identical curves.
+					for (const contour of difference.toBezArcs())
+						assert.ok(bezierContourArea(contour) < 0.02, `${top} ${bottom} ${serif}, weight ${weight}`);
+				}
+			}
+		}
+		const rotunda = upright.queryByNameEnsured("dRotundaCrossingLoop.curlyBar");
+		const rotundaContours = new Geom.SimplifyGeometry(
+			rotunda.geometry,
+			rotunda.gizmo,
+			true,
+		).toContours();
+		const straightEdges = rotundaContours.flatMap((contour) =>
+			contour.flatMap((p, index) => {
+				const q = contour[(index + 1) % contour.length];
+				const dx = q.x - p.x;
+				const dy = q.y - p.y;
+				return p.type === 0 && q.type === 0 && Math.abs(dy) > 0.1 * data.iosevka.cap &&
+					dx * dy < 0 && Math.abs(dx / dy) > 0.25
+					? [dx / dy]
+					: [];
+			}),
+		);
+		assert.ok(straightEdges.length >= 2, `missing straight crossing edges at weight ${weight}`);
+		const upperCounter = rotundaContours.find((contour) => {
+			const ys = contour.map((point) => point.y);
+			return Math.max(...ys) > 0.75 * data.iosevka.cap &&
+				Math.min(...ys) < 0.38 * data.iosevka.cap;
+		});
+		assert.ok(upperCounter, `missing large crossing arc at weight ${weight}`);
 	}
 });

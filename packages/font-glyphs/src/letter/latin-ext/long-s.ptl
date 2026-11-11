@@ -372,20 +372,17 @@ glyph-block Letter-Latin-Long-S : begin
 	define [LongSTopLoop bottomStyle serifStyle] : glyph-proc
 		include : MarkSet.bp
 		local baseScale : clamp 1 1.12 : StrokeWidthBlend 1 1.12
-		local hasTail : (bottomStyle == 'tailed') || (bottomStyle == 'diagonalTailed')
-		# Give the tail room before compressing the design back to the cell.
-		local designScale : if hasTail 1.45 baseScale
+		local designScale baseScale
 		local designWidth : Width * designScale
 		local sw : AdviceStroke2 2 3 Ascender
-		local xStem : mix SB (designWidth - SB) : if hasTail 0.24 0.10
+		local headShift : 0.06 * Width * designScale
+		local xStem : [mix SB (designWidth - SB) 0.10] + headShift
 		local yBar : 0.67 * XH
 		local yLoopTop : Ascender - 0.01 * XH
 		local yLoopBottom : 0.64 * XH
-		local loopScale : if hasTail
-			clamp 0.64 0.74 : StrokeWidthBlend 0.64 0.74
-			clamp 0.68 0.77 : StrokeWidthBlend 0.68 0.77
+		local loopScale : clamp 0.68 0.77 : StrokeWidthBlend 0.68 0.77
 		local df : DivFrame (loopScale * designScale) 2
-		local shift : designWidth - SB - df.rightSB
+		local shift : designWidth - SB - df.rightSB + headShift
 		local refDf : DivFrame (0.68 * designScale) 2
 		local loopBase : Math.min [refDf.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yLoopTop - yLoopBottom)]
 		local loopSw : loopBase * [clamp 1 1.20 : StrokeWidthBlend 1 1.20]
@@ -399,14 +396,24 @@ glyph-block Letter-Latin-Long-S : begin
 		local xArm : df.leftSB + 0.75 * OX + [HSwToV : 0.4 * loopSw]
 		local xJoin : shift + df.middle + (xArm - df.middle) * cosine
 		local yJoin : yLoopTop + (xArm - df.middle) * sine + [if para.isItalic (0.02 * loopSw + 2) (-0.02 * loopSw + [clamp 0 3 : StrokeWidthBlend 0 3])]
-		local yStemBottom : if (bottomStyle == 'nonDescending') 0 : if (bottomStyle == 'descending') Descender : if (bottomStyle == 'tailed') (0.5 * XH) 0
 		local tailX : Math.max (0.05 * Width) : Math.min (HookX + QuarterStroke) (xStem - [HSwToV : 0.5 * stemSw] + 0.06 * Width)
-		include : with-transform [Scale (1 / designScale) 1] : union
+		local innerX : xStem - [HSwToV : 0.5 * stemSw]
+		local tailRadius : Math.min TightBendInnerRadius (0.30 * innerX)
+		local tailFine : [AdviceStroke 2.5] * (stemSw / Stroke) / [mix 1 HVContrast 0.375]
+		define [Head] : union
 			if [maskBits serifStyle (SLAB_MIDDLE + SLAB_MIDDLE_XH + SLAB_MIDDLE_HALF_ASC)]
 				no-shape
 				HSerif.lt xBarRight yBar barLength sw
-			LongSUpperHalf (+1) xStem yJoin yStemBottom (xJoin - xStem) (0.35 * XH) loopSw false stemSw
+			LongSUpperHalf (+1) xStem yJoin 0 (xJoin - xStem) (0.35 * XH) loopSw false stemSw
 			StandardSerifs (xStem - [HSwToV HalfStroke]) serifStyle
+			with-transform [Translate (shift + df.middle) yLoopTop]
+				with-transform [Rotate angle]
+					with-transform [Translate (-df.middle) (-yLoopTop)]
+						RamsHornShape df yLoopTop yLoopBottom false false false loopSw nothing loopFine (designScale / baseScale)
+		define [DescenderShape] : union
+			if (bottomStyle == 'descending')
+				VBar.m xStem Descender TINY stemSw
+				no-shape
 			if (bottomStyle == 'tailed')
 				LongSLowerHalf (+1) xStem (0.5 * XH - O) Descender tailX Hook stemSw false
 				no-shape
@@ -414,12 +421,15 @@ glyph-block Letter-Latin-Long-S : begin
 				dispiro
 					widths.center stemSw
 					flat xStem TINY [heading Downward]
-					DiagTail.L xStem Descender ([Math.max (0.25 * stemSw) ([DiagTail.StdDepth [DivFrame 1] stemSw] - 0.5 * stemSw - 0.18 * Width)]) stemSw
+					curl innerX (Descender + tailFine + tailRadius) [widths.lhs stemSw]
+					arcvh 8 DesignParameters.superness
+					DiagTail.F (-1) innerX Descender tailRadius DiagTailAngle (0.35 * stemSw) stemSw
 				no-shape
-			with-transform [Translate (shift + df.middle) yLoopTop]
-				with-transform [Rotate angle]
-					with-transform [Translate (-df.middle) (-yLoopTop)]
-						RamsHornShape df yLoopTop yLoopBottom false false false loopSw nothing loopFine (designScale / baseScale)
+		include : with-transform [Translate (0.11 * Width) 0]
+			with-transform [Scale 0.83 1]
+				with-transform [Scale (1 / designScale) 1] : union
+					Head
+					DescenderShape
 
 	define TopLoopBottomStyles : object
 		'Descending' 'descending'
