@@ -354,22 +354,26 @@ glyph-block Letter-Latin-C : begin
 		create-glyph "cLoopedCedilla.\(suffix)" : glyph-proc
 			include [refer-glyph "c.\(suffix)"] AS_BASE ALSO_METRICS
 			include : ExtendBelowBaseAnchors Descender
-			local df : DivFrame 0.65 2
-			local yTop : -0.12 * XH
-			local yBottom : -0.51 * XH
-			local sw : Math.min [df.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yTop - yBottom)]
+			local weightBlend : clamp 0 1 : StrokeWidthBlend 0 1
+			local df : DivFrame [mix 0.65 0.84 weightBlend] 2
+			local refDf : DivFrame 0.65 2
+			local yTop : XH * [mix (-0.12) (-0.09) weightBlend]
+			local yBottom : XH * [mix (-0.51) (-0.54) weightBlend]
+			local sw : Math.min [refDf.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (0.39 * XH)]
+			local loopFine : sw * [mix 1 0.85 weightBlend]
 			local shift : Middle - df.middle
 			local xArm : df.leftSB + 0.75 * OX + shift
 			local halfWidth : HSwToV : 0.5 * sw
+			local yAttach : Math.max 2 (0.12 * sw)
 			include : union
 				spiro-outline
-					corner (Middle - halfWidth) 0
-					corner (Middle + halfWidth) 0
+					corner (Middle - halfWidth) yAttach
+					corner (Middle + halfWidth) yAttach
 					corner (xArm + 2 * halfWidth) (yTop - 0.5 * sw)
 					corner xArm (yTop - 0.5 * sw)
 					corner xArm yTop
 				with-transform [Translate shift 0]
-					RamsHornShape df yTop yBottom false false false sw
+					RamsHornShape df yTop yBottom false false false sw nothing loopFine
 
 		create-glyph "cRightLoop.\(suffix)" : glyph-proc
 			local outDf : include : DivFrame [if para.isQuasiProportional para.advanceScaleM 1] 4

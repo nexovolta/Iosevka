@@ -112,11 +112,23 @@ test("Cossic letters export as nonempty glyphs", async () => {
 			assert.equal(advance(0x1df92), advance(0x63), "c with rho must retain the monospace advance");
 			assert.equal(advance(0x1df94), advance(0x32), "rum with rho must retain the monospace advance");
 		}
-		assert.ok(font.cmap.unicode.get(0x1df91).geometry.contours.some(c => area(c) > 0),
-			"looped cedilla must retain its counter");
+		const unskew = p => p.x - p.y * Math.tan((slope === "italic" ? 9.4 : 0) * Math.PI / 180);
+		const checkCedilla = (glyph, name) => {
+			const contours = glyphContours(glyph);
+			assert.equal(contours.filter(c => area(c) < 0).length, 1, `${name} must have connected ink`);
+			const counters = contours.filter(c => area(c) > 0);
+			assert.equal(counters.length, 1, `${name} must have exactly one counter`);
+			const x = counters[0].map(unskew);
+			const y = counters[0].map(p => p.y);
+			assert.ok(Math.max(...y) < 0, `${name} counter must remain below the baseline`);
+			assert.ok(Math.max(...x) - Math.min(...x) >= advance(0x1df91) * 0.1,
+				`${name} counter must retain its width`);
+			assert.ok(Math.max(...y) - Math.min(...y) >= (weight >= 900 ? 40 : 25),
+				`${name} counter must not collapse at heavy weights`);
+		};
+		checkCedilla(font.cmap.unicode.get(0x1df91), "looped cedilla");
 		const longS = font.cmap.unicode.get(0x1df96);
 		const longSCounters = longS.geometry.contours.filter(c => area(c) > 0);
-		const unskew = p => p.x - p.y * Math.tan((slope === "italic" ? 9.4 : 0) * Math.PI / 180);
 		assert.ok(longSCounters.some(c => {
 			const x = c.map(unskew);
 			const y = c.map(p => p.y);
@@ -188,6 +200,9 @@ test("Cossic letters export as nonempty glyphs", async () => {
 				const glyph = font.cmap.unicode.get(cp);
 				const alternates = feature.lookups.flatMap(lookup => lookup.mapping?.get(glyph) || []);
 				assert.ok(alternates.length, `missing ${prime} alternates for U+${cp.toString(16)}`);
+				if (cp === 0x1df91) {
+					for (const [i, alternate] of alternates.entries()) checkCedilla(alternate, `cedilla variant ${i + 1}`);
+				}
 			}
 		}
 		const longSFeature = font.gsub.features.find(f => f.tag === variants.primes.get("long-s").tag);
