@@ -8,6 +8,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : PalatalHook
+	glyph-block-import Letter-Latin-Rams-Horn : PfennigUmShape
 
 	define fine ShoulderFine
 
@@ -50,6 +51,22 @@ glyph-block Letter-Latin-Lower-Eth : begin
 
 	select-variant 'dInsular' 0xA77A (follow -- 'eth')
 	select-variant 'partial'  0x2202 (shapeFrom -- 'dInsular')
+
+	foreach suffix {'curlyBar' 'straightBar' 'closedContour'} : do
+		create-glyph "dRotundaCrossingLoop.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			local df : DivFrame 1
+			local bottom : Descender - CAP * 0.06
+			local span : df.rightSB - df.leftSB
+			local sw : AdviceStroke2 2 3 (Ascender - bottom)
+			local loopScale : 0.625 + [Math.min 0.18 (sw / span * 0.7)]
+			local bowlCut : mix 0.88 1.05 [clamp 0 1 ((sw - 0.04 * span) / (0.20 * span))]
+			include : union
+				intersection [MaskLeftLine [mix SB RightSB bowlCut] 0 [mix SB RightSB 0.27] yMid1 2] : dispiro
+					ArcStartKnots
+				PfennigUmShape df Ascender bottom sw loopScale (0.25 * sw)
+
+	select-variant 'dRotundaCrossingLoop' 0x1DF93 (follow -- 'eth')
 
 	derive-composites 'eth' 0xF0 'dInsular' : dispiro
 		widths.center OverlayStroke

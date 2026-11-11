@@ -14,6 +14,7 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 	glyph-block-import Letter-Shared : PackSrc
+	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
 	define HOOK-ROUND  0
 	define HOOK-FLAT   1
@@ -209,9 +210,26 @@ glyph-block Digits-Two : begin
 			create-glyph "rumRotunda.\(suffix)" : glyph-proc
 				include : MarkSet.p
 				include : RumRotundaShape XH fStraight fSlab hookStyle
+			create-glyph "rRotundaLoop.\(suffix)" : glyph-proc
+				local outDf : include : DivFrame [if para.isQuasiProportional para.advanceScaleM 1] 4
+				include : outDf.markSet.p
+				local df : DivFrame [Math.max 1.6 outDf.adws] 4
+				local subDf : df.sliceFine 4 2 0.4
+				local hook : Math.min Hook : 0.45 * (subDf.rightSB - subDf.leftSB)
+				local xRho : df.rightSB - subDf.rightSB + subDf.leftSB
+				include : with-transform [Scale (outDf.width / df.width) 1] : glyph-proc
+					include : union
+						if fStraight
+							TwoStraightNeckArcT dispiro 0 df.mvs XH hookStyle subDf.leftSB subDf.rightSB hook
+							TwoArcShapeT dispiro 0 0 df.mvs XH hookStyle subDf.leftSB subDf.rightSB hook subDf.width
+						HBar.b subDf.leftSB (xRho + [HSwToV : df.mvs / 2]) 0 df.mvs
+						RhoSymbolShape xRho df.rightSB XH 0 Descender df.mvs subDf.smallArchDepthA subDf.smallArchDepthB
+					if (hookStyle === HOOK-INWARD) : include : ArcStartSerif.InwardL subDf.leftSB XH df.mvs hook
+					if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L subDf.leftSB XH df.mvs hook
 
 		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
 		select-variant 'rumRotunda' 0xA75D (follow -- 'two')
+		select-variant 'rRotundaLoop' 0x1DF94 (follow -- 'two')
 
 		# Full-weight letter plus rum-rotunda 2-foot. Advance matches ae/oe
 		# (MM), growing if the unscaled letter plus foot needs more.

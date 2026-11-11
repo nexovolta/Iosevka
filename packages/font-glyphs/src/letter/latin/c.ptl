@@ -19,6 +19,8 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerifWidth ArcStartSerifDepth
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Latin-Rams-Horn : RamsHornShape
+	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
@@ -329,7 +331,6 @@ glyph-block Letter-Latin-C : begin
 				adb -- SmallArchDepthB
 			include : lf.full
 
-		# Same forward slash as rum rotunda (number/2.ptl), cutting through the bottom of the c.
 		create-glyph "cLowSlash.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			local df : DivFrame 1
@@ -349,6 +350,41 @@ glyph-block Letter-Latin-C : begin
 				corner xRightTop yTop
 				corner xRightBot yBot
 				corner (xRightBot - w) yBot
+
+		create-glyph "cLoopedCedilla.\(suffix)" : glyph-proc
+			include [refer-glyph "c.\(suffix)"] AS_BASE ALSO_METRICS
+			include : ExtendBelowBaseAnchors Descender
+			local df : DivFrame 0.65 2
+			local yTop : -0.12 * XH
+			local yBottom : -0.51 * XH
+			local sw : Math.min [df.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yTop - yBottom)]
+			local shift : Middle - df.middle
+			local xArm : df.leftSB + 0.75 * OX + shift
+			local halfWidth : HSwToV : 0.5 * sw
+			include : union
+				spiro-outline
+					corner (Middle - halfWidth) 0
+					corner (Middle + halfWidth) 0
+					corner (xArm + 2 * halfWidth) (yTop - 0.5 * sw)
+					corner xArm (yTop - 0.5 * sw)
+					corner xArm yTop
+				with-transform [Translate shift 0]
+					RamsHornShape df yTop yBottom false false false sw
+
+		create-glyph "cRightLoop.\(suffix)" : glyph-proc
+			local outDf : include : DivFrame [if para.isQuasiProportional para.advanceScaleM 1] 4
+			include : outDf.markSet.p
+			local df : DivFrame [Math.max 1.6 outDf.adws] 4
+			local subDf : df.sliceFine 4 2 0.4
+			local lf : CLetterForm subDf styTop FLAT-CONNECTION XH 0
+				ada -- subDf.smallArchDepthA
+				adb -- subDf.smallArchDepthB
+				sw -- df.mvs
+			local xRho : df.rightSB - subDf.rightSB + subDf.leftSB
+			include : with-transform [Scale (outDf.width / df.width) 1] : union
+				lf.full
+				HBar.b subDf.rightSB (xRho + [HSwToV : df.mvs / 2]) 0 df.mvs
+				RhoSymbolShape xRho df.rightSB XH 0 Descender df.mvs subDf.smallArchDepthA subDf.smallArchDepthB
 
 		create-glyph "cStretchedCurlyTail.\(suffix)" : glyph-proc
 			include : MarkSet.p
@@ -562,6 +598,8 @@ glyph-block Letter-Latin-C : begin
 	select-variant 'cStretched' 0x297 (follow -- 'c')
 	select-variant 'cStretchedCurlyTail' 0x1DF0F (follow -- 'cCurlyTail')
 	select-variant 'cLowSlash' 0x1DF90 (follow -- 'c')
+	select-variant 'cLoopedCedilla' 0x1DF91 (follow -- 'c')
+	select-variant 'cRightLoop' 0x1DF92 (follow -- 'c')
 
 	alias 'cyrl/Es' 0x421 'C'
 	alias 'cyrl/es' 0x441 'c'

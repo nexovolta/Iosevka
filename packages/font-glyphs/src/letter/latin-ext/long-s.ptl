@@ -17,6 +17,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import Letter-Latin-Lower-F : StdSmallFBarLeftPos StdSmallFBarLeftPos0 ySmallFBarPos
 	glyph-block-import Letter-Latin-Lower-F : SmallFDiagonalTail
 	glyph-block-import Letter-Latin-Lower-I : Casual CasualTopBetween CasualBottom
+	glyph-block-import Letter-Latin-Rams-Horn : RamsHornShape
 	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
 
 	define SLAB_SERIFLESS       0
@@ -364,6 +365,34 @@ glyph-block Letter-Latin-Long-S : begin
 			g4 xLeft [mix top yBar 0.5]
 			flat xLeft [mix yBar yJoin 0.5] [heading Downward]
 			curl xLeft bot [heading Downward]
+
+	create-glyph 'longsTopLoop' 0x1DF96 : glyph-proc
+		include : MarkSet.bp
+		local designScale : clamp 1 1.12 : StrokeWidthBlend 1 1.12
+		local designWidth : Width * designScale
+		local sw : AdviceStroke2 2 3 Ascender
+		local xStem : mix SB (designWidth - SB) 0.10
+		local yBar : 0.67 * XH
+		local yLoopTop : Ascender - 0.08 * XH
+		local yLoopBottom : 0.64 * XH
+		local df : DivFrame (0.68 * designScale) 2
+		local shift : designWidth - SB - df.rightSB
+		local loopSw : Math.min [df.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yLoopTop - yLoopBottom)]
+		local xBarRight : xStem - [HSwToV : 0.5 * loopSw] + TINY
+		local barLength : Math.min (xBarRight - 0.04 * Width) ([Math.max Jut [HSwToV sw]] + 0.06 * Width)
+		local angle : 3 * Math.PI / 180
+		local cosine : Math.cos angle
+		local sine : Math.sin angle
+		local xArm : df.leftSB + 0.75 * OX + [HSwToV : 0.4 * loopSw]
+		local xJoin : shift + df.middle + (xArm - df.middle) * cosine
+		local yJoin : yLoopTop + (xArm - df.middle) * sine + [if para.isItalic (0.02 * loopSw + 2) (-0.02 * loopSw)]
+		include : with-transform [Scale (1 / designScale) 1] : union
+			HSerif.lt xBarRight yBar barLength sw
+			LongSUpperHalf (+1) xStem yJoin Descender (xJoin - xStem) (0.35 * XH) loopSw false
+			with-transform [Translate (shift + df.middle) yLoopTop]
+				with-transform [Rotate angle]
+					with-transform [Translate (-df.middle) (-yLoopTop)]
+						RamsHornShape df yLoopTop yLoopBottom false false false loopSw
 
 	create-glyph 'is/phoneticRight' : glyph-proc
 		include : MarkSet.b

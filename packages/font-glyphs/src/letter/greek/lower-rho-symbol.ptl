@@ -10,6 +10,30 @@ glyph-block Letter-Greek-Lower-Rho-Symbol : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : OBarLeft
 
+	glyph-block-export RhoSymbolShape
+	define [RhoSymbolShape left right top bottom desc sw _ada _adb] : glyph-proc
+		local ada : ArchDepthAClamped top bottom [fallback _ada SmallArchDepthA] [fallback _adb SmallArchDepthB]
+		local adb : ArchDepthBClamped top bottom [fallback _ada SmallArchDepthA] [fallback _adb SmallArchDepthB]
+		local fine : Math.min sw ShoulderFine
+		include : OBarLeft.earlessRoundedFlat
+			left -- left
+			right -- right
+			top -- top
+			bot -- bottom
+			yTerminal -- bottom
+			sw -- sw
+			fine -- fine
+			ada -- ada
+			adb -- adb
+		include : dispiro
+			widths.lhs sw
+			flat left (top - ada)
+			curl left (desc + adb)
+			arcvh
+			g4 [mix left right 0.50] desc [heading Rightward]
+			flat [mix left right 0.75] desc [heading Rightward]
+			curl right desc [heading Rightward]
+
 	create-glyph 'grek/rhoSymbol' 0x3F1 : glyph-proc
 		include : MarkSet.p
 		include : tagged 'bowl' : OBarLeft.earlessRounded (yTerminal -- 0)
