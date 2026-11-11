@@ -16,12 +16,26 @@ const references = "c2m\u03F1\u0263\u0264\u0291\u0292\u029D\u2C74\uA77A\u20B0\u0
 const weight = Number(process.env.COSSIC_WEIGHT || 420);
 const slope = process.env.COSSIC_SLOPE || "upright";
 const spacing = process.env.COSSIC_SPACING || "term";
+const longSVariant = process.env.COSSIC_LONG_S_VARIANT;
 
 function area(contour) {
 	return contour.reduce((sum, p, i) => {
 		const q = contour[(i + 1) % contour.length];
 		return sum + p.x * q.y - q.x * p.y;
 	}, 0) / 2;
+}
+
+function glyphContours(glyph) {
+	const geometry = glyph.geometry;
+	if (geometry.contours) return geometry.contours;
+	assert.equal(geometry.items.length, 1, "expected a single alternate glyph reference");
+	const { to, transform } = geometry.items[0];
+	assert.deepEqual(
+		[transform.xx, transform.xy, transform.yx, transform.yy, transform.dx, transform.dy],
+		[1, 0, 0, 1, 0, 0],
+		"expected an untransformed alternate glyph reference",
+	);
+	return glyphContours(to);
 }
 
 test("Cossic letters export as nonempty glyphs", async () => {
@@ -35,7 +49,11 @@ test("Cossic letters export as nonempty glyphs", async () => {
 			o: output,
 			cache: { input: null, output: cache, freshAgeKey: "cossic-test" },
 			featureControl: { noCvSs: false, noLigation: false, exportGlyphNames: true },
-			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+			variants: { design: {
+				"capital-latin-gamma": "serifless",
+				"latin-gamma": "serifless",
+				...(longSVariant ? { "long-s": longSVariant } : {}),
+			} },
 			shape: { serifs: "sans", spacing, weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 			menu: { family: "Cossic Test", version: "34.9.0", width: 5, slope, weight: 400 },
 			subset: { include: { text: text + references } },
@@ -102,7 +120,7 @@ test("Cossic letters export as nonempty glyphs", async () => {
 		assert.ok(longSCounters.some(c => {
 			const x = c.map(unskew);
 			const y = c.map(p => p.y);
-			return Math.min(...y) < 450 && Math.max(...y) > 450
+			return Math.min(...y) < 535 && Math.max(...y) > 435
 				&& Math.max(...x) - Math.min(...x) >= 25
 				&& Math.max(...y) - Math.min(...y) >= 60
 				&& Math.min(...x) > advance(0x1df96) * 0.4;
@@ -113,11 +131,22 @@ test("Cossic letters export as nonempty glyphs", async () => {
 		if (weight === 920) {
 			const stemEdges = longS.geometry.contours.flatMap(c => c.flatMap((p, i) => {
 				const q = c[(i + 1) % c.length];
-				if (p.kind !== 0 || q.kind !== 0 || Math.min(p.y, q.y) > -100 || Math.max(p.y, q.y) <= -100) return [];
-				return [p.x + (q.x - p.x) * (-100 - p.y) / (q.y - p.y)];
+				if (p.kind !== 0 || q.kind !== 0 || Math.min(p.y, q.y) > 200 || Math.max(p.y, q.y) <= 200) return [];
+				return [p.x + (q.x - p.x) * (200 - p.y) / (q.y - p.y)];
 			})).sort((a, b) => a - b);
-			assert.equal(stemEdges.length, 2, "long s must have one stem at the descender");
+			assert.equal(stemEdges.length, 2, "long s must have one stem below the bar");
 			assert.ok(stemEdges[1] - stemEdges[0] >= 78, "heavy long s stem must retain its increased weight");
+		}
+		const longSPoints = longS.geometry.contours.flat();
+		assert.ok(Math.abs(Math.max(...longSPoints.map(p => p.y)) - 735) <= 15,
+			"long s hook and loop must reach ascender height");
+		if (longSVariant) {
+			const bottom = Math.min(...longSPoints.map(p => p.y));
+			if (longSVariant.includes("descending") || longSVariant.includes("tailed")) {
+				assert.ok(bottom < -100, "descending and tailed long s variants must extend below the baseline");
+			} else {
+				assert.ok(bottom >= -15, "non-descending long s variants must end at the baseline");
+			}
 		}
 		for (const c of longS.geometry.contours) {
 			for (let i = 0; i < c.length; i++) {
@@ -150,6 +179,7 @@ test("Cossic letters export as nonempty glyphs", async () => {
 			["c", [0x1df90, 0x1df91, 0x1df92]],
 			["two", [0x1df94]],
 			["lower-eth", [0x1df93]],
+			["long-s", [0x1df96]],
 		]) {
 			const tag = variants.primes.get(prime).tag;
 			const feature = font.gsub.features.find(f => f.tag === tag);
@@ -159,6 +189,27 @@ test("Cossic letters export as nonempty glyphs", async () => {
 				const alternates = feature.lookups.flatMap(lookup => lookup.mapping?.get(glyph) || []);
 				assert.ok(alternates.length, `missing ${prime} alternates for U+${cp.toString(16)}`);
 			}
+		}
+		const longSFeature = font.gsub.features.find(f => f.tag === variants.primes.get("long-s").tag);
+		const alternatesFor = cp => longSFeature.lookups.flatMap(lookup =>
+			lookup.mapping?.get(font.cmap.unicode.get(cp)) || []);
+		const plainAlternates = alternatesFor(0x17f);
+		const loopAlternates = alternatesFor(0x1df96);
+		assert.equal(loopAlternates.length, plainAlternates.length, "looped long s must follow every long s variant");
+		assert.equal(loopAlternates.length, 60, "all long s variant combinations must be exported");
+		for (let i = 0; i < loopAlternates.length; i++) {
+			const loopContours = glyphContours(loopAlternates[i]);
+			const plainContours = glyphContours(plainAlternates[i]);
+			const bottom = contours => Math.min(...contours.flat().map(p => p.y));
+			assert.equal(bottom(loopContours) < -100, bottom(plainContours) < -100,
+				`long s variant ${i + 1} must follow the matching bottom`);
+			assert.equal(loopContours.filter(c => area(c) < 0).length, 1,
+				`long s variant ${i + 1} must have connected ink`);
+			const counters = loopContours.filter(c => area(c) > 0);
+			assert.equal(counters.length, 1, `long s variant ${i + 1} must not have overlap slivers`);
+			assert.ok(area(counters[0]) > 100, `long s variant ${i + 1} must retain its loop counter`);
+			assert.ok(Math.abs(Math.max(...loopContours.flat().map(p => p.y)) - 735) <= 15,
+				`long s variant ${i + 1} must reach ascender height`);
 		}
 	} finally {
 		await rm(output, { force: true });

@@ -122,12 +122,12 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	select-variant 'latn/gammaPalatalHook' 0x1DF31 (follow -- 'latn/gamma')
 
 	glyph-block-export RamsHornShape RamsHornLoopKnots RamsHornBottomKnots
-	define [RamsHornBottomKnots df top bottom sw kIntersection _fine] : begin
+	define [RamsHornBottomKnots df top bottom sw kIntersection _fine _loopAdws] : begin
 		local k1 0.625
 		local k2 0.7
 		local lExt : df.leftSB + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
-		local dfLoop : DivFrame 1
+		local dfLoop : DivFrame [fallback _loopAdws 1]
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
@@ -139,14 +139,14 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			g4.up.mid [mix df.middle lInner k1] ([mix top bottom k2] + d)
 			g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
 
-	define [RamsHornLoopKnots df top bottom sw kIntersection _fine] : begin
+	define [RamsHornLoopKnots df top bottom sw kIntersection _fine _loopAdws] : begin
 		local fine : Math.min sw : fallback _fine : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / 0.7
 		return : list
 			g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
-			RamsHornBottomKnots df top bottom sw kIntersection fine
+			RamsHornBottomKnots df top bottom sw kIntersection fine _loopAdws
 
-	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt _fine] : glyph-proc
+	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt _fine _loopAdws] : glyph-proc
 		local k1 0.625
 		local k2 0.7
 		local kIntersection : fallback _kInt 0.15
@@ -154,7 +154,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local lExt : df.leftSB  + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
 
-		local dfLoop : DivFrame 1
+		local dfLoop : DivFrame [fallback _loopAdws 1]
 
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
@@ -174,7 +174,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 					else : list
 						flat lExt top [heading Rightward]
 						curl lInner top [heading Rightward]
-				RamsHornLoopKnots df top bottom sw kIntersection fine
+				RamsHornLoopKnots df top bottom sw kIntersection fine _loopAdws
 				if omitRight
 					then : list
 					else : list
