@@ -93,6 +93,15 @@ test("Cossic letters export as nonempty glyphs", async () => {
 		for (const c of longSCounters) {
 			assert.ok(area(c) >= 100, "long s must not have tiny overlap counters");
 		}
+		if (weight === 920) {
+			const stemEdges = longS.geometry.contours.flatMap(c => c.flatMap((p, i) => {
+				const q = c[(i + 1) % c.length];
+				if (p.kind !== 0 || q.kind !== 0 || Math.min(p.y, q.y) > -100 || Math.max(p.y, q.y) <= -100) return [];
+				return [p.x + (q.x - p.x) * (-100 - p.y) / (q.y - p.y)];
+			})).sort((a, b) => a - b);
+			assert.equal(stemEdges.length, 2, "long s must have one stem at the descender");
+			assert.ok(stemEdges[1] - stemEdges[0] >= 78, "heavy long s stem must retain its increased weight");
+		}
 		for (const c of longS.geometry.contours) {
 			for (let i = 0; i < c.length; i++) {
 				const p = c[i];

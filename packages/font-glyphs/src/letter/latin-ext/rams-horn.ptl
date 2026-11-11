@@ -122,7 +122,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 	select-variant 'latn/gammaPalatalHook' 0x1DF31 (follow -- 'latn/gamma')
 
 	glyph-block-export RamsHornShape RamsHornLoopKnots RamsHornBottomKnots
-	define [RamsHornBottomKnots df top bottom sw kIntersection] : begin
+	define [RamsHornBottomKnots df top bottom sw kIntersection _fine] : begin
 		local k1 0.625
 		local k2 0.7
 		local lExt : df.leftSB + 0.75 * OX
@@ -131,7 +131,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local rInner : Math.min (rExt - TINY) : df.middle + (dfLoop.rightSB - dfLoop.leftSB) / 2
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
-		local fine : Math.min sw : AdviceStroke : if SLAB 3.75 3.50
+		local fine : Math.min sw : fallback _fine : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / k2
 		return : list
 			g4.down.mid [mix df.middle rInner k1] ([mix top bottom k2] - d) [widths.rhs fine]
@@ -139,14 +139,14 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			g4.up.mid [mix df.middle lInner k1] ([mix top bottom k2] + d)
 			g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
 
-	define [RamsHornLoopKnots df top bottom sw kIntersection] : begin
-		local fine : Math.min sw : AdviceStroke : if SLAB 3.75 3.50
+	define [RamsHornLoopKnots df top bottom sw kIntersection _fine] : begin
+		local fine : Math.min sw : fallback _fine : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / 0.7
 		return : list
 			g4 df.middle [mix top bottom kIntersection] [widths.rhs coFine]
-			RamsHornBottomKnots df top bottom sw kIntersection
+			RamsHornBottomKnots df top bottom sw kIntersection fine
 
-	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt] : glyph-proc
+	define [RamsHornShape df top bottom fFill omitLeft omitRight _sw _kInt _fine] : glyph-proc
 		local k1 0.625
 		local k2 0.7
 		local kIntersection : fallback _kInt 0.15
@@ -162,7 +162,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local d : 0.25 * (rInner - lInner) * k1 * TanSlope
 
 		local sw   : fallback _sw : AdviceStroke : if SLAB 3.50 2.75
-		local fine : Math.min sw : AdviceStroke : if SLAB 3.75 3.50
+		local fine : Math.min sw : fallback _fine : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / k2
 		local fillOffset : sw * 0.25
 
@@ -174,7 +174,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 					else : list
 						flat lExt top [heading Rightward]
 						curl lInner top [heading Rightward]
-				RamsHornLoopKnots df top bottom sw kIntersection
+				RamsHornLoopKnots df top bottom sw kIntersection fine
 				if omitRight
 					then : list
 					else : list

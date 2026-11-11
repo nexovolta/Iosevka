@@ -375,9 +375,13 @@ glyph-block Letter-Latin-Long-S : begin
 		local yBar : 0.67 * XH
 		local yLoopTop : Ascender - 0.08 * XH
 		local yLoopBottom : 0.64 * XH
-		local df : DivFrame (0.68 * designScale) 2
+		local loopScale : clamp 0.68 0.77 : StrokeWidthBlend 0.68 0.77
+		local df : DivFrame (loopScale * designScale) 2
 		local shift : designWidth - SB - df.rightSB
-		local loopSw : Math.min [df.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yLoopTop - yLoopBottom)]
+		local refDf : DivFrame (0.68 * designScale) 2
+		local loopBase : Math.min [refDf.adviceStroke 3.5] [AdviceStroke2 3.5 3.5 (yLoopTop - yLoopBottom)]
+		local loopSw : loopBase * [clamp 1 1.20 : StrokeWidthBlend 1 1.20]
+		local loopFine : loopBase * [clamp 1 1.10 : StrokeWidthBlend 1 1.10]
 		local xBarRight : xStem - [HSwToV : 0.5 * loopSw] + TINY
 		local barLength : Math.min (xBarRight - 0.04 * Width) ([Math.max Jut [HSwToV sw]] + 0.06 * Width)
 		local angle : 3 * Math.PI / 180
@@ -385,14 +389,14 @@ glyph-block Letter-Latin-Long-S : begin
 		local sine : Math.sin angle
 		local xArm : df.leftSB + 0.75 * OX + [HSwToV : 0.4 * loopSw]
 		local xJoin : shift + df.middle + (xArm - df.middle) * cosine
-		local yJoin : yLoopTop + (xArm - df.middle) * sine + [if para.isItalic (0.02 * loopSw + 2) (-0.02 * loopSw)]
+		local yJoin : yLoopTop + (xArm - df.middle) * sine + [if para.isItalic (0.02 * loopSw + 2) (-0.02 * loopSw + [clamp 0 3 : StrokeWidthBlend 0 3])]
 		include : with-transform [Scale (1 / designScale) 1] : union
 			HSerif.lt xBarRight yBar barLength sw
 			LongSUpperHalf (+1) xStem yJoin Descender (xJoin - xStem) (0.35 * XH) loopSw false
 			with-transform [Translate (shift + df.middle) yLoopTop]
 				with-transform [Rotate angle]
 					with-transform [Translate (-df.middle) (-yLoopTop)]
-						RamsHornShape df yLoopTop yLoopBottom false false false loopSw
+						RamsHornShape df yLoopTop yLoopBottom false false false loopSw nothing loopFine
 
 	create-glyph 'is/phoneticRight' : glyph-proc
 		include : MarkSet.b
