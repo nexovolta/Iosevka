@@ -66,6 +66,23 @@ test("Cossic letters export as nonempty glyphs", async () => {
 			const horizontal = font.cmap.unicode.get(cp).horizontal;
 			return horizontal.end - horizontal.start;
 		};
+		const penny = font.cmap.unicode.get(0x20b0);
+		const pennyContours = penny.geometry.contours;
+		assert.equal(pennyContours.filter(c => area(c) < 0).length, 1, "penny must have connected ink");
+		const pennyCounters = pennyContours.filter(c => area(c) > 0);
+		assert.equal(pennyCounters.length, 1, "penny must retain its upper counter");
+		if (slope === "upright") {
+			const x = pennyCounters[0].map(p => p.x);
+			assert.ok(Math.max(...x) - Math.min(...x) >= advance(0x20b0) * 0.08,
+				"penny counter must remain open at heavy weights");
+			const allX = pennyContours.flat().map(p => p.x);
+			assert.ok(Math.min(...allX) >= 0 && Math.max(...allX) <= advance(0x20b0),
+				"penny must fit its advance width");
+			if (weight === 920 && spacing === "term") {
+				assert.ok(-pennyContours.reduce((sum, c) => sum + area(c), 0) >= 220000,
+					"heavy penny must retain its increased stroke weight");
+			}
+		}
 		if (spacing === "quasi-proportional") {
 			assert.ok(advance(0x1df92) > advance(0x63), "c with rho must use a wider proportional advance");
 			assert.ok(advance(0x1df94) > advance(0x32), "rum with rho must use a wider proportional advance");
