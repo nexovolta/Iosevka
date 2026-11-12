@@ -68,7 +68,7 @@ glyph-block Symbol-Pictograph-Checking-Marks : begin
 
 		create-glyph [MangleName 'halfCheck'] [MangleUnicode 0x237B] : glyph-proc
 			set-width MosaicWidth
-			include : union
+			include : with-transform [ScaleAround (MosaicWidth / 2) SymbolMid 1 1.08] : union
 				checkMarkShape plainBox lightSw
 				HBar.m [mix ptSB ptRSB 0.62] ptRSB [mix ptBot ptTop 0.68] lightSw
 

@@ -35,10 +35,10 @@ const codes = [
 	0x23b4, 0x23b5, 0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1,
 	0x2972, 0x2973, 0x2974, 0x2975, 0x2b41, 0x2b42, 0x2b47, 0x2b48, 0x2b49,
 	0x2b4a, 0x2b4b, 0x2b4c, 0x237c, 0x238c, 0x23af, 0x23d0, 0x2976, 0x2978,
-	0x2979, 0x297b, 0x2993, 0x2994, 0x2995, 0x2996, 0x239a, 0x23e7, 0x20e2,
+	0x237b, 0x2979, 0x297b, 0x2993, 0x2994, 0x2995, 0x2996, 0x239a, 0x23e7, 0x20e2,
 	0x29c0, 0x29c1, 0x2e00, 0x2e01, 0x2e02, 0x2e03, 0x2e04, 0x2e05, 0x2e06,
 	0x2e07, 0x2e08, 0x2e09, 0x2e0a, 0x2e3f,
-	0x2248, 0x2249, 0x224b, 0x2a6f, 0x2b97, 0x3001, 0x3002, 0x3003, 0x301c,
+	0x2248, 0x2249, 0x224b, 0x2a6f, 0x2a79, 0x2a7a, 0x2b97, 0x3001, 0x3002, 0x3003, 0x301c,
 	0x301d, 0x301e, 0x301f, 0x3030, 0x303b, 0x303c, 0x303d, 0x303f,
 ];
 
@@ -392,6 +392,17 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					contours(code).flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
 					`U+${code.toString(16)} exceeds its advance`,
 				);
+				if ([0x3012, 0x3013, 0x3036, 0x2b97].includes(code)) {
+					const points = contours(code).flat();
+					const center =
+						(Math.min(...points.map((p) => p.x)) +
+							Math.max(...points.map((p) => p.x))) /
+						2;
+					assert.ok(
+						Math.abs(center - glyph.advanceWidth / 2) < 1,
+						`U+${code.toString(16)} must be centered in its cell`,
+					);
+				}
 				if (enlargedCjkHeights.some(([c]) => c === code)) {
 					assertCjkVerticalFit(glyph, para, code);
 					assertNoSelfIntersections(glyph.geometry, `U+${code.toString(16)}`);
@@ -421,6 +432,82 @@ for (const spacing of ["term", "quasi-proportional"]) {
 						`U+${code.toString(16)} must be visibly larger`,
 					);
 				}
+				for (const [code, axis, minimum] of [
+					[0x3012, "x", 380], [0x3013, "x", 420],
+					[0x3036, "x", 460], [0x2b97, "x", 430],
+				]) {
+					const values = contours(code).flat().map((p) => p[axis]);
+					assert.ok(
+						Math.max(...values) - Math.min(...values) > minimum,
+						`U+${code.toString(16)} must fill more of its cell`,
+					);
+				}
+				for (const code of [0x237b, 0x237c, 0x238c, 0x239a]) {
+					const glyph = glyphStore.queryByUnicode(code);
+					const points = contours(code).flat();
+					assert.ok(
+						points.every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
+						`U+${code.toString(16)} exceeds its advance`,
+					);
+					assertNoSelfIntersections(glyph.geometry, `U+${code.toString(16)}`);
+				}
+				for (const [code, minWidth, minHeight] of [
+					[0x237b, 450, 545], [0x237c, 370, 500],
+					[0x238c, 390, 280], [0x239a, 470, 445],
+				]) {
+					assert.ok(
+						geometryExtent(glyphStore.queryByUnicode(code), "x") > minWidth &&
+							geometryExtent(glyphStore.queryByUnicode(code), "y") > minHeight,
+						`U+${code.toString(16)} must be enlarged`,
+					);
+				}
+				for (const code of [0x2a79, 0x2a7a]) {
+					const parts = contours(code);
+					assert.equal(parts.length, 3, `U+${code.toString(16)} must retain its ring counter`);
+					const boxes = parts.map((points) => {
+						const xs = points.map((p) => p.x);
+						const ys = points.map((p) => p.y);
+						return {
+							width: Math.max(...xs) - Math.min(...xs),
+							height: Math.max(...ys) - Math.min(...ys),
+							center: [
+								(Math.min(...xs) + Math.max(...xs)) / 2,
+								(Math.min(...ys) + Math.max(...ys)) / 2,
+							],
+						};
+					});
+					const ringParts = boxes
+						.filter((box) => box.width < 150 && box.height < 150)
+						.sort((a, b) => b.width - a.width)[0];
+					const counter = boxes
+						.filter((box) => box.width < 150 && box.height < 150)
+						.sort((a, b) => a.width - b.width)[0];
+					assert.ok(
+						ringParts && ringParts.width > 95 && ringParts.height > 95,
+						"inequality ring is too small",
+					);
+					assert.ok(
+						Math.abs(ringParts.center[0] - counter.center[0]) < 0.01 &&
+							Math.abs(ringParts.center[1] - counter.center[1]) < 0.01,
+						"inequality ring counter is misaligned",
+					);
+				}
+				const smashParts = contours(0x2a33);
+				assert.equal(smashParts.length, 2, "smash product must retain its counter");
+				const smashHole = smashParts
+					.map((points) => {
+						const xs = points.map((p) => p.x);
+						const ys = points.map((p) => p.y);
+						return {
+							width: Math.max(...xs) - Math.min(...xs),
+							height: Math.max(...ys) - Math.min(...ys),
+						};
+					})
+					.sort((a, b) => a.width - b.width)[0];
+				assert.ok(
+					smashHole.width > 115 && smashHole.height > 115,
+					"smash product strokes need more separation",
+				);
 			}
 			if (spacing === "quasi-proportional" && weight === 420) {
 				for (const [code, axis, previous] of [
@@ -988,10 +1075,12 @@ for (const variant of ["square", "diamond", "hexagon"]) {
 		for (const [code, reference] of [[0x3001, 0x2c], [0x3002, 0x2e]]) {
 			const glyph = glyphStore.queryByUnicode(code);
 			const ref = glyphStore.queryByUnicode(reference);
-			assert.ok(
-				geometryExtent(glyph, "y") >= geometryExtent(ref, "y") - 1,
-				`U+${code.toString(16)} height mismatch`,
-			);
+			if (code !== 0x3002) {
+				assert.ok(
+					geometryExtent(glyph, "y") >= geometryExtent(ref, "y") - 1,
+					`U+${code.toString(16)} height mismatch`,
+				);
+			}
 			assert.ok(
 				glyph.geometry.toContours().flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
 				`U+${code.toString(16)} exceeds its advance`,

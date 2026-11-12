@@ -803,11 +803,12 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'floorRight'   0x230B 'ceilingLeft' Middle SymbolMid
 		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
 
-	define [EnlargeCjkInk df bottomAligned uniform] : glyph-proc
+	define [EnlargeCjkInk df bottomAligned uniform _maxScale] : glyph-proc
 		local left VERY-FAR
 		local right (-VERY-FAR)
 		local bottom VERY-FAR
 		local top (-VERY-FAR)
+		local maxScale : fallback _maxScale 1.2
 		foreach contour [items-of : currentGlyph.geometry.toContours] : foreach p [items-of contour] : begin
 			set left : Math.min left p.x
 			set right : Math.max right p.x
@@ -817,8 +818,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			set top : Math.max top p.y
 		if (right <= left || top <= bottom) : throw : new Error 'Cannot enlarge empty CJK glyph'
 		local yCenter : if bottomAligned bottom ((bottom + top) / 2)
-		local kx : Math.min 1.2 (df.width * 0.99 / (right - left))
-		local ky : Math.min 1.2 [Math.max 1 ((Ascender - yCenter) / (top - yCenter))]
+		local kx : Math.min maxScale (df.width * 0.99 / (right - left))
+		local ky : Math.min maxScale [Math.max 1 ((Ascender - yCenter) / (top - yCenter))]
 		if [not bottomAligned] : set ky : Math.min ky [Math.max 1 ((yCenter - Descender) / (yCenter - bottom))]
 		if uniform : begin
 			set kx : Math.min kx ky
@@ -846,7 +847,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local shapeWidth : 0.80 * (df.rightSB - df.leftSB)
 			local shapeHeight : 0.46 * (ParenTop - ParenBot)
 			include : PostalShape df shapeWidth shapeHeight 1
-			include : EnlargeCjkInk df false false
+			include : EnlargeCjkInk df false false 1.35
 
 		create-glyph 'getaMark' 0x3013 : glyph-proc
 			local df : DivFrame 1
@@ -861,7 +862,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : union
 				Rect (SymbolMid + barOffset + barHeight / 2) (SymbolMid + barOffset - barHeight / 2) left right
 				Rect (SymbolMid - barOffset + barHeight / 2) (SymbolMid - barOffset - barHeight / 2) left right
-			include : EnlargeCjkInk df false false
+			include : EnlargeCjkInk df false false 1.35
 
 		create-glyph 'circledPostalMark' 0x3036 : glyph-proc
 			local df : DivFrame 1
@@ -874,7 +875,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : union
 				RingStrokeAt center SymbolMid radius ringSw
 				PostalShape df shapeWidth shapeHeight shapeScale
-			include : EnlargeCjkInk df false true
+			include : EnlargeCjkInk df false true 1.35
 
 		create-glyph 'typeAElectronics' 0x2B97 : glyph-proc
 			local df : DivFrame 1
@@ -891,6 +892,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				TriangleShape (center - triangleWidth / 2) top (center + triangleWidth / 2) top center bottom frameSw
 				with-transform [ApparentTranslate 0 (top - triangleHeight * 0.33 - SymbolMid)]
 					PostalShape df shapeWidth shapeHeight shapeScale
+			include : EnlargeCjkInk df false true 1.35
 
 	do 'Ideographic Punctuation'
 		define df : DivFrame 1
