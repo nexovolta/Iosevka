@@ -21,6 +21,10 @@ const data = Object.assign(
 	),
 );
 const variantData = readParams("variants");
+const resizedCjkCodes = [
+	0x3001, 0x3002, 0x3003, 0x3012, 0x3013, 0x301c, 0x301d,
+	0x301e, 0x301f, 0x3030, 0x3036, 0x303b, 0x303c, 0x303d, 0x303f,
+];
 const codes = [
 	0x2a33, 0x2a50, 0x2afb, 0x22d8, 0x22d9, 0x2a91, 0x2a92, 0x2a93, 0x2a94,
 	0x23b4, 0x23b5, 0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1,
@@ -30,7 +34,7 @@ const codes = [
 	0x29c0, 0x29c1, 0x2e00, 0x2e01, 0x2e02, 0x2e03, 0x2e04, 0x2e05, 0x2e06,
 	0x2e07, 0x2e08, 0x2e09, 0x2e0a, 0x2e3f,
 	0x2248, 0x2249, 0x224b, 0x2a6f, 0x2b97, 0x3001, 0x3002, 0x3003, 0x301c,
-	0x301d, 0x301e, 0x301f, 0x3030, 0x303b, 0x303c, 0x303d,
+	0x301d, 0x301e, 0x301f, 0x3030, 0x303b, 0x303c, 0x303d, 0x303f,
 ];
 
 await Geom.Init();
@@ -77,6 +81,40 @@ function assertNoSelfIntersections(geometry, label) {
 				);
 			}
 		}
+	}
+}
+
+function geometryExtent(glyph, axis) {
+	const values = [];
+	for (const contour of glyph.geometry.toBezArcs()) {
+		for (const arc of contour) {
+			for (let i = 0; i <= 24; i++) values.push(arc.eval(i / 24)[axis]);
+		}
+	}
+	return Math.max(...values) - Math.min(...values);
+}
+
+function assertSmoothWave(geometry) {
+	const points = geometry.toBezArcs()[0].flatMap((arc) =>
+		Array.from({ length: 16 }, (_, i) => arc.eval(i / 16)),
+	);
+	const xs = points.map((p) => p.x);
+	const left = Math.min(...xs);
+	const right = Math.max(...xs);
+	for (let i = 0; i < points.length; i++) {
+		const p = points[i];
+		if (p.x < left + (right - left) * 0.15 || p.x > right - (right - left) * 0.15) continue;
+		let a = i, b = i;
+		do { a = (a + points.length - 1) % points.length; }
+		while (a !== i && Math.hypot(points[a].x - p.x, points[a].y - p.y) < 4);
+		do { b = (b + 1) % points.length; }
+		while (b !== i && Math.hypot(points[b].x - p.x, points[b].y - p.y) < 4);
+		const ux = p.x - points[a].x, uy = p.y - points[a].y;
+		const vx = points[b].x - p.x, vy = points[b].y - p.y;
+		assert.ok(
+			ux * vx + uy * vy >= Math.SQRT1_2 * Math.hypot(ux, uy) * Math.hypot(vx, vy),
+			"wavy dash must not have sharp interior cusps",
+		);
 	}
 }
 
@@ -159,7 +197,9 @@ test("wavy punctuation gains ink with weight", () => {
 			glyphIsNeeded: () => true,
 		});
 		for (const code of codes) {
-			const contours = glyphStore.queryByUnicode(code).geometry.toContours();
+			const geometry = glyphStore.queryByUnicode(code).geometry;
+			const contours = geometry.toContours();
+			if (code === 0x3030) assertSmoothWave(geometry);
 			if (code === 0x303b) {
 				const points = contours.flat();
 				const ys = points.map((p) => p.y);
@@ -225,6 +265,8 @@ for (const [tilde, width] of [
 			}
 		}
 		assertDisjoint(contours(0x3003), "ditto mark");
+		assert.equal(contours(0x3030).length, 1, "wavy dash must have one outline");
+		assert.equal(contours(0x3036).length, 4, "postal mark must not touch the circle");
 		assert.equal(
 			triangleContours(contours(0x2b97)).length,
 			2,
@@ -319,6 +361,67 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				return result;
 			};
 			for (const code of codes) contours(code);
+			for (const code of resizedCjkCodes) {
+				const glyph = glyphStore.queryByUnicode(code);
+				const scale = [0x3001, 0x3002, 0x301d, 0x301e, 0x301f].includes(code)
+					? para.advanceScaleI
+					: code === 0x3003 ? para.advanceScaleF : 1;
+				assert.ok(
+					Math.abs(glyph.advanceWidth - 500 * scale) < 0.001,
+					`U+${code.toString(16)} has the wrong advance`,
+				);
+				assert.ok(
+					contours(code).flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
+					`U+${code.toString(16)} exceeds its advance`,
+				);
+			}
+			assert.equal(contours(0x3030).length, 1, "wavy dash must have one outline");
+			assert.equal(contours(0x3036).length, 4, "postal mark must not touch the circle");
+			if (spacing === "term" && weight === 420) {
+				for (const [code, axis, previous] of [
+					[0x3001, "y", 78], [0x3002, "x", 90], [0x3003, "y", 188],
+					[0x3012, "y", 328], [0x3013, "y", 368], [0x301c, "y", 124],
+					[0x301d, "x", 107], [0x301e, "x", 107], [0x301f, "x", 107],
+					[0x3030, "x", 394], [0x3036, "x", 312], [0x303b, "y", 500],
+					[0x303c, "y", 260], [0x303d, "y", 319],
+				]) {
+					const values = contours(code).flat().map((p) => p[axis]);
+					assert.ok(
+						Math.max(...values) - Math.min(...values) > previous * 1.1,
+						`U+${code.toString(16)} must be visibly larger`,
+					);
+				}
+			}
+			if (spacing === "quasi-proportional" && weight === 420) {
+				for (const [code, axis, previous] of [
+					[0x3001, "y", 78], [0x3002, "x", 90],
+					[0x301d, "x", 107], [0x301e, "x", 107], [0x301f, "x", 107],
+				]) {
+					const values = contours(code).flat().map((p) => p[axis]);
+					assert.ok(
+						Math.max(...values) - Math.min(...values) > previous * 1.1,
+						`U+${code.toString(16)} must remain larger in a narrow cell`,
+					);
+				}
+			}
+			for (const [code, reference] of [
+				[0x3001, 0x2c], [0x3002, 0x2e], [0x301d, 0x201c],
+				[0x301e, 0x201d], [0x301f, 0x201e],
+			]) {
+				const extent = (glyphCode, axis) =>
+					geometryExtent(glyphStore.queryByUnicode(glyphCode), axis);
+				const height = extent(reference, "y");
+				assert.ok(
+					Math.abs(extent(code, "y") - height) < 1,
+					`U+${code.toString(16)} must match the Latin reference height`,
+				);
+				if (spacing === "term") {
+					assert.ok(
+						Math.abs(extent(code, "x") - extent(reference, "x")) < 2,
+						`U+${code.toString(16)} must match the Latin reference width`,
+					);
+				}
+			}
 			for (const code of [0x3002, 0x3003, 0x301d, 0x301e, 0x301f]) {
 				assert.equal(
 					contours(code).length,
@@ -351,6 +454,20 @@ for (const spacing of ["term", "quasi-proportional"]) {
 				"postal frame must be equilateral",
 			);
 			assert.equal(contours(0x303c).length, 3, "masu mark must retain both triangular counters");
+			assert.equal(contours(0x303f).length, 5, "half fill space must have four triangular counters");
+			const masu = contours(0x303c)[0];
+			const halfFill = contours(0x303f)[0];
+			for (const axis of ["x", "y"]) {
+				for (const bound of [Math.min, Math.max]) {
+					assert.ok(
+						Math.abs(bound(...masu.map((p) => p[axis])) - bound(...halfFill.map((p) => p[axis]))) < 0.01,
+						"masu and half fill space must share their frame",
+					);
+				}
+			}
+			const masuWidth = Math.max(...masu.map((p) => p.x)) - Math.min(...masu.map((p) => p.x));
+			const masuHeight = Math.max(...masu.map((p) => p.y)) - Math.min(...masu.map((p) => p.y));
+			assert.ok(masuHeight > masuWidth * 1.2, "masu frame must be rectangular");
 			for (const code of [0x303b, 0x303d]) {
 				const parts = contours(code);
 				assert.equal(
@@ -752,6 +869,93 @@ for (const spacing of ["term", "quasi-proportional"]) {
 			}
 		});
 	}
+}
+
+for (const spacing of ["term", "quasi-proportional"]) {
+	for (const weight of [120, 420, 920]) {
+		test(`resized CJK glyphs fit narrow italic ${spacing} ${weight} cells`, () => {
+			const argv = {
+				shape: {
+					serifs: "sans", spacing, weight, width: 416,
+					slope: "italic", slopeAngle: 9.4,
+				},
+				featureControl: { noCvSs: true },
+				variants: {
+					design: {
+						"capital-latin-gamma": "serifless",
+						"latin-gamma": "serifless",
+					},
+				},
+			};
+			const para = init(data, argv);
+			Variant.apply(variantData, para, argv);
+			const { glyphStore } = buildGlyphs(para, {
+				blockIsNeeded: () => true,
+				glyphIsNeeded: () => true,
+			});
+			for (const code of resizedCjkCodes) {
+				const glyph = glyphStore.queryByUnicode(code);
+				const contours = glyph.geometry.toContours();
+				assert.ok(
+					contours.flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
+					`U+${code.toString(16)} exceeds its advance`,
+				);
+				assertNoSelfIntersections(glyph.geometry, `U+${code.toString(16)}`);
+				if (code === 0x3030) {
+					assert.equal(contours.length, 1, "wavy dash must stay continuous");
+					assertSmoothWave(glyph.geometry);
+				}
+				if (code === 0x3036) assert.equal(contours.length, 4, "postal mark must stay separate");
+				if (code === 0x303f) assert.equal(contours.length, 5, "half fill space must retain four counters");
+			}
+			for (const [code, reference] of [
+				[0x3001, 0x2c], [0x3002, 0x2e], [0x301d, 0x201c],
+				[0x301e, 0x201d], [0x301f, 0x201e],
+			]) {
+				const height = (glyphCode) =>
+					geometryExtent(glyphStore.queryByUnicode(glyphCode), "y");
+				assert.ok(Math.abs(height(code) - height(reference)) < 1, `U+${code.toString(16)} height mismatch`);
+			}
+		});
+	}
+}
+
+for (const variant of ["square", "diamond", "hexagon"]) {
+	test(`CJK punctuation follows ${variant} Latin punctuation sizes`, () => {
+		const argv = {
+			shape: {
+				serifs: "sans", spacing: "quasi-proportional", weight: 920, width: 416,
+				slope: "italic", slopeAngle: 9.4,
+			},
+			featureControl: { noCvSs: true },
+			variants: {
+				design: {
+					"capital-latin-gamma": "serifless",
+					"latin-gamma": "serifless",
+					"punctuation-dot": variant,
+					"punctuation-comma": variant,
+				},
+			},
+		};
+		const para = init(data, argv);
+		Variant.apply(variantData, para, argv);
+		const { glyphStore } = buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		});
+		for (const [code, reference] of [[0x3001, 0x2c], [0x3002, 0x2e]]) {
+			const glyph = glyphStore.queryByUnicode(code);
+			const ref = glyphStore.queryByUnicode(reference);
+			assert.ok(
+				Math.abs(geometryExtent(glyph, "y") - geometryExtent(ref, "y")) < 1,
+				`U+${code.toString(16)} height mismatch`,
+			);
+			assert.ok(
+				glyph.geometry.toContours().flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
+				`U+${code.toString(16)} exceeds its advance`,
+			);
+		}
+	});
 }
 
 test("arc bracket follows each parenthesis contour", () => {

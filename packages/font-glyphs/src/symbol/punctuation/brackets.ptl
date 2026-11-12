@@ -15,6 +15,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Shared-Symbol-Shapes : Polyline TriangleShape CreateWaveShape
 	glyph-block-import Symbol-Punctuation-Small : PrimeShape
+	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 	glyph-block-import Letter-Latin-Upper-P : SquirrelTailHook
 
@@ -819,15 +820,15 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		create-glyph 'postalMark' 0x3012 : glyph-proc
 			local df : DivFrame 1
-			local shapeWidth : 0.60 * (df.rightSB - df.leftSB)
-			local shapeHeight : 0.34 * (ParenTop - ParenBot)
+			local shapeWidth : 0.80 * (df.rightSB - df.leftSB)
+			local shapeHeight : 0.46 * (ParenTop - ParenBot)
 			include : PostalShape df shapeWidth shapeHeight 1
 
 		create-glyph 'getaMark' 0x3013 : glyph-proc
 			local df : DivFrame 1
 			local center : mix df.leftSB df.rightSB 0.5
-			local shapeWidth : 0.72 * (df.rightSB - df.leftSB)
-			local shapeHeight : 0.38 * (ParenTop - ParenBot)
+			local shapeWidth : 0.88 * (df.rightSB - df.leftSB)
+			local shapeHeight : 0.48 * (ParenTop - ParenBot)
 			local barHeight : shapeHeight * 0.36
 			local gap : shapeHeight * 0.28
 			local left : center - shapeWidth / 2
@@ -840,13 +841,14 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		create-glyph 'circledPostalMark' 0x3036 : glyph-proc
 			local df : DivFrame 1
 			local center : mix df.leftSB df.rightSB 0.5
-			local radius : 0.42 * (df.rightSB - df.leftSB)
-			local shapeWidth : radius * 1.24
-			local shapeHeight : radius * 1.12
+			local radius : 0.48 * (df.rightSB - df.leftSB)
+			local shapeWidth radius
+			local shapeHeight : radius * 0.95
 			local ringSw : Math.min (Stroke * 0.32) [AdviceStroke 4]
+			local shapeScale : Math.min 0.65 (0.22 * shapeHeight / [Math.max (Stroke * 0.7) (shapeHeight * 0.12)])
 			include : union
 				RingStrokeAt center SymbolMid radius ringSw
-				PostalShape df shapeWidth shapeHeight 0.75
+				PostalShape df shapeWidth shapeHeight shapeScale
 
 		create-glyph 'typeAElectronics' 0x2B97 : glyph-proc
 			local df : DivFrame 1
@@ -868,27 +870,61 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		define df : DivFrame 1
 		define w : df.rightSB - df.leftSB
 		define sw : Math.min (OperatorStroke * 0.75) [AdviceStroke 4]
-		define lowY : 0 + XH * 0.13
-		define lowX : df.leftSB + w * 0.18
+
+		define [PunctuationBounds name] : begin
+			local bounds nothing
+			local shape : new-glyph : glyph-proc
+				include : refer-glyph name
+				set bounds : include : MeasureGlyphBounds
+			return bounds
+
+		define [FitPunctuation shape bounds x bottom width height center] : glyph-proc
+			include : with-transform [ApparentTranslate (x - width * (bounds.xMin + bounds.xMax) / (2 * (bounds.xMax - bounds.xMin))) (bottom - height * bounds.yMin / (bounds.yMax - bounds.yMin))]
+				with-transform [Scale (width / (bounds.xMax - bounds.xMin)) (height / (bounds.yMax - bounds.yMin))] shape
+			local left VERY-FAR
+			local right (-VERY-FAR)
+			foreach contour [items-of : currentGlyph.geometry.toBezArcs] : foreach arc [items-of contour] : foreach i [range 0 25] : begin
+				local p : arc.eval (i / 24)
+				set left : Math.min left p.x
+				set right : Math.max right p.x
+			include : ApparentTranslate (center - (left + right) / 2) 0
 
 		create-glyph 'ideographicComma' 0x3001 : glyph-proc
-			include : union
-				dispiro
-					flat (lowX - w * 0.08) (lowY + w * 0.12) [widths.center (sw * 0.25)]
-					curl (lowX + w * 0.06) lowY [widths.center (sw * 1.1)]
-				DotAt (lowX + w * 0.06) lowY (sw * 0.55)
+			local df : include : DivFrame para.advanceScaleI
+			local ref : PunctuationBounds 'comma'
+			local height : ref.yMax - ref.yMin
+			local width : ref.xMax - ref.xMin
+			local bounds nothing
+			local shape : new-glyph : glyph-proc
+				define [point x y] : currentGlyph.gizmo.apply : object [x : x * w] [y : y * w]
+				local curves : list
+					new Arcs.Bez3 [point (-0.12) 0.20] [point (-0.03) 0.19] [point 0.10 0.13] [point 0.13 0.04]
+					new Arcs.Bez3 [point 0.13 0.04] [point 0.15 (-0.03)] [point 0.075 (-0.07)] [point 0.04 (-0.035)]
+					new Arcs.Bez3 [point 0.04 (-0.035)] [point 0.005 0] [point (-0.08) 0.17] [point (-0.12) 0.20]
+				local sink : new BezToContoursSink
+				ShapeConv.transferGenericShapeAsBezier [list curves] sink GEOMETRY_PRECISION
+				currentGlyph.includeContours sink.contours
+				set bounds : include : MeasureGlyphBounds
+			local x : df.middle + TanSlope * (SymbolMid - height / 2)
+			include : FitPunctuation shape bounds x 0 width height df.middle
 
 		create-glyph 'ideographicFullStop' 0x3002 : glyph-proc
-			local radius : w * 0.12
-			include : RingStrokeAt lowX (lowY + radius) radius [Math.min sw (radius * 0.65)]
+			local df : include : DivFrame para.advanceScaleI
+			local ref : PunctuationBounds 'period'
+			local radius : (ref.yMax - ref.yMin) / 2
+			local radiusX : Math.min radius [Math.sqrt : Math.max 0 ((df.width * 0.48) ** 2 - (TanSlope * radius) ** 2)]
+			local x : df.middle + TanSlope * (SymbolMid - radius)
+			include : RingStroke (2 * radius) 0 (x - radiusX) (x + radiusX) [Math.min sw (radius * 0.65)]
 
 		create-glyph 'ideographicDittoMark' 0x3003 : glyph-proc
-			local top : SymbolMid + XH * 0.18
-			local bottom : SymbolMid - XH * 0.18
-			local d : w * 0.13
-			local fine : Math.min (sw * 0.55) (w * 0.075)
-			include : PrimeShape (df.middle - d) top bottom (w * 0.05) fine
-			include : PrimeShape (df.middle + d) top bottom (w * 0.05) fine
+			local df : include : DivFrame para.advanceScaleF
+			local w : df.rightSB - df.leftSB
+			local top : SymbolMid + XH * 0.25
+			local bottom : SymbolMid - XH * 0.25
+			local d : w * 0.20
+			local fine : Math.min (sw * 0.55) (w * 0.07)
+			include : PrimeShape (df.middle - d) top bottom (w * 0.07) fine
+			include : PrimeShape (df.middle + d) top bottom (w * 0.07) fine
 
 		# Offset a safe base outline and merge overlaps at tight bends.
 		define [StrengthenWave shape baseStroke] : begin
@@ -902,37 +938,6 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			corner (x + 10 * dy + 10 * dx) (y - 10 * dx + 10 * dy)
 			corner (x - 10 * dy + 10 * dx) (y + 10 * dx + 10 * dy)
 
-		define [IdeographicWave count phase] : begin
-			local waveSw : Math.min sw (w * 0.08)
-			local amplitude : XH * [if (count > 1) 0.055 0.075]
-			local inset : Math.max 0 ((sw - waveSw) / 2)
-			local left : df.leftSB + inset
-			local waveWidth : w - 2 * inset
-			local wave : CreateWaveShape ((amplitude + waveSw / 2) * 4 / 3) waveSw phase
-			local shape : with-transform [ApparentTranslate left 0]
-				wave (left -- 0) (right -- 0) (unitWidth -- waveWidth) (waveCount -- count)
-			local deriv : 2 * Math.PI * count * 1.225 * [if (phase === 0.5) (-1) 1]
-			local dx : waveWidth - 0.75 * TanSlope * amplitude * deriv
-			local dy : amplitude * deriv
-			local strengthened : StrengthenWave shape waveSw
-			return : FlatCut [FlatCut strengthened left SymbolMid dx dy] (left + waveWidth) SymbolMid (-dx) (-dy)
-
-		create-glyph 'waveDash' 0x301C : IdeographicWave 1 0
-		create-glyph 'wavyDash' 0x3030 : IdeographicWave 2 0.5
-
-		define [IdeographicQuote x y dir] : glyph-proc
-			local dx : w * 0.24 * dir
-			local dy : XH * 0.045
-			local quoteSw : Math.min sw (XH * 0.09)
-			foreach offset [list (0 - XH * 0.085) (XH * 0.085)] : do
-				include : dispiro
-					flat (x - dx / 2) (y + dy + offset) [widths.center quoteSw]
-					curl (x + dx / 2) (y - dy + offset) [widths.center (quoteSw * 0.45)]
-
-		create-glyph 'reversedDoublePrimeQuotationMark' 0x301D : IdeographicQuote (df.middle + w * 0.25) (CAP * 0.82) 1
-		create-glyph 'doublePrimeQuotationMark' 0x301E : IdeographicQuote (df.middle - w * 0.25) (CAP * 0.82) (-1)
-		create-glyph 'lowDoublePrimeQuotationMark' 0x301F : IdeographicQuote (df.middle - w * 0.25) (XH * 0.2) 1
-
 		define [CubicStroke curves stroke] : glyph-proc
 			local inner {}
 			local outer {}
@@ -945,6 +950,68 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		define [CjkPoint gizmo x y] : gizmo.apply : object [x : 0 + x] [y : 0 + y]
 
+		define [DoubleWave left waveWidth amplitude waveSw] : glyph-proc
+			define [point x y] : CjkPoint currentGlyph.gizmo (x - 0.75 * TanSlope * y) (SymbolMid + y)
+			local curves {}
+			foreach i [range 0 8] : begin
+				local x0 : left + waveWidth * i / 8
+				local x1 : left + waveWidth * (i + 1) / 8
+				local y0 : 0 - amplitude * [Math.sin (Math.PI * i / 2)]
+				local y1 : 0 - amplitude * [Math.sin (Math.PI * (i + 1) / 2)]
+				local d0 : 0 - amplitude * Math.PI / 6 * [Math.cos (Math.PI * i / 2)]
+				local d1 : 0 - amplitude * Math.PI / 6 * [Math.cos (Math.PI * (i + 1) / 2)]
+				curves.push : new Arcs.Bez3
+					point x0 y0
+					point [mix x0 x1 (1 / 3)] (y0 + d0)
+					point [mix x0 x1 (2 / 3)] (y1 - d1)
+					point x1 y1
+			include : CubicStroke curves waveSw
+
+		define [IdeographicWave count phase] : begin
+			local waveSw : Math.min sw (w * 0.08)
+			local inset : Math.max 0 ((sw - waveSw) / 2)
+			local left : df.leftSB * 0.5 + inset
+			local waveWidth : df.width - df.leftSB - 2 * inset
+			# Limit the curvature of the tight, weight-expanded double wave.
+			local amplitude : if (count > 1) [Math.min (XH * 0.075) (waveWidth * waveWidth / (16 * Math.PI * Math.PI * sw))] (XH * 0.10)
+			local wave : CreateWaveShape ((amplitude + waveSw / 2) * 4 / 3) waveSw phase
+			local shape : if (count > 1)
+				DoubleWave left waveWidth amplitude waveSw
+				with-transform [ApparentTranslate left 0]
+					wave (left -- 0) (right -- 0) (unitWidth -- waveWidth) (waveCount -- count)
+			local deriv : 2 * Math.PI * count * [if (count > 1) 1 1.225] * [if (phase === 0.5) (-1) 1]
+			local dx : waveWidth - 0.75 * TanSlope * amplitude * deriv
+			local dy : amplitude * deriv
+			local strengthened : StrengthenWave shape waveSw
+			return : remove-holes : FlatCut [FlatCut strengthened left SymbolMid dx dy] (left + waveWidth) SymbolMid (-dx) (-dy)
+
+		create-glyph 'waveDash' 0x301C : IdeographicWave 1 0
+		create-glyph 'wavyDash' 0x3030 : IdeographicWave 2 0.5
+
+		define [IdeographicQuote name low dir] : glyph-proc
+			local df : include : DivFrame para.advanceScaleI
+			local ref : PunctuationBounds name
+			local height : ref.yMax - ref.yMin
+			local width : Math.min (ref.xMax - ref.xMin) (df.width * 0.9 - [Math.abs TanSlope] * height)
+			local bottom : if low 0 (ref.yMax - height)
+			local x : df.middle + TanSlope * (SymbolMid - bottom - height / 2)
+			local center : df.middle + [if low (-1) dir] * (df.width - width - [Math.abs TanSlope] * height) * 0.20
+			local bounds nothing
+			local shape : new-glyph : glyph-proc
+				local dx : w * 0.36 * dir
+				local dy : XH * 0.055
+				local quoteSw : Math.min sw (XH * 0.09)
+				foreach offset [list (0 - XH * 0.11) (XH * 0.11)] : do
+					include : dispiro
+						flat (0 - dx / 2) (dy + offset) [widths.center quoteSw]
+						curl (dx / 2) (offset - dy) [widths.center (quoteSw * 0.45)]
+				set bounds : include : MeasureGlyphBounds
+			include : FitPunctuation shape bounds x bottom width height center
+
+		create-glyph 'reversedDoublePrimeQuotationMark' 0x301D : IdeographicQuote 'openDoubleQuote' false 1
+		create-glyph 'doublePrimeQuotationMark' 0x301E : IdeographicQuote 'closeDoubleQuote' false (-1)
+		create-glyph 'lowDoublePrimeQuotationMark' 0x301F : IdeographicQuote 'lowDoubleQuote' true 1
+
 		define [VerticalWaveCurve gizmo x0 y0 x1 y1] : new Arcs.Bez3
 			CjkPoint gizmo x0 y0
 			CjkPoint gizmo x0 [mix y0 y1 0.5]
@@ -954,24 +1021,25 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		create-glyph 'verticalIdeographicIterationMark' 0x303B : glyph-proc
 			local baseSw : Math.min sw (XH * 0.09)
 			local curves : list
-				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.09) (SymbolMid + XH * 0.48) (df.middle - w * 0.09) (SymbolMid + XH * 0.44)
-				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.09) (SymbolMid + XH * 0.44) (df.middle + w * 0.09) (SymbolMid + XH * 0.22)
-				VerticalWaveCurve currentGlyph.gizmo (df.middle + w * 0.09) (SymbolMid + XH * 0.22) (df.middle - w * 0.09) SymbolMid
-				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.09) SymbolMid (df.middle + w * 0.09) (SymbolMid - XH * 0.22)
-				VerticalWaveCurve currentGlyph.gizmo (df.middle + w * 0.09) (SymbolMid - XH * 0.22) (df.middle - w * 0.09) (SymbolMid - XH * 0.44)
-				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.09) (SymbolMid - XH * 0.44) (df.middle - w * 0.09) (SymbolMid - XH * 0.48)
+				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.13) (SymbolMid + XH * 0.60) (df.middle - w * 0.13) (SymbolMid + XH * 0.55)
+				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.13) (SymbolMid + XH * 0.55) (df.middle + w * 0.13) (SymbolMid + XH * 0.275)
+				VerticalWaveCurve currentGlyph.gizmo (df.middle + w * 0.13) (SymbolMid + XH * 0.275) (df.middle - w * 0.13) SymbolMid
+				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.13) SymbolMid (df.middle + w * 0.13) (SymbolMid - XH * 0.275)
+				VerticalWaveCurve currentGlyph.gizmo (df.middle + w * 0.13) (SymbolMid - XH * 0.275) (df.middle - w * 0.13) (SymbolMid - XH * 0.55)
+				VerticalWaveCurve currentGlyph.gizmo (df.middle - w * 0.13) (SymbolMid - XH * 0.55) (df.middle - w * 0.13) (SymbolMid - XH * 0.60)
 			local shape : CubicStroke curves baseSw
 			local strengthened : StrengthenWave shape baseSw
-			local xEnd : df.middle - w * 0.09
-			include : FlatCut [FlatCut strengthened xEnd (SymbolMid + XH * 0.48) 0 (-XH)] xEnd (SymbolMid - XH * 0.48) 0 XH
+			local xEnd : df.middle - w * 0.13
+			include : FlatCut [FlatCut strengthened xEnd (SymbolMid + XH * 0.60) 0 (-XH)] xEnd (SymbolMid - XH * 0.60) 0 XH
 
-		create-glyph 'masuMark' 0x303C : glyph-proc
-			local half : w * 0.35
-			local left : df.middle - half
-			local right : df.middle + half
-			local top : SymbolMid + half
-			local bottom : SymbolMid - half
-			local masuSw : Math.min sw (half * 0.4)
+		define [MasuShape cross] : glyph-proc
+			local halfWidth : w * 0.44
+			local halfHeight : XH * 0.45
+			local left : df.middle - halfWidth
+			local right : df.middle + halfWidth
+			local top : SymbolMid + halfHeight
+			local bottom : SymbolMid - halfHeight
+			local masuSw : Math.min sw (halfWidth * 0.4)
 			include : union
 				difference
 					Rect top bottom left right
@@ -980,6 +1048,15 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					widths.center masuSw
 					flat (left + masuSw / 2) (bottom + masuSw / 2)
 					curl (right - masuSw / 2) (top - masuSw / 2)
+				if cross
+				: then : dispiro
+					widths.center masuSw
+					flat (left + masuSw / 2) (top - masuSw / 2)
+					curl (right - masuSw / 2) (bottom + masuSw / 2)
+				: else : no-shape
+
+		create-glyph 'masuMark' 0x303C : MasuShape false
+		create-glyph 'ideographicHalfFillSpace' 0x303F : MasuShape true
 
 		define [HorizontalWaveCurve gizmo x0 y0 x1 y1] : new Arcs.Bez3
 			CjkPoint gizmo x0 y0
@@ -989,16 +1066,16 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		create-glyph 'partAlternationMark' 0x303D : glyph-proc
 			local x3 : df.middle + w * 0.08
-			local y3 : SymbolMid + XH * 0.22
-			local y4 : SymbolMid - XH * 0.32
+			local y3 : SymbolMid + XH * 0.30
+			local y4 : SymbolMid - XH * 0.45
 			local baseSw : Math.min sw (XH * 0.065)
 			local inset : Math.max 0 ((sw - baseSw) / 2)
 			local left : df.leftSB + inset
 			local right : df.rightSB - inset
 			local curves : list
-				HorizontalWaveCurve currentGlyph.gizmo left (SymbolMid + XH * 0.16) (df.middle - w * 0.25) (SymbolMid + XH * 0.22)
-				HorizontalWaveCurve currentGlyph.gizmo (df.middle - w * 0.25) (SymbolMid + XH * 0.22) (df.middle - w * 0.08) (SymbolMid + XH * 0.16)
-				HorizontalWaveCurve currentGlyph.gizmo (df.middle - w * 0.08) (SymbolMid + XH * 0.16) x3 y3
+				HorizontalWaveCurve currentGlyph.gizmo left (SymbolMid + XH * 0.21) (df.middle - w * 0.25) (SymbolMid + XH * 0.30)
+				HorizontalWaveCurve currentGlyph.gizmo (df.middle - w * 0.25) (SymbolMid + XH * 0.30) (df.middle - w * 0.08) (SymbolMid + XH * 0.21)
+				HorizontalWaveCurve currentGlyph.gizmo (df.middle - w * 0.08) (SymbolMid + XH * 0.21) x3 y3
 				new Arcs.Bez3
 					CjkPoint currentGlyph.gizmo x3 y3
 					CjkPoint currentGlyph.gizmo [mix x3 right 0.50] y3
@@ -1006,4 +1083,4 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					CjkPoint currentGlyph.gizmo right y4
 			local shape : CubicStroke curves baseSw
 			local strengthened : StrengthenWave shape baseSw
-			include : FlatCut [FlatCut strengthened left (SymbolMid + XH * 0.16) w 0] right y4 (x3 - right) (y3 - y4)
+			include : FlatCut [FlatCut strengthened left (SymbolMid + XH * 0.21) w 0] right y4 (x3 - right) (y3 - y4)
