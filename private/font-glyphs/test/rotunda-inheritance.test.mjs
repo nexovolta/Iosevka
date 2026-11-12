@@ -64,6 +64,49 @@ function inkBounds(glyph) {
 	};
 }
 
+function upperDiagonalJoinAngles(glyph, cap) {
+	const result = [];
+	for (const contour of glyph.geometry.toBezArcs()) {
+		const arcs = contour.map((arc) =>
+			[arc.a, arc.b, arc.c, arc.d].map((p) => glyph.gizmo.unapply(p)),
+		);
+		for (let i = 0; i < arcs.length; i++) {
+			const [a, b, c, d] = arcs[i];
+			const dx = d.x - a.x;
+			const dy = d.y - a.y;
+			const length = Math.hypot(dx, dy);
+			const distanceFromLine = (p) =>
+				Math.abs((p.x - a.x) * dy - (p.y - a.y) * dx) / length;
+			const top = a.y > d.y ? a : d;
+			if (
+				Math.abs(dy) < 0.08 * cap || dx * dy >= 0 ||
+				top.y < 0.48 * cap || top.y > 0.8 * cap ||
+				distanceFromLine(b) > 0.01 || distanceFromLine(c) > 0.01
+			) continue;
+
+			const topIsStart = top === a;
+			const step = topIsStart ? -1 : 1;
+			let next;
+			for (let n = 1; n < arcs.length; n++) {
+				next = arcs[(i + step * n + arcs.length) % arcs.length];
+				if (Math.hypot(next[3].x - next[0].x, next[3].y - next[0].y) > 0.01)
+					break;
+			}
+			const away = topIsStart ? next[0] : next[3];
+			if (away.y <= top.y + 0.01) continue;
+			const tangent = topIsStart
+				? { x: next[3].x - next[2].x, y: next[3].y - next[2].y }
+				: { x: next[1].x - next[0].x, y: next[1].y - next[0].y };
+			assert.ok(Math.hypot(tangent.x, tangent.y) > 1e-8, "degenerate join tangent");
+			result.push(Math.atan2(
+				Math.abs(dx * tangent.y - dy * tangent.x),
+				Math.abs(dx * tangent.x + dy * tangent.y),
+			) * 180 / Math.PI);
+		}
+	}
+	return result;
+}
+
 test("rotunda variants retain independent leg and case-specific hook relations", () => {
 	const argv = {
 		shape: {
@@ -157,13 +200,13 @@ test("rotunda variants retain independent leg and case-specific hook relations",
 
 test("Cossic rotunda d and looped long s use the upright outline under italic skew", () => {
 	for (const weight of [120, 420, 920]) {
-		const build = (slope, slopeAngle) => {
+		const build = (slope, slopeAngle, width = 500) => {
 			const argv = {
 				shape: {
 					serifs: "sans",
 					spacing: "term",
 					weight,
-					width: 500,
+					width,
 					slope,
 					slopeAngle,
 				},
@@ -271,6 +314,12 @@ test("Cossic rotunda d and looped long s use the upright outline under italic sk
 			Math.abs(inkBounds(rotunda).yMax - data.iosevka.ascender) < 0.1,
 			`rotunda outer arc must reach the ascender at weight ${weight}`,
 		);
+		const joinAngles = upperDiagonalJoinAngles(rotunda, data.iosevka.cap);
+		assert.ok(joinAngles.length, `missing upper diagonal join at weight ${weight}`);
+		assert.ok(
+			joinAngles.every((angle) => angle < 0.05),
+			`rotunda arc-to-diagonal tangent mismatch at weight ${weight}: ${joinAngles}`,
+		);
 		const rotundaContours = new Geom.SimplifyGeometry(
 			rotunda.geometry,
 			rotunda.gizmo,
@@ -294,5 +343,14 @@ test("Cossic rotunda d and looped long s use the upright outline under italic sk
 				Math.min(...ys) < 0.38 * data.iosevka.cap;
 		});
 		assert.ok(upperCounter, `missing large crossing arc at weight ${weight}`);
+		if (weight === 920) {
+			for (const width of [416, 720]) {
+				const wideOrNarrow = build("upright", 0, width)
+					.queryByNameEnsured("dRotundaCrossingLoop.curlyBar");
+				const angles = upperDiagonalJoinAngles(wideOrNarrow, data.iosevka.cap);
+				assert.ok(angles.length && angles.every((angle) => angle < 0.1),
+					`rotunda tangent mismatch at width ${width}: ${angles}`);
+			}
+		}
 	}
 });
