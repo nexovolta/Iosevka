@@ -112,7 +112,6 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			set this.y0 y0
 			set this.dy dy
 			set this.c1 : slope0 * dy
-			# Match zero curvature at the straight stroke and the um hook's curvature.
 			set this.c3 : 10 * dx - 4 * ds + 0.5 * dc
 			set this.c4 : -15 * dx + 7 * ds - dc
 			set this.c5 : 6 * dx - 3 * ds + 0.5 * dc
@@ -181,7 +180,6 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		local yJoinTop : umJoin + 0.12 * CAP
 		local overlap : 0.02 * SwAmpersand
 		local arcOverlap : Math.max TINY (0.001 * SwAmpersand)
-		# Keep the um's lower hook, excluding its upper loop and left spur.
 		define [UmLower clipY] : difference
 			intersection [MaskBelow clipY]
 				UmShape df umTop bottom df.adws SwAmpersand SwAmpersand 0.625
@@ -236,7 +234,6 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		local arcJoinRight : new RotundaJoinEdge (arcLineX + nx + slope * ny) yCross arcEdges.right arcJoinY (-slope) arcEdges.rightSlope arcEdges.rightCurvature
 		define [OuterArc] : difference
 			RawOuterArc arcTop
-			# Clear the arc end where the straight diagonal replaces it.
 			intersection [MaskBelow yCross] [MaskAbove (yJoinTop - overlap)] : spiro-outline
 				corner (-VERY-FAR) (-VERY-FAR)
 				corner (xBase + slope * VERY-FAR + nx + slope * ny - 0.25 * SwAmpersand) (-VERY-FAR)
@@ -694,7 +691,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)ToothlessRounded"  : EtGlyph hookType topSerif HYBRID-TOOTHLESS-ROUND
 
 	define [UpperOpenEtTopVariants hookSuffix topShape topSuffix] : begin
-		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Toothed"         : HybridEtGlyph topShape HYBRID-TOOTHED
+		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Toothed"          : HybridEtGlyph topShape HYBRID-TOOTHED
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Tailed"           : HybridEtGlyph topShape HYBRID-TAILED
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)FlatBottom"       : HybridEtGlyph topShape HYBRID-FLAT-BOTTOM
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessCorner"  : HybridEtGlyph topShape HYBRID-TOOTHLESS-CORNER
