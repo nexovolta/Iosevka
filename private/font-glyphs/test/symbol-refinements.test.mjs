@@ -25,6 +25,11 @@ const resizedCjkCodes = [
 	0x3001, 0x3002, 0x3003, 0x3012, 0x3013, 0x301c, 0x301d,
 	0x301e, 0x301f, 0x3030, 0x3036, 0x303b, 0x303c, 0x303d, 0x303f,
 ];
+const enlargedCjkHeights = [
+	[0x3001, 366], [0x3002, 159], [0x3003, 260], [0x3012, 444],
+	[0x3013, 464], [0x301c, 148], [0x3030, 94], [0x3036, 358],
+	[0x303b, 624], [0x303c, 468], [0x303d, 426], [0x303f, 468],
+];
 const codes = [
 	0x2a33, 0x2a50, 0x2afb, 0x22d8, 0x22d9, 0x2a91, 0x2a92, 0x2a93, 0x2a94,
 	0x23b4, 0x23b5, 0x23b6, 0x23dc, 0x23dd, 0x23de, 0x23df, 0x23e0, 0x23e1,
@@ -92,6 +97,19 @@ function geometryExtent(glyph, axis) {
 		}
 	}
 	return Math.max(...values) - Math.min(...values);
+}
+
+function assertCjkVerticalFit(glyph, para, code) {
+	const bottom = Math.round(para.descender ?? (para.xHeight - para.ascender));
+	const top = Math.round(para.ascender);
+	for (const contour of glyph.geometry.toBezArcs()) {
+		for (const arc of contour) {
+			for (let i = 0; i <= 24; i++) {
+				const y = arc.eval(i / 24).y;
+				assert.ok(y >= bottom - 0.1 && y <= top + 0.1, `U+${code.toString(16)} exceeds vertical metrics`);
+			}
+		}
+	}
 }
 
 function assertSmoothWave(geometry) {
@@ -374,9 +392,21 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					contours(code).flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
 					`U+${code.toString(16)} exceeds its advance`,
 				);
+				if (enlargedCjkHeights.some(([c]) => c === code)) {
+					assertCjkVerticalFit(glyph, para, code);
+					assertNoSelfIntersections(glyph.geometry, `U+${code.toString(16)}`);
+				}
 			}
 			assert.equal(contours(0x3030).length, 1, "wavy dash must have one outline");
 			assert.equal(contours(0x3036).length, 4, "postal mark must not touch the circle");
+			if (weight === 420) {
+				for (const [code, previousHeight] of enlargedCjkHeights) {
+					assert.ok(
+						geometryExtent(glyphStore.queryByUnicode(code), "y") > previousHeight * 1.1,
+						`U+${code.toString(16)} must be larger than its previous size`,
+					);
+				}
+			}
 			if (spacing === "term" && weight === 420) {
 				for (const [code, axis, previous] of [
 					[0x3001, "y", 78], [0x3002, "x", 90], [0x3003, "y", 188],
@@ -412,10 +442,12 @@ for (const spacing of ["term", "quasi-proportional"]) {
 					geometryExtent(glyphStore.queryByUnicode(glyphCode), axis);
 				const height = extent(reference, "y");
 				assert.ok(
-					Math.abs(extent(code, "y") - height) < 1,
-					`U+${code.toString(16)} must match the Latin reference height`,
+					code === 0x3001 || code === 0x3002
+						? extent(code, "y") >= height - 1
+						: Math.abs(extent(code, "y") - height) < 1,
+					`U+${code.toString(16)} has the wrong height relative to its Latin reference`,
 				);
-				if (spacing === "term") {
+				if (spacing === "term" && code !== 0x3001 && code !== 0x3002) {
 					assert.ok(
 						Math.abs(extent(code, "x") - extent(reference, "x")) < 2,
 						`U+${code.toString(16)} must match the Latin reference width`,
@@ -873,10 +905,10 @@ for (const spacing of ["term", "quasi-proportional"]) {
 
 for (const spacing of ["term", "quasi-proportional"]) {
 	for (const weight of [120, 420, 920]) {
-		test(`resized CJK glyphs fit narrow italic ${spacing} ${weight} cells`, () => {
+		for (const width of [416, 500]) test(`resized CJK glyphs fit italic ${spacing} ${weight} width ${width} cells`, () => {
 			const argv = {
 				shape: {
-					serifs: "sans", spacing, weight, width: 416,
+					serifs: "sans", spacing, weight, width,
 					slope: "italic", slopeAngle: 9.4,
 				},
 				featureControl: { noCvSs: true },
@@ -896,11 +928,16 @@ for (const spacing of ["term", "quasi-proportional"]) {
 			for (const code of resizedCjkCodes) {
 				const glyph = glyphStore.queryByUnicode(code);
 				const contours = glyph.geometry.toContours();
+				const scale = [0x3001, 0x3002, 0x301d, 0x301e, 0x301f].includes(code)
+					? para.advanceScaleI
+					: code === 0x3003 ? para.advanceScaleF : 1;
+				assert.ok(Math.abs(glyph.advanceWidth - width * scale) < 0.001);
 				assert.ok(
 					contours.flat().every((p) => p.x >= 0 && p.x <= glyph.advanceWidth),
 					`U+${code.toString(16)} exceeds its advance`,
 				);
 				assertNoSelfIntersections(glyph.geometry, `U+${code.toString(16)}`);
+				if (enlargedCjkHeights.some(([c]) => c === code)) assertCjkVerticalFit(glyph, para, code);
 				if (code === 0x3030) {
 					assert.equal(contours.length, 1, "wavy dash must stay continuous");
 					assertSmoothWave(glyph.geometry);
@@ -914,14 +951,19 @@ for (const spacing of ["term", "quasi-proportional"]) {
 			]) {
 				const height = (glyphCode) =>
 					geometryExtent(glyphStore.queryByUnicode(glyphCode), "y");
-				assert.ok(Math.abs(height(code) - height(reference)) < 1, `U+${code.toString(16)} height mismatch`);
+				assert.ok(
+					code === 0x3001 || code === 0x3002
+						? height(code) >= height(reference) - 1
+						: Math.abs(height(code) - height(reference)) < 1,
+					`U+${code.toString(16)} height mismatch`,
+				);
 			}
 		});
 	}
 }
 
 for (const variant of ["square", "diamond", "hexagon"]) {
-	test(`CJK punctuation follows ${variant} Latin punctuation sizes`, () => {
+	test(`CJK punctuation fits ${variant} Latin punctuation variants`, () => {
 		const argv = {
 			shape: {
 				serifs: "sans", spacing: "quasi-proportional", weight: 920, width: 416,
@@ -947,7 +989,7 @@ for (const variant of ["square", "diamond", "hexagon"]) {
 			const glyph = glyphStore.queryByUnicode(code);
 			const ref = glyphStore.queryByUnicode(reference);
 			assert.ok(
-				Math.abs(geometryExtent(glyph, "y") - geometryExtent(ref, "y")) < 1,
+				geometryExtent(glyph, "y") >= geometryExtent(ref, "y") - 1,
 				`U+${code.toString(16)} height mismatch`,
 			);
 			assert.ok(

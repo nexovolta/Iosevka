@@ -803,6 +803,29 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'floorRight'   0x230B 'ceilingLeft' Middle SymbolMid
 		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
 
+	define [EnlargeCjkInk df bottomAligned uniform] : glyph-proc
+		local left VERY-FAR
+		local right (-VERY-FAR)
+		local bottom VERY-FAR
+		local top (-VERY-FAR)
+		foreach contour [items-of : currentGlyph.geometry.toContours] : foreach p [items-of contour] : begin
+			set left : Math.min left p.x
+			set right : Math.max right p.x
+		foreach contour [items-of : currentGlyph.geometry.toBezArcs] : foreach arc [items-of contour] : foreach i [range 0 25] : begin
+			local p : arc.eval (i / 24)
+			set bottom : Math.min bottom p.y
+			set top : Math.max top p.y
+		if (right <= left || top <= bottom) : throw : new Error 'Cannot enlarge empty CJK glyph'
+		local yCenter : if bottomAligned bottom ((bottom + top) / 2)
+		local kx : Math.min 1.2 (df.width * 0.99 / (right - left))
+		local ky : Math.min 1.2 [Math.max 1 ((Ascender - yCenter) / (top - yCenter))]
+		if [not bottomAligned] : set ky : Math.min ky [Math.max 1 ((yCenter - Descender) / (yCenter - bottom))]
+		if uniform : begin
+			set kx : Math.min kx ky
+			set ky kx
+		currentGlyph.applyTransform [Scale kx ky] true
+		currentGlyph.applyTransform [Translate (df.width / 2 - kx * (left + right) / 2) (yCenter * (1 - ky))] true
+
 	do 'Postal Marks'
 		define [PostalShape df shapeWidth shapeHeight strokeScale] : glyph-proc
 			local center : mix df.leftSB df.rightSB 0.5
@@ -823,6 +846,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local shapeWidth : 0.80 * (df.rightSB - df.leftSB)
 			local shapeHeight : 0.46 * (ParenTop - ParenBot)
 			include : PostalShape df shapeWidth shapeHeight 1
+			include : EnlargeCjkInk df false false
 
 		create-glyph 'getaMark' 0x3013 : glyph-proc
 			local df : DivFrame 1
@@ -837,6 +861,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : union
 				Rect (SymbolMid + barOffset + barHeight / 2) (SymbolMid + barOffset - barHeight / 2) left right
 				Rect (SymbolMid - barOffset + barHeight / 2) (SymbolMid - barOffset - barHeight / 2) left right
+			include : EnlargeCjkInk df false false
 
 		create-glyph 'circledPostalMark' 0x3036 : glyph-proc
 			local df : DivFrame 1
@@ -849,6 +874,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : union
 				RingStrokeAt center SymbolMid radius ringSw
 				PostalShape df shapeWidth shapeHeight shapeScale
+			include : EnlargeCjkInk df false true
 
 		create-glyph 'typeAElectronics' 0x2B97 : glyph-proc
 			local df : DivFrame 1
@@ -907,6 +933,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				set bounds : include : MeasureGlyphBounds
 			local x : df.middle + TanSlope * (SymbolMid - height / 2)
 			include : FitPunctuation shape bounds x 0 width height df.middle
+			include : EnlargeCjkInk df true false
 
 		create-glyph 'ideographicFullStop' 0x3002 : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
@@ -915,6 +942,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local radiusX : Math.min radius [Math.sqrt : Math.max 0 ((df.width * 0.48) ** 2 - (TanSlope * radius) ** 2)]
 			local x : df.middle + TanSlope * (SymbolMid - radius)
 			include : RingStroke (2 * radius) 0 (x - radiusX) (x + radiusX) [Math.min sw (radius * 0.65)]
+			include : EnlargeCjkInk df true true
 
 		create-glyph 'ideographicDittoMark' 0x3003 : glyph-proc
 			local df : include : DivFrame para.advanceScaleF
@@ -925,6 +953,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local fine : Math.min (sw * 0.55) (w * 0.07)
 			include : PrimeShape (df.middle - d) top bottom (w * 0.07) fine
 			include : PrimeShape (df.middle + d) top bottom (w * 0.07) fine
+			include : EnlargeCjkInk df false false
 
 		# Offset a safe base outline and merge overlaps at tight bends.
 		define [StrengthenWave shape baseStroke] : begin
@@ -985,8 +1014,12 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local strengthened : StrengthenWave shape waveSw
 			return : remove-holes : FlatCut [FlatCut strengthened left SymbolMid dx dy] (left + waveWidth) SymbolMid (-dx) (-dy)
 
-		create-glyph 'waveDash' 0x301C : IdeographicWave 1 0
-		create-glyph 'wavyDash' 0x3030 : IdeographicWave 2 0.5
+		create-glyph 'waveDash' 0x301C : glyph-proc
+			include : IdeographicWave 1 0
+			include : EnlargeCjkInk df false false
+		create-glyph 'wavyDash' 0x3030 : glyph-proc
+			include : IdeographicWave 2 0.5
+			include : EnlargeCjkInk df false false
 
 		define [IdeographicQuote name low dir] : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
@@ -1031,6 +1064,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local strengthened : StrengthenWave shape baseSw
 			local xEnd : df.middle - w * 0.13
 			include : FlatCut [FlatCut strengthened xEnd (SymbolMid + XH * 0.60) 0 (-XH)] xEnd (SymbolMid - XH * 0.60) 0 XH
+			include : EnlargeCjkInk df false false
 
 		define [MasuShape cross] : glyph-proc
 			local halfWidth : w * 0.44
@@ -1054,6 +1088,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					flat (left + masuSw / 2) (top - masuSw / 2)
 					curl (right - masuSw / 2) (bottom + masuSw / 2)
 				: else : no-shape
+			include : EnlargeCjkInk df false false
 
 		create-glyph 'masuMark' 0x303C : MasuShape false
 		create-glyph 'ideographicHalfFillSpace' 0x303F : MasuShape true
@@ -1084,3 +1119,4 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local shape : CubicStroke curves baseSw
 			local strengthened : StrengthenWave shape baseSw
 			include : FlatCut [FlatCut strengthened left (SymbolMid + XH * 0.21) w 0] right y4 (x3 - right) (y3 - y4)
+			include : EnlargeCjkInk df false false
