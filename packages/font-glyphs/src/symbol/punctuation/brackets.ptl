@@ -937,12 +937,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		create-glyph 'ideographicFullStop' 0x3002 : glyph-proc
 			local df : include : DivFrame para.advanceScaleI
-			local ref : PunctuationBounds 'period'
-			local radius : (ref.yMax - ref.yMin) / 2
-			local radiusX : Math.min radius [Math.sqrt : Math.max 0 ((df.width * 0.48) ** 2 - (TanSlope * radius) ** 2)]
-			local x : df.middle + TanSlope * (SymbolMid - radius)
-			include : RingStroke (2 * radius) 0 (x - radiusX) (x + radiusX) [Math.min sw (radius * 0.65)]
-			include : EnlargeCjkInk df true true
+			local bounds : PunctuationBounds 'degree'
+			local width : bounds.xMax - bounds.xMin
+			local height : bounds.yMax - bounds.yMin
+			include : FitPunctuation [refer-glyph 'degree'] bounds df.middle 0 width height df.middle
 
 		create-glyph 'ideographicDittoMark' 0x3003 : glyph-proc
 			local df : include : DivFrame para.advanceScaleF
