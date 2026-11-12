@@ -48,6 +48,22 @@ function bezierContourArea(arcs) {
 	return Math.abs(twiceArea / 2);
 }
 
+function inkBounds(glyph) {
+	const points = glyph.geometry.toBezArcs().flatMap((contour) =>
+		contour.flatMap((arc) =>
+			Array.from({ length: 129 }, (_, i) =>
+				glyph.gizmo.unapply(arc.eval(i / 128)),
+			),
+		),
+	);
+	assert.ok(points.length, "glyph must have an outline");
+	return {
+		xMin: Math.min(...points.map((p) => p.x)),
+		xMax: Math.max(...points.map((p) => p.x)),
+		yMax: Math.max(...points.map((p) => p.y)),
+	};
+}
+
 test("rotunda variants retain independent leg and case-specific hook relations", () => {
 	const argv = {
 		shape: {
@@ -229,6 +245,11 @@ test("Cossic rotunda d and looped long s use the upright outline under italic sk
 		for (const top of ["bentHook", "flatHook", "cornerHook"]) {
 			for (const serif of ["Serifless", "MiddleSerifedHalfAscender"]) {
 				const head = upright.queryByNameEnsured(`longsTopLoop.${top}${serif}`);
+				const bounds = inkBounds(head);
+				assert.ok(
+					Math.abs(bounds.xMin - (head.advanceWidth - bounds.xMax)) < 0.1,
+					`${top} ${serif}, weight ${weight}: asymmetric head margins`,
+				);
 				for (const bottom of ["Descending", "Tailed", "DiagonalTailed"]) {
 					const other = upright.queryByNameEnsured(`longsTopLoop.${top}${bottom}${serif}`);
 					const clip = (glyph) => new Geom.BooleanGeometry(
@@ -246,6 +267,10 @@ test("Cossic rotunda d and looped long s use the upright outline under italic sk
 			}
 		}
 		const rotunda = upright.queryByNameEnsured("dRotundaCrossingLoop.curlyBar");
+		assert.ok(
+			Math.abs(inkBounds(rotunda).yMax - data.iosevka.ascender) < 0.1,
+			`rotunda outer arc must reach the ascender at weight ${weight}`,
+		);
 		const rotundaContours = new Geom.SimplifyGeometry(
 			rotunda.geometry,
 			rotunda.gizmo,

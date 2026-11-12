@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Long-S : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Mark-Above : CenterInkInFrame
+	glyph-block-import Mark-Above : CenterInkInFrame MeasureGlyphBounds
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : JCurlyTailShape FlatHookDepth LetterBarOverlay DiagTail
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
@@ -425,11 +425,23 @@ glyph-block Letter-Latin-Long-S : begin
 					arcvh 8 DesignParameters.superness
 					DiagTail.F (-1) innerX Descender tailRadius DiagTailAngle (0.35 * stemSw) stemSw
 				no-shape
-		include : with-transform [Translate (0.11 * Width) 0]
+		define [OriginalHead] : with-transform [Translate (0.11 * Width) 0]
 			with-transform [Scale 0.83 1]
-				with-transform [Scale (1 / designScale) 1] : union
-					Head
-					DescenderShape
+				with-transform [Scale (1 / designScale) 1] : Head
+		local bounds nothing
+		local head : new-glyph : glyph-proc
+			include : OriginalHead
+			set bounds : include : MeasureGlyphBounds
+		if (([not bounds]) || (bounds.xMax <= bounds.xMin) || (Width <= 2 * SB))
+			throw : new Error 'Cannot fit looped long s in its advance'
+		local inkScale : (Width - 2 * SB) / (bounds.xMax - bounds.xMin)
+		local inkShift : SB - inkScale * bounds.xMin
+		include : with-transform [Translate inkShift 0] : with-transform [Scale inkScale 1]
+			with-transform [Translate (0.11 * Width) 0]
+				with-transform [Scale 0.83 1]
+					with-transform [Scale (1 / designScale) 1] : union
+						Head
+						DescenderShape
 
 	define TopLoopBottomStyles : object
 		'Descending' 'descending'

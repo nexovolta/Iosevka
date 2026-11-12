@@ -11,6 +11,7 @@ glyph-module
 glyph-block Symbol-Punctuation-Ampersand : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Latin-Ezh : RevEzh
 	glyph-block-import Letter-Latin-Rams-Horn : UmShape
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcStart SerifedArcEnd InwardSlabArcStart ArcStartSerif
@@ -126,7 +127,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		local xCross : mix SB RightSB 0.36
 		local yCross : 0.56 * CAP
 		local xFlat : mix SB RightSB 0.11
-		local yFlat : 0.78 * CAP
+		local yFlat : 0.78 * Ascender
 		local slope : (xCross - xFlat) / (yFlat - yCross)
 		local xBase : xCross + slope * yCross
 		local yLowerCross : 0.20 * CAP
@@ -192,7 +193,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		local joinLeft : new RotundaJoinEdge (lineX - nx - slope * ny) yJoinTop (umLeft + umShift) umJoin (-slope) umLeftSlope umLeftCurvature
 		local joinRight : new RotundaJoinEdge (lineX + nx + slope * ny) yJoinTop (umRight + umShift) umJoin (-slope) umRightSlope umRightCurvature
 		local arcEndY : yCross - 0.2 * SwAmpersand
-		local lineStartY : yCross + 0.1 * SwAmpersand
+		local lineStartY yCross
 		local lineStartX : xBase - slope * lineStartY
 		local lineEndY : yJoinTop - 2 * ny - 2 * overlap
 		local lineEndX : xBase - slope * lineEndY
@@ -203,13 +204,13 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			g4 (SB + OX) (0.24 * CAP)
 			g4 xClosedAmpersandBottom (O + 0.5 * SwAmpersand)
 			curl xLowerCross yLowerCross
-		define [OuterArc] : difference
+		define [OuterArc topY] : difference
 			dispiro
 				widths.center SwAmpersand
 				flat (xBase - slope * arcEndY) arcEndY [heading crossHeading]
 				g4 xCross yCross [heading crossHeading]
 				g4 xFlat yFlat
-				g4 [mix SB RightSB 0.40] (CAP - 0.5 * SwAmpersand)
+				g4 [mix SB RightSB 0.40] topY
 				g4 xOuter (0.48 * CAP)
 				curl xLowerCross yLowerCross
 			# Clear the arc end where the straight diagonal replaces it.
@@ -218,6 +219,15 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				corner (xBase + slope * VERY-FAR + nx + slope * ny - 0.25 * SwAmpersand) (-VERY-FAR)
 				corner (xBase - slope * CAP + nx + slope * ny - 0.25 * SwAmpersand) CAP
 				corner (-VERY-FAR) CAP
+		local arcTop : Ascender - 0.5 * SwAmpersand
+		foreach iteration [range 0 5] : begin
+			local measuredTop nothing
+			local probe : new-glyph : glyph-proc
+				include : OuterArc arcTop
+				local bounds : include : MeasureGlyphBounds
+				if [not bounds] : throw : new Error 'Cannot measure rotunda outer arc'
+				set measuredTop bounds.yMax
+			set arcTop : arcTop + Ascender - measuredTop
 		define [CrossingHook] : union
 			intersection [MaskAbove (yJoinTop - overlap)] : spiro-outline
 				corner (lineStartX - nx) (lineStartY - ny)
@@ -231,7 +241,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			with-transform [Translate umShift 0] : UmLower (umJoin + overlap)
 		return : with-transform [Translate (0.075 * Width) 0] : with-transform [Scale 0.85 1] : union
 			LowerArc
-			OuterArc
+			OuterArc arcTop
 			CrossingHook
 
 	create-glyph 'ampersand.closed' : ClosedRest
