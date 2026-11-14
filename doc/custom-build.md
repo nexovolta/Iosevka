@@ -4668,8 +4668,24 @@ There are tools tha could be used to bake other OpenType that are not configurab
 
 These tools could be used in post-processing fonts. Please refer their documents for instructions.
 
-The custom `PTMN` Latin language system provides opt-in Pitman phonotypic forms
-for U+018C, U+1DF79, U+014A, U+A7CB, U+0264, U+018F, U+01B7,
-U+0244, and U+0289 through `locl`. Applications must explicitly select the
-`PTMN` OpenType language system; ordinary language tags may not select this
-custom tag. The default forms remain unchanged.
+Localized forms can also be enabled explicitly with their custom OpenType
+feature tags, without setting a language selector. For example:
+
+```css
+.pitman {
+  font-feature-settings: "PTMN" 1;
+}
+
+.serbian {
+  font-feature-settings: "LSRB" 1;
+}
+```
+
+Three-letter language selectors use an `L` prefix (`LSRB`, `LMKD`, `LBOS`,
+`LBGR`, `LBSH`, `LCHU`, `LNSM`, `LISM`, `LLSM`, `LSJE`, `LSJU`, `LSKS`,
+`LSSM`, `LPLK`, `LROM`, `LMOL`, `LTRK`, `LAZE`, `LCRT`, `LGAG`, `LJCT`,
+`LKAZ`, `LKJJ`, `LKMZ`, `LTAT`, `LTLY`, `LUDI`, `LZZA`, and `LVIT`).
+Existing four-letter selectors retain their full tags: `IPPH`, `APPH`,
+`UPPH`, and `PTMN`. Enable only the desired locale feature for a run of text.
+These are custom GSUB feature tags, not `ssXX` stylistic-set features; use
+`font-feature-settings` to activate them. The default forms are unchanged.

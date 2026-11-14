@@ -47,26 +47,40 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	define grekAPPH : gsub.copyLanguage 'grek_APPH' 'grek_DFLT'
 	define grekUPPH : gsub.copyLanguage 'grek_UPPH' 'grek_DFLT'
 
+	define [addCustomFeature tag lookup] : begin
+		local feature : gsub.addCommonFeature : gsub.createFeature tag
+		feature.addLookup lookup
+
 	# SRB
 	define loclSRB : gsub.createFeature 'locl'
 	cyrlSRB.addFeature loclSRB
 	cyrlMKD.addFeature loclSRB
 	cyrlBOS.addFeature loclSRB
-	loclSRB.addLookup : createGsubLookupFromGr gsub glyphStore
+	local lookupSRB : createGsubLookupFromGr gsub glyphStore
 		if [not para.isItalic] LocalizedForm.SRB.Upright LocalizedForm.SRB.Italic
+	loclSRB.addLookup lookupSRB
+	addCustomFeature 'LSRB' lookupSRB
+	addCustomFeature 'LMKD' lookupSRB
+	addCustomFeature 'LBOS' lookupSRB
 
 	# BGR
 	define loclBGR : cyrlBGR.addFeature : gsub.createFeature 'locl'
-	loclBGR.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.BGR
+	local lookupBGR : createGsubLookupFromGr gsub glyphStore LocalizedForm.BGR
+	loclBGR.addLookup lookupBGR
+	addCustomFeature 'LBGR' lookupBGR
 
 	# BSH
 	define loclBSH : cyrlBSH.addFeature : gsub.createFeature 'locl'
-	loclBSH.addLookup : createGsubLookupFromGr gsub glyphStore
+	local lookupBSH : createGsubLookupFromGr gsub glyphStore
 		if [not para.isItalic] LocalizedForm.BSH.Upright LocalizedForm.BSH.Italic
+	loclBSH.addLookup lookupBSH
+	addCustomFeature 'LBSH' lookupBSH
 
 	# CHU
 	define loclCHU : cyrlCHU.addFeature : gsub.createFeature 'locl'
-	loclCHU.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.CHU
+	local lookupCHU : createGsubLookupFromGr gsub glyphStore LocalizedForm.CHU
+	loclCHU.addLookup lookupCHU
+	addCustomFeature 'LCHU' lookupCHU
 
 	# NSM
 	define loclNSM : gsub.createFeature 'locl'
@@ -77,23 +91,36 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	latnSJU.addFeature loclNSM
 	latnSKS.addFeature loclNSM
 	latnSSM.addFeature loclNSM
-	loclNSM.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.NSM
+	local lookupNSM : createGsubLookupFromGr gsub glyphStore LocalizedForm.NSM
+	loclNSM.addLookup lookupNSM
+	addCustomFeature 'LNSM' lookupNSM
+	addCustomFeature 'LISM' lookupNSM
+	addCustomFeature 'LLSM' lookupNSM
+	addCustomFeature 'LSJE' lookupNSM
+	addCustomFeature 'LSJU' lookupNSM
+	addCustomFeature 'LSKS' lookupNSM
+	addCustomFeature 'LSSM' lookupNSM
 
 	# PLK
 	define loclPLK : latnPLK.addFeature : gsub.createFeature 'locl'
-	loclPLK.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.PLK
+	local lookupPLK : createGsubLookupFromGr gsub glyphStore LocalizedForm.PLK
+	loclPLK.addLookup lookupPLK
+	addCustomFeature 'LPLK' lookupPLK
 
 	# ROM
 	define loclROM : gsub.createFeature 'locl'
 	latnROM.addFeature loclROM
 	latnMOL.addFeature loclROM
-	loclROM.addLookup : gsub.createLookup
+	local lookupROM : gsub.createLookup
 		.type 'gsub_single'
 		.substitutions : object
 			'SCedilla' : glyphStore.ensureExists 'SComma'
 			'sCedilla' : glyphStore.ensureExists 'sComma'
 			'TCedilla' : glyphStore.ensureExists 'TComma'
 			'tCedilla' : glyphStore.ensureExists 'tComma'
+	loclROM.addLookup lookupROM
+	addCustomFeature 'LROM' lookupROM
+	addCustomFeature 'LMOL' lookupROM
 
 	# TRK
 	define loclTRK : gsub.createFeature 'locl'
@@ -109,7 +136,20 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	latnTLY.addFeature loclTRK
 	latnUDI.addFeature loclTRK
 	latnZZA.addFeature loclTRK
-	loclTRK.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.TRK
+	local lookupTRK : createGsubLookupFromGr gsub glyphStore LocalizedForm.TRK
+	loclTRK.addLookup lookupTRK
+	addCustomFeature 'LTRK' lookupTRK
+	addCustomFeature 'LAZE' lookupTRK
+	addCustomFeature 'LCRT' lookupTRK
+	addCustomFeature 'LGAG' lookupTRK
+	addCustomFeature 'LJCT' lookupTRK
+	addCustomFeature 'LKAZ' lookupTRK
+	addCustomFeature 'LKJJ' lookupTRK
+	addCustomFeature 'LKMZ' lookupTRK
+	addCustomFeature 'LTAT' lookupTRK
+	addCustomFeature 'LTLY' lookupTRK
+	addCustomFeature 'LUDI' lookupTRK
+	addCustomFeature 'LZZA' lookupTRK
 
 	# VIT
 	define loclVIT : latnVIT.addFeature : gsub.createFeature 'locl'
@@ -119,9 +159,10 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	do 'Decompose Vietnamese glyphs'
 
 		local decompositionSubstitutions {.}
-		loclVIT.addLookup : gsub.createLookup
+		local lookupVITDecompose : gsub.createLookup
 			.type 'gsub_multiple'
 			.substitutions decompositionSubstitutions
+		loclVIT.addLookup lookupVITDecompose
 
 		local viCircumflex 'ẦẤẨỀẾỂỒỐỔầấẩềếểồốổ'
 		local viBreve      'ẮẰẲằắẳ'
@@ -134,7 +175,7 @@ export : define [buildLOCL gsub para glyphStore] : begin
 			local decomp : CvDecompose.get g
 			set decompositionSubstitutions.(gn) decomp
 
-		loclVIT.addLookup : gsub.createLookup
+		local lookupVITMarks : gsub.createLookup
 			.type 'gsub_chaining'
 			.rules : list
 				chain-rule
@@ -145,6 +186,10 @@ export : define [buildLOCL gsub para glyphStore] : begin
 					{'A' 'a'}                 ~> nothing
 					{'breveAbove'}            ~> nothing
 					viShiftableMarks          ~> [sx 'viCenter']
+		loclVIT.addLookup lookupVITMarks
+		local featureVIT : gsub.addCommonFeature : gsub.createFeature 'LVIT'
+		featureVIT.addLookup lookupVITDecompose
+		featureVIT.addLookup lookupVITMarks
 
 	# IPPH
 	define loclIPPH : gsub.createFeature 'locl'
@@ -152,17 +197,24 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	latnAPPH.addFeature loclIPPH
 	grekIPPH.addFeature loclIPPH
 	grekAPPH.addFeature loclIPPH
-	loclIPPH.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.IPPH
+	local lookupIPPH : createGsubLookupFromGr gsub glyphStore LocalizedForm.IPPH
+	loclIPPH.addLookup lookupIPPH
+	addCustomFeature 'IPPH' lookupIPPH
+	addCustomFeature 'APPH' lookupIPPH
 
 	# Pitman phonotypic
 	define loclPTMN : latnPTMN.addFeature : gsub.createFeature 'locl'
-	loclPTMN.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.PTMN
+	local lookupPTMN : createGsubLookupFromGr gsub glyphStore LocalizedForm.PTMN
+	loclPTMN.addLookup lookupPTMN
+	addCustomFeature 'PTMN' lookupPTMN
 
 	# UPPH
 	define loclUPPH : gsub.createFeature 'locl'
 	latnUPPH.addFeature loclUPPH
 	grekUPPH.addFeature loclUPPH
-	loclUPPH.addLookup : createGsubLookupFromGr gsub glyphStore
+	local lookupUPPH : createGsubLookupFromGr gsub glyphStore
 		if [not para.isItalic] LocalizedForm.UPPH.Upright LocalizedForm.UPPH.Italic
+	loclUPPH.addLookup lookupUPPH
+	addCustomFeature 'UPPH' lookupUPPH
 
 	gsub.endBlockAtFront rec

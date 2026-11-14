@@ -11,6 +11,7 @@ import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 import { AnyLocalizedForm, LocalizedForm } from "@iosevka/glyph/relation";
 import * as Caching from "@iosevka/geometry-cache";
+import { buildOtl } from "@iosevka/font-otl";
 import { buildFont } from "../../../packages/font/src/build-font/index.mjs";
 import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
@@ -40,6 +41,13 @@ const localized = [
 	[0x0244, "UBar.phonotypic"],
 	[0x0289, "uBar.phonotypic"],
 ];
+const localizedFeatureTags = [
+	"LSRB", "LMKD", "LBOS", "LBGR", "LBSH", "LCHU", "LNSM", "LISM",
+	"LLSM", "LSJE", "LSJU", "LSKS", "LSSM", "LPLK", "LROM", "LMOL",
+	"LTRK", "LAZE", "LCRT", "LGAG", "LJCT", "LKAZ", "LKJJ", "LKMZ",
+	"LTAT", "LTLY", "LUDI", "LZZA", "LVIT", "IPPH", "APPH", "UPPH",
+	"PTMN",
+];
 
 function signedArea(contour) {
 	return contour.reduce((area, point, index) => {
@@ -52,10 +60,10 @@ await Geom.Init();
 
 for (const slope of ["upright", "italic"]) {
 	for (const weight of [120, 420, 920]) {
-		test(`phonotypic glyph variants resolve with finite outlines at ${weight} ${slope}`, () => {
+		test(`phonotypic glyph variants resolve with finite outlines at ${weight} ${slope}`, async () => {
 			const argv = {
 				shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
-				featureControl: { noCvSs: false },
+				featureControl: { noCvSs: false, noLigation: true },
 				variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
 			};
 			const para = init(data, argv);
@@ -64,6 +72,42 @@ for (const slope of ["upright", "italic"]) {
 				blockIsNeeded: () => true,
 				glyphIsNeeded: () => true,
 			});
+			if (weight === 420 && slope === "upright") {
+				const makePara = await getParametersT({ paramsDir });
+				const otlPara = makePara({
+					shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: 0 },
+					menu: { family: "Phonotypic Test", version: "34.9.0", width: 5, slope, weight: 400 },
+					featureControl: { noCvSs: false, noLigation: true },
+					variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+				});
+				const { glyphStore: otlGlyphStore } = buildGlyphs(otlPara);
+				const { GSUB } = buildOtl(otlPara, otlGlyphStore);
+				const features = new Map(
+					Object.entries(GSUB.features).map(([name, feature]) => [feature.tag, { name, feature }]),
+				);
+				for (const tag of localizedFeatureTags) {
+					const entry = features.get(tag);
+					assert.ok(entry, tag);
+					assert.equal(tag.length, 4, tag);
+					assert.ok(entry.feature.lookups.length, tag);
+					for (const scriptTag of ["latn", "cyrl", "grek"]) {
+						assert.ok(
+							GSUB.languages[`${scriptTag}_DFLT`].features.includes(entry.name),
+							`${scriptTag} ${tag}`,
+						);
+					}
+				}
+				for (const [tag, languageTag] of [
+					["LSRB", "cyrl_SRB "],
+					["LMKD", "cyrl_MKD "],
+					["PTMN", "latn_PTMN"],
+				]) {
+					const language = GSUB.languages[languageTag];
+					const loclName = language.features.find((name) => GSUB.features[name].tag === "locl");
+					assert.ok(loclName, languageTag);
+					assert.deepEqual(features.get(tag).feature.lookups, GSUB.features[loclName].lookups, tag);
+				}
+			}
 			for (const [cp, target] of localized) {
 				const source = glyphStore.queryByUnicode(cp);
 				assert.ok(source, cp.toString(16));
@@ -104,7 +148,7 @@ for (const slope of ["upright", "italic"]) {
 	}
 }
 
-test("subset fonts retain PTMN substitutions without changing the default language", async () => {
+test("subset fonts expose custom localization features and PTMN substitutions", async () => {
 	const slope = "upright";
 	const argv = {
 		shape: { serifs: "sans", spacing: "term", weight: 420, width: 500, slope, slopeAngle: 0 },
