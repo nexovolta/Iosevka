@@ -293,6 +293,11 @@ The `capital-latin-upsilon` and `latin-upsilon` selectors independently control
 `Ʊ` and `ʊ`; both support `serifless` and `serifed`. This split shifts the
 OpenType feature tags assigned to subsequent selectors.
 
+The `capital-latin-alpha` and `latin-alpha` selectors independently control
+`Ɑ` and `ɑ`. Both support `single-storey`, which follows the corresponding
+single-storey `a` design, and `crossing`. They are independent of Greek
+`lower-alpha`.
+
 <!-- BEGIN Section-Cherry-Picking-Styles -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

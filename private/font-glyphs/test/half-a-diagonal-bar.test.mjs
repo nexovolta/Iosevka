@@ -93,7 +93,7 @@ for (const noCvSs of [false, true]) {
 	});
 }
 
-test("swash a follows the selected a, including diagonal bars and single-storey forms", () => {
+test("italic swash a follows forced double-storey choices", () => {
 	const contours = [];
 	for (const choice of [
 		"double-storey-serifless",
@@ -124,8 +124,7 @@ test("swash a follows the selected a, including diagonal bars and single-storey 
 			blockIsNeeded: () => true,
 			glyphIsNeeded: () => true,
 		});
-		const selected = para.variants.primes.get("a").variants.get(choice)
-			.selector.a;
+		const selected = para.variantSelector["a/doubleStorey"];
 		assert.deepEqual(
 			glyphStore.queryByUnicode(0x1df69).geometry.toContours(),
 			glyphStore

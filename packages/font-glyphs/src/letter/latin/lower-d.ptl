@@ -2,6 +2,7 @@ $$include '../../meta/macros.ptl'
 
 import [mix clamp fallback SuffixCfg] from '@iosevka/util'
 import [MathSansSerif] from '@iosevka/glyph/relation'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
 
 glyph-module
 
@@ -223,16 +224,70 @@ glyph-block Letter-Latin-Lower-D : begin
 			local df : include : DivFrame 1
 			include : df.markSet.b
 			local xLeft : mix df.leftSB df.rightSB 0.1
-			local yBar : [if para.isItalic 0.85 0.9] * XH
-			local triSw : Math.min df.mvs : 0.32 * (Ascender - yBar)
-			local bowlTop : if para.isItalic (yBar - 0.35 * triSw) (0.7 * XH)
-			include : union
-				Body df Ascender [if para.isItalic true fFlat] cut bowlTop
-				HBar.m xLeft [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
-				intersection [Rect Ascender (yBar - triSw / 2) xLeft df.rightSB]
-					ExtLineCenter xLeft yBar (df.rightSB - [HSwToV : 0.5 * df.mvs]) Ascender triSw
-			if topSerif : include : topSerif df Ascender
-			if bottomSerif : include : bottomSerif df Ascender
+			if para.isItalic
+				then : begin
+					local yBar XH
+					local yDiagonalTop Ascender
+					local triSw : Math.min df.mvs : 0.32 * (yDiagonalTop - yBar)
+					local xInnerR : df.rightSB - [HSwToV df.mvs]
+					local xOuterL df.leftSB
+					local leftLean : 0.5 * TanSlope
+					# Overlap the original bowl so clipping cannot expose a seam.
+					local seamOverlap : Math.max 1 ([Math.abs OX] / 4)
+					local [leftAt x y] : x - leftLean * (y - 0.25 * XH)
+					local xJoin : mix df.leftSB df.rightSB 0.18
+					local yJoin : 0.85 * XH
+					local t : Math.min 0.3 : 0.6 * (xJoin - xOuterL) / (xInnerR - xJoin)
+					local xInnerL : xOuterL + [HSwToV df.mvs]
+					local yInnerTop : XH - triSw / 2
+					local xInnerJoin : Math.min [mix xInnerL xInnerR 0.8] (xJoin + [HSwToV df.mvs])
+					local xInnerTop : mix xInnerJoin xInnerR 0.6
+					local innerT : Math.min 0.1 : 0.4 * (yInnerTop - yJoin) / (Ascender - yJoin)
+					local yHoleBottom : XH + triSw / 2
+					local xEdge : mix xJoin xInnerR [(yHoleBottom - yJoin) / (Ascender - yJoin)]
+					include : union
+						intersection
+							Body df Ascender false ''
+							Rect (0.4 * XH) (-XH) (-df.width) (2 * df.width)
+						difference
+							union
+								glyph-proc
+									local cs : new BezToContoursSink currentGlyph.gizmo
+									cs.moveTo df.rightSB Ascender
+									cs.lineTo df.rightSB (0.25 * XH)
+									cs.lineTo (xOuterL + seamOverlap) (0.25 * XH)
+									cs.cubicTo (xOuterL + seamOverlap) (0.3 * XH) ([leftAt xOuterL (0.38 * XH)] - seamOverlap) (0.38 * XH) ([leftAt xOuterL (0.42 * XH)] - seamOverlap) (0.42 * XH)
+									cs.cubicTo ([leftAt xOuterL (0.60 * XH)] - seamOverlap) (0.60 * XH) (xJoin + t * (xJoin - xInnerR)) (yJoin + t * (yJoin - Ascender)) xJoin yJoin
+									cs.lineTo xInnerR Ascender
+									cs.endShape
+									currentGlyph.includeContours cs.contours
+								HBar.m xInnerR [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
+							glyph-proc
+								local cs : new BezToContoursSink currentGlyph.gizmo
+								cs.moveTo xInnerR (0.2 * XH)
+								cs.lineTo ([leftAt xInnerL (0.2 * XH)] - seamOverlap) (0.2 * XH)
+								cs.lineTo (xInnerL - seamOverlap) (0.25 * XH)
+								cs.cubicTo (xInnerL - seamOverlap) (0.3 * XH) ([leftAt xInnerL (0.38 * XH)] + seamOverlap) (0.38 * XH) ([leftAt xInnerL (0.42 * XH)] + seamOverlap) (0.42 * XH)
+								cs.cubicTo ([leftAt xInnerL (0.60 * XH)] + seamOverlap) (0.60 * XH) (xInnerJoin + t * (xJoin - xInnerR)) (yJoin + t * (yJoin - Ascender)) xInnerJoin yJoin
+								cs.cubicTo (xInnerJoin + innerT * (xInnerR - xJoin)) (yJoin + innerT * (Ascender - yJoin)) [mix xInnerJoin xInnerTop 0.6] yInnerTop xInnerTop yInnerTop
+								cs.lineTo xInnerR yInnerTop
+								cs.endShape
+								currentGlyph.includeContours cs.contours
+							spiro-outline
+								corner xInnerR yHoleBottom
+								corner [mix xEdge xInnerR 0.45] yHoleBottom
+								corner xInnerR [mix yHoleBottom Ascender 0.65]
+				else : begin
+					local yBar : 0.9 * XH
+					local triSw : Math.min df.mvs : 0.32 * (Ascender - yBar)
+					local bowlTop : 0.7 * XH
+					include : union
+						Body df Ascender fFlat cut bowlTop
+						HBar.m xLeft [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
+						intersection [Rect Ascender (yBar - triSw / 2) xLeft df.rightSB]
+							ExtLineCenter xLeft yBar (df.rightSB - [HSwToV : 0.5 * df.mvs]) Ascender triSw
+					if topSerif : include : topSerif df Ascender
+					if bottomSerif : include : bottomSerif df Ascender
 			include : LeaningAnchor.Above.VBar.r df.rightSB df.mvs
 
 		if [not topSerif] : create-glyph "dHookTop.\(suffix)" : glyph-proc

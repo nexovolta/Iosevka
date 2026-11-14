@@ -157,9 +157,9 @@ glyph-block Letter-Latin-Lower-A : begin
 			Serifless  df hookStyle _sw cut diag _barTop
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
-		export : define [Tailed df hookStyle _sw cut diag] : union
+		export : define [Tailed df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
-			Arc        df 0         0            _sw nothing nothing diag
+			Arc        df 0         0            _sw nothing nothing diag _barTop
 			RightwardTailedBar df.rightSB 0 (XH - [SmoothB df]) [fallback _sw : Sw df]
 
 		export : define [FlatBottomSerifless df hookStyle _sw cut diag _barTop] : union
@@ -381,7 +381,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				archv
 				g4.down.mid (df.leftSB + OX) [mix barY XH 0.5] [heading Downward]
 				arcvh
-				g4.right.end (df.rightSB - [HSwToV sw] / 2) barY [heading Rightward]
+				g4.right.end (df.rightSB + 0.1 * df.width) barY [heading Rightward]
 
 	foreach {suffix {{hookStyle cut {body revBody xTrailing}} diag}} [Object.entries DoubleStoreyDiagConfig] : do
 		do
@@ -403,7 +403,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				then : begin
 					local df : include : DivFrame 1
 					include : df.markSet.e
-					include : ItalicSwash df [if (body === DoubleStorey.Tailed) DoubleStorey.Serifless body] cut diag
+					include : ItalicSwash df body cut diag
 				else : begin
 					local baseSuffix : if (body === DoubleStorey.Tailed) [suffix.replace 'Tailed' 'Serifless'] suffix
 					include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
@@ -473,6 +473,13 @@ glyph-block Letter-Latin-Lower-A : begin
 		local df : include : DivFrame 1
 		include : df.markSet.e
 		include : CrossingBody df XH
+
+	create-glyph 'AScript.crossing' : glyph-proc
+		local df : include : DivFrame 1
+		include : df.markSet.capital
+		include : CrossingBody df CAP nothing ArchDepthA ArchDepthB
+
+	alias 'aScript.crossing' null 'a.crossing'
 
 	glyph-block-export SingleStorey
 	define SingleStorey : namespace
@@ -673,6 +680,10 @@ glyph-block Letter-Latin-Lower-A : begin
 			local df : include : DivFrame 1
 			include : df.markSet.capital
 			include : body df CAP bar cut nothing ArchDepthA ArchDepthB
+		alias "AScript.singleStorey.\(suffix)" null "aCap.\(suffix)"
+		alias "AScript.crossing.\(suffix)" null 'AScript.crossing'
+		alias "aScript.singleStorey.\(suffix)" null "a.\(suffix)"
+		alias "aScript.crossing.\(suffix)" null 'aScript.crossing'
 		create-glyph "reva.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
@@ -706,24 +717,17 @@ glyph-block Letter-Latin-Lower-A : begin
 	select-variant 'aRetroflexHook' 0x1D8F
 	link-reduced-variant 'aRetroflexHook/doubleStorey' 'aRetroflexHook'
 
-	select-variant 'aSwash' 0x1DF69 (follow -- 'a')
+	select-variant 'aSwash' 0x1DF69 (follow -- [conditional-follow para.isItalic 'a/doubleStorey' 'a'])
 	select-variant 'aRoundTop.upright' (follow -- 'a/doubleStorey') (shapeFrom -- 'reva')
 
 	select-variant 'grek/alpha' 0x3B1 (shapeFrom -- 'a')
 	link-reduced-variant 'grek/alpha/sansSerif' 'grek/alpha' MathSansSerif (shapeFrom -- 'a')
 
-	select-variant 'AScript.slab.upright' (shapeFrom -- 'aCap') (follow -- 'a/singleStorey.slab.upright')
-	select-variant 'AScript.slab.italic'  (shapeFrom -- 'aCap') (follow -- 'a/singleStorey.slab.italic')
-	orthographic-italic 'AScript.slab' null
-	select-variant 'AScript.sans' (shapeFrom -- 'aCap') (follow -- 'a/singleStorey.sans')
-	orthographic-slab SLAB 'AScript' 0x2C6D
+	local alphaASelector : if SLAB [if para.isItalic 'a/singleStorey.slab.italic' 'a/singleStorey.slab.upright'] 'a/singleStorey.sans'
+	select-multi-dimensional-variant 'AScript' 0x2C6D (follows -- {'AScript' alphaASelector})
 	CreateTurnedLetter 'turnAScript' 0x2C70 'AScript' HalfAdvance (CAP / 2)
 
-	select-variant 'aScript.slab.upright' (shapeFrom -- 'a') (follow -- 'a/singleStorey.slab.upright')
-	select-variant 'aScript.slab.italic'  (shapeFrom -- 'a') (follow -- 'a/singleStorey.slab.italic')
-	orthographic-italic 'aScript.slab' null
-	select-variant 'aScript.sans' (shapeFrom -- 'a') (follow -- 'a/singleStorey.sans')
-	orthographic-slab SLAB 'aScript' 0x251
+	select-multi-dimensional-variant 'aScript' 0x251 (follows -- {'aScript' alphaASelector})
 	CreateTurnedLetter 'turnaScript' 0x252 'aScript' HalfAdvance (XH / 2)
 
 	alias 'aScript.UPPH' null 'a.crossing'

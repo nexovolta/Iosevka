@@ -9,6 +9,10 @@ import { buildGlyphs } from "@iosevka/font-glyphs";
 import * as Geom from "@iosevka/geometry";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
+import { AnyCv } from "@iosevka/glyph/relation";
+import * as Caching from "@iosevka/geometry-cache";
+import { buildFont } from "../../../packages/font/src/build-font/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params/", import.meta.url));
 const read = (name) =>
@@ -139,6 +143,14 @@ for (const [weight, slope] of [
 				);
 			}
 		}
+		for (const name of ["AScript.crossing", "aScript.crossing"]) {
+			const outline = contours(glyphStore.queryByNameEnsured(name));
+			assert.ok(outline.length, name);
+			assert.ok(
+				outline.flat().every((p) => Number.isFinite(p.x) && Number.isFinite(p.y)),
+				name,
+			);
+		}
 		for (const [tail, base] of [
 			["singleStoreyTopCutTailed", "singleStoreyTopCutSerifless"],
 			["singleStoreyTailedSerifed", "singleStoreySerifless"],
@@ -153,7 +165,11 @@ for (const [weight, slope] of [
 			const baseOutline = contours(
 				glyphStore.queryByNameEnsured(`aSwash.${base}`),
 			);
-			assert.deepEqual(tailOutline, baseOutline, tail);
+			if (slope === "italic" && tail.startsWith("doubleStorey")) {
+				assert.notDeepEqual(tailOutline, baseOutline, tail);
+			} else {
+				assert.deepEqual(tailOutline, baseOutline, tail);
+			}
 			assert.equal(
 				tailOutline.length,
 				slope === "italic" ? 3 : 2,
@@ -162,6 +178,76 @@ for (const [weight, slope] of [
 		}
 	});
 }
+
+test("Latin alpha selectors are independent and preserve the single-storey a choice", () => {
+	for (const [upper, lower] of [
+		["crossing", "single-storey"],
+		["single-storey", "crossing"],
+	]) {
+		const { para, glyphStore } = build(
+			420, "italic", "single-storey-flat-top-serifless", undefined, false,
+			{ "capital-latin-alpha": upper, "latin-alpha": lower, "lower-alpha": "barred" },
+		);
+		for (const [cp, name, choice] of [
+			[0x2c6d, "AScript", upper],
+			[0x251, "aScript", lower],
+		]) {
+			const suffix = choice === "crossing" ? "crossing" : "singleStorey";
+			const glyph = glyphStore.queryByUnicode(cp);
+			assert.deepEqual(
+				contours(glyph),
+				contours(
+					glyphStore.queryByNameEnsured(
+						`${name}.${suffix}.${para.variantSelector["a/singleStorey.sans"]}`,
+					),
+				),
+				name,
+			);
+			const tags = new Set(AnyCv.query(glyph).map((cv) => cv.tag));
+			const alphaPrime = name === "AScript" ? "capital-latin-alpha" : "latin-alpha";
+			assert.ok(tags.has(para.variants.primes.get(alphaPrime).tag));
+			assert.ok(tags.has(para.variants.primes.get("a").tag));
+		}
+		assert.equal(para.variantSelector["grek/alpha"], "singleStoreySerifless");
+	}
+});
+
+test("subset fonts retain the Latin alpha and single-storey a features", async () => {
+	const makePara = await getParametersT({ paramsDir });
+	const argv = {
+		shape: {
+			serifs: "sans", spacing: "term", weight: 420, width: 500,
+			slope: "italic", slopeAngle: 9.4,
+		},
+		menu: {
+			family: "Alpha Test", version: "34.9.0", width: 5,
+			slope: "italic", weight: 400,
+		},
+		featureControl: { noCvSs: false, noLigation: true, exportGlyphNames: true },
+		variants: { design: {
+			"latin-alpha": "crossing",
+			"capital-latin-alpha": "single-storey",
+			"capital-latin-gamma": "serifless",
+			"latin-gamma": "serifless",
+		} },
+		subset: { include: { text: String.fromCodePoint(0x251, 0x2c6d) } },
+	};
+	const para = makePara(argv);
+	const cache = await Caching.load(null, "34.9.0", "latin-alpha-test");
+	const { font, charMap } = await buildFont(para, cache);
+	for (const cp of [0x251, 0x2c6d]) {
+		assert.ok(
+			charMap.some(([, unicodes]) => unicodes.includes(cp)),
+			cp.toString(16),
+		);
+	}
+	const tags = new Set(
+		font.gsub.scripts.get("latn").defaultLanguage.features.map((feature) => feature.tag),
+	);
+	for (const key of ["a", "capital-latin-alpha", "latin-alpha"]) {
+		assert.ok(tags.has(para.variants.primes.get(key).tag), key);
+	}
+});
 
 test("ae keeps its independently selected e when inheriting a", () => {
 	const { para, glyphStore } = build(420, "upright", regular, regular, true, {

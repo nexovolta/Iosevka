@@ -122,7 +122,32 @@ for (const slope of ["upright", "italic"]) {
 					const glyph = glyphStore.queryByNameEnsured(id);
 					const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 					assert.ok(contours.length, id);
-					if (name === "latn/de.phonotypic") assert.equal(contours.length, 3, id);
+					if (name === "latn/de.phonotypic") {
+						assert.equal(contours.length, 3, id);
+						if (slope === "italic") {
+							const holes = contours
+								.filter((contour) => signedArea(contour) > 0)
+								.sort((a, b) => Math.max(...a.map((p) => p.y)) - Math.max(...b.map((p) => p.y)));
+							assert.equal(holes.length, 2, id);
+							assert.ok(Math.max(...holes[0].map((p) => p.y)) < para.xHeight, id);
+							const triangleBottom = Math.min(...holes[1].map((p) => p.y));
+							assert.ok(
+								triangleBottom >= para.xHeight && triangleBottom <= 1.15 * para.xHeight,
+								id,
+							);
+							const tooth = [
+								"toothlessCornerRTB", "toothlessCorner", "toothlessRounded",
+								"flatBottom", "toothed", "tailed",
+							].find((value) => suffix.startsWith(value));
+							assert.ok(tooth, id);
+							const reference = glyphStore.queryByNameEnsured(`${name}.${tooth}Serifless`);
+							assert.deepEqual(
+								contours,
+								new Geom.SimplifyGeometry(reference.geometry, reference.gizmo, true).toContours(),
+								id,
+							);
+						}
+					}
 					if (name === "latn/the.phonotypic") {
 						assert.equal(contours.length, 2, id);
 						assert.ok(signedArea(contours[0]) * signedArea(contours[1]) < 0, id);
