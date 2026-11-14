@@ -89,7 +89,7 @@ for (const noCvSs of [false, true]) {
 			);
 			contours.push(JSON.stringify(shape));
 		}
-		assert.equal(new Set(contours).size, 3);
+			assert.equal(new Set(contours).size, 3);
 	});
 }
 
@@ -138,5 +138,6 @@ test("swash a follows the selected a, including diagonal bars and single-storey 
 			),
 		);
 	}
-	assert.equal(new Set(contours).size, 3);
+	assert.notEqual(contours[0], contours[1]);
+	assert.equal(contours[0], contours[2]);
 });

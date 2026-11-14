@@ -40,6 +40,7 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	define latnZZA  : gsub.copyLanguage 'latn_ZZA ' 'latn_DFLT'
 	define latnVIT  : gsub.copyLanguage 'latn_VIT ' 'latn_DFLT'
 	define latnIPPH : gsub.copyLanguage 'latn_IPPH' 'latn_DFLT'
+	define latnPTMN : gsub.copyLanguage 'latn_PTMN' 'latn_DFLT'
 	define latnAPPH : gsub.copyLanguage 'latn_APPH' 'latn_DFLT'
 	define latnUPPH : gsub.copyLanguage 'latn_UPPH' 'latn_DFLT'
 	define grekIPPH : gsub.copyLanguage 'grek_IPPH' 'grek_DFLT'
@@ -152,6 +153,10 @@ export : define [buildLOCL gsub para glyphStore] : begin
 	grekIPPH.addFeature loclIPPH
 	grekAPPH.addFeature loclIPPH
 	loclIPPH.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.IPPH
+
+	# Pitman phonotypic
+	define loclPTMN : latnPTMN.addFeature : gsub.createFeature 'locl'
+	loclPTMN.addLookup : createGsubLookupFromGr gsub glyphStore LocalizedForm.PTMN
 
 	# UPPH
 	define loclUPPH : gsub.createFeature 'locl'

@@ -46,6 +46,11 @@ glyph-block Letter-Greek-Upper-Sigma : begin
 			include : df.markSet.capital
 			include : SigmaShape df CAP 0 Stroke (doSerifTop -- fTop) (doSerifBot -- fBot)
 
+		create-glyph "Ezh.phonotypic.\(suffix)" : glyph-proc
+			include [refer-glyph "grek/Sigma.\(suffix)"] AS_BASE ALSO_METRICS
+			include : FlipAround Middle 0 (-1) 1
+
 	select-variant 'grek/Sigma' 0x3A3
+	select-variant 'Ezh.phonotypic' (follow -- 'grek/Sigma')
 	link-reduced-variant 'grek/Sigma/sansSerif' 'grek/Sigma' MathSansSerif
 	select-variant 'Esh' 0x1A9 (shapeFrom -- 'grek/Sigma') (follow -- 'grek/Sigma')

@@ -319,8 +319,30 @@ glyph-block Letter-Latin-V : begin
 			bilateralMotionSerifed VBilateralMotionSerifs
 			serifed               VSerifs
 
+	define [PhonotypicRamsHorn top Arm] : glyph-proc
+		local df : include : DivFrame 1
+		local sw : AdviceStroke 2.75
+		local bowlTop : 0.5 * top
+		local yJoin : bowlTop - 0.35 * sw
+		include : union
+			OShape bowlTop 0 df.leftSB df.rightSB sw
+			with-transform [ApparentTranslate 0 yJoin] : Arm df (top - yJoin) sw
+
 	foreach {suffix {{fStraightBar fSquareTop} Serifs}} [Object.entries VStandardConfig] : do
 		local fSerifStraight : if fSquareTop 0 fStraightBar
+		define [RamsHornArm df top sw] : glyph-proc
+			if fSquareTop : include : VSquareTopShape df top sw
+			: else : include : VShape df fStraightBar top sw
+			include : Serifs df fSerifStraight top sw
+
+		create-glyph "Ramshorn.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : PhonotypicRamsHorn CAP RamsHornArm
+
+		create-glyph "ramshorn.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : PhonotypicRamsHorn XH RamsHornArm
+
 		create-glyph "V.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			if fSquareTop : include : VSquareTopShape [DivFrame 1] CAP Stroke
@@ -426,6 +448,16 @@ glyph-block Letter-Latin-V : begin
 		cursiveSerifed   {(1/16)  true }
 
 	foreach {suffix {pxBar fDoSerif}} [Object.entries VCursiveConfig] : do
+		define [RamsHornCursiveArm df top sw] : glyph-proc
+			include : VCursiveShape pxBar top sw
+			if fDoSerif : begin
+				local xBar : VCursiveShape.xBarPos pxBar
+				include : tagged 'serifLT' : HSerif.lt xBar top (SideJut + (xBar - SB))
+
+		create-glyph "ramshorn.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : PhonotypicRamsHorn XH RamsHornCursiveArm
+
 		create-glyph "v.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : VCursiveShape pxBar XH Stroke
@@ -444,10 +476,12 @@ glyph-block Letter-Latin-V : begin
 		derive-composites "vSlash.\(suffix)" null "v.\(suffix)" 'shortSlash'
 
 	select-variant 'V' 'V'
+	select-variant 'Ramshorn.phonotypic' (follow -- 'V')
 	link-reduced-variant 'V/sansSerif' 'V' MathSansSerif
 	select-variant 'smcpV' 0x1D20 (shapeFrom -- 'v') (follow -- 'V')
 
 	select-variant 'v' 'v'
+	select-variant 'ramshorn.phonotypic' (follow -- 'v')
 	link-reduced-variant 'v/sansSerif' 'v' MathSansSerif
 
 	select-variant 'vPalatalHook' 0x1D8C (follow -- 'v')

@@ -75,9 +75,9 @@ glyph-block Letter-Latin-Lower-T : begin
 
 		###########################################################################################
 
-		export : define [Body df sym top bot _sw fFitHook] : glyph-proc
+		export : define [Body df sym top bot _sw fFitHook fNoCrossbar] : glyph-proc
 			local sw : fallback _sw Stroke
-			include : CrossBar df sym sw
+			if [not fNoCrossbar] : include : CrossBar df sym sw
 
 			local g : include : HookShapeT dispiro df sym 0 top bot sw fFitHook
 			local gEnd g.knots.(g.knots.length - 1)
@@ -106,7 +106,7 @@ glyph-block Letter-Latin-Lower-T : begin
 		define [xHookTerminal df sym sw] : begin
 			local pAdaptive : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
 			return : match sym
-				[Just SYM-LEFT] : mix [BarLeftPos df sym] df.rightSB [mix 0.75 1.00 pAdaptive]
+				[Just SYM-LEFT] : Math.min df.rightSB : Math.max [mix [BarLeftPos df sym] df.rightSB [mix 0.75 1.00 pAdaptive]] ([BarLeftPos df sym] + [HSwToV : 2.25 * sw])
 				__              : [BarLeftPos df sym] + [Math.max ((df.rightSB - df.leftSB) * [mix 0.55 0.80 pAdaptive] + [HSwToV : 0.25 * sw]) [HSwToV : 2.25 * sw]]
 
 		export : define [HookShapeT sink df sym offset top bot sw fFitHook] : begin
@@ -131,9 +131,9 @@ glyph-block Letter-Latin-Lower-T : begin
 
 		###########################################################################################
 
-		export : define [Body df sym top bot _sw fFitHook] : glyph-proc
+		export : define [Body df sym top bot _sw fFitHook fNoCrossbar] : glyph-proc
 			local sw : fallback _sw Stroke
-			include : CrossBar df sym sw
+			if [not fNoCrossbar] : include : CrossBar df sym sw
 
 			local g : include : HookShapeT dispiro df sym 0 top bot sw fFitHook
 			local gEnd g.knots.(g.knots.length - 1)
@@ -160,9 +160,9 @@ glyph-block Letter-Latin-Lower-T : begin
 
 		export : define BarLeftPos BentHook.BarLeftPos
 
-		export : define [Body df sym top bot _sw] : glyph-proc
+		export : define [Body df sym top bot _sw _fFitHook fNoCrossbar] : glyph-proc
 			local sw : fallback _sw Stroke
-			include : BentHook.CrossBar df sym sw
+			if [not fNoCrossbar] : include : BentHook.CrossBar df sym sw
 
 			local g : include : HookShape df sym top 0 sw
 
@@ -190,12 +190,12 @@ glyph-block Letter-Latin-Lower-T : begin
 			[Just SYM-BALANCED]  : xSmallTBarLeftT df
 			__                   : df.middle - [HSwToV HalfStroke]
 
-		export : define [Body        df sym top bot _sw] : Impl NORMAL    df sym top bot 0 _sw
+		export : define [Body        df sym top bot _sw _fFitHook fNoCrossbar] : Impl NORMAL df sym top bot 0 _sw false fNoCrossbar
 		export : define [Retroflex   df sym top bot _sw] : Impl RETROFLEX df sym top bot 0 _sw
 		export : define [CrossRTBody df sym top bot _sw] : Impl RETROFLEX df sym top bot 0 _sw
-		export : define [CornerBody df sym top bot _sw] : Impl NORMAL df sym top bot 0 _sw true
+		export : define [CornerBody df sym top bot _sw _fFitHook fNoCrossbar] : Impl NORMAL df sym top bot 0 _sw true fNoCrossbar
 
-		define [Impl shape df sym top bot ext _sw fCorner] : glyph-proc
+		define [Impl shape df sym top bot ext _sw fCorner fNoCrossbar] : glyph-proc
 			local sw : fallback _sw Stroke
 			local xBarLeft : BarLeftPos df sym
 			local {xCrossLeft xCrossRight} : xCrossBarPos df sym
@@ -206,7 +206,7 @@ glyph-block Letter-Latin-Lower-T : begin
 				__               : begin xCrossRight
 
 			include : union
-				HCrossBar.top xCrossLeft (xCrossRight + ext) ySmallTBarPos sw
+				if fNoCrossbar [no-shape] [HCrossBar.top xCrossLeft (xCrossRight + ext) ySmallTBarPos sw]
 				dispiro
 					widths.rhs sw
 					if (shape === RETROFLEX)
@@ -231,7 +231,7 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	define CornerHook : namespace
 		export : define BarLeftPos FlatHook.BarLeftPos
-		export : define [Body df sym top bot _sw] : FlatHook.CornerBody df sym top bot _sw
+		export : define [Body df sym top bot _sw _fFitHook fNoCrossbar] : FlatHook.CornerBody df sym top bot _sw _fFitHook fNoCrossbar
 		export : define [Retroflex df sym top bot _sw] : FlatHook.Retroflex df sym top bot _sw
 
 	define UprightTailed : namespace
@@ -258,13 +258,13 @@ glyph-block Letter-Latin-Lower-T : begin
 			([Just SYM-LEFT] || [Just SYM-PR-LEFT]) {([BarLeftPos df sym] + TanSlope * Stroke) (df.middle + LongJut * [Math.sqrt df.adws])}
 			__                                    {(df.middle - LongJut * [Math.sqrt df.adws]) (df.middle + LongJut * [Math.sqrt df.adws])}
 
-		export : define [Body df sym top bot _sw] : glyph-proc
+		export : define [Body df sym top bot _sw _fFitHook fNoCrossbar] : glyph-proc
 			local sw : fallback _sw Stroke
 			local xLeft : BarLeftPos df sym
 			local {xcl xcr} : xCrossBarPos df sym
 			local xEnd : xLeft + [HSwToV : 1.75 * sw]
 			include : VBar.l xLeft 0 top sw
-			include : HCrossBar.top xcl xcr ySmallTBarPos sw
+			if [not fNoCrossbar] : include : HCrossBar.top xcl xcr ySmallTBarPos sw
 
 			include : LeaningAnchor.Above.VBar.l xLeft
 			include : LeaningAnchor.Below.VBar.l xLeft
@@ -306,6 +306,29 @@ glyph-block Letter-Latin-Lower-T : begin
 			include : Style.Body df sym top 0
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
+
+		create-glyph "latn/the.phonotypic.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.b
+			local stem : Style.BarLeftPos df sym
+			local xBarLeft : if (sym === SYM-LEFT) stem df.leftSB
+			local yBar : XH - 0.55 * (top - XH)
+			local dBar : [if para.isItalic 0.85 0.9] * XH
+			local triWidth : df.rightSB - stem
+			local triClear : (top - yBar) * (triWidth - [HSwToV Stroke]) / triWidth
+			local triSw : Math.min (2 * [Math.min Stroke : 0.32 * (Ascender - dBar)]) : 0.85 * triClear
+			include : with-transform [if para.isItalic [FlipAround df.middle 0 (-1) 1] [Translate 0 0]] : difference
+				union
+					Style.Body df sym top 0 nothing nothing true
+					HBar.t xBarLeft df.rightSB yBar Stroke
+					intersection [Rect top (yBar - Stroke) stem df.rightSB]
+						ExtLineCenter stem top df.rightSB yBar triSw
+				spiro-outline
+					corner stem top
+					corner df.rightSB yBar
+					corner (df.width + Stroke) yBar
+					corner (df.width + Stroke) (top + Stroke)
+					corner stem (top + Stroke)
 
 		create-glyph "t/pack75.\(suffix)" : glyph-proc
 			local dfPack : include : ThreeQuarterDf para.advanceScaleM Stroke 1 df.adws
@@ -520,7 +543,10 @@ glyph-block Letter-Latin-Lower-T : begin
 				Arch.lhs Ascender
 				flatside.ld xLeft 0 Ascender ada adb 0
 
-	select-variant 'latn/the' 0x1DF79 (shapeFrom -- 'tClosed') (follow -- 'tHookTopRTail')
+	create-glyph 'latn/the' 0x1DF79 : glyph-proc
+		include [refer-glyph 'tClosed.hookless'] AS_BASE ALSO_METRICS
+
+	select-variant 'latn/the.phonotypic' (follow -- 't')
 
 	# U+01BE is actually "t" and "s" combined together
 	define SLAB-NONE        0

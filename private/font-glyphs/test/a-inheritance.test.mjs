@@ -156,8 +156,8 @@ for (const [weight, slope] of [
 			assert.deepEqual(tailOutline, baseOutline, tail);
 			assert.equal(
 				tailOutline.length,
-				2,
-				`${tail}: swash must join the body and preserve its counter`,
+				slope === "italic" ? 3 : 2,
+				`${tail}: swash must join the body and preserve its counters`,
 			);
 		}
 	});

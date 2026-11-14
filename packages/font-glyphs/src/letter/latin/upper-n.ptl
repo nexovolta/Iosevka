@@ -89,6 +89,7 @@ glyph-block Letter-Latin-Upper-N : begin
 		local-parameter : kSB    -- 1.0
 		local-parameter : stroke -- [AdviceStroke 2]
 		local-parameter : swDiag -- [AdviceStroke 4]
+		local-parameter : rightBottom -- 0
 
 		local left  : mix 0        df.leftSB  kSB
 		local right : mix df.width df.rightSB kSB
@@ -113,10 +114,10 @@ glyph-block Letter-Latin-Upper-N : begin
 			match bodyType
 				[Just BODY-SYMMETRIC] : dispiro
 					widths.lhs stroke
-					flat right      0               [heading Upward]
-					curl right [mix 0 top pInkTrap] [heading Upward]
+					flat right      rightBottom               [heading Upward]
+					curl right [mix rightBottom top pInkTrap] [heading Upward]
 					straight.up.end right top [widths.lhs.heading fine Upward]
-				__ : VBar.r right 0 top fine
+				__ : VBar.r right rightBottom top fine
 			match bodyType
 				[Just BODY-SYMMETRIC] : dispiro
 					widths.lhs stroke
@@ -234,12 +235,22 @@ glyph-block Letter-Latin-Upper-N : begin
 			include : RevNShape [DivFrame 1] CAP bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
 
+		create-glyph "Eng.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			local yHook : 0 - Descender
+			include : RevNShape [DivFrame 1] CAP bodyType slabType
+				swDiag -- [AdviceStroke crDiag]
+				rightBottom -- yHook
+			eject-contour 'serifRB'
+			include : PalatalHook.rExt RightSB yHook (xLink -- (RightSB - [HSwToV : 0.5 * Stroke]))
+
 		create-glyph "cyrl/i.upright.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : RevNShape [DivFrame 1] XH bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
 
 	select-variant 'cyrl/I' 0x418
+	select-variant 'Eng.phonotypic' (follow -- 'cyrl/I')
 	derive-composites 'cyrl/ITail' null 'cyrl/I' [CyrTailDescender.rSideJut RightSB 0]
 
 	CreateAccentedComposition 'cyrl/IBreve' 0x419 'cyrl/I' 'breveAbove'

@@ -251,6 +251,10 @@ glyph-block Letter-Latin-U : begin
 			include : Base  df CAP Stroke nothing nothing cut
 			include : Slabs df CAP Stroke
 
+		create-glyph "UBar.phonotypic.\(suffix)" : glyph-proc
+			include [refer-glyph "U.\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.m (SB + [HSwToV : 0.5 * Stroke]) (RightSB - [HSwToV : 0.5 * Stroke]) (CAP / 2) Stroke
+
 		create-glyph "U/withTonos.\(suffix)" : glyph-proc
 			include [refer-glyph "U.\(suffix)"] AS_BASE ALSO_METRICS
 			include : SetGrekUpperTonos [if fSlabLT (-SideJut) 0]
@@ -349,6 +353,10 @@ glyph-block Letter-Latin-U : begin
 			include : df.markSet.e
 			include : UBase  df XH Stroke
 			include : Slabs df XH Stroke
+
+		create-glyph "uBar.phonotypic.\(suffix)" : glyph-proc
+			include [refer-glyph "u.\(suffix)"] AS_BASE ALSO_METRICS
+			include : HBar.m (SB + [HSwToV : 0.5 * Stroke]) (RightSB - [HSwToV : 0.5 * Stroke]) (XH / 2) Stroke
 
 		create-glyph "uReversed.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -498,6 +506,7 @@ glyph-block Letter-Latin-U : begin
 				include : Translate 0 (SB / 2)
 
 	select-variant 'U' 'U'
+	select-variant 'UBar.phonotypic' (follow -- 'U')
 	link-reduced-variant 'U/sansSerif' 'U' MathSansSerif
 	select-variant 'U/withTonos' (follow -- 'U')
 	select-variant 'smcpU' 0x1D1C (follow -- 'U')
@@ -506,6 +515,7 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'UReversed' 0x1DF7E
 
 	select-variant 'u' 'u'
+	select-variant 'uBar.phonotypic' (follow -- 'u')
 	select-variant 'latn/ou' 0x1DF5F (follow -- 'u')
 	link-reduced-variant 'u/sansSerif' 'u' MathSansSerif
 	select-variant 'u/descBase' (shapeFrom -- 'u')
@@ -576,6 +586,7 @@ glyph-block Letter-Latin-U : begin
 
 	CreateAccentedComposition 'uDieresis' 0xFC 'u' 'dieresisAbove'
 
+	CreateAccentedComposition 'UBar'     0x244   'U'     'hStrike'
 	CreateAccentedComposition 'uBar'     0x289   'u'     'hStrike'
 	CreateAccentedComposition 'turnhBar' 0x1DF3E 'turnh' 'hStrike'
 

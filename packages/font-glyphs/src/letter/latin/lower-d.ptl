@@ -16,9 +16,10 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
 
-	define [ToothedBody df yTop fFlat cut] : union
+	define [ToothedBody df yTop fFlat cut _bowlTop] : union
 		if fFlat
 		: then : OBarRight.earlessCorner
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -27,6 +28,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 			rise  -- 0
 		: else : OBarRight.shape
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -42,22 +44,25 @@ glyph-block Letter-Latin-Lower-D : begin
 			tagged 'strokeR' : VBar.r df.rightSB y.bot y.top df.mvs
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- yBot) (top -- yTop) (sw -- df.mvs)
 
-	define [TailedBody df yTop fFlat cut] : begin
+	define [TailedBody df yTop fFlat cut _bowlTop] : begin
 		local y : StemCutY 0 yTop cut
 		return : union
-			OBarRight.shape
+			[if fFlat OBarRight.earlessCorner OBarRight.shape]
+				top   -- [fallback _bowlTop XH]
 				left  -- df.leftSB
 				right -- df.rightSB
 				sw    -- df.mvs
 				fine  -- df.shoulderFine
 				ada   -- df.smallArchDepthA
 				adb   -- df.smallArchDepthB
+				rise  -- 0
 			tagged 'strokeR' : RightwardTailedBar df.rightSB y.bot y.top df.mvs
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTop) (sw -- df.mvs)
 
-	define [FlatBottomBody df yTop fFlat cut] : union
+	define [FlatBottomBody df yTop fFlat cut _bowlTop] : union
 		if fFlat
 		: then : OBarRight.flatTopAndBottom
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -65,6 +70,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
 		: else : OBarRight.toothlessCorner
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -74,9 +80,10 @@ glyph-block Letter-Latin-Lower-D : begin
 			rise  -- 0
 		DBar df yTop cut
 
-	define [ToothlessCornerBody df yTop fFlat cut] : union
+	define [ToothlessCornerBody df yTop fFlat cut _bowlTop] : union
 		if fFlat
 		: then : OBarRight.toothlessCornerFlat
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -84,6 +91,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
 		: else : OBarRight.toothlessCorner
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -92,9 +100,10 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		DBar df yTop cut DToothlessRise
 
-	define [ToothlessCornerRTBBody df yTop fFlat cut] : union
+	define [ToothlessCornerRTBBody df yTop fFlat cut _bowlTop] : union
 		if fFlat
 		: then : OBarRight.toothlessCornerFlat
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -102,6 +111,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			ada   -- df.smallArchDepthA
 			adb   -- df.smallArchDepthB
 		: else : OBarRight.toothlessCorner
+			top   -- [fallback _bowlTop XH]
 			left  -- df.leftSB
 			right -- df.rightSB
 			sw    -- df.mvs
@@ -110,9 +120,10 @@ glyph-block Letter-Latin-Lower-D : begin
 			adb   -- df.smallArchDepthB
 		DBar df yTop cut
 
-	define [ToothlessRoundedBody df yTop fFlat cut] : begin
+	define [ToothlessRoundedBody df yTop fFlat cut _bowlTop] : begin
 		local body : if fFlat
 			then : OBarRight.toothlessRoundedFlat (yTerminal -- yTop)
+				top   -- [fallback _bowlTop XH]
 				left  -- df.leftSB
 				right -- df.rightSB
 				sw    -- df.mvs
@@ -120,6 +131,7 @@ glyph-block Letter-Latin-Lower-D : begin
 				ada   -- df.smallArchDepthA
 				adb   -- df.smallArchDepthB
 			else : OBarRight.toothlessRounded (yTerminal -- yTop)
+				top   -- [fallback _bowlTop XH]
 				left  -- df.leftSB
 				right -- df.rightSB
 				sw    -- df.mvs
@@ -207,6 +219,22 @@ glyph-block Letter-Latin-Lower-D : begin
 			if bottomSerif : include : bottomSerif df Ascender
 			include : LeaningAnchor.Above.At [mix xTopLeft df.rightSB 0.5]
 
+		create-glyph "latn/de.phonotypic.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.b
+			local xLeft : mix df.leftSB df.rightSB 0.1
+			local yBar : [if para.isItalic 0.85 0.9] * XH
+			local triSw : Math.min df.mvs : 0.32 * (Ascender - yBar)
+			local bowlTop : if para.isItalic (yBar - 0.35 * triSw) (0.7 * XH)
+			include : union
+				Body df Ascender [if para.isItalic true fFlat] cut bowlTop
+				HBar.m xLeft [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
+				intersection [Rect Ascender (yBar - triSw / 2) xLeft df.rightSB]
+					ExtLineCenter xLeft yBar (df.rightSB - [HSwToV : 0.5 * df.mvs]) Ascender triSw
+			if topSerif : include : topSerif df Ascender
+			if bottomSerif : include : bottomSerif df Ascender
+			include : LeaningAnchor.Above.VBar.r df.rightSB df.mvs
+
 		if [not topSerif] : create-glyph "dHookTop.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.b
@@ -228,6 +256,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	CreateAccentedComposition 'dBar' null 'd' 'hStrike'
 
 	select-variant 'latn/de' 0x18C (follow -- 'd')
+	select-variant 'latn/de.phonotypic' (follow -- 'd')
 	select-variant 'dHookTop' 0x257
 
 	link-reduced-variant 'd/descBase' 'd'
