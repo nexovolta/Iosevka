@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix clamp fallback] from '@iosevka/util'
+import [ethCrossbar] from '../../../eth-crossbar.mjs'
 
 glyph-module
 
@@ -10,6 +11,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	glyph-block-import Letter-Shared-Shapes : PalatalHook
 	glyph-block-import Symbol-Punctuation-Ampersand : ClosedRotunda
 	glyph-block-import Recursive-Build : ForkUpright
+	glyph-block-import Digits-Six : SixConfig
 
 	define fine ShoulderFine
 
@@ -33,22 +35,11 @@ glyph-block Letter-Latin-Lower-Eth : begin
 			quadControls 0 0.8
 			g4 (SB + Stroke * 1.1) Ascender [widths.lhs]
 
-	create-glyph 'dInsular.straightBar' : glyph-proc
-		include : MarkSet.b
-		local yMockBarStart : yMid2 + Stroke * 0.3
-		local xTerminal : [mix SB RightSB 0.4] + [HSwToV HalfStroke]
-		local pStraightBarStart : 0.75 - Stroke / (Ascender - 0)
-		include : intersection [MaskBelow Ascender] : dispiro
-			ArcStartKnots
-			flat [mix Width xTerminal pStraightBarStart] [mix yMockBarStart CAP pStraightBarStart] [widths.lhs]
-			curl [mix Width xTerminal 2]                 [mix yMockBarStart CAP 2]
-
-	create-glyph 'dInsular.closedContour' : glyph-proc
-		include : MarkSet.b
-		include : dispiro
-			ArcStartKnots SmallArchDepthA (Ascender - SmallArchDepthB)
-			HookEnd Ascender
-			g4 (SB + OX) (Ascender - Hook)
+	foreach {suffix {Body fFlatBowl}} [Object.entries SixConfig] : do
+		create-glyph "dInsular.\(suffix)" : glyph-proc
+			include : MarkSet.b
+			include : Body fFlatBowl Ascender
+			include : FlipAround Middle 0 (-1) 1
 
 	select-variant 'dInsular' 0xA77A (follow -- 'eth')
 	select-variant 'partial'  0x2202 (shapeFrom -- 'dInsular')
@@ -62,7 +53,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	if (useUprightSource && [query-glyph 'dRotundaCrossingLoop/uprightSource'])
 		set uprightRotunda : ForkUpright {'dRotundaCrossingLoop/uprightSource'}
 
-	foreach suffix {'curlyBar' 'straightBar' 'closedContour'} : do
+	foreach suffix [{'curlyBar'}.concat : Object.keys SixConfig] : do
 		create-glyph "dRotundaCrossingLoop.\(suffix)" : glyph-proc
 			local source : refer-glyph 'dRotundaCrossingLoop/uprightSource'
 			if useUprightSource
@@ -74,10 +65,21 @@ glyph-block Letter-Latin-Lower-Eth : begin
 
 	select-variant 'dRotundaCrossingLoop' 0x1DF93 (follow -- 'eth')
 
-	derive-composites 'eth' 0xF0 'dInsular' : dispiro
-		widths.center OverlayStroke
-		flat [mix SB RightSB 0.10] [mix XH Ascender (-0.05)]
-		curl [mix SB RightSB 0.95] [mix XH Ascender (+0.35)]
+	foreach suffix [{'curlyBar'}.concat : Object.keys SixConfig] : do
+		create-glyph "eth.\(suffix)" : glyph-proc
+			local base : query-glyph "dInsular.\(suffix)"
+			include base AS_BASE ALSO_METRICS
+			local corners : ethCrossbar base Ascender Width OverlayStroke
+			currentGlyph.clearGeometry
+			include : union
+				begin base
+				spiro-outline
+					corner corners.0.x corners.0.y
+					corner corners.3.x corners.3.y
+					corner corners.2.x corners.2.y
+					corner corners.1.x corners.1.y
+
+	select-variant 'eth' 0xF0
 
 	derive-composites 'ethPalatalHook' 0x1DF2F 'eth' : PalatalHook.r
 		x -- [mix [Arch.adjust-x.bot Middle] (RightSB - OX) 0.75]

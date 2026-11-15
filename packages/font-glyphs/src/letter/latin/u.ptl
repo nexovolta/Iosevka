@@ -207,8 +207,6 @@ glyph-block Letter-Latin-U : begin
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
 
-	# Mirror the body, then boolean-union it with remapped serifs so overlapping
-	# stems/bowl/serifs share one fill (inner/outer serifs kept, not swapped).
 	define [ReversedUCompose revBody revSlabs df top sw cut] : glyph-proc
 		include : union
 			new-glyph : glyph-proc

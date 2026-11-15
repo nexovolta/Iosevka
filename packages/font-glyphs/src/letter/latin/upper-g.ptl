@@ -48,14 +48,12 @@ glyph-block Letter-Latin-Upper-G : begin
 		local-parameter : fHookBot -- false
 
 		local yBarTop : [mix 0 top pyBar] + HalfStroke
-		# The top edge of the bar meets the top-left corner of the stem, and anything of the bar above the stem top is cut flat
 		define [DiagBar xr dir] : begin
 			local slope : dir * 0.16 * top / (RightSB - SB)
 			local h : Stroke * [Math.sqrt : 1 + slope * slope]
 			local xStemL : RightSB - [HSwToV Stroke]
 			local yMid : yBarTop + slope * ((Middle + xr) / 2 - xStemL) - h / 2
 			local bar : DiagonalHBar Middle xr yMid (slope * (xr - Middle)) Stroke
-			# A bar ending at the stem is cut flat above the stem corner; a crossing bar keeps its slope
 			if (xr > RightSB) : return bar
 			return : difference bar
 				Rect (yBarTop + top) yBarTop xStemL (Width + Stroke)

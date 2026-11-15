@@ -52,7 +52,10 @@ for (const [weight, slope] of [
 		const prime = para.variants.primes.get("capital-latin-upsilon");
 		assert.deepEqual([...prime.variants.keys()], ["serifless", "serifed"]);
 		const lowerPrime = para.variants.primes.get("latin-upsilon");
-		assert.deepEqual([...lowerPrime.variants.keys()], ["serifless", "serifed"]);
+		assert.deepEqual(
+			[...lowerPrime.variants.keys()],
+			["serifless", "serifed"],
+		);
 		const { glyphStore } = buildGlyphs(para, {
 			blockIsNeeded: () => true,
 			glyphIsNeeded: () => true,
@@ -84,11 +87,26 @@ for (const [weight, slope] of [
 		}
 
 		test("Latin upsilon cases select serifs independently", () => {
-			for (const [upper, lower] of [["serifed", "serifless"], ["serifless", "serifed"]]) {
+			for (const [upper, lower] of [
+				["serifed", "serifless"],
+				["serifless", "serifed"],
+			]) {
 				const argv = {
-					shape: { serifs: "sans", spacing: "term", weight: 420, width: 500, slope: "upright", slopeAngle: 0 },
+					shape: {
+						serifs: "sans",
+						spacing: "term",
+						weight: 420,
+						width: 500,
+						slope: "upright",
+						slopeAngle: 0,
+					},
 					featureControl: { noCvSs: false },
-					variants: { design: { "capital-latin-upsilon": upper, "latin-upsilon": lower } },
+					variants: {
+						design: {
+							"capital-latin-upsilon": upper,
+							"latin-upsilon": lower,
+						},
+					},
 				};
 				const para = init(data, argv);
 				Variant.apply(variants, para, argv);

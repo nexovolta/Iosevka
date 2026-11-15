@@ -18,7 +18,6 @@ glyph-block Letter-Latin-K : begin
 
 	glyph-block-export KLegs KInnerRtSerif
 
-# Inner serif on a down-left diagonal: attach at the true inner edge, jut left.
 	define [KInnerRtSerif xOuter top left swRef swSerif] : begin
 		local stemInk : HSwToV swRef
 		local yJoin : [mix 0 top 0.42] - swRef
@@ -73,7 +72,6 @@ glyph-block Letter-Latin-K : begin
 		local stemInk        : HSwToV swRef
 		local sideJutAdj     : ox + stemInk
 		local xSerif         : kshRight - sideJutAdj
-		# Path start is the OUTER edge of the upper arm (widths.rhs, traveling down-left).
 		local xOuter         : kshRight - ox
 		local yJoinArm : [mix 0 top 0.42] - swRef
 		local fallArm : Math.max TINY (top - yJoinArm)
@@ -185,7 +183,6 @@ glyph-block Letter-Latin-K : begin
 			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yAttach2 0 : StrokeWidthBlend 0.5 0.7]
 
-			# Union serifs into the legs so overlapping contours cannot reverse winding.
 			include : union
 				new-glyph : glyph-proc
 					if fHookRight
@@ -320,11 +317,6 @@ glyph-block Letter-Latin-K : begin
 						maskRT	     -- TopSerifMask
 						maskRB	     -- BotSerifMask
 
-		# Flip the unhooked straight body only. Leg serifs and slash overlays are
-		# applied afterwards so they sit on the inverted arms, not the pre-flip
-		# geometry. For K with hook, flip first so the original lower lands on
-		# top, eject that arm, then reinsert a smaller hooked upper as a
-		# separate union operand (avoids mixed-winding dents).
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
 			local ox : KOvershootX slabLegs true top stroke
@@ -432,9 +424,6 @@ glyph-block Letter-Latin-K : begin
 						Rect yJoin 0 (-VERY-FAR) VERY-FAR
 						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke 0.2
 				new-glyph : glyph-proc
-					# Top-right serifs sit on the quarter-arc terminal.
-					# Outer is one bar to the right. Middle is one bar centered on that
-					# terminal: cap height for uppercase, x-height for lowercase.
 					local roundedTr : [not fHookRight] && [HasRtOuter slabLegs]
 					include : KLegSlabs
 						mode         -- [maskOffBits slabLegs : if (fHookRight || roundedTr) [bitOr SLAB-TR-L SLAB-TR-R] 0]

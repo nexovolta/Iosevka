@@ -217,13 +217,7 @@ glyph-block Letter-Latin-X : begin
 		include : HBar.m (mid - barHalf) (mid + barHalf) (height / 2) sw
 		include : ApparentTranslate 0 box.b
 
-	# Four parallelograms: a left chevron and a right chevron. Each pair shares
-	# the horizontal edge at yMid; every parallelogram has one vertex at (mid, yMid).
 	define [StraightTouchingXHw mid xr sw box] : begin
-		# Thickness follows the above-baseline half, not extra descender
-		# length, so longer legs keep the same diagonal weight.
-		# kFine matches HalfXStrand's crossing (AdviceStroke 3), so these
-		# constant-width chevrons track other X/x variants, especially heavy.
 		local fallBody : Math.max TINY : 0.5 * (box.t - [Math.max 0 box.b])
 		local run : Math.max TINY (xr - mid)
 		local kFine : Math.min 0.97 : [AdviceStroke 3] / Stroke
@@ -231,7 +225,6 @@ glyph-block Letter-Latin-X : begin
 		return : hw * [clamp 0.8 1 : fallBody / (CAP / 2)]
 
 	define [StraightTouchingXParallelograms mid yMid hw xl xr yt ybL ybR] : begin
-		# Overlap the inner vertices so the chevrons kiss after integer rounding.
 		local kiss 1
 		return : union
 			spiro-outline
@@ -271,8 +264,6 @@ glyph-block Letter-Latin-X : begin
 		include : StraightTouchingXParallelograms mid yMid hw box.l box.r height (botLong - box.b) 0
 		include : ApparentTranslate 0 box.b
 
-	# Stretch the left-bottom K-leg to botLong. Do not add a vertical stem.
-	# rhs + Upward matches the 180-flip of the right-top K-leg (stroke fills inward).
 	define [HShapedLongLeftBottom fCurly box sw height mid botRel] : glyph-proc
 		local fineBar : [AdviceStroke 3.5] * (sw / Stroke)
 		local barHalf : [HSwToV : 0.5 * sw] + fineBar
