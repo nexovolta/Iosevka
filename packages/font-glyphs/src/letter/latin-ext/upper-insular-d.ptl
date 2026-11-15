@@ -12,10 +12,9 @@ glyph-block Letter-Latin-Upper-Insular-D : begin
 		straightBowl 1
 	foreach {suffix verticalBowl} [Object.entries InsularDConfig] : do
 		create-glyph "DInsular.\(suffix)" : glyph-proc
-			include : MarkSet.capital
 			include : new-glyph : glyph-proc
-				include : SigmaShape verticalBowl
-				include : ScaleAround Middle 0 (-1) (CAP / XH)
+				include : SigmaShape verticalBowl CAP
+				include : ScaleAround Middle 0 (-1) 1
 
 	alias 'DInsular.verticalBowl' null 'DInsular.straightBowl'
 	select-variant 'DInsular' 0xA779 (follow -- 'grek/sigma')
