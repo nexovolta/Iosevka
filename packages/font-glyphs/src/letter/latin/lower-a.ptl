@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar LeftwardTailedBar RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart StemCutY ApplyDiagCut
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Latin-Wynn : WynnBowl
 
 	define HOOK-SLAB-NONE      0
 	define HOOK-SLAB-CLASSICAL 1 # TODO
@@ -479,22 +480,14 @@ glyph-block Letter-Latin-Lower-A : begin
 		include : df.markSet.capital
 		include : CrossingBody df CAP nothing ArchDepthA ArchDepthB
 
-	define [PhonotypicTurnAlpha df top bar cut _ada _adb] : glyph-proc
+	define [PhonotypicTurnAlpha df top bar cut] : glyph-proc
 		local left df.leftSB
 		local right df.rightSB
-		local ada : fallback _ada : df.archDepthAOf SmallArchDepth df.mvs
-		local adb : fallback _adb : df.archDepthBOf SmallArchDepth df.mvs
 		local shape : union
 			with-transform [ScaleAround df.middle (top / 2) (-1) (-1)] : union
 				bar df top df.mvs [if (cut === 'topCut') '' cut]
 				ApplyDiagCut (cut -- [if (cut === 'topCut') '' cut]) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- df.mvs)
-			intersection [MaskAbove 0] : dispiro
-				g4 (left + [HSwToV : 0.8 * df.mvs]) (0.02 * top) [widths.lhs : mix df.shoulderFine df.mvs 0.6]
-				bezControls 0.38 0.12 1 0.5 8
-				flat (right - OX) (0.52 * top) [widths.lhs.heading df.mvs Upward]
-				curl (right - OX) [Math.max (0.52 * top + TINY) (top - adb)]
-				Arch.lhs top (sw -- df.mvs) (swAfter -- df.shoulderFine)
-				flatside.ld (left + [HSwToV : df.mvs - df.shoulderFine]) 0 top ada adb 0 [widths.lhs df.shoulderFine]
+			intersection [MaskAbove 0] : WynnBowl left 0 top df.mvs
 		if (cut === 'topCut')
 			then : begin
 				local x0 : left - df.width
@@ -703,7 +696,7 @@ glyph-block Letter-Latin-Lower-A : begin
 		create-glyph "turnAScript.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
-			include : PhonotypicTurnAlpha df CAP bar cut ArchDepthA ArchDepthB
+			include : PhonotypicTurnAlpha df CAP bar cut
 		create-glyph "turnaScript.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e

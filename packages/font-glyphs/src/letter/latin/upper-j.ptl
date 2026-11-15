@@ -63,7 +63,7 @@ glyph-block Letter-Latin-Upper-J : begin
 			flat (xBarRight - hookScale * [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) 0 [widths.rhs Stroke]
 			curl [mix xBarRight df.leftSB hookScale] 0
 
-	define [JCornerHookBase df dfHook top _sw _hookScale] : glyph-proc
+	define [JCornerHookBase df dfHook top _sw _hookScale _cornerShift] : glyph-proc
 		set-width df.width
 		include : df.markSet.[if (top > XH) 'capital' 'e']
 
@@ -78,14 +78,23 @@ glyph-block Letter-Latin-Upper-J : begin
 		local terminalSw : if _hookScale sw Stroke
 		local hd : FlatHookDepth dfHook
 		local depth : CornerHookDepth Hook terminalSw
-		local xTerminal : mix xBarRight (df.leftSB + [HSwToV : 0.25 * [ArcStartSerifWidth terminalSw]]) hookScale
+		local cornerShift : fallback _cornerShift [if (para.isItalic || para.isOblique) (0.045 * df.width + [Math.max 0 : 0.35 * (Stroke - 0.07 * top)]) 0]
+		local xTerminal : mix xBarRight (df.leftSB + [HSwToV : 0.25 * [ArcStartSerifWidth terminalSw]] - cornerShift) hookScale
 
-		include : dispiro
-			flat xBarRight top [widths.rhs.heading [fallback _sw sw] Downward]
-			curl xBarRight (HalfStroke + 1.375 * hd.y) [if _hookScale [widths.rhs sw] nothing]
-			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.max (xBarRight - hookScale * [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) (xTerminal + [HSwToV terminalSw] + 1)] 0 [widths.rhs terminalSw]
-			CornerHookEnd xTerminal 0 depth terminalSw (-1) 1
+		if (_cornerShift || para.isItalic || para.isOblique)
+			then : begin
+				local xEnd : mix xBarRight df.leftSB hookScale
+				local xStub : xEnd - cornerShift * hookScale
+				include : union
+					JFlatHookBase df dfHook top _sw _hookScale
+					HBar.b xStub xEnd 0 Stroke
+					VBar.l xStub 0 depth terminalSw
+			else : include : dispiro
+				flat xBarRight top [widths.rhs.heading [fallback _sw sw] Downward]
+				curl xBarRight (HalfStroke + 1.375 * hd.y) [if _hookScale [widths.rhs sw] nothing]
+				arcvh.superness DesignParameters.tightHookSuperness
+				flat [Math.max (xBarRight - hookScale * [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) (xTerminal + [HSwToV terminalSw] + 1)] 0 [widths.rhs terminalSw]
+				CornerHookEnd xTerminal 0 depth terminalSw (-1) 1
 
 	define [JDescendingBentHookBase df dfHook top] : glyph-proc
 		set-width df.width

@@ -172,13 +172,18 @@ glyph-block Letter-Latin-Upper-T : begin
 				local designDf : DivFrame [if para.isQuasiProportional adws [if doST (7 / 6) 1]]
 				local hookDf : if para.isQuasiProportional jDf : DivFrame [if [jSuffix.startsWith 'bentHook'] 1 (5 / 6)]
 				local hookDepthDf : if para.isQuasiProportional jDfHook hookDf
-				local hookExtent : hookDf.rightSB - JBalance2 - 0.75 * hookDf.leftSB - [HSwToV HalfStroke] + 0.01 * hookDf.width
+				local cornerShift : if [jSuffix.startsWith 'cornerHook'] (0.06 * hookDf.width + [Math.max 0 : Stroke - 0.07 * CAP]) 0
+				local hookExtent : hookDf.rightSB - JBalance2 - 0.75 * hookDf.leftSB - [HSwToV HalfStroke] + 0.01 * hookDf.width + cornerShift
 				local fitWidth : 2 * [Math.max designDf.middle (hookExtent - 0.1 * designDf.width)]
 				local shape : new-glyph : glyph-proc
 					include : TShape designDf CAP doST false nothing fShort
 					eject-contour 'strokeV'
 					local j : new-glyph : glyph-proc
-						include : jBase hookDf hookDepthDf CAP Stroke 1
+						if [jSuffix.startsWith 'bentHook']
+							then : include : jBase hookDf hookDepthDf CAP Stroke 1
+							else : if [jSuffix.startsWith 'cornerHook']
+								then : include : jBase hookDf hookDepthDf CAP nothing nothing cornerShift
+								else : include : jBase hookDf hookDepthDf CAP
 						include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2) (-1) 1
 					local attach : j.gizmo.unapply j.baseAnchors.jTopSerifAttach
 					local xAttach : j.advanceWidth - attach.x

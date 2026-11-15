@@ -114,6 +114,28 @@ function signedArea(contour) {
 	);
 }
 
+function horizontalCrossings(glyph, y) {
+	const contours = new Geom.SimplifyGeometry(
+		glyph.geometry,
+		glyph.gizmo,
+		true,
+	).toBezArcs();
+	const crossings = [];
+	for (const contour of contours) {
+		for (const arc of contour) {
+			let a = glyph.gizmo.unapply(arc.eval(0));
+			for (let i = 1; i <= 48; i++) {
+				const b = glyph.gizmo.unapply(arc.eval(i / 48));
+				if ((a.y <= y && b.y > y) || (b.y <= y && a.y > y)) {
+					crossings.push(a.x + ((b.x - a.x) * (y - a.y)) / (b.y - a.y));
+				}
+				a = b;
+			}
+		}
+	}
+	return crossings.sort((a, b) => a - b);
+}
+
 await Geom.Init();
 
 for (const [spacing, slope, weight] of ["term", "quasi-proportional"].flatMap(
@@ -222,6 +244,14 @@ for (const [spacing, slope, weight] of ["term", "quasi-proportional"].flatMap(
 					) <= expected,
 					name,
 				);
+				if (t === "serifless" && hook === "cornerHook") {
+					const crossings = horizontalCrossings(glyph, 1.25 * para.stroke);
+					assert.equal(crossings.length, 4, `${name}: corner counter`);
+					assert.ok(
+						crossings[2] - crossings[1] > 0.15 * para.stroke,
+						`${name}: corner hook crowds the stem`,
+					);
+				}
 				if (t === "serifless" && hook === "bentHook") {
 					const tail = contours[0]
 						.filter((point) => point.y < 0.35 * para.cap)
@@ -235,8 +265,103 @@ for (const [spacing, slope, weight] of ["term", "quasi-proportional"].flatMap(
 				}
 			}
 		}
+		if (slope === "italic") {
+			const flat = glyphStore.queryByNameEnsured("J.flatHookSerifless");
+			const corner = glyphStore.queryByNameEnsured("J.cornerHookSerifless");
+			const y = 0.5 * para.stroke;
+			const flatLeft = horizontalCrossings(flat, y)[0];
+			const cornerLeft = horizontalCrossings(corner, y)[0];
+			assert.ok(
+				flatLeft - cornerLeft > 0.025 * corner.advanceWidth,
+				`italic J corner terminal must extend left: flat ${flatLeft}, corner ${cornerLeft}, width ${corner.advanceWidth}, stroke ${para.stroke}`,
+			);
+		}
+		if (spacing === "quasi-proportional") {
+			for (const hook of ["flatHook", "cornerHook"]) {
+				const j = glyphStore.queryByNameEnsured(`J.${hook}Serifless`);
+				const t = glyphStore.queryByNameEnsured(
+					`TRTail.phonotypic.serifless.${hook}Serifless`,
+				);
+				const jStem = horizontalCrossings(j, 0.55 * para.cap);
+				const tStem = horizontalCrossings(t, 0.55 * para.cap);
+				const scale =
+					(tStem.at(-1) - tStem[0]) / (jStem.at(-1) - jStem[0]);
+				const offset = tStem[0] + scale * jStem.at(-1);
+				if (hook === "cornerHook") {
+					const flat = glyphStore.queryByNameEnsured("J.flatHookSerifless");
+					const y = 0.5 * para.stroke;
+					const jTail = horizontalCrossings(flat, y);
+					const tTail = horizontalCrossings(t, y);
+					assert.ok(
+						tTail.at(-1) - (offset - scale * jTail[0]) >
+							0.03 * scale * j.advanceWidth,
+						"corner-hook terminal must be shifted outward",
+					);
+					continue;
+				}
+				for (const fraction of [0.05, 0.1, 0.2, 0.3, 0.4]) {
+					const expected = horizontalCrossings(j, fraction * para.cap)
+						.reverse()
+						.map((x) => offset - scale * x);
+					const actual = horizontalCrossings(t, fraction * para.cap);
+					assert.equal(actual.length, expected.length, `${hook} at ${fraction}`);
+					for (let i = 0; i < actual.length; i++) {
+						assert.ok(
+							Math.abs(actual[i] - expected[i]) < 0.25,
+							`${hook} at ${fraction}: J-hook profile changed`,
+						);
+					}
+				}
+			}
+		}
 	});
 }
+
+test("narrow PTMN corner hooks fit their advance", () => {
+	for (const [weight, slope] of [
+		[120, "upright"],
+		[920, "upright"],
+		[920, "italic"],
+	]) {
+		const argv = {
+			shape: {
+				serifs: "sans",
+				spacing: "term",
+				weight,
+				width: 350,
+				slope,
+				slopeAngle: slope === "italic" ? 9.4 : 0,
+			},
+			featureControl: { noCvSs: false, noLigation: true },
+			variants: {
+				design: {
+					"capital-latin-gamma": "serifless",
+					"latin-gamma": "serifless",
+				},
+			},
+		};
+		const para = init(data, argv);
+		Variant.apply(variants, para, argv);
+		const { glyphStore } = buildGlyphs(para, {
+			blockIsNeeded: () => true,
+			glyphIsNeeded: () => true,
+		});
+		const glyph = glyphStore.queryByNameEnsured(
+			"TRTail.phonotypic.serifless.cornerHookSerifless",
+		);
+		const contours = new Geom.SimplifyGeometry(
+			glyph.geometry,
+			glyph.gizmo,
+			true,
+		).toContours();
+		assert.equal(contours.length, 1, `${weight} ${slope}`);
+		const tail = contours[0].filter((point) => point.y < 0.6 * para.cap);
+		assert.ok(
+			Math.max(...tail.map((point) => point.x)) <= glyph.advanceWidth,
+			`${weight} ${slope}: corner hook exceeds advance`,
+		);
+	}
+});
 
 test("PTMN monospace T hooks retain proportional outlines when fitted", () => {
 	const stores = new Map();
@@ -481,6 +606,28 @@ for (const slope of ["upright", "italic"]) {
 				"turnAScript.phonotypic",
 				"turnaScript.phonotypic",
 			]) {
+				const sharpBowl = glyphStore.queryByNameEnsured(
+					`${prefix}.singleStoreySerifless`,
+				);
+				const points = new Geom.SimplifyGeometry(
+					sharpBowl.geometry,
+					sharpBowl.gizmo,
+					true,
+				)
+					.toBezArcs()
+					.flatMap((contour) =>
+						contour.flatMap((arc) =>
+							Array.from({ length: 32 }, (_, i) =>
+								sharpBowl.gizmo.unapply(arc.eval(i / 32)),
+							),
+						),
+					);
+				const rightmost = points.reduce((a, b) => (a.x > b.x ? a : b));
+				const top = prefix === "turnAScript.phonotypic" ? para.cap : para.xHeight;
+				assert.ok(
+					rightmost.y > 0.62 * top && rightmost.y < 0.76 * top,
+					`${prefix}: sharp bowl should turn above mid-height`,
+				);
 				const outlines = (suffix) => {
 					const glyph = glyphStore.queryByNameEnsured(
 						`${prefix}.${suffix}`,
@@ -560,12 +707,26 @@ for (const slope of ["upright", "italic"]) {
 								)
 						)
 							continue;
-						const previous =
-							contours[0][
-								(i + contours[0].length - 1) %
-									contours[0].length
-							];
-						const next = contours[0][(i + 1) % contours[0].length];
+						let back = 1;
+						let forward = 1;
+						while (
+							back < contours[0].length - 1 &&
+							Math.hypot(
+								contours[0][(i + contours[0].length - back) % contours[0].length].x - point.x,
+								contours[0][(i + contours[0].length - back) % contours[0].length].y - point.y,
+							) < 6
+						)
+							back++;
+						while (
+							forward < contours[0].length - 1 &&
+							Math.hypot(
+								contours[0][(i + forward) % contours[0].length].x - point.x,
+								contours[0][(i + forward) % contours[0].length].y - point.y,
+							) < 6
+						)
+							forward++;
+						const previous = contours[0][(i + contours[0].length - back) % contours[0].length];
+						const next = contours[0][(i + forward) % contours[0].length];
 						const ax = point.x - previous.x;
 						const ay = point.y - previous.y;
 						const bx = next.x - point.x;
