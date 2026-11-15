@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import * as Toml from "@iarna/toml";
 import { buildGlyphs } from "@iosevka/font-glyphs";
 import * as Geom from "@iosevka/geometry";
+import { Point } from "@iosevka/geometry/point";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
 import { AnyLocalizedForm, LocalizedForm } from "@iosevka/glyph/relation";
@@ -135,6 +136,39 @@ for (const slope of ["upright", "italic"]) {
 								triangleBottom >= para.xHeight && triangleBottom <= 1.15 * para.xHeight,
 								id,
 							);
+							const outer = contours[0];
+							const topIndex = outer.findIndex((point, index) => {
+								const previous = outer[(index + outer.length - 1) % outer.length];
+								return point.type === Point.Type.Corner && Math.abs(point.y - para.ascender) < 1
+									&& previous.type === Point.Type.Corner && Math.abs(previous.y - para.xHeight) < 1;
+							});
+							assert.ok(topIndex >= 0, id);
+							const top = glyph.gizmo.unapply(outer[topIndex]);
+							const join = glyph.gizmo.unapply(outer[(topIndex + outer.length - 1) % outer.length]);
+							const base = holes[1].filter((point) => Math.abs(point.y - triangleBottom) < 1)
+								.map((point) => glyph.gizmo.unapply(point))
+								.sort((a, b) => a.x - b.x);
+							assert.equal(base.length, 2, id);
+							const edge = join.x + (top.x - join.x) * (base[0].y - join.y) / (top.y - join.y);
+							const diagonalWidth = (base[0].x - edge) * (top.y - join.y)
+								/ Math.hypot(top.x - join.x, top.y - join.y);
+							const stemWidth = glyph.gizmo.unapply(outer[(topIndex + 1) % outer.length]).x - top.x;
+							assert.ok(diagonalWidth > 0.5 * stemWidth && diagonalWidth < 0.72 * stemWidth, id);
+							for (const contour of [contours[0], holes[0]]) {
+								for (let i = 0; i < contour.length; i++) {
+									const point = contour[i];
+									if (point.type !== Point.Type.Corner || point.x >= para.width / 2
+										|| point.y <= 0.24 * para.xHeight || point.y >= 0.47 * para.xHeight) continue;
+									const previous = contour[(i + contour.length - 1) % contour.length];
+									const next = contour[(i + 1) % contour.length];
+									const ax = point.x - previous.x;
+									const ay = point.y - previous.y;
+									const bx = next.x - point.x;
+									const by = next.y - point.y;
+									const lengths = Math.hypot(ax, ay) * Math.hypot(bx, by);
+									assert.ok(lengths > 0 && (ax * bx + ay * by) / lengths > Math.cos(Math.PI / 12), id);
+								}
+							}
 							const tooth = [
 								"toothlessCornerRTB", "toothlessCorner", "toothlessRounded",
 								"flatBottom", "toothed", "tailed",
