@@ -54,6 +54,15 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	select-variant 'grek/delta' 0x3B4
 
 	alias 'latn/delta' 0x1E9F 'grek/delta'
+	create-glyph 'latn/delta.phonotypic' : glyph-proc
+		include : MarkSet.b
+		include : OShape XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
+		local hookSw : Math.min (0.7 * Stroke) (0.22 * (Ascender - XH))
+		include : dispiro
+			g4 Middle (XH - 0.25 * hookSw) [widths.center.heading (0.2 * hookSw) Rightward]
+			g4 [mix Middle RightSB 0.45] [mix XH Ascender 0.3] [widths.center hookSw]
+			g4 [mix Middle RightSB 0.4] [mix XH Ascender 0.65]
+			g4 [mix Middle RightSB 0.1] [mix XH Ascender 0.9] [heading Leftward]
 	CreateTurnedLetter 'latn/turndelta' 0x18D 'grek/delta' HalfAdvance (XH / 2)
 
 	alias 'cyrl/be.SRB' null 'grek/delta.rounded'

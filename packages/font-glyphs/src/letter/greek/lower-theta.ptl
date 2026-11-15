@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
+import [BezToContoursSink] from '@iosevka/geometry/curve-util'
 
 glyph-module
 
@@ -24,6 +25,57 @@ glyph-block Letter-Greek-Lower-Theta : begin
 		'oval'    {Oval     [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB]}
 		'diamond' {Diamond  null                                                          }
 
+	define [PhonotypicTheta ShapeBase] : glyph-proc
+		include : MarkSet.b
+		local yMid : Ascender / 2
+		local yInner : yMid + HalfStroke
+		local yJoin : 0.47 * Ascender
+		local xJoin : mix SB Middle 0.18
+		local xJoinR : 2 * Middle - xJoin
+		local inset : Math.min (0.18 * (RightSB - SB)) ([HSwToV Stroke] * [Math.hypot (Middle - xJoin) (Ascender - yJoin)] / (Ascender - yJoin))
+		local xLeft : mix xJoin Middle [(yInner - yJoin) / (Ascender - yJoin)]
+		local xRight : 2 * Middle - xLeft
+		local yPeak : Ascender - inset * (Ascender - yJoin) / (Middle - xJoin)
+		local yBarBottom : yMid - HalfStroke
+		local innerInset : Math.min (0.35 * (RightSB - SB)) [HSwToV Stroke]
+		local innerLeft : SB + innerInset
+		local innerRight : RightSB - innerInset
+		local yLowerRef : Math.max yJoin yBarBottom
+		local barEdge : mix xJoin Middle [(yLowerRef - yJoin) / (Ascender - yJoin)]
+		local barLeft : Math.min (Middle - TINY) : Math.max innerLeft (barEdge + inset)
+		local barRight : 2 * Middle - barLeft
+		local bottom : Math.min (0.18 * Ascender) : Math.max ShoulderFine (0.06 * Ascender)
+		local ySide : [if (ShapeBase === Capsule) 0.30 0.24] * Ascender
+		local yArc : [if (ShapeBase === Capsule) 0.18 0.24] * Ascender
+		include : difference
+			glyph-proc
+				local cs : new BezToContoursSink currentGlyph.gizmo
+				cs.moveTo Middle Ascender
+				cs.lineTo xJoin yJoin
+				cs.cubicTo (xJoin + 0.15 * (xJoin - Middle)) (yJoin + 0.15 * (yJoin - Ascender)) SB (0.34 * Ascender) SB ySide
+				if (ySide !== yArc) : cs.lineTo SB yArc
+				cs.cubicTo SB (0.09 * Ascender) [mix SB Middle 0.35] 0 Middle 0
+				cs.cubicTo [mix RightSB Middle 0.35] 0 RightSB (0.09 * Ascender) RightSB yArc
+				if (ySide !== yArc) : cs.lineTo RightSB ySide
+				cs.cubicTo RightSB (0.34 * Ascender) (xJoinR + 0.15 * (xJoinR - Middle)) (yJoin + 0.15 * (yJoin - Ascender)) xJoinR yJoin
+				cs.lineTo Middle Ascender
+				cs.endShape
+				currentGlyph.includeContours cs.contours
+			spiro-outline
+				corner (xLeft + inset) yInner
+				corner Middle yPeak
+				corner (xRight - inset) yInner
+			glyph-proc
+				local cs : new BezToContoursSink currentGlyph.gizmo
+				cs.moveTo barLeft yBarBottom
+				cs.lineTo barRight yBarBottom
+				cs.cubicTo [mix barRight innerRight 0.5] yBarBottom innerRight (0.36 * Ascender) innerRight (0.24 * Ascender)
+				cs.cubicTo innerRight [mix bottom (0.24 * Ascender) 0.35] [mix innerRight Middle 0.35] bottom Middle bottom
+				cs.cubicTo [mix innerLeft Middle 0.35] bottom innerLeft [mix bottom (0.24 * Ascender) 0.35] innerLeft (0.24 * Ascender)
+				cs.cubicTo innerLeft (0.36 * Ascender) [mix barLeft innerLeft 0.5] yBarBottom barLeft yBarBottom
+				cs.endShape
+				currentGlyph.includeContours cs.contours
+
 	foreach {suffix {ShapeBase y0R}} [pairs-of ThetaConfig] : begin
 		create-glyph "grek/theta.\(suffix)" : glyph-proc
 			include : MarkSet.b
@@ -34,6 +86,8 @@ glyph-block Letter-Greek-Lower-Theta : begin
 			if y0R : set-base-anchor 'palatalHookAttach'
 				mix [Arch.adjust-x.bot Middle] (RightSB - OX) 0.75
 				mix O y0R [archv.yFromX 0.75]
+
+		create-glyph "grek/theta.phonotypic.\(suffix)" : PhonotypicTheta [if (suffix === 'diamond') Oval ShapeBase]
 
 	create-glyph 'grek/theta.cursive' : glyph-proc
 		include : MarkSet.b
@@ -58,6 +112,8 @@ glyph-block Letter-Greek-Lower-Theta : begin
 			g4 coXTopLeft (Ascender - topSMA)
 
 	select-variant 'grek/theta' 0x3B8
+	create-glyph 'grek/theta.phonotypic.cursive' : PhonotypicTheta Oval
+	select-variant 'grek/theta.phonotypic' (follow -- 'grek/theta')
 	select-variant 'grek/theta/nonCursive' (shapeFrom -- 'grek/theta')
 
 	alias 'grek/thetaSymbol' 0x03D1 'grek/theta.cursive'

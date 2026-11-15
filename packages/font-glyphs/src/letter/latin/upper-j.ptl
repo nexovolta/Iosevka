@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Upper-J : begin
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-Lower-J : FlatHookDotlessJShape
 
-	define [JBentHookBase df dfHook top] : glyph-proc
+	define [JBentHookBase df dfHook top _sw _hookScale] : glyph-proc
 		set-width df.width
 		include : df.markSet.[if (top > XH) 'capital' 'e']
 
@@ -24,17 +24,25 @@ glyph-block Letter-Latin-Upper-J : begin
 		set-base-anchor 'overlay' (xBarRight - [HSwToV : 0.75 * Stroke]) [mix 0 top OverlayPos]
 		set-base-anchor 'jTopSerifAttach' (xBarRight - [HSwToV HalfStroke]) top
 
-		local sw : Math.min Stroke : 0.4 * (xBarRight - df.leftSB)
-		local hookx : 0.75 * df.leftSB
+		local hookScale : fallback _hookScale 1
+		local sw : Math.min Stroke : [if _hookScale 0.3 0.4] * (xBarRight - df.leftSB) * hookScale
+		local hookx : mix xBarRight (0.75 * df.leftSB) hookScale
 
 		include : dispiro
-			widths.rhs sw
-			flat xBarRight top [heading Downward]
-			curl xBarRight ArchDepthB
-			HookEnd 0 (sw -- sw)
-			g4 hookx Hook
+			if _hookScale
+				list
+					flat xBarRight top [widths.rhs.heading [fallback _sw sw] Downward]
+					curl xBarRight ArchDepthB [widths.rhs sw]
+					HookEnd 0 (sw -- sw)
+					g4 hookx Hook [widths.rhs sw]
+				list
+					widths.rhs sw
+					flat xBarRight top [heading Downward]
+					curl xBarRight ArchDepthB
+					HookEnd 0 (sw -- sw)
+					g4 hookx Hook
 
-	define [JFlatHookBase df dfHook top] : glyph-proc
+	define [JFlatHookBase df dfHook top _sw _hookScale] : glyph-proc
 		set-width df.width
 		include : df.markSet.[if (top > XH) 'capital' 'e']
 
@@ -44,18 +52,18 @@ glyph-block Letter-Latin-Upper-J : begin
 		set-base-anchor 'overlay' (xBarRight - [HSwToV : 0.75 * Stroke]) (top * OverlayPos)
 		set-base-anchor 'jTopSerifAttach' (xBarRight - [HSwToV HalfStroke]) top
 
-		local sw : Math.min Stroke : 0.4 * (xBarRight - df.leftSB)
-		local hookx : 0.75 * df.leftSB
+		local hookScale : fallback _hookScale 1
+		local sw : Math.min Stroke : [if _hookScale 0.3 0.4] * (xBarRight - df.leftSB) * hookScale
 		local hd : FlatHookDepth dfHook
 
 		include : dispiro
-			flat xBarRight top [widths.rhs.heading sw Downward]
-			curl xBarRight (HalfStroke + 1.375 * hd.y)
+			flat xBarRight top [widths.rhs.heading [fallback _sw sw] Downward]
+			curl xBarRight (HalfStroke + 1.375 * hd.y) [if _hookScale [widths.rhs sw] nothing]
 			arcvh.superness DesignParameters.tightHookSuperness
-			flat (xBarRight - [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) 0 [widths.rhs Stroke]
-			curl df.leftSB 0
+			flat (xBarRight - hookScale * [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) 0 [widths.rhs Stroke]
+			curl [mix xBarRight df.leftSB hookScale] 0
 
-	define [JCornerHookBase df dfHook top] : glyph-proc
+	define [JCornerHookBase df dfHook top _sw _hookScale] : glyph-proc
 		set-width df.width
 		include : df.markSet.[if (top > XH) 'capital' 'e']
 
@@ -65,17 +73,19 @@ glyph-block Letter-Latin-Upper-J : begin
 		set-base-anchor 'overlay' (xBarRight - [HSwToV : 0.75 * Stroke]) (top * OverlayPos)
 		set-base-anchor 'jTopSerifAttach' (xBarRight - [HSwToV HalfStroke]) top
 
-		local sw : Math.min Stroke : 0.4 * (xBarRight - df.leftSB)
+		local hookScale : fallback _hookScale 1
+		local sw : Math.min Stroke : [if _hookScale 0.3 0.4] * (xBarRight - df.leftSB) * hookScale
+		local terminalSw : if _hookScale sw Stroke
 		local hd : FlatHookDepth dfHook
-		local depth : CornerHookDepth Hook Stroke
-		local xTerminal : df.leftSB + [HSwToV : 0.25 * [ArcStartSerifWidth Stroke]]
+		local depth : CornerHookDepth Hook terminalSw
+		local xTerminal : mix xBarRight (df.leftSB + [HSwToV : 0.25 * [ArcStartSerifWidth terminalSw]]) hookScale
 
 		include : dispiro
-			flat xBarRight top [widths.rhs.heading sw Downward]
-			curl xBarRight (HalfStroke + 1.375 * hd.y)
+			flat xBarRight top [widths.rhs.heading [fallback _sw sw] Downward]
+			curl xBarRight (HalfStroke + 1.375 * hd.y) [if _hookScale [widths.rhs sw] nothing]
 			arcvh.superness DesignParameters.tightHookSuperness
-			flat [Math.max (xBarRight - [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) (xTerminal + [HSwToV Stroke] + 1)] 0 [widths.rhs Stroke]
-			CornerHookEnd xTerminal 0 depth Stroke (-1) 1
+			flat [Math.max (xBarRight - hookScale * [Math.min (0.625 * (df.rightSB - df.leftSB)) (1.375 * hd.x)]) (xTerminal + [HSwToV terminalSw] + 1)] 0 [widths.rhs terminalSw]
+			CornerHookEnd xTerminal 0 depth terminalSw (-1) 1
 
 	define [JDescendingBentHookBase df dfHook top] : glyph-proc
 		set-width df.width
@@ -169,6 +179,7 @@ glyph-block Letter-Latin-Upper-J : begin
 		set-base-anchor 'overlay' barCenter (top / 2)
 		set-base-anchor 'jTopSerifAttach' barCenter top
 
+	glyph-block-export JConfig
 	define JConfig : SuffixCfg.weave
 		object # height and hook
 			bentHook             {JBentHookBase              [DivFrame 1]                   [DivFrame 1]                 }
@@ -212,6 +223,12 @@ glyph-block Letter-Latin-Upper-J : begin
 			include [refer-glyph "J.\(suffix)"] AS_BASE ALSO_METRICS
 			include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2) (-1) 1
 
+		create-glyph "latn/iota.phonotypic/dotless.\(suffix)" : glyph-proc
+			include [refer-glyph "smcpJ.\(suffix)"] AS_BASE ALSO_METRICS
+			local attach : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.jTopSerifAttach
+			include : FlipAround (currentGlyph.advanceWidth / 2) (XH / 2) (-1) 1
+			set-base-anchor 'above' (currentGlyph.advanceWidth - attach.x) XH
+
 	select-variant 'J' 'J'
 	select-variant 'J/noDescend' (shapeFrom -- 'J')
 	link-reduced-variant 'J/sansSerif' 'J' MathSansSerif
@@ -220,6 +237,8 @@ glyph-block Letter-Latin-Upper-J : begin
 	alias 'grek/Yot' 0x37F 'J'
 	select-variant 'JCurlyTail' 0xA7B2
 	select-variant 'latn/Iota' 0x196 (follow -- 'J/noDescend')
+	select-variant 'latn/iota.phonotypic/dotless' (follow -- 'J/noDescend')
+	CreateAccentedComposition 'latn/iota.phonotypic' null 'latn/iota.phonotypic/dotless' 'tittleAbove'
 	alias 'cyrl/Iota' 0xA646 'latn/Iota'
 
 	CreateAccentedComposition 'JAcute' null 'J' 'acuteAbove'

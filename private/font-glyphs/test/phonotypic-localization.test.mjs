@@ -10,7 +10,7 @@ import * as Geom from "@iosevka/geometry";
 import { Point } from "@iosevka/geometry/point";
 import { init } from "@iosevka/param";
 import * as Variant from "@iosevka/param/variant";
-import { AnyLocalizedForm, LocalizedForm } from "@iosevka/glyph/relation";
+import { AnyLocalizedForm, Dotless, LocalizedForm } from "@iosevka/glyph/relation";
 import * as Caching from "@iosevka/geometry-cache";
 import { buildOtl } from "@iosevka/font-otl";
 import { buildFont } from "../../../packages/font/src/build-font/index.mjs";
@@ -30,6 +30,9 @@ const cases = [
 	["capital-u", "U", "UBar.phonotypic"],
 	["u", "u", "uBar.phonotypic"],
 	["t", "t", "latn/the.phonotypic"],
+	["lower-theta", "grek/theta", "grek/theta.phonotypic"],
+	["capital-j", "J/noDescend", "latn/iota.phonotypic/dotless"],
+	["capital-sigma", "grek/Sigma", "smcpEzh.phonotypic"],
 ];
 const localized = [
 	[0x018c, "latn/de.phonotypic"],
@@ -41,6 +44,22 @@ const localized = [
 	[0x01b7, "Ezh.phonotypic"],
 	[0x0244, "UBar.phonotypic"],
 	[0x0289, "uBar.phonotypic"],
+	[0x0220, "NLongLeg.phonotypic"],
+	[0x1e9f, "latn/delta.phonotypic"],
+	[0x2c70, "turnAScript.phonotypic"],
+	[0x0252, "turnaScript.phonotypic"],
+	[0x03b8, "grek/theta.phonotypic"],
+	[0x01ae, "TRTail.phonotypic"],
+	[0x0269, "latn/iota.phonotypic"],
+	[0x1d23, "smcpEzh.phonotypic"],
+	[0x1d15, "smcpOU.phonotypic"],
+	[0x019c, "turnmCap.phonotypic"],
+	[0xa79a, "AeVolapuk.phonotypic"],
+	[0xa79b, "aeVolapuk.phonotypic"],
+	[0xa79c, "OeVolapuk.phonotypic"],
+	[0xa79d, "oeVolapuk.phonotypic"],
+	[0xa79e, "UeVolapuk.phonotypic"],
+	[0xa79f, "ueVolapuk.phonotypic"],
 ];
 const localizedFeatureTags = [
 	"LSRB", "LMKD", "LBOS", "LBGR", "LBSH", "LCHU", "LNSM", "LISM",
@@ -58,6 +77,30 @@ function signedArea(contour) {
 }
 
 await Geom.Init();
+
+for (const [slope, weight] of ["upright", "italic"].flatMap((slope) => [120, 420, 920].map((weight) => [slope, weight]))) {
+	test(`phonotypic T hook uses the selected T advance in proportional ${weight} ${slope}`, () => {
+		const argv = {
+			shape: { serifs: "sans", spacing: "quasi-proportional", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			featureControl: { noCvSs: false, noLigation: true },
+			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		};
+		const para = init(data, argv);
+		Variant.apply(variants, para, argv);
+		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		for (const t of ["serifless", "motionSerifed", "serifed", "baseSerifed"]) {
+			const expected = glyphStore.queryByNameEnsured(`T.${t}`).advanceWidth;
+			for (const hook of ["bentHook", "flatHook", "cornerHook"]) {
+				const name = `TRTail.phonotypic.${t}.${hook}Serifless`;
+				const glyph = glyphStore.queryByNameEnsured(name);
+				assert.equal(glyph.advanceWidth, expected, name);
+				const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+				assert.equal(contours.length, 1, name);
+				assert.ok(Math.max(...contours[0].filter((point) => point.y < 0.6 * para.cap).map((point) => point.x)) <= expected, name);
+			}
+		}
+	});
+}
 
 for (const slope of ["upright", "italic"]) {
 	for (const weight of [120, 420, 920]) {
@@ -115,6 +158,71 @@ for (const slope of ["upright", "italic"]) {
 				assert.equal(LocalizedForm.PTMN.get(source), target);
 				assert.ok(AnyLocalizedForm.query(source).includes(LocalizedForm.PTMN));
 				assert.ok(glyphStore.queryByName(target), target);
+			}
+			const dottedIota = glyphStore.queryByNameEnsured("latn/iota.phonotypic");
+			const dotlessIota = glyphStore.queryByNameEnsured(Dotless.get(dottedIota));
+			assert.equal(Dotless.get(dottedIota), "latn/iota.phonotypic/dotless");
+			const contours = new Geom.SimplifyGeometry(dottedIota.geometry, dottedIota.gizmo, true).toContours();
+			assert.equal(contours.length, 2);
+			const attach = dotlessIota.gizmo.unapply(dotlessIota.baseAnchors.jTopSerifAttach);
+			const above = dotlessIota.gizmo.unapply(dotlessIota.baseAnchors.above);
+			assert.ok(Math.abs(above.x - (dotlessIota.advanceWidth - attach.x)) < 0.01);
+			for (const name of ["latn/delta.phonotypic", "turnAScript.phonotypic", "turnaScript.phonotypic"]) {
+				const glyph = glyphStore.queryByNameEnsured(name);
+				const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+				assert.equal(contours.length, 2, name);
+				if (name !== "latn/delta.phonotypic") {
+					assert.ok(Math.min(...contours.flat().map((point) => point.y)) >= 0, name);
+				}
+			}
+			const alphaSuffixes = new Set([...primes.get("a").variants.values()].map((v) => v.selector["a/singleStorey.sans"]));
+			for (const suffix of alphaSuffixes) {
+				for (const prefix of ["turnAScript.phonotypic", "turnaScript.phonotypic"]) {
+					const name = `${prefix}.${suffix}`;
+					const glyph = glyphStore.queryByNameEnsured(name);
+					const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+					assert.equal(contours.length, 2, name);
+					assert.ok(Math.min(...contours.flat().map((point) => point.y)) >= 0, name);
+					for (const point of contours.flat()) assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), name);
+				}
+			}
+			for (const prefix of ["turnAScript.phonotypic", "turnaScript.phonotypic"]) {
+				const outlines = (suffix) => {
+					const glyph = glyphStore.queryByNameEnsured(`${prefix}.${suffix}`);
+					return new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+				};
+				const toothed = outlines("singleStoreySerifless");
+				assert.deepEqual(outlines("singleStoreyEarlessCornerSerifless"), toothed);
+				assert.deepEqual(outlines("singleStoreyEarlessRoundedSerifless"), toothed);
+			}
+			const turnedM = glyphStore.queryByNameEnsured("turnmCap.phonotypic");
+			const mContours = new Geom.SimplifyGeometry(turnedM.geometry, turnedM.gizmo, true).toContours();
+			assert.ok(mContours.flat().map((point) => turnedM.gizmo.unapply(point)).some((point) =>
+				Math.abs(point.y - para.cap) < 1 && Math.abs(point.x - turnedM.advanceWidth / 2) < para.stroke,
+			), "turned M middle stem reaches cap height");
+			for (const t of ["serifless", "motionSerifed", "serifed", "baseSerifed"]) {
+				for (const hook of ["bentHook", "flatHook", "cornerHook"]) {
+					const name = `TRTail.phonotypic.${t}.${hook}Serifless`;
+					const glyph = glyphStore.queryByNameEnsured(name);
+					const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+					assert.equal(contours.length, 1, name);
+					assert.ok(Math.min(...contours[0].map((point) => point.y)) >= 0, name);
+					const tail = contours[0].filter((point) => point.y < 0.6 * para.cap);
+					assert.ok(Math.max(...tail.map((point) => point.x)) <= glyph.advanceWidth, name);
+					for (let i = 0; i < contours[0].length; i++) {
+						const point = contours[0][i];
+						if (point.type !== Point.Type.Corner || point.y <= 0.4 * para.cap || point.y >= Math.min(0.7 * para.cap, para.cap - 1.8 * para.stroke)) continue;
+						const previous = contours[0][(i + contours[0].length - 1) % contours[0].length];
+						const next = contours[0][(i + 1) % contours[0].length];
+						const ax = point.x - previous.x;
+						const ay = point.y - previous.y;
+						const bx = next.x - point.x;
+						const by = next.y - point.y;
+						const lengths = Math.hypot(ax, ay) * Math.hypot(bx, by);
+						assert.ok(lengths > 0 && (ax * bx + ay * by) / lengths > Math.cos(Math.PI / 12),
+							`${name} at ${point.x}, ${point.y}: ${(ax * bx + ay * by) / lengths}`);
+					}
+				}
 			}
 			for (const [prime, selector, name] of cases) {
 				const suffixes = new Set([...primes.get(prime).variants.values()].map((v) => v.selector[selector]));
@@ -196,6 +304,10 @@ for (const slope of ["upright", "italic"]) {
 					if (name === "Eng.phonotypic") assert.equal(contours.length, 1, id);
 					if (name === "Ramshorn.phonotypic" || name === "ramshorn.phonotypic") {
 						assert.equal(contours.length, 2, id);
+					}
+					if (name === "grek/theta.phonotypic") assert.equal(contours.length, 3, id);
+					if (name === "latn/iota.phonotypic/dotless") {
+						assert.ok(Math.min(...contours.flat().map((point) => point.y)) >= para.overshoot - 1, id);
 					}
 					for (const point of contours.flat()) {
 						assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), id);

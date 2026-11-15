@@ -448,8 +448,9 @@ glyph-block Letter-Latin-Lower-M : begin
 
 	define [turnMShapeBodyImpl df top body toothless shortLeg tailed serifs cut _sw _ada _adb] : glyph-proc
 		local sw : fallback _sw df.mvs
-		include : body df top 0 [if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0] 0 sw [flipUCut cut] _ada _adb
-		include : serifs df top 0 [if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0] 0 toothless shortLeg false sw
+		local legHeight : if shortLeg [SmallMShortLegHeight df top sw _ada _adb] 0
+		include : body df top 0 legHeight 0 sw [flipUCut cut] _ada _adb
+		include : serifs df top 0 legHeight 0 toothless shortLeg false sw
 		include : FlipAround df.middle (top / 2)
 		if tailed : begin
 			eject-contour 'barL'
@@ -542,6 +543,15 @@ glyph-block Letter-Latin-Lower-M : begin
 				SmallMSmoothB df ArchDepth
 			eject-contour 'serifMB'
 
+		create-glyph "turnmCap.phonotypic.\(suffix)" : glyph-proc
+			local df : include dfM
+			include : df.markSet.capital
+			include : turnMShapeBodyImpl df CAP Body toothless true tailed USerifs cut nothing
+				SmallMSmoothA df ArchDepth
+				SmallMSmoothB df ArchDepth
+			eject-contour 'serifMB'
+			include : VBar.m df.middle 0 CAP df.mvs
+
 		create-glyph "uNotch.\(suffix)" : glyph-proc
 			local df : include dfM
 			include : df.markSet.e
@@ -592,6 +602,7 @@ glyph-block Letter-Latin-Lower-M : begin
 	select-variant 'turnm/reduced' (shapeFrom -- 'turnm') (follow -- 'uu/reduced')
 
 	select-variant 'turnmCap' 0x19C (follow -- 'uu')
+	select-variant 'turnmCap.phonotypic' (follow -- 'U')
 
 	select-variant 'turnmLongLeg' 0x270 (follow -- [conditional-follow [MEnoughSpaceForFullSerifs dfM] 'uuLongLeg' 'uuLongLeg/reduced'])
 	select-variant 'turnmLongLeg/reduced' (shapeFrom -- 'turnmLongLeg') (follow -- 'uuLongLeg/reduced')
