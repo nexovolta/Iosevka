@@ -2,7 +2,7 @@
 $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
-import [getGrMesh AnyCv AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant] from '@iosevka/glyph/relation'
+import [getGrMesh AnyCv AnyCvOrCherryPicking CvDecompose Joining hashCv IsCompositeOrLigature NLDAcuteVariant HBSCaronVariant LocalizedForm] from '@iosevka/glyph/relation'
 import [hashGeometry] from '@iosevka/geometry'
 import [Transform] from '@iosevka/geometry/transform'
 extern Map
@@ -1686,6 +1686,11 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 		local eshTag eshPrime.tag
 		local ezhPrime : para.variants.primes.get 'lower-ezh'
 		local ezhTag ezhPrime.tag
+		foreach {gn unicode parts mak} [items-of : jobs.nonDecomposable.slice 0] : if (unicode === 0x1DF24) : begin
+			local toParts : list parts.0 'grek/theta.phonotypic'
+			local toGn : CircNameNoCheck unicode prefix toParts ''
+			jobs.nonDecomposable.push {toGn null toParts mak}
+			jobs.relApplications.push {LocalizedForm.PTMN gn toGn}
 		foreach {gn unicode parts mak} [items-of : jobs.nonDecomposable.slice 0] : if (unicode === 0x1DF17 || unicode === 0x1DF1C || unicode === 0x02A4 || unicode === 0x1DF12 || unicode === 0x1DF20) : begin
 			local right : query-glyph parts.1
 			local targetTag : if (unicode === 0x1DF17 || unicode === 0x1DF1C) eshTag ezhTag
