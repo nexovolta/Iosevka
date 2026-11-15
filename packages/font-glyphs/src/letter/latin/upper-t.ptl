@@ -165,20 +165,28 @@ glyph-block Letter-Latin-Upper-T : begin
 			include : df.markSet.capital
 			include : RetroflexHook.mExt df.middle 0
 
-		foreach {jSuffix {{jBase _ _} _}} [Object.entries JConfig] : do
+		foreach {jSuffix {{jBase jDf jDfHook} _}} [Object.entries JConfig] : do
 			create-glyph "TRTail.phonotypic.\(suffix).\(jSuffix)" : glyph-proc
 				local df : include : DivFrame adws
 				include : df.markSet.capital
-				include : TShape df CAP doST false nothing fShort
-				eject-contour 'strokeV'
-				local j : new-glyph : glyph-proc
-					include : jBase df df CAP Stroke 0.65
-					include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2) (-1) 1
-				local attach : j.gizmo.unapply j.baseAnchors.jTopSerifAttach
-				local xAttach : j.advanceWidth - attach.x
-				include : intersection [MaskAbove 0]
-					with-transform [ApparentTranslate (df.middle - xAttach) 0]
-						begin j
+				local designDf : DivFrame [if para.isQuasiProportional adws [if doST (7 / 6) 1]]
+				local hookDf : if para.isQuasiProportional jDf : DivFrame [if [jSuffix.startsWith 'bentHook'] 1 (5 / 6)]
+				local hookDepthDf : if para.isQuasiProportional jDfHook hookDf
+				local hookExtent : hookDf.rightSB - JBalance2 - 0.75 * hookDf.leftSB - [HSwToV HalfStroke] + 0.01 * hookDf.width
+				local fitWidth : 2 * [Math.max designDf.middle (hookExtent - 0.1 * designDf.width)]
+				local shape : new-glyph : glyph-proc
+					include : TShape designDf CAP doST false nothing fShort
+					eject-contour 'strokeV'
+					local j : new-glyph : glyph-proc
+						include : jBase hookDf hookDepthDf CAP Stroke 1
+						include : FlipAround (currentGlyph.advanceWidth / 2) (CAP / 2) (-1) 1
+					local attach : j.gizmo.unapply j.baseAnchors.jTopSerifAttach
+					local xAttach : j.advanceWidth - attach.x
+					include : intersection [MaskAbove 0]
+						with-transform [ApparentTranslate (designDf.middle - 0.1 * designDf.width - xAttach) 0]
+							begin j
+				include : with-transform [ApparentTranslate (df.middle - designDf.middle) 0]
+					with-transform [ScaleAround designDf.middle 0 (df.width / fitWidth) 1] shape
 				set-width df.width
 
 		create-glyph "smcpT.\(suffix)" : glyph-proc

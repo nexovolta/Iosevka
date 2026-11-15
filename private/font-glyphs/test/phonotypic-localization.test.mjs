@@ -78,16 +78,36 @@ function signedArea(contour) {
 
 await Geom.Init();
 
-for (const [slope, weight] of ["upright", "italic"].flatMap((slope) => [120, 420, 920].map((weight) => [slope, weight]))) {
-	test(`phonotypic T hook uses the selected T advance in proportional ${weight} ${slope}`, () => {
+for (const [spacing, slope, weight] of ["term", "quasi-proportional"].flatMap((spacing) =>
+	["upright", "italic"].flatMap((slope) => [120, 420, 920].map((weight) => [spacing, slope, weight])),
+)) {
+	test(`PTMN theta and T contours in ${spacing} ${weight} ${slope}`, () => {
 		const argv = {
-			shape: { serifs: "sans", spacing: "quasi-proportional", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			shape: { serifs: "sans", spacing, weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 			featureControl: { noCvSs: false, noLigation: true },
 			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
 		};
 		const para = init(data, argv);
 		Variant.apply(variants, para, argv);
 		const { glyphStore } = buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true });
+		const angle = para.slopeAngle * Math.PI / 180;
+		const horizontalStroke = para.stroke * (para.contrast * Math.cos(angle) + Math.sin(angle) * Math.tan(angle));
+		for (const suffix of ["capsule", "oval", "diamond", "cursive"]) {
+			const name = `grek/theta.phonotypic.${suffix}`;
+			const glyph = glyphStore.queryByNameEnsured(name);
+			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours()
+				.map((contour) => contour.map((point) => glyph.gizmo.unapply(point)));
+			assert.equal(contours.length, 3, name);
+			const minY = (contour) => Math.min(...contour.map((point) => point.y));
+			const lower = contours.slice(1).sort((a, b) => minY(a) - minY(b))[0];
+			const minX = (contour) => Math.min(...contour.map((point) => point.x));
+			assert.ok(Math.abs(minY(lower) - para.stroke) < 2, `${name}: bottom stroke`);
+			assert.ok(Math.abs(minX(lower) - minX(contours[0]) - horizontalStroke) < 2, `${name}: side stroke`);
+			const arcSideY = para.ascender * (suffix === "capsule" ? 0.18 : 0.24);
+			assert.ok(lower.some((point) =>
+				Math.abs(point.x - minX(lower)) < 2 && Math.abs(point.y - arcSideY) < 4,
+			), `${name}: lower arc tangent`);
+		}
 		for (const t of ["serifless", "motionSerifed", "serifed", "baseSerifed"]) {
 			const expected = glyphStore.queryByNameEnsured(`T.${t}`).advanceWidth;
 			for (const hook of ["bentHook", "flatHook", "cornerHook"]) {
@@ -96,11 +116,45 @@ for (const [slope, weight] of ["upright", "italic"].flatMap((slope) => [120, 420
 				assert.equal(glyph.advanceWidth, expected, name);
 				const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 				assert.equal(contours.length, 1, name);
+				assert.ok(Math.min(...contours[0].map((point) => point.y)) >= 0, name);
 				assert.ok(Math.max(...contours[0].filter((point) => point.y < 0.6 * para.cap).map((point) => point.x)) <= expected, name);
+				if (t === "serifless" && hook === "bentHook") {
+					const tail = contours[0].filter((point) => point.y < 0.35 * para.cap).map((point) => glyph.gizmo.unapply(point));
+					assert.ok(Math.max(...tail.map((point) => point.x)) - Math.min(...tail.map((point) => point.x)) > 0.53 * expected, name);
+				}
 			}
 		}
 	});
 }
+
+test("PTMN monospace T hooks retain proportional outlines when fitted", () => {
+	const stores = new Map();
+	for (const spacing of ["term", "quasi-proportional"]) {
+		const argv = {
+			shape: { serifs: "sans", spacing, weight: 420, width: 500, slope: "upright", slopeAngle: 0 },
+			featureControl: { noCvSs: false, noLigation: true },
+			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		};
+		const para = init(data, argv);
+		Variant.apply(variants, para, argv);
+		stores.set(spacing, buildGlyphs(para, { blockIsNeeded: () => true, glyphIsNeeded: () => true }).glyphStore);
+	}
+	for (const hook of ["bentHook", "flatHook", "cornerHook"]) {
+		const name = `TRTail.phonotypic.serifed.${hook}Serifless`;
+		const bounds = (spacing, predicate) => {
+			const glyph = stores.get(spacing).queryByNameEnsured(name);
+			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+			const points = contours.flat().filter(predicate).map((point) => glyph.gizmo.unapply(point));
+			return [Math.min(...points.map((point) => point.x)) / glyph.advanceWidth,
+				Math.max(...points.map((point) => point.x)) / glyph.advanceWidth];
+		};
+		for (const predicate of [(point) => point.y < 250, (point) => point.y > 500]) {
+			const mono = bounds("term", predicate);
+			const proportional = bounds("quasi-proportional", predicate);
+			for (let i = 0; i < 2; i++) assert.ok(Math.abs(mono[i] - proportional[i]) < 0.01, name);
+		}
+	}
+});
 
 for (const slope of ["upright", "italic"]) {
 	for (const weight of [120, 420, 920]) {

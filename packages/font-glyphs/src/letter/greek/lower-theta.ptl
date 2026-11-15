@@ -37,14 +37,14 @@ glyph-block Letter-Greek-Lower-Theta : begin
 		local xRight : 2 * Middle - xLeft
 		local yPeak : Ascender - inset * (Ascender - yJoin) / (Middle - xJoin)
 		local yBarBottom : yMid - HalfStroke
-		local innerInset : Math.min (0.35 * (RightSB - SB)) [HSwToV Stroke]
+		local innerInset : Math.min (0.5 * (RightSB - SB) - TINY) [HSwToV Stroke]
 		local innerLeft : SB + innerInset
 		local innerRight : RightSB - innerInset
 		local yLowerRef : Math.max yJoin yBarBottom
 		local barEdge : mix xJoin Middle [(yLowerRef - yJoin) / (Ascender - yJoin)]
 		local barLeft : Math.min (Middle - TINY) : Math.max innerLeft (barEdge + inset)
 		local barRight : 2 * Middle - barLeft
-		local bottom : Math.min (0.18 * Ascender) : Math.max ShoulderFine (0.06 * Ascender)
+		local bottom Stroke
 		local ySide : [if (ShapeBase === Capsule) 0.30 0.24] * Ascender
 		local yArc : [if (ShapeBase === Capsule) 0.18 0.24] * Ascender
 		include : difference
@@ -69,9 +69,9 @@ glyph-block Letter-Greek-Lower-Theta : begin
 				local cs : new BezToContoursSink currentGlyph.gizmo
 				cs.moveTo barLeft yBarBottom
 				cs.lineTo barRight yBarBottom
-				cs.cubicTo [mix barRight innerRight 0.5] yBarBottom innerRight (0.36 * Ascender) innerRight (0.24 * Ascender)
-				cs.cubicTo innerRight [mix bottom (0.24 * Ascender) 0.35] [mix innerRight Middle 0.35] bottom Middle bottom
-				cs.cubicTo [mix innerLeft Middle 0.35] bottom innerLeft [mix bottom (0.24 * Ascender) 0.35] innerLeft (0.24 * Ascender)
+				cs.cubicTo [mix barRight innerRight 0.5] yBarBottom innerRight (0.36 * Ascender) innerRight yArc
+				cs.cubicTo innerRight [mix bottom yArc [if (ShapeBase === Capsule) 0.5 0.375]] [mix innerRight Middle 0.35] bottom Middle bottom
+				cs.cubicTo [mix innerLeft Middle 0.35] bottom innerLeft [mix bottom yArc [if (ShapeBase === Capsule) 0.5 0.375]] innerLeft yArc
 				cs.cubicTo innerLeft (0.36 * Ascender) [mix barLeft innerLeft 0.5] yBarBottom barLeft yBarBottom
 				cs.endShape
 				currentGlyph.includeContours cs.contours
