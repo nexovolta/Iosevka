@@ -258,9 +258,18 @@ glyph-block Mark-Horn-And-Angle : begin
 			set-mark-anchor 'bottomLeft' 0 0 (-startX) (XH - startY)
 			set-base-anchor 'belowBraceL' ((-startX) + r) (XH - startY)
 			set-base-anchor 'belowBraceR' ((-startX) + r) (XH - startY)
+		create-glyph "dotBR.\(suffix)" : glyph-proc
+			set-width 0
+			local [object radius startX startY] : HornDim 0 XH 0 0 0.5
+			local r : mix radius DotRadius 0.5
+			include : DrawAt ((+startX) - r) (XH - startY) (r * kdr)
+			set-mark-anchor 'bottomRight' 0 0 (+startX) (XH - startY)
+			set-base-anchor 'belowBraceL' ((+startX) - r) (XH - startY)
+			set-base-anchor 'belowBraceR' ((+startX) - r) (XH - startY)
 
 	select-variant 'dotTR' 0x358  (follow -- 'diacriticDot')
 	select-variant 'dotTL' 0x1DF8 (follow -- 'diacriticDot')
+	select-variant 'dotBR'        (follow -- 'diacriticDot')
 	select-variant 'dotBL' 0x1DFA (follow -- 'diacriticDot')
 
 	derive-glyphs 'commaTR' 0x315 'commaAbove' : function [src gr] : glyph-proc

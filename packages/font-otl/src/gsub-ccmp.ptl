@@ -132,6 +132,13 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				object [from : list 'h' 'dotAbove'] [to 'hDot']
 				object [from : list 'k' 'dotAbove'] [to 'kDot']
 
+	Ccmp-Group 'Special dot-below transformation' : begin
+		export-lookup : gsub.createLookup : object
+			.type 'gsub_ligature'
+			.ignoreGlyphs [filterMarkByClassNegated markGlyphs 'below']
+			.substitutions : list
+				object [from : list 'y' 'dotBelow'] [to 'yBelowdot']
+
 	Ccmp-Group 'IJ-Acute composites' : begin
 		local substitutions {}
 		foreach {gn g} [glyphStore.namedEntries] : begin

@@ -1,20 +1,33 @@
 $$include '../../meta/macros.ptl'
 
+import [mix] from '@iosevka/util'
+
 glyph-module
 
 glyph-block Letter-Latin-Upper-Insular-D : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Greek-Lower-Sigma : SigmaShape
 
-	define InsularDConfig : object
-		rounded      0
-		straightBowl 1
-	foreach {suffix verticalBowl} [Object.entries InsularDConfig] : do
+	define fine : Stroke * CThinB
+
+	foreach {suffix straightBowl} [Object.entries : object [rounded 0] [straightBowl 1]] : do
 		create-glyph "DInsular.\(suffix)" : glyph-proc
-			include : new-glyph : glyph-proc
-				include : SigmaShape verticalBowl CAP
-				include : ScaleAround Middle 0 (-1) 1
+			include : MarkSet.capital
+			include : dispiro
+				widths.lhs fine
+				match straightBowl
+					[Just 1] : list
+						straight.down.start SB (CAP - Stroke + fine) [widths.lhs.heading Stroke Downward]
+						curl SB ArchDepthB
+					__ : list
+						straight.left.start [Arch.adjust-x.top Middle] (CAP - Stroke + fine)
+						archv
+						flatside.ld SB 0 CAP ArchDepthA ArchDepthB 0 [widths.lhs]
+				Arch.lhs 0
+				flatside.ru RightSB 0 CAP ArchDepthA ArchDepthB
+				arcvh
+				flat [Arch.adjust-x.top Middle] CAP
+				curl ([mix SB 0 0.7] - SerifShiftS) CAP
 
 	alias 'DInsular.verticalBowl' null 'DInsular.straightBowl'
 	select-variant 'DInsular' 0xA779 (follow -- 'grek/sigma')
