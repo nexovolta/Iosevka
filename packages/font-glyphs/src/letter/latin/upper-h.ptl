@@ -172,9 +172,10 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : fTailed  -- false
 		local-parameter : stroke   -- [Math.min [df.adviceThinnerStroke 2.75 1.00] [df.adviceThinnerStroke 2.00 0.75]]
 		local-parameter : serifTR  -- SLAB
+		local-parameter : diag     -- 0
 
 		local subDf : DivFrame (0.75 * df.adws) 2
-		include : HShape subDf top slabType fTailed stroke
+		include : HShape subDf top slabType fTailed stroke diag
 
 		local xTopBarRightEnd : mix df.width df.rightSB : if serifTR 0.25 0.375
 		include : HBar.t ((subDf.rightSB - [HSwToV stroke]) - O) xTopBarRightEnd top stroke
@@ -191,9 +192,10 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : stroke   -- df.mvs
 		local-parameter : serifTR  -- SLAB
 		local-parameter : yend     -- XH
+		local-parameter : diag     -- 0
 
 		local subDf : df.slice 3 2
-		include : HShape subDf top slabType fTailed stroke
+		include : HShape subDf top slabType fTailed stroke diag
 		eject-contour 'strokeR'
 		eject-contour 'serifRB'
 
@@ -238,14 +240,20 @@ glyph-block Letter-Latin-Upper-H : begin
 			serifedExceptBottomRight {false SLAB-TAILED}
 			diagonalCrossbar        {false SLAB-NONE 1}
 			diagonalCrossbarFalling {false SLAB-NONE (-1)}
+			tailedDiagonalCrossbar        {true SLAB-NONE 1}
+			tailedDiagonalCrossbarFalling {true SLAB-NONE (-1)}
+			serifedExceptBottomRightDiagonalCrossbar        {false SLAB-TAILED 1}
+			serifedExceptBottomRightDiagonalCrossbarFalling {false SLAB-TAILED (-1)}
 		SuffixCfg.weave
 			object
 				'' false
+				tailed true
 			function [tail] : object
+				serifless                  SLAB-NONE
 				topLeftSerifed             SLAB-TL
-				topLeftBottomRightSerifed  SLAB-TL-BR
-				serifed                    SLAB-ALL
-				serifedBGR                 SLAB-ALL-BGR
+				topLeftBottomRightSerifed  : if (tail === 'tailed') SLAB-TL SLAB-TL-BR
+				serifed                    : if (tail === 'tailed') SLAB-TAILED SLAB-ALL
+				serifedBGR                 : if (tail === 'tailed') SLAB-TAILED-BGR SLAB-ALL-BGR
 				topRightMotionSerifed      SLAB-TR
 				bilateralMotionSerifed     SLAB-BILATERAL-MOTION
 			object
@@ -302,12 +310,12 @@ glyph-block Letter-Latin-Upper-H : begin
 			create-glyph "cyrl/EnGhe.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : EnGheShape enGheDf CAP slabType fTailed (serifTR -- serifGhe)
+				include : EnGheShape enGheDf CAP slabType fTailed (serifTR -- serifGhe) (diag -- diag)
 
 			create-glyph "cyrl/enghe.\(suffix).\(suffixGhe)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : EnGheShape enGheDf XH slabType fTailed (serifTR -- serifGhe)
+				include : EnGheShape enGheDf XH slabType fTailed (serifTR -- serifGhe) (diag -- diag)
 
 		select-variant "cyrl/EnGhe.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 		select-variant "cyrl/enghe.\(suffix)" (follow -- 'cyrl/enghe/ghe')
@@ -320,19 +328,19 @@ glyph-block Letter-Latin-Upper-H : begin
 			create-glyph "Hwair.\(suffix).\(suffixV)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : HwairShape hwairDf CAP slabType fTailed (serifTR -- serifV)
+				include : HwairShape hwairDf CAP slabType fTailed (serifTR -- serifV) (diag -- diag)
 
 		select-variant "Hwair.\(suffix)" (follow -- 'Hv/v')
 
 		create-glyph "cyrl/NjeKomi.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
-			include : HwairShape df CAP slabType fTailed (yend -- (CAP / 2 + HalfStroke))
+			include : HwairShape df CAP slabType fTailed (yend -- (CAP / 2 + HalfStroke)) (diag -- diag)
 
 		create-glyph "cyrl/njeKomi.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			include : HwairShape df XH slabType fTailed (yend -- (XH / 2 + HalfStroke))
+			include : HwairShape df XH slabType fTailed (yend -- (XH / 2 + HalfStroke)) (diag -- diag)
 
 		create-glyph "HHookLeft.\(suffix)" : glyph-proc
 			include [refer-glyph "H.\(suffix)"] AS_BASE ALSO_METRICS
@@ -373,13 +381,13 @@ glyph-block Letter-Latin-Upper-H : begin
 		create-glyph "cyrl/EnMidHook.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capDesc
-			include : HShape [df.slice 3 2] CAP slabType fTailed df.mvs
+			include : HShape [df.slice 3 2] CAP slabType fTailed df.mvs diag
 			include : MidHook.m df CAP
 
 		create-glyph "cyrl/enMidHook.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.p
-			include : HShape [df.slice 3 2] XH slabType fTailed df.mvs
+			include : HShape [df.slice 3 2] XH slabType fTailed df.mvs diag
 			include : MidHook.m df XH
 
 	select-variant 'H' 'H'

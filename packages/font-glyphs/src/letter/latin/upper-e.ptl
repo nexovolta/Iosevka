@@ -39,14 +39,16 @@ glyph-block Letter-Latin-Upper-E : begin
 		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0]
 		if serifRM : include : tagged 'serifRM' : VSerif.mr xMidBarRight yMidEnd jutMid swVJut
 
-	define [RevEShape top serifRT serifRB serifLT serifLB serifLM _stroke _jutTop _jutBot] : glyph-proc
+	define [RevEShape top serifRT serifRB serifLT serifLB serifLM _stroke _jutTop _jutBot _diag] : glyph-proc
 		local stroke : fallback _stroke Stroke
 		local xMidBarLeft : mix 0 SB : EFMidBarShrinkK [DivFrame 1] serifLT
 		local barPos : EFMidBarPosY top 0
 
 		include : tagged 'strokeR' : VBar.r xRevEBarRight 0 top stroke
 		include : tagged 'strokeT' : HBar.t SB          (xRevEBarRight + O) top    stroke
-		include : tagged 'strokeM' : HBar.m xMidBarLeft (xRevEBarRight + O) barPos stroke
+		include : tagged 'strokeM' : if _diag
+			DiagonalHBar xMidBarLeft (xRevEBarRight + O) barPos (_diag * 0.16 * top) stroke
+			HBar.m xMidBarLeft (xRevEBarRight + O) barPos stroke
 		include : tagged 'strokeB' : HBar.b SB          (xRevEBarRight + O) 0      stroke
 
 		if serifRT : include : tagged 'serifRT' : HSerif.rt xRevEBarRight top SideJut stroke
@@ -56,7 +58,8 @@ glyph-block Letter-Latin-Upper-E : begin
 		local swVJut : VJutStroke * (stroke / Stroke)
 		if serifLT : include : tagged 'serifLT' : VSerif.dl SB          top    jutTop swVJut
 		if serifLB : include : tagged 'serifLB' : VSerif.ul SB          0      jutBot swVJut
-		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft barPos jutMid swVJut
+		local yMidEnd : barPos - [if _diag (_diag * 0.08 * top) 0]
+		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft yMidEnd jutMid swVJut
 
 	define EConfig : object
 		serifless             {false  false  false  false  false}
@@ -133,7 +136,7 @@ glyph-block Letter-Latin-Upper-E : begin
 
 		create-glyph "revE.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : RevEShape CAP lt lb rt rb rm swCap
+			include : RevEShape CAP lt lb rt rb rm swCap nothing nothing diag
 
 	select-variant 'E' 'E'
 	select-variant 'Schwa.phonotypic' (follow -- 'E')

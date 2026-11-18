@@ -20,21 +20,21 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 	do 'A glyphs'
 		glyph-block-import Letter-Latin-Upper-A : AShape AConfig
 
-		define [AHalfShape pShift df top fStraightBar slabKind] : begin
+		define [AHalfShape pShift df top fStraightBar slabKind diag] : begin
 			local {subDf shift} : SubDfAndShift pShift df
 			return : with-transform [ApparentTranslate shift 0]
-				AShape.Letter subDf fStraightBar slabKind top df.mvs
+				AShape.Letter subDf fStraightBar slabKind top df.mvs diag
 
 		define [AHalfShapeMask pShift df top fStraightBar slabKind] : begin
 			local {subDf shift} : SubDfAndShift pShift df
 			return : with-transform [ApparentTranslate shift 0]
 				AShape.Mask subDf fStraightBar top df.mvs
 
-		define [AHalfLeft df height bodyShape slabKind mk] : glyph-proc
+		define [AHalfLeft df height bodyShape slabKind mk diag] : glyph-proc
 			include df
 			include : df.markSet.(mk)
 			set-base-anchor 'cvDecompose' 0 0
-			include : AHalfShape 0 df height bodyShape slabKind
+			include : AHalfShape 0 df height bodyShape slabKind diag
 			local {subDf} : SubDfAndShift 0 df
 			set-base-anchor 'aBar' subDf.middle [AShape.BarPos bodyShape slabKind height]
 
@@ -48,11 +48,11 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 			smcp {null    para.advanceScaleM   'e'        XH }
 
 		foreach {prefix {code adws mk height}} [Object.entries ALetters] : do
-			foreach {suffix {bodyShape slabKind}} [Object.entries AConfig] : do
+			foreach {suffix {bodyShape slabKind diag}} [Object.entries AConfig] : do
 				define skLeft  : maskOffBits slabKind SLAB-RIGHT
 				define skRight : maskOffBits slabKind SLAB-LEFT
 
-				create-glyph "\(prefix)AA/left.\(suffix)" : AHalfLeft [DivFrame adws 3.5] height bodyShape skLeft mk
+				create-glyph "\(prefix)AA/left.\(suffix)" : AHalfLeft [DivFrame adws 3.5] height bodyShape skLeft mk diag
 
 				create-glyph "\(prefix)AA/left/mask.\(suffix)" : glyph-proc
 					define df : include : DivFrame adws 3.5
@@ -65,7 +65,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					set-width 0
 					include : df.markSet.(mk)
 					set-mark-anchor 'cvDecompose' 0 0 0 0
-					include : AHalfShape 1 df height bodyShape skRight
+					include : AHalfShape 1 df height bodyShape skRight diag
 
 				create-glyph "\(prefix)AA/right/mask.\(suffix)" : glyph-proc
 					define df : DivFrame adws 3.5
@@ -75,18 +75,18 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 					include : AHalfShapeMask 1 df height bodyShape skRight
 
 				if (!prefix) : begin
-					create-glyph "AV/A.\(suffix)" : AHalfLeft [DivFrame para.advanceScaleM 3.5] CAP bodyShape skLeft 'capital'
+					create-glyph "AV/A.\(suffix)" : AHalfLeft [DivFrame para.advanceScaleM 3.5] CAP bodyShape skLeft 'capital' diag
 					create-glyph "AU/A.\(suffix)" : glyph-proc
 						define df : include : DivFrame adws 3.5
 						local subDf : df.slice 3 2
-						include : AShape.LetterBottomRightRemoved subDf bodyShape slabKind CAP df.mvs
+						include : AShape.LetterBottomRightRemoved subDf bodyShape slabKind CAP df.mvs diag
 					create-glyph "AU/A/mask.\(suffix)" : glyph-proc
 						define df : include : DivFrame adws 3.5
 						local subDf : df.slice 3 2
 						include : union
 							MaskAbove : [AShape.BarPos bodyShape slabKind CAP] - df.mvs
 							MaskLeft  : subDf.width / 2
-						include : AShape.LetterBottomRightRemoved subDf bodyShape slabKind CAP df.mvs
+						include : AShape.LetterBottomRightRemoved subDf bodyShape slabKind CAP df.mvs diag
 
 			select-variant "\(prefix)AA/left"       (follow -- 'A')
 			select-variant "\(prefix)AA/left/mask"  (follow -- 'A')
