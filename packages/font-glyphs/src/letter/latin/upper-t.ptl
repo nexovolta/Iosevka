@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Upper-T : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : CyrDescender RetroflexHook MidHook LeftHook
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-Upper-J : JConfig
@@ -40,7 +40,7 @@ glyph-block Letter-Latin-Upper-T : begin
 			local botJut : if fShortSerifs SideJut MidJutCenter
 			include : tagged 'serifMB' : HSerif.[if fBottomSerifRightHalfOnly 'rb' 'mb'] df.middle 0 botJut sw
 
-	define [CyrKomiTjeShape df top doTopSerifs doBottomSerif] : glyph-proc
+	define [CyrKomiTjeShape df top doTopSerifs doBottomSerif hookSerifs] : glyph-proc
 		local sw : df.adviceThinnerStroke 2.75
 		local left : [mix df.leftSB df.rightSB 0.3] + OX
 		local right : df.rightSB - OX
@@ -65,7 +65,7 @@ glyph-block Letter-Latin-Upper-T : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : tagged 'serifRT' : VSerif.dr xTopBarRight top jutTop swVJut
 			include : tagged 'serifLT' : VSerif.dl xTopBarLeft  top jutTop swVJut
-		if SLAB : include [SerifFrame (top / 2 + HalfStroke) 0 left right (swRef -- sw)].rt.full
+		include : KomiHookSerif [SerifFrame (top / 2 + HalfStroke) 0 left right (swRef -- sw)] hookSerifs
 
 	define [CyrTeMidHookShape pArc] : function [df top doTopSerifs doBottomSerif] : glyph-proc
 		local sw : df.adviceThinnerStroke 2.75
@@ -224,15 +224,15 @@ glyph-block Letter-Latin-Upper-T : begin
 			include : df.markSet.p
 			include : [CyrTeMidHookShape (HBarPos ** 0.3)] df XH doST doSB
 
-		create-glyph "cyrl/TjeKomi.\(suffix)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/TjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 			local df : include : DivFrame adws 3
 			include : df.markSet.capital
-			include : CyrKomiTjeShape df CAP doST doSB
+			include : CyrKomiTjeShape df CAP doST doSB hookSerifs
 
-		create-glyph "cyrl/tjeKomi.upright.\(suffix)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/tjeKomi.upright.\(suffix).\(hookSuffix)" : glyph-proc
 			local df : include : DivFrame adws 3
 			include : df.markSet.e
-			include : CyrKomiTjeShape df XH doST doSB
+			include : CyrKomiTjeShape df XH doST doSB hookSerifs
 
 		create-glyph "cyrl/Twe/upper.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
@@ -330,8 +330,8 @@ glyph-block Letter-Latin-Upper-T : begin
 	select-variant 'cyrl/TeDescender' 0x4AC (follow -- 'T')
 	select-variant 'cyrl/teDescender.upright' (follow -- 'T')
 
-	select-variant 'cyrl/TjeKomi' 0x50E (follow -- 'T/rTailBase')
-	select-variant 'cyrl/tjeKomi.upright' null (follow -- 'T/rTailBase')
+	select-multi-dimensional-variant 'cyrl/TjeKomi' 0x50E (follows -- {'T/rTailBase' 'cyrl/komiHook'})
+	select-multi-dimensional-variant 'cyrl/tjeKomi.upright' (follows -- {'T/rTailBase' 'cyrl/komiHook'})
 
 	select-variant 'cyrl/teTall' 0x1C84 (follow -- 'T')
 

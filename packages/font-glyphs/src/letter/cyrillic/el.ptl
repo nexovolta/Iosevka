@@ -11,7 +11,7 @@ glyph-block Letter-Cyrillic-El : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 	glyph-block-import Letter-Shared-Shapes : SerifFrame LegShape RightwardTailedBar
-	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender PalatalHook MidHook UpwardHookShape
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender PalatalHook MidHook UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Latin-Upper-Lambda-Delta : LambdaShape
 
 	define BODY-NONE     0
@@ -229,7 +229,7 @@ glyph-block Letter-Cyrillic-El : begin
 					include : [CyrSoftElShape cyrSoftElVSlab] cyrSoftElCapDf CAP bodyType fBarStraight fSquareBottom serifType false cyrSoftElCapDf.mvs
 			select-variant "cyrl/ElSoft.\(suffix)" (follow -- 'cyrl/EnGhe/Ghe')
 
-			create-glyph "cyrl/LjeKomi.\(suffix)" : glyph-proc
+			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/LjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.capital
 				include : CyrElLeftHalf df CAP bodyType fBarStraight fSquareBottom serifType false
@@ -241,11 +241,10 @@ glyph-block Letter-Cyrillic-El : begin
 					ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 					adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 					sw     -- df.mvs
-				if (serifType !== SERIF-NONE) : begin
-					local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
-					include sf2.rt.full
+				local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
+				include : KomiHookSerif sf2 hookSerifs
 
-			create-glyph "cyrl/ljeKomi.\(suffix)" : glyph-proc
+			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/ljeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleMM 3
 				include : df.markSet.e
 				include : CyrElLeftHalf df XH bodyType fBarStraight fSquareBottom serifType true
@@ -257,9 +256,8 @@ glyph-block Letter-Cyrillic-El : begin
 					ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 					adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 					sw     -- df.mvs
-				if (serifType !== SERIF-NONE) : begin
-					local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
-					include sf2.rt.full
+				local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
+				include : KomiHookSerif sf2 hookSerifs
 
 		create-glyph "cyrl/el.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -317,8 +315,9 @@ glyph-block Letter-Cyrillic-El : begin
 		alias "cyrl/elDescender.tailed\(ser)" null "cyrl/elDescender.standard\(ser)"
 		alias "cyrl/elTail.tailed\(ser)" null "cyrl/elTail.standard\(ser)"
 		alias "cyrl/elHook.tailed\(ser)" null "cyrl/elHook.standard\(ser)"
-		alias "cyrl/LjeKomi.tailed\(ser)" null "cyrl/LjeKomi.standard\(ser)"
-		alias "cyrl/ljeKomi.tailed\(ser)" null "cyrl/ljeKomi.standard\(ser)"
+		foreach {hookSuffix _} [Object.entries KomiHookSerifs] : do
+			alias "cyrl/LjeKomi.tailed\(ser).\(hookSuffix)" null "cyrl/LjeKomi.standard\(ser).\(hookSuffix)"
+			alias "cyrl/ljeKomi.tailed\(ser).\(hookSuffix)" null "cyrl/ljeKomi.standard\(ser).\(hookSuffix)"
 		alias "cyrl/lje/leftHalf.tailed\(ser)" null "cyrl/lje/leftHalf.standard\(ser)"
 		DefineSelectorGlyph 'cyrl/ElSoft' "tailed\(ser)" [DivFrame para.advanceScaleM 3] 'capital'
 		alias "cyrl/ElSoft.tailed\(ser)" null "cyrl/ElSoft.standard\(ser)"
@@ -335,8 +334,8 @@ glyph-block Letter-Cyrillic-El : begin
 	select-variant 'cyrl/elDescender' 0x52F (follow -- 'cyrl/el')
 	select-variant 'cyrl/elTail' 0x4C6 (follow -- 'cyrl/el')
 	select-variant 'cyrl/elHook' 0x513 (follow -- 'cyrl/el')
-	select-variant 'cyrl/LjeKomi' 0x508 (follow -- 'cyrl/El')
-	select-variant 'cyrl/ljeKomi' 0x509 (follow -- 'cyrl/el')
+	select-multi-dimensional-variant 'cyrl/LjeKomi' 0x508 (follows -- {'cyrl/El' 'cyrl/komiHook'})
+	select-multi-dimensional-variant 'cyrl/ljeKomi' 0x509 (follows -- {'cyrl/el' 'cyrl/komiHook'})
 
 	CreateSelectorVariants 'cyrl/ElSoft' 0xA664 [Object.keys ElCapConfig] (follow -- 'cyrl/El')
 	CreateSelectorVariants 'cyrl/elSoft' 0xA665 [Object.keys ElConfig] (follow -- 'cyrl/el')

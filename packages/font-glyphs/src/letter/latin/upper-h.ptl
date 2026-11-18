@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Upper-H : begin
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 	glyph-block-import Letter-Shared-Metrics : EFMidBarShrinkK EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : SerifFrame RightwardTailedBar
-	glyph-block-import Letter-Shared-Shapes : LeftHook MidHook EngHook UpwardHookShape
+	glyph-block-import Letter-Shared-Shapes : LeftHook MidHook EngHook UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender PalatalHook
 
 	define SLAB-NONE                   0
@@ -332,15 +332,19 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		select-variant "Hwair.\(suffix)" (follow -- 'Hv/v')
 
-		create-glyph "cyrl/NjeKomi.\(suffix)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/NjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
-			include : HwairShape df CAP slabType fTailed (yend -- (CAP / 2 + HalfStroke)) (diag -- diag)
+			include : HwairShape df CAP slabType fTailed (serifTR -- false) (yend -- (CAP / 2 + HalfStroke)) (diag -- diag)
+			local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
+			include : KomiHookSerif sf2 hookSerifs
 
-		create-glyph "cyrl/njeKomi.\(suffix)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/njeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
-			include : HwairShape df XH slabType fTailed (yend -- (XH / 2 + HalfStroke)) (diag -- diag)
+			include : HwairShape df XH slabType fTailed (serifTR -- false) (yend -- (XH / 2 + HalfStroke)) (diag -- diag)
+			local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
+			include : KomiHookSerif sf2 hookSerifs
 
 		create-glyph "HHookLeft.\(suffix)" : glyph-proc
 			include [refer-glyph "H.\(suffix)"] AS_BASE ALSO_METRICS
@@ -432,8 +436,8 @@ glyph-block Letter-Latin-Upper-H : begin
 	select-variant 'cyrl/EnMidHook' 0x522 (follow -- 'cyrl/En')
 	select-variant 'cyrl/enMidHook' 0x523 (follow -- 'cyrl/en')
 
-	select-variant 'cyrl/NjeKomi' 0x50A
-	select-variant 'cyrl/njeKomi' 0x50B
+	select-multi-dimensional-variant 'cyrl/NjeKomi' 0x50A (follows -- {'cyrl/NjeKomi' 'cyrl/komiHook'})
+	select-multi-dimensional-variant 'cyrl/njeKomi' 0x50B (follows -- {'cyrl/njeKomi' 'cyrl/komiHook'})
 
 	derive-glyphs 'HCedilla' 0x1E28 'H' : lambda [src gr] : glyph-proc
 		local shift : SB + [HSwToV HalfStroke] - markMiddle

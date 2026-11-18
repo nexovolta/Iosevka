@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor TurnMarks
 	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender CyrCurlDescender PalatalHook EngHook
-	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame
+	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared : ThreeQuarterDf
 
@@ -366,7 +366,7 @@ glyph-block Letter-Latin-Lower-M : begin
 
 		if (Body === SmallMArches && !shortLeg) : begin
 			if (!tailed) : begin
-				create-glyph "cyrl/tjeKomi.italic.\(suffix)" : glyph-proc
+				foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/tjeKomi.italic.\(suffix).\(hookSuffix)" : glyph-proc
 					local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
 					include : df.markSet.e
 					local subDf : df.slice 4 3 0
@@ -380,9 +380,8 @@ glyph-block Letter-Latin-Lower-M : begin
 						adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 						sw     -- subDf.mvs
 					include : Serifs subDf XH 0 0 (XH / 2) false false true
-					if SLAB : begin
-						local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 2 3
-						include sf2.rt.full
+					local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 2 3
+					include : KomiHookSerif sf2 hookSerifs
 
 				create-glyph : glyph-proc
 					local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
@@ -413,7 +412,7 @@ glyph-block Letter-Latin-Lower-M : begin
 	select-variant 'cyrl/te.italic' (shapeFrom -- 'm')
 	alias 'cyrl/te/reduced.italic' null 'cyrl/te.italic'
 	select-variant 'cyrl/te.italic/descBase' (shapeFrom -- 'm')
-	select-variant 'cyrl/tjeKomi.italic'
+	select-multi-dimensional-variant 'cyrl/tjeKomi.italic' (follows -- {'cyrl/tjeKomi.italic' 'cyrl/komiHook'})
 
 	select-variant 'cyrl/tje.italic/base/corner'
 	select-variant 'cyrl/tje.italic/base/cursive'

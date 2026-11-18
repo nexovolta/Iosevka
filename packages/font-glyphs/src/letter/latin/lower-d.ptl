@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition ThreeQuarterDf
 	glyph-block-import Letter-Shared-Shapes : OBarRight RightwardTailedBar CurlyTail
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
 
 	define [ToothedBody df yTop fFlat cut _bowlTop] : union
@@ -387,7 +387,7 @@ glyph-block Letter-Latin-Lower-D : begin
 
 	select-variant 'dCurlyTail' 0x221
 
-	create-glyph 'cyrl/djeKomi.toothlessRoundedSerifless' : glyph-proc
+	foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/djeKomi.toothlessRoundedSerifless.\(hookSuffix)" : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 3
 		include : df.markSet.b
 
@@ -419,13 +419,12 @@ glyph-block Letter-Latin-Lower-D : begin
 			ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 			adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 			sw     -- df.mvs
-		if SLAB : begin
-			local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
-			include sf2.rt.full
-		create-forked-glyph 'cyrl/djeKomi.toothlessRoundedTopSerifed' : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) Ascender SideJut df.mvs
+		local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
+		include : KomiHookSerif sf2 hookSerifs
+		create-forked-glyph "cyrl/djeKomi.toothlessRoundedTopSerifed.\(hookSuffix)" : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) Ascender SideJut df.mvs
 
 	alias 'cyrl/deKomi' 0x501 'd'
-	select-variant 'cyrl/djeKomi' 0x503
+	select-multi-dimensional-variant 'cyrl/djeKomi' 0x503 (follows -- {'cyrl/djeKomi' 'cyrl/komiHook'})
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarRight
 	create-glyph 'mathbb/d' 0x1D555 : glyph-proc

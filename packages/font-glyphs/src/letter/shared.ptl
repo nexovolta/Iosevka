@@ -1305,6 +1305,16 @@ glyph-block Letter-Shared-Shapes : begin
 			swSerif -- swSerif
 			fForceSymmetric -- fForceSymmetric
 
+	glyph-block-export KomiHookSerifs KomiHookSerif
+	define KomiHookSerifs : object
+		serifless     0
+		motionSerifed 1
+		serifed       2
+	define [KomiHookSerif sf style] : match style
+		[Just 1] sf.rt.inner
+		[Just 2] sf.rt.full
+		__       : no-shape
+
 	glyph-block-export WithSerifOverflowMask
 	define [WithSerifOverflowMask fEnable box s] : begin
 		if [not fEnable] : return s

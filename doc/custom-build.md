@@ -240,6 +240,9 @@ The `x` and `capital-x` designs include rounded variants with optional serifs,
 and a serifless `rounded-chancery` variant.
 The `capital-omega` design includes a `serifed` Greek Omega, selected by default
 in slab builds.
+The `komi-hook` design independently controls the hooks on ԂԃԄԅԈԉԊԋԌԍԎԏ:
+`serifless`, `motion-serifed`, or `serifed`. It defaults to `serifless` in sans
+builds and `serifed` in slab builds.
 
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->

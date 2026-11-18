@@ -17,7 +17,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
 	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot RoundedTailReverseKnots StemCutY ApplyDiagCut
-	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape
+	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 	glyph-block-import Digits-Three : ThreeFlatHookTop ThreeFlatHookBrokenTop
@@ -565,7 +565,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 					include : union [ze.Shape] [ze.AutoStartSerifL]
 					include : CyrDescender.rSideJut (RightSB - OX * 2) 0
 
-				create-glyph "cyrl/ZjeKomi.\(suffix)" : glyph-proc
+				foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/ZjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleMM 3
 					include : df.markSet.capital
 
@@ -589,11 +589,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 						ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 						adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 						sw     -- stroke
-					if SLAB : begin
-						local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
-						include sf2.rt.full
+					local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
+					include : KomiHookSerif sf2 hookSerifs
 
-				create-glyph "cyrl/zjeKomi.\(suffix)" : glyph-proc
+				foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/zjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 					local df : include : DivFrame para.advanceScaleMM 3
 					include : df.markSet.e
 
@@ -617,9 +616,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 						ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
 						adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
 						sw     -- stroke
-					if SLAB : begin
-						local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
-						include sf2.rt.full
+					local sf2 : [SerifFrame.fromDf df (XH / 2 + HalfStroke) 0].slice 1 2
+					include : KomiHookSerif sf2 hookSerifs
 
 	select-variant 'cyrl/Ze' 0x417
 	select-variant 'cyrl/ze' 0x437
@@ -643,8 +641,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 	select-variant 'latn/revepsilon' 0x25C  (shapeFrom -- 'cyrl/ze')
 	select-variant 'latn/revepsilonRhoticHook' 0x25D (shapeFrom -- 'cyrl/zeRhoticHook') (follow -- 'latn/revepsilon')
 
-	select-variant 'cyrl/ZjeKomi'  0x504 (follow -- 'cyrl/Ze/topSerif')
-	select-variant 'cyrl/zjeKomi'  0x505 (follow -- 'cyrl/ze/topSerif')
+	select-multi-dimensional-variant 'cyrl/ZjeKomi'  0x504 (follows -- {'cyrl/Ze/topSerif' 'cyrl/komiHook'})
+	select-multi-dimensional-variant 'cyrl/zjeKomi'  0x505 (follows -- {'cyrl/ze/topSerif' 'cyrl/komiHook'})
 	select-variant 'cyrl/DzjeKomi' 0x506 (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'cyrl/dzjeKomi' 0x507 (follow -- 'cyrl/ze/topSerif')
 

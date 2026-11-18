@@ -203,7 +203,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	CreateTurnedLetter 'smcpTurnG' 0x1DF02 'smcpG' HalfAdvance (XH / 2)
 
 	do 'Komi sje'
-		glyph-block-import Letter-Shared-Shapes : SerifFrame
+		glyph-block-import Letter-Shared-Shapes : SerifFrame KomiHookSerifs KomiHookSerif
 
 		define Config : object
 			serifless               {SLAB-NONE       }
@@ -213,28 +213,26 @@ glyph-block Letter-Latin-Upper-G : begin
 			unilateralInwardSerifed {SLAB-INWARD     }
 
 		foreach {suffix {slabType}} [Object.entries Config] : begin
-			create-glyph "cyrl/SjeKomi.\(suffix)" : glyph-proc
+			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/SjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				include : MarkSet.capital
 				include : GShape CAP BODY-TOOTHLESS-ROUNDED CROSSBAR-NONE slabType ArchDepthA
 					ada   -- ArchDepthA
 					adb   -- ArchDepthB
 					pyBar -- 0.5
-				if SLAB : begin
-					local sf2 : SerifFrame.fromDf [DivFrame 1] (CAP / 2 + HalfStroke) 0
-					include sf2.rt.full
+				local sf2 : SerifFrame.fromDf [DivFrame 1] (CAP / 2 + HalfStroke) 0
+				include : KomiHookSerif sf2 hookSerifs
 
-			create-glyph "cyrl/sjeKomi.\(suffix)" : glyph-proc
+			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/sjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				include : MarkSet.e
 				include : GShape XH BODY-TOOTHLESS-ROUNDED CROSSBAR-NONE slabType ArchDepthA
 					ada   -- SmallArchDepthA
 					adb   -- SmallArchDepthB
 					pyBar -- 0.5
-				if SLAB : begin
-					local sf2 : SerifFrame.fromDf [DivFrame 1] (XH / 2 + HalfStroke) 0
-					include sf2.rt.full
+				local sf2 : SerifFrame.fromDf [DivFrame 1] (XH / 2 + HalfStroke) 0
+				include : KomiHookSerif sf2 hookSerifs
 
-		select-variant 'cyrl/SjeKomi' 0x50C (follow -- 'C/topSerif')
-		select-variant 'cyrl/sjeKomi' 0x50D (follow -- 'c/topSerif')
+		select-multi-dimensional-variant 'cyrl/SjeKomi' 0x50C (follows -- {'C/topSerif' 'cyrl/komiHook'})
+		select-multi-dimensional-variant 'cyrl/sjeKomi' 0x50D (follows -- {'c/topSerif' 'cyrl/komiHook'})
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarRight
 	define [BBGArcT sink offset top ada adb xTerm yTerm] : sink
