@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcStartSerifWidth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay TopHook PalatalHook
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Latin-Z : ZemlyaBottomStrokeCursive
 
 	define BODY-TOOTHED            0
 	define BODY-TOOTHLESS-CORNER   1
@@ -162,6 +163,13 @@ glyph-block Letter-Latin-Upper-G : begin
 		create-glyph "G.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : GShape CAP bodyType crossbarType slabType rise
+		create-glyph "GInsular.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.capDesc
+			local swashBodyType : if (bodyType === BODY-TOOTHED) BODY-TOOTHLESS-ROUNDED bodyType
+			local swashRise : if (bodyType === BODY-TOOTHED) ArchDepthA rise
+			include : GShape CAP swashBodyType crossbarType slabType swashRise
+			include : VBar.r RightSB 0 ([mix 0 CAP GBarPos] + HalfStroke) [AdviceStroke 4]
+			include : ZemlyaBottomStrokeCursive
 		create-glyph "GHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : GShape CAP bodyType crossbarType slabType rise (fHookTop -- true)
@@ -183,6 +191,7 @@ glyph-block Letter-Latin-Upper-G : begin
 				space -- {(SB + [HSwToV Stroke]) Width}
 
 	select-variant 'G' 'G'
+	select-variant 'GInsular.phonotypic' (follow -- 'G')
 	link-reduced-variant 'G/sansSerif' 'G' MathSansSerif
 	select-variant 'GHookTop' 0x193
 	select-variant 'smcpG' 0x262 (follow -- 'G')

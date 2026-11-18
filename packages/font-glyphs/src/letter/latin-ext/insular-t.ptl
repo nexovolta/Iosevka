@@ -16,6 +16,10 @@ glyph-block Letter-Latin-Insular-T : begin
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
 
+	define InsularTSymConfig : object
+		symmetric  false
+		asymmetric true
+
 	define [InsularTShape top bot ada adb styBot] : glyph-proc
 		include : HBar.t SB RightSB top
 
@@ -42,13 +46,16 @@ glyph-block Letter-Latin-Insular-T : begin
 			include : MarkSet.e
 			include : InsularTShape XH 0 SmallArchDepthA SmallArchDepthB styBot
 
-		create-glyph "tInsular.phonotypic.\(suffix)" : glyph-proc
-			local df : include : DivFrame 1
-			include : df.markSet.b
-			include : union
-				[CLetterForm df styTop styBot XH 0 (ada -- SmallArchDepthA) (adb -- SmallArchDepthB)].full
-				VBar.m df.middle (XH - Stroke) Ascender
-				HBar.m [mix df.leftSB df.middle 0.5] [mix df.rightSB df.middle 0.5] [mix XH Ascender 0.6] [Math.min Stroke : 0.45 * (Ascender - XH)]
+		foreach {sym fAsymmetric} [pairs-of InsularTSymConfig] : do
+			create-glyph "tInsular.phonotypic.\(suffix).\(sym)" : glyph-proc
+				local df : include : DivFrame 1
+				include : df.markSet.b
+				local bowl : [CLetterForm df styTop styBot XH 0 (ada -- SmallArchDepthA) (adb -- SmallArchDepthB)].full
+				local xShift : if fAsymmetric (0.25 * (df.rightSB - df.leftSB)) 0
+				include bowl
+				include : difference [VBar.m df.middle (XH - HalfStroke) Ascender] bowl
+				include : HBar.m ([mix df.leftSB df.middle 0.5] + xShift) ([mix df.rightSB df.middle 0.5] + xShift) [mix XH Ascender 0.6] [Math.min Stroke : 0.45 * (Ascender - XH)]
+		select-variant "tInsular.phonotypic.\(suffix)" (follow -- 't/insularSym')
 
 	select-variant 'TInsular' 0xA786 (follow -- 'C')
 	select-variant 'tInsular' 0xA787 (follow -- 'c')

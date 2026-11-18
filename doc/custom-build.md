@@ -4694,3 +4694,7 @@ Existing four-letter selectors retain their full tags: `IPPH`, `APPH`,
 `UPPH`, and `PTMN`. Enable only the desired locale feature for a run of text.
 These are custom GSUB feature tags, not `ssXX` stylistic-set features; use
 `font-feature-settings` to activate them. The default forms are unchanged.
+
+`PTMN` includes the Comstock forms of Ꝺꝺ, Ᵹᵹ, and ꞇ. Its lowercase insular g
+uses an open double-storey form; a toothed capital G selection uses a
+toothless-rounded bowl.

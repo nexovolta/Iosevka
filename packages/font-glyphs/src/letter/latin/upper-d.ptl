@@ -8,7 +8,7 @@ glyph-module
 glyph-block Letter-Latin-Upper-D : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook PalatalHook
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook VerticalHook
 
 	define BODY-STANDARD 0
 	define BODY-MORE-ROUNDED 1
@@ -74,10 +74,25 @@ glyph-block Letter-Latin-Upper-D : begin
 			flat               mxb                       yBot
 			[if offset corner curl] (xLeft - O) yBot [heading Leftward]
 
-	define [DShape df top right bodyKind smooth slabTop slabBot] : glyph-proc
-		include : VBar.l df.leftSB 0 top df.mvs
+	define [DShape df top right bodyKind smooth slabTop slabBot fBaselineHook] : glyph-proc
+		include : if fBaselineHook
+			VerticalHook.l df.leftSB (TailY + df.mvs / 2) (-TailX) TailY (sw -- df.mvs) (yExtension -- (top - TailY - df.mvs / 2))
+			VBar.l df.leftSB 0 top df.mvs
+		if fBaselineHook : include : VBar.l df.leftSB 0 (TailY + df.mvs) df.mvs
 		if (bodyKind === BODY-DIAMOND) : include : DDiamondArcShapeT dispiro df top right 0 df.mvs
 		: else : include : DArcShapeT dispiro df top right 0 df.mvs (bodyKind === BODY-MORE-ROUNDED) smooth
+		if fBaselineHook : begin
+			local radius : Math.min (0.35 * df.mvs) (0.1 * top)
+			local innerX : df.leftSB + [HSwToV df.mvs]
+			local radiusX : HSwToV radius
+			include : difference
+				Rect (df.mvs + radius) df.mvs innerX (innerX + radiusX)
+				Ellipse.Outline.AtDimens (df.mvs + 2 * radius) df.mvs innerX (innerX + 2 * radiusX)
+			local outerRadius : Math.min TailY (0.25 * top)
+			local outerRadiusX : Math.min (TailX - [HSwToV : 0.5 * df.mvs]) [HSwToV outerRadius]
+			if (outerRadiusX > 0) : include : difference
+				Rect outerRadius 0 (df.leftSB - outerRadiusX) df.leftSB
+				Ellipse.Outline.AtDimens (2 * outerRadius) 0 (df.leftSB - 2 * outerRadiusX) df.leftSB
 		if slabTop : include : tagged 'serifLT' : HSerif.lt df.leftSB top SideJut
 		if slabBot : include : tagged 'serifLB' : HSerif.lb df.leftSB 0 SideJut
 
@@ -105,8 +120,7 @@ glyph-block Letter-Latin-Upper-D : begin
 			local shift : df.width - bodyDf.width
 			include : df.markSet.capital
 			include : with-transform [ApparentTranslate shift 0]
-				DShape bodyDf CAP bodyDf.rightSB bodyKind nothing fSlabTop false
-			include : PalatalHook.lExt (bodyDf.leftSB + shift) 0 (sw -- bodyDf.mvs)
+				DShape bodyDf CAP bodyDf.rightSB bodyKind nothing fSlabTop false true
 
 		create-glyph "currency/emiratiDirhamSign/base.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1 3.5 1.25

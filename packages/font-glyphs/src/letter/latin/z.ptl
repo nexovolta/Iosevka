@@ -226,11 +226,12 @@ glyph-block Letter-Latin-Z : begin
 			archv
 			g4.down.end (SB + O + [HSwToV fine]) Descender [heading Downward]
 
-	define [ZemlyaBottomStrokeCursive] : begin
+	glyph-block-export ZemlyaBottomStrokeCursive
+	define [ZemlyaBottomStrokeCursive _startY] : begin
 		local fine : AdviceStroke 4
 		local hx : [Math.max (0.5 * HookX) : HSwToV : 1.25 * fine] + [HSwToV : 0.125 * fine]
 		return : dispiro
-			flat (RightSB - [HSwToV fine]) HalfStroke [widths.lhs.heading fine Downward]
+			flat (RightSB - [HSwToV fine]) [fallback _startY HalfStroke] [widths.lhs.heading fine Downward]
 			curl (RightSB - [HSwToV fine]) [mix (Descender + fine) 0 0.5] [widths.lhs.heading fine Downward]
 			arcvh
 			g2.left.mid (RightSB - hx) (Descender + fine + O)

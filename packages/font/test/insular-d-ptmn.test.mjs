@@ -28,10 +28,17 @@ test("phonotypic insular D forms have stem hooks and omit the capital bottom ser
 					const glyph = glyphStore.queryByNameEnsured(target);
 					const contours = new Geometry.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 					assert.ok(contours.length && contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
-					assert.ok(contours.flat().some(p => glyph.gizmo.unapply(p).y < 0), target);
+					if (cp === 0xA77A) assert.ok(contours.flat().some(p => glyph.gizmo.unapply(p).y < 0), target);
+					else {
+						assert.equal(contours.length, 2, "capital bowl and baseline hook must remain connected");
+						assert.ok(contours.flat().every(p => glyph.gizmo.unapply(p).y >= -1), target);
+					}
 				}
 				const upper = glyphStore.queryByNameEnsured("DInsular.phonotypic");
-				assert.equal(upper.advanceWidth, glyphStore.queryByNameEnsured("D").advanceWidth * para.advanceScaleT);
+				const regularD = glyphStore.queryByNameEnsured("D");
+				assert.equal(upper.advanceWidth, regularD.advanceWidth * para.advanceScaleT);
+				const minX = glyph => Math.min(...new Geometry.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours().flat().map(p => glyph.gizmo.unapply(p).x));
+				assert.ok(minX(upper) < minX(regularD) + upper.advanceWidth - regularD.advanceWidth, "capital hook extends left of the stem");
 				const outline = suffix => {
 					const glyph = glyphStore.queryByNameEnsured(`DInsular.phonotypic.standard${suffix}`);
 					return new Geometry.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
