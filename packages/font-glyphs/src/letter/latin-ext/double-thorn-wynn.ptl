@@ -9,7 +9,7 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared-Shapes : SerifFrame SerifedArcStart
-	glyph-block-import Letter-Latin-Upper-B : BShape
+	glyph-block-import Letter-Latin-Upper-B : BConfig
 	glyph-block-import Letter-Latin-Yogh : LowerHalfT
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-STEM FLAT-CONNECTION
 
@@ -20,13 +20,10 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	define [MotionSerif x top bot] : SerifLT x top bot
 	define [FullSerifs x top bot] : composite-proc [SerifLT x top bot] [SerifLB x top bot]
 
-	define [yThornBowlBot top] : mix 0 top 0.19
-	define [yThornBowlTop top] : top - [yThornBowlBot top]
-
-	define [DoubleThornShape xStem stemBot stemTop bowlBot bowlTop] : glyph-proc
+	define [DoubleThornShape xStem stemBot stemTop bowlBot bowlTop body] : glyph-proc
 		local h : bowlTop - bowlBot
 		include : with-transform [ApparentTranslate (xStem - SB) bowlBot]
-			BShape h (stroke -- Stroke) (serifTop -- false) (serifBot -- false)
+			body h Stroke false false
 		include : VBar.l xStem stemBot stemTop
 		include : LeaningAnchor.Above.VBar.l xStem
 		include : LeaningAnchor.Below.VBar.l xStem
@@ -73,12 +70,14 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 		motionSerifed {MotionSerif}
 		serifed       {FullSerifs }
 
-	foreach {suffix {Serifs}} [Object.entries Config] : do
+	foreach {suffix {{body mask bp fGap fAsymmetric} {ts bs}}} [Object.entries BConfig] : do
 		create-glyph "ThornDouble.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : DoubleThornShape xThornStem 0 CAP [yThornBowlBot CAP] [yThornBowlTop CAP]
-			include : Serifs xThornStem CAP 0
+			include : DoubleThornShape xThornStem 0 CAP (0.08 * CAP) (0.92 * CAP) body
+			if ts : include : SerifLT xThornStem CAP 0
+			if bs : include : SerifLB xThornStem CAP 0
 
+	foreach {suffix {Serifs}} [Object.entries Config] : do
 		create-glyph "WynnDouble.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DoubleWynnShape 0 CAP [mix 0 CAP 0.18] CAP
@@ -106,7 +105,7 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 			include : DoubleThornLowerShape SB Descender Ascender 0 XH SHook SmallArchDepthA SmallArchDepthB slabTop slabBot
 			include : Serifs SB Ascender Descender
 
-	select-variant 'ThornDouble' 0xA7D2
+	select-variant 'ThornDouble' 0xA7D2 (follow -- 'B')
 	select-variant 'thornDouble' 0xA7D3
 	select-variant 'WynnDouble'  0xA7D4
 	select-variant 'wynnDouble'  0xA7D5
