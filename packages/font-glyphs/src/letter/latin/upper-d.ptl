@@ -8,13 +8,13 @@ glyph-module
 glyph-block Letter-Latin-Upper-D : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook VerticalHook
+	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook PalatalHook OBarLeft
 
 	define BODY-STANDARD 0
 	define BODY-MORE-ROUNDED 1
 	define BODY-DIAMOND 2
 
-	define [DArcShapeT sink df top right offset sw fRound smooth] : glyph-proc
+	define [DArcShapeT sink df top right offset sw fRound smooth fToothed] : glyph-proc
 		local mockWidth : right + (df.width - df.rightSB)
 		local maxXSmoothWidth : mockWidth - df.leftSB * 2 - [HSwToV sw]
 		local dsmooth : fallback smooth : clamp (sw * 1.5) (top / 2 - TINY) ((top / CAP) * ArchDepth * 1.1)
@@ -30,20 +30,26 @@ glyph-block Letter-Latin-Upper-D : begin
 			curl [Arch.adjust-x.top (right - barchDepthRd)] (top - offset)
 			archv
 			g4 (right - OX - offset) [YSmoothMidR top 0 ada adb]
-			arcvh
-			flat [Arch.adjust-x.bot (right - barchDepthRd)] offset
-			[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
+			if fToothed
+				then : OBarLeft.arcEnd (bot -- 0) (left -- df.leftSB) (right -- right) (sw -- sw) (fine -- ShoulderFine) (ada -- ada) (adb -- adb)
+				else : list
+					arcvh
+					flat [Arch.adjust-x.bot (right - barchDepthRd)] offset
+					[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
 		: else : include : sink
 			widths.rhs sw
 			[if offset corner flat] (df.leftSB - O) (top - offset) [heading Rightward]
 			curl [Arch.adjust-x.top (right - bsmooth)] (top - offset)
 			archv
 			flatside.rd (right - offset) 0 top ada adb
-			arcvh
-			flat [Arch.adjust-x.bot (right - bsmooth)] offset
-			[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
+			if fToothed
+				then : OBarLeft.arcEnd (bot -- 0) (left -- df.leftSB) (right -- right) (sw -- sw) (fine -- ShoulderFine) (ada -- ada) (adb -- adb)
+				else : list
+					arcvh
+					flat [Arch.adjust-x.bot (right - bsmooth)] offset
+					[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
 
-	define [DDiamondArcShapeT sink df top right offset sw] : glyph-proc
+	define [DDiamondArcShapeT sink df top right offset sw fToothed] : glyph-proc
 		local body : fallback sw df.mvs
 		local fine : [AdviceStroke 3] * (body / Stroke)
 		local xLeft df.leftSB
@@ -72,27 +78,21 @@ glyph-block Letter-Latin-Upper-D : begin
 			curl               [mix xRight mxb (1 - p1)] [mix myr yBot (1 - p2)]
 			alsoThru.g2        (1 - pcx)                 (1 - pcy)
 			flat               mxb                       yBot
-			[if offset corner curl] (xLeft - O) yBot [heading Leftward]
+			if fToothed
+				then : list
+					archv
+					flat (xLeft + [HSwToV : body - ShoulderFine]) ArchDepthB [widths.rhs ShoulderFine]
+					curl (xLeft + [HSwToV : body - ShoulderFine]) (ArchDepthB + TINY) [heading Upward]
+				else : list
+					[if offset corner curl] (xLeft - O) yBot [heading Leftward]
 
 	define [DShape df top right bodyKind smooth slabTop slabBot fBaselineHook] : glyph-proc
+		# Raise the palatal hook's terminal to the baseline.
 		include : if fBaselineHook
-			VerticalHook.l df.leftSB (TailY + df.mvs / 2) (-TailX) TailY (sw -- df.mvs) (yExtension -- (top - TailY - df.mvs / 2))
+			PalatalHook.lExt df.leftSB (-Descender - O) (yAttach -- top) (sw -- df.mvs)
 			VBar.l df.leftSB 0 top df.mvs
-		if fBaselineHook : include : VBar.l df.leftSB 0 (TailY + df.mvs) df.mvs
-		if (bodyKind === BODY-DIAMOND) : include : DDiamondArcShapeT dispiro df top right 0 df.mvs
-		: else : include : DArcShapeT dispiro df top right 0 df.mvs (bodyKind === BODY-MORE-ROUNDED) smooth
-		if fBaselineHook : begin
-			local radius : Math.min (0.35 * df.mvs) (0.1 * top)
-			local innerX : df.leftSB + [HSwToV df.mvs]
-			local radiusX : HSwToV radius
-			include : difference
-				Rect (df.mvs + radius) df.mvs innerX (innerX + radiusX)
-				Ellipse.Outline.AtDimens (df.mvs + 2 * radius) df.mvs innerX (innerX + 2 * radiusX)
-			local outerRadius : Math.min TailY (0.25 * top)
-			local outerRadiusX : Math.min (TailX - [HSwToV : 0.5 * df.mvs]) [HSwToV outerRadius]
-			if (outerRadiusX > 0) : include : difference
-				Rect outerRadius 0 (df.leftSB - outerRadiusX) df.leftSB
-				Ellipse.Outline.AtDimens (2 * outerRadius) 0 (df.leftSB - 2 * outerRadiusX) df.leftSB
+		if (bodyKind === BODY-DIAMOND) : include : DDiamondArcShapeT dispiro df top right 0 df.mvs fBaselineHook
+		: else : include : DArcShapeT dispiro df top right 0 df.mvs (bodyKind === BODY-MORE-ROUNDED) smooth fBaselineHook
 		if slabTop : include : tagged 'serifLT' : HSerif.lt df.leftSB top SideJut
 		if slabBot : include : tagged 'serifLB' : HSerif.lb df.leftSB 0 SideJut
 
