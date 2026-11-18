@@ -90,6 +90,7 @@ glyph-block Letter-Latin-Upper-N : begin
 		local-parameter : stroke -- [AdviceStroke 2]
 		local-parameter : swDiag -- [AdviceStroke 4]
 		local-parameter : rightBottom -- 0
+		local-parameter : verticalAsymmetric -- false
 
 		local left  : mix 0        df.leftSB  kSB
 		local right : mix df.width df.rightSB kSB
@@ -104,10 +105,10 @@ glyph-block Letter-Latin-Upper-N : begin
 			__                     : right - swDiag
 		local yEnd : match bodyType
 			[Just BODY-CYR-I-SLAB] : 0 + stroke
-			[Just BODY-ASYMMETRIC] : mix 0 top 0.375
+			[Just BODY-ASYMMETRIC] : if verticalAsymmetric 0 : mix 0 top 0.375
 			__                       0
 		local yStart : match bodyType
-			[Just BODY-ASYMMETRIC]   top
+			[Just BODY-ASYMMETRIC] : if verticalAsymmetric (top * 0.625) top
 			__                     : top - yEnd
 
 		include : union
@@ -202,6 +203,7 @@ glyph-block Letter-Latin-Upper-N : begin
 			include : MarkSet.e
 			include : RevNShape [DivFrame 1] XH bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
+				verticalAsymmetric -- true
 
 		create-glyph "currency/nairaSign/base.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -234,6 +236,7 @@ glyph-block Letter-Latin-Upper-N : begin
 			include : MarkSet.capital
 			include : RevNShape [DivFrame 1] CAP bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
+				verticalAsymmetric -- true
 
 		create-glyph "Eng.phonotypic.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -248,6 +251,7 @@ glyph-block Letter-Latin-Upper-N : begin
 			include : MarkSet.e
 			include : RevNShape [DivFrame 1] XH bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
+				verticalAsymmetric -- true
 
 	select-variant 'cyrl/I' 0x418
 	alias 'NLongLeg.phonotypic' null 'cyrl/I'
