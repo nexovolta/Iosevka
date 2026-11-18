@@ -128,7 +128,9 @@ glyph-block Digits-Four : begin
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : FlipAround Middle (CAP / 2) (-1) 1
 
-	alias 'revFour.onum' [CodeOnum 0x218C] 'revFour.lnum'
+	derive-glyphs 'revFour.onum' [CodeOnum 0x218C] 'four.onum' : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : FlipAround Middle (CAP / 2) (-1) 1
 
 	link-reduced-variant 'four/sansSerif.lnum' 'four.lnum' MathSansSerif (follow -- 'four/sansSerif')
 	link-reduced-variant 'four/sansSerif.onum' 'four.onum' MathSansSerif (follow -- 'four/sansSerif')
