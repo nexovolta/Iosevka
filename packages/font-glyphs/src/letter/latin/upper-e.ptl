@@ -11,6 +11,7 @@ glyph-block Letter-Latin-Upper-E : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition SetGrekUpperTonos CreateTurnedLetter
 	glyph-block-import Letter-Shared-Metrics : EFMidBarShrinkK EFMidBarPosY EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay
+	glyph-block-import Letter-Latin-C : CConfig CLetterForm
 
 	define kSB 1.0
 	define xEBarLeft     : [mix 0     SB      kSB] - O
@@ -134,6 +135,19 @@ glyph-block Letter-Latin-Upper-E : begin
 				flat [Arch.adjust-x.top [mix RightSB [Math.max xEBarLeft : [mix 0 SB 1.5] + 0.75 * OX] 0.5] (sw -- swCap)] CAP
 				curl (xEBarLeft - O) CAP [heading Leftward]
 
+		foreach {cSuffix {styTop styBot}} [Object.entries CConfig] : if (!styTop) : do
+			create-glyph "EHookRight.phonotypic.\(suffix).\(cSuffix)" : glyph-proc
+				include : MarkSet.capital
+				include : EShape CAP lt false rt false rm swCap nothing nothing diag
+				eject-contour 'strokeL'
+				eject-contour 'strokeB'
+				local join : CAP / 2
+				include : VBar.l xEBarLeft (join - TINY) CAP swCap
+				include : intersection
+					MaskBelow (join + TINY)
+					with-transform [ApparentTranslate (-O) 0]
+						[CLetterForm [DivFrame 1] 0 styBot CAP 0 (sw -- swCap) (ox -- 0)].full
+
 		create-glyph "revE.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : RevEShape CAP lt lb rt rb rm swCap nothing nothing diag
@@ -159,6 +173,7 @@ glyph-block Letter-Latin-Upper-E : begin
 	CreateTurnedLetter 'smcpTurnE'  0x2C7B 'smcpE' HalfAdvance (XH  / 2)
 
 	select-variant 'EHookRight' 0x1DF81 (follow -- 'E')
+	select-multi-dimensional-variant 'EHookRight.phonotypic' (follows -- {'E' 'C/bottomSerif'})
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/E' 0x1D53C : glyph-proc

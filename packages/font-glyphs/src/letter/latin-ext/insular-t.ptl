@@ -10,6 +10,7 @@ glyph-block Letter-Latin-Insular-T : begin
 	glyph-block-import Letter-Latin-C : CConfig CLetterForm
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
+	glyph-block-import Letter-Latin-Upper-T : TConfig TShape TLeftX
 
 	define SLAB-CLASSICAL   1
 	define SLAB-INWARD      2
@@ -20,8 +21,8 @@ glyph-block Letter-Latin-Insular-T : begin
 		symmetric  false
 		asymmetric true
 
-	define [InsularTShape top bot ada adb styBot] : glyph-proc
-		include : HBar.t SB RightSB top
+	define [InsularTShape top bot ada adb styBot fNoTopBar] : glyph-proc
+		if (!fNoTopBar) : include : HBar.t SB RightSB top
 
 		local fine : Stroke * CThinB
 		include : dispiro
@@ -46,6 +47,27 @@ glyph-block Letter-Latin-Insular-T : begin
 			include : MarkSet.e
 			include : InsularTShape XH 0 SmallArchDepthA SmallArchDepthB styBot
 
+		foreach {tSuffix {adws doST doSB fShort}} [Object.entries TConfig] : do
+			create-glyph "TInsular.phonotypic.\(suffix).\(tSuffix)" : glyph-proc
+				local df : include : DivFrame adws
+				include : df.markSet.capital
+				local serifShift : if doST (0.07 * df.width + [HSwToV HalfStroke] / 4) 0
+				include : new-glyph : glyph-proc
+					include : TShape df CAP doST false nothing fShort
+					eject-contour 'strokeV'
+					if doST : eject-contour 'serifLT'
+				if doST : begin
+					include : HBar.t ([TLeftX df] - serifShift) [TLeftX df] CAP
+					include : with-transform [ApparentTranslate (-serifShift) 0]
+						new-glyph : glyph-proc
+							include : TShape df CAP doST false nothing fShort
+							eject-contour 'strokeV'
+							eject-contour 'strokeLT'
+							eject-contour 'strokeRT'
+							eject-contour 'serifRT'
+				include : with-transform [ApparentTranslate (df.middle - Middle + serifShift) 0]
+					InsularTShape CAP 0 ArchDepthA ArchDepthB styBot true
+
 		foreach {sym fAsymmetric} [pairs-of InsularTSymConfig] : do
 			create-glyph "tInsular.phonotypic.\(suffix).\(sym)" : glyph-proc
 				local df : include : DivFrame 1
@@ -58,5 +80,6 @@ glyph-block Letter-Latin-Insular-T : begin
 		select-variant "tInsular.phonotypic.\(suffix)" (follow -- 't/insularSym')
 
 	select-variant 'TInsular' 0xA786 (follow -- 'C')
+	select-multi-dimensional-variant 'TInsular.phonotypic' (follows -- {'C' 'T'})
 	select-variant 'tInsular' 0xA787 (follow -- 'c')
 	select-variant 'tInsular.phonotypic' (follow -- 'c')
