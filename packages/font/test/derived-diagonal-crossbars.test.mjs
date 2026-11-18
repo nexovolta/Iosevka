@@ -151,7 +151,7 @@ test("H-derived selectors retain diagonal crossbars with each serif style", asyn
 			const diagonal = para.variantSelector["Hv/H"];
 			const horizontal = diagonal.replace(/DiagonalCrossbar(?:Falling)?$/, "");
 			const contours = suffix => {
-				const glyph = glyphStore.queryByNameEnsured(`Hwair.${suffix}.roundedSerifless`);
+				const glyph = glyphStore.queryByNameEnsured(`Hwair.${suffix}.serifless`);
 				return new Geometry.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
 			};
 			assert.notDeepEqual(contours(diagonal), contours(horizontal), `${direction}${serif}: Hwair crossbar`);

@@ -10,23 +10,19 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
-	glyph-block-import Letter-Shared-Shapes : nShoulder uBowl SerifFrame
+	glyph-block-import Letter-Shared-Shapes : nShoulder uBowl SerifFrame KomiHookSerifs KomiHookSerif
 
 	define HConfig : object
 		straightSerifless                {false  false}
 		straightTopLeftSerifed           {true   false}
 		straightSerifedExceptBottomRight {true   true }
 
-	define VConfig : object
-		roundedSerifless false
-		roundedSerifed   true
-
 	foreach {suffix {serifLT serifLB}} [pairs-of HConfig] : do
 		local df : DivFrame para.advanceScaleMM 3
 		DefineSelectorGlyph 'hwair' suffix df 'b'
 
-		foreach {suffixV serifRT} [Object.entries VConfig] : do
-			create-glyph "hwair.\(suffix).\(suffixV)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : do
+			create-glyph "hwair.\(suffix).\(hookSuffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
 				include : LeaningAnchor.Above.VBar.l df.leftSB df.mvs
@@ -55,10 +51,9 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 				local sf : SerifFrame.fromDf df Ascender 0
 				if serifLT : include : tagged 'serifLT' sf.lt.outer
 				if serifLB : include : tagged 'serifLB' sf.lb.full
-				if serifRT : begin
-					local sf2 : SerifFrame.fromDf df XH 0
-					include : tagged 'serifRT' sf2.rt.full
+				local sf2 : SerifFrame.fromDf df XH 0
+				include : KomiHookSerif sf2 hookSerifs
 
-		select-variant "hwair.\(suffix)" (follow -- 'hv/v')
+		select-variant "hwair.\(suffix)" (follow -- 'cyrl/komiHook')
 
 	CreateSelectorVariants 'hwair' 0x195 [Object.keys HConfig] (follow -- 'hv/h')

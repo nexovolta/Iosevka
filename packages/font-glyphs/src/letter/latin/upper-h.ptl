@@ -264,10 +264,6 @@ glyph-block Letter-Latin-Upper-H : begin
 		serifless       false
 		topRightSerifed true
 
-	define HwairVConfig : object
-		roundedSerifless false
-		roundedSerifed   true
-
 	foreach {suffix {fTailed slabType diag}} [Object.entries HConfig] : do
 		create-glyph "H.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -324,13 +320,15 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		DefineSelectorGlyph 'Hwair' suffix hwairDf 'capital'
 
-		foreach {suffixV serifV} [Object.entries HwairVConfig] : do
-			create-glyph "Hwair.\(suffix).\(suffixV)" : glyph-proc
+		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : do
+			create-glyph "Hwair.\(suffix).\(hookSuffix)" : glyph-proc
 				set-width 0
 				set-mark-anchor 'cvDecompose' 0 0
-				include : HwairShape hwairDf CAP slabType fTailed (serifTR -- serifV) (diag -- diag)
+				include : HwairShape hwairDf CAP slabType fTailed (serifTR -- false) (diag -- diag)
+				local sf2 : [SerifFrame.fromDf hwairDf XH 0].slice 1 2
+				include : KomiHookSerif sf2 hookSerifs
 
-		select-variant "Hwair.\(suffix)" (follow -- 'Hv/v')
+		select-variant "Hwair.\(suffix)" (follow -- 'cyrl/komiHook')
 
 		foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/NjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
