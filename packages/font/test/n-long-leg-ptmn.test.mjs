@@ -28,7 +28,10 @@ test("phonotypic N with long right leg uses the reversed N form", async () => {
 			const target = glyphStore.queryByNameEnsured(name);
 			return new Geometry.SimplifyGeometry(target.geometry, target.gizmo, true).toContours();
 		};
-		assert.deepEqual(contours("NLongLeg.phonotypic"), contours("Eng.phonotypic"));
+		assert.notDeepEqual(contours("NLongLeg.phonotypic"), contours("Eng.phonotypic"));
 		assert.notDeepEqual(contours("NLongLeg.phonotypic"), contours("cyrl/I"));
+		const target = glyphStore.queryByNameEnsured("NLongLeg.phonotypic");
+		const points = contours("NLongLeg.phonotypic").flat().map(point => target.gizmo.unapply(point));
+		assert.ok(points.some(point => point.y < 0), "the reversed N keeps its long right leg");
 	}
 });

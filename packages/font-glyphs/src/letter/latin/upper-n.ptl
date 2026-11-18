@@ -253,9 +253,18 @@ glyph-block Letter-Latin-Upper-N : begin
 				swDiag -- [AdviceStroke crDiag]
 				verticalAsymmetric -- true
 
+	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries NConfig] : do
+		create-glyph "NLongLeg.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			local yLeg : (0 - Descender) * (-1)
+			include : RevNShape [DivFrame 1] CAP bodyType slabType
+				swDiag -- [AdviceStroke crDiag]
+				rightBottom -- yLeg
+			eject-contour 'serifRB'
+
 	select-variant 'cyrl/I' 0x418
 	select-variant 'Eng.phonotypic' (follow -- 'cyrl/I')
-	alias 'NLongLeg.phonotypic' null 'Eng.phonotypic'
+	select-variant 'NLongLeg.phonotypic' (follow -- 'N')
 	derive-composites 'cyrl/ITail' null 'cyrl/I' [CyrTailDescender.rSideJut RightSB 0]
 
 	CreateAccentedComposition 'cyrl/IBreve' 0x419 'cyrl/I' 'breveAbove'
