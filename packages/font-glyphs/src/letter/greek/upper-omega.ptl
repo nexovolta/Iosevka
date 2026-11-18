@@ -62,11 +62,12 @@ glyph-block Letter-Greek-Upper-Omega : begin
 
 	foreach {suffix {fDisjoint doSerifs}} [Object.entries OmegaConfig] : do
 		create-glyph "grek/Omega.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : SetGrekUpperTonos 0
-			if fDisjoint
-				include : DisjointOmegaShape CAP doSerifs
-				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+			local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
+			include : df.markSet.capital
+			include : SetGrekUpperTonos (df.middle - Middle)
+			include : with-transform [ApparentTranslate (df.middle - Middle) 0] : if fDisjoint
+				DisjointOmegaShape CAP doSerifs
+				UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
 
 		create-glyph "grek/smcpOmega.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -78,9 +79,11 @@ glyph-block Letter-Greek-Upper-Omega : begin
 
 		if [not fDisjoint] : begin
 			create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
-				include : MarkSet.capital
-				include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
-				include : FlipAround Middle (CAP / 2)
+				local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
+				include : df.markSet.capital
+				include : with-transform [ApparentTranslate (df.middle - Middle) 0] : new-glyph : glyph-proc
+					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+					include : FlipAround Middle (CAP / 2)
 
 			create-glyph "latn/upsilon.\(suffix)" : glyph-proc
 				include : MarkSet.e
