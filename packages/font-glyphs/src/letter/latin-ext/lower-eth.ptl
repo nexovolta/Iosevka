@@ -17,32 +17,39 @@ glyph-block Letter-Latin-Lower-Eth : begin
 
 	define yMid1 : mix 0 Ascender 0.6
 	define yMid2 : YSmoothMidR yMid1 0 SmallArchDepthA SmallArchDepthB
-	define yMid3 : mix yMid1 yMid2 0.875
 
-	define [ArcStartKnots _flatY1 _flatY2] : list
-		widths.lhs fine
-		straight.up.mid (RightSB - OX - [HSwToV : Stroke - fine]) yMid2
-		Arch.lhs yMid1 (swBefore -- fine)
-		g4 (SB + OX) [YSmoothMidL yMid1 0 SmallArchDepthA SmallArchDepthB]
-		Arch.lhs 0
-		flat (RightSB - OX) [fallback _flatY1 yMid2]
-		curl (RightSB - OX) [fallback _flatY2 yMid3]
-
-	create-glyph 'dInsular.curlyBar' : glyph-proc
-		include : MarkSet.b
+	define [CurlyBarShape bowlTop] : glyph-proc
+		local mid : YSmoothMidR bowlTop 0 SmallArchDepthA SmallArchDepthB
 		include : dispiro
-			ArcStartKnots
+			widths.lhs fine
+			straight.up.mid (RightSB - OX - [HSwToV : Stroke - fine]) mid
+			Arch.lhs bowlTop (swBefore -- fine)
+			g4 (SB + OX) [YSmoothMidL bowlTop 0 SmallArchDepthA SmallArchDepthB]
+			Arch.lhs 0
+			flat (RightSB - OX) mid
+			curl (RightSB - OX) [mix bowlTop mid 0.875]
 			quadControls 0 0.8
 			g4 (SB + Stroke * 1.1) Ascender [widths.lhs]
 
+	create-glyph 'dInsular.curlyBar' : glyph-proc
+		include : MarkSet.b
+		include : CurlyBarShape XH
+	create-glyph 'dInsular/oldBowl.curlyBar' : glyph-proc
+		include : MarkSet.b
+		include : CurlyBarShape yMid1
+
 	foreach {suffix {Body fFlatBowl}} [Object.entries SixConfig] : do
 		create-glyph "dInsular.\(suffix)" : glyph-proc
+			include : MarkSet.b
+			include : Body fFlatBowl Ascender XH
+			include : FlipAround Middle 0 (-1) 1
+		create-glyph "dInsular/oldBowl.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			include : Body fFlatBowl Ascender
 			include : FlipAround Middle 0 (-1) 1
 
 	select-variant 'dInsular' 0xA77A (follow -- 'eth')
-	select-variant 'partial'  0x2202 (shapeFrom -- 'dInsular')
+	select-variant 'partial'  0x2202 (shapeFrom -- 'dInsular/oldBowl')
 
 	create-glyph 'dRotundaCrossingLoop/uprightSource' : glyph-proc
 		include : MarkSet.p
@@ -67,7 +74,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 
 	foreach suffix [{'curlyBar'}.concat : Object.keys SixConfig] : do
 		create-glyph "eth.\(suffix)" : glyph-proc
-			local base : query-glyph "dInsular.\(suffix)"
+			local base : query-glyph "dInsular/oldBowl.\(suffix)"
 			include base AS_BASE ALSO_METRICS
 			local corners : ethCrossbar base Ascender Width OverlayStroke
 			currentGlyph.clearGeometry

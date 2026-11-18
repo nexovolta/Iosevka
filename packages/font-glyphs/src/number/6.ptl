@@ -39,15 +39,20 @@ glyph-block Digits-Six : begin
 	define [SixFlatHookFromBowl] : with-params [top oTop [xStem : SB + OX] [sw Stroke] [fCorner false]] : glyph-proc
 		local fh : MakeFlatHook SB RightSB top 0 (sw -- sw)
 		local midShift : (RightSB - SB) * (-0.05)
-		local yTurn : Math.max (oTop + Stroke) (top - SmallArchDepthA)
+		local yTurn : if (oTop > [SixBowlOTop top])
+			Math.min (top - 1.2 * sw - TINY) [Math.max (oTop + sw) (top - SmallArchDepthA)]
+			Math.max (oTop + sw) (top - SmallArchDepthA)
+		local yStart : Math.min oTop (yTurn - TINY)
+		local cornerDepth : CornerHookDepth Hook sw
+		if (oTop > [SixBowlOTop top]) : set cornerDepth : Math.min cornerDepth [Math.max sw (top - oTop + O - 0.25 * sw)]
 		include : dispiro
 			widths.rhs sw
-			flat xStem oTop [heading Upward]
+			flat xStem yStart [heading Upward]
 			curl xStem yTurn [heading Upward]
 			arcvh.superness DesignParameters.tightHookSuperness
 			flat [Math.min (fh.xRHook - TanSlope * sw) : Arch.adjust-x.top (Middle - midShift) sw] top [widths.rhs.heading sw Rightward]
 			if fCorner
-				CornerHookEnd fh.xRHook top [CornerHookDepth Hook sw] sw 1 (-1)
+				CornerHookEnd fh.xRHook top cornerDepth sw 1 (-1)
 				list
 					corner fh.xRHook top
 
@@ -83,8 +88,7 @@ glyph-block Digits-Six : begin
 		if slabHook : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
 
 	glyph-block-export OpenContourSixShape
-	define [OpenContourSixShape] : with-params [charTop [flatBowl false]] : glyph-proc
-		local oTop : SixBowlOTop charTop
+	define [OpenContourSixShape] : with-params [charTop [flatBowl false] [oTop [SixBowlOTop charTop]]] : glyph-proc
 		local arches : SixBowlArches oTop
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
@@ -105,8 +109,7 @@ glyph-block Digits-Six : begin
 			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O) [widths.rhs]
 
 	glyph-block-export ClosedContourSixShape
-	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [slabHook false]] : glyph-proc
-		local oTop : SixBowlOTop top
+	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [slabHook false] [oTop [SixBowlOTop top]]] : glyph-proc
 		local arches : SixBowlArches oTop
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
@@ -136,8 +139,7 @@ glyph-block Digits-Six : begin
 			corner xTopL         yTop
 
 	glyph-block-export StraightBarSixShape
-	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6] [flatBowl false]] : glyph-proc
-		local oTop : SixBowlOTop charTop
+	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6] [flatBowl false] [oTop [SixBowlOTop charTop]]] : glyph-proc
 		local arches : SixBowlArches oTop
 		local ymiddlea arches.yMiddleA
 		local ymiddleb arches.yMiddleB
@@ -175,31 +177,38 @@ glyph-block Digits-Six : begin
 				flat [mix xMockBarStart (xTerminal - kDiagBbd * bbd) pStraightBarStart] [mix yMockBarStart charTop pStraightBarStart]
 				curl [mix xMockBarStart (xTerminal - kDiagBbd * bbd) 2]                 [mix yMockBarStart charTop 2]
 
-	define [SixBodyClosed fFlatBowl _top] : glyph-proc
-		include : ClosedContourSixShape [fallback _top CAP] (flatBowl -- fFlatBowl)
-	define [SixBodyOpen fFlatBowl _top] : glyph-proc
-		include : OpenContourSixShape [fallback _top CAP] (flatBowl -- fFlatBowl)
-	define [SixBodyStraightBar fFlatBowl _top] : glyph-proc
-		include : StraightBarSixShape [fallback _top CAP] (flatBowl -- fFlatBowl)
-	define [SixBodyClosedHooked fFlatBowl fCorner _top] : glyph-proc
+	define [SixBodyClosed fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
-		local oTop : SixBowlOTop top
+		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodyOpen fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : OpenContourSixShape top (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodyStraightBar fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : StraightBarSixShape top (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodyClosedHooked fFlatBowl fCorner _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		local oTop : fallback _oTop [SixBowlOTop top]
 		if fFlatBowl : include : union
 			SixFlatBowlOBar oTop
 			SixFlatHookFromBowl top oTop (xStem -- SB) (fCorner -- fCorner)
 		if [not fFlatBowl] : include : union
 			SixRoundBowl oTop
 			SixFlatHookFromBowl top oTop (fCorner -- fCorner)
-	define [SixBodyClosedFlatHook fFlatBowl _top] : SixBodyClosedHooked fFlatBowl false _top
-	define [SixBodyClosedCornerHook fFlatBowl _top] : SixBodyClosedHooked fFlatBowl true _top
-	define [SixBodyClosedInwardSerifed fFlatBowl _top] : glyph-proc
-		include : ClosedContourSixShape [fallback _top CAP] (flatBowl -- fFlatBowl) (inward -- true)
-	define [SixBodyClosedSerifedHook fFlatBowl _top] : glyph-proc
-		include : ClosedContourSixShape [fallback _top CAP] (flatBowl -- fFlatBowl) (slabHook -- true)
-	define [SixBodySteepBar fFlatBowl _top] : glyph-proc
-		include : StraightBarSixShape [fallback _top CAP] (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl)
-	define [SixBodyVerticalBar fFlatBowl _top] : glyph-proc
-		include : ClosedContourSixShape [fallback _top CAP] (vertical -- true) (flatBowl -- fFlatBowl)
+	define [SixBodyClosedFlatHook fFlatBowl _top _oTop] : SixBodyClosedHooked fFlatBowl false _top _oTop
+	define [SixBodyClosedCornerHook fFlatBowl _top _oTop] : SixBodyClosedHooked fFlatBowl true _top _oTop
+	define [SixBodyClosedInwardSerifed fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (inward -- true) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodyClosedSerifedHook fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (slabHook -- true) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodySteepBar fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : StraightBarSixShape top (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
+	define [SixBodyVerticalBar fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : ClosedContourSixShape top (vertical -- true) (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
 
 	glyph-block-export SixConfig
 	define SixConfig : SuffixCfg.weave
