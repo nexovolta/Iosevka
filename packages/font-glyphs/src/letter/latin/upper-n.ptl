@@ -256,7 +256,7 @@ glyph-block Letter-Latin-Upper-N : begin
 	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries NConfig] : do
 		create-glyph "NLongLeg.phonotypic.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			local yLeg : (0 - Descender) * (-1)
+			local yLeg : Descender / 2
 			include : RevNShape [DivFrame 1] CAP bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
 				rightBottom -- yLeg
