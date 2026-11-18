@@ -19,7 +19,7 @@ test("phonotypic N with long right leg uses the reversed N form", async () => {
 		});
 		const { glyphStore } = buildGlyphs(para, {
 			blockIsNeeded: id => ["Letter-Latin-Upper-N", "Letter-Latin-Lower-N", "Orthography"].includes(id),
-			glyphIsNeeded: id => /^(?:N|NLongLeg|Eng\.phonotypic|cyrl\/I|nCapLongLeg)(?:\.|$)/.test(id),
+			glyphIsNeeded: id => /^(?:N|NLongLeg|revN|Eng\.phonotypic|cyrl\/I|nCapLongLeg)(?:\.|$)/.test(id),
 		});
 		const glyph = glyphStore.queryByUnicode(0x0220);
 		assert.ok(glyph);
@@ -29,9 +29,10 @@ test("phonotypic N with long right leg uses the reversed N form", async () => {
 			return new Geometry.SimplifyGeometry(target.geometry, target.gizmo, true).toContours();
 		};
 		assert.notDeepEqual(contours("NLongLeg.phonotypic"), contours("Eng.phonotypic"));
-		assert.notDeepEqual(contours("NLongLeg.phonotypic"), contours("cyrl/I"));
+		assert.deepEqual(contours("NLongLeg.phonotypic.asymmetricSerifless"), contours("revN.asymmetricSerifless"));
+		assert.notDeepEqual(contours("NLongLeg.phonotypic.asymmetricSerifless"), contours("cyrl/I.asymmetricSerifless"));
 		const target = glyphStore.queryByNameEnsured("NLongLeg.phonotypic");
 		const points = contours("NLongLeg.phonotypic").flat().map(point => target.gizmo.unapply(point));
-		assert.ok(points.some(point => point.y < 0), "the reversed N keeps its long right leg");
+		assert.ok(Math.abs(Math.min(...points.map(point => point.y))) < 0.01, "the reversed N ends at the baseline");
 	}
 });
