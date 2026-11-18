@@ -36,6 +36,15 @@ glyph-block Letter-Latin-Upper-G : begin
 
 	define GBarPos : DesignParameters.upperGBarPos - QuarterStroke / CAP
 
+	define [FallingBarNub top yBarTop] : begin
+		local xsMask : RightSB - [HSwToV Stroke]
+		local slMask : 0.16 * top / (RightSB - SB)
+		return : spiro-outline
+			corner xsMask yBarTop
+			corner (Width + Stroke) (yBarTop - slMask * (Width + Stroke - xsMask))
+			corner (Width + Stroke) (yBarTop + Stroke)
+			corner xsMask (yBarTop + Stroke)
+
 	define flex-params [GShape] : glyph-proc
 		local-parameter : top
 		local-parameter : bodyType
@@ -119,15 +128,8 @@ glyph-block Letter-Latin-Upper-G : begin
 				[Just BODY-TOOTHLESS-CORNER] : VBar.r RightSB rise yBarTop
 				__ : no-shape
 
-		local xsMask : RightSB - [HSwToV Stroke]
-		local slMask : 0.16 * top / (RightSB - SB)
-		local nubMask : spiro-outline
-			corner xsMask yBarTop
-			corner (Width + Stroke) (yBarTop - slMask * (Width + Stroke - xsMask))
-			corner (Width + Stroke) (yBarTop + Stroke)
-			corner xsMask (yBarTop + Stroke)
 		# The stem corner would poke above a falling crossing bar
-		include : if (crossbarType == CROSSBAR-DIAG-CAPPED-F) [difference body nubMask] body
+		include : if (crossbarType == CROSSBAR-DIAG-CAPPED-F) [difference body [FallingBarNub top yBarTop]] body
 
 		if fHookTop : begin
 			include : TopHook.toRight.arcStart RightSB top hook
@@ -167,8 +169,11 @@ glyph-block Letter-Latin-Upper-G : begin
 			include : MarkSet.capDesc
 			local swashBodyType : if (bodyType === BODY-TOOTHED) BODY-TOOTHLESS-ROUNDED bodyType
 			local swashRise : if (bodyType === BODY-TOOTHED) ArchDepthA rise
-			include : GShape CAP swashBodyType crossbarType slabType swashRise
-			include : VBar.r RightSB 0 ([mix 0 CAP GBarPos] + HalfStroke) [AdviceStroke 4]
+			local yBarTop : [mix 0 CAP GBarPos] + HalfStroke
+			local upper : union
+				GShape CAP swashBodyType crossbarType slabType swashRise
+				VBar.r RightSB 0 (yBarTop - Stroke) [AdviceStroke 4]
+			include : if (crossbarType == CROSSBAR-DIAG-HOOKED-F || crossbarType == CROSSBAR-DIAG-CAPPED-F) [difference upper [FallingBarNub CAP yBarTop]] upper
 			include : ZemlyaBottomStrokeCursive
 		create-glyph "GHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.capital
