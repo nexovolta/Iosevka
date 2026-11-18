@@ -315,6 +315,10 @@ glyph-block Letter-Latin-Lower-D : begin
 		x     -- (RightSB + SideJut)
 		y     -- 0
 
+	derive-glyphs 'dInsular.phonotypic' null 'd/descBase' : function [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : PalatalHook.rExt RightSB 0
+
 	link-reduced-variant 'd/rTailBase' 'd'
 	derive-glyphs 'dRTail' 0x256 'd/rTailBase' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
