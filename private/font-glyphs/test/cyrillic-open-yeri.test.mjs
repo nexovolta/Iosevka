@@ -6,9 +6,9 @@ import * as Geometry from "@iosevka/geometry";
 import * as Caching from "@iosevka/geometry-cache";
 import * as hb from "harfbuzzjs";
 import { buildGlyphs } from "@iosevka/font-glyphs";
-import { buildFont } from "../src/build-font/index.mjs";
-import { buildTTF } from "../src/font-io/index.mjs";
-import { getParametersT } from "../src/param/index.mjs";
+import { buildFont } from "../../../packages/font/src/build-font/index.mjs";
+import { buildTTF } from "../../../packages/font/src/font-io/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 test("yery overflow alternatives select the intended glyphs with HarfBuzz", async () => {
 	const makePara = await getParametersT({ paramsDir: fileURLToPath(new URL("../../../params/", import.meta.url)) });

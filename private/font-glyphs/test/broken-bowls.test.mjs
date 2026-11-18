@@ -6,7 +6,7 @@ import * as toml from "@iarna/toml";
 import * as Geometry from "@iosevka/geometry";
 import { buildGlyphs } from "@iosevka/font-glyphs";
 import { parse as parseVariants } from "@iosevka/param/variant";
-import { getParametersT } from "../src/param/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 function straightEdges(glyph) {
 	const contours = new Geometry.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toBezArcs();

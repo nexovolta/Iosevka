@@ -7,9 +7,9 @@ import * as Caching from "@iosevka/geometry-cache";
 import * as hb from "harfbuzzjs";
 import { buildGlyphs } from "@iosevka/font-glyphs";
 import { LocalizedForm } from "@iosevka/glyph/relation";
-import { buildFont } from "../src/build-font/index.mjs";
-import { buildTTF } from "../src/font-io/index.mjs";
-import { getParametersT } from "../src/param/index.mjs";
+import { buildFont } from "../../../packages/font/src/build-font/index.mjs";
+import { buildTTF } from "../../../packages/font/src/font-io/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 function straightEdges(glyph) {
 	const edges = [];

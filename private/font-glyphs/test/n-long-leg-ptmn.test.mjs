@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import * as Geometry from "@iosevka/geometry";
 import { buildGlyphs } from "@iosevka/font-glyphs";
 import { LocalizedForm } from "@iosevka/glyph/relation";
-import { getParametersT } from "../src/param/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 test("phonotypic N with long right leg uses the reversed N form", async () => {
 	await Geometry.Init();

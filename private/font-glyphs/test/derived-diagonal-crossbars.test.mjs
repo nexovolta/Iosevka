@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import * as Geometry from "@iosevka/geometry";
 import { buildGlyphs } from "@iosevka/font-glyphs";
-import { getParametersT } from "../src/param/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 test("diagonal crossbars propagate through A, E and Cyrillic En derivatives", async () => {
 	await Geometry.Init();

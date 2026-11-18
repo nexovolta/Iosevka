@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import * as Geometry from "@iosevka/geometry";
 import { buildGlyphs } from "@iosevka/font-glyphs";
-import { getParametersT } from "../src/param/index.mjs";
+import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 
 test("capital double thorn follows capital B and keeps both counters open", async () => {
 	await Geometry.Init();
