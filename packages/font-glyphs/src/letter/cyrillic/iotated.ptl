@@ -219,10 +219,15 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				include : Iotation.full df XH (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift) (XH / 2) (swRef -- sw) (swSerif -- subDf.mvs) (serifType -- [IotationSerifFromSelector 'cyrl/yu'])
 
 	do 'Iotated e'
-		glyph-block-import Letter-Latin-C : CLetterForm CConfig
+		glyph-block-import Letter-Latin-C : CLetterForm CConfig CyrillicEDiagonal
+
+		define DiagCfg : object
+			''                      0
+			DiagonalCrossbar        1
+			DiagonalCrossbarFalling (-1)
 
 		foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
-			define [IotatedEShape fCapital fMidSerif df top ada adb] : glyph-proc
+			define [IotatedEShape fCapital fMidSerif df top ada adb diag] : glyph-proc
 				local sw : df.adviceThinnerStroke2 2 3 top 0.75
 				local gap : 0.375 * (df.rightSB - df.leftSB) - [HSwToV : 0.25 * sw] + sw / 16
 				local subDf : DivFrame [Math.min ((df.width - gap) / Width) (0.75 * df.adws)] 2
@@ -236,12 +241,17 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				include : with-transform [ApparentTranslate shift 0] : lf.full
 
 				local xMidBarRight : [if (fMidSerif && !fCapital) subDf.middle : mix subDf.rightSB subDf.leftSB 0.35] + shift
+				local xBodyBarLeft : (subDf.leftSB + OX - O) + shift
+				local barRise : diag * 0.16 * top
+				local yBarRight : top / 2 + barRise / 2
+				local fullRise : if diag (barRise * (xMidBarRight - df.leftSB) / (xMidBarRight - xBodyBarLeft)) 0
 				include : Iotation.full df top
-					hBarRight -- xMidBarRight
+					hBarRight -- : if diag df.leftSB xMidBarRight
 					hBarY     -- (top / 2)
 					fCapital  -- fCapital
 					swRef     -- sw
 					serifType -- [IotationSerifFromSelector : if fCapital 'cyrl/Yu' 'cyrl/yu']
+				if diag : include : DiagonalHBar df.leftSB xMidBarRight (yBarRight - fullRise / 2) fullRise sw
 
 				if fMidSerif : begin
 					local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
@@ -249,35 +259,26 @@ glyph-block Letter-Cyrillic-Iotated : begin
 						if fCapital Hook nothing
 					local swVJut : Math.min (VJutStroke * (sw / Stroke))
 						VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : (subDf.rightSB - [HSwToV sw]) + shift] - ((subDf.leftSB + [HSwToV sw]) + shift))
-					include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) (top / 2) jutMid swVJut
+					include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) yBarRight jutMid swVJut
 
-			create-glyph "cyrl/EIotated.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleM 3
-				include : df.markSet.capital
-				include : IotatedEShape true false df CAP ArchDepthA ArchDepthB
-			create-glyph "cyrl/EIotated.\(suffix)Capped" : glyph-proc
-				local df : include : DivFrame para.advanceScaleM 3
-				include : df.markSet.capital
-				include : IotatedEShape true true df CAP ArchDepthA ArchDepthB
-
-			create-glyph "cyrl/eIotated.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.advanceScaleM 3
-				include : df.markSet.e
-				include : IotatedEShape false false df XH SmallArchDepthA SmallArchDepthB
-			create-glyph "cyrl/eIotated.\(suffix)Capped" : glyph-proc
-				local df : include : DivFrame para.advanceScaleM 3
-				include : df.markSet.e
-				include : IotatedEShape false true df XH SmallArchDepthA SmallArchDepthB
-
-			foreach dsuf [items-of {'DiagonalCrossbar' 'DiagonalCrossbarFalling'}] : do
+			foreach {dsuf dval0} [Object.entries DiagCfg] : do
+				local diag : CyrillicEDiagonal styTop styBot dval0
 				create-glyph "cyrl/EIotated.\(suffix)\(dsuf)" : glyph-proc
-					include [refer-glyph "cyrl/EIotated.\(suffix)"] AS_BASE ALSO_METRICS
+					local df : include : DivFrame para.advanceScaleM 3
+					include : df.markSet.capital
+					include : IotatedEShape true false df CAP ArchDepthA ArchDepthB diag
 				create-glyph "cyrl/EIotated.\(suffix)Capped\(dsuf)" : glyph-proc
-					include [refer-glyph "cyrl/EIotated.\(suffix)Capped"] AS_BASE ALSO_METRICS
+					local df : include : DivFrame para.advanceScaleM 3
+					include : df.markSet.capital
+					include : IotatedEShape true true df CAP ArchDepthA ArchDepthB diag
 				create-glyph "cyrl/eIotated.\(suffix)\(dsuf)" : glyph-proc
-					include [refer-glyph "cyrl/eIotated.\(suffix)"] AS_BASE ALSO_METRICS
+					local df : include : DivFrame para.advanceScaleM 3
+					include : df.markSet.e
+					include : IotatedEShape false false df XH SmallArchDepthA SmallArchDepthB diag
 				create-glyph "cyrl/eIotated.\(suffix)Capped\(dsuf)" : glyph-proc
-					include [refer-glyph "cyrl/eIotated.\(suffix)Capped"] AS_BASE ALSO_METRICS
+					local df : include : DivFrame para.advanceScaleM 3
+					include : df.markSet.e
+					include : IotatedEShape false true df XH SmallArchDepthA SmallArchDepthB diag
 
 	do 'Latin iotated e'
 		glyph-block-import Letter-Latin-Lower-E : SmallEConfig
