@@ -568,7 +568,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Greek Lower Beta
 
-	define [BetaStandardShape flatBottom] : glyph-proc
+	define [BetaStandardShape flatBottom diag] : glyph-proc
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		include : LeaningAnchor.Below.VBar.l SB stroke
 
@@ -589,13 +589,15 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		local fine : stroke * CThin
 		local shoulderFine : ShoulderFine * (stroke / Stroke)
+		local xTurnMin : Math.min [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]
+		local join : if diag [BrokenBarJoin SB Width stroke xTurnMin bowl diag] null
 
 		include : difference
 			union
 				dispiro
 					widths.lhs fine
-					flat (SB - O) (bowl - fine) [heading Rightward]
-					curl [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] (bowl - fine)
+					flat [if diag join.xCut (SB - O)] (bowl - fine) [heading Rightward]
+					curl [if diag [Math.max join.minTurn [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] (bowl - fine)
 					archv
 					g4   xTopArcRight yTopArcRight [widths.lhs stroke]
 					Arch.lhs Ascender (sw -- stroke)
@@ -609,17 +611,18 @@ glyph-block Letter-Latin-Upper-B : begin
 						archv
 						g4   xBotArcRight yBotArcRight [widths.lhs stroke]
 						arcvh
-						flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine) [widths.lhs fine]
-						curl (SB - O) (bowl - stroke + fine) [heading Leftward]
+						flat [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine) [widths.lhs fine]
+						curl [if diag join.xCut (SB - O)] (bowl - stroke + fine) [heading Leftward]
 					dispiro
 						widths.lhs shoulderFine
 						g4.down.start (SB + [HSwToV : stroke - shoulderFine]) adbBot [heading Downward]
 						Arch.lhs 0 (sw -- stroke) (swBefore -- shoulderFine)
 						g4   xBotArcRight yBotArcRight [widths.lhs stroke]
 						arcvh
-						flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine) [widths.lhs fine]
-						curl (SB - O) (bowl - stroke + fine) [heading Leftward]
-			[InterruptShape TallCyrVeBarPos] Ascender stroke
+						flat [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine) [widths.lhs fine]
+						curl [if diag join.xCut (SB - O)] (bowl - stroke + fine) [heading Leftward]
+				if diag join.shape [no-shape]
+			if diag [no-shape] [[InterruptShape TallCyrVeBarPos] Ascender stroke]
 
 		set-base-anchor 'palatalHookAttach'
 			mix [Arch.adjust-x.bot [mix (SB + [HSwToV : stroke - shoulderFine]) xBotArcRight 0.5] (sw -- stroke)] xBotArcRight 0.75
@@ -633,14 +636,26 @@ glyph-block Letter-Latin-Upper-B : begin
 		include : MarkSet.bp
 		include : BetaStandardShape true
 
+	foreach {suffix flatBottom diag} {
+		{'brokenRising' false 1}
+		{'brokenFalling' false (-1)}
+		{'flatBottomBrokenRising' true 1}
+		{'flatBottomBrokenFalling' true (-1)}
+	} : create-glyph "grek/beta.\(suffix)" : glyph-proc
+		include : MarkSet.bp
+		include : BetaStandardShape flatBottom diag
+
 	alias 'grek/beta.cursive' null  'smcpB.cursiveInterruptedTall'
 	alias 'grek/betaSymbol'   0x3D0 'smcpB.cursiveInterruptedTall'
 
 	select-variant 'grek/beta' 0x3B2
 
 	alias 'grek/beta.UPPH' null 'grek/beta.standard'
-	derive-composites 'latn/beta' 0xA7B5 'grek/beta.standard' : NeedSlab SLAB
-		NeedNotItalic [SerifFrame.fromDf [DivFrame 1] XH Descender].lb.fullSide
+	foreach suffix {'standard' 'brokenRising' 'brokenFalling'} : create-glyph "latn/beta.\(suffix)" : glyph-proc
+		include [refer-glyph "grek/beta.\(suffix)"] AS_BASE ALSO_METRICS
+		include : NeedSlab SLAB
+			NeedNotItalic [SerifFrame.fromDf [DivFrame 1] XH Descender].lb.fullSide
+	select-variant 'latn/beta' 0xA7B5 (follow -- 'latn/beta')
 
 	derive-glyphs 'latn/betaPalatalHook' 0x1DF3B 'latn/beta' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

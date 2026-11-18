@@ -114,6 +114,12 @@ glyph-block Letter-Latin-Upper-D : begin
 			include : df.markSet.capital
 			include : DShape df CAP df.rightSB bodyKind nothing fSlabTop fSlabBot
 
+		foreach {barSuffix diag} {{'flat' 0} {'rising' 1} {'falling' (-1)}} : create-glyph "TauGallicum.\(suffix).\(barSuffix)" : glyph-proc
+			include [refer-glyph "D.\(suffix)"] AS_BASE ALSO_METRICS
+			include : if diag
+				DiagonalHBar (SB - OX) (RightSB + OX) (CAP / 2) (diag * 0.16 * CAP) OverlayStroke
+				HBar.m (SB - OX) (RightSB + OX) (CAP / 2) OverlayStroke
+
 		create-glyph "DInsular.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT
 			local bodyDf : DivFrame 1
@@ -172,8 +178,7 @@ glyph-block Letter-Latin-Upper-D : begin
 	alias 'africanD' 0x189 'Eth'
 	select-variant 'Dhookleft' 0x18A
 
-	derive-composites 'TauGallicum' 0xA7C7 'D'
-		HBar.m (SB - OX) (RightSB + OX) (CAP / 2) OverlayStroke
+	select-multi-dimensional-variant 'TauGallicum' 0xA7C7 (follows -- {'D' 'TauGallicum/bar'})
 
 	select-variant 'smcpD' 0x1D05
 	derive-glyphs 'smcpEth' 0x1D06 'smcpD' : lambda [src gr] : glyph-proc

@@ -245,16 +245,18 @@ glyph-block Letter-Cyrillic-Ze : begin
 		local-parameter : ada       -- SmallArchDepthA
 		local-parameter : adb       -- SmallArchDepthB
 		local-parameter : notchToRight -- false
+		local-parameter : diag      -- 0
 
 		export : define [Dim] : begin
 			local midx : if notchToRight (right - [HSwToV : 0.5 * stroke]) : mix (left + ([HSwToV stroke] - xOverflow)) (right - ([HSwToV stroke] - xOverflow)) blend
 			local midy : mix bot top barPos
 			local fine : stroke * CThin
 			local shoulderFine : ShoulderFine * (stroke / Stroke)
-			return : object stroke midx midy fine shoulderFine
+			local join : if diag [BrokenBarJoin left Width stroke (left + right - Middle) (midy + stroke / 2) (-diag) stroke (left + right)] null
+			return : object stroke midx midy fine shoulderFine join
 
 		export : define [UpperShape] : begin
-			define [object stroke midx midy fine shoulderFine] : Dim
+			define [object stroke midx midy fine shoulderFine join] : Dim
 			local middle : mix left right 0.5
 			return : dispiro
 				match slabTop
@@ -280,15 +282,15 @@ glyph-block Letter-Cyrillic-Ze : begin
 						HookStart top (sw -- stroke) (o -- yo)
 				[if (slabTop === OPEN-VERTICAL) curl g4] left [YSmoothMidL top (midy - stroke / 2) ada adb]
 				arcvh
-				flat Middle (midy + (stroke / 2 - fine)) [widths.heading fine 0 Rightward]
-				curl midx   (midy + (stroke / 2 - fine)) [heading Rightward]
+				flat [if diag [Math.min Middle (left + right - join.minTurn)] Middle] (midy + (stroke / 2 - fine)) [widths.heading fine 0 Rightward]
+				curl [if diag (left + right - join.xCut) midx] (midy + (stroke / 2 - fine)) [heading Rightward]
 
 		export : define [LowerShape] : begin
-			define [object stroke midx midy fine shoulderFine] : Dim
+			define [object stroke midx midy fine shoulderFine join] : Dim
 			local middle : mix left right 0.5
 			return : dispiro
-				flat midx   (midy - (stroke / 2 - fine)) [widths.heading fine 0 Leftward]
-				curl Middle (midy - (stroke / 2 - fine)) [heading Leftward]
+				flat [if diag (left + right - join.xCut) midx] (midy - (stroke / 2 - fine)) [widths.heading fine 0 Leftward]
+				curl [if diag [Math.min Middle (left + right - join.minTurn)] Middle] (midy - (stroke / 2 - fine)) [heading Leftward]
 				archv
 				[if (slabBot === OPEN-VERTICAL) flat g4] (left + xo * 2) [YSmoothMidL (midy + stroke / 2) bot ada adb] [widths.lhs stroke]
 				match slabBot
@@ -343,7 +345,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 
 		export : define [TresilloShape] : union [TresilloUpperShape] [LowerShape]
 
-		export : define [Shape] : union [UpperShape] [LowerShape]
+		export : define [Shape] : union [UpperShape] [LowerShape] : if diag [Dim].join.shape [no-shape]
 
 		export : define [AutoStartSerifR] : begin
 			define [object stroke] : Dim
@@ -808,21 +810,24 @@ glyph-block Letter-Cyrillic-Ze : begin
 		foreach {name top hook ada adb mark} {
 			{'OeVolapuk.phonotypic' CAP Hook ArchDepthA ArchDepthB 'capital'}
 			{'oeVolapuk.phonotypic' XH SHook SmallArchDepthA SmallArchDepthB 'e'}
-		} : create-glyph name : glyph-proc
-			include : MarkSet.(mark)
-			local revZe : CyrRevZe CLOSED-CIRCLE CLOSED-CIRCLE top 0
-				blend -- VolBlend
-				hook -- hook
-				xOverflow -- 0
-				ada -- ada
-				adb -- adb
-				notchToRight -- true
-			include : revZe.Shape
+		} : do
+			foreach {joinSuffix diag} {{'closed' 0} {'rising' 1} {'falling' (-1)}} : create-glyph "\(name).\(joinSuffix)" : glyph-proc
+				include : MarkSet.(mark)
+				local revZe : CyrRevZe CLOSED-CIRCLE CLOSED-CIRCLE top 0
+					blend -- VolBlend
+					hook -- hook
+					xOverflow -- 0
+					ada -- ada
+					adb -- adb
+					notchToRight -- true
+					diag -- diag
+				include : revZe.Shape
+			select-variant name (follow -- 'phonotypic/volapukJoin')
 
 	do 'Volapuk AE'
 		glyph-block-import Letter-Latin-Lower-A : SingleStorey
 
-		define [FullBarBody df top bar hook ada adb cut extended] : glyph-proc
+		define [FullBarBody df top bar hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe CLOSED-STEM CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -830,12 +835,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : bar df top stroke cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 
-		define [FlatTopBody df top bar hook ada adb cut extended] : glyph-proc
+		define [FlatTopBody df top bar hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe FLAT-CONNECTION CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -843,12 +849,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : bar df top stroke cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 
-		define [EarlessCornerBody df top bar hook ada adb cut extended] : glyph-proc
+		define [EarlessCornerBody df top bar hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe SLAB-INWARD CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -856,12 +863,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : bar df (top - DToothlessRise) stroke cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- stroke)
 
-		define [EarlessRoundedBody df top bar hook ada adb cut extended] : glyph-proc
+		define [EarlessRoundedBody df top bar hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe CLOSED-ROUND CLOSED-STEM top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -869,6 +877,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : bar df (top - adb) stroke cut
@@ -911,14 +920,15 @@ glyph-block Letter-Cyrillic-Ze : begin
 				local df : include : DivFrame 1
 				include : df.markSet.e
 				include : body df XH bar SHook SmallArchDepthA SmallArchDepthB cut
-			create-glyph "AeVolapuk.phonotypic/base.\(suffix)" : glyph-proc
-				local df : include : DivFrame 1
-				include : df.markSet.capital
-				include : body df CAP bar Hook ArchDepthA ArchDepthB cut true
-			create-glyph "aeVolapuk.phonotypic/base.\(suffix)" : glyph-proc
-				local df : include : DivFrame 1
-				include : df.markSet.e
-				include : body df XH bar SHook SmallArchDepthA SmallArchDepthB cut true
+			foreach {joinSuffix diag} {{'closed' 0} {'rising' 1} {'falling' (-1)}} : do
+				create-glyph "AeVolapuk.phonotypic/base.\(suffix).\(joinSuffix)" : glyph-proc
+					local df : include : DivFrame 1
+					include : df.markSet.capital
+					include : body df CAP bar Hook ArchDepthA ArchDepthB cut true diag
+				create-glyph "aeVolapuk.phonotypic/base.\(suffix).\(joinSuffix)" : glyph-proc
+					local df : include : DivFrame 1
+					include : df.markSet.e
+					include : body df XH bar SHook SmallArchDepthA SmallArchDepthB cut true diag
 
 		select-variant 'AeVolapuk.slab.upright' (shapeFrom -- 'AeVolapuk/base') (follow -- 'a/singleStorey.slab.upright')
 		select-variant 'AeVolapuk.slab.italic'  (shapeFrom -- 'AeVolapuk/base') (follow -- 'a/singleStorey.slab.italic')
@@ -933,10 +943,10 @@ glyph-block Letter-Cyrillic-Ze : begin
 		orthographic-slab SLAB 'aeVolapuk' 0xA79B
 
 		foreach name {'AeVolapuk.phonotypic' 'aeVolapuk.phonotypic'} : do
-			select-variant "\(name).slab.upright" (shapeFrom -- "\(name)/base") (follow -- 'a/singleStorey.slab.upright')
-			select-variant "\(name).slab.italic" (shapeFrom -- "\(name)/base") (follow -- 'a/singleStorey.slab.italic')
+			select-multi-dimensional-variant "\(name).slab.upright" (shapeFrom -- "\(name)/base") (follows -- {'a/singleStorey.slab.upright' 'phonotypic/volapukJoin'})
+			select-multi-dimensional-variant "\(name).slab.italic" (shapeFrom -- "\(name)/base") (follows -- {'a/singleStorey.slab.italic' 'phonotypic/volapukJoin'})
 			orthographic-italic "\(name).slab" null
-			select-variant "\(name).sans" (shapeFrom -- "\(name)/base") (follow -- 'a/singleStorey.sans')
+			select-multi-dimensional-variant "\(name).sans" (shapeFrom -- "\(name)/base") (follows -- {'a/singleStorey.sans' 'phonotypic/volapukJoin'})
 			orthographic-slab SLAB name null
 
 		alias 'aRoundTop.italic' null [if SLAB 'aeVolapuk.slab.italic' 'aeVolapuk.sans']
@@ -951,7 +961,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				VBar.r df.rightSB y.bot y.top stroke
 				ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- bot) (top -- top) (sw -- stroke)
 
-		define [UToothed df top slab hook ada adb cut extended] : glyph-proc
+		define [UToothed df top slab hook ada adb cut extended diag] : glyph-proc
 			set-base-anchor 'trailing' df.rightSB 0
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-STEM top 0
 				blend     -- VolBlend
@@ -960,12 +970,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : UVolBar df top 0 stroke cut
 			include : slab df top stroke
 
-		define [UTailed df top slab hook ada adb cut extended] : glyph-proc
+		define [UTailed df top slab hook ada adb cut extended diag] : glyph-proc
 			set-base-anchor 'trailing' (df.rightSB + SideJut) 0
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-STEM top 0
 				blend     -- VolBlend
@@ -974,6 +985,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			local y : StemCutY (bot -- 0) (top -- top) (cut -- [fallback cut ''])
@@ -981,7 +993,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 			include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- stroke)
 			include : slab df top stroke
 
-		define [UFlatBottom df top slab hook ada adb cut extended] : glyph-proc
+		define [UFlatBottom df top slab hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL FLAT-CONNECTION top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -989,12 +1001,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : UVolBar df top 0 stroke cut
 			include : slab df top stroke
 
-		define [UToothlessCorner df top slab hook ada adb cut extended] : glyph-proc
+		define [UToothlessCorner df top slab hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL SLAB-INWARD top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -1002,12 +1015,13 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : UVolBar df top DToothlessRise stroke cut
 			include : slab df top stroke
 
-		define [UToothlessRounded df top slab hook ada adb cut extended] : glyph-proc
+		define [UToothlessRounded df top slab hook ada adb cut extended diag] : glyph-proc
 			local revZe : CyrRevZe OPEN-VERTICAL CLOSED-ROUND top 0
 				blend     -- VolBlend
 				hook      -- hook
@@ -1015,6 +1029,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 				ada       -- ada
 				adb       -- adb
 				notchToRight -- extended
+				diag -- diag
 			define [object stroke] : revZe.Dim
 			include : revZe.Shape
 			include : UVolBar df top ada stroke cut
@@ -1074,22 +1089,22 @@ glyph-block Letter-Cyrillic-Ze : begin
 				local df : include : DivFrame 1
 				include : df.markSet.capital
 				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB cut
-			create-glyph "UeVolapuk.phonotypic.\(suffix)" : glyph-proc
+			foreach {joinSuffix diag} {{'closed' 0} {'rising' 1} {'falling' (-1)}} : create-glyph "UeVolapuk.phonotypic.\(suffix).\(joinSuffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.capital
-				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB cut true
+				include : Base df CAP Slabs Hook ArchDepthA ArchDepthB cut true diag
 
 		foreach {suffix {Base cut Slabs}} [Object.entries ueVolapukConfig] : do
 			create-glyph "ueVolapuk.\(suffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e
 				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB cut
-			create-glyph "ueVolapuk.phonotypic.\(suffix)" : glyph-proc
+			foreach {joinSuffix diag} {{'closed' 0} {'rising' 1} {'falling' (-1)}} : create-glyph "ueVolapuk.phonotypic.\(suffix).\(joinSuffix)" : glyph-proc
 				local df : include : DivFrame 1
 				include : df.markSet.e
-				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB cut true
+				include : Base df XH Slabs SHook SmallArchDepthA SmallArchDepthB cut true diag
 
 		select-variant 'UeVolapuk' 0xA79E (follow -- 'U')
 		select-variant 'ueVolapuk' 0xA79F (follow -- 'u')
-		select-variant 'UeVolapuk.phonotypic' (follow -- 'U')
-		select-variant 'ueVolapuk.phonotypic' (follow -- 'u')
+		select-multi-dimensional-variant 'UeVolapuk.phonotypic' (follows -- {'U' 'phonotypic/volapukJoin'})
+		select-multi-dimensional-variant 'ueVolapuk.phonotypic' (follows -- {'u' 'phonotypic/volapukJoin'})

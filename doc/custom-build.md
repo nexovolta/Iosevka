@@ -248,6 +248,10 @@ Broken-bowl options are available for `capital-b`, `capital-p`, `capital-thorn`,
 `cyrl-capital-be`, and `cyrl-ve`. For example,
 `capital-b = 'standard-broken-rising-serifless'` and
 `cyrl-ve = 'rounded-top-broken-falling-serifless'`.
+The `capital-b` join also controls the phonotypic (`PTMN`) forms of ꞚꞛꞜꞝꞞꞟ,
+without changing their ordinary forms. `lower-beta` offers `broken-rising` and
+`broken-falling` choices for β and ꞵ, as well as flat-bottom versions.
+The crossbars of Ꟈꟈ follow the `capital-h` crossbar direction.
 
 The `cyrl-capital-yeri` and `cyrl-yeri` designs also combine a bowl
 (`flat`, `rounded`, `open`, `broken-rising`, or `broken-falling`), a bottom
@@ -257,6 +261,7 @@ top (`serifless` or `serifed`), as in
 `cyrl-capital-yery` and `cyrl-yery` designs add I-stem choices; for example,
 `cyrl-yery = 'broken-falling-flat-serifless-tailed-i-serifless'`.
 Existing short variant names remain available.
+The same `cyrl-yeri` choices also control the yer component of ꭠ.
 The `cyrl-yery` OpenType alternatives use `VXCV` for the first 255 choices and
 `VXFX` for the remaining choices, numbered from 1. Enable only one of these
 two features at a time for the same characters.
