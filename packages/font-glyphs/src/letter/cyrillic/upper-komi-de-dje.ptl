@@ -9,6 +9,16 @@ glyph-block Letter-Cyrillic-Upper-Komi-De-Dje : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame
 	glyph-block-import Letter-Cyrillic-Yeri : RevYeriUpper
+	glyph-block-import Letter-Latin-Upper-P : PConfig PShape
+
+	foreach {suffix {fOpen slabs}} [Object.entries PConfig] : do
+		create-glyph "cyrl/DeKomi.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : RevYeriUpper.Shape CAP (fSlab -- false) (fOpen -- fOpen)
+			if slabs : include : tagged 'serifRT' : if (slabs === PShape.SlabMotion)
+				HSerif.lt (RightSB - [HSwToV Stroke]) CAP SideJut
+				HSerif.mt (RightSB - [HSwToV HalfStroke]) CAP Jut
+			if (slabs && slabs !== PShape.SlabMotion) : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut
 
 	define DeConfig : object
 		standardSerifless         {false  false}
@@ -17,14 +27,6 @@ glyph-block Letter-Cyrillic-Upper-Komi-De-Dje : begin
 
 	foreach {suffix {doST doSB}} [Object.entries DeConfig] : do
 		define fMotion : doST && !doSB
-
-		create-glyph "cyrl/DeKomi.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			include : RevYeriUpper.Shape CAP (fSlab -- false)
-			if doST : include : tagged 'serifRT' : if fMotion
-				HSerif.lt (RightSB - [HSwToV Stroke]) CAP SideJut
-				HSerif.mt (RightSB - [HSwToV HalfStroke]) CAP Jut
-			if doSB : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut
 
 		create-glyph "cyrl/DjeKomi.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
@@ -51,5 +53,5 @@ glyph-block Letter-Cyrillic-Upper-Komi-De-Dje : begin
 				local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
 				include sf2.rt.full
 
-	select-variant 'cyrl/DeKomi'  0x500 (follow -- 'dCap')
+	select-variant 'cyrl/DeKomi'  0x500 (follow -- 'P')
 	select-variant 'cyrl/DjeKomi' 0x502 (follow -- 'dCap')
