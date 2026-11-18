@@ -73,7 +73,9 @@ glyph-block Letter-Latin-Double-Thorn-Wynn : begin
 	foreach {suffix {{body mask bp fGap fAsymmetric} {ts bs}}} [Object.entries BConfig] : do
 		create-glyph "ThornDouble.\(suffix)" : glyph-proc
 			include : MarkSet.capital
-			include : DoubleThornShape xThornStem 0 CAP (0.08 * CAP) (0.92 * CAP) body
+			local insetTop : if ts [Math.max (0.08 * CAP) (Stroke + 0.03 * CAP)] (0.08 * CAP)
+			local insetBot : if bs [Math.max (0.08 * CAP) (Stroke + 0.03 * CAP)] (0.08 * CAP)
+			include : DoubleThornShape xThornStem 0 CAP insetBot (CAP - insetTop) body
 			if ts : include : SerifLT xThornStem CAP 0
 			if bs : include : SerifLB xThornStem CAP 0
 
