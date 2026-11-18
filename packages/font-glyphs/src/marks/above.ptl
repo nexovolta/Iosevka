@@ -14,10 +14,11 @@ glyph-block Mark-Above : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Symbol-Arrow-Shared : ArrowDims ArrowT
-
-	glyph-block-import Mark-Shared-Metrics : markExtend markStroke markHalfStroke markStress markFine
+	glyph-block-import Mark-Shared-Metrics : markMiddle markExtend
+	glyph-block-import Mark-Shared-Metrics : markStroke markHalfStroke markStress markFine
 	glyph-block-import Mark-Shared-Metrics : asciiMarkZoomX asciiMarkZoomY
-	glyph-block-import Mark-Shared-Metrics : markMiddle markDotsRadius dialytikaRadius
+	glyph-block-import Mark-Shared-Metrics : markDotsRadius dialytikaRadius commaRadius
+	glyph-block-import Mark-Shared-Metrics : commaOvershoot commaOvershoot2
 
 	glyph-block-export aboveMarkTop aboveMarkBot aboveMarkMid aboveMarkStack
 	define aboveMarkTop   : XH + AccentClearance + AccentHeight
@@ -100,9 +101,7 @@ glyph-block Mark-Above : begin
 		local yShift : toneAboveBaseline - b.yMin
 		if ([Math.abs yShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate 0 yShift]
 
-	glyph-block-export commaOvershoot commaOvershoot2 commaAboveRadius
-	define commaOvershoot  : O * [linreg 16 0 90 (-1) markStroke]
-	define commaOvershoot2 : O * [linreg 16 1 90 (-1) markStroke]
+	glyph-block-export commaAboveRadius
 	define commaAboveRadius : 0.85 * DotRadius * markHalfStroke / HalfStroke
 
 	glyph-block-export OgonekAboveShape OgonekAboveTerminal
