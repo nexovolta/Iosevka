@@ -461,6 +461,31 @@ glyph-block CommonShapes : begin
 			corner xr (y + rise / 2 + h / 2)
 			corner xr (y + rise / 2 - h / 2)
 
+	glyph-block-export BrokenBarJoin
+	define [BrokenBarJoin left width stroke xTurn yTop direction _stemWidth _mirrorX] : begin
+		local stemWidth : fallback _stemWidth stroke
+		local slope : direction * 0.6
+		local height : stroke * [Math.sqrt : 1 + slope * slope]
+		local offset : (height - stroke) / (2 * slope)
+		local xStart : left + [HSwToV : 0.5 * stemWidth]
+		local xCut : Math.max (left + [HSwToV stemWidth] + 0.12 * width - [Math.abs offset]) (xTurn - [HSwToV : 0.5 * stroke] - [Math.abs : TanSlope * stroke] - TINY)
+		local minTurn : xCut + [HSwToV : 0.1 * stroke] + [Math.abs : TanSlope * stroke] + TINY
+		local xJoin : xCut + [Math.abs offset]
+		local rise : slope * (xJoin - xStart)
+		local yJoin : yTop - stroke / 2
+		local shape : if _mirrorX
+			spiro-outline
+				corner (_mirrorX - xStart) (yJoin - rise - height / 2)
+				corner (_mirrorX - xJoin - offset) (yTop - stroke)
+				corner (_mirrorX - xJoin + offset) yTop
+				corner (_mirrorX - xStart) (yJoin - rise + height / 2)
+			spiro-outline
+				corner xStart (yJoin - rise + height / 2)
+				corner (xJoin - offset) yTop
+				corner (xJoin + offset) (yTop - stroke)
+				corner xStart (yJoin - rise - height / 2)
+		return : object xCut minTurn shape
+
 	glyph-block-export FlatSlashShape
 	define [FlatSlashShape middlex middle fine kx ky] : glyph-proc
 		include : dispiro

@@ -65,13 +65,13 @@ glyph-block Letter-Cyrillic-Tje : begin
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.capital
 			include : RightHalf Uc df CAP [CyrTjeStroke df CAP]
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner' || Uc.hasFlatBottom) 'full' 'reduced'
 
 		create-glyph "cyrl/tje.upright/rightHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleT 3
 			include : df.markSet.e
 			include : RightHalf Lc df XH [CyrTjeStroke df XH]
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner' || Lc.hasFlatBottom) 'full' 'reduced'
 
 	select-variant 'cyrl/Tje/leftHalf/full'
 		follow    -- 'T'

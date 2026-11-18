@@ -29,7 +29,7 @@ export default async function processCherryPickingStyles(argv, dirs) {
 			if (cv.tag) {
 				info.alternatives.push({
 					imageId: `${cv.key}-${cvv.key}`,
-					selectors: [`${cv.key} = '${cvv.key}'`, `${cv.tag} = ${cvv.rank}`],
+					selectors: [`${cv.key} = '${cvv.key}'`, `${cvv.tag || cv.tag} = ${cvv.rank}`],
 					description:
 						formatDescription(cvv.description) + formatDefaults(cvv.key, defaults),
 				});

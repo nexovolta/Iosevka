@@ -53,7 +53,7 @@ glyph-block Letter-Latin-Upper-P : begin
 			curl endX bowlBottom [heading Leftward]
 
 	glyph-block-export PShapeOutlineKnots
-	define [PShapeOutlineKnots top df mul bp overshoot sw offset _endX _endStroke] : begin
+	define [PShapeOutlineKnots top df mul bp overshoot sw offset _endX _endStroke _barEndX _barMinTurn] : begin
 		local bowlTop : top - offset
 		local bowlBottom : [PBarPosY top sw bp] + offset
 		local turnRadius : BowlXDepth bowlTop bowlBottom df.leftSB df.rightSB sw
@@ -71,8 +71,8 @@ glyph-block Letter-Latin-Upper-P : begin
 				curl _endX bowlBottom [heading Downward] [widths.rhs _endStroke]
 				list
 					arcvh
-					flat [Arch.adjust-x.bot (right - turnRadius) (sw -- sw)] bowlBottom
-					curl (left - O) bowlBottom [heading Leftward]
+					flat [if _barEndX [Math.max _barMinTurn [Arch.adjust-x.bot (right - turnRadius) (sw -- sw)]] [Arch.adjust-x.bot (right - turnRadius) (sw -- sw)]] bowlBottom
+					curl [if _barEndX _barEndX (left - O)] bowlBottom [heading Leftward]
 
 	define [RevPshapeOutlineKnots top df mul bp overshoot sw offset] : begin
 		local bowlTop : top - offset
@@ -115,10 +115,16 @@ glyph-block Letter-Latin-Upper-P : begin
 		local-parameter : sw        -- df.mvs
 		local-parameter : slab      -- null
 		local-parameter : withBar   -- true
+		local-parameter : diag      -- 0
 
+		local bowlBottom : PBarPosY top sw bp
+		local turnRadius : BowlXDepth top bowlBottom df.leftSB df.rightSB sw
+		local turn : Arch.adjust-x.bot (df.rightSB - turnRadius) (sw -- sw)
+		local join : if diag [BrokenBarJoin [mix 0 df.leftSB mul] df.width sw turn (bowlBottom + sw) diag] null
 		include : tagged 'bowl' : dispiro
 			widths.rhs sw
-			PShapeOutlineKnots top df mul bp overshoot sw 0
+			PShapeOutlineKnots top df mul bp overshoot sw 0 null null [if diag join.xCut null] [if diag join.minTurn null]
+		if diag : include join.shape
 		if withBar : include : tagged 'strokeL' : VBar.l [mix 0 df.leftSB mul] 0 top sw
 		if slab : include : slab top df sw mul
 
@@ -209,6 +215,8 @@ glyph-block Letter-Latin-Upper-P : begin
 		object # openness
 			closed           false
 			open             true
+			brokenRising     1
+			brokenFalling    (-1)
 		object # serifs
 			serifless        null
 			motionSerifed    PShape.SlabMotion
@@ -216,6 +224,7 @@ glyph-block Letter-Latin-Upper-P : begin
 
 	foreach {suffix {fGap slabs}} [Object.entries PConfig] : do
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
+		define diag : if (fGap === true) 0 fGap
 		define swCap : AdviceStroke2 2 3 CAP
 		define swXH  : AdviceStroke2 2 3 XH
 
@@ -223,8 +232,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			include : MarkSet.capital
 			include : LeaningAnchor.Below.VBar.l [mix 0 SB PShape.defaultMul] swCap
 			include : difference
-				PShape CAP (sw -- swCap) (slab -- slabs)
-				if fGap
+				PShape CAP (sw -- swCap) (slab -- slabs) (diag -- diag)
+				if (fGap === true)
 					PShape.OpenGap (top -- CAP) (bot -- [if fSlabBot swCap 0]) (sw -- swCap)
 					no-shape
 
@@ -241,8 +250,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			include : MarkSet.e
 			include : LeaningAnchor.Below.VBar.l [mix 0 SB PShape.defaultMul] swXH
 			include : difference
-				PShape XH (sw -- swXH) (slab -- slabs)
-				if fGap
+				PShape XH (sw -- swXH) (slab -- slabs) (diag -- diag)
+				if (fGap === true)
 					PShape.OpenGap (top -- XH) (bot -- [if fSlabBot swXH 0]) (sw -- swXH)
 					no-shape
 
@@ -265,8 +274,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : LeaningAnchor.Below.VBar.l [mix 0 subDf.leftSB PShape.defaultMul] sw
 				include : difference
-					PShape CAP (df -- subDf) (sw -- sw) (slab -- slabs)
-					if fGap
+					PShape CAP (df -- subDf) (sw -- sw) (slab -- slabs) (diag -- diag)
+					if (fGap === true)
 						PShape.OpenGap (top -- CAP) (df -- subDf) (bot -- [if fSlabBot sw 0]) (sw -- sw)
 						no-shape
 			local xStem : [mix 0 subDf.leftSB PShape.defaultMul] + shift
@@ -288,8 +297,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : LeaningAnchor.Below.VBar.l [mix 0 subDf.leftSB PShape.defaultMul] sw
 				include : difference
-					PShape CAP (df -- subDf) (sw -- sw) (slab -- slabs)
-					if fGap
+					PShape CAP (df -- subDf) (sw -- sw) (slab -- slabs) (diag -- diag)
+					if (fGap === true)
 						PShape.OpenGap (top -- CAP) (df -- subDf) (bot -- [if fSlabBot sw 0]) (sw -- sw)
 						no-shape
 			local xStem : [mix 0 subDf.leftSB PShape.defaultMul] + shift

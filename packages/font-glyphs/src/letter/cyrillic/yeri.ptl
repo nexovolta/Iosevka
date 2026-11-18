@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp fallback] from '@iosevka/util'
+import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
 
 glyph-module
 
@@ -197,6 +197,71 @@ glyph-block Letter-Cyrillic-Yeri : begin
 				HSerif.lt left top (jut - [HSwToV : 0.5 * swVBar]) stroke swVBar
 		set CursiveShape.useFullSerifs useFullSerifs
 
+		export : define [StagedShape bowl tooth topSerif] : begin
+			local variant : function [] : with-params [top [left SB] [right RightSB] [stroke Stroke] [fine (ShoulderFine * (stroke / Stroke))] [swVBar stroke] [jut (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])] [pBar YeriBarPos] [yStart top] [fSlab topSerif]] : glyph-proc
+				local bowlTop : [mix 0 top pBar] + stroke / 2
+				local mockLeft : left - [HSwToV : stroke - swVBar]
+				local turnRadius : BowlXDepth bowlTop 0 mockLeft right stroke
+				local xTurnRightT : clamp
+					Math.max
+						(left - O) + TINY + [Math.abs : TanSlope * stroke]
+						left + [HSwToV swVBar]
+					right - [HSwToV : 1.125 * stroke]
+					Arch.adjust-x.top (right - turnRadius) (sw -- stroke)
+				local xTurnRightB : clamp
+					Math.max
+						(left - O) + TINY + [Math.abs : TanSlope * stroke]
+						left + [HSwToV swVBar]
+					right - [HSwToV : 1.125 * stroke]
+					Arch.adjust-x.bot (right - turnRadius) (sw -- stroke)
+				local mockWidth : (right - mockLeft) + SB * 2
+				local archDepth : Math.max (ArchDepth * (mockWidth / Width)) (stroke * 1.125)
+				local ada : ArchDepthAOf archDepth mockWidth
+				local adb : ArchDepthBOf archDepth mockWidth
+				local yTurnBottomL : YSmoothMidL bowlTop 0 ada adb
+				local yTurnBottomR : YSmoothMidR bowlTop 0 ada adb
+				local diag : if (bowl === 'brokenRising') 1 : if (bowl === 'brokenFalling') (-1) 0
+				local join : if diag [BrokenBarJoin left mockWidth stroke xTurnRightT bowlTop diag swVBar] null
+
+				include : difference
+					new-glyph : glyph-proc
+						if (tooth !== 'rounded') : include : VBar.l left [if (tooth === 'corner') DToothlessRise 0] yStart swVBar
+						include : dispiro
+							widths.lhs stroke
+							if (tooth === 'rounded')
+								list
+									flat left yStart [heading Downward] [widths.lhs swVBar]
+									curl left [Math.min (yStart - TINY - [HSwToV : Math.abs : TanSlope * swVBar]) adb yTurnBottomL]
+									Arch.lhs 0 (sw -- stroke) (swBefore -- swVBar)
+								if (tooth === 'corner')
+									list
+										g4 left DToothlessRise
+										Arch.lhs 0 (sw -- stroke) (blendPre -- {})
+									list
+										flat (left - O) 0 [heading Rightward]
+										curl xTurnRightB 0 [if (xTurnRightB - [Math.abs : TanSlope * stroke] <= left + [HSwToV swVBar]) [heading Rightward] nothing]
+										archv 8
+							g4 (right - OX) yTurnBottomR
+							if (bowl === 'rounded')
+								list
+									Arch.lhs bowlTop (sw -- stroke) (swAfter -- fine)
+									g4.down.end (left + [HSwToV : swVBar - fine]) [Math.max (bowlTop - ada) yTurnBottomL] [widths.lhs.heading fine Downward]
+								list
+									arcvh 8
+									flat [if diag [Math.max join.minTurn xTurnRightT] xTurnRightT] bowlTop [if (xTurnRightT - [Math.abs : TanSlope * stroke] <= left + [HSwToV swVBar]) [heading Leftward] nothing]
+									curl [if diag join.xCut (left - O)] bowlTop [heading Leftward]
+						if diag : include join.shape
+					if (bowl === 'open') [YeriOpenGap left right bowlTop stroke swVBar false] [no-shape]
+
+				if (tooth === 'flatBottom') : include : tagged 'serifYeriLB' : HSerif.lb left 0 (jut - [HSwToV : 0.5 * swVBar]) stroke swVBar
+				if fSlab : include : tagged 'serifYeriLT' : if useFullSerifs
+					HSerif.mt (left + [HSwToV : 0.5 * swVBar]) top jut stroke
+					HSerif.lt left top (jut - [HSwToV : 0.5 * swVBar]) stroke swVBar
+			set variant.useFullSerifs useFullSerifs
+			set variant.topSerif topSerif
+			set variant.hasFlatBottom (tooth === 'flat' || tooth === 'flatBottom')
+			return variant
+
 	glyph-block-export YeriUpper YeriLower
 	define YeriUpper    : YeriShapeGroup true  false
 	define YeriLower    : YeriShapeGroup false false
@@ -240,6 +305,9 @@ glyph-block Letter-Cyrillic-Yeri : begin
 			local yTurnBottomL : YSmoothMidL bowlTop 0 ada adb
 			local yTurnBottomR : YSmoothMidR bowlTop 0 ada adb
 
+			local diag : if (fOpen === true) 0 fOpen
+			local join : if diag [BrokenBarJoin 0 mockWidth stroke (right - xTurnLeftT) bowlTop (-diag) swVBar right] null
+
 			include : difference
 				union [VBar.r right 0 yStart swVBar] : dispiro
 					widths.rhs stroke
@@ -248,9 +316,10 @@ glyph-block Letter-Cyrillic-Yeri : begin
 					archv 8
 					g4   (left + OX) yTurnBottomL
 					arcvh 8
-					flat xTurnLeftT  bowlTop [if (xTurnLeftT + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Rightward] nothing]
-					curl (right + O) bowlTop [heading Rightward]
-				if fOpen [YeriOpenGap left right bowlTop stroke swVBar true] [no-shape]
+					flat [if diag [Math.min xTurnLeftT (right - join.minTurn)] xTurnLeftT] bowlTop [if (xTurnLeftT + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Rightward] nothing]
+					curl [if diag (right - join.xCut) (right + O)] bowlTop [heading Rightward]
+				if (fOpen === true) [YeriOpenGap left right bowlTop stroke swVBar true] [no-shape]
+			if diag : include join.shape
 
 			if fSlab : include : composite-proc
 				tagged 'serifYeriRB' : HSerif.rb right 0 (jut - [HSwToV : 0.5 * swVBar]) stroke swVBar
@@ -303,12 +372,34 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 			if fSlab : include : tagged 'serifYeriRT' : HSerif.mt (right - [HSwToV : 0.5 * swVBar]) top jut stroke
 
-	glyph-block-export YeriConfig
-	define YeriConfig : object
+	define LegacyYeriConfig : object
 		corner  {YeriUpper.Shape         YeriLower.Shape         YeriLowerBGR.Shape       }
 		open    {YeriUpper.OpenShape     YeriLower.OpenShape     YeriLowerBGR.OpenShape   }
 		round   {YeriUpper.RoundShape    YeriLower.RoundShape    YeriLowerBGR.RoundShape  }
 		cursive {YeriUpper.CursiveShape  YeriLower.CursiveShape  YeriLowerBGR.CursiveShape}
+
+	define StagedYeriInput : SuffixCfg.weave
+		object
+			flat          'flat'
+			rounded       'rounded'
+			open          'open'
+			brokenRising  'brokenRising'
+			brokenFalling 'brokenFalling'
+		object
+			flatBottom       'flatBottom'
+			flat             'flat'
+			toothlessCorner  'corner'
+			toothlessRounded 'rounded'
+		object
+			serifless false
+			serifed   true
+
+	define StagedYeriConfig : Object.fromEntries : [Object.entries StagedYeriInput].map : lambda [entry] : begin
+		local {bowl tooth topSerif} entry.1
+		return {entry.0 {[YeriUpper.StagedShape bowl tooth topSerif] [YeriLower.StagedShape bowl tooth topSerif] [YeriLowerBGR.StagedShape bowl tooth topSerif]}}
+
+	glyph-block-export YeriConfig
+	define YeriConfig : Object.assign LegacyYeriConfig StagedYeriConfig
 
 	foreach {suffix {Uc Lc BGRc}} [Object.entries YeriConfig] : do
 		create-glyph "cyrl/Yeri.\(suffix)" : glyph-proc

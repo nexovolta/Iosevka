@@ -8,7 +8,7 @@ glyph-block Letter-Cyrillic-Yery : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar
-	glyph-block-import Letter-Cyrillic-Yeri : YeriUpper YeriLower
+	glyph-block-import Letter-Cyrillic-Yeri : YeriConfig
 	glyph-block-import Letter-Cyrillic-Yer : CyrYerShape
 
 	define [CyrYeryShape fBackYer] : function [Yeri df top fTailed iSerif] : glyph-proc
@@ -38,24 +38,25 @@ glyph-block Letter-Cyrillic-Yery : begin
 			RightwardTailedBar df.rightSB 0 top stroke
 			VBar.r             df.rightSB 0 top stroke
 
-		local motionI : (iSerif === 'tr') || (iSerif === 'bilateral')
-		local doITop : motionI || (SLAB && Yeri.useFullSerifs)
-		local doIBot : [not motionI] && SLAB && [not fTailed]
+		local motionI : (iSerif === 'tr') || (iSerif === 'bilateral') || (iSerif === 'explicitTr')
+		local explicitI : (iSerif === 'none') || (iSerif === 'bottom') || (iSerif === 'explicitTr') || (iSerif === 'full')
+		local doITop : if explicitI
+			(iSerif === 'explicitTr') || (iSerif === 'full')
+			motionI || (SLAB && Yeri.useFullSerifs)
+		local doIBot : [not fTailed] && [if explicitI ((iSerif === 'bottom') || (iSerif === 'full')) ([not motionI] && SLAB)]
 		if doITop : include : tagged 'serifRT' : if motionI
 			HSerif.lt (df.rightSB - [HSwToV stroke]) top (jut - [HSwToV : 0.5 * stroke]) stroke
 			HSerif.mt (df.rightSB - [HSwToV : 0.5 * stroke]) top jut stroke
-		if doIBot : include : tagged 'serifRB' : if Yeri.useFullSerifs
+		if doIBot : include : tagged 'serifRB' : if (iSerif === 'full' || (!explicitI && Yeri.useFullSerifs))
 			HSerif.mb (df.rightSB - [HSwToV : 0.5 * stroke]) 0 jut stroke
 			HSerif.rb df.rightSB 0 (jut - [HSwToV : 0.5 * stroke]) stroke
 		if ((iSerif === 'bilateral') && [not SLAB]) : include : tagged 'serifYeriLT'
 			HSerif.lt df.leftSB top (jut - [HSwToV : 0.5 * stroke]) stroke
 
+	define YeryBodies : Object.fromEntries : [Object.entries YeriConfig].map : lambda [entry] : begin
+		return {entry.0 {entry.1.0 entry.1.1}}
 	define YeryConfig : SuffixCfg.weave
-		object # Yeri
-			corner  {YeriUpper.Shape         YeriLower.Shape       }
-			open    {YeriUpper.OpenShape     YeriLower.OpenShape   }
-			round   {YeriUpper.RoundShape    YeriLower.RoundShape  }
-			cursive {YeriUpper.CursiveShape  YeriLower.CursiveShape}
+		begin YeryBodies
 		object # Tail
 			''            false
 			tailed        true
@@ -63,6 +64,10 @@ glyph-block Letter-Cyrillic-Yery : begin
 			''                      'auto'
 			topRightMotionSerifed    'tr'
 			bilateralMotionSerifed   'bilateral'
+			iSerifless               'none'
+			iBottomRightSerifed      'bottom'
+			iTopRightMotionSerifed   'explicitTr'
+			iSerifed                 'full'
 
 	foreach {suffix {{Uc Lc} fTailed iSerif}} [Object.entries YeryConfig] : do
 		if [not fTailed] : begin

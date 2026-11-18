@@ -124,7 +124,9 @@ async function main(argv) {
 		if (!cv.tag && !cv.isSpecial) continue;
 		for (const variant of cv.variants) {
 			await tasks.add(`cv-${cv.key}-${variant.key}`, CharVariant, {
-				fontFeatures: variant.snapshotFeatureApplication || { [cv.tag]: variant.rank },
+				fontFeatures: variant.snapshotFeatureApplication || {
+					[variant.tag || cv.tag]: variant.rank,
+				},
 				slopeDependent: !!cv.slopeDependent,
 				hotChars: cv.hotChars,
 			});

@@ -26,6 +26,8 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 		local xTurn : Math.max
 			RightSB       - [BowlXDepth yBowlTop yBowlBot xThornBarLeft RightSB Stroke]
 			xThornBarLeft + [HSwToV Stroke]
+		local diag : if (fOpen === true) 0 fOpen
+		local join : if diag [BrokenBarJoin xThornBarLeft Width Stroke [Arch.adjust-x.bot xTurn] (yBowlBot + Stroke) diag] null
 
 		include : difference
 			new-glyph : glyph-proc
@@ -36,15 +38,16 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 					archv
 					g4   (RightSB - OX) [YSmoothMidR yBowlTop yBowlBot ArchDepthA ArchDepthB]
 					arcvh
-					flat [Arch.adjust-x.bot xTurn] yBowlBot
-					curl xThornBarLeft yBowlBot [heading Leftward]
+					flat [if diag [Math.max join.minTurn [Arch.adjust-x.bot xTurn]] [Arch.adjust-x.bot xTurn]] yBowlBot
+					curl [if diag join.xCut xThornBarLeft] yBowlBot [heading Leftward]
 				include : VBar.l xThornBarLeft 0 top
+				if diag : include join.shape
 				if slabTop : begin
 					local sf : SerifFrame top 0 xThornBarLeft RightSB
 					if slabBot
 						then : include : composite-proc sf.lt.fullSide sf.lb.fullSide
 						else : include   sf.lt.outer
-			if fOpen
+			if (fOpen === true)
 				PShape.OpenGap
 					top -- yBowlTop
 					bot -- (yBowlBot - 0.5 * Stroke - TINY)
@@ -72,6 +75,8 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 		object # openness
 			''            false
 			open          true
+			brokenRising  1
+			brokenFalling (-1)
 		object # serifs
 			serifless     {false  false}
 			motionSerifed {true   false}

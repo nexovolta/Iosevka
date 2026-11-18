@@ -48,6 +48,12 @@ glyph-block Letter-Cyrillic-Nje : begin
 			right  -- (df.rightSB - O)
 			stroke -- sw
 			fSlab  -- false
+		if Yeri.topSerif : begin
+			local subDf : df.slice 3 2
+			local sf : SerifFrame.fromDf subDf top 0 (swRef -- sw)
+			include : if Yeri.useFullSerifs
+				if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer
+				begin sf.rt.inner
 
 	define LeftHalfConfig : SuffixCfg.weave
 		object
@@ -66,24 +72,32 @@ glyph-block Letter-Cyrillic-Nje : begin
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
 			include : LeftHalf slabType df CAP diag
+			create-forked-glyph "cyrl/Nje/leftHalfNoTop.\(suffix)" : glyph-proc
+				eject-contour 'serifRT'
 
 		create-glyph "cyrl/nje/leftHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
 			include : LeftHalf slabType df XH diag
+			create-forked-glyph "cyrl/nje/leftHalfNoTop.\(suffix)" : glyph-proc
+				eject-contour 'serifRT'
 
 	foreach {suffix {Uc Lc BGRc}} [Object.entries YeriConfig] : do
 		create-glyph "cyrl/Nje/rightHalf.\(suffix)"  : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.capital
 			include : RightHalf Uc df CAP
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (Uc.topSerif !== undefined)
+				if Uc.hasFlatBottom 'fullStaged' 'reducedStaged'
+				if (suffix === 'corner') 'full' 'reduced'
 
 		create-glyph "cyrl/nje/rightHalf.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleMM 3
 			include : df.markSet.e
 			include : RightHalf Lc df XH
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (Lc.topSerif !== undefined)
+				if Lc.hasFlatBottom 'fullStaged' 'reducedStaged'
+				if (suffix === 'corner') 'full' 'reduced'
 
 	select-variant 'cyrl/Nje/leftHalf/full'
 		follow    -- 'cyrl/Nje/leftHalf'
@@ -97,6 +111,18 @@ glyph-block Letter-Cyrillic-Nje : begin
 	select-variant 'cyrl/nje/leftHalf/reduced'
 		follow    -- 'cyrl/nje/leftHalf/reduced'
 		shapeFrom -- 'cyrl/nje/leftHalf'
+	select-variant 'cyrl/Nje/leftHalf/fullStaged'
+		follow    -- 'cyrl/Nje/leftHalf'
+		shapeFrom -- 'cyrl/Nje/leftHalfNoTop'
+	select-variant 'cyrl/nje/leftHalf/fullStaged'
+		follow    -- 'cyrl/nje/leftHalf'
+		shapeFrom -- 'cyrl/nje/leftHalfNoTop'
+	select-variant 'cyrl/Nje/leftHalf/reducedStaged'
+		follow    -- 'cyrl/Nje/leftHalf/reduced'
+		shapeFrom -- 'cyrl/Nje/leftHalfNoTop'
+	select-variant 'cyrl/nje/leftHalf/reducedStaged'
+		follow    -- 'cyrl/nje/leftHalf/reduced'
+		shapeFrom -- 'cyrl/nje/leftHalfNoTop'
 
 	select-variant 'cyrl/Nje/rightHalf'
 	select-variant 'cyrl/nje/rightHalf'
@@ -104,6 +130,10 @@ glyph-block Letter-Cyrillic-Nje : begin
 	CreateDependentComposite 'cyrl/Nje' 0x40A 'cyrl/Nje/rightHalf' : object
 		full    'cyrl/Nje/leftHalf/full'
 		reduced 'cyrl/Nje/leftHalf/reduced'
+		fullStaged    'cyrl/Nje/leftHalf/fullStaged'
+		reducedStaged 'cyrl/Nje/leftHalf/reducedStaged'
 	CreateDependentComposite 'cyrl/nje' 0x45A 'cyrl/nje/rightHalf' : object
 		full    'cyrl/nje/leftHalf/full'
 		reduced 'cyrl/nje/leftHalf/reduced'
+		fullStaged    'cyrl/nje/leftHalf/fullStaged'
+		reducedStaged 'cyrl/nje/leftHalf/reducedStaged'

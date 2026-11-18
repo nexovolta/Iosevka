@@ -20,10 +20,11 @@ glyph-block Letter-Cyrillic-Yer : begin
 		local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - stroke)])
 		local-parameter : pBar   -- YeriBarPos
 
-		local xYeriLeft : Math.max (right - (RightSB - SB)) : if SLAB
+		local fSlab : fallback Yeri.topSerif SLAB
+		local xYeriLeft : Math.max (right - (RightSB - SB)) : if fSlab
 			[mix left right 0.35] - [HSwToV : 0.50 * stroke]
 			[mix left right 0.20] - [HSwToV : 0.25 * stroke]
-		local xTopBarLeft : mix 0 left : if SLAB 0.250 0.375
+		local xTopBarLeft : mix 0 left : if fSlab 0.250 0.375
 
 		include : HBar.t xTopBarLeft ((xYeriLeft + [HSwToV stroke]) + O) top stroke
 		include : Yeri top
@@ -33,7 +34,7 @@ glyph-block Letter-Cyrillic-Yer : begin
 			jut    -- jut
 			pBar   -- pBar
 
-		if SLAB : begin
+		if fSlab : begin
 			local swVJut : Math.min (VJutStroke * (stroke / Stroke)) : VSwToH : 0.625 * (xYeriLeft - xTopBarLeft)
 			include : VSerif.dl xTopBarLeft top VJut swVJut
 

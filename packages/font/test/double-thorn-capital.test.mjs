@@ -9,7 +9,7 @@ test("capital double thorn follows capital B and keeps both counters open", asyn
 	await Geometry.Init();
 	const makePara = await getParametersT({ paramsDir: fileURLToPath(new URL("../../../params/", import.meta.url)) });
 	for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
-		for (const design of ["standard-serifless", "more-asymmetric-unilateral-serifed", "standard-interrupted-bilateral-serifed"]) {
+		for (const design of ["standard-serifless", "more-asymmetric-unilateral-serifed", "standard-interrupted-bilateral-serifed", "standard-broken-rising-serifless", "more-asymmetric-broken-falling-bilateral-serifed"]) {
 			const para = makePara({
 				shape: { serifs: "sans", spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 				menu: { family: "Double thorn QA", version: "34.9.0", width: 5, slope, weight: 400 },

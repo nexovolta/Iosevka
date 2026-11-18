@@ -244,6 +244,23 @@ The `komi-hook` design independently controls the hooks on ԂԃԄԅԈԉԊԋԌԍ�
 `serifless`, `motion-serifed`, or `serifed`. It defaults to `serifless` in sans
 builds and `serifed` in slab builds.
 
+Broken-bowl options are available for `capital-b`, `capital-p`, `capital-thorn`,
+`cyrl-capital-be`, and `cyrl-ve`. For example,
+`capital-b = 'standard-broken-rising-serifless'` and
+`cyrl-ve = 'rounded-top-broken-falling-serifless'`.
+
+The `cyrl-capital-yeri` and `cyrl-yeri` designs also combine a bowl
+(`flat`, `rounded`, `open`, `broken-rising`, or `broken-falling`), a bottom
+(`flat-bottom`, `flat`, `toothless-corner`, or `toothless-rounded`), and a
+top (`serifless` or `serifed`), as in
+`cyrl-yeri = 'broken-rising-toothless-rounded-serifless'`. The corresponding
+`cyrl-capital-yery` and `cyrl-yery` designs add I-stem choices; for example,
+`cyrl-yery = 'broken-falling-flat-serifless-tailed-i-serifless'`.
+Existing short variant names remain available.
+The `cyrl-yery` OpenType alternatives use `VXCV` for the first 255 choices and
+`VXFX` for the remaining choices, numbered from 1. Enable only one of these
+two features at a time for the same characters.
+
 <!-- BEGIN Section-Stylistic-Sets -->
 <!-- THIS SECTION IS AUTOMATICALLY GENERATED. DO NOT EDIT. -->
 

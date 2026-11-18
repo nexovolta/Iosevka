@@ -99,6 +99,9 @@ export : define [buildCVSS gsub para glyphStore] : begin
 			define feature : gsub.addCommonFeature : gsub.createFeature prime.tag
 			local cvLookupManager : new CvLookupManager gsub prime.tag feature
 			cvs.set prime.tag cvLookupManager
+			if prime.overflowTag : begin
+				define overflowFeature : gsub.addCommonFeature : gsub.createFeature prime.overflowTag
+				cvs.set prime.overflowTag : new CvLookupManager gsub prime.overflowTag overflowFeature
 
 	do 'Build decomposition lookups'
 		foreach {gn glyph} [glyphStore.namedEntries] : begin

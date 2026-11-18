@@ -51,7 +51,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			include : tagged 'serifDL' : VSerif.dl xCrossbarLeft  yCrossbarPos jutTop swVJut
 			include : tagged 'serifDR' : VSerif.dr xCrossbarRight yCrossbarPos jutTop swVJut
 
-			if [not fCapital] : begin
+			if ([not fCapital] && [fallback Yeri.topSerif true]) : begin
 				eject-contour 'serifYeriLT'
 				include : tagged 'serifLT' : HSerif.lt xYeriLeft top SideJut stroke
 
@@ -149,7 +149,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			eject-contour 'serifYeriLT'
 			eject-contour 'serifYeriLB'
 
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner' || Lc.hasFlatBottom) 'full' 'reduced'
 
 		create-glyph "cyrl/tje.italic/yeri.\(suffix)" : glyph-proc
 			local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
@@ -164,7 +164,7 @@ glyph-block Letter-Cyrillic-Yat : begin
 			eject-contour 'serifYeriLT'
 			eject-contour 'serifYeriLB'
 
-			DependentSelector.set currentGlyph : if (suffix === 'corner') 'full' 'reduced'
+			DependentSelector.set currentGlyph : if (suffix === 'corner' || Lc.hasFlatBottom) 'full' 'reduced'
 
 	foreach {suffix {Uc Lc BGRc}} [pairs-of YeriConfig] : do
 		create-glyph "cyrl/YatIotated.\(suffix)" : glyph-proc

@@ -4,9 +4,11 @@ export function apply(data, para, argv) {
 	const parsed = parse(data, argv);
 	const tagSet = new Set();
 	for (const prime of parsed.primes.values()) {
-		if (!prime.tag) continue;
-		if (!tagSet.has(prime.tag)) tagSet.add(prime.tag);
-		else throw new Error(`CV tag conflict: ${prime.tag}`);
+		for (const tag of [prime.tag, prime.overflowTag]) {
+			if (!tag) continue;
+			if (!tagSet.has(tag)) tagSet.add(tag);
+			else throw new Error(`CV tag conflict: ${tag}`);
+		}
 	}
 	const variantSelector = resolveSelectors(parsed, para, argv);
 	applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantSelector);
@@ -194,6 +196,15 @@ function assignOpenTypeTags(primes, reservedLetterAppendOrders) {
 		else if (prime.tagKind === "letter-append") appendedLetters.push(prime);
 		else if (prime.tagKind === "symbol") symbols.push(prime);
 		else other.push(prime);
+		if (prime.overflowTagOrder != null) {
+			if (!Number.isInteger(prime.overflowTagOrder) || prime.overflowTagOrder < 1)
+				throw new Error(`Invalid overflow tag order for ${prime.key}`);
+			appendedLetters.push({
+				key: prime.key,
+				tagOrder: prime.overflowTagOrder,
+				assignTag: tag => prime.assignOverflowTag(tag),
+			});
+		}
 	}
 	digits.sort((a, b) => DIGIT_ORDER.indexOf(a.key) - DIGIT_ORDER.indexOf(b.key));
 	letters.sort(compareLetters);
@@ -236,14 +247,24 @@ function assignOpenTypeTags(primes, reservedLetterAppendOrders) {
 		}
 		prime.assignTag(`VX${mapNumberToLetter(vxCount++)}`);
 	}
+	for (const prime of primes.values()) {
+		for (const variant of prime.variants.values()) {
+			if (variant.tag && variant.rank > 255)
+				throw new Error(
+					`Variant ${prime.key}.${variant.key} exceeds the OpenType alternate limit`,
+				);
+		}
+	}
 }
 
 class Prime {
 	constructor(key, cfg) {
 		this.key = key;
 		this.tag = null;
+		this.overflowTag = null;
 		this.tagKind = cfg.tagKind || null;
 		this.tagOrder = cfg.tagOrder || 0;
+		this.overflowTagOrder = cfg.overflowTagOrder ?? null;
 		this.sampler = cfg.sampler;
 		this.samplerExplain = cfg.samplerExplain;
 
@@ -292,11 +313,19 @@ class Prime {
 		this.tag = tag;
 		for (const variant of this.variants.values()) variant.tag = tag;
 	}
+	assignOverflowTag(tag) {
+		this.overflowTag = tag;
+		for (const variant of this.variants.values()) {
+			if (variant.rank > 255) {
+				variant.tag = tag;
+				variant.rank -= 255;
+			}
+		}
+	}
 	register(tree) {
 		for (const [k, v] of this.variants) tree.set(this.key, k, this, v);
-		if (this.tag) {
-			for (const v of this.variants.values()) if (v.rank) tree.set(this.tag, v.rank, this, v);
-		}
+		for (const v of this.variants.values())
+			if (v.tag && v.rank) tree.set(v.tag, v.rank, this, v);
 	}
 	toJson() {
 		const gr = {
@@ -315,13 +344,18 @@ class Prime {
 		for (const variant of this.variants.values()) {
 			gr.variants.push({
 				key: variant.key,
+				tag: variant.tag,
 				rank: variant.rank,
 				groupRank: variant.groupRank,
 				description: variant.description,
 				snapshotFeatureApplication: variant.snapshotFeatureApplication,
 			});
 		}
-		gr.variants.sort((a, b) => (a.rank || 0x7fffffff) - (b.rank || 0x7fffffff));
+		gr.variants.sort(
+			(a, b) =>
+				(a.tag === gr.tag ? 0 : 1) - (b.tag === gr.tag ? 0 : 1) ||
+				(a.rank || 0x7fffffff) - (b.rank || 0x7fffffff),
+		);
 		return gr;
 	}
 }

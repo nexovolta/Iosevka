@@ -10,18 +10,25 @@ glyph-block Letter-Cyrillic-Be : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos YeriUpper RevYeriUpper
 
-	define BeConfig : object
-		serifless        {false  false  false}
-		topSerifed       {false  true   false}
-		bilateralSerifed {true   true   false}
-		motionSerifed    {false  true   true }
-		fullSerifed      {true   true   true }
+	define BeConfig : SuffixCfg.weave
+		object
+			''            'flat'
+			open          'open'
+			brokenRising  'brokenRising'
+			brokenFalling 'brokenFalling'
+		object
+			serifless        {false  false  false}
+			topSerifed       {false  true   false}
+			bilateralSerifed {true   true   false}
+			motionSerifed    {false  true   true }
+			fullSerifed      {true   true   true }
 
-	foreach {suffix {doSerifLT doSerifRT doSerifLB}} [Object.entries BeConfig] : do
+	foreach {suffix {bowl {doSerifLT doSerifRT doSerifLB}}} [Object.entries BeConfig] : do
 		create-glyph "cyrl/Be.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local stroke : AdviceStroke2 2 3 CAP
-			include : YeriUpper.Shape CAP SB RightSB stroke (fSlab -- false)
+			local Body : if (bowl === 'flat') YeriUpper.Shape [YeriUpper.StagedShape bowl 'flat' false]
+			include : Body CAP SB RightSB stroke (fSlab -- false)
 			include : HBar.t (SB - O) [mix SB RightSB 0.9] CAP stroke
 			if doSerifLT : include : tagged 'serifLT' : HSerif.lt SB CAP SideJut stroke
 			if doSerifRT : begin
@@ -33,7 +40,8 @@ glyph-block Letter-Cyrillic-Be : begin
 		create-glyph "cyrl/revBe.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			local stroke : AdviceStroke2 2 3 CAP
-			include : RevYeriUpper.Shape CAP SB RightSB stroke (fSlab -- false)
+			local opening : if (bowl === 'open') true : if (bowl === 'brokenRising') 1 : if (bowl === 'brokenFalling') (-1) false
+			include : RevYeriUpper.Shape CAP SB RightSB stroke (fSlab -- false) (fOpen -- opening)
 			include : HBar.t [mix SB RightSB 0.1] (RightSB + O) CAP stroke
 			if doSerifLT : include : tagged 'serifRT' : HSerif.rt RightSB CAP SideJut stroke
 			if doSerifRT : begin

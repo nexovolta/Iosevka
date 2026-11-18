@@ -23,7 +23,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	define AsymmetricBTopArcShift      : (-0.05) * (RightSB - SB)
 	define AsymmetricBTopArcInnerShift : (-0.10) * (RightSB - SB)
 
-	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [df [DivFrame 1]]] : glyph-proc
+	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [df [DivFrame 1]] [diag 0]] : glyph-proc
 		local bowl : mix stroke top barPos
 		local mockBowlDepth : BowlXDepth top (bowl - stroke) df.leftSB df.rightSB stroke
 		local curveLeftBot : [mix df.width df.rightSB 1.5] - mockBowlDepth + topArcInnerShift
@@ -40,6 +40,8 @@ glyph-block Letter-Latin-Upper-B : begin
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
+		local xTurnMin : Math.min [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]
+		local join : if diag [BrokenBarJoin df.leftSB df.width stroke xTurnMin bowl diag] null
 
 		include : sink
 			widths.rhs stroke
@@ -48,20 +50,20 @@ glyph-block Letter-Latin-Upper-B : begin
 			archv
 			g4   (xTopArcRight - offset) yTopArcRight
 			arcvh
-			flat [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] (bowl - fine + offset) [widths.rhs fine]
-			curl (df.leftSB - O) (bowl - fine + offset) [heading Leftward]
+			flat [if diag [Math.max join.minTurn [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] (bowl - fine + offset) [widths.rhs fine]
+			curl [if diag join.xCut (df.leftSB - O)] (bowl - fine + offset) [heading Leftward]
 
 		include : sink
 			widths.rhs fine
-			flat (df.leftSB - O) (bowl - stroke + fine - offset) [heading Rightward]
-			curl [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine - offset)
+			flat [if diag join.xCut (df.leftSB - O)] (bowl - stroke + fine - offset) [heading Rightward]
+			curl [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine - offset)
 			archv
 			g4   (xBotArcRight - offset) yBotArcRight [widths.rhs stroke]
 			arcvh
 			flat [Arch.adjust-x.bot curveLeftBot (sw -- stroke)] (0 + offset)
 			curl (df.leftSB - O) (0 + offset) [heading Leftward]
 
-		return : object bowl
+		return : object bowl join
 
 	define flex-params [BShape] : glyph-proc
 		local-parameter : top
@@ -72,6 +74,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : serifTop         -- false
 		local-parameter : serifBot         -- false
 		local-parameter : df               -- [DivFrame 1]
+		local-parameter : diag             -- 0
 
 		include : VBar.l df.leftSB 0 top stroke
 		local dims : include : [BShapeArcsT dispiro 0] top
@@ -80,6 +83,9 @@ glyph-block Letter-Latin-Upper-B : begin
 			topArcShift      -- topArcShift
 			topArcInnerShift -- topArcInnerShift
 			df               -- df
+			diag             -- diag
+
+		if diag : include dims.join.shape
 
 		set-base-anchor 'strike' df.middle (dims.bowl - 0.5 * stroke)
 
@@ -120,6 +126,15 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [StdShapeInterrupted top sw st sb _df] : difference
 		StdShape                 top sw st sb _df
 		[InterruptShape BBarPos] top sw st sb _df
+	define [StdShapeBroken diag] : function [top sw st sb _df] : BShape top
+		stroke   -- sw
+		barPos   -- BBarPos
+		serifTop -- st
+		serifBot -- sb
+		df       -- [fallback _df : DivFrame 1]
+		diag     -- diag
+	define StdShapeBrokenRising  : StdShapeBroken 1
+	define StdShapeBrokenFalling : StdShapeBroken (-1)
 	define [StdMask top sw _df] : BShapeMask top
 		stroke   -- sw
 		barPos   -- BBarPos
@@ -138,6 +153,19 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [AsymmetricShapeInterrupted top sw st sb _df] : difference
 		AsymmetricShape                    top sw st sb _df
 		[InterruptShape AsymmetricBBarPos] top sw st sb _df
+	define [AsymmetricShapeBroken diag] : function [top sw st sb _df] : begin
+		local df : fallback _df : DivFrame 1
+		return : BShape top
+			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
+			barPos           -- AsymmetricBBarPos
+			topArcShift      -- ((-0.05) * (df.rightSB - df.leftSB))
+			topArcInnerShift -- ((-0.10) * (df.rightSB - df.leftSB))
+			serifTop         -- st
+			serifBot         -- sb
+			df               -- df
+			diag             -- diag
+	define AsymmetricShapeBrokenRising  : AsymmetricShapeBroken 1
+	define AsymmetricShapeBrokenFalling : AsymmetricShapeBroken (-1)
 	define [AsymmetricMask top sw _df] : begin
 		local df : fallback _df : DivFrame 1
 		return : BShapeMask top
@@ -149,7 +177,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Cyrillic Lower Ve
 
-	define [RoundedTopCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift rise] : glyph-proc
+	define [RoundedTopCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift rise [diag 0]] : glyph-proc
 		local bowl : mix stroke top barPos
 		local mockBowlDepth : BowlXDepth top (bowl - stroke) SB RightSB stroke
 		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth + topArcInnerShift
@@ -166,11 +194,13 @@ glyph-block Letter-Latin-Upper-B : begin
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
+		local xTurnMin : Math.min [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]
+		local join : if diag [BrokenBarJoin SB Width stroke xTurnMin bowl diag] null
 
 		include : sink
 			widths.lhs fine
-			flat (SB + offset - O) (bowl - fine + offset) [heading Rightward]
-			curl [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] (bowl - fine + offset)
+			flat [if diag join.xCut (SB + offset - O)] (bowl - fine + offset) [heading Rightward]
+			curl [if diag [Math.max join.minTurn [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] (bowl - fine + offset)
 			archv
 			g4   (xTopArcRight - offset) yTopArcRight [widths.lhs stroke]
 			Arch.lhs (top - offset) (sw -- stroke)
@@ -179,8 +209,8 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		include : sink
 			widths.rhs fine
-			flat (SB + offset - O) (bowl - stroke + fine - offset) [heading Rightward]
-			curl [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine - offset)
+			flat [if diag join.xCut (SB + offset - O)] (bowl - stroke + fine - offset) [heading Rightward]
+			curl [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine - offset)
 			archv
 			g4   (xBotArcRight - offset) yBotArcRight [widths.rhs stroke]
 			if rise
@@ -192,7 +222,7 @@ glyph-block Letter-Latin-Upper-B : begin
 					flat [Arch.adjust-x.bot curveLeftBot (sw -- stroke)] (0 + offset)
 					curl (SB + offset - O) (0 + offset) [heading Leftward]
 
-		return : object bowl
+		return : object bowl join
 
 	define flex-params [RoundedTopCyrVeShape] : glyph-proc
 		local-parameter : top
@@ -203,6 +233,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : rise             -- 0
 		local-parameter : serifTop         -- false
 		local-parameter : serifBot         -- false
+		local-parameter : diag             -- 0
 
 		local dims : include : [RoundedTopCyrVeArcsT dispiro 0] top
 			stroke           -- stroke
@@ -210,6 +241,9 @@ glyph-block Letter-Latin-Upper-B : begin
 			topArcShift      -- topArcShift
 			topArcInnerShift -- topArcInnerShift
 			rise             -- rise
+			diag             -- diag
+
+		if diag : include dims.join.shape
 
 		set-base-anchor 'strike' Middle (dims.bowl - 0.5 * stroke)
 
@@ -239,6 +273,13 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [RoundedTopShapeInterrupted top sw st sb] : difference
 		RoundedTopShape                                          top sw st sb
 		[InterruptShape : if (top > XH) TallCyrVeBarPos BBarPos] top sw st sb
+	define [RoundedTopShapeBroken diag rise] : function [top sw st sb] : RoundedTopCyrVeShape top
+		stroke   -- sw
+		barPos   -- [if (top > XH) TallCyrVeBarPos BBarPos]
+		rise     -- rise
+		serifTop -- st
+		serifBot -- sb
+		diag     -- diag
 	define [RoundedTopMask top sw] : RoundedTopCyrVeShapeMask top
 		stroke   -- sw
 		barPos   -- [if (top > XH) TallCyrVeBarPos BBarPos]
@@ -264,13 +305,19 @@ glyph-block Letter-Latin-Upper-B : begin
 		create-forked-glyph 'smcpB.roundedTopUnilateralBottomSerifed'            : RoundedTopShape            XH stroke false true
 		create-forked-glyph 'smcpB.roundedTopInterruptedSerifless'               : RoundedTopShapeInterrupted XH stroke false false
 		create-forked-glyph 'smcpB.roundedTopInterruptedUnilateralBottomSerifed' : RoundedTopShapeInterrupted XH stroke false true
+		create-forked-glyph 'smcpB.roundedTopBrokenRisingSerifless' : [RoundedTopShapeBroken 1 0] XH stroke false false
+		create-forked-glyph 'smcpB.roundedTopBrokenRisingUnilateralBottomSerifed' : [RoundedTopShapeBroken 1 0] XH stroke false true
+		create-forked-glyph 'smcpB.roundedTopBrokenFallingSerifless' : [RoundedTopShapeBroken (-1) 0] XH stroke false false
+		create-forked-glyph 'smcpB.roundedTopBrokenFallingUnilateralBottomSerifed' : [RoundedTopShapeBroken (-1) 0] XH stroke false true
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		create-forked-glyph 'smcpB.roundedTopTall'            : RoundedTopShapeBGR            Ascender stroke false false
 		create-forked-glyph 'smcpB.roundedTopInterruptedTall' : RoundedTopShapeBGRInterrupted Ascender stroke false false
+		create-forked-glyph 'smcpB.roundedTopBrokenRisingTall' : [RoundedTopShapeBroken 1 DToothlessRise] Ascender stroke false false
+		create-forked-glyph 'smcpB.roundedTopBrokenFallingTall' : [RoundedTopShapeBroken (-1) DToothlessRise] Ascender stroke false false
 
-	define [CursiveCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift] : glyph-proc
+	define [CursiveCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [diag 0]] : glyph-proc
 		local bowl : mix stroke top barPos
 		local mockBowlDepth : BowlXDepth top (bowl - stroke) SB RightSB stroke
 		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth + topArcInnerShift
@@ -287,11 +334,13 @@ glyph-block Letter-Latin-Upper-B : begin
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
+		local xTurnMin : Math.min [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]
+		local join : if diag [BrokenBarJoin SB Width stroke xTurnMin bowl diag] null
 
 		include : sink
 			widths.lhs fine
-			flat (SB + offset - O) (bowl - fine + offset) [heading Rightward]
-			curl [Arch.adjust-x.bot curveLeftTop (sw -- stroke)] (bowl - fine + offset)
+			flat [if diag join.xCut (SB + offset - O)] (bowl - fine + offset) [heading Rightward]
+			curl [if diag [Math.max join.minTurn [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] (bowl - fine + offset)
 			archv
 			g4   (xTopArcRight - offset) yTopArcRight [widths.lhs stroke]
 			Arch.lhs (top - offset) (sw -- stroke)
@@ -299,10 +348,10 @@ glyph-block Letter-Latin-Upper-B : begin
 			Arch.lhs (0   + offset) (sw -- stroke)
 			g4   (xBotArcRight - offset) yBotArcRight [widths.lhs stroke]
 			arcvh
-			flat [Arch.adjust-x.top curveLeftBot (sw -- stroke)] (bowl - stroke + fine - offset) [widths.lhs fine]
-			curl (SB + offset - O) (bowl - stroke + fine - offset) [heading Leftward]
+			flat [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine - offset) [widths.lhs fine]
+			curl [if diag join.xCut (SB + offset - O)] (bowl - stroke + fine - offset) [heading Leftward]
 
-		return : object bowl
+		return : object bowl join
 
 	define flex-params [CursiveCyrVeShape] : glyph-proc
 		local-parameter : top
@@ -312,12 +361,16 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : topArcInnerShift -- 0
 		local-parameter : serifTop         -- false
 		local-parameter : serifBot         -- false
+		local-parameter : diag             -- 0
 
 		local dims : include : [CursiveCyrVeArcsT dispiro 0] top
 			stroke           -- stroke
 			barPos           -- barPos
 			topArcShift      -- topArcShift
 			topArcInnerShift -- topArcInnerShift
+			diag             -- diag
+
+		if diag : include dims.join.shape
 
 		set-base-anchor 'strike' Middle (dims.bowl - 0.5 * stroke)
 
@@ -342,6 +395,12 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [CursiveShapeInterrupted top sw st sb] : difference
 		CursiveShape                                             top sw st sb
 		[InterruptShape : if (top > XH) TallCyrVeBarPos BBarPos] top sw st sb
+	define [CursiveShapeBroken diag] : function [top sw st sb] : CursiveCyrVeShape top
+		stroke   -- sw
+		barPos   -- [if (top > XH) TallCyrVeBarPos BBarPos]
+		serifTop -- st
+		serifBot -- sb
+		diag     -- diag
 	define [CursiveMask top sw] : CursiveCyrVeShapeMask top
 		stroke   -- sw
 		barPos   -- [if (top > XH) TallCyrVeBarPos BBarPos]
@@ -351,11 +410,15 @@ glyph-block Letter-Latin-Upper-B : begin
 		local stroke : AdviceStroke2 2 3 (XH - 0)
 		create-forked-glyph 'smcpB.cursive'            : CursiveShape            XH stroke false false
 		create-forked-glyph 'smcpB.cursiveInterrupted' : CursiveShapeInterrupted XH stroke false false
+		create-forked-glyph 'smcpB.cursiveBrokenRising' : [CursiveShapeBroken 1] XH stroke false false
+		create-forked-glyph 'smcpB.cursiveBrokenFalling' : [CursiveShapeBroken (-1)] XH stroke false false
 	create-glyph : glyph-proc
 		include : MarkSet.b
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		create-forked-glyph 'smcpB.cursiveTall'            : CursiveShape            Ascender stroke false false
 		create-forked-glyph 'smcpB.cursiveInterruptedTall' : CursiveShapeInterrupted Ascender stroke false false
+		create-forked-glyph 'smcpB.cursiveBrokenRisingTall' : [CursiveShapeBroken 1] Ascender stroke false false
+		create-forked-glyph 'smcpB.cursiveBrokenFallingTall' : [CursiveShapeBroken (-1)] Ascender stroke false false
 
 	define [BOverlayBar top bp] : begin
 		local stroke : AdviceStroke2 2 3 (top - 0)
@@ -386,8 +449,12 @@ glyph-block Letter-Latin-Upper-B : begin
 		object # body
 			standard                  {StdShape                    StdMask         BBarPos            false  false}
 			standardInterrupted       {StdShapeInterrupted         StdMask         BBarPos            true   false}
+			standardBrokenRising      {StdShapeBrokenRising        StdMask         BBarPos            true   false}
+			standardBrokenFalling     {StdShapeBrokenFalling       StdMask         BBarPos            true   false}
 			moreAsymmetric            {AsymmetricShape             AsymmetricMask  AsymmetricBBarPos  false  true }
 			moreAsymmetricInterrupted {AsymmetricShapeInterrupted  AsymmetricMask  AsymmetricBBarPos  true   true }
+			moreAsymmetricBrokenRising  {AsymmetricShapeBrokenRising  AsymmetricMask AsymmetricBBarPos true   true }
+			moreAsymmetricBrokenFalling {AsymmetricShapeBrokenFalling AsymmetricMask AsymmetricBBarPos true   true }
 		object # serifs
 			serifless         {false  false}
 			unilateralSerifed {true   false}
