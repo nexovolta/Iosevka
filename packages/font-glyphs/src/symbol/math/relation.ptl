@@ -957,9 +957,9 @@ glyph-block Symbol-Math-Relation-Inequality : begin
 			local oldHeight : Math.max (dH * 1.35) (OperatorStroke * 2.7)
 			local t : SymbolMid + oldHeight
 			local b : SymbolMid - oldHeight * 0.45
-			local sw : Math.min [AdviceStroke2 2.5 4 (t - b)] ((t - b) * 0.1)
-			foreach j [range 0 2] : include : with-transform [ScaleAround (width * 0.08) SymbolMid (1 - j * 0.25) (1 - j * 0.25)]
-				LessShape t b (width * 0.08) (width * 0.92) sw
+			local sw : Math.min [AdviceStroke2 2.5 4 (t - b)] ((t - b) * 0.1) (width * 0.12)
+			include : LessShape t b (width * 0.08) (width * 0.60) sw
+			include : LessShape t b (width * 0.40) (width * 0.92) sw
 			include : HBar.m (width * 0.08) (width * 0.92) (SymbolMid - oldHeight) [AdviceStroke 5]
 		create-glyph [MangleName 'tripleNestedLess'] [MangleUnicode 0x2AF7] : glyph-proc
 			set-width width
