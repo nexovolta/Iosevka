@@ -2,6 +2,7 @@ $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg joinCamel] from '@iosevka/util'
 import [MathSansSerif] from '@iosevka/glyph/relation'
+import [ContourSetGeometry SimplifyGeometry] from '@iosevka/geometry'
 
 glyph-module
 
@@ -16,6 +17,12 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import Letter-Shared : ThreeQuarterDf
 
 	define dfM : DivFrame para.advanceScaleMM 3
+
+	define [ReverseWithWinding x] : glyph-proc
+		local contours : [new SimplifyGeometry currentGlyph.geometry currentGlyph.gizmo true].toContours
+		foreach contour [items-of contours] : contour.reverse
+		set currentGlyph.geometry : new ContourSetGeometry contours
+		include : FlipAround x 0 (-1) 1
 
 	define [SmallMSmoothA df _ad _sw] : [df.slice 3 2].archDepthAOf [fallback _ad SmallArchDepth] [fallback _sw df.mvs]
 	define [SmallMSmoothB df _ad _sw] : [df.slice 3 2].archDepthBOf [fallback _ad SmallArchDepth] [fallback _sw df.mvs]
@@ -495,6 +502,10 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : df.markSet.e
 			include : turnMShapeBody df XH
 
+		create-glyph "smcpTurnmCap.phonotypic.\(suffix)" : glyph-proc
+			include [refer-glyph "turnm.\(suffix)"] AS_BASE ALSO_METRICS
+			include : ReverseWithWinding (currentGlyph.advanceWidth / 2)
+
 		create-glyph "cyrl/sha.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
 			include [refer-glyph "turnm.\(suffix)"] AS_BASE ALSO_METRICS
 		create-glyph "cyrl/sha/reduced.upright.\[joinCamel 'cursive' suffix]" : glyph-proc
@@ -524,6 +535,10 @@ glyph-block Letter-Latin-Lower-M : begin
 				SmallMSmoothA df ArchDepth
 				SmallMSmoothB df ArchDepth
 
+		create-glyph "reversedTurnmCap.phonotypic.\(suffix)" : glyph-proc
+			include [refer-glyph "turnmCap.\(suffix)"] AS_BASE ALSO_METRICS
+			include : ReverseWithWinding (currentGlyph.advanceWidth / 2)
+
 		create-glyph "turnmSideways.\(suffix)" : glyph-proc
 			local realHeight : XH * para.advanceScaleMM
 			local realTop : XH / 2 + realHeight / 2
@@ -541,15 +556,6 @@ glyph-block Letter-Latin-Lower-M : begin
 				SmallMSmoothA df ArchDepth
 				SmallMSmoothB df ArchDepth
 			eject-contour 'serifMB'
-
-		create-glyph "turnmCap.phonotypic.\(suffix)" : glyph-proc
-			local df : include dfM
-			include : df.markSet.capital
-			include : turnMShapeBodyImpl df CAP Body toothless true tailed USerifs cut nothing
-				SmallMSmoothA df ArchDepth
-				SmallMSmoothB df ArchDepth
-			eject-contour 'serifMB'
-			include : VBar.m df.middle 0 CAP df.mvs
 
 		create-glyph "uNotch.\(suffix)" : glyph-proc
 			local df : include dfM
@@ -598,10 +604,11 @@ glyph-block Letter-Latin-Lower-M : begin
 					include : CyrCurlDescender.rSideJut df.rightSB 0 (refSw -- df.mvs)
 
 	select-variant 'turnm' 0x26F (follow -- [conditional-follow [MEnoughSpaceForFullSerifs dfM] 'uu' 'uu/reduced'])
+	select-variant 'smcpTurnmCap.phonotypic' (follow -- [conditional-follow [MEnoughSpaceForFullSerifs dfM] 'uu' 'uu/reduced'])
 	select-variant 'turnm/reduced' (shapeFrom -- 'turnm') (follow -- 'uu/reduced')
 
 	select-variant 'turnmCap' 0x19C (follow -- 'uu')
-	select-variant 'turnmCap.phonotypic' (follow -- 'U')
+	select-variant 'reversedTurnmCap.phonotypic' (follow -- 'uu')
 
 	select-variant 'turnmLongLeg' 0x270 (follow -- [conditional-follow [MEnoughSpaceForFullSerifs dfM] 'uuLongLeg' 'uuLongLeg/reduced'])
 	select-variant 'turnmLongLeg/reduced' (shapeFrom -- 'turnmLongLeg') (follow -- 'uuLongLeg/reduced')

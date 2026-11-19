@@ -8,6 +8,7 @@ import { getParametersT } from "../../../packages/font/src/param/index.mjs";
 test("serifed capital Omega and Latin Upsilon use T advance", async () => {
 	await Geometry.Init();
 	const makePara = await getParametersT({ paramsDir: fileURLToPath(new URL("../../../params/", import.meta.url)) });
+	const baseWidths = new Map();
 	for (const spacing of ["term", "quasi-proportional"]) for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
 		const para = makePara({
 			shape: { serifs: "sans", spacing, weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
@@ -32,6 +33,13 @@ test("serifed capital Omega and Latin Upsilon use T advance", async () => {
 			}
 			const contours = new Geometry.SimplifyGeometry(g.geometry, g.gizmo, true).toBezArcs();
 			assert.ok(contours.flat().every(arc => Array.from({ length: 16 }, (_, i) => arc.eval(i / 16)).every(p => Number.isFinite(p.x) && Number.isFinite(p.y))));
+			if (name.endsWith(".serifed") || name.endsWith(".disjointSerifed")) {
+				const xs = contours.flat().flatMap(arc => Array.from({ length: 32 }, (_, i) => g.gizmo.unapply(arc.eval(i / 32)).x));
+				const inkWidth = Math.max(...xs) - Math.min(...xs);
+				const key = `${name} ${slope} ${weight}`;
+				if (spacing === "term") baseWidths.set(key, inkWidth);
+				else assert.ok(Math.abs(inkWidth - baseWidths.get(key) * para.advanceScaleT) < 0.1, `${key}: scaled ink width`);
+			}
 		}
 	}
 });

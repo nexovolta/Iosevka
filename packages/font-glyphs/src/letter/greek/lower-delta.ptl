@@ -8,6 +8,7 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
+	glyph-block-import Mark-Above : OgonekAboveShape OgonekAboveTerminal MeasureGlyphBounds
 
 	create-glyph 'grek/delta.rounded' : glyph-proc
 		include : MarkSet.b
@@ -56,13 +57,26 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	alias 'latn/delta' 0x1E9F 'grek/delta'
 	create-glyph 'latn/delta.phonotypic' : glyph-proc
 		include : MarkSet.b
-		include : OShape XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
-		local hookSw : Math.min (0.7 * Stroke) (0.22 * (Ascender - XH))
-		include : dispiro
-			g4 Middle (XH - 0.25 * hookSw) [widths.center.heading (0.2 * hookSw) Rightward]
-			g4 [mix Middle RightSB 0.45] [mix XH Ascender 0.3] [widths.center hookSw]
-			g4 [mix Middle RightSB 0.4] [mix XH Ascender 0.65]
-			g4 [mix Middle RightSB 0.1] [mix XH Ascender 0.9] [heading Leftward]
+		local bounds nothing
+		local hook : new-glyph : glyph-proc
+			include : OgonekAboveShape false
+			set bounds : include : MeasureGlyphBounds
+		local sx : (0.55 * (RightSB - SB)) / (bounds.xMax - bounds.xMin)
+		local sy : (1.0 * (Ascender - XH)) / (bounds.yMax - bounds.yMin)
+		local x : Middle - 0.08 * (RightSB - SB)
+		local y : XH - 0.2 * Stroke
+		local dotBounds nothing
+		local dot : new-glyph : glyph-proc
+			include : refer-glyph 'tittleAbove'
+			set dotBounds : include : MeasureGlyphBounds
+		local terminal : OgonekAboveTerminal
+		local terminalX : x + sx * (terminal.x - bounds.xMin)
+		local terminalY : y + sy * (terminal.y - bounds.yMin)
+		include : union
+			OShape XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
+			with-transform [ApparentTranslate (x - sx * bounds.xMin) (y - sy * bounds.yMin)] : with-transform [Italify para.slopeAngle] : with-transform [Scale sx sy] : with-transform [Italify (-para.slopeAngle)] hook
+			with-transform [ApparentTranslate (terminalX - (dotBounds.xMin + dotBounds.xMax) / 2) (terminalY - (dotBounds.yMin + dotBounds.yMax) / 2)] dot
+		set-base-anchor 'above' terminalX (terminalY + 0.5 * (dotBounds.yMax - dotBounds.yMin))
 	CreateTurnedLetter 'latn/turndelta' 0x18D 'grek/delta' HalfAdvance (XH / 2)
 
 	alias 'cyrl/be.SRB' null 'grek/delta.rounded'

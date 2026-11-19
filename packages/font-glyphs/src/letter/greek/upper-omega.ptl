@@ -38,8 +38,8 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			include : VSerif.ul SB 0 serifHeight serifStroke
 			include : VSerif.ur RightSB 0 serifHeight serifStroke
 
-	define [DisjointOmegaShape top doSerifs] : glyph-proc
-		local dfT : DivFrame para.advanceScaleT
+	define [DisjointOmegaShape top doSerifs _scaleToFrame] : glyph-proc
+		local dfT : DivFrame [if _scaleToFrame 1 para.advanceScaleT]
 		local dx : 0.5 * (Width - dfT.width)
 		local l : dx + [TLeftX dfT]
 		local r : dx + [TRightX dfT]
@@ -65,8 +65,8 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
 			include : df.markSet.capital
 			include : SetGrekUpperTonos (df.middle - Middle)
-			include : with-transform [ApparentTranslate (df.middle - Middle) 0] : if fDisjoint
-				DisjointOmegaShape CAP doSerifs
+			include : with-transform [ApparentTranslate (df.middle - Middle) 0] : with-transform [ScaleAround Middle 0 (df.width / Width) 1] : if fDisjoint
+				DisjointOmegaShape CAP doSerifs doSerifs
 				UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
 
 		create-glyph "grek/smcpOmega.\(suffix)" : glyph-proc
@@ -81,7 +81,7 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
 				local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
 				include : df.markSet.capital
-				include : with-transform [ApparentTranslate (df.middle - Middle) 0] : new-glyph : glyph-proc
+				include : with-transform [ApparentTranslate (df.middle - Middle) 0] : with-transform [ScaleAround Middle 0 (df.width / Width) 1] : new-glyph : glyph-proc
 					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
 					include : FlipAround Middle (CAP / 2)
 

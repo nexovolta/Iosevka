@@ -50,6 +50,29 @@ glyph-block Letter-Latin-Upper-I : begin
 			local serifs : include : Serifs df CAP
 			create-forked-glyph "grek/Iota.\(suffix)" : SetGrekUpperTonos [Math.min 0 : df.middle - serifs.jut - SB]
 
+		create-glyph "latn/Iota.phonotypic.\(suffix)" : glyph-proc
+			local df : include : DivFrame [Math.max 1 adws]
+			include : df.markSet.capital
+			local xBar : df.middle + [HSwToV HalfStroke]
+			local hookSw : Math.min Stroke : 0.25 * (xBar - df.leftSB)
+			local hookTop : Math.max Hook (1.4 * Stroke)
+			local hookOverhang : 0.07 * (df.rightSB - df.leftSB)
+			include : union
+				dispiro
+					widths.rhs Stroke
+					flat xBar CAP [heading Downward]
+					curl xBar ArchDepthB [widths.rhs hookSw]
+					HookEnd 0 (sw -- hookSw)
+					g4 (df.leftSB - hookOverhang) hookTop
+				dispiro
+					widths.lhs Stroke
+					flat (df.middle - [HSwToV HalfStroke]) CAP [heading Downward]
+					curl (df.middle - [HSwToV HalfStroke]) ArchDepthB [widths.lhs hookSw]
+					HookEnd 0 (sw -- hookSw)
+					g4 (df.rightSB + hookOverhang) hookTop
+			include : Serifs df CAP
+			eject-contour 'serifMB'
+
 		create-glyph "smcpI.UPPH.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include : df.markSet.e
@@ -87,6 +110,7 @@ glyph-block Letter-Latin-Upper-I : begin
 				include : VSerif.mr xMidRight yBar jutMid swVJut
 
 	select-variant 'I' 'I'
+	select-variant 'latn/Iota.phonotypic' (follow -- 'I')
 	link-reduced-variant 'I/sansSerif' 'I' MathSansSerif
 	select-variant 'smcpI.UPPH' (follow -- 'I')
 

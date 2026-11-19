@@ -36,10 +36,14 @@ const cases = [
 	["v", "v", "ramshorn.phonotypic"],
 	["capital-e", "E", "Schwa.phonotypic"],
 	["capital-u", "U", "UBar.phonotypic"],
+	["capital-u", "U", "turnmCap.phonotypic"],
 	["u", "u", "uBar.phonotypic"],
 	["t", "t", "latn/the.phonotypic"],
 	["lower-theta", "grek/theta", "grek/theta.phonotypic"],
 	["capital-j", "J/noDescend", "latn/iota.phonotypic/dotless"],
+	["capital-i", "I", "latn/Iota.phonotypic"],
+	["u", "uHookLeft", "uHookLeft.phonotypic"],
+	["u", "uu", "reversedTurnmCap.phonotypic"],
 	["capital-sigma", "grek/Sigma", "smcpEzh.phonotypic"],
 ];
 const localized = [
@@ -59,6 +63,9 @@ const localized = [
 	[0x03b8, "grek/theta.phonotypic"],
 	[0x01ae, "TRTail.phonotypic"],
 	[0x0269, "latn/iota.phonotypic"],
+	[0x0196, "latn/Iota.phonotypic"],
+	[0xab52, "uHookLeft.phonotypic"],
+	[0xa7fa, "smcpTurnmCap.phonotypic"],
 	[0x1d23, "smcpEzh.phonotypic"],
 	[0x1d15, "smcpOU.phonotypic"],
 	[0x019c, "turnmCap.phonotypic"],
@@ -525,6 +532,26 @@ for (const slope of ["upright", "italic"]) {
 				);
 				assert.ok(glyphStore.queryByName(target), target);
 			}
+			for (const [originalName, reversedName] of [
+				["turnmCap", "reversedTurnmCap.phonotypic"],
+				["turnm", "smcpTurnmCap.phonotypic"],
+			]) {
+				const original = glyphStore.queryByNameEnsured(originalName);
+				const reversed = glyphStore.queryByNameEnsured(reversedName);
+				const contoursOf = (glyph) =>
+					new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true)
+						.toContours()
+						.map((contour) => contour.map((point) => glyph.gizmo.unapply(point)));
+				const a = contoursOf(original);
+				const b = contoursOf(reversed);
+				const largest = (contours) => contours.map(signedArea).sort((x, y) => Math.abs(y) - Math.abs(x))[0];
+				assert.equal(Math.sign(largest(a)), Math.sign(largest(b)), reversedName);
+				assert.ok(
+					Math.abs(Math.abs(largest(a)) - Math.abs(largest(b))) < Math.max(100, 0.01 * Math.abs(largest(a))),
+					`${reversedName} ${slope} ${weight}: ${largest(a)} vs ${largest(b)}`,
+				);
+				assert.equal(original.advanceWidth, reversed.advanceWidth, reversedName);
+			}
 			const dottedIota = glyphStore.queryByNameEnsured(
 				"latn/iota.phonotypic",
 			);
@@ -931,6 +958,57 @@ for (const slope of ["upright", "italic"]) {
 	}
 }
 
+test("PTMN hooks remain joined and reversed turned-M forms preserve winding", async () => {
+	const makePara = await getParametersT({ paramsDir });
+	for (const serifs of ["sans", "slab"]) for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
+		const para = makePara({
+			shape: { serifs, spacing: "term", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			menu: { family: "PTMN hooks QA", version: "34.9.0", width: 5, slope, weight: 400 },
+			featureControl: { noCvSs: false, noLigation: true },
+			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+		});
+		const { glyphStore } = buildGlyphs(para, {
+			blockIsNeeded: id => ["Mark-Above", "Letter-Greek-Lower-Delta", "Letter-Latin-Upper-I", "Letter-Latin-Lower-M", "Letter-Latin-U"].includes(id),
+			glyphIsNeeded: id => /^(?:dotAbove|tittleAbove|latn\/delta\.phonotypic|latn\/Iota\.phonotypic|turnm|turnmCap|smcpTurnmCap\.phonotypic|reversedTurnmCap\.phonotypic|uHookLeft\.phonotypic)(?:\.|$)/.test(id),
+		});
+		const contoursOf = name => {
+			const g = glyphStore.queryByNameEnsured(name);
+			return new Geom.SimplifyGeometry(g.geometry, g.gizmo, true).toContours().map(c => c.map(p => g.gizmo.unapply(p)));
+		};
+		const delta = contoursOf("latn/delta.phonotypic");
+		assert.equal(delta.length, 2, `delta hook and tittle must be fused: ${serifs} ${slope} ${weight}`);
+		const iota = glyphStore.queryByNameEnsured("latn/Iota.phonotypic");
+		const crossings = horizontalCrossings(iota, 0.12 * para.cap);
+		assert.ok(crossings.length >= 6, `double-tailed iota counters: ${serifs} ${slope} ${weight}`);
+		for (const shape of ["toothed", "tailed", "flatBottom", "toothlessCorner", "toothlessRounded"]) {
+			const name = `turnmCap.phonotypic.${shape}Serifless`;
+			assert.equal(contoursOf(name).length, 1, `${name}: ${serifs} ${slope} ${weight}`);
+		}
+		if (serifs === "sans" && slope === "upright" && weight === 120) {
+			const pairedU = glyphStore.queryByNameEnsured("turnmCap.phonotypic.toothlessRoundedSerifless");
+			assert.equal(horizontalCrossings(pairedU, 0).length, 4, "paired U bowls must not have a baseline tooth between them");
+			assert.equal(contoursOf("turnmCap.phonotypic.toothlessRoundedSerifless").length, 1, "paired U shapes must be joined");
+		}
+		for (const [source, target] of [["turnmCap", "reversedTurnmCap.phonotypic"], ["turnm", "smcpTurnmCap.phonotypic"]]) {
+			const a = contoursOf(source);
+			const b = contoursOf(target);
+			const area = cs => cs.reduce((sum, c) => sum + signedArea(c), 0);
+			assert.equal(Math.sign(area(a)), Math.sign(area(b)), target);
+			assert.ok(Math.abs(area(a) - area(b)) < Math.max(100, 0.01 * Math.abs(area(a))), `${target} ${serifs} ${slope} ${weight}: ${area(a)} vs ${area(b)}`);
+			const xBounds = cs => [Math.min(...cs.flat().map(p => p.x)), Math.max(...cs.flat().map(p => p.x))];
+			const [aMin, aMax] = xBounds(a);
+			const [bMin, bMax] = xBounds(b);
+			const width = glyphStore.queryByNameEnsured(source).advanceWidth;
+			assert.ok(Math.abs(bMin - (width - aMax)) < 1 && Math.abs(bMax - (width - aMin)) < 1, target);
+		}
+		const uContours = contoursOf("uHookLeft.phonotypic");
+		assert.equal(uContours.length, 1, `joined u hooks: ${serifs} ${slope} ${weight}`);
+		const u = uContours.flat();
+		const uBottom = Math.min(...u.map(p => p.y));
+		assert.ok(uBottom >= Math.min(0, para.overshoot) - 1, `retroflex baseline: ${serifs} ${slope} ${weight}: ${uBottom}`);
+	}
+});
+
 test("subset fonts expose custom localization features and PTMN substitutions", async () => {
 	const slope = "upright";
 	const argv = {
@@ -962,7 +1040,7 @@ test("subset fonts expose custom localization features and PTMN substitutions", 
 		},
 		subset: {
 			include: {
-				text: String.fromCodePoint(...localized.map(([cp]) => cp)),
+				text: String.fromCodePoint(...localized.map(([cp]) => cp), 0xa7fd),
 			},
 		},
 	};
@@ -980,7 +1058,7 @@ test("subset fonts expose custom localization features and PTMN substitutions", 
 			]),
 		),
 	);
-	for (const [cp, target] of localized) {
+	for (const [cp, target] of [...localized, [0xa7fd, "reversedTurnmCap.phonotypic"]]) {
 		assert.ok(
 			mappings.has(
 				`uni${cp.toString(16).toUpperCase().padStart(4, "0")}`,

@@ -97,14 +97,23 @@ glyph-block Mark-Above : begin
 	define commaOvershoot2 : O * [linreg 16 1 90 (-1) markStroke]
 	define commaAboveRadius : 0.85 * DotRadius * markHalfStroke / HalfStroke
 
-	glyph-block-export OgonekAboveShape
+	glyph-block-export OgonekAboveShape OgonekAboveTerminal
+	define [OgonekAboveTerminal] : begin
+		local depth : 0 - Descender - markStroke
+		local fullExt : (7 / 16) * depth + 0.125 * markStress
+		local extL : 0.5 * fullExt + 0.375 * markStroke + [Math.max (0.125 * markExtend) (TanSlope * 1.5 * markStroke)]
+		return : object
+			x : markMiddle - extL
+			y : XH + depth - 0.5 * O
+
 	define [OgonekAboveShape diagonalTerminal _weight] : glyph-proc
 		local weight : fallback _weight 1
 		local fine : AdviceStroke 8
 		local depth : 0 - Descender - markStroke
 		local fullExt : (7 / 16) * depth + 0.125 * markStress
 		local extR : 0.25 * fullExt
-		local extL : 0.5 * fullExt + 0.375 * markStroke + [Math.max (0.125 * markExtend) (TanSlope * 1.5 * markStroke)]
+		local terminal : OgonekAboveTerminal
+		local extL : markMiddle - terminal.x
 		local turnSlope : 0.5 * ((markStroke - fine) / markStroke - (ArchDepthB - ArchDepth) / ArchDepth)
 		include : intersection
 			if diagonalTerminal
@@ -116,7 +125,7 @@ glyph-block Mark-Above : begin
 				g4.up.mid (markMiddle + extR) (XH + 0.75 * depth) [widths.rhs.heading (weight * markStroke) {.x (-HVContrast) .y (-turnSlope)}]
 				arcvh [widths.rhs (weight * markStroke)]
 				g4 (markMiddle + [mix (+extR) (-extL) 0.625]) (XH + depth - O) [heading Leftward]
-				g4 (markMiddle - extL) (XH + depth - 0.5 * O) [heading Leftward]
+				g4 terminal.x terminal.y [heading Leftward]
 
 	glyph-block-export OgonekTickShape
 	define [OgonekTickShape cx top _weight _height] : glyph-proc

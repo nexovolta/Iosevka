@@ -3,7 +3,7 @@ $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
 import [getGrTree IsSuperscript IsSubscript AnyCvOrCherryPicking] from '@iosevka/glyph/relation'
-import [AnyLocalizedForm DotlessOrNot CvDecompose MathSansSerif] from '@iosevka/glyph/relation'
+import [AnyLocalizedForm DotlessOrNot CvDecompose MathSansSerif LocalizedForm] from '@iosevka/glyph/relation'
 import [Texture Joining] from '@iosevka/glyph/relation'
 import [BooleanGeometry StrokeGeometry] from '@iosevka/geometry'
 import [NumeratorForm DenominatorForm] from '@iosevka/glyph/relation'
@@ -279,6 +279,7 @@ glyph-block Autobuild-Transformed : begin
 				if bLeaningBelow : set-base-anchor 'leaningBelow' (currentGlyph.advanceWidth - bLeaningBelow.x) bLeaningBelow.y
 
 	createReversed JobsData.Reversed
+	link-gr LocalizedForm.PTMN 'reversed{turnM}' 'reversedTurnmCap.phonotypic'
 
 glyph-block Autobuild-Transformed-Texture : begin
 	if (!(para.buildTextureFeature && !para.isQuasiProportional)) : return nothing

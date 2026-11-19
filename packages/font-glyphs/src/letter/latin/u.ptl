@@ -292,6 +292,22 @@ glyph-block Letter-Latin-U : begin
 			include : df.markSet.capital
 			include : ReversedUCompose revBody revSlabs df CAP Stroke cut
 
+	define phonotypicMDf : DivFrame para.advanceScaleMM 3
+	define phonotypicUSubDf : phonotypicMDf.slice 3 2
+	define phonotypicUShift : phonotypicMDf.rightSB - phonotypicUSubDf.rightSB
+	define phonotypicUShapes : UShapeGroup phonotypicUSubDf.archDepthA phonotypicUSubDf.archDepthB
+	foreach {suffix {{Base} cut {Slabs}}} [Object.entries : CapitalUConfigT phonotypicUShapes] : do
+		create-glyph "turnmCap.phonotypic.\(suffix)" : glyph-proc
+			include phonotypicMDf
+			include : phonotypicMDf.markSet.capital
+			include : union
+				Base phonotypicUSubDf CAP phonotypicMDf.mvs nothing nothing cut
+				with-transform [ApparentTranslate phonotypicUShift 0] : Base phonotypicUSubDf CAP phonotypicMDf.mvs nothing nothing cut
+				Slabs phonotypicUSubDf CAP phonotypicMDf.mvs
+				with-transform [ApparentTranslate phonotypicUShift 0] : Slabs phonotypicUSubDf CAP phonotypicMDf.mvs
+			set-base-anchor 'overlay' phonotypicMDf.middle (CAP / 2)
+			set-base-anchor 'strike' phonotypicMDf.middle (CAP / 2)
+
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
 		object # tooth
@@ -448,6 +464,18 @@ glyph-block Letter-Latin-U : begin
 			include : Slabs df XH Stroke
 			eject-contour 'serifLT'
 
+		create-glyph "uHookLeft.phonotypic.\(suffix)" : glyph-proc
+			local df : include : DivFrame 1
+			include : df.markSet.e
+			include : union
+				new-glyph : glyph-proc
+					include : ULower.Toothed df XH Stroke true
+					eject-contour 'strokeR'
+				RetroflexHook.rExt df.rightSB (0 - Descender) (yAttach -- XH)
+			include : Slabs df XH Stroke
+			eject-contour 'serifLT'
+			eject-contour 'serifRB'
+
 		create-glyph "uRTail.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
@@ -505,6 +533,7 @@ glyph-block Letter-Latin-U : begin
 
 	select-variant 'U' 'U'
 	select-variant 'UBar.phonotypic' (follow -- 'U')
+	select-variant 'turnmCap.phonotypic' (follow -- 'U')
 	link-reduced-variant 'U/sansSerif' 'U' MathSansSerif
 	select-variant 'U/withTonos' (follow -- 'U')
 	select-variant 'smcpU' 0x1D1C (follow -- 'U')
@@ -530,6 +559,7 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'uShortLeg' 0xAB4E
 
 	select-variant 'uHookLeft' 0xAB52
+	select-variant 'uHookLeft.phonotypic' (follow -- 'uHookLeft')
 	select-variant 'uRTail'    0x1DF7B
 
 	select-variant 'turnhHookLeft'      0x2AE (follow -- 'uHookLeftLongLeg')

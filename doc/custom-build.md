@@ -4723,3 +4723,6 @@ These are custom GSUB feature tags, not `ssXX` stylistic-set features; use
 `PTMN` includes the Comstock forms of Ꝺꝺ, Ᵹᵹ, Ꞇꞇ, and 𝾁. Its lowercase insular g
 uses an open double-storey form; a toothed capital G selection uses a
 toothless-rounded bowl.
+It also supplies a double-tailed Ɩ, a double-hooked ꭒ, a Ɯ made from two joined
+unmirrored U shapes, and reversed turned-M forms for ꟽ and ꟺ. The PTMN form of
+ẟ has a dot fused to its upper hook.
