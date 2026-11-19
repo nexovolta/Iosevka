@@ -10,6 +10,7 @@ glyph-block Letter-Latin-Upper-I : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : SetGrekUpperTonos CreateAccentedComposition
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
+	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors
 
 	define [IShape df top] : glyph-proc
@@ -51,25 +52,11 @@ glyph-block Letter-Latin-Upper-I : begin
 			create-forked-glyph "grek/Iota.\(suffix)" : SetGrekUpperTonos [Math.min 0 : df.middle - serifs.jut - SB]
 
 		create-glyph "latn/Iota.phonotypic.\(suffix)" : glyph-proc
-			local df : include : DivFrame [Math.max 1 adws]
+			local df : include : DivFrame para.advanceScaleF
 			include : df.markSet.capital
-			local xBar : df.middle + [HSwToV HalfStroke]
-			local hookSw : Math.min Stroke : 0.25 * (xBar - df.leftSB)
-			local hookTop : Math.max Hook (1.4 * Stroke)
-			local hookOverhang : 0.07 * (df.rightSB - df.leftSB)
 			include : union
-				dispiro
-					widths.rhs Stroke
-					flat xBar CAP [heading Downward]
-					curl xBar ArchDepthB [widths.rhs hookSw]
-					HookEnd 0 (sw -- hookSw)
-					g4 (df.leftSB - hookOverhang) hookTop
-				dispiro
-					widths.lhs Stroke
-					flat (df.middle - [HSwToV HalfStroke]) CAP [heading Downward]
-					curl (df.middle - [HSwToV HalfStroke]) ArchDepthB [widths.lhs hookSw]
-					HookEnd 0 (sw -- hookSw)
-					g4 (df.rightSB + hookOverhang) hookTop
+				PalatalHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP)
+				RetroflexHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP)
 			include : Serifs df CAP
 			eject-contour 'serifMB'
 

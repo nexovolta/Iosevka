@@ -233,17 +233,15 @@ glyph-block Letter-Latin-Lower-D : begin
 			if para.isItalic
 				then : begin
 					local yBar XH
-					local yDiagonalTop Ascender
-					local triSw : Math.min df.mvs : 0.32 * (yDiagonalTop - yBar)
 					local xInnerR : df.rightSB - [HSwToV df.mvs]
 					local xOuterL : df.leftSB + OX
 					local xJoin : mix df.leftSB df.rightSB 0.18
 					local yJoin XH
 					local t : Math.min 0.3 : 0.6 * (xJoin - xOuterL) / (xInnerR - xJoin)
 					local xInnerL : xOuterL + [HSwToV df.mvs]
-					local yInnerTop : XH - triSw / 2
+					local yInnerTop : yBar - Stroke
 					local xInnerTop : Math.min [mix xInnerL xInnerR 0.65] (xJoin + 0.45 * [HSwToV df.mvs] + 0.04 * df.width)
-					local yHoleBottom : XH + triSw / 2
+					local yHoleBottom yBar
 					local xEdge : mix xJoin xInnerR [(yHoleBottom - yJoin) / (Ascender - yJoin)]
 					local diagonalInset : Math.min (0.7 * (xInnerR - xEdge)) ((2 / 3) * [HSwToV df.mvs] * [Math.hypot (xInnerR - xJoin) (Ascender - yJoin)] / (Ascender - yJoin))
 					local holeFraction : diagonalInset / (xInnerR - xEdge)
@@ -263,7 +261,7 @@ glyph-block Letter-Latin-Lower-D : begin
 									cs.lineTo xInnerR Ascender
 									cs.endShape
 									currentGlyph.includeContours cs.contours
-								HBar.m xInnerR [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
+								HCrossBar.top xInnerR [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar Stroke
 							glyph-proc
 								local cs : new BezToContoursSink currentGlyph.gizmo
 								cs.moveTo xInnerR (0.2 * XH)
@@ -287,7 +285,6 @@ glyph-block Letter-Latin-Lower-D : begin
 						HBar.m xLeft [Math.min df.width (df.rightSB + 0.1 * df.width)] yBar triSw
 						intersection [Rect Ascender (yBar - triSw / 2) xLeft df.rightSB]
 							ExtLineCenter xLeft yBar (df.rightSB - [HSwToV : 0.5 * df.mvs]) Ascender triSw
-					if topSerif : include : topSerif df Ascender
 					if bottomSerif : include : bottomSerif df Ascender
 			include : LeaningAnchor.Above.VBar.r df.rightSB df.mvs
 
