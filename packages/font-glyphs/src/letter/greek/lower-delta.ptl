@@ -9,6 +9,7 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Mark-Above : OgonekAboveShape OgonekAboveTerminal MeasureGlyphBounds
+	glyph-block-import Mark-Shared-Metrics : markStroke
 
 	create-glyph 'grek/delta.rounded' : glyph-proc
 		include : MarkSet.b
@@ -58,11 +59,11 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	create-glyph 'latn/delta.phonotypic' : glyph-proc
 		include : MarkSet.b
 		local bounds nothing
+		local hookWeight 0.5
 		local hook : new-glyph : glyph-proc
-			include : OgonekAboveShape false
+			include : OgonekAboveShape false hookWeight
 			set bounds : include : MeasureGlyphBounds
 		local sx : (0.55 * (RightSB - SB)) / (bounds.xMax - bounds.xMin)
-		local sy : (1.0 * (Ascender - XH)) / (bounds.yMax - bounds.yMin)
 		local x : Middle - 0.08 * (RightSB - SB)
 		local y : XH - 0.2 * Stroke
 		local dotBounds nothing
@@ -70,8 +71,12 @@ glyph-block Letter-Greek-Lower-Delta : begin
 			include : refer-glyph 'tittleAbove'
 			set dotBounds : include : MeasureGlyphBounds
 		local terminal : OgonekAboveTerminal
+		local terminalOffset : terminal.y - 0.5 * hookWeight * markStroke - bounds.yMin
+		local baseSy : (Ascender - XH) / (bounds.yMax - bounds.yMin)
+		local sy : Math.max baseSy ((XH - O + 0.1 * Stroke + 0.5 * (dotBounds.yMax - dotBounds.yMin) - y) / terminalOffset)
 		local terminalX : x + sx * (terminal.x - bounds.xMin)
-		local terminalY : y + sy * (terminal.y - bounds.yMin)
+		# The ogonek's terminal point is the upper edge of its leftward stroke.
+		local terminalY : y + sy * terminalOffset
 		include : union
 			OShape XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
 			with-transform [ApparentTranslate (x - sx * bounds.xMin) (y - sy * bounds.yMin)] : with-transform [Italify para.slopeAngle] : with-transform [Scale sx sy] : with-transform [Italify (-para.slopeAngle)] hook

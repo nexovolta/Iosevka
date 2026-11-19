@@ -958,6 +958,43 @@ for (const slope of ["upright", "italic"]) {
 	}
 }
 
+test("PTMN delta joins its dot regardless of tittle shape and mark height", async () => {
+	const makePara = await getParametersT({ paramsDir });
+	for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) for (const tittle of ["round", "square", "diamond", "hexagon"]) {
+		const glyphs = [];
+		for (const offset of [0, 200]) {
+			const para = makePara({
+				shape: { serifs: "sans", spacing: "quasi-proportional", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+				menu: { family: "PTMN delta QA", version: "34.9.0", width: 5, slope, weight: 400 },
+				featureControl: { noCvSs: false, noLigation: true },
+				variants: { design: { tittle } },
+			});
+			para.accentClearance += offset;
+			const { glyphStore } = buildGlyphs(para, {
+				blockIsNeeded: id => ["Mark-Above", "Letter-Greek-Lower-Delta"].includes(id),
+				glyphIsNeeded: id => /^(?:dotAbove|tittleAbove|latn\/delta\.phonotypic)(?:\.|$)/.test(id),
+			});
+			const glyph = glyphStore.queryByNameEnsured("latn/delta.phonotypic");
+			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours()
+				.map(c => c.map(p => glyph.gizmo.unapply(p)));
+			const id = `${slope} ${weight} ${tittle} ${offset}`;
+			assert.equal(contours.length, 2, `${id}: detached dot or closed hook`);
+			assert.ok(contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), id);
+			const dot = glyphStore.queryByNameEnsured("tittleAbove");
+			const dotYs = new Geom.SimplifyGeometry(dot.geometry, dot.gizmo, true).toContours()
+				.flat().map(p => dot.gizmo.unapply(p).y);
+			const anchor = glyph.gizmo.unapply(glyph.baseAnchors.above);
+			const dotBottom = anchor.y - (Math.max(...dotYs) - Math.min(...dotYs));
+			assert.ok(dotBottom >= para.xHeight - para.overshoot, `${id}: dot touches the bowl`);
+			glyphs.push(glyph);
+		}
+		const difference = new Geom.BooleanGeometry("xor", glyphs.map(g => g.geometry));
+		const diffContours = new Geom.SimplifyGeometry(difference, glyphs[0].gizmo, true).toContours();
+		const area = diffContours.reduce((sum, c) => sum + Math.abs(signedArea(c)), 0);
+		assert.ok(area < 25, `${slope} ${weight} ${tittle}: mark height changed delta by ${area}`);
+	}
+});
+
 test("PTMN hooks remain joined and reversed turned-M forms preserve winding", async () => {
 	const makePara = await getParametersT({ paramsDir });
 	for (const serifs of ["sans", "slab"]) for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
