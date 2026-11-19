@@ -12,8 +12,9 @@ glyph-block Letter-Greek-Upper-Omega : begin
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
 	glyph-block-import Letter-Latin-Upper-T : TLeftX TRightX
 
-	define [UpperOmegaShape top extend ada adb _serifed] : glyph-proc
+	define [UpperOmegaShape top extend ada adb _serifed _bowlScale] : glyph-proc
 		local halfSpan : Middle - SB
+		local bowlStroke : Stroke / [fallback _bowlScale 1]
 		local fine : if _serifed [Math.min (Stroke * CThin) [VSwToH : 0.38 * halfSpan]] (Stroke * CThin)
 		local x0 : mix SB RightSB 0.4
 		local inward : if _serifed [Math.max 0 : Math.min (Middle - [HSwToV : fine / 2] - 0.05 * halfSpan - x0) : HSwToV : 0.55 * Stroke] 0
@@ -23,9 +24,9 @@ glyph-block Letter-Greek-Upper-Omega : begin
 		include : dispiro
 			g4   x1 (yattach - fine) [widths.rhs.heading fine Leftward]
 			archv
-			flatside.lu SB      (yattach - Stroke) top ada adb 0 [widths.rhs Stroke]
-			Arch.rhs top
-			flatside.rd RightSB (yattach - Stroke) top ada adb 0
+			flatside.lu SB      (yattach - Stroke) top ada adb 0 [widths.rhs bowlStroke]
+			Arch.rhs top (sw -- bowlStroke)
+			flatside.rd RightSB (yattach - Stroke) top ada adb 0 [widths.rhs bowlStroke]
 			arcvh
 			g4   x2 (yattach - fine) [widths.heading 0 fine Leftward]
 		include : VBar.r x1 0 yattach fine
@@ -38,7 +39,7 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			include : VSerif.ul SB 0 serifHeight serifStroke
 			include : VSerif.ur RightSB 0 serifHeight serifStroke
 
-	define [DisjointOmegaShape top doSerifs _scaleToFrame] : glyph-proc
+	define [DisjointOmegaShape top doSerifs _scaleToFrame _bowlScale] : glyph-proc
 		local dfT : DivFrame [if _scaleToFrame 1 para.advanceScaleT]
 		local dx : 0.5 * (Width - dfT.width)
 		local l : dx + [TLeftX dfT]
@@ -51,7 +52,7 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			include : VSerif.ul l 0 serifH swVJut
 			include : VSerif.ur r 0 serifH swVJut
 		include : with-transform [ApparentTranslate 0 yOBot]
-			OShape XH 0 SB RightSB nothing nothing nothing
+			OShape XH 0 SB RightSB (Stroke / [fallback _bowlScale 1]) nothing nothing
 		if (top < CAP) : include : ScaleAround Middle 0 (top / CAP) (top / CAP)
 
 	define OmegaConfig : object
@@ -66,8 +67,8 @@ glyph-block Letter-Greek-Upper-Omega : begin
 			include : df.markSet.capital
 			include : SetGrekUpperTonos (df.middle - Middle)
 			include : with-transform [ApparentTranslate (df.middle - Middle) 0] : with-transform [ScaleAround Middle 0 (df.width / Width) 1] : if fDisjoint
-				DisjointOmegaShape CAP doSerifs doSerifs
-				UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+				DisjointOmegaShape CAP doSerifs doSerifs [if doSerifs (df.width / Width) 1]
+				UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs [if doSerifs (df.width / Width) 1]
 
 		create-glyph "grek/smcpOmega.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -82,7 +83,7 @@ glyph-block Letter-Greek-Upper-Omega : begin
 				local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
 				include : df.markSet.capital
 				include : with-transform [ApparentTranslate (df.middle - Middle) 0] : with-transform [ScaleAround Middle 0 (df.width / Width) 1] : new-glyph : glyph-proc
-					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
+					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs [if doSerifs (df.width / Width) 1]
 					include : FlipAround Middle (CAP / 2)
 
 			create-glyph "latn/upsilon.\(suffix)" : glyph-proc

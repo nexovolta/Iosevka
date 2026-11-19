@@ -280,7 +280,8 @@ glyph-block Letter-Latin-Lower-J : begin
 
 		create-glyph "dotlessjBar.\(suffix)" : glyph-proc
 			include [refer-glyph "dotlessj.\(suffix)"] AS_BASE ALSO_METRICS
-			include : LetterBarOverlay.m currentGlyph.baseAnchors.overlay.x (XH / 2) (space -- {0  df.width})
+			local overlay : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.overlay
+			include : LetterBarOverlay.m overlay.x (XH / 2) (space -- {0  df.width})
 			include : CenterInkInFrame df
 
 	foreach {suffix _} [Object.entries JConfig] : do
@@ -296,7 +297,8 @@ glyph-block Letter-Latin-Lower-J : begin
 		create-glyph "dotlessjBarHookTop.\(suffix)" : glyph-proc
 			include [refer-glyph "dotlessjBar.topSerifless\(bottom)"] AS_BASE ALSO_METRICS
 			local df : DivFrame (currentGlyph.advanceWidth / Width)
-			include : TopHook.toRight.mBarOuter currentGlyph.baseAnchors.overlay.x (XH + O) XH
+			local overlay : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.overlay
+			include : TopHook.toRight.mBarOuter overlay.x (XH + O) XH
 			include : CenterInkInFrame df
 
 	select-variant 'dotlessj' 0x237
