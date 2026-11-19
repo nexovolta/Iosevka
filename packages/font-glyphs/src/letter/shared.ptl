@@ -1361,18 +1361,18 @@ glyph-block Letter-Shared-Shapes : begin
 	# Generic "connected" vertical hooks
 	glyph-block-export VerticalHook
 	define VerticalHook : namespace
-		export : define [m] : with-params [x y xDepth yDepth [sw Stroke] [yExtension 0]] : begin
+		export : define [m] : with-params [x y xDepth yDepth [sw Stroke] [yExtension 0] [radiusScale 1]] : begin
 			local hd : FlatHookDepth [DivFrame 1]
-			local hdX : if (xDepth < 0) (-hd.x) hd.x
-			local hdY : if (yDepth < 0) (-hd.y) hd.y
+			local hdX : radiusScale * hd.x
+			local hdY : radiusScale * hd.y
 
 			local y2 : if (yDepth > 0)
-				Math.min (y - yDepth + hd.y - 0.25 * sw) (y - TINY)
-				Math.max (y - yDepth - hd.y + 0.25 * sw) (y + TINY)
+				Math.min (y - yDepth + hdY - 0.25 * sw) (y - TINY)
+				Math.max (y - yDepth - hdY + 0.25 * sw) (y + TINY)
 
 			local x3 : if (xDepth > 0)
-				Math.min (x + xDepth - TINY) (x + hd.x - [HSwToV : 0.25 * sw])
-				Math.max (x + xDepth + TINY) (x - hd.x + [HSwToV : 0.25 * sw])
+				Math.min (x + xDepth - TINY) (x + hdX - [HSwToV : 0.25 * sw])
+				Math.max (x + xDepth + TINY) (x - hdX + [HSwToV : 0.25 * sw])
 
 			return : dispiro
 				widths.center sw
@@ -1424,8 +1424,8 @@ glyph-block Letter-Shared-Shapes : begin
 
 			export : define [lExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null]] : begin
 				return : Impl (x + [HSwToV : 0.5 * sw]) y xLink yAttach yOverflow sw sw maskOut
-			export : define [mExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null]] : begin
-				return : Impl x y xLink yAttach yOverflow sw sw maskOut
+			export : define [mExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null] [radiusScale 1]] : begin
+				return : Impl x y xLink yAttach yOverflow sw sw maskOut radiusScale
 			export : define [rExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null]] : begin
 				return : Impl (x - [HSwToV : 0.5 * sw]) y xLink yAttach yOverflow sw sw maskOut
 
@@ -1545,7 +1545,7 @@ glyph-block Letter-Shared-Shapes : begin
 
 		# Palatal hooks
 		glyph-block-export PalatalHook
-		define PalatalHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut] : glyph-proc
+		define PalatalHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale] : glyph-proc
 			local fullDepth : (0 - Descender) - 0.5 * sw - O
 			include : ExtendBelowBaseAnchors (y + Descender)
 			include : difference
@@ -1558,11 +1558,12 @@ glyph-block Letter-Shared-Shapes : begin
 						yDepth -- TailY
 						sw     -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
+						radiusScale -- radiusScale
 				if maskOut maskOut [no-shape]
 
 		# Retroflex hooks
 		glyph-block-export RetroflexHook
-		define RetroflexHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut] : glyph-proc
+		define RetroflexHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale] : glyph-proc
 			local fullDepth : (0 - Descender) - 0.5 * sw - O
 			include : ExtendBelowBaseAnchors (y + Descender)
 			include : difference
@@ -1575,6 +1576,7 @@ glyph-block Letter-Shared-Shapes : begin
 						yDepth -- TailY
 						sw     -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
+						radiusScale -- radiusScale
 				if maskOut maskOut [no-shape]
 
 		# Half-circle hook
