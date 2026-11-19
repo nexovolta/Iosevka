@@ -98,21 +98,21 @@ glyph-block Mark-Above : begin
 	define commaAboveRadius : 0.85 * DotRadius * markHalfStroke / HalfStroke
 
 	glyph-block-export OgonekAboveShape OgonekAboveTerminal
-	define [OgonekAboveTerminal] : begin
-		local depth : 0 - Descender - markStroke
+	define [OgonekAboveTerminal _depth] : begin
+		local depth : fallback _depth (0 - Descender - markStroke)
 		local fullExt : (7 / 16) * depth + 0.125 * markStress
 		local extL : 0.5 * fullExt + 0.375 * markStroke + [Math.max (0.125 * markExtend) (TanSlope * 1.5 * markStroke)]
 		return : object
 			x : markMiddle - extL
 			y : XH + depth - 0.5 * O
 
-	define [OgonekAboveShape diagonalTerminal _weight] : glyph-proc
+	define [OgonekAboveShape diagonalTerminal _weight _depth] : glyph-proc
 		local weight : fallback _weight 1
 		local fine : AdviceStroke 8
-		local depth : 0 - Descender - markStroke
+		local depth : fallback _depth (0 - Descender - markStroke)
 		local fullExt : (7 / 16) * depth + 0.125 * markStress
 		local extR : 0.25 * fullExt
-		local terminal : OgonekAboveTerminal
+		local terminal : OgonekAboveTerminal depth
 		local extL : markMiddle - terminal.x
 		local turnSlope : 0.5 * ((markStroke - fine) / markStroke - (ArchDepthB - ArchDepth) / ArchDepth)
 		include : intersection

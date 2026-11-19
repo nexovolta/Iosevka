@@ -958,18 +958,34 @@ for (const slope of ["upright", "italic"]) {
 	}
 }
 
-test("PTMN delta joins its dot regardless of tittle shape and mark height", async () => {
+test("PTMN delta keeps its dot at a fixed level and sizes it from the bowl stroke", async () => {
 	const makePara = await getParametersT({ paramsDir });
-	for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) for (const tittle of ["round", "square", "diamond", "hexagon"]) {
-		const glyphs = [];
-		for (const offset of [0, 200]) {
+	for (const slope of ["upright", "italic"]) for (const weight of [120, 260, 420, 530, 920, 930]) for (const tittle of ["round", "square", "diamond", "hexagon"]) {
+		let baselineLeft;
+		for (const variation of ["default", "dotSize", "accentHeight", "accentWidth", "accentClearance", "ascender", "descender", "xHeight", "privateMetrics"]) {
 			const para = makePara({
-				shape: { serifs: "sans", spacing: "quasi-proportional", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+				shape: { serifs: "sans", spacing: variation === "privateMetrics" ? "term" : "quasi-proportional", weight, width: variation === "privateMetrics" ? 586 : 500, slope, slopeAngle: slope === "italic" ? 10 : 0 },
 				menu: { family: "PTMN delta QA", version: "34.9.0", width: 5, slope, weight: 400 },
 				featureControl: { noCvSs: false, noLigation: true },
 				variants: { design: { tittle } },
+				...(variation === "privateMetrics" ? {
+					metricOverride: {
+						xHeight: 518, cap: 693, ascender: 732, descender: -186, symbolMid: 305,
+						sb: "blend(weight, [260, 82], [303, 80], [389, 77], [530, 72], [618, 70], [783, 64], [930, 60])",
+						contrast: "blend(weight, [260, 1.044], [530, 1.093], [930, 1.102])",
+						accentWidth: 215, accentClearance: 68, accentHeight: 186, accentStackOffset: 234,
+						dotSize: "blend(weight, [260, 98], [303, 104], [389, 113], [530, 125], [618, 133], [783, 150], [930, 166])",
+						archDepth: 192, smallArchDepth: 256,
+					},
+				} : {}),
 			});
-			para.accentClearance += offset;
+			if (variation === "dotSize") para.dotSize *= 1.7;
+			if (variation === "accentHeight") para.accentHeight *= 0.6;
+			if (variation === "accentWidth") para.accentWidth += 80;
+			if (variation === "accentClearance") para.accentClearance += 200;
+			if (variation === "ascender") para.ascender += 150;
+			if (variation === "descender") para.descender -= 70;
+			if (variation === "xHeight") para.xHeight += 80;
 			const { glyphStore } = buildGlyphs(para, {
 				blockIsNeeded: id => ["Mark-Above", "Letter-Greek-Lower-Delta"].includes(id),
 				glyphIsNeeded: id => /^(?:dotAbove|tittleAbove|latn\/delta\.phonotypic)(?:\.|$)/.test(id),
@@ -977,21 +993,27 @@ test("PTMN delta joins its dot regardless of tittle shape and mark height", asyn
 			const glyph = glyphStore.queryByNameEnsured("latn/delta.phonotypic");
 			const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours()
 				.map(c => c.map(p => glyph.gizmo.unapply(p)));
-			const id = `${slope} ${weight} ${tittle} ${offset}`;
+			const id = `${slope} ${weight} ${tittle} ${variation}`;
 			assert.equal(contours.length, 2, `${id}: detached dot or closed hook`);
 			assert.ok(contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), id);
-			const dot = glyphStore.queryByNameEnsured("tittleAbove");
-			const dotYs = new Geom.SimplifyGeometry(dot.geometry, dot.gizmo, true).toContours()
-				.flat().map(p => dot.gizmo.unapply(p).y);
 			const anchor = glyph.gizmo.unapply(glyph.baseAnchors.above);
-			const dotBottom = anchor.y - (Math.max(...dotYs) - Math.min(...dotYs));
-			assert.ok(dotBottom >= para.xHeight - para.overshoot, `${id}: dot touches the bowl`);
-			glyphs.push(glyph);
+			const centerY = para.xHeight + 140;
+			const radius = 20 + 0.625 * para.stroke;
+			assert.ok(Math.abs(anchor.y - centerY - radius) < 0.1, `${id}: dot top changed`);
+			assert.ok(centerY - radius > para.xHeight - para.overshoot, `${id}: dot touches the bowl`);
+			assert.ok(Math.max(...contours.flat().map(p => p.y)) <= centerY + radius + 1, `${id}: hook protrudes above the dot`);
+			const left = [-0.5, 0, 0.5].map(level =>
+				horizontalCrossings(glyph, centerY + level * radius + 0.321)[0] - anchor.x);
+			assert.ok(left.every(x => Number.isFinite(x) && x < 0), `${id}: missing dot at expected level`);
+			if (tittle === "round") {
+				assert.ok(Math.abs(left[1] + radius) < 1, `${id}: dot is not centered or sized to the bowl stroke`);
+			}
+			const normalizedLeft = left.map(x => x / radius);
+			if (baselineLeft === undefined) baselineLeft = normalizedLeft;
+			for (let i = 0; i < left.length; i++) {
+				assert.ok(Math.abs(normalizedLeft[i] - baselineLeft[i]) < 0.02, `${id}: dot outline changed`);
+			}
 		}
-		const difference = new Geom.BooleanGeometry("xor", glyphs.map(g => g.geometry));
-		const diffContours = new Geom.SimplifyGeometry(difference, glyphs[0].gizmo, true).toContours();
-		const area = diffContours.reduce((sum, c) => sum + Math.abs(signedArea(c)), 0);
-		assert.ok(area < 25, `${slope} ${weight} ${tittle}: mark height changed delta by ${area}`);
 	}
 });
 
