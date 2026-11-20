@@ -53,6 +53,8 @@ For the extended lower-beta combinations, use `<body>-<crossing>-<symmetry>`, fo
 
 For the extended Cyrillic lower ve combinations, use `<ear>-<tooth>-<crossing>-<symmetry>-<height>`, for example `earless-rounded-flat-bottom-serifed-open-big-bottom-bowl-tall`. The ears are `earless-rounded`, `earless-corner`, `flat-top`, and `flat-top-serifed`; the teeth are `toothless-rounded`, `toothless-corner`, `flat-bottom`, and `flat-bottom-serifed`; the crossings and symmetries are the same as for lower beta; and the heights are `short` and `tall`. These variants span two OpenType features because a single feature can hold at most 255 alternates.
 
+For Cyrillic capital `Э` and `Є`, `cyrl-capital-e` independently combines `top-{rounded,serifed,inward-serifed,flat-hooked,corner-hooked}` and `bottom-{rounded,serifed,inward-serifed,flat-hooked,corner-hooked}`, with an optional `diagonal-crossbar-rising` or `diagonal-crossbar-falling` prefix and an optional `middle-serifed` suffix.
+
 Inside the plan, top-level properties include:
 
 - `family`: String, defines the family name of your custom variant.
