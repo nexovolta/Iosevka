@@ -11,7 +11,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markExtend
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition ThreeQuarterDf
+	glyph-block-import Letter-Shared : CreateAccentedComposition CreateCommaCaronComposition ThreeQuarterDf PhonotypicPackFraction
 	glyph-block-import Letter-Shared-Shapes : OBarRight RightwardTailedBar CurlyTail
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape KomiHookSerifs KomiHookSerif
@@ -186,6 +186,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			create-glyph "d.\(suffix)"           : make [DivFrame 1.00] [DivFrame 1] false
 			create-glyph "dCaron/base.\(suffix)" : make [DivFrame 0.95] [DivFrame 1] false
 			create-glyph "d/pack75.\(suffix)"    : make [ThreeQuarterDf para.advanceScaleM] [ThreeQuarterDf para.advanceScaleM] false
+			create-glyph "d/packPTMN.\(suffix)"  : make [ThreeQuarterDf para.advanceScaleM Stroke 1 1 PhonotypicPackFraction] [ThreeQuarterDf para.advanceScaleM Stroke 1 1 PhonotypicPackFraction] false
 			create-glyph "d/pack80.\(suffix)"    : make [ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)] [ThreeQuarterDf para.advanceScaleM Stroke 1 1 (4 / 5)] false
 			if ([not bottomSerif] && Body === ToothedBody && !fFlat) : create-glyph "d/phoneticLeft2.\(suffix)" : make
 				DivFrame (([mix Width RightSB 0.5] - [HSwToV QuarterStroke]) / Width) 2 1
@@ -298,6 +299,7 @@ glyph-block Letter-Latin-Lower-D : begin
 
 	select-variant 'd' 'd'
 	select-variant 'd/pack75' (follow -- 'd')
+	select-variant 'd/packPTMN' (follow -- 'd')
 	select-variant 'd/pack80' (follow -- 'd')
 	link-reduced-variant 'd/sansSerif' 'd' MathSansSerif
 	select-variant 'dCaron/base' (follow -- 'd')

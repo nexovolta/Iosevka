@@ -79,6 +79,14 @@ glyph-block Mark-Above : begin
 		local xShift : df.middle - [mix b.xMin b.xMax 0.5]
 		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
 
+	glyph-block-export FitInkAdvance
+	define [FitInkAdvance minWidth] : glyph-proc
+		local b : include : MeasureGlyphBounds
+		if [not b] : throw : new Error "Cannot fit advance of an empty glyph"
+		local aw : Math.max minWidth (b.xMax - b.xMin + 2 * SB)
+		set-width aw
+		include : CenterInkInFrame : DivFrame (aw / Width)
+
 	define [CenterMarkHorizontally] : glyph-proc
 		local b : include : MeasureGlyphBounds
 		if [not b] : return nothing

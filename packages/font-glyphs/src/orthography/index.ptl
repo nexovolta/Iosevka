@@ -5,7 +5,9 @@ import [LocalizedForm] from '@iosevka/glyph/relation'
 glyph-module
 
 glyph-block Orthography : begin
+	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Above : FitInkAdvance
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 
 	########## Latin letters
@@ -25,6 +27,15 @@ glyph-block Orthography : begin
 	CreateAccentedComposition 'EzhCaron.phonotypic' null 'Ezh.phonotypic' 'caronAbove'
 	CreateAccentedComposition 'uni1DF4A' 0x1DF4A 'M' 'hStrike/adwsM'
 	CreateAccentedComposition 'uni1DF4D' 0x1DF4D 'N' 'hStrike'
+
+	derive-multi-part-glyphs 'um.phonotypic' null {'n' 'u'} : lambda [srcs gr] : glyph-proc
+		include [refer-glyph srcs.0] AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		include : union
+			intersection [refer-glyph srcs.0] [MaskAbove : XH / 2]
+			intersection [refer-glyph srcs.1] [MaskBelow : XH / 2]
+		include : FitInkAdvance [if para.isQuasiProportional 0 Width]
+		include : [DivFrame (currentGlyph.advanceWidth / Width)].markSet.e
 
 	# Link localization forms
 	link-gr LocalizedForm.NSM          'Eng'                 'Eng.NSM'
@@ -62,6 +73,13 @@ glyph-block Orthography : begin
 	link-gr LocalizedForm.PTMN         'smcpOU'              'smcpOU.phonotypic'
 	link-gr LocalizedForm.PTMN         'OO'                  'OO.phonotypic'
 	link-gr LocalizedForm.PTMN         'oo'                  'oo.phonotypic'
+	link-gr LocalizedForm.PTMN         'dum'                 'dum.phonotypic'
+	link-gr LocalizedForm.PTMN         'lum'                 'lum.phonotypic'
+	link-gr LocalizedForm.PTMN         'mum'                 'mum.phonotypic'
+	link-gr LocalizedForm.PTMN         'num'                 'num.phonotypic'
+	link-gr LocalizedForm.PTMN         'rum'                 'rum.phonotypic'
+	link-gr LocalizedForm.PTMN         'tum'                 'tum.phonotypic'
+	link-gr LocalizedForm.PTMN         'um'                  'um.phonotypic'
 	link-gr LocalizedForm.PTMN         'turnmCap'            'turnmCap.phonotypic'
 	link-gr LocalizedForm.PTMN         'smcpTurnmCap'        'smcpTurnmCap.phonotypic'
 	link-gr LocalizedForm.PTMN         'AeVolapuk'           'AeVolapuk.phonotypic'

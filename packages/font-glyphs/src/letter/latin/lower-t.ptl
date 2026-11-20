@@ -32,6 +32,15 @@ glyph-block Letter-Latin-Lower-T : begin
 
 	define ySmallTBarPos XH
 
+	glyph-block-export BentTHook
+	define [BentTHook sink xLeft xHook top bot sw adb yHook] : sink
+		widths.lhs sw
+		[if (sink == spiro-outline) corner flat] xLeft top [heading Downward]
+		curl xLeft (bot + adb)
+		HookEnd bot (sw -- sw)
+		g4 xHook (bot + yHook)
+		if (sink == spiro-outline) {[corner xHook top]} {}
+
 	glyph-block-export yShortNeck1 yShorterNeck
 	define yShortNeck1 : clamp [mix XH Ascender 0.5] CAP : [mix XH Ascender 0.875] - Stroke * 0.125
 	define yShorterNeck : clamp [mix XH Ascender 0.5] CAP : [mix XH Ascender 0.750] - Stroke * 0.125
@@ -61,13 +70,7 @@ glyph-block Letter-Latin-Lower-T : begin
 		export : define [HookShapeT sink df sym offset top bot sw fFitHook] : begin
 			define [object xLeft xHook yHook adb] : Dims df sym [if fFitHook sw Stroke]
 
-			return : sink
-				widths.lhs sw
-				[if (sink == spiro-outline) corner flat] (offset + xLeft) top [heading Downward]
-				curl (offset + xLeft) (bot + adb)
-				HookEnd (bot + offset) (sw -- sw)
-				g4 (xHook - offset) (bot + yHook)
-				if (sink == spiro-outline) {[corner (xHook - offset) top]} {}
+			return : BentTHook sink (offset + xLeft) (xHook - offset) top (bot + offset) sw (adb - offset) (yHook - offset)
 
 		export : define [CrossBar df sym _sw] : begin
 			local {xcl xcr} : xCrossBarPos df sym
@@ -301,6 +304,13 @@ glyph-block Letter-Latin-Lower-T : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
 
+		create-glyph "t/phonotypic.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.b
+			include : BentHook.Body df sym top 0
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
+
 		create-glyph "latn/the.phonotypic.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.b
@@ -468,6 +478,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tHReversed'  0x1DF64 (follow -- 't')
 	select-variant 't' 't'
 	select-variant 't/pack75' (follow -- 't')
+	select-variant 't/phonotypic' (follow -- 't')
 	select-variant 't/pack80' (follow -- 't')
 	select-variant 't/compLigRight'
 

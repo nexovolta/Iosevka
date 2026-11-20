@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Lower-I : begin
 	glyph-block-import Mark-Above : CenterInkInFrame
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateMultiAccentedComposition
 	glyph-block-import Letter-Shared : CreateCommaCaronComposition CreateTurnedLetter
+	glyph-block-import Letter-Shared : ThreeQuarterDf PhonotypicPackFraction
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail VerticalHook
 	glyph-block-import Letter-Shared-Shapes : CurlyTail BeltOverlay PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : HalfRingDescender LetterBarOverlay RightwardTailedBar
@@ -601,6 +602,14 @@ glyph-block Letter-Latin-Lower-I : begin
 			include [refer-glyph "l/uncentered.\(suffix)"] AS_BASE ALSO_METRICS
 			if (Body !== ILBody.PhoneticLeft) : include : CenterInkInFrame df
 
+		create-glyph "l/packPTMN.\(suffix)" : glyph-proc
+			local df : include : ThreeQuarterDf para.advanceScaleM Stroke 1 adws PhonotypicPackFraction
+			include : df.markSet.b
+			local xMiddle : xMiddleT df
+			include : Body df Ascender 0 xMiddle
+			include : Marks df Ascender 0 xMiddle
+			include : Serifs df Ascender 0 xMiddle
+			if (Body !== ILBody.PhoneticLeft) : include : CenterInkInFrame df
 		create-glyph "lDot/base.\(suffix)" : glyph-proc
 			local df : include : DivFrame adws
 			include [refer-glyph "l.\(suffix)"] AS_BASE
@@ -818,6 +827,7 @@ glyph-block Letter-Latin-Lower-I : begin
 
 	do 'l glyphs'
 		select-variant 'l' 'l'
+		select-variant 'l/packPTMN' (follow -- 'l')
 		link-reduced-variant 'l/sansSerif' 'l' MathSansSerif
 		select-variant 'l/reduced/decompress' (shapeFrom -- 'l')
 

@@ -12,8 +12,9 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
-	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
+	glyph-block-import Mark-Above : FitInkAdvance MeasureGlyphBoundsInY
 	glyph-block-import Letter-Shared : PackSrc
+	glyph-block-import Letter-Latin-Lower-T : BentTHook
 	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
 	define HOOK-ROUND  0
@@ -310,6 +311,53 @@ glyph-block Digits-Two : begin
 			local dx : kLen * 0.20 * (RightSB - dfSlash.leftSB)
 			local dy : kLen * (rumSlashYTop - rumSlashYBot)
 			include : RumRotundaSlash (xMid - dx / 2) (xMid + dx / 2) (yMid + dy / 2) (yMid - dy / 2) OverlayStroke
+
+		define [PhonotypicUm prefix adws] : lambda [src gr] : glyph-proc
+			local base src
+			if (prefix === 'd') : begin
+				local suffix : if (src === 'd') para.variantSelector.d : src.slice 2
+				if [not suffix] : throw : new Error "Cannot select toothless PTMN d for \(src)"
+				set suffix : suffix.replace [regex '^(toothed|tailed|flatBottom)(BottomCut)?'] 'toothlessRounded'
+				set base : 'd.' + suffix
+				if [not : query-glyph base] : throw : new Error "Cannot find toothless PTMN d \(base)"
+			local packed : if (prefix === 'r') base : PackSrc prefix base [if (prefix === 't') 'phonotypic' 'packPTMN']
+			local letter : new-glyph : glyph-proc
+				include [refer-glyph packed] AS_BASE ALSO_METRICS
+				eject-contour 'serifRB'
+				eject-contour 'serifMB'
+			include letter AS_BASE ALSO_METRICS
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			local sw : Stroke * [if (prefix === 'm') [mix 1 0.88 heavyT] 1]
+			local swX : HSwToV sw
+			local yJoin : if (prefix === 'l') (0.62 * Ascender) : Math.min (0.55 * XH) : Math.max (0.35 * XH) (1.1 * sw)
+			local yMeasure : if (prefix === 'l') (0.7 * Ascender) : if (prefix === 'r') (0.2 * XH) yJoin
+			local bounds : include : MeasureGlyphBoundsInY (yMeasure - 0.08 * XH) (yMeasure + 0.08 * XH)
+			if [not bounds] : throw : new Error "Cannot attach PTMN hook to \(src)"
+			local overlay letter.baseAnchors.overlay
+			if (prefix === 'r' && [not overlay]) : throw : new Error "Cannot find PTMN r stem in \(src)"
+			local xLeft : if (prefix === 'r') ([letter.gizmo.unapply overlay].x - swX / 2) (bounds.xMax - swX)
+			local xHook : xLeft + [Math.max (2.25 * swX) (0.24 * Width)]
+			local adb : clamp Hook (1.2 * ([Arch.adjust-x.top [mix xLeft xHook 0.5]] - xLeft)) ArchDepthB
+			local outWidth : Math.max (Width * adws) (xHook + SB)
+			local joinedBase : if (prefix === 'd' || prefix === 't') letter : new-glyph : glyph-proc
+				include : difference
+					begin letter
+					Rect yJoin (0 - XH) [if (prefix === 'l' || prefix === 'r') (0 - Width) (xLeft - 0.05 * swX)] (outWidth + Width)
+			local df : include : DivFrame (outWidth / Width)
+			include : df.markSet.p
+			currentGlyph.clearGeometry
+			include : union
+				begin joinedBase
+				BentTHook dispiro xLeft xHook [Math.max (yJoin + 0.2 * sw) (adb + 0.5 * sw)] 0 sw adb Hook
+			include : FitInkAdvance [if para.isQuasiProportional 0 Width]
+			include : [DivFrame (currentGlyph.advanceWidth / Width)].markSet.p
+
+		derive-glyphs 'dum.phonotypic' null 'd' : PhonotypicUm 'd' para.advanceScaleM
+		derive-glyphs 'lum.phonotypic' null 'l' : PhonotypicUm 'l' para.advanceScaleM
+		derive-glyphs 'mum.phonotypic' null 'm' : PhonotypicUm 'm' para.advanceScaleMM
+		derive-glyphs 'num.phonotypic' null 'n' : PhonotypicUm 'n' para.advanceScaleM
+		derive-glyphs 'rum.phonotypic' null 'r' : PhonotypicUm 'r' 1
+		derive-glyphs 'tum.phonotypic' null 't' : PhonotypicUm 't' para.advanceScaleM
 
 		# Monospace tum: t with the same compact rum slash through the bar.
 		# Aile/Etoile keep the t–Is ligature (see phoneticTum).

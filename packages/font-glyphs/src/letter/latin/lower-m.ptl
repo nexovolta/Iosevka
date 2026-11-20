@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender CyrCurlDescender PalatalHook EngHook
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
-	glyph-block-import Letter-Shared : ThreeQuarterDf
+	glyph-block-import Letter-Shared : ThreeQuarterDf PhonotypicPackFraction
 
 	define dfM : DivFrame para.advanceScaleMM 3
 
@@ -339,6 +339,13 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : df.markSet.e
 			include : mShapeBody df XH df.mvs
 
+		create-glyph "m/packPTMN.\(suffix)" : glyph-proc
+			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+			local sw : Stroke * [mix 1 0.88 heavyT]
+			local df : include : ThreeQuarterDf para.advanceScaleMM sw 3 para.advanceScaleMM PhonotypicPackFraction
+			include : df.markSet.e
+			include : mShapeBody df XH df.mvs
+
 		if (!tailed) : begin
 			create-glyph "meng.\(suffix)" : glyph-proc
 				local df : include dfM
@@ -413,6 +420,7 @@ glyph-block Letter-Latin-Lower-M : begin
 
 	select-variant 'm' 'm'
 	select-variant 'm/pack75' (follow -- 'm')
+	select-variant 'm/packPTMN' (follow -- 'm')
 	select-variant 'm/descBase' (shapeFrom -- 'm')
 	link-reduced-variant 'm/sansSerif' 'm' MathSansSerif
 

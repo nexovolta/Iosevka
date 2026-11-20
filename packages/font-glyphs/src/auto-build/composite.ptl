@@ -1681,6 +1681,9 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 		local {ww0 wwM shrink kern} : PhoneticDimensions tfm adws mockNParts _shrink kKern
 		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix '' demands
 
+		foreach {gn unicode parts mak} [items-of jobs.nonDecomposable] : if (unicode === 0xA777)
+			jobs.relApplications.push {LocalizedForm.PTMN gn 'tum.phonotypic'}
+
 		# Preserve live esh and ezh selectors in the non-decomposable digraphs.
 		local eshPrime : para.variants.primes.get 'lower-esh'
 		local eshTag eshPrime.tag

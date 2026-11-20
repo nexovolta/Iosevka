@@ -1,6 +1,6 @@
 $$include '../meta/macros.ptl'
 
-import [mix clamp fallback] from '@iosevka/util'
+import [mix linreg clamp fallback] from '@iosevka/util'
 import [FunctionInterpolator] from '@iosevka/geometry/spiro-control'
 import [Dotless CvDecompose] from '@iosevka/glyph/relation'
 import [RightDependentTrigger RightDependentLink DependentSelector] from '@iosevka/glyph/relation'
@@ -30,6 +30,9 @@ glyph-block Letter-Shared : begin
 			hPack : 0 + hp
 			mvs : 0 + mvs
 			ox : 0 + ox
+
+	glyph-block-export PhonotypicPackFraction
+	define PhonotypicPackFraction : mix (3 / 4) 1 : clamp 0 1 : linreg (0.5 * para.canonicalStrokeWidthMax) 0 para.canonicalStrokeWidthMax 1 Stroke
 
 	glyph-block-export PackSrc
 	define [PackSrc prefix src _tag] : begin
