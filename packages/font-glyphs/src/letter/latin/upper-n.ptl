@@ -175,6 +175,24 @@ glyph-block Letter-Latin-Upper-N : begin
 				swDiag -- [AdviceStroke crDiag]
 			set-base-anchor 'trailing' (RightSB - markHalfStroke) 0
 
+		create-glyph "NStrike.phonotypic.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			local swDiag : AdviceStroke crDiag
+			local dims : include : NShape [DivFrame 1] CAP bodyType slabType (swDiag -- swDiag)
+			local dx : dims.xEnd - dims.xStart + TanSlope * (dims.yEnd - dims.yStart)
+			local dy : dims.yEnd - dims.yStart
+			local len : Math.hypot dx dy
+			local halfLen : Math.max (0.17 * CAP) [HSwToV swDiag]
+			local hx : (-dy) * halfLen / len
+			local hy : dx * halfLen / len
+			local x : mix dims.xStart dims.xEnd 0.5
+			local y : mix dims.yStart dims.yEnd 0.5
+			include : dispiro
+				widths.center OverlayStroke
+				flat (x - hx + TanSlope * hy) (y - hy)
+				curl (x + hx - TanSlope * hy) (y + hy)
+			set-base-anchor 'trailing' (RightSB - markHalfStroke) 0
+
 		create-glyph "revN.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : RevNShape [DivFrame 1] CAP bodyType slabType
@@ -213,6 +231,7 @@ glyph-block Letter-Latin-Upper-N : begin
 				swDiag -- [AdviceStroke 4.0]
 
 	select-variant 'N' 'N'
+	select-variant 'NStrike.phonotypic' (follow -- 'N')
 	link-reduced-variant 'N/sansSerif' 'N' MathSansSerif
 	select-variant 'smcpN' 0x274 (follow -- 'N')
 	select-variant 'revN' (follow -- 'N')

@@ -115,7 +115,7 @@ glyph-block Letter-Latin-Upper-M : begin
 				if para.isItalic sfB.lb.outer sfB.lb.full
 				if tailed [no-shape] : if para.isItalic sfB.rb.outer sfB.rb.full
 
-		return : object [swSideBot]
+		return : object swSideBot swSideTop swMiddleShrink xLeftTop xRightTop kMidShift middleY
 
 	define [CyrSoftEmShape] : with-params [top df form slabType slanted vSlab [middleYExt nothing]] : glyph-proc
 		local subDf : df.slice 4 3
@@ -196,6 +196,15 @@ glyph-block Letter-Latin-Upper-M : begin
 			include : df.markSet.capital
 			include : MShape CAP df form slab slanted (middleYExt -- middleYExt)
 
+		create-glyph "MStrike.phonotypic.\(suffix)" : glyph-proc
+			local df : include : DivFrame para.advanceScaleM 3
+			include : df.markSet.capital
+			local dims : include : MShape CAP df form slab slanted (middleYExt -- middleYExt)
+			local yBar : mix dims.middleY CAP 0.5
+			local xLeft : mix (df.middle - [HSwToV : 0.5 * dims.swMiddleShrink]) (dims.xLeftTop + dims.kMidShift * [HSwToV dims.swSideTop]) 0.5
+			local xRight : mix (df.middle + [HSwToV : 0.5 * dims.swMiddleShrink]) (dims.xRightTop - dims.kMidShift * [HSwToV dims.swSideTop]) 0.5
+			include : HOverlayBar xLeft xRight yBar OverlayStroke
+
 		create-glyph "Meng.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capDesc
@@ -268,6 +277,7 @@ glyph-block Letter-Latin-Upper-M : begin
 				include : MShape XH df form slab slanted (middleYExt -- middleYExt) (tailed -- tailed)
 
 	select-variant 'M' 'M'
+	select-variant 'MStrike.phonotypic' (follow -- 'M')
 	link-reduced-variant 'M/sansSerif' 'M' MathSansSerif
 	select-variant 'Meng' 0x2C6E (follow -- 'M')
 	select-variant 'smcpM' 0x1D0D (follow -- 'M')
