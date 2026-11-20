@@ -8,8 +8,6 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
-	glyph-block-import Mark-Above : OgonekAboveShape OgonekAboveTerminal MeasureGlyphBounds
-	glyph-block-import Mark-Shared-Metrics : markStroke
 
 	create-glyph 'grek/delta.rounded' : glyph-proc
 		include : MarkSet.b
@@ -56,36 +54,6 @@ glyph-block Letter-Greek-Lower-Delta : begin
 	select-variant 'grek/delta' 0x3B4
 
 	alias 'latn/delta' 0x1E9F 'grek/delta'
-	create-glyph 'latn/delta.phonotypic' : glyph-proc
-		include : MarkSet.b
-		local bounds nothing
-		local hookWeight 0.5
-		# A shallow ogonek would rise above its terminal at heavy weights.
-		local hookDepth : Math.max 200 (3 * markStroke)
-		local hook : new-glyph : glyph-proc
-			include : OgonekAboveShape false hookWeight hookDepth
-			set bounds : include : MeasureGlyphBounds
-		local sx : (0.55 * (RightSB - SB)) / (bounds.xMax - bounds.xMin)
-		local x : Middle - 0.08 * (RightSB - SB)
-		local y : XH - 0.2 * Stroke
-		local dotBounds nothing
-		local dot : new-glyph : glyph-proc
-			include : refer-glyph 'tittleAbove'
-			set dotBounds : include : MeasureGlyphBounds
-		local terminal : OgonekAboveTerminal hookDepth
-		# The ogonek's terminal point is the upper edge of its leftward stroke.
-		local terminalOffset : terminal.y - 0.5 * hookWeight * markStroke - bounds.yMin
-		# This is part of the letter, so its size is independent of mark metrics.
-		local dotRadius : 20 + 0.625 * Stroke
-		local dotScale : (2 * dotRadius) / (dotBounds.yMax - dotBounds.yMin)
-		local terminalY : XH + 140
-		local sy : (terminalY - y) / terminalOffset
-		local terminalX : x + sx * (terminal.x - bounds.xMin)
-		include : union
-			OShape XH 0 SB RightSB Stroke SmallArchDepthA SmallArchDepthB
-			with-transform [ApparentTranslate (x - sx * bounds.xMin) (y - sy * bounds.yMin)] : with-transform [Italify para.slopeAngle] : with-transform [Scale sx sy] : with-transform [Italify (-para.slopeAngle)] hook
-			with-transform [ApparentTranslate (terminalX - dotScale * (dotBounds.xMin + dotBounds.xMax) / 2) (terminalY - dotScale * (dotBounds.yMin + dotBounds.yMax) / 2)] : with-transform [Italify para.slopeAngle] : with-transform [Scale dotScale dotScale] : with-transform [Italify (-para.slopeAngle)] dot
-		set-base-anchor 'above' terminalX (terminalY + dotRadius)
 	CreateTurnedLetter 'latn/turndelta' 0x18D 'grek/delta' HalfAdvance (XH / 2)
 
 	alias 'cyrl/be.SRB' null 'grek/delta.rounded'
