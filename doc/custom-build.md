@@ -47,6 +47,8 @@ To create a custom build, you need:
 
 Configuration of build plans are organized under `[buildPlans.<plan name>]` sections in the `private-build-plans.toml`. You can use [the Customizer](https://be5invis.github.io/Iosevka/customizer) to create the build plan, and/or manually edit them, following the instructions below. It is recommended to use PascalCase in the plan names.
 
+For asymmetric bowls, `capital-b` supports `big-top-bowl` and `big-bottom-bowl` with the usual serif and bar options. `lower-beta` supports `big-top-bowl` and `small-top-bowl`; `cyrl-ve` supports `big-top-bowl` and `big-bottom-bowl`, each with an optional `-tall` suffix.
+
 Inside the plan, top-level properties include:
 
 - `family`: String, defines the family name of your custom variant.
@@ -659,17 +661,17 @@ single-storey `a` design, and `crossing`. They are independent of Greek
     <tr><td><code>B</code> with mostly symmetric shape, interrupted middle bar, and serifs at top</td></tr>
     <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-standard-interrupted-bilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-standard-interrupted-bilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'standard-interrupted-bilateral-serifed'</code>, <code>cv12 = 6</code></td></tr>
     <tr><td><code>B</code> with mostly symmetric shape, interrupted middle bar, and serifs at both top and bottom</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-serifless'</code>, <code>cv12 = 7</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-serifless'</code>, <code>cv12 = 7</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape; without serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-unilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-unilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-unilateral-serifed'</code>, <code>cv12 = 8</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-unilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-unilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-unilateral-serifed'</code>, <code>cv12 = 8</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape, and serifs at top</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-bilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-bilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-bilateral-serifed'</code>, <code>cv12 = 9</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-bilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-bilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-bilateral-serifed'</code>, <code>cv12 = 9</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape, and serifs at both top and bottom</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-interrupted-serifless'</code>, <code>cv12 = 10</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-interrupted-serifless'</code>, <code>cv12 = 10</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape, and interrupted middle bar; without serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-unilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-unilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-interrupted-unilateral-serifed'</code>, <code>cv12 = 11</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-unilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-unilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-interrupted-unilateral-serifed'</code>, <code>cv12 = 11</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape, interrupted middle bar, and serifs at top</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-bilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-bilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'more-asymmetric-interrupted-bilateral-serifed'</code>, <code>cv12 = 12</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-capital-b-more-asymmetric-interrupted-bilateral-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-capital-b-more-asymmetric-interrupted-bilateral-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>capital-b = 'big-bottom-bowl-interrupted-bilateral-serifed'</code>, <code>cv12 = 12</code></td></tr>
     <tr><td><code>B</code> with more asymmetric shape, interrupted middle bar, and serifs at both top and bottom</td></tr>
     </table></details>
   - Styles for `C`

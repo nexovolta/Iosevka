@@ -175,6 +175,31 @@ glyph-block Letter-Latin-Upper-B : begin
 			topArcInnerShift -- ((-0.10) * (df.rightSB - df.leftSB))
 			df               -- df
 
+	define BigTopBBarPos 0.40
+	define [BigTopShapeT diag] : function [top sw st sb _df] : begin
+		local df : fallback _df : DivFrame 1
+		return : BShape top
+			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
+			barPos           -- BigTopBBarPos
+			topArcShift      -- (0.05 * (df.rightSB - df.leftSB))
+			topArcInnerShift -- (0.05 * (df.rightSB - df.leftSB))
+			serifTop         -- st
+			serifBot         -- sb
+			df               -- df
+			diag             -- diag
+	define BigTopShape : BigTopShapeT 0
+	define [BigTopShapeInterrupted top sw st sb _df] : difference
+		BigTopShape                  top sw st sb _df
+		[InterruptShape BigTopBBarPos] top sw st sb _df
+	define [BigTopMask top sw _df] : begin
+		local df : fallback _df : DivFrame 1
+		return : BShapeMask top
+			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
+			barPos           -- BigTopBBarPos
+			topArcShift      -- (0.05 * (df.rightSB - df.leftSB))
+			topArcInnerShift -- (0.05 * (df.rightSB - df.leftSB))
+			df               -- df
+
 	### Cyrillic Lower Ve
 
 	define [RoundedTopCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift rise [diag 0]] : glyph-proc
@@ -420,6 +445,19 @@ glyph-block Letter-Latin-Upper-B : begin
 		create-forked-glyph 'smcpB.cursiveBrokenRisingTall'  : [CursiveShapeBroken 1]    Ascender stroke false false
 		create-forked-glyph 'smcpB.cursiveBrokenFallingTall' : [CursiveShapeBroken (-1)] Ascender stroke false false
 
+	foreach {suffix barPos} {{'bigTopBowl' BigTopBBarPos} {'smallTopBowl' AsymmetricBBarPos}} : begin
+		create-glyph "smcpB.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : BShape XH (barPos -- barPos)
+		create-glyph "smcpB.\(suffix)Tall" : glyph-proc
+			include : MarkSet.b
+			include : BShape Ascender (barPos -- barPos)
+		create-glyph "smcpB.\(suffix)BGRTall" : glyph-proc
+			include : MarkSet.b
+			include : RoundedTopCyrVeShape Ascender
+				barPos -- barPos
+				rise   -- DToothlessRise
+
 	define [BOverlayBar top bp] : begin
 		local stroke : AdviceStroke2 2 3 (top - 0)
 		local bowl : mix stroke top bp
@@ -455,6 +493,10 @@ glyph-block Letter-Latin-Upper-B : begin
 			moreAsymmetricInterrupted   {AsymmetricShapeInterrupted   AsymmetricMask AsymmetricBBarPos  true   true }
 			moreAsymmetricBrokenRising  {AsymmetricShapeBrokenRising  AsymmetricMask AsymmetricBBarPos  true   true }
 			moreAsymmetricBrokenFalling {AsymmetricShapeBrokenFalling AsymmetricMask AsymmetricBBarPos  true   true }
+			bigTopBowl                  {BigTopShape                  BigTopMask     BigTopBBarPos      false  true }
+			bigTopBowlInterrupted       {BigTopShapeInterrupted       BigTopMask     BigTopBBarPos      true   true }
+			bigTopBowlBrokenRising      {[BigTopShapeT 1]             BigTopMask     BigTopBBarPos      true   true }
+			bigTopBowlBrokenFalling     {[BigTopShapeT (-1)]          BigTopMask     BigTopBBarPos      true   true }
 		object # serifs
 			serifless         {false  false}
 			unilateralSerifed {true   false}
@@ -568,11 +610,12 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Greek Lower Beta
 
-	define [BetaStandardShape flatBottom diag] : glyph-proc
+	define [BetaStandardShape flatBottom diag _barPos] : glyph-proc
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		include : LeaningAnchor.Below.VBar.l SB stroke
 
-		local bowl : mix stroke Ascender TallCyrVeBarPos
+		local barPos : fallback _barPos TallCyrVeBarPos
+		local bowl : mix stroke Ascender barPos
 		local mockBowlDepth : BowlXDepth Ascender (bowl - stroke) SB RightSB stroke
 		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth
 		local curveLeftTop : Math.min curveLeftBot : [mix Width RightSB 1.5] - OX - stroke * 1.375
@@ -622,7 +665,7 @@ glyph-block Letter-Latin-Upper-B : begin
 						flat [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine) [widths.lhs fine]
 						curl [if diag join.xCut (SB - O)] (bowl - stroke + fine) [heading Leftward]
 				if diag join.shape [no-shape]
-			if diag [no-shape] [[InterruptShape TallCyrVeBarPos] Ascender stroke]
+			if diag [no-shape] [[InterruptShape barPos] Ascender stroke]
 
 		set-base-anchor 'palatalHookAttach'
 			mix [Arch.adjust-x.bot [mix (SB + [HSwToV : stroke - shoulderFine]) xBotArcRight 0.5] (sw -- stroke)] xBotArcRight 0.75
@@ -635,6 +678,13 @@ glyph-block Letter-Latin-Upper-B : begin
 	create-glyph 'grek/beta.flatBottom' : glyph-proc
 		include : MarkSet.bp
 		include : BetaStandardShape true
+
+	create-glyph 'grek/beta.bigTopBowl' : glyph-proc
+		include : MarkSet.bp
+		include : BetaStandardShape false 0 BigTopBBarPos
+	create-glyph 'grek/beta.smallTopBowl' : glyph-proc
+		include : MarkSet.bp
+		include : BetaStandardShape false 0 AsymmetricBBarPos
 
 	foreach {suffix flatBottom diag} {
 		{'brokenRising' false 1}
@@ -651,7 +701,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	select-variant 'grek/beta' 0x3B2
 
 	alias 'grek/beta.UPPH' null 'grek/beta.standard'
-	foreach suffix {'standard' 'brokenRising' 'brokenFalling'} : create-glyph "latn/beta.\(suffix)" : glyph-proc
+	foreach suffix {'standard' 'brokenRising' 'brokenFalling' 'bigTopBowl' 'smallTopBowl'} : create-glyph "latn/beta.\(suffix)" : glyph-proc
 		include [refer-glyph "grek/beta.\(suffix)"] AS_BASE ALSO_METRICS
 		include : NeedSlab SLAB
 			NeedNotItalic [SerifFrame.fromDf [DivFrame 1] XH Descender].lb.fullSide
