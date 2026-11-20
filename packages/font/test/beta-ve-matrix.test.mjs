@@ -13,7 +13,7 @@ const makePara = await getParametersT({
 	paramsDir: fileURLToPath(new URL("../../../params", import.meta.url)),
 });
 const ears = ["earless-rounded", "earless-corner", "flat-top", "flat-top-serifed"];
-const teeth = ["rounded", "corner", "flat-bottom", "flat-bottom-serifed"];
+const teeth = ["toothless-rounded", "toothless-corner", "flat-bottom", "flat-bottom-serifed"];
 const bodies = ["descending", "descending-serifed", "descending-motion-serifed", "cursive"];
 const crossings = ["closed", "open", "broken-rising", "broken-falling"];
 const symmetries = ["symmetric-bowls", "big-bottom-bowl", "big-top-bowl"];
@@ -126,11 +126,11 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 			return signatures.get(`${prefix}.${variant.selector[selector]}`);
 		};
 		for (const alternatives of [
-			ears.map(ear => `${ear}-rounded-closed-symmetric-bowls-tall`),
+			ears.map(ear => `${ear}-toothless-rounded-closed-symmetric-bowls-tall`),
 			teeth.map(tooth => `earless-rounded-${tooth}-closed-symmetric-bowls-tall`),
-			crossings.map(crossing => `earless-rounded-rounded-${crossing}-symmetric-bowls-tall`),
-			symmetries.map(symmetry => `earless-rounded-rounded-closed-${symmetry}-tall`),
-			heights.map(height => `earless-rounded-rounded-closed-symmetric-bowls-${height}`),
+			crossings.map(crossing => `earless-rounded-toothless-rounded-${crossing}-symmetric-bowls-tall`),
+			symmetries.map(symmetry => `earless-rounded-toothless-rounded-closed-${symmetry}-tall`),
+			heights.map(height => `earless-rounded-toothless-rounded-closed-symmetric-bowls-${height}`),
 		]) {
 			assert.equal(new Set(alternatives.map(key => signature(key))).size, alternatives.length);
 		}

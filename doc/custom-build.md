@@ -51,7 +51,7 @@ For asymmetric bowls, `capital-b` supports `big-top-bowl` and `big-bottom-bowl` 
 
 For the extended lower-beta combinations, use `<body>-<crossing>-<symmetry>`, for example `descending-motion-serifed-broken-rising-big-top-bowl`. The bodies are `descending`, `descending-serifed`, `descending-motion-serifed`, and `cursive`; the crossings are `closed`, `open`, `broken-rising`, and `broken-falling`; and the symmetries are `symmetric-bowls`, `big-bottom-bowl`, and `big-top-bowl`.
 
-For the extended Cyrillic lower ve combinations, use `<ear>-<tooth>-<crossing>-<symmetry>-<height>`, for example `earless-rounded-flat-bottom-serifed-open-big-bottom-bowl-tall`. The ears are `earless-rounded`, `earless-corner`, `flat-top`, and `flat-top-serifed`; the teeth are `rounded`, `corner`, `flat-bottom`, and `flat-bottom-serifed`; the crossings and symmetries are the same as for lower beta; and the heights are `short` and `tall`. These variants span two OpenType features because a single feature can hold at most 255 alternates.
+For the extended Cyrillic lower ve combinations, use `<ear>-<tooth>-<crossing>-<symmetry>-<height>`, for example `earless-rounded-flat-bottom-serifed-open-big-bottom-bowl-tall`. The ears are `earless-rounded`, `earless-corner`, `flat-top`, and `flat-top-serifed`; the teeth are `toothless-rounded`, `toothless-corner`, `flat-bottom`, and `flat-bottom-serifed`; the crossings and symmetries are the same as for lower beta; and the heights are `short` and `tall`. These variants span two OpenType features because a single feature can hold at most 255 alternates.
 
 Inside the plan, top-level properties include:
 
