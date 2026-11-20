@@ -75,6 +75,12 @@ for (const [spacing, slope, weight, lVariant] of [
 		const numStems = crossings(glyphStore.queryByNameEnsured("num.phonotypic"), para.xHeight * 0.3);
 		assert.ok(mumStems.length >= 2 && numStems.length >= 2);
 		assert.ok(Math.abs((mumStems[1] - mumStems[0]) - (numStems[1] - numStems[0])) < 3, "mum stem weight differs from num");
+		if (spacing === "normal" && slope === "upright" && weight === 420) {
+			const rum = crossings(glyphStore.queryByNameEnsured("rum.phonotypic"), para.xHeight * 0.2);
+			assert.ok(rum.length >= 4 && rum.at(-1) - rum[0] > para.width * 0.55, "rum hook does not fill the base advance");
+			const lum = crossings(glyphStore.queryByNameEnsured("lum.phonotypic"), para.xHeight * 0.2);
+			assert.ok(lum.length >= 4 && lum.at(-1) - lum[0] > para.width * 0.3, "lum hook is too small");
+		}
 		if (spacing === "quasi-proportional") {
 			const margins = [];
 			for (const name of ["dum", "lum", "mum", "num", "rum", "tum", "um"]) {

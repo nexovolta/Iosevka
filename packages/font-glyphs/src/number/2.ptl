@@ -326,7 +326,9 @@ glyph-block Digits-Two : begin
 			local overlay letter.baseAnchors.overlay
 			if (prefix === 'r' && [not overlay]) : throw : new Error "Cannot find PTMN r stem in \(src)"
 			local xLeft : if (prefix === 'r') ([letter.gizmo.unapply overlay].x - swX / 2) (bounds.xMax - swX)
-			local xHook : Math.max (xLeft + [Math.max (2.25 * swX) (0.24 * Width)]) (letter.advanceWidth - SB)
+			local hookExtra : if (prefix === 'l') (0.10 * Width) 0
+			local xHook : [Math.max (xLeft + [Math.max (2.25 * swX) (0.24 * Width)]) (letter.advanceWidth - SB)] + hookExtra
+			local hookHeight : Hook * [if (prefix === 'l') 1.2 1]
 			local adb : clamp Hook (1.2 * ([Arch.adjust-x.top [mix xLeft xHook 0.5]] - xLeft)) ArchDepthB
 			local outWidth : Math.max (Width * adws) (xHook + SB)
 			local joinedBase : if (prefix === 'd' || prefix === 't') letter : new-glyph : glyph-proc
@@ -338,7 +340,7 @@ glyph-block Digits-Two : begin
 			currentGlyph.clearGeometry
 			include : union
 				begin joinedBase
-				BentTHook dispiro xLeft xHook [Math.max (yJoin + 0.2 * sw) (adb + 0.5 * sw)] 0 sw adb Hook
+				BentTHook dispiro xLeft xHook [Math.max (yJoin + 0.2 * sw) (adb + 0.5 * sw)] 0 sw adb hookHeight
 			include : FitInkAdvance [if para.isQuasiProportional 0 Width]
 			include : [DivFrame (currentGlyph.advanceWidth / Width)].markSet.p
 
