@@ -160,8 +160,6 @@ glyph-block Digits-Two : begin
 
 	do 'Rum rotunda : compressed 2 plus a forward slash through the base'
 		define rumAdws 0.78
-		# 2's foot bar plus `/` slash. `xSlashRefLeft` is the 2-body left SB
-		# used to place the slash; the bar itself may start further right.
 		define rumSlashYTop : 0.34 * XH
 		define rumSlashYBot : 0.70 * Descender
 		define [RumRotundaSlash xLeft xRight yTop yBot swSlash] : glyph-proc
@@ -182,7 +180,6 @@ glyph-block Digits-Two : begin
 			local df : DivFrame rumAdws
 			local hook : Math.min Hook : 0.45 * (df.rightSB - df.leftSB)
 			local xBarLeft : if fStraight df.leftSB (df.leftSB + df.mvs / 2)
-			# 2 body without its foot serif; compressed left to leave room for the slash.
 			if fStraight
 				include : TwoStraightNeckArcT dispiro 0 df.mvs top hookStyle df.leftSB df.rightSB hook
 				include : TwoArcShapeT dispiro 0 0 df.mvs top hookStyle df.leftSB df.rightSB hook df.width
@@ -232,9 +229,6 @@ glyph-block Digits-Two : begin
 		select-variant 'RumRotunda' 0xA75C (follow -- 'two')
 		select-variant 'rumRotunda' 0xA75D (follow -- 'two')
 		select-variant 'rRotundaLoop' 0x1DF94 (follow -- 'two')
-
-		# Full-weight letter plus rum-rotunda 2-foot. Advance matches ae/oe
-		# (MM), growing if the unscaled letter plus foot needs more.
 		define [MakeUmAt src adws _sw] : glyph-proc
 			local sw : fallback _sw Stroke
 			include : refer-glyph src
@@ -257,8 +251,6 @@ glyph-block Digits-Two : begin
 			local df : include : DivFrame (aw / Width)
 			include : df.markSet.p
 			include : TwoBaseWithSlash xJoin df.rightSB xJoin Stroke
-
-		# Tails flatten so the 2-foot can join; serifs stay; serifless uses hooky.
 		define [LumLSrc src] : begin
 			local suffix : if (src == 'l') [fallback para.variantSelector.l 'serifless'] : src.slice 2
 			local mapped : match suffix
@@ -295,7 +287,6 @@ glyph-block Digits-Two : begin
 			include : MakeUmAt [PackSrc 'n' src] para.advanceScaleM
 		derive-glyphs 'smcpRum' 0xA776 'smcpR' : lambda [src gr] : glyph-proc
 			include : MakeUmAt [PackSrc 'smcpR' src] para.advanceScaleM
-		# Rum-rotunda slash through the r ear, not the stem.
 		derive-glyphs 'rum' 0xA775 'r' : lambda [src gr] : glyph-proc
 			include [refer-glyph src] AS_BASE ALSO_METRICS
 			include : MarkSet.e
@@ -358,9 +349,6 @@ glyph-block Digits-Two : begin
 		derive-glyphs 'num.phonotypic' null 'n' : PhonotypicUm 'n' para.advanceScaleM
 		derive-glyphs 'rum.phonotypic' null 'r' : PhonotypicUm 'r' 1
 		derive-glyphs 'tum.phonotypic' null 't' : PhonotypicUm 't' para.advanceScaleM
-
-		# Monospace tum: t with the same compact rum slash through the bar.
-		# Aile/Etoile keep the t–Is ligature (see phoneticTum).
 		if [not para.isQuasiProportional] : begin
 			derive-glyphs 'tum' 0xA777 't' : lambda [src gr] : glyph-proc
 				include [refer-glyph src] AS_BASE ALSO_METRICS
