@@ -340,9 +340,7 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : mShapeBody df XH df.mvs
 
 		create-glyph "m/packPTMN.\(suffix)" : glyph-proc
-			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
-			local sw : Stroke * [mix 1 0.88 heavyT]
-			local df : include : ThreeQuarterDf para.advanceScaleMM sw 3 para.advanceScaleMM PhonotypicPackFraction
+			local df : include : ThreeQuarterDf para.advanceScaleMM Stroke 3 para.advanceScaleMM PhonotypicPackFraction
 			include : df.markSet.e
 			include : mShapeBody df XH df.mvs
 

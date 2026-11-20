@@ -29,6 +29,12 @@ function crossings(glyph, y) {
 
 for (const [spacing, slope, weight, lVariant] of [
 	["term", "upright", 120, null],
+	["normal", "upright", 120, null],
+	["normal", "upright", 420, null],
+	["normal", "upright", 920, null],
+	["normal", "italic", 120, null],
+	["normal", "italic", 420, null],
+	["normal", "italic", 920, null],
 	["quasi-proportional", "italic", 920, null],
 	["quasi-proportional", "upright", 420, "double-tailed"],
 	["quasi-proportional", "upright", 420, "top-tailed-bottom-flat-tailed"],
@@ -65,6 +71,10 @@ for (const [spacing, slope, weight, lVariant] of [
 		for (let i = 0; i < 4; i++) {
 			assert.ok(Math.abs(lower[i] - upper[i]) < Math.max(3, 0.05 * para.stroke), "um stems do not align");
 		}
+		const mumStems = crossings(glyphStore.queryByNameEnsured("mum.phonotypic"), para.xHeight * 0.3);
+		const numStems = crossings(glyphStore.queryByNameEnsured("num.phonotypic"), para.xHeight * 0.3);
+		assert.ok(mumStems.length >= 2 && numStems.length >= 2);
+		assert.ok(Math.abs((mumStems[1] - mumStems[0]) - (numStems[1] - numStems[0])) < 3, "mum stem weight differs from num");
 		if (spacing === "quasi-proportional") {
 			const margins = [];
 			for (const name of ["dum", "lum", "mum", "num", "rum", "tum", "um"]) {
