@@ -47,7 +47,11 @@ To create a custom build, you need:
 
 Configuration of build plans are organized under `[buildPlans.<plan name>]` sections in the `private-build-plans.toml`. You can use [the Customizer](https://be5invis.github.io/Iosevka/customizer) to create the build plan, and/or manually edit them, following the instructions below. It is recommended to use PascalCase in the plan names.
 
-For asymmetric bowls, `capital-b` supports `big-top-bowl` and `big-bottom-bowl` with the usual serif and bar options. `lower-beta` supports `big-top-bowl` and `small-top-bowl`; `cyrl-ve` supports `big-top-bowl` and `big-bottom-bowl`, each with an optional `-tall` suffix.
+For asymmetric bowls, `capital-b` supports `big-top-bowl` and `big-bottom-bowl` with the usual serif and bar options. `lower-beta` and `cyrl-ve` support `big-top-bowl` and `big-bottom-bowl`; `cyrl-ve` also has tall variants.
+
+For the extended lower-beta combinations, use `<body>-<crossing>-<symmetry>`, for example `descending-motion-serifed-broken-rising-big-top-bowl`. The bodies are `descending`, `descending-serifed`, `descending-motion-serifed`, and `cursive`; the crossings are `closed`, `open`, `broken-rising`, and `broken-falling`; and the symmetries are `symmetric-bowls`, `big-bottom-bowl`, and `big-top-bowl`.
+
+For the extended Cyrillic lower ve combinations, use `<ear>-<tooth>-<crossing>-<symmetry>-<height>`, for example `earless-rounded-flat-bottom-serifed-open-big-bottom-bowl-tall`. The ears are `earless-rounded`, `earless-corner`, `flat-top`, and `flat-top-serifed`; the teeth are `rounded`, `corner`, `flat-bottom`, and `flat-bottom-serifed`; the crossings and symmetries are the same as for lower beta; and the heights are `short` and `tall`. These variants span two OpenType features because a single feature can hold at most 255 alternates.
 
 Inside the plan, top-level properties include:
 

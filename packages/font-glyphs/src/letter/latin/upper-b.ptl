@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback SuffixCfg] from '@iosevka/util'
+import [mix fallback SuffixCfg joinCamel] from '@iosevka/util'
 import [MathSansSerif] from '@iosevka/glyph/relation'
 
 glyph-module
@@ -202,7 +202,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Cyrillic Lower Ve
 
-	define [RoundedTopCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift rise [diag 0]] : glyph-proc
+	define [RoundedTopCyrVeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift rise [diag 0] [earCorner false]] : glyph-proc
 		local bowl : mix stroke top barPos
 		local mockBowlDepth : BowlXDepth top (bowl - stroke) SB RightSB stroke
 		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth + topArcInnerShift
@@ -228,9 +228,14 @@ glyph-block Letter-Latin-Upper-B : begin
 			curl [if diag [Math.max join.minTurn [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] [Arch.adjust-x.bot curveLeftTop (sw -- stroke)]] (bowl - fine + offset)
 			archv
 			g4   (xTopArcRight - offset) yTopArcRight [widths.lhs stroke]
-			Arch.lhs (top - offset) (sw -- stroke)
-			flat (SB + offset) (top - [ArchDepthAClamped top 0 adaTop adbBot]) [widths.lhs.heading stroke Downward]
-			curl (SB + offset) (0 + rise + offset) [heading Downward]
+			if earCorner
+				list
+					Arch.lhs (top - offset) (sw -- stroke) (blendPost -- {})
+					g4 (SB + offset) (top - DToothlessRise - offset) [widths.lhs stroke]
+				list
+					Arch.lhs (top - offset) (sw -- stroke)
+					flat (SB + offset) (top - [ArchDepthAClamped top 0 adaTop adbBot]) [widths.lhs.heading stroke Downward]
+					curl (SB + offset) (0 + rise + offset) [heading Downward]
 
 		include : sink
 			widths.rhs fine
@@ -259,6 +264,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		local-parameter : serifTop         -- false
 		local-parameter : serifBot         -- false
 		local-parameter : diag             -- 0
+		local-parameter : earCorner        -- false
 
 		local dims : include : [RoundedTopCyrVeArcsT dispiro 0] top
 			stroke           -- stroke
@@ -267,8 +273,10 @@ glyph-block Letter-Latin-Upper-B : begin
 			topArcInnerShift -- topArcInnerShift
 			rise             -- rise
 			diag             -- diag
+			earCorner        -- earCorner
 
 		if diag : include dims.join.shape
+		if earCorner : include : VBar.l SB (0 + rise) (top - DToothlessRise) stroke
 
 		set-base-anchor 'strike' Middle (dims.bowl - 0.5 * stroke)
 
@@ -458,6 +466,44 @@ glyph-block Letter-Latin-Upper-B : begin
 				barPos -- barPos
 				rise   -- DToothlessRise
 
+	define [VeMatrixShape ear tooth diag closed barPos top] : glyph-proc
+		local sw : AdviceStroke2 2 3 top
+		local mid : [mix sw top barPos] - sw / 2
+		local upper : new-glyph : glyph-proc
+			if (ear === 'flatTop' || ear === 'flatTopSerifed')
+				include : BShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
+				include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag) (earCorner -- [ear === 'earlessCorner'])
+		local lower : new-glyph : glyph-proc
+			match tooth
+				[Just 'rounded'] : include : CursiveCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
+				[Just 'corner'] : include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag) (rise -- DToothlessRise)
+				__ : include : BShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
+		include : difference
+			union
+				intersection [begin upper] [MaskAbove mid]
+				intersection [begin lower] [MaskBelow mid]
+			if (diag || closed) [no-shape] [[InterruptShape barPos] top sw]
+		local sf : SerifFrame.fromDf [DivFrame 1] top 0 (swRef -- sw)
+		if (ear === 'flatTopSerifed') : include sf.lt.outer
+		if (tooth === 'flatBottomSerifed') : include sf.lb.outer
+		set-base-anchor 'strike' Middle mid
+
+	foreach ear {'earlessRounded' 'earlessCorner' 'flatTop' 'flatTopSerifed'} : foreach tooth {'rounded' 'corner' 'flatBottom' 'flatBottomSerifed'} : foreach {cross diag closed} {
+			{'closed' 0 true}
+			{'open' 0 false}
+			{'brokenRising' 1 false}
+			{'brokenFalling' (-1) false}
+		} : foreach {symmetry pos} {
+			{'symmetricBowls' BBarPos}
+			{'bigBottomBowl' AsymmetricBBarPos}
+			{'bigTopBowl' BigTopBBarPos}
+		} : foreach {height top} {{'short' XH} {'tall' Ascender}} : begin
+			local suffix : joinCamel [joinCamel [joinCamel [joinCamel [joinCamel 'matrix' ear] tooth] cross] symmetry] height
+			create-glyph "smcpB.\(suffix)" : glyph-proc
+				if (height === 'short') : include : MarkSet.e
+				if (height === 'tall') : include : MarkSet.b
+				include : VeMatrixShape ear tooth diag closed pos top
+
 	define [BOverlayBar top bp] : begin
 		local stroke : AdviceStroke2 2 3 (top - 0)
 		local bowl : mix stroke top bp
@@ -610,7 +656,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	### Greek Lower Beta
 
-	define [BetaStandardShape flatBottom diag _barPos] : glyph-proc
+	define [BetaStandardShape flatBottom diag _barPos _closed] : glyph-proc
 		local stroke : AdviceStroke2 2 3 (Ascender - 0)
 		include : LeaningAnchor.Below.VBar.l SB stroke
 
@@ -665,7 +711,7 @@ glyph-block Letter-Latin-Upper-B : begin
 						flat [if diag [Math.max join.minTurn [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] [Arch.adjust-x.top curveLeftBot (sw -- stroke)]] (bowl - stroke + fine) [widths.lhs fine]
 						curl [if diag join.xCut (SB - O)] (bowl - stroke + fine) [heading Leftward]
 				if diag join.shape [no-shape]
-			if diag [no-shape] [[InterruptShape barPos] Ascender stroke]
+			if (diag || _closed) [no-shape] [[InterruptShape barPos] Ascender stroke]
 
 		set-base-anchor 'palatalHookAttach'
 			mix [Arch.adjust-x.bot [mix (SB + [HSwToV : stroke - shoulderFine]) xBotArcRight 0.5] (sw -- stroke)] xBotArcRight 0.75
@@ -694,6 +740,36 @@ glyph-block Letter-Latin-Upper-B : begin
 	} : create-glyph "grek/beta.\(suffix)" : glyph-proc
 		include : MarkSet.bp
 		include : BetaStandardShape flatBottom diag
+
+	foreach {body serif cursive} {
+		{'descending' 0 false}
+		{'descendingSerifed' 1 false}
+		{'descendingMotionSerifed' 2 false}
+		{'cursive' 0 true}
+	} : foreach {cross diag closed} {
+		{'closed' 0 true}
+		{'open' 0 false}
+		{'brokenRising' 1 false}
+		{'brokenFalling' (-1) false}
+	} : foreach {symmetry pos} {
+		{'symmetricBowls' TallCyrVeBarPos}
+		{'bigBottomBowl' AsymmetricBBarPos}
+		{'bigTopBowl' BigTopBBarPos}
+	} : begin
+		local suffix : joinCamel [joinCamel [joinCamel 'matrix' body] cross] symmetry
+		create-glyph "grek/beta.\(suffix)" : glyph-proc
+			include : MarkSet.bp
+			if cursive
+				include : difference
+					CursiveCyrVeShape Ascender (barPos -- pos) (diag -- diag)
+					if (diag || closed) [no-shape] [[InterruptShape pos] Ascender [AdviceStroke2 2 3 Ascender]]
+				include : BetaStandardShape false diag pos closed
+			if serif : begin
+				local sf : SerifFrame.fromDf [DivFrame 1] Ascender Descender
+				if (serif === 1) : include sf.lb.fullSide
+				if (serif === 2) : include sf.lb.outer
+		create-glyph "latn/beta.\(suffix)" : glyph-proc
+			include [refer-glyph "grek/beta.\(suffix)"] AS_BASE ALSO_METRICS
 
 	alias 'grek/beta.cursive' null  'smcpB.cursiveInterruptedTall'
 	alias 'grek/betaSymbol'   0x3D0 'smcpB.cursiveInterruptedTall'

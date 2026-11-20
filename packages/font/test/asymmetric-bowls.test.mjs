@@ -18,7 +18,7 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 				shape: { serifs: "sans", spacing: "normal", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 				menu: { family: "Bowl test", version: "34.9.0", width: 5, slope, weight: 400 },
 				featureControl: { noCvSs: true, noLigation: true },
-				variants: { design: { "capital-b": `${name}-serifless`, "lower-beta": size === "big" ? name : "small-top-bowl", "cyrl-ve": `${name}-tall`, "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
+				variants: { design: { "capital-b": `${name}-serifless`, "lower-beta": name, "cyrl-ve": `${name}-tall`, "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
 			});
 			const { glyphStore } = buildGlyphs(para, {
 				blockIsNeeded: id => id === "Letter-Latin-Upper-B",
