@@ -124,6 +124,25 @@ glyph-block Letter-Latin-Upper-I : begin
 		include : [ISerifs.Impl MidJutCenter] df XH
 	alias 'smcpI.DFLT' null 'smcpI'
 
+	define [PhonotypicSmallIShape df top] : begin
+		local hookExtent : Math.max TailX MidJutCenter
+		define [BottomHooks] : union
+			PalatalHook.mExt df.middle (0 - Descender - O) (yAttach -- top) (radiusScale -- 1.5) (hookExtent -- hookExtent)
+			RetroflexHook.mExt df.middle (0 - Descender - O) (yAttach -- top) (radiusScale -- 1.5) (hookExtent -- hookExtent)
+		return : union
+			BottomHooks
+			with-transform [FlipAround df.middle (top / 2) 1 (-1)] : BottomHooks
+
+	create-glyph 'smcpICap.phonotypic' : glyph-proc
+		local df : include : DivFrame para.advanceScaleF
+		include : df.markSet.capital
+		include : PhonotypicSmallIShape df CAP
+
+	create-glyph 'smcpI.phonotypic' : glyph-proc
+		local df : include : DivFrame para.advanceScaleI
+		include : df.markSet.e
+		include : PhonotypicSmallIShape df XH
+
 	CreateAccentedComposition 'smcpIBar' 0x1D7B 'smcpI' 'barOver'
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarCenter
