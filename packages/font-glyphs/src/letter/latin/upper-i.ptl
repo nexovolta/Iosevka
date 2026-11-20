@@ -54,10 +54,11 @@ glyph-block Letter-Latin-Upper-I : begin
 		create-glyph "latn/Iota.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleF
 			include : df.markSet.capital
+			local serifs : include : Serifs df CAP
+			local hookExtent : Math.max TailX serifs.jut
 			include : union
-				PalatalHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP) (radiusScale -- 1.5)
-				RetroflexHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP) (radiusScale -- 1.5)
-			include : Serifs df CAP
+				PalatalHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP) (radiusScale -- 1.5) (hookExtent -- hookExtent)
+				RetroflexHook.mExt df.middle (0 - Descender - O) (yAttach -- CAP) (radiusScale -- 1.5) (hookExtent -- hookExtent)
 			eject-contour 'serifMB'
 
 		create-glyph "smcpI.UPPH.\(suffix)" : glyph-proc

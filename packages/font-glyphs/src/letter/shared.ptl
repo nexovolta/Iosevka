@@ -1424,8 +1424,8 @@ glyph-block Letter-Shared-Shapes : begin
 
 			export : define [lExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null]] : begin
 				return : Impl (x + [HSwToV : 0.5 * sw]) y xLink yAttach yOverflow sw sw maskOut
-			export : define [mExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null] [radiusScale 1]] : begin
-				return : Impl x y xLink yAttach yOverflow sw sw maskOut radiusScale
+			export : define [mExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null] [radiusScale 1] [hookExtent TailX]] : begin
+				return : Impl x y xLink yAttach yOverflow sw sw maskOut radiusScale hookExtent
 			export : define [rExt] : with-params [x y xLink [yAttach y] [yOverflow 0] [sw Stroke] [maskOut null]] : begin
 				return : Impl (x - [HSwToV : 0.5 * sw]) y xLink yAttach yOverflow sw sw maskOut
 
@@ -1545,7 +1545,7 @@ glyph-block Letter-Shared-Shapes : begin
 
 		# Palatal hooks
 		glyph-block-export PalatalHook
-		define PalatalHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale] : glyph-proc
+		define PalatalHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale hookExtent] : glyph-proc
 			local fullDepth : (0 - Descender) - 0.5 * sw - O
 			include : ExtendBelowBaseAnchors (y + Descender)
 			include : difference
@@ -1554,7 +1554,7 @@ glyph-block Letter-Shared-Shapes : begin
 					VerticalHook.m
 						x      -- x
 						y      -- (y - (fullDepth - TailY))
-						xDepth -- (-TailX)
+						xDepth -- (0 - [fallback hookExtent TailX])
 						yDepth -- TailY
 						sw     -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
@@ -1563,7 +1563,7 @@ glyph-block Letter-Shared-Shapes : begin
 
 		# Retroflex hooks
 		glyph-block-export RetroflexHook
-		define RetroflexHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale] : glyph-proc
+		define RetroflexHook : Descenders : function [x y xLink yAttach yOverflow sw refSw maskOut radiusScale hookExtent] : glyph-proc
 			local fullDepth : (0 - Descender) - 0.5 * sw - O
 			include : ExtendBelowBaseAnchors (y + Descender)
 			include : difference
@@ -1572,7 +1572,7 @@ glyph-block Letter-Shared-Shapes : begin
 					VerticalHook.m
 						x      -- x
 						y      -- (y - (fullDepth - TailY))
-						xDepth -- (+TailX)
+						xDepth -- [fallback hookExtent TailX]
 						yDepth -- TailY
 						sw     -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
