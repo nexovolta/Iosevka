@@ -42,6 +42,33 @@ glyph-block Letter-Latin-OO : begin
 		include : df.markSet.e
 		include : OOShape df XH SmallArchDepth
 
+	define [PhonotypicOOShape df top ad] : begin
+		local subDf : df.slice 3 2 OX
+		local ada : subDf.archDepthAOf ad df.mvs
+		local adb : subDf.archDepthBOf ad df.mvs
+		local swX : HSwToV df.mvs
+		local overlap : Math.max (0.12 * (df.rightSB - df.leftSB)) (1.1 * swX)
+		local innerLeft : df.middle - overlap
+		local innerRight : df.middle + overlap
+		local insetY : df.mvs * CThin
+		return : difference
+			union
+				OShapeOutline top 0 df.leftSB innerRight df.mvs ada adb
+				OShapeOutline top 0 innerLeft df.rightSB df.mvs ada adb
+			union
+				OShapeOutline (top - insetY) insetY (df.leftSB + swX) (innerRight - swX) df.mvs ada adb
+				OShapeOutline (top - insetY) insetY (innerLeft + swX) (df.rightSB - swX) df.mvs ada adb
+
+	create-glyph 'OO.phonotypic' : glyph-proc
+		local df : include : DivFrame para.advanceScaleMM 3
+		include : df.markSet.capital
+		include : PhonotypicOOShape df CAP ArchDepth
+
+	create-glyph 'oo.phonotypic' : glyph-proc
+		local df : include : DivFrame para.advanceScaleMM 3
+		include : df.markSet.e
+		include : PhonotypicOOShape df XH SmallArchDepth
+
 	alias 'cyrl/OO' 0xA698 'OO'
 	alias 'cyrl/oo' 0xA699 'oo'
 
