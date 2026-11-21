@@ -28,6 +28,7 @@ function inspectGlyph(glyph) {
 	assert.ok(contours.every(contour => contour.length >= 3 && contour.every(point => Number.isFinite(point.x) && Number.isFinite(point.y))));
 	assert.ok(points.length > 0 && points.every(point => Number.isFinite(point.x) && Number.isFinite(point.y)));
 	return {
+		advanceWidth: glyph.advanceWidth,
 		bounds: [
 			Math.min(...points.map(point => point.x)),
 			Math.min(...points.map(point => point.y)),
@@ -46,10 +47,10 @@ function reflectedError(source, target, centerY) {
 	return Math.max(directedError(source, target), directedError(target, source));
 }
 
-for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
-	test(`Greek capital Theta serif placement and circle clearance: ${slope} ${weight}`, () => {
+for (const spacing of ["normal", "quasi-proportional"]) for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
+	test(`Greek capital Theta serif placement and circle clearance: ${spacing} ${slope} ${weight}`, () => {
 		const para = makePara({
-			shape: { serifs: "sans", spacing: "normal", weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
+			shape: { serifs: "sans", spacing, weight, width: 500, slope, slopeAngle: slope === "italic" ? 9.4 : 0 },
 			menu: { family: "Theta serif test", version: "34.9.0", width: 5, slope, weight: 400 },
 			featureControl: { noCvSs: true, noLigation: true },
 			variants: { design: { "capital-latin-gamma": "serifless", "latin-gamma": "serifless" } },
@@ -66,8 +67,16 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 
 		for (const [suffix] of variants) {
 			const glyph = inspected.get(suffix);
-			for (let i = 0; i < base.bounds.length; i++) {
-				assert.ok(Math.abs(glyph.bounds[i] - base.bounds[i]) < 0.1, `${suffix}: serif extends outside the circle`);
+			const hasSerifs = suffix === "serifed" || suffix.endsWith("MiddleSerifed");
+			assert.ok(Math.abs(glyph.bounds[1] - base.bounds[1]) < 0.1, `${suffix}: top of circle changed`);
+			assert.ok(Math.abs(glyph.bounds[3] - base.bounds[3]) < 0.1, `${suffix}: bottom of circle changed`);
+			if (spacing === "normal" || !hasSerifs) {
+				assert.ok(Math.abs(glyph.bounds[0] - base.bounds[0]) < 0.1, `${suffix}: left side changed`);
+				assert.ok(Math.abs(glyph.bounds[2] - base.bounds[2]) < 0.1, `${suffix}: right side changed`);
+			} else {
+				assert.ok(glyph.bounds[2] - glyph.bounds[0] > base.bounds[2] - base.bounds[0], `${suffix}: quasi-proportional circle was not widened`);
+				assert.ok(Math.abs(glyph.advanceWidth - para.width * para.advanceScaleT) < 0.1, `${suffix}: advance did not use advanceScaleT`);
+				assert.ok(Math.abs((glyph.bounds[0] + glyph.bounds[2]) / 2 - glyph.advanceWidth / 2) < 0.1, `${suffix}: widened circle is not centered`);
 			}
 		}
 
@@ -81,7 +90,7 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 		assert.ok(straightSerifs.points.length > straightPlain.points.length, "straight serifs are not centered on the bar");
 		assert.ok(risingSerifs.points.length > inspected.get("diagonalCrossbar").points.length);
 		assert.ok(fallingSerifs.points.length > inspected.get("diagonalCrossbarFalling").points.length);
-		if (slope === "upright") {
+		if (spacing === "normal" && slope === "upright") {
 			assert.ok(reflectedError(straightSerifs.points, straightSerifs.points, para.cap / 2) < 1, "straight serifs are not centered");
 			assert.ok(reflectedError(risingSerifs.points, fallingSerifs.points, para.cap / 2) < 8, "diagonal serifs do not flank in opposite directions");
 		}

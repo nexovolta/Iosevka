@@ -17,25 +17,40 @@ glyph-block Letter-Greek-Upper-Theta : begin
 		diagonalCrossbarFalling               {false  (-1)}
 		diagonalCrossbarFallingMiddleSerifed  {true   (-1)}
 
+	define [ThetaBar xMidLeft xMidRight diag] : glyph-proc
+		local yBar : 0.5 * CAP
+		include : if diag
+			DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
+			HBar.m xMidLeft xMidRight yBar
+
+	define [ThetaMiddleSerifs xMidLeft xMidRight diag] : glyph-proc
+		define jutSw : Math.min VJutStroke [Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))]
+		define jut : Math.min VJut (Stroke + 2 * jutSw)
+		local yBar : 0.5 * CAP
+		local rise : diag * 0.16 * CAP
+		local yRise : diag * 0.08 * CAP
+		local barWidth : xMidRight - xMidLeft
+		local midJut : DiagonalMiddleSerifLength rise barWidth Stroke (jut / 2) [HSwToV jutSw]
+		local serifShift : DiagonalMiddleSerifShift rise barWidth Stroke midJut 1
+		include : VSerif.ml xMidLeft  (yBar - yRise - serifShift) midJut jutSw
+		include : VSerif.mr xMidRight (yBar + yRise + serifShift) midJut jutSw
+
 	foreach {suffix {fSerif diag}} [Object.entries ThetaConfig] : begin
 		create-glyph "grek/Theta.\(suffix)" : glyph-proc
-			include : MarkSet.capital
-			local xMidLeft  : SB + [HSwToV Stroke] - O * 3
-			local xMidRight : RightSB - [HSwToV Stroke] + O * 3
-			local yBar : 0.5 * CAP
-			include [refer-glyph 'O'] AS_BASE
-			include : if diag
-				DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
-				HBar.m xMidLeft xMidRight yBar
-			if fSerif : begin
-				define jutSw : Math.min VJutStroke [Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))]
-				define jut : Math.min VJut (Stroke + 2 * jutSw)
-				local rise : diag * 0.16 * CAP
-				local yRise : diag * 0.08 * CAP
-				local barWidth : xMidRight - xMidLeft
-				local midJut : DiagonalMiddleSerifLength rise barWidth Stroke (jut / 2) [HSwToV jutSw]
-				local serifShift : DiagonalMiddleSerifShift rise barWidth Stroke midJut 1
-				include : VSerif.ml xMidLeft  (yBar - yRise - serifShift) midJut jutSw
-				include : VSerif.mr xMidRight (yBar + yRise + serifShift) midJut jutSw
+			if (fSerif && para.isQuasiProportional) : begin
+				local df : include : DivFrame para.advanceScaleT 3
+				include : df.markSet.capital
+				include : OShape CAP 0 df.leftSB df.rightSB Stroke ArchDepthA ArchDepthB
+				local xMidLeft  : df.leftSB + [HSwToV Stroke] - O * 3
+				local xMidRight : df.rightSB - [HSwToV Stroke] + O * 3
+				include : ThetaBar xMidLeft xMidRight diag
+				include : ThetaMiddleSerifs xMidLeft xMidRight diag
+			else : begin
+				include : MarkSet.capital
+				local xMidLeft  : SB + [HSwToV Stroke] - O * 3
+				local xMidRight : RightSB - [HSwToV Stroke] + O * 3
+				include [refer-glyph 'O'] AS_BASE
+				include : ThetaBar xMidLeft xMidRight diag
+				if fSerif : include : ThetaMiddleSerifs xMidLeft xMidRight diag
 
 	select-variant 'grek/Theta' 0x398
