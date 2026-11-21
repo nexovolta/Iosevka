@@ -43,7 +43,8 @@ glyph-block Letter-Greek-Upper-Xi : begin
 			if serifBL : include : VSerif.ul (SB      + OX) 0    jutBot
 			if serifBR : include : VSerif.ur (RightSB - OX) 0    jutBot
 			local yRise : if diag (diag * 0.08 * CAP) 0
-			if serifML : include : VSerif.ml xMidLeft       (yBar - yRise) jutMid
-			if serifMR : include : VSerif.mr xMidRight      (yBar + yRise) jutMid
+			local serifShift : DiagonalMiddleSerifShift (diag * 0.16 * CAP) (xMidRight - xMidLeft) Stroke jutMid 1
+			if serifML : include : VSerif.ml xMidLeft       (yBar - yRise - serifShift) jutMid
+			if serifMR : include : VSerif.mr xMidRight      (yBar + yRise + serifShift) jutMid
 
 	select-variant 'grek/Xi' 0x39E

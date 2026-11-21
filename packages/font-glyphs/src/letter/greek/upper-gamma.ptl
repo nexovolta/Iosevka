@@ -80,7 +80,10 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				DiagonalHBar xGammaBarLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
 				HBar.m xGammaBarLeft xMidRight yBar
 			if doRM : begin
-				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke + [if diag (diag * 0.08 * CAP) 0]) [mix Stroke VJut 0.5]
+				local slope : [if diag (diag * 0.16 * CAP) 0] / (xMidRight - xGammaBarLeft)
+				local halfHeight : 0.5 * Stroke * [Math.sqrt : 1 + slope * slope]
+				local shift : if diag [Math.max 0 : slope * [HSwToV VJutStroke] + HalfStroke - halfHeight + TINY] 0
+				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke + [if diag (diag * 0.08 * CAP) 0] - shift) [mix Stroke VJut 0.5]
 
 		create-glyph "rCap.\(suffix)" : glyph-proc
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS

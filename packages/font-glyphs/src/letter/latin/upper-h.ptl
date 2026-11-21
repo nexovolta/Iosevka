@@ -125,7 +125,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-ALL]        : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
-				include : VSerif.mr xRight (barPos + rise / 2) jutMid swVJut
+				include : VSerif.mr xRight (barPos + rise / 2 + [DiagonalMiddleSerifShift rise (xRight - xLeft + O) stroke jutMid 1]) jutMid swVJut
 			__                     : glyph-proc
 
 	define flex-params [RightHalfHShape] : glyph-proc
@@ -162,7 +162,7 @@ glyph-block Letter-Latin-Upper-H : begin
 			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
-				include : VSerif.ml xLeft (barPos - rise / 2) jutMid swVJut
+				include : VSerif.ml xLeft (barPos - rise / 2 + [DiagonalMiddleSerifShift rise (xRight - xLeft + O) stroke jutMid (-1)]) jutMid swVJut
 			__                     : glyph-proc
 
 	define flex-params [EnGheShape] : glyph-proc

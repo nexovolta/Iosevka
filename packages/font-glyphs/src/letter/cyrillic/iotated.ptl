@@ -245,21 +245,23 @@ glyph-block Letter-Cyrillic-Iotated : begin
 				local barRise : diag * 0.16 * top
 				local yBarRight : top / 2 + barRise / 2
 				local fullRise : if diag (barRise * (xMidBarRight - df.leftSB) / (xMidBarRight - xBodyBarLeft)) 0
+				local swVJut : Math.min (VJutStroke * (sw / Stroke))
+					VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : (subDf.rightSB - [HSwToV sw]) + shift] - ((subDf.leftSB + [HSwToV sw]) + shift))
+				local extra : if (diag && fMidSerif && !fCapital) [HSwToV : 0.5 * swVJut] 0
+				local slope : fullRise / (xMidBarRight - df.leftSB)
 				include : Iotation.full df top
 					hBarRight -- : if diag df.leftSB xMidBarRight
 					hBarY     -- (top / 2)
 					fCapital  -- fCapital
 					swRef     -- sw
 					serifType -- [IotationSerifFromSelector : if fCapital 'cyrl/Yu' 'cyrl/yu']
-				if diag : include : DiagonalHBar df.leftSB xMidBarRight (yBarRight - fullRise / 2) fullRise sw
+				if diag : include : DiagonalHBar df.leftSB (xMidBarRight + extra) (yBarRight - fullRise / 2 + slope * extra / 2) (fullRise + slope * extra) sw
 
 				if fMidSerif : begin
 					local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 						if fCapital Hook nothing
 						if fCapital Hook nothing
-					local swVJut : Math.min (VJutStroke * (sw / Stroke))
-						VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : (subDf.rightSB - [HSwToV sw]) + shift] - ((subDf.leftSB + [HSwToV sw]) + shift))
-					include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) yBarRight jutMid swVJut
+					include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) (yBarRight + slope * extra + [DiagonalMiddleSerifShift fullRise (xMidBarRight - df.leftSB) sw jutMid 1]) jutMid swVJut
 
 			foreach {dsuf dval0} [Object.entries DiagCfg] : do
 				local diag : CyrillicEDiagonal styTop styBot dval0

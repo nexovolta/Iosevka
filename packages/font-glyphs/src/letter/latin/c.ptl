@@ -429,17 +429,21 @@ glyph-block Letter-Latin-C : begin
 			include : lf.revFull
 
 			local xMidBarLeft : if (fMidSerif && !fCapital) df.middle : mix df.leftSB df.rightSB 0.35
+			local swVJut : Math.min (VJutStroke * (sw / Stroke))
+				VSwToH : [if fCapital 0.800 0.625] * ((df.rightSB - [HSwToV sw]) - [if fCapital xMidBarLeft : df.leftSB + [HSwToV sw]])
+			local extra : if (fMidSerif && !fCapital && _diag) [HSwToV : 0.5 * swVJut] 0
+			local barWidth : (df.rightSB - OX + O) - xMidBarLeft
+			local slope : [if _diag (_diag * 0.16 * top) 0] / barWidth
 			include : if _diag
-				DiagonalHBar xMidBarLeft ((df.rightSB - OX) + O) (top / 2) (_diag * 0.16 * top) sw
+				DiagonalHBar (xMidBarLeft - extra) ((df.rightSB - OX) + O) (top / 2 - slope * extra / 2) (slope * (barWidth + extra)) sw
 				HBar.m xMidBarLeft ((df.rightSB - OX) + O) (top / 2) sw
 
 			if fMidSerif : begin
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
-				local swVJut : Math.min (VJutStroke * (sw / Stroke))
-					VSwToH : [if fCapital 0.800 0.625] * ((df.rightSB - [HSwToV sw]) - [if fCapital xMidBarLeft : df.leftSB + [HSwToV sw]])
-				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) ((top / 2) - [if _diag (_diag * 0.08 * top) 0]) jutMid swVJut
+				local ySerif : top / 2 - slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw jutMid (-1)]
+				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif jutMid swVJut
 
 		define [CyrYeShape fCapital fMidSerif df top ada adb _diag] : glyph-proc
 			local sw : df.adviceThinnerStroke2 2 3 top
@@ -450,17 +454,21 @@ glyph-block Letter-Latin-C : begin
 			include : lf.full
 
 			local xMidBarRight : if (fMidSerif && !fCapital) df.middle : mix df.rightSB df.leftSB 0.35
+			local swVJut : Math.min (VJutStroke * (sw / Stroke))
+				VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : df.rightSB - [HSwToV sw]] - (df.leftSB + [HSwToV sw]))
+			local extra : if (fMidSerif && !fCapital && _diag) [HSwToV : 0.5 * swVJut] 0
+			local barWidth : xMidBarRight - (df.leftSB + OX - O)
+			local slope : [if _diag (_diag * 0.16 * top) 0] / barWidth
 			include : if _diag
-				DiagonalHBar ((df.leftSB + OX) - O) xMidBarRight (top / 2) (_diag * 0.16 * top) sw
+				DiagonalHBar ((df.leftSB + OX) - O) (xMidBarRight + extra) (top / 2 + slope * extra / 2) (slope * (barWidth + extra)) sw
 				HBar.m ((df.leftSB + OX) - O) xMidBarRight (top / 2) sw
 
 			if fMidSerif : begin
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
-				local swVJut : Math.min (VJutStroke * (sw / Stroke))
-					VSwToH : [if fCapital 0.800 0.625] * ([if fCapital xMidBarRight : df.rightSB - [HSwToV sw]] - (df.leftSB + [HSwToV sw]))
-				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) ((top / 2) + [if _diag (_diag * 0.08 * top) 0]) jutMid swVJut
+				local ySerif : top / 2 + slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw jutMid 1]
+				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif jutMid swVJut
 
 		create-glyph "cyrl/E.\(suffix)" : glyph-proc
 			include : MarkSet.capital

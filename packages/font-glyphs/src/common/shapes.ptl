@@ -461,6 +461,13 @@ glyph-block CommonShapes : begin
 			corner xr (y + rise / 2 + h / 2)
 			corner xr (y + rise / 2 - h / 2)
 
+	glyph-block-export DiagonalMiddleSerifShift
+	define [DiagonalMiddleSerifShift rise width stroke length side] : begin
+		if (!rise) : return 0
+		local slope : rise / width
+		local halfHeight : 0.5 * stroke * [Math.sqrt : 1 + slope * slope]
+		return : [Math.sign (rise * side)] * [Math.max 0 : length - halfHeight + TINY]
+
 	glyph-block-export BrokenBarJoin
 	define [BrokenBarJoin left width stroke xTurn yTop direction _stemWidth _mirrorX] : begin
 		local stemWidth : fallback _stemWidth stroke

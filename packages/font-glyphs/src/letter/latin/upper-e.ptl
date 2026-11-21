@@ -37,7 +37,7 @@ glyph-block Letter-Latin-Upper-E : begin
 		local swVJut : VJutStroke * (stroke / Stroke)
 		if serifRT : include : tagged 'serifRT' : VSerif.dr RightSB      top    jutTop swVJut
 		if serifRB : include : tagged 'serifRB' : VSerif.ur RightSB      0      jutBot swVJut
-		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0]
+		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) (xMidBarRight - (xEBarLeft - O)) stroke jutMid 1]
 		if serifRM : include : tagged 'serifRM' : VSerif.mr xMidBarRight yMidEnd jutMid swVJut
 
 	define [RevEShape top serifRT serifRB serifLT serifLB serifLM _stroke _jutTop _jutBot _diag] : glyph-proc
@@ -59,7 +59,7 @@ glyph-block Letter-Latin-Upper-E : begin
 		local swVJut : VJutStroke * (stroke / Stroke)
 		if serifLT : include : tagged 'serifLT' : VSerif.dl SB          top    jutTop swVJut
 		if serifLB : include : tagged 'serifLB' : VSerif.ul SB          0      jutBot swVJut
-		local yMidEnd : barPos - [if _diag (_diag * 0.08 * top) 0]
+		local yMidEnd : barPos - [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) ((xRevEBarRight + O) - xMidBarLeft) stroke jutMid (-1)]
 		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft yMidEnd jutMid swVJut
 
 	define EConfig : object
