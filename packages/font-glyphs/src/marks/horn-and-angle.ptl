@@ -68,12 +68,6 @@ glyph-block Mark-Horn-And-Angle : begin
 						g4 (attX - overflowX - [HSwToV HalfStroke]) (attY - overflowY - Stroke) [widths.rhs stroke]
 
 	glyph-block-export HornBaseAnchor
-	define [HornDim attX attY overflowX overflowY krY] : begin
-		local horn : Horn attX attY overflowX overflowY (+2.0) krY
-		local [object radius fine stroke startX startY] : horn.dim
-		local hornFine : fine
-		local hornStroke : stroke
-		return : object radius hornFine hornStroke startX startY
 
 	define [HornMarkAnchor attX attY overflowX overflowY krY] : glyph-proc
 		local horn : Horn attX attY overflowX overflowY (+2.0) krY
@@ -92,20 +86,22 @@ glyph-block Mark-Horn-And-Angle : begin
 		include : horn.shape.square
 
 	define [DiamondHornShape attX attY overshootX overshootY krY] : glyph-proc
-		local [object [radius r] hornFine hornStroke startX startY] : HornDim attX attY overshootX overshootY krY
+		local horn : Horn attX attY overshootX overshootY (+2.0) krY
+		local [object [radius r] fine stroke startX startY] : horn.dim
 		local radius : r * SquareDotScalar
 		local q : radius * Math.SQRT2
 		include : union
 			DiamondAt (startX - q) startY radius
 			dispiro
-				flat startX startY [widths.rhs.heading hornFine Downward]
+				flat startX startY [widths.rhs.heading fine Downward]
 				curl startX (startY - radius)
 				quadControls 0 0.8 8 : object : blend : lambda [t]
-					widths.rhs [mix hornFine hornStroke t]
-				g4 (attX - overshootX - [HSwToV HalfStroke]) (attY - overshootY - Stroke) [widths.rhs hornStroke]
+					widths.rhs [mix fine stroke t]
+				g4 (attX - overshootX - [HSwToV HalfStroke]) (attY - overshootY - Stroke) [widths.rhs stroke]
 
 	define [ArcHornShape attX attY overshootX overshootY krY topCut] : glyph-proc
-		local [object radius startX] : HornDim attX attY overshootX overshootY krY
+		local horn : Horn attX attY overshootX overshootY (+2.0) krY
+		local [object radius startX] : horn.dim
 		local bottom : attY - overshootY - 0.35 * markStroke
 		local curveTop : bottom + radius
 		local verticalLength : Math.max (radius * 1.5) (markStroke * 1.2)
@@ -126,7 +122,8 @@ glyph-block Mark-Horn-And-Angle : begin
 				VBar.m startX curveTop (curveTop + radius) markStroke
 
 	define [CornerHornShape attX attY overshootX overshootY krY] : glyph-proc
-		local [object radius startX] : HornDim attX attY overshootX overshootY krY
+		local horn : Horn attX attY overshootX overshootY (+2.0) krY
+		local [object radius startX] : horn.dim
 		local bottom : attY - overshootY - 0.35 * markStroke
 		local left : attX - overshootX - [HSwToV HalfStroke]
 		local half : markStroke / 2
@@ -139,17 +136,18 @@ glyph-block Mark-Horn-And-Angle : begin
 			corner (startX + half) (bottom - half)
 
 	define [HexagonHornShape attX attY overshootX overshootY krY] : glyph-proc
-		local [object [radius r] hornFine hornStroke startX startY] : HornDim attX attY overshootX overshootY krY
+		local horn : Horn attX attY overshootX overshootY (+2.0) krY
+		local [object [radius r] fine stroke startX startY] : horn.dim
 		local radius : r * HexagonDotScalar
 		local halfWidth : radius * [Math.sqrt 3] / 2
 		include : union
 			HexagonAt (startX - halfWidth) startY radius
 			dispiro
-				flat startX (startY + radius / 2) [widths.rhs.heading hornFine Downward]
+				flat startX (startY + radius / 2) [widths.rhs.heading fine Downward]
 				curl startX (startY - radius)
 				quadControls 0 0.8 8 : object : blend : lambda [t]
-					widths.rhs [mix hornFine hornStroke t]
-				g4 (attX - overshootX - [HSwToV HalfStroke]) (attY - overshootY - Stroke) [widths.rhs hornStroke]
+					widths.rhs [mix fine stroke t]
+				g4 (attX - overshootX - [HSwToV HalfStroke]) (attY - overshootY - Stroke) [widths.rhs stroke]
 
 	create-glyph : glyph-proc
 		set-width 0
