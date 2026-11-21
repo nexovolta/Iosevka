@@ -10,10 +10,12 @@ glyph-block Letter-Greek-Upper-Theta : begin
 	glyph-block-import Common-Derivatives
 
 	define ThetaConfig : object
-		serifless               {false  0   }
-		serifed                 {true   0   }
-		diagonalCrossbar        {false  1   }
-		diagonalCrossbarFalling {false  (-1)}
+		serifless                             {false  0   }
+		serifed                               {true   0   }
+		diagonalCrossbar                      {false  1   }
+		diagonalCrossbarMiddleSerifed         {true   1   }
+		diagonalCrossbarFalling               {false  (-1)}
+		diagonalCrossbarFallingMiddleSerifed  {true   (-1)}
 
 	foreach {suffix {fSerif diag}} [Object.entries ThetaConfig] : begin
 		create-glyph "grek/Theta.\(suffix)" : glyph-proc
@@ -26,9 +28,14 @@ glyph-block Letter-Greek-Upper-Theta : begin
 				DiagonalHBar xMidLeft xMidRight yBar (diag * 0.16 * CAP) Stroke
 				HBar.m xMidLeft xMidRight yBar
 			if fSerif : begin
-				define jutSw : Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))
+				define jutSw : Math.min VJutStroke [Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))]
 				define jut : Math.min VJut (Stroke + 2 * jutSw)
-				include : VBar.l xMidLeft (yBar - 0.5 * jut) (yBar + 0.5 * jut) jutSw
-				include : VBar.r xMidRight (yBar - 0.5 * jut) (yBar + 0.5 * jut) jutSw
+				local rise : diag * 0.16 * CAP
+				local yRise : diag * 0.08 * CAP
+				local barWidth : xMidRight - xMidLeft
+				local midJut : DiagonalMiddleSerifLength rise barWidth Stroke (jut / 2) [HSwToV jutSw]
+				local serifShift : DiagonalMiddleSerifShift rise barWidth Stroke midJut 1
+				include : VSerif.ml xMidLeft  (yBar - yRise - serifShift) midJut jutSw
+				include : VSerif.mr xMidRight (yBar + yRise + serifShift) midJut jutSw
 
 	select-variant 'grek/Theta' 0x398
