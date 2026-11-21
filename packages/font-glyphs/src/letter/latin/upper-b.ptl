@@ -19,9 +19,14 @@ glyph-block Letter-Latin-Upper-B : begin
 	define BBarPos           0.52
 	define TallCyrVeBarPos   0.55
 	define AsymmetricBBarPos 0.60
+	define BigTopBBarPos     0.40
 
-	define AsymmetricBTopArcShift      : (-0.05) * (RightSB - SB)
-	define AsymmetricBTopArcInnerShift : (-0.10) * (RightSB - SB)
+	define [BTopArcShift pos] : if (pos == AsymmetricBBarPos)
+		(-0.05) * (RightSB - SB)
+		if (pos == BigTopBBarPos) (0.05 * (RightSB - SB)) 0
+	define [BTopArcInnerShift pos] : if (pos == AsymmetricBBarPos)
+		(-0.10) * (RightSB - SB)
+		if (pos == BigTopBBarPos) (0.05 * (RightSB - SB)) 0
 
 	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [df [DivFrame 1]] [diag 0]] : glyph-proc
 		local bowl : mix stroke top barPos
@@ -175,7 +180,6 @@ glyph-block Letter-Latin-Upper-B : begin
 			topArcInnerShift -- ((-0.10) * (df.rightSB - df.leftSB))
 			df               -- df
 
-	define BigTopBBarPos 0.40
 	define [BigTopShapeT diag] : function [top sw st sb _df] : begin
 		local df : fallback _df : DivFrame 1
 		return : BShape top
@@ -456,28 +460,32 @@ glyph-block Letter-Latin-Upper-B : begin
 	foreach {suffix barPos} {{'bigTopBowl' BigTopBBarPos} {'smallTopBowl' AsymmetricBBarPos}} : begin
 		create-glyph "smcpB.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			include : BShape XH (barPos -- barPos)
+			include : BShape XH (barPos -- barPos) (topArcShift -- [BTopArcShift barPos]) (topArcInnerShift -- [BTopArcInnerShift barPos])
 		create-glyph "smcpB.\(suffix)Tall" : glyph-proc
 			include : MarkSet.b
-			include : BShape Ascender (barPos -- barPos)
+			include : BShape Ascender (barPos -- barPos) (topArcShift -- [BTopArcShift barPos]) (topArcInnerShift -- [BTopArcInnerShift barPos])
 		create-glyph "smcpB.\(suffix)BGRTall" : glyph-proc
 			include : MarkSet.b
 			include : RoundedTopCyrVeShape Ascender
 				barPos -- barPos
+				topArcShift -- [BTopArcShift barPos]
+				topArcInnerShift -- [BTopArcInnerShift barPos]
 				rise   -- DToothlessRise
 
 	define [VeMatrixShape ear tooth diag closed barPos top] : glyph-proc
 		local sw : AdviceStroke2 2 3 top
 		local mid : [mix sw top barPos] - sw / 2
+		local outerShift : BTopArcShift barPos
+		local innerShift : BTopArcInnerShift barPos
 		local upper : new-glyph : glyph-proc
 			if (ear === 'flatTop' || ear === 'flatTopSerifed')
-				include : BShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
-				include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag) (earCorner -- [ear === 'earlessCorner'])
+				include : BShape top (stroke -- sw) (barPos -- barPos) (topArcShift -- outerShift) (topArcInnerShift -- innerShift) (diag -- diag)
+				include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (topArcShift -- outerShift) (topArcInnerShift -- innerShift) (diag -- diag) (earCorner -- [ear === 'earlessCorner'])
 		local lower : new-glyph : glyph-proc
 			match tooth
-				[Just 'rounded'] : include : CursiveCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
-				[Just 'corner'] : include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (diag -- diag) (rise -- DToothlessRise)
-				__ : include : BShape top (stroke -- sw) (barPos -- barPos) (diag -- diag)
+				[Just 'rounded'] : include : CursiveCyrVeShape top (stroke -- sw) (barPos -- barPos) (topArcShift -- outerShift) (topArcInnerShift -- innerShift) (diag -- diag)
+				[Just 'corner'] : include : RoundedTopCyrVeShape top (stroke -- sw) (barPos -- barPos) (topArcShift -- outerShift) (topArcInnerShift -- innerShift) (diag -- diag) (rise -- DToothlessRise)
+				__ : include : BShape top (stroke -- sw) (barPos -- barPos) (topArcShift -- outerShift) (topArcInnerShift -- innerShift) (diag -- diag)
 		include : difference
 			union
 				intersection [begin upper] [MaskAbove mid]
@@ -535,10 +543,10 @@ glyph-block Letter-Latin-Upper-B : begin
 			standardInterrupted         {StdShapeInterrupted          StdMask        BBarPos            true   false}
 			standardBrokenRising        {StdShapeBrokenRising         StdMask        BBarPos            true   false}
 			standardBrokenFalling       {StdShapeBrokenFalling        StdMask        BBarPos            true   false}
-			moreAsymmetric              {AsymmetricShape              AsymmetricMask AsymmetricBBarPos  false  true }
-			moreAsymmetricInterrupted   {AsymmetricShapeInterrupted   AsymmetricMask AsymmetricBBarPos  true   true }
-			moreAsymmetricBrokenRising  {AsymmetricShapeBrokenRising  AsymmetricMask AsymmetricBBarPos  true   true }
-			moreAsymmetricBrokenFalling {AsymmetricShapeBrokenFalling AsymmetricMask AsymmetricBBarPos  true   true }
+			bigBottomBowl              {AsymmetricShape              AsymmetricMask AsymmetricBBarPos  false  true }
+			bigBottomBowlInterrupted   {AsymmetricShapeInterrupted   AsymmetricMask AsymmetricBBarPos  true   true }
+			bigBottomBowlBrokenRising  {AsymmetricShapeBrokenRising  AsymmetricMask AsymmetricBBarPos  true   true }
+			bigBottomBowlBrokenFalling {AsymmetricShapeBrokenFalling AsymmetricMask AsymmetricBBarPos  true   true }
 			bigTopBowl                  {BigTopShape                  BigTopMask     BigTopBBarPos      false  true }
 			bigTopBowlInterrupted       {BigTopShapeInterrupted       BigTopMask     BigTopBBarPos      true   true }
 			bigTopBowlBrokenRising      {[BigTopShapeT 1]             BigTopMask     BigTopBBarPos      true   true }
@@ -663,15 +671,15 @@ glyph-block Letter-Latin-Upper-B : begin
 		local barPos : fallback _barPos TallCyrVeBarPos
 		local bowl : mix stroke Ascender barPos
 		local mockBowlDepth : BowlXDepth Ascender (bowl - stroke) SB RightSB stroke
-		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth
-		local curveLeftTop : Math.min curveLeftBot : [mix Width RightSB 1.5] - OX - stroke * 1.375
+		local curveLeftBot : [mix Width RightSB 1.5] - mockBowlDepth + [BTopArcInnerShift barPos]
+		local curveLeftTop : Math.min curveLeftBot : [mix Width RightSB 1.5] - OX - stroke * 1.375 + [BTopArcInnerShift barPos]
 
 		local adaBot : ArchDepthAOf : ArchDepth * 0.9
 		local adbBot : ArchDepthBOf : ArchDepth * 0.9
 		local adaTop : ArchDepthAOf : ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)
 		local adbTop : ArchDepthBOf : ArchDepth * 0.9 - (curveLeftBot - curveLeftTop)
 
-		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2
+		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + [BTopArcShift barPos]
 		local yTopArcRight : YSmoothMidR Ascender (bowl - stroke) adaTop adbTop
 		local xBotArcRight : RightSB - OX * 2
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
@@ -761,7 +769,7 @@ glyph-block Letter-Latin-Upper-B : begin
 			include : MarkSet.bp
 			if cursive
 				include : difference
-					CursiveCyrVeShape Ascender (barPos -- pos) (diag -- diag)
+					CursiveCyrVeShape Ascender (barPos -- pos) (topArcShift -- [BTopArcShift pos]) (topArcInnerShift -- [BTopArcInnerShift pos]) (diag -- diag)
 					if (diag || closed) [no-shape] [[InterruptShape pos] Ascender [AdviceStroke2 2 3 Ascender]]
 				include : BetaStandardShape false diag pos closed
 			if serif : begin

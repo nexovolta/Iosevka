@@ -10,6 +10,24 @@ const makePara = await getParametersT({
 	paramsDir: fileURLToPath(new URL("../../../params", import.meta.url)),
 });
 
+function rightEdge(glyph, y) {
+	const xs = [];
+	for (const contour of new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toBezArcs()) {
+		for (const arc of contour) {
+			let a = glyph.gizmo.unapply(arc.eval(0));
+			for (let i = 1; i <= 64; i++) {
+				const b = glyph.gizmo.unapply(arc.eval(i / 64));
+				if ((a.y <= y && b.y > y) || (b.y <= y && a.y > y)) {
+					xs.push(a.x + (b.x - a.x) * (y - a.y) / (b.y - a.y));
+				}
+				a = b;
+			}
+		}
+	}
+	assert.ok(xs.length);
+	return Math.max(...xs);
+}
+
 for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
 	for (const size of ["big", "small"]) {
 		test(`${size} top bowls: ${slope} ${weight}`, () => {
@@ -34,6 +52,27 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 			const strike = b.gizmo.unapply(b.baseAnchors.strike);
 			assert.ok(size === "big" ? strike.y < para.cap * 0.5 : strike.y > para.cap * 0.5);
 			const stem = size === "big" ? "bigTopBowl" : "smallTopBowl";
+			const ref = glyphStore.queryByNameEnsured(`smcpB.${stem}Tall`);
+			for (const glyphName of [
+				`grek/beta.${stem}`,
+				`grek/beta.matrixDescendingClosed${size === "big" ? "BigTopBowl" : "BigBottomBowl"}`,
+				`grek/beta.matrixCursiveClosed${size === "big" ? "BigTopBowl" : "BigBottomBowl"}`,
+				`smcpB.${stem}BGRTall`,
+				...["EarlessRounded", "EarlessCorner", "FlatTop", "FlatTopSerifed"].map(
+					ear => `smcpB.matrix${ear}FlatBottomClosed${size === "big" ? "BigTopBowl" : "BigBottomBowl"}Tall`,
+				),
+				...["Rounded", "Corner"].map(
+					tooth => `smcpB.matrixEarlessRounded${tooth}Closed${size === "big" ? "BigTopBowl" : "BigBottomBowl"}Tall`,
+				),
+			]) {
+				const glyph = glyphStore.queryByNameEnsured(glyphName);
+				for (const fraction of [0.25, 0.30, 0.70, 0.75, 0.85]) {
+					const y = para.ascender * fraction;
+					const difference = Math.abs(rightEdge(glyph, y) - rightEdge(ref, y));
+					const tolerance = fraction === 0.70 || fraction === 0.75 ? 2 : 12;
+					assert.ok(difference < tolerance, `${glyphName} differs from B at ${fraction}: ${difference}`);
+				}
+			}
 			for (const suffix of ["", "Tall", "BGRTall"]) {
 				const ve = glyphStore.queryByNameEnsured(`smcpB.${stem}${suffix}`);
 				const points = new Geom.SimplifyGeometry(ve.geometry, ve.gizmo, true).toContours()
