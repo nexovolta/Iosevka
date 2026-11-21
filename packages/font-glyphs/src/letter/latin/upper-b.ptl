@@ -23,10 +23,12 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	define [BTopArcShift pos] : if (pos == AsymmetricBBarPos)
 		(-0.05) * (RightSB - SB)
-		if (pos == BigTopBBarPos) (0.05 * (RightSB - SB)) 0
+		if (pos == BigTopBBarPos) ((1 - BArcMix) * (RightSB - SB)) 0
 	define [BTopArcInnerShift pos] : if (pos == AsymmetricBBarPos)
 		(-0.10) * (RightSB - SB)
 		if (pos == BigTopBBarPos) (0.05 * (RightSB - SB)) 0
+
+	define [BBottomArcShift pos left right] : if (pos == BigTopBBarPos) ((BArcMix - 1 - 0.05) * (right - left)) 0
 
 	define [BShapeArcsT sink offset] : function [] : with-params [top stroke barPos topArcShift topArcInnerShift [df [DivFrame 1]] [diag 0]] : glyph-proc
 		local bowl : mix stroke top barPos
@@ -41,7 +43,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		local xTopArcRight : [mix df.leftSB df.rightSB BArcMix] - OX * 2 + topArcShift
 		local yTopArcRight : YSmoothMidR top (bowl - stroke) adaTop adbTop
-		local xBotArcRight : df.rightSB - OX * 2
+		local xBotArcRight : df.rightSB - OX * 2 + [BBottomArcShift barPos df.leftSB df.rightSB]
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
@@ -185,7 +187,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		return : BShape top
 			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
 			barPos           -- BigTopBBarPos
-			topArcShift      -- (0.05 * (df.rightSB - df.leftSB))
+			topArcShift      -- ((1 - BArcMix) * (df.rightSB - df.leftSB))
 			topArcInnerShift -- (0.05 * (df.rightSB - df.leftSB))
 			serifTop         -- st
 			serifBot         -- sb
@@ -200,7 +202,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		return : BShapeMask top
 			stroke           -- [fallback sw : AdviceStroke2 2 3 (top - 0)]
 			barPos           -- BigTopBBarPos
-			topArcShift      -- (0.05 * (df.rightSB - df.leftSB))
+			topArcShift      -- ((1 - BArcMix) * (df.rightSB - df.leftSB))
 			topArcInnerShift -- (0.05 * (df.rightSB - df.leftSB))
 			df               -- df
 
@@ -219,7 +221,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + topArcShift
 		local yTopArcRight : YSmoothMidR top (bowl - stroke) adaTop adbTop
-		local xBotArcRight : RightSB - OX * 2
+		local xBotArcRight : RightSB - OX * 2 + [BBottomArcShift barPos SB RightSB]
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
@@ -367,7 +369,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + topArcShift
 		local yTopArcRight : YSmoothMidR top (bowl - stroke) adaTop adbTop
-		local xBotArcRight : RightSB - OX * 2
+		local xBotArcRight : RightSB - OX * 2 + [BBottomArcShift barPos SB RightSB]
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin
@@ -681,7 +683,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + [BTopArcShift barPos]
 		local yTopArcRight : YSmoothMidR Ascender (bowl - stroke) adaTop adbTop
-		local xBotArcRight : RightSB - OX * 2
+		local xBotArcRight : RightSB - OX * 2 + [BBottomArcShift barPos SB RightSB]
 		local yBotArcRight : YSmoothMidR bowl 0 adaBot adbBot
 
 		local fine : stroke * CThin

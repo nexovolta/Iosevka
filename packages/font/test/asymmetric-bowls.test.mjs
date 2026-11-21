@@ -53,6 +53,27 @@ for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920])
 			assert.ok(size === "big" ? strike.y < para.cap * 0.5 : strike.y > para.cap * 0.5);
 			const stem = size === "big" ? "bigTopBowl" : "smallTopBowl";
 			const ref = glyphStore.queryByNameEnsured(`smcpB.${stem}Tall`);
+			const xAtBowlExtremum = (glyph, bottom, top) => Math.max(
+				...Array.from({ length: 31 }, (_, i) => rightEdge(glyph, bottom + (top - bottom) * (i + 1) / 32)),
+			);
+			const midpoint = ref.gizmo.unapply(ref.baseAnchors.strike).y;
+			const upperEdge = xAtBowlExtremum(ref, midpoint + para.stroke * 0.5, para.ascender);
+			const lowerEdge = xAtBowlExtremum(ref, 0, midpoint - para.stroke * 0.5);
+			assert.ok(
+				size === "big" ? upperEdge - lowerEdge > 20 : lowerEdge - upperEdge > 20,
+				`${stem} does not have a narrower ${size === "big" ? "bottom" : "top"} bowl`,
+			);
+			const bUpper = xAtBowlExtremum(b, strike.y + para.stroke * 0.5, para.cap);
+			const bLower = xAtBowlExtremum(b, 0, strike.y - para.stroke * 0.5);
+			assert.ok(size === "big" ? bUpper - bLower > 20 : bLower - bUpper > 20, "B bowl widths are not asymmetric");
+			if (size === "big") {
+				const flipped = glyphStore.queryByNameEnsured("smcpB.smallTopBowlTall");
+				const flippedMid = flipped.gizmo.unapply(flipped.baseAnchors.strike).y;
+				const flippedUpper = xAtBowlExtremum(flipped, flippedMid + para.stroke * 0.5, para.ascender);
+				const flippedLower = xAtBowlExtremum(flipped, 0, flippedMid - para.stroke * 0.5);
+				assert.ok(Math.abs(upperEdge - flippedLower) < 3, "large bowl widths do not mirror");
+				assert.ok(Math.abs(lowerEdge - flippedUpper) < 3, "small bowl widths do not mirror");
+			}
 			for (const glyphName of [
 				`grek/beta.${stem}`,
 				`grek/beta.matrixDescendingClosed${size === "big" ? "BigTopBowl" : "BigBottomBowl"}`,
