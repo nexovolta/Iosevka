@@ -17,7 +17,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart MakeFlatHook MakeCornerHookBase
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart MakeFlatHook MakeCornerHookBase MakeMidHeightLeftHook
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -477,6 +477,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tHStretched' 0x1DF63 (follow -- 't')
 	select-variant 'tHReversed'  0x1DF64 (follow -- 't')
 	select-variant 't' 't'
+	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook 't' (XH - Stroke)
 	select-variant 't/pack75' (follow -- 't')
 	select-variant 't/phonotypic' (follow -- 't')
 	select-variant 't/pack80' (follow -- 't')

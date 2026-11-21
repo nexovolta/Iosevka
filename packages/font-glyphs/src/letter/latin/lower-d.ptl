@@ -16,6 +16,7 @@ glyph-block Letter-Latin-Lower-D : begin
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay SerifFrame UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook TopHook
+	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHook
 
 	define [ToothedBody df yTop fFlat cut _bowlTop] : union
 		if fFlat
@@ -298,6 +299,7 @@ glyph-block Letter-Latin-Lower-D : begin
 			include : LeaningAnchor.Above.VBar.r df.rightSB
 
 	select-variant 'd' 'd'
+	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook 'd' XH
 	select-variant 'd/pack75' (follow -- 'd')
 	select-variant 'd/packPTMN' (follow -- 'd')
 	select-variant 'd/pack80' (follow -- 'd')

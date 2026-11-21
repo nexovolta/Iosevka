@@ -14,6 +14,7 @@ glyph-block Letter-Latin-Lower-N : begin
 	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : VerticalHook EngHook SerifFrame
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
+	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHook
 
 	define [AdjustTrailingAnchor] : glyph-proc
 		define trAnchor currentGlyph.baseAnchors.trailing
@@ -393,6 +394,7 @@ glyph-block Letter-Latin-Lower-N : begin
 					if sLT : include : sLT [DivFrame 1] XH
 
 	select-variant 'n' 'n'
+	derive-glyphs 'nMidHeightLeftHook' 0x1DF27 'n' : MakeMidHeightLeftHook 'n' XH
 	select-variant 'n/pack75' (follow -- 'n')
 	select-variant 'n/packPTMN' (follow -- 'n')
 	select-variant 'n/pack80' (follow -- 'n')

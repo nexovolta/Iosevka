@@ -16,6 +16,7 @@ glyph-block Letter-Latin-Lower-I : begin
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail VerticalHook
 	glyph-block-import Letter-Shared-Shapes : CurlyTail BeltOverlay PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : HalfRingDescender LetterBarOverlay RightwardTailedBar
+	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHookL
 
 	# Implementations
 
@@ -827,6 +828,7 @@ glyph-block Letter-Latin-Lower-I : begin
 
 	do 'l glyphs'
 		select-variant 'l' 'l'
+		derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHookL XH
 		select-variant 'l/packPTMN' (follow -- 'l')
 		link-reduced-variant 'l/sansSerif' 'l' MathSansSerif
 		select-variant 'l/reduced/decompress' (shapeFrom -- 'l')

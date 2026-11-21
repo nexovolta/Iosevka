@@ -16,7 +16,7 @@ glyph-block Letter-Latin-S : begin
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook CyrDescender CurlyTail
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CornerHookOffset
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CornerHookOffset MakeMidHeightLeftHook
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
@@ -395,6 +395,7 @@ glyph-block Letter-Latin-S : begin
 	select-variant 'smcpS' 0xA731 (follow -- 'S')
 
 	select-variant 's' 's'
+	derive-glyphs 'sMidHeightLeftHook' 0x1DF29 's' : MakeMidHeightLeftHook 's' XH
 	select-variant 's/pack75' (follow -- 's')
 	select-variant 's/pack80' (follow -- 's')
 	link-reduced-variant 's/sansSerif' 's' MathSansSerif
