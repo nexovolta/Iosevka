@@ -29,6 +29,7 @@ function inspectGlyph(glyph) {
 	assert.ok(points.length > 0 && points.every(point => Number.isFinite(point.x) && Number.isFinite(point.y)));
 	return {
 		advanceWidth: glyph.advanceWidth,
+		contours,
 		bounds: [
 			Math.min(...points.map(point => point.x)),
 			Math.min(...points.map(point => point.y)),
@@ -37,6 +38,18 @@ function inspectGlyph(glyph) {
 		],
 		points,
 	};
+}
+
+function horizontalCrossings(contours, y) {
+	const crossings = [];
+	for (const contour of contours) for (let i = 0; i < contour.length; i++) {
+		const a = contour[i];
+		const b = contour[(i + 1) % contour.length];
+		if ((a.y <= y && b.y > y) || (b.y <= y && a.y > y)) {
+			crossings.push(a.x + ((y - a.y) * (b.x - a.x)) / (b.y - a.y));
+		}
+	}
+	return crossings.sort((a, b) => a - b);
 }
 
 function reflectedError(source, target, centerY) {
@@ -59,9 +72,9 @@ for (const spacing of ["normal", "quasi-proportional"]) for (const slope of ["up
 			blockIsNeeded: id => id === "Letter-Greek-Upper-Theta" || id === "Letter-Latin-O",
 			glyphIsNeeded: id => id === "O" || id.startsWith("grek/Theta."),
 		});
-		const inspected = new Map(variants.map(([suffix, ,]) => [
-			suffix,
-			inspectGlyph(glyphStore.queryByNameEnsured(`grek/Theta.${suffix}`)),
+		const inspected = new Map([["O", "O"], ...variants.map(([suffix]) => [suffix, `grek/Theta.${suffix}`])].map(([key, name]) => [
+			key,
+			inspectGlyph(glyphStore.queryByNameEnsured(name)),
 		]));
 		const base = inspected.get("serifless");
 
@@ -77,6 +90,10 @@ for (const spacing of ["normal", "quasi-proportional"]) for (const slope of ["up
 				assert.ok(glyph.bounds[2] - glyph.bounds[0] > base.bounds[2] - base.bounds[0], `${suffix}: quasi-proportional circle was not widened`);
 				assert.ok(Math.abs(glyph.advanceWidth - para.width * para.advanceScaleT) < 0.1, `${suffix}: advance did not use advanceScaleT`);
 				assert.ok(Math.abs((glyph.bounds[0] + glyph.bounds[2]) / 2 - glyph.advanceWidth / 2) < 0.1, `${suffix}: widened circle is not centered`);
+				const referenceRing = horizontalCrossings(inspected.get("O").contours, para.cap / 4);
+				const widenedRing = horizontalCrossings(glyph.contours, para.cap / 4);
+				assert.equal(referenceRing.length, 4, "reference circle does not have two ring edges");
+				assert.equal(widenedRing.length, 4, `${suffix}: circle has a duplicated outline`);
 			}
 		}
 
