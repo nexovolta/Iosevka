@@ -1,61 +1,11 @@
 $$include '../../meta/macros.ptl'
 
-import [mix fallback] from '@iosevka/util'
-
 glyph-module
 
 glyph-block Letter-Latin-Mid-Height-Left-Hook : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
-	glyph-block-import Letter-Shared : PackSrc
-
-	define kHook : 1 / 5
-
-	define [MidHeightLeftHook xStem yTop] : glyph-proc
-		local xHook : mix 0 xStem 0.08
-		include : dispiro
-			widths.rhs
-			g4.right.start xHook (yTop - O)
-			archv
-			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
-
-	define [MakeMidHeightLeftHook prefix yTop] : lambda [src gr] : glyph-proc
-		local packed : PackSrc prefix src 'pack80'
-		include [refer-glyph packed] AS_BASE ALSO_METRICS
-		local letterW : mix currentGlyph.advanceWidth currentGlyph.advanceWidth 0
-		currentGlyph.clearGeometry
-		local df : include : DivFrame para.advanceScaleM
-		local shift : Math.max 0 (df.width - letterW)
-		include : with-transform [ApparentTranslate shift 0] : refer-glyph packed
-		local yHook : 0 + yTop
-		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
-		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
-		local xStem : shift + SB
-		if b : set xStem : mix b.xMin b.xMin 0
-		local bTop : include : MeasureGlyphBoundsInY (XH - Stroke - O) (XH + O)
-		if bTop : begin
-			if (bTop.xMin < xStem - Stroke / 5) : set yHook : XH - Stroke
-		if (yHook < yTop) : begin
-			set yAtt : Math.max (yHook * 0.35) (yHook - Hook)
-			local bLow : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
-			if bLow : set xStem : mix bLow.xMin bLow.xMin 0
-		include : MidHeightLeftHook xStem yHook
-		include : LeaningAnchor.Above.At [mix xStem df.width 0.35]
-		include : LeaningAnchor.Below.At [mix xStem df.width 0.35]
-
-	define [MakeMidHeightLeftHookL yTop] : lambda [src gr] : glyph-proc
-		include [refer-glyph src] AS_BASE ALSO_METRICS
-		currentGlyph.clearGeometry
-		include : with-transform [ApparentTranslate (kHook * Width) 0] : refer-glyph src
-		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
-		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
-		local xStem : kHook * Width + SB
-		if b : set xStem : mix b.xMin b.xMin 0
-		include : MidHeightLeftHook xStem yTop
-		include : LeaningAnchor.Above.At [mix xStem Width 0.35]
-		include : LeaningAnchor.Below.At [mix xStem Width 0.35]
+	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHook MakeMidHeightLeftHookL
 
 	derive-glyphs 'dMidHeightLeftHook' 0x1DF25 'd' : MakeMidHeightLeftHook 'd' XH
 	derive-glyphs 'lMidHeightLeftHook' 0x1DF26 'l' : MakeMidHeightLeftHookL XH

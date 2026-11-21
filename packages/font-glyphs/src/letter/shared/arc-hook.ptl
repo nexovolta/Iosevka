@@ -11,8 +11,58 @@ glyph-block Letter-Arc-Hook : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+	glyph-block-import Letter-Shared : PackSrc
+	glyph-block-import Mark-Adjustment : LeaningAnchor
+	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 
 	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook MakeCornerHookBase CornerHookOffset CornerHookOutset CornerHookDepth CornerHookEnd CornerHookStart
+	glyph-block-export MakeMidHeightLeftHook MakeMidHeightLeftHookL
+
+	define kHook : 1 / 5
+
+	define [MidHeightLeftHook xStem yTop] : glyph-proc
+		local xHook : mix 0 xStem 0.08
+		include : dispiro
+			widths.rhs
+			g4.right.start xHook (yTop - O)
+			archv
+			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
+
+	define [MakeMidHeightLeftHook prefix yTop] : lambda [src gr] : glyph-proc
+		local packed : PackSrc prefix src 'pack80'
+		include [refer-glyph packed] AS_BASE ALSO_METRICS
+		local letterW : mix currentGlyph.advanceWidth currentGlyph.advanceWidth 0
+		currentGlyph.clearGeometry
+		local df : include : DivFrame para.advanceScaleM
+		local shift : Math.max 0 (df.width - letterW)
+		include : with-transform [ApparentTranslate shift 0] : refer-glyph packed
+		local yHook : 0 + yTop
+		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
+		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
+		local xStem : shift + SB
+		if b : set xStem : mix b.xMin b.xMin 0
+		local bTop : include : MeasureGlyphBoundsInY (XH - Stroke - O) (XH + O)
+		if bTop : begin
+			if (bTop.xMin < xStem - Stroke / 5) : set yHook : XH - Stroke
+		if (yHook < yTop) : begin
+			set yAtt : Math.max (yHook * 0.35) (yHook - Hook)
+			local bLow : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
+			if bLow : set xStem : mix bLow.xMin bLow.xMin 0
+		include : MidHeightLeftHook xStem yHook
+		include : LeaningAnchor.Above.At [mix xStem df.width 0.35]
+		include : LeaningAnchor.Below.At [mix xStem df.width 0.35]
+
+	define [MakeMidHeightLeftHookL yTop] : lambda [src gr] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		currentGlyph.clearGeometry
+		include : with-transform [ApparentTranslate (kHook * Width) 0] : refer-glyph src
+		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
+		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
+		local xStem : kHook * Width + SB
+		if b : set xStem : mix b.xMin b.xMin 0
+		include : MidHeightLeftHook xStem yTop
+		include : LeaningAnchor.Above.At [mix xStem Width 0.35]
+		include : LeaningAnchor.Below.At [mix xStem Width 0.35]
 
 	glyph-block-export ArcStartSerifWidth
 	define [ArcStartSerifWidth sw] : clamp (sw * 0.875) sw VJutStroke
@@ -289,7 +339,6 @@ glyph-block Letter-Arc-Hook : begin
 	define [CornerHookOffset sw] : HSwToV : 0.25 * sw
 	define [CornerHookOutset sw] : if para.isItalic [HSwToV : 0.125 * sw] 0
 
-	# Keep the flat arc's body, extending only the terminal before adding its inward stub.
 	define [MakeCornerHookBase] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r]
 		sw -- sw
 		xShrink -- ([HSwToV : 0.25 * [ArcStartSerifWidth sw]] - [if para.isItalic 0 [CornerHookOffset sw]] - [CornerHookOutset sw])
@@ -297,9 +346,6 @@ glyph-block Letter-Arc-Hook : begin
 
 	define [CornerHookDepth hook sw] : ArcStartInwardSerifDepth hook sw
 
-	# A miter normal offsets the inner corner along both axes without a folded inner contour.
-	# CornerHookEnd:   a bar heading dirBar (-1 left, +1 right) ends at x, then a stub runs dirStub (+1 up, -1 down).
-	# CornerHookStart: a stub runs dirStub up to y, then the bar continues heading dirBar.
 	define [CornerHookEnd x y depth sw dirBar dirStub] : begin
 		local miterDirection : if para.isItalic (-1) 1
 		local xOut : x + dirBar * (miterDirection * [CornerHookOffset sw] + [CornerHookOutset sw])
@@ -367,7 +413,6 @@ glyph-block Letter-Arc-Hook : begin
 			local originalFlatX : Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw
 			local endX : Math.min (flatHook.xLHook + endInset) (originalFlatX - 0.5 * w)
 			local italicClearance : if para.isItalic ([CornerHookOffset sw] + [Math.max 0 : TanSlope * sw]) 0
-			# Leave room for the inner corner without forcing the tangent past the bowl.
 			local flatLimit : Math.max (endX + w) (box.r - 1.25 * w)
 			local flatX : if endInset [Math.max originalFlatX : Math.min (endX + w + italicClearance) flatLimit] originalFlatX
 			return : list
