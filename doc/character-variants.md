@@ -3325,7 +3325,7 @@ for example `double-storey-serifless-curved-bar-rising` and
 <td colspan="8"> </td>
 </tr>
 <tr>
-<td rowspan="2"><code>cv83</code></td>
+<td rowspan="2"><code>VXBF</code></td>
 <td><img src="../images/cv-lower-phi-straight.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight.dark.svg#gh-dark-mode-only" width=32/></td>
 <td><img src="../images/cv-lower-phi-cursive.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-cursive.dark.svg#gh-dark-mode-only" width=32/></td>
 <td><img src="../images/cv-lower-phi-neo-hellenic.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-neo-hellenic.dark.svg#gh-dark-mode-only" width=32/></td>
@@ -3335,9 +3335,9 @@ for example `double-storey-serifless-curved-bar-rising` and
 </tr>
 <tr>
 <td>1</td>
-<td>2</td>
+<td>9</td>
+<td>7</td>
 <td>3</td>
-<td>4</td>
 <td>5</td>
 <td colspan="7"> </td>
 </tr>
@@ -3409,7 +3409,7 @@ for example `double-storey-serifless-curved-bar-rising` and
 <td colspan="10"> </td>
 </tr>
 <tr>
-<td rowspan="2"><code>cv85</code></td>
+<td rowspan="2"><code>VXBH</code></td>
 <td><img src="../images/cv-lower-psi-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifless.dark.svg#gh-dark-mode-only" width=32/></td>
 <td><img src="../images/cv-lower-psi-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifed.dark.svg#gh-dark-mode-only" width=32/></td>
 <td><img src="../images/cv-lower-psi-flat-top-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-flat-top-serifless.dark.svg#gh-dark-mode-only" width=32/></td>
@@ -3423,10 +3423,10 @@ for example `double-storey-serifless-curved-bar-rising` and
 <tr>
 <td>1</td>
 <td>2</td>
-<td>3</td>
+<td>10</td>
+<td>11</td>
 <td>4</td>
 <td>5</td>
-<td>6</td>
 <td>7</td>
 <td>8</td>
 <td colspan="4"> </td>

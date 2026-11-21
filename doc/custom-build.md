@@ -3208,17 +3208,18 @@ single-storey `a` design, and `crossing`. They are independent of Greek
     <tr><td>Greek lower Upsilon (<code>υ</code>) with casual shape, and serifs (default for Slab)</td></tr>
     </table></details>
   - Styles for `φ` (Greek lower Phi)
-    <details><summary>5 variants</summary>
+    Straight forms support the suffixes `-base-serifed`, `-top-serifed`, and `-top-base-serifed`, including after `-short-neck` or `-shorter-neck`. Cursive and neo-Hellenic forms support the same suffixes; their top-serif choices affect the ascending phi symbol, not the non-ascending letter.
+    <details><summary>Selected variants</summary>
     <table>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight'</code>, <code>cv83 = 1</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight'</code>, <code>VXBF = 1</code></td></tr>
     <tr><td>Greek lower Phi (<code>φ</code>) with straight shape</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-cursive.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-cursive.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'cursive'</code>, <code>cv83 = 2</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-cursive.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-cursive.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'cursive'</code>, <code>VXBF = 9</code></td></tr>
     <tr><td>Greek lower Phi (<code>φ</code>) with cursive shape (default)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-neo-hellenic.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-neo-hellenic.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'neo-hellenic'</code>, <code>cv83 = 3</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-neo-hellenic.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-neo-hellenic.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'neo-hellenic'</code>, <code>VXBF = 7</code></td></tr>
     <tr><td>Greek lower Phi (<code>φ</code>) with neo-hellenic shape</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight-short-neck.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight-short-neck.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight-short-neck'</code>, <code>cv83 = 4</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight-short-neck.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight-short-neck.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight-short-neck'</code>, <code>VXBF = 3</code></td></tr>
     <tr><td>Greek lower Phi (<code>φ</code>) with straight shape, and a shorter neck</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight-short-neck2.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight-short-neck2.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight-short-neck2'</code>, <code>cv83 = 5</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-phi-straight-short-neck2.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-phi-straight-short-neck2.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-phi = 'straight-shorter-neck'</code>, <code>VXBF = 5</code></td></tr>
     <tr><td>Greek lower Phi (<code>φ</code>) with straight shape, and a more shorter neck</td></tr>
     </table></details>
   - Styles for `χ` (Greek lower Chi)
@@ -3278,23 +3279,24 @@ single-storey `a` design, and `crossing`. They are independent of Greek
     <tr><td>Greek lower Chi (<code>χ</code>) with Chancery shape, and short body that sits entirely above the baseline</td></tr>
     </table></details>
   - Styles for `ψ` (Greek lower Psi)
-    <details><summary>8 variants</summary>
+    Serif choices are `serifless`, `left-serifed`, `base-serifed`, `left-base-serifed`, `top-serifed`, `top-left-serifed`, `top-base-serifed`, and `top-left-base-serifed`. Prefix these with `short-neck-` or `shorter-neck-` as desired. Flat-top forms use the first four choices, prefixed with `flat-top-`; they have no exposed stem top. The former `serifed` names are now `left-serifed`.
+    <details><summary>Selected variants</summary>
     <table>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'serifless'</code>, <code>cv85 = 1</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'serifless'</code>, <code>VXBH = 1</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) without serifs (default for Sans)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'serifed'</code>, <code>cv85 = 2</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'left-serifed'</code>, <code>VXBH = 2</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with serifs (default for Slab)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-flat-top-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-flat-top-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'flat-top-serifless'</code>, <code>cv85 = 3</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-flat-top-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-flat-top-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'flat-top-serifless'</code>, <code>VXBH = 10</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with flat top; without serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-flat-top-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-flat-top-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'flat-top-serifed'</code>, <code>cv85 = 4</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-flat-top-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-flat-top-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'flat-top-left-serifed'</code>, <code>VXBH = 11</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with flat top, and serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck-serifless'</code>, <code>cv85 = 5</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck-serifless'</code>, <code>VXBH = 4</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with a shorter neck; without serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck-serifed'</code>, <code>cv85 = 6</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck-left-serifed'</code>, <code>VXBH = 5</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with a shorter neck, and serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck2-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck2-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck2-serifless'</code>, <code>cv85 = 7</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck2-serifless.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck2-serifless.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'shorter-neck-serifless'</code>, <code>VXBH = 7</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with a more shorter neck; without serifs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck2-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck2-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'short-neck2-serifed'</code>, <code>cv85 = 8</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-lower-psi-short-neck2-serifed.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-lower-psi-short-neck2-serifed.dark.svg#gh-dark-mode-only" width=32/></td><td><code>lower-psi = 'shorter-neck-left-serifed'</code>, <code>VXBH = 8</code></td></tr>
     <tr><td>Greek lower Psi (<code>ψ</code>) with a more shorter neck, and serifs</td></tr>
     </table></details>
   - Styles for `∂` (Partial derivative symbol)
