@@ -260,7 +260,8 @@ glyph-block Letter-Latin-Upper-AE-OE : begin
 			match slabKind
 				([Just SLAB-CAPPED] || [Just SLAB-MID]) : begin
 					local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.8 * (xMidBarRight - (eLeft + [HSwToV sw]))
-					include : VSerif.mr xMidBarRight (yBar + [if diag (diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (diag * 0.16 * top) (xMidBarRight - eLeft + O) sw jutMid 1]) jutMid swVJut
+					local midJut : DiagonalMiddleSerifLength (diag * 0.16 * top) (xMidBarRight - eLeft + O) sw jutMid [HSwToV swVJut]
+					include : VSerif.mr xMidBarRight (yBar + [if diag (diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (diag * 0.16 * top) (xMidBarRight - eLeft + O) sw midJut 1]) midJut swVJut
 
 		define EConfig : object
 			serifless                                   {SLAB-NONE   0 false}

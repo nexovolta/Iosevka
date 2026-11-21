@@ -36,8 +36,9 @@ glyph-block Letter-Latin-Upper-F : begin
 		local {jutTop jutBot jutMid} : EFVJutLength top 0 nothing stroke _jutTop
 		local swVJut : VJutStroke * (stroke / Stroke)
 		if serifRT : include : VSerif.dr RightSB      top    jutTop swVJut
-		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) (xMidBarRight - (xFBarLeft - O)) stroke jutMid 1]
-		if serifRM : include : VSerif.mr xMidBarRight yMidEnd jutMid swVJut
+		local midJut : DiagonalMiddleSerifLength (_diag * 0.16 * top) (xMidBarRight - (xFBarLeft - O)) stroke jutMid [HSwToV swVJut]
+		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) (xMidBarRight - (xFBarLeft - O)) stroke midJut 1]
+		if serifRM : include : VSerif.mr xMidBarRight yMidEnd midJut swVJut
 
 	define FConfig : object
 		serifless             {false  false  false  false}

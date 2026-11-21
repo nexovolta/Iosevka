@@ -468,6 +468,19 @@ glyph-block CommonShapes : begin
 		local halfHeight : 0.5 * stroke * [Math.sqrt : 1 + slope * slope]
 		return : [Math.sign (rise * side)] * [Math.max 0 : length - halfHeight + TINY]
 
+	glyph-block-export DiagonalMiddleSerifLength
+	define [DiagonalMiddleSerifLength rise width stroke length serifWidth] : begin
+		if (!rise) : return length
+		local slope : rise / width
+		local halfHeight : 0.5 * stroke * [Math.sqrt : 1 + slope * slope]
+		local across : [Math.abs slope] * serifWidth
+		local shift : Math.max 0 : length - halfHeight + TINY
+		local exposed : length + shift - halfHeight + across
+		if (exposed <= 0) : return length
+		# Invert the shift calculation after halving the exposed projection.
+		local target : exposed / 2 - across
+		return : halfHeight + [if (target >= (-TINY)) ((target - TINY) / 2) target]
+
 	glyph-block-export BrokenBarJoin
 	define [BrokenBarJoin left width stroke xTurn yTop direction _stemWidth _mirrorX] : begin
 		local stemWidth : fallback _stemWidth stroke

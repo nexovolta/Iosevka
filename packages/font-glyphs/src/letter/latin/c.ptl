@@ -442,8 +442,9 @@ glyph-block Letter-Latin-C : begin
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
-				local ySerif : top / 2 - slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw jutMid (-1)]
-				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif jutMid swVJut
+				local midJut : DiagonalMiddleSerifLength (slope * barWidth) barWidth sw jutMid [HSwToV swVJut]
+				local ySerif : top / 2 - slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw midJut (-1)]
+				include : VSerif.ml (xMidBarLeft - [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif midJut swVJut
 
 		define [CyrYeShape fCapital fMidSerif df top ada adb _diag] : glyph-proc
 			local sw : df.adviceThinnerStroke2 2 3 top
@@ -467,8 +468,9 @@ glyph-block Letter-Latin-C : begin
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 0.5 sw
 					if fCapital Hook nothing
 					if fCapital Hook nothing
-				local ySerif : top / 2 + slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw jutMid 1]
-				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif jutMid swVJut
+				local midJut : DiagonalMiddleSerifLength (slope * barWidth) barWidth sw jutMid [HSwToV swVJut]
+				local ySerif : top / 2 + slope * (barWidth / 2 + extra) + [DiagonalMiddleSerifShift (slope * barWidth) barWidth sw midJut 1]
+				include : VSerif.mr (xMidBarRight + [if fCapital 0 : HSwToV : 0.5 * swVJut]) ySerif midJut swVJut
 
 		create-glyph "cyrl/E.\(suffix)" : glyph-proc
 			include : MarkSet.capital

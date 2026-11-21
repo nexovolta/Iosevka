@@ -31,6 +31,18 @@ for (const direction of ["DiagonalCrossbar", "DiagonalCrossbarFalling"]) {
 			names.push(`${glyph}.${hook}Capped${direction}`);
 }
 
+function lineSegments(glyph) {
+	return new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toBezArcs().flat().map(arc => ({
+		a: glyph.gizmo.unapply(arc.eval(0)),
+		b: glyph.gizmo.unapply(arc.eval(1)),
+		m: glyph.gizmo.unapply(arc.eval(0.5)),
+	}));
+}
+
+function isHorizontal({ a, b, m }) {
+	return Math.abs(b.x - a.x) > 1 && Math.abs(b.y - a.y) < 0.01 && Math.abs(m.y - a.y) < 0.01;
+}
+
 for (const spacing of ["normal", "term"]) for (const slope of ["upright", "italic"]) for (const weight of [120, 420, 920]) {
 	test(`diagonal middle serifs have no flat bar joins: ${spacing} ${slope} ${weight}`, () => {
 		const para = makePara({
@@ -41,7 +53,7 @@ for (const spacing of ["normal", "term"]) for (const slope of ["upright", "itali
 		});
 		const { glyphStore } = buildGlyphs(para, {
 			blockIsNeeded: id => blocks.includes(id),
-			glyphIsNeeded: id => names.includes(id),
+			glyphIsNeeded: id => names.includes(id) || id === "F.capped" || id === "grek/Digamma.capped",
 		});
 		for (const name of names) {
 			const glyph = glyphStore.queryByNameEnsured(name);
@@ -63,6 +75,66 @@ for (const spacing of ["normal", "term"]) for (const slope of ["upright", "itali
 					assert.ok(!(dx > 1 && dy > 0.05 && dy / dx < 0.8), `${name}: horizontal join at ${a.y}`);
 				}
 			}
+		}
+
+		const middle = segment => segment.a.y > para.cap * 0.25 && segment.a.y < para.cap * 0.75;
+		const straight = lineSegments(glyphStore.queryByNameEnsured("F.capped")).filter(segment => isHorizontal(segment) && middle(segment));
+		assert.equal(straight.length, 4);
+		const outerX = Math.max(...straight.flatMap(segment => [segment.a.x, segment.b.x]));
+		const tips = straight.filter(segment => Math.abs(Math.max(segment.a.x, segment.b.x) - outerX) < 0.05);
+		const bars = straight.filter(segment => !tips.includes(segment));
+		assert.equal(tips.length, 2);
+		const serifWidth = Math.abs(tips[0].b.x - tips[0].a.x);
+		const length = Math.abs(tips[0].a.y - tips[1].a.y) / 2;
+		const stroke = Math.abs(bars[0].a.y - bars[1].a.y);
+		const innerX = Math.min(tips[0].a.x, tips[0].b.x);
+		for (const direction of ["diagonalCrossbar", "diagonalCrossbarFalling"]) {
+			const segments = lineSegments(glyphStore.queryByNameEnsured(`F.${direction}Capped`));
+			const tip = segments.find(segment => isHorizontal(segment) && middle(segment)
+				&& Math.abs(Math.min(segment.a.x, segment.b.x) - innerX) < 0.05
+				&& Math.abs(Math.max(segment.a.x, segment.b.x) - outerX) < 0.05);
+			assert.ok(tip, direction);
+			const leg = segments.find(segment => Math.abs(segment.a.x - innerX) < 0.05 && Math.abs(segment.b.x - innerX) < 0.05
+				&& Math.abs(segment.a.y - segment.b.y) > 1
+				&& (Math.abs(segment.a.y - tip.a.y) < 0.05 || Math.abs(segment.b.y - tip.a.y) < 0.05));
+			assert.ok(leg, direction);
+			const bar = segments.find(segment => Math.abs(segment.b.x - segment.a.x) > serifWidth * 1.2
+				&& Math.abs(segment.b.y - segment.a.y) > 1 && middle(segment));
+			assert.ok(bar, direction);
+			const barSlope = (bar.b.y - bar.a.y) / (bar.b.x - bar.a.x);
+			const halfHeight = stroke * Math.hypot(1, barSlope) / 2;
+			const oldShift = Math.max(0, length - halfHeight + 1 / 128);
+			const oldProjection = length + oldShift - halfHeight + Math.abs(barSlope) * serifWidth;
+			const projection = Math.abs(leg.a.y - leg.b.y);
+			assert.ok(Math.abs(projection - oldProjection / 2) < 0.1, `${direction}: ${projection} vs ${oldProjection / 2}`);
+		}
+
+		const gammaStraight = lineSegments(glyphStore.queryByNameEnsured("grek/Digamma.capped"))
+			.filter(segment => isHorizontal(segment) && middle(segment));
+		const levels = [...new Set(gammaStraight.map(segment => Math.round(segment.a.y * 100) / 100))].sort((a, b) => a - b);
+		assert.equal(levels.length, 3);
+		const gammaTip = gammaStraight.find(segment => Math.abs(segment.a.y - levels[0]) < 0.05);
+		assert.ok(gammaTip);
+		const gammaWidth = Math.abs(gammaTip.b.x - gammaTip.a.x);
+		const gammaOuterX = Math.max(gammaTip.a.x, gammaTip.b.x);
+		const gammaLength = levels[2] - levels[0];
+		const gammaHalfStroke = (levels[2] - levels[1]) / 2;
+		for (const direction of ["diagonalCrossbar", "diagonalCrossbarFalling"]) {
+			const segments = lineSegments(glyphStore.queryByNameEnsured(`grek/Digamma.${direction}Capped`));
+			const tip = segments.find(segment => isHorizontal(segment) && middle(segment)
+				&& Math.abs(Math.max(segment.a.x, segment.b.x) - gammaOuterX) < 0.05);
+			assert.ok(tip, direction);
+			const diagonals = segments.filter(segment => Math.abs(segment.b.x - segment.a.x) > 10
+				&& Math.abs(segment.b.y - segment.a.y) > 1 && middle(segment));
+			assert.equal(diagonals.length, 2, direction);
+			const barSlope = (diagonals[0].b.y - diagonals[0].a.y) / (diagonals[0].b.x - diagonals[0].a.x);
+			const halfHeight = gammaHalfStroke * Math.hypot(1, barSlope);
+			const shift = Math.max(0, barSlope * gammaWidth + gammaHalfStroke - halfHeight + 1 / 128);
+			const oldProjection = gammaLength - gammaHalfStroke + shift - halfHeight + Math.max(0, -barSlope * gammaWidth);
+			const x = barSlope < 0 ? Math.min(tip.a.x, tip.b.x) : gammaOuterX;
+			const lowerBar = Math.min(...diagonals.map(segment => segment.a.y + barSlope * (x - segment.a.x)));
+			const projection = lowerBar - tip.a.y;
+			assert.ok(Math.abs(projection - oldProjection / 2) < 0.1, `${direction} digamma: ${projection} vs ${oldProjection / 2}`);
 		}
 	});
 }
