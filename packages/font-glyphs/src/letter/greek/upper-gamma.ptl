@@ -85,14 +85,9 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				local shift : if diag [Math.max 0 : slope * [HSwToV VJutStroke] + HalfStroke - halfHeight + TINY] 0
 				local length : mix Stroke VJut 0.5
 				local exposed : Math.max 0 : length - HalfStroke + shift - halfHeight + [Math.max 0 ((-slope) * [HSwToV VJutStroke])]
-				# Keep the shortened tip clear of the sloping bar across its width.
-				local clearance : Math.min (exposed / 4) [AdviceStroke 16]
-				local swVJut : if (diag && exposed > 0)
-					Math.min VJutStroke : VSwToH : (exposed / 2 - clearance) / [Math.abs slope]
-					begin VJutStroke
-				local widthChange : [HSwToV VJutStroke] - [HSwToV swVJut]
-				local midJut : if diag (length - exposed / 2 + [Math.max 0 ((-slope) * widthChange)]) length
-				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke + [if diag (diag * 0.08 * CAP) 0] - shift) midJut swVJut
+				# Shorten the turned stroke to clear the sloping bar.
+				local midJut : if diag [Math.max 0 (length - exposed / 2)] length
+				include : tagged 'serifRM' : VSerif.dr xMidRight (yBar + HalfStroke + [if diag (diag * 0.08 * CAP) 0] - shift) midJut VJutStroke
 
 		create-glyph "rCap.\(suffix)" : glyph-proc
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS
