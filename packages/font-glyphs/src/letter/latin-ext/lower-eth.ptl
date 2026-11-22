@@ -1,7 +1,6 @@
 $$include '../../meta/macros.ptl'
 
 import [mix clamp fallback] from '@iosevka/util'
-import [BOOLE_RESOLUTION] from '@iosevka/geometry/curve-util'
 import [Boolean] from 'typo-geom'
 
 extern Infinity
@@ -17,10 +16,8 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	glyph-block-import Digits-Six : SixConfig
 
 	define [EthCrossbarSegments glyph] : begin
-		local contours : Boolean.removeOverlap
-			[glyph.geometry.toBezArcs]
-			Boolean.PolyFillType.NonZero
-			BOOLE_RESOLUTION
+		local arcs : glyph.geometry.toBezArcs
+		local contours : Boolean.removeOverlap arcs 'nonZero' 0x4000
 		local segments {}
 		foreach contour [items-of contours] : foreach arc [items-of contour] : begin
 			local a : arc.eval 0
@@ -60,12 +57,10 @@ glyph-block Letter-Latin-Lower-Eth : begin
 			y 0
 		local spans : EthCrossbarIntervals segments origin direction
 		if [not spans.length] : return null
-		local span : spans.(spans.length - 1)
-		if (nearX !== null) : begin
-			set span spans.0
-			foreach candidate [items-of spans] : begin
-				if ([Math.abs ((candidate.0 + candidate.1) / 2 - nearX)] < [Math.abs ((span.0 + span.1) / 2 - nearX)])
-					set span candidate
+		local span null
+		foreach candidate [items-of spans] : begin
+			if (nearX === null || span === null || [Math.abs ((candidate.0 + candidate.1) / 2 - nearX)] < [Math.abs ((span.0 + span.1) / 2 - nearX)])
+				set span candidate
 		return : (span.0 + span.1) / 2
 
 	define [EthCrossbarFit glyph segments ascender width thickness fraction] : begin
