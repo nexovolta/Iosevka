@@ -1,7 +1,10 @@
 $$include '../../meta/macros.ptl'
 
 import [mix clamp fallback] from '@iosevka/util'
-import [ethCrossbar] from '../../../eth-crossbar.mjs'
+import [BOOLE_RESOLUTION] from '@iosevka/geometry/curve-util'
+import [Boolean] from 'typo-geom'
+
+extern Infinity
 
 glyph-module
 
@@ -12,6 +15,112 @@ glyph-block Letter-Latin-Lower-Eth : begin
 	glyph-block-import Symbol-Punctuation-Ampersand : ClosedRotunda
 	glyph-block-import Recursive-Build : ForkUpright
 	glyph-block-import Digits-Six : SixConfig
+
+	define [EthCrossbarSegments glyph] : begin
+		local contours : Boolean.removeOverlap
+			[glyph.geometry.toBezArcs]
+			Boolean.PolyFillType.NonZero
+			BOOLE_RESOLUTION
+		local segments {}
+		foreach contour [items-of contours] : foreach arc [items-of contour] : begin
+			local a : arc.eval 0
+			foreach j [range 1 13] : begin
+				local b : arc.eval (j / 12)
+				segments.push {a b}
+				set a b
+		return segments
+
+	define [EthCrossbarCross a b] : a.x * b.y - a.y * b.x
+
+	define [EthCrossbarIntervals segments origin direction] : begin
+		local hits {}
+		foreach {a b} [items-of segments] : begin
+			local edge : object
+				x : b.x - a.x
+				y : b.y - a.y
+			local offset : object
+				x : a.x - origin.x
+				y : a.y - origin.y
+			local denominator : EthCrossbarCross direction edge
+			if ([Math.abs denominator] >= 1e-9) : begin
+				local u : [EthCrossbarCross offset direction] / denominator
+				if (u >= 0 && u < 1) : hits.push : [EthCrossbarCross offset edge] / denominator
+		hits.sort : lambda [a b] : a - b
+		if (hits.length % 2 !== 0) : throw : new Error 'Unclosed outline while placing eth crossbar'
+		local result {}
+		for [local i 0] (i + 1 < hits.length) [set i : i + 2] : result.push {hits.(i) hits.(i + 1)}
+		return result
+
+	define [EthCrossbarStemAt segments y nearX] : begin
+		local origin : object
+			x 0
+			y : 0 + y
+		local direction : object
+			x 1
+			y 0
+		local spans : EthCrossbarIntervals segments origin direction
+		if [not spans.length] : return null
+		local span : spans.(spans.length - 1)
+		if (nearX !== null) : begin
+			set span spans.0
+			foreach candidate [items-of spans] : begin
+				if ([Math.abs ((candidate.0 + candidate.1) / 2 - nearX)] < [Math.abs ((span.0 + span.1) / 2 - nearX)])
+					set span candidate
+		return : (span.0 + span.1) / 2
+
+	define [EthCrossbarFit glyph segments ascender width thickness fraction] : begin
+		local gap : Math.max 1 (width * 0.01)
+		local extension : width * 0.19
+		local minimumExtension : width * 0.035
+		local step : Math.max 2 (thickness * 0.08)
+		local y : ascender * fraction
+		local x : EthCrossbarStemAt segments y null
+		if (x === null) : return null
+		local below : EthCrossbarStemAt segments (y - step) x
+		local above : EthCrossbarStemAt segments (y + step) x
+		if (below === null || above === null) : return null
+		local slope : (above - below) / (2 * step)
+		local length : Math.hypot 1 slope
+		local normal : object
+			x : 1 / length
+			y : (-slope) / length
+		local tangent : object
+			x : slope / length
+			y : 1 / length
+		local leftStem Infinity
+		local rightStem : -Infinity
+		local leftLimit : -Infinity
+		local rightLimit Infinity
+		foreach i [range 0 13] : begin
+			local offset : thickness * (i / 12 - 0.5)
+			local origin : object
+				x : x + tangent.x * offset
+				y : y + tangent.y * offset
+			local spans : EthCrossbarIntervals segments origin normal
+			local index : -1
+			foreach j [range 0 spans.length] : if (index < 0 && spans.(j).0 <= 0 && spans.(j).1 >= 0)
+				set index j
+			if (index < 0) : return null
+			set leftStem : Math.min leftStem spans.(index).0
+			set rightStem : Math.max rightStem spans.(index).1
+			if (index > 0) : set leftLimit : Math.max leftLimit (spans.(index - 1).1 + gap)
+			if (index + 1 < spans.length) : set rightLimit : Math.min rightLimit (spans.(index + 1).0 - gap)
+		local left : Math.max leftLimit (leftStem - extension)
+		local right : Math.min rightLimit (rightStem + extension)
+		if (leftStem - left < minimumExtension || right - rightStem < minimumExtension) : return null
+		local corners {}
+		foreach {along across} [items-of {{left (-0.5)} {right (-0.5)} {right 0.5} {left 0.5}}] : begin
+			corners.push : glyph.gizmo.unapply : object
+				x : x + normal.x * along + tangent.x * thickness * across
+				y : y + normal.y * along + tangent.y * thickness * across
+		return corners
+
+	define [EthCrossbar glyph ascender width thickness] : begin
+		local segments : EthCrossbarSegments glyph
+		foreach fraction [items-of {0.76 0.72 0.8 0.68 0.84 0.64 0.88 0.92}] : begin
+			local corners : EthCrossbarFit glyph segments ascender width thickness fraction
+			if corners : return corners
+		throw : new Error "Cannot place an isolated eth crossbar on \(glyph.identifier)"
 
 	define fine ShoulderFine
 
@@ -76,7 +185,7 @@ glyph-block Letter-Latin-Lower-Eth : begin
 		create-glyph "eth.\(suffix)" : glyph-proc
 			local base : query-glyph "dInsular/oldBowl.\(suffix)"
 			include base AS_BASE ALSO_METRICS
-			local corners : ethCrossbar base Ascender Width OverlayStroke
+			local corners : EthCrossbar base Ascender Width OverlayStroke
 			currentGlyph.clearGeometry
 			include : union
 				begin base
