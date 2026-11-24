@@ -384,7 +384,59 @@ glyph-block Letter-Latin-Lower-A : begin
 				arcvh
 				g4.right.end (df.rightSB + 0.1 * df.width) barY [heading Rightward]
 
+	define [PhonotypicASwash hookStyle fSingleStorey] : glyph-proc
+		local df : include : DivFrame para.advanceScaleT 4
+		include : df.markSet.e
+		local subDf : df.sliceFine 4 3 0.75 0
+		local sw : df.adviceStroke2 3 3 XH
+		local loopSw : Math.min (0.6 * sw) ([AdviceStroke 3] * (sw / Stroke))
+		local fine : Math.min (0.7 * sw) (ShoulderFine * ([mix sw loopSw 0.5] / Stroke))
+		local loopFine : Math.max (0.4 * sw) : Math.min (0.5 * sw) fine
+		local loopTop : mix sw XH 0.5
+		local loopLeft : subDf.rightSB - [HSwToV sw]
+		local loopRight df.rightSB
+		local ada : ArchDepthAOf (0.5 * SmallArchDepth) (loopRight - loopLeft)
+		local adb : ArchDepthBOf (0.5 * SmallArchDepth) (loopRight - loopLeft)
+		local loopSideY : YSmoothMidR loopTop 0 ada adb
+		local bowlAda : subDf.archDepthAOf (SmallArchDepth * 0.9) sw
+		local bowlAdb : subDf.archDepthBOf (SmallArchDepth * 0.9) sw
+		local barTop loopTop
+		local bowlTop : if fSingleStorey XH (barTop - 0.08 * XH)
+		local rise : 0.7 * loopTop
+		local stemBottom : YSmoothMidL loopTop 0 ada adb
+		include : union
+			if fSingleStorey
+				VBar.r subDf.rightSB stemBottom XH sw
+				DoubleStorey.HookAndBar subDf hookStyle stemBottom sw
+			dispiro
+				widths.lhs sw
+				if fSingleStorey
+					OBarRight.arcStart (top -- XH) (left -- subDf.leftSB) (right -- subDf.rightSB) (sw -- sw) (fine -- fine) (ada -- bowlAda) (adb -- bowlAdb)
+					list
+						g4.up.start (loopRight - 2 * OX) loopSideY [widths.lhs.heading loopSw Upward]
+						arcvh
+						Arch.lhs.centerAt.rtl.t [mix subDf.rightSB loopRight 0.5] loopTop (sw -- loopFine) (swBefore -- loopSw) (o -- 0)
+						archv
+				g4 (subDf.leftSB + OX) [YSmoothMidL bowlTop 0 bowlAda bowlAdb] [widths.lhs sw]
+				arcvh
+				Arch.lhs.centerAt.ltr.b [mix subDf.leftSB subDf.rightSB 0.42] 0 (sw -- sw) (swAfter -- fine)
+				bezControls 0.65 0 0.75 0.5 6
+				g4.up.end subDf.rightSB rise [widths.lhs.heading fine Upward]
+			dispiro
+				flat loopLeft (stemBottom + 0.25 * sw) [widths.lhs.heading sw Downward]
+				curl loopLeft stemBottom [heading Downward]
+				Arch.lhs 0 (sw -- sw) (swAfter -- loopSw)
+				g4.up.end (loopRight - 2 * OX) loopSideY [widths.lhs.heading loopSw Upward]
+			if fSingleStorey
+				dispiro
+					g4.up.start (loopRight - 2 * OX) loopSideY [widths.lhs.heading loopSw Upward]
+					arcvh
+					Arch.lhs.centerAt.rtl.t [mix subDf.rightSB loopRight 0.5] loopTop (sw -- loopFine) (swBefore -- loopSw) (o -- 0)
+					g4.left.end (subDf.rightSB - [HSwToV : 0.5 * sw]) loopTop [widths.lhs.heading loopFine Leftward]
+				no-shape
+
 	foreach {suffix {{hookStyle cut {body revBody xTrailing}} diag}} [Object.entries DoubleStoreyDiagConfig] : do
+		if [not para.isItalic] : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash hookStyle false
 		do
 			create-glyph "a.\(suffix)" : make [DivFrame 1]
 			if (!hookStyle) : begin
@@ -695,6 +747,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				tailedSerifed {SingleStorey.TailedSerifedBar  RevSingleStorey.TailedSerifedBar}
 
 	foreach {suffix {{body revBody} cut {bar revBar}}} [Object.entries SingleStoreyConfig] : do
+		if [not para.isItalic] : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash HOOK-SLAB-NONE true
 		create-glyph "turnAScript.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
@@ -749,6 +802,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	link-reduced-variant 'aRetroflexHook/doubleStorey' 'aRetroflexHook'
 
 	select-variant 'aSwash' 0x1DF69 (follow -- [conditional-follow para.isItalic 'a/doubleStorey' 'a'])
+	if [not para.isItalic] : select-variant 'aSwash.phonotypic' (follow -- 'a')
 	select-variant 'aRoundTop.upright' (follow -- 'a/doubleStorey') (shapeFrom -- 'reva')
 
 	select-variant 'grek/alpha' 0x3B1 (shapeFrom -- 'a')
