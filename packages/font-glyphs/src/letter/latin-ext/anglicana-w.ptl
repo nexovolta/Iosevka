@@ -7,54 +7,62 @@ glyph-module
 glyph-block Letter-Latin-Anglicana-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
 	glyph-block-import Letter-Latin-W : WDim WShapeImpl WSquareTopShape WConfig FORM-STRAIGHT FORM-VERTICAL FORM-CURSIVE
+	glyph-block-import Letter-Latin-V : VSquareTopYJoin
 	glyph-block-import Letter-Latin-W : SERIFS-NONE SERIFS-MOTION SERIFS-CYRL-OMEGA SERIFS-ALL SERIFS-ALL-OUTER SERIFS-ALL-ASYMMETRIC SERIFS-ALL-REVERSE-ASYMMETRIC SERIFS-BILATERAL-MOTION
 	glyph-block-import Letter-Latin-Lower-A : CrossingBody
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe FLAT-CONNECTION
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 
-	define [AnglicanaInnerOffset subDf] : HSwToV : 0.5 * (subDf.mvs - [subDf.adviceStroke 3.25])
+	define [AnglicanaInnerOffset subDf zeStroke] : HSwToV : 0.5 * (zeStroke - [subDf.adviceStroke 3.25])
 
-	define [AnglicanaAlphaMask subDf top cutX] : begin
-		local innerOffset : AnglicanaInnerOffset subDf
+	define [AnglicanaAlphaMask subDf top cutX zeStroke] : begin
+		local innerOffset : AnglicanaInnerOffset subDf zeStroke
 		return : spiro-outline
 			corner (-subDf.width) (top * 1.5)
 			corner cutX (top * 1.5)
 			corner cutX (top - O)
-			corner (cutX - innerOffset) (top - O - subDf.mvs)
-			corner (cutX - innerOffset) (O + subDf.mvs)
+			corner (cutX - innerOffset) (top - O - zeStroke)
+			corner (cutX - innerOffset) (O + zeStroke)
 			corner cutX O
 			corner cutX (-top)
 			corner (-subDf.width) (-top)
 
-	define [AnglicanaJoin subDf top cutX] : begin
-		local x0 : cutX - [AnglicanaInnerOffset subDf] - [HSwToV : 0.05 * subDf.mvs]
-		local x1 : cutX + [HSwToV : 0.05 * subDf.mvs]
-		local inset : 0.05 * subDf.mvs
-		return : union
-			Rect (top - O - inset) (top - O - subDf.mvs + 0.005 * subDf.mvs) x0 x1
-			Rect (O + subDf.mvs - inset) (O + inset) x0 x1
+	define [AnglicanaJoin subDf cutX zeStroke] : begin
+		local x0 : cutX - [AnglicanaInnerOffset subDf zeStroke] - [HSwToV : 0.05 * zeStroke]
+		local x1 : cutX + [HSwToV : 0.05 * zeStroke]
+		return : spiro-outline
+			corner x0 (O + 0.3 * zeStroke)
+			corner cutX O
+			corner x1 O
+			corner x1 (O + 0.6 * zeStroke)
+			corner x0 (O + 0.6 * zeStroke)
 
-	define [AnglicanaZe subDf top cutX hook ada adb] : glyph-proc
+	define [AnglicanaZe subDf top cutX hook ada adb zeStroke] : glyph-proc
 		local ze : CyrZe FLAT-CONNECTION FLAT-CONNECTION (top - O) O
 			left      -- (2 * cutX - subDf.rightSB)
 			right     -- subDf.rightSB
 			blend     -- 0.85
 			hook      -- hook
 			hookBot   -- hook
-			stroke    -- subDf.mvs
-			xOverflow -- [Math.max 0 ([HSwToV subDf.mvs] - (subDf.rightSB - cutX) + [HSwToV : 0.6 * subDf.mvs])]
+			stroke    -- zeStroke
+			xOverflow -- [Math.max 0 ([HSwToV zeStroke] - (subDf.rightSB - cutX) + [HSwToV : 0.6 * zeStroke])]
 			xo        -- OX
 			yo        -- O
 			ada       -- ada
 			adb       -- adb
+
 		local [object midy] : ze.Dim
 		include : intersection [ze.Shape] : union
 			difference
 				Rect (top * 1.5) (-top) (-subDf.width) (subDf.width * 2)
-				AnglicanaAlphaMask subDf top cutX
+				AnglicanaAlphaMask subDf top cutX zeStroke
 			Rect (midy + 0.7 * subDf.mvs) (midy - 0.7 * subDf.mvs) (-subDf.width) (subDf.width * 2)
+
+	define [AnglicanaAlpha subDf top cutX ada adb zeStroke] : glyph-proc
+		include : intersection
+			with-transform [ScaleAround subDf.middle (top / 2) (-1) (-1)] : CrossingBody subDf top zeStroke ada adb (top * 0.2)
+			AnglicanaAlphaMask subDf top cutX zeStroke
 
 	define [AnglicanaLeft df top bodyType slabType midHClass fSquareTop] : glyph-proc
 		local leftSlab : if (slabType === SERIFS-CYRL-OMEGA) SERIFS-NONE slabType
@@ -65,36 +73,67 @@ glyph-block Letter-Latin-Anglicana-W : begin
 		eject-contour 'strokeDown2'
 		eject-contour 'strokeExtension'
 		eject-contour 'serifRT'
+		if fSquareTop : begin
+			local dim : WDim df top bodyType slabType midHClass
+			local yJoin : VSquareTopYJoin top
+			local hw : Math.min [HSwToV dim.strokeOuter] (0.7 * (dim.xBot1 - df.leftSB))
+			eject-contour 'strokeDown1'
+			include : union
+				Rect top yJoin df.leftSB (df.leftSB + hw)
+				spiro-outline
+					corner df.leftSB yJoin
+					corner (df.leftSB + hw) yJoin
+					corner dim.xBot1 0
+					corner (dim.xBot1 - hw) 0
 		if (slabType === SERIFS-ALL || slabType === SERIFS-ALL-REVERSE-ASYMMETRIC || (fSquareTop && (slabType === SERIFS-MOTION || slabType === SERIFS-ALL-OUTER || slabType === SERIFS-ALL-ASYMMETRIC || slabType === SERIFS-BILATERAL-MOTION))) : begin
 			eject-contour 'serifLT'
 			local sf : SerifFrame top 0 df.leftSB df.rightSB (hSplit -- 3)
 			include sf.lt.outer
 
 	define [BuildAnglicanaW bodyTop mak bodyType slabType midHClass fSquareTop] : glyph-proc
-		local outputDf : include : DivFrame para.advanceScaleMM 3
-		include : outputDf.markSet.(mak)
-		local df : DivFrame [Math.max 1.7 outputDf.adws] 3
-		local {subDf} : SubDfAndShift 1 df OX
+		local df : include : DivFrame [if (bodyTop === CAP) para.advanceScaleMM para.advanceScaleM] 3
+		include : df.markSet.(mak)
+		local subDf : df.slice 3 2 OX
 		local actualBody : if (bodyType === FORM-VERTICAL || bodyType === FORM-CURSIVE) FORM-STRAIGHT bodyType
 		local dim : WDim df bodyTop actualBody slabType midHClass
+		local xBottom : mix df.leftSB df.rightSB 0.20
 		local hook : if (bodyTop === CAP) Hook SHook
 		local ada : if (bodyTop === CAP) ArchDepthA SmallArchDepthA
 		local adb : if (bodyTop === CAP) ArchDepthB SmallArchDepthB
-		local shift : dim.xBot1 - subDf.leftSB - OX * 1.75
+		local shift : xBottom - subDf.leftSB - OX * 1.75
+		local wScale : 1.2 * (xBottom - df.leftSB) / (dim.xBot1 - df.leftSB)
+		local zeStroke : 0.75 * subDf.mvs
 		local cutX : 2 * subDf.middle - [mix subDf.leftSB subDf.rightSB 0.42]
 		local joinY : 0.25 * [subDf.adviceStroke 3.25]
 		local joinHalf : HSwToV joinY
+		local rightShape : new-glyph : with-transform [ApparentTranslate shift 0] : with-transform [Italify 5 0] : union
+			AnglicanaAlpha subDf bodyTop cutX ada adb zeStroke
+			AnglicanaZe subDf bodyTop cutX hook ada adb zeStroke
+			AnglicanaJoin subDf cutX zeStroke
+		local refDim : WDim df bodyTop FORM-STRAIGHT SERIFS-ALL 0
+		local refScale : 1.2 * (xBottom - df.leftSB) / (refDim.xBot1 - df.leftSB)
+		local refMin 0x7fffffff
+		local refMax (0 - 0x7fffffff)
+		local refCount 0
+		local ref : new-glyph : glyph-proc
+			include rightShape
+			include : with-transform [ApparentTranslate (xBottom - refDim.xBot1) 0] : with-transform [ScaleAround refDim.xBot1 0 refScale 1] : AnglicanaLeft df bodyTop FORM-STRAIGHT SERIFS-ALL 0 false
+			include : with-transform [ApparentTranslate (xBottom - refDim.xBot1) 0] : with-transform [ScaleAround refDim.xBot1 0 refScale 1] : AnglicanaLeft df bodyTop FORM-STRAIGHT SERIFS-ALL 0 true
+			foreach contour [items-of : currentGlyph.geometry.toBezArcs] : foreach arc [items-of contour] : foreach i [range 0 25] : begin
+				local p : arc.eval (i / 24)
+				if (p.x < refMin) : set refMin p.x
+				if (p.x > refMax) : set refMax p.x
+				set refCount : refCount + 1
+		if (refCount === 0 || refMax <= refMin) : throw : new Error 'Cannot fit an empty Anglicana W'
+		local margin : 0.8 * SB
+		local fitScale : (df.width - 2 * margin) / (refMax - refMin)
 
-		include : with-transform [ApparentTranslate (outputDf.middle - df.middle) 0] : with-transform [ScaleAround df.middle 0 (outputDf.width / df.width) 1] : union
-			AnglicanaLeft df bodyTop actualBody slabType midHClass fSquareTop
-			if fSquareTop [Rect joinY 0 (dim.xBot1 - joinHalf) (dim.xBot1 + joinHalf)] [no-shape]
-			with-transform [ApparentTranslate shift 0] : union
-				intersection
-					with-transform [ScaleAround subDf.middle (bodyTop / 2) (-1) (-1)] : CrossingBody subDf bodyTop nothing ada adb (bodyTop * 0.2)
-					AnglicanaAlphaMask subDf bodyTop cutX
-				AnglicanaZe subDf bodyTop cutX hook ada adb
-				AnglicanaJoin subDf bodyTop cutX
-		set-width outputDf.width
+		include : union
+			with-transform [ApparentTranslate (xBottom - dim.xBot1) 0] : with-transform [ScaleAround dim.xBot1 0 wScale 1] : AnglicanaLeft df bodyTop actualBody slabType midHClass fSquareTop
+			if fSquareTop [Rect joinY 0 (xBottom - joinHalf) (xBottom + joinHalf)] [no-shape]
+		include rightShape
+		currentGlyph.applyTransform [Scale fitScale 1] true
+		currentGlyph.applyTransform [Translate (margin - fitScale * refMin) 0] true
 
 	foreach {suffix {{implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType}} [Object.entries WConfig] : do
 		local fSquareTop : suffix.startsWith 'squareTop'
