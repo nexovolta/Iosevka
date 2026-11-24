@@ -499,7 +499,7 @@ glyph-block Letter-Latin-Lower-A : begin
 
 	# Greek Lower Alpha
 	glyph-block-export CrossingBody
-	define [CrossingBody df top _sw _ada _adb extension] : glyph-proc
+	define [CrossingBody df top _sw _ada _adb fStraightTerminal _terminalInset] : glyph-proc
 		local sw  : fallback _sw    df.mvs
 		local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 		local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -509,6 +509,9 @@ glyph-block Letter-Latin-Lower-A : begin
 		local k2 0.50
 		local k3 0.35
 		local k4 1.00
+		local hookStartX : df.rightSB - OX * 2
+		local terminalInset : fallback _terminalInset 0
+		local hookSlope : (hookStartX - middle) * 0.15 / (top * 0.4 - terminalInset)
 		include : dispiro
 			g4   (df.rightSB - OX * 1.75) top [widths.rhs.heading fine Downward]
 			bezControls (0 + k1) (0 + k2) (0 + k3) (0 + k4) 6
@@ -517,14 +520,14 @@ glyph-block Letter-Latin-Lower-A : begin
 			flatside.lu df.leftSB 0 top ada adb (OX * 2) [widths.rhs df.mvs]
 			arcvh
 			Arch.rhs.centerAt.ltr.t middle top (sw -- sw) (swAfter -- fine)
-			bezControls (1 - k3) (1 - k4) (1 - k1) (1 - k2) 6
-			g4   (df.rightSB - OX * 2.00) 0 [widths.rhs.heading fine Downward]
-			if extension
+			if fStraightTerminal
 				then : list
-					bezControls 0 0.35 0.7 0.8 6
-					g4 [mix df.rightSB df.leftSB 0.2] (-extension) [widths.rhs fine]
+					bezControls (1 - k3) (1 - k4) (1 - k1) (1 - k2) 6
+					flat [mix middle hookStartX 0.85] (top * 0.4) [widths.rhs.heading fine {.x HVContrast .y hookSlope}]
+					curl hookStartX terminalInset [widths.rhs.heading fine Downward]
 				else : list
-
+					bezControls (1 - k3) (1 - k4) (1 - k1) (1 - k2) 6
+					g4 (df.rightSB - OX * 2) 0 [widths.rhs.heading fine Downward]
 		set-base-anchor 'overlay' (middle - OX) [mix 0 top OverlayPos]
 		set-base-anchor 'strike'  (middle - OX) [mix 0 top 0.5]
 

@@ -900,11 +900,11 @@ glyph-block CommonShapes : begin
 	define [with-transform tfm gr] : new-glyph : composite-proc gr tfm
 
 	glyph-block-export with-outlined
-	define [with-outlined sw gr] : new-glyph : glyph-proc
+	define [with-outlined sw gr miter] : new-glyph : glyph-proc
 		include gr
 		local g currentGlyph.geometry
 		local gizmo : currentGlyph.gizmo || GlobalTransform
-		set currentGlyph.geometry : new StrokeGeometry g gizmo sw HVContrast false
+		set currentGlyph.geometry : new StrokeGeometry g gizmo sw HVContrast false miter
 
 	glyph-block-export remove-holes
 	define [remove-holes gr] : new-glyph : glyph-proc

@@ -35,8 +35,8 @@ glyph-block Letter-Latin-Anglicana-W : begin
 			corner x0 (O + 0.3 * zeStroke)
 			corner cutX O
 			corner x1 O
-			corner x1 (O + 0.6 * zeStroke)
-			corner x0 (O + 0.6 * zeStroke)
+			corner x1 (O + 0.9 * zeStroke)
+			corner x0 (O + 0.9 * zeStroke)
 
 	define [AnglicanaZe subDf top cutX hook ada adb zeStroke] : glyph-proc
 		local ze : CyrZe FLAT-CONNECTION FLAT-CONNECTION (top - O) O
@@ -59,9 +59,10 @@ glyph-block Letter-Latin-Anglicana-W : begin
 				AnglicanaAlphaMask subDf top cutX zeStroke
 			Rect (midy + 0.7 * subDf.mvs) (midy - 0.7 * subDf.mvs) (-subDf.width) (subDf.width * 2)
 
-	define [AnglicanaAlpha subDf top cutX ada adb zeStroke] : glyph-proc
+	define [AnglicanaAlpha subDf top cutX ada adb zeStroke offset] : glyph-proc
+		# The outline offset expands the inset terminal back to the requested height.
 		include : intersection
-			with-transform [ScaleAround subDf.middle (top / 2) (-1) (-1)] : CrossingBody subDf top zeStroke ada adb (top * 0.2)
+			with-transform [ScaleAround subDf.middle (top / 2) (-1) (-1)] : CrossingBody subDf top zeStroke ada adb true offset
 			AnglicanaAlphaMask subDf top cutX zeStroke
 
 	define [AnglicanaLeft df top bodyType slabType midHClass fSquareTop] : glyph-proc
@@ -90,6 +91,10 @@ glyph-block Letter-Latin-Anglicana-W : begin
 			local sf : SerifFrame top 0 df.leftSB df.rightSB (hSplit -- 3)
 			include sf.lt.outer
 
+	define [AnglicanaOffset shape offset] : new-glyph : glyph-proc
+		include shape
+		if (offset > 0) : include : with-outlined offset shape true
+
 	define [BuildAnglicanaW bodyTop mak bodyType slabType midHClass fSquareTop] : glyph-proc
 		local df : include : DivFrame [if (bodyTop === CAP) para.advanceScaleMM para.advanceScaleM] 3
 		include : df.markSet.(mak)
@@ -106,8 +111,9 @@ glyph-block Letter-Latin-Anglicana-W : begin
 		local cutX : 2 * subDf.middle - [mix subDf.leftSB subDf.rightSB 0.42]
 		local joinY : 0.25 * [subDf.adviceStroke 3.25]
 		local joinHalf : HSwToV joinY
-		local rightShape : new-glyph : with-transform [ApparentTranslate shift 0] : with-transform [Italify 5 0] : union
-			AnglicanaAlpha subDf bodyTop cutX ada adb zeStroke
+		local offset : if para.isQuasiProportional (0.05 * df.mvs) 0
+		local rightShape : new-glyph : with-transform [ApparentTranslate shift 0] : union
+			AnglicanaAlpha subDf bodyTop cutX ada adb zeStroke offset
 			AnglicanaZe subDf bodyTop cutX hook ada adb zeStroke
 			AnglicanaJoin subDf cutX zeStroke
 		local refDim : WDim df bodyTop FORM-STRAIGHT SERIFS-ALL 0
@@ -115,10 +121,12 @@ glyph-block Letter-Latin-Anglicana-W : begin
 		local refMin 0x7fffffff
 		local refMax (0 - 0x7fffffff)
 		local refCount 0
-		local ref : new-glyph : glyph-proc
+		local refShape : new-glyph : glyph-proc
 			include rightShape
 			include : with-transform [ApparentTranslate (xBottom - refDim.xBot1) 0] : with-transform [ScaleAround refDim.xBot1 0 refScale 1] : AnglicanaLeft df bodyTop FORM-STRAIGHT SERIFS-ALL 0 false
 			include : with-transform [ApparentTranslate (xBottom - refDim.xBot1) 0] : with-transform [ScaleAround refDim.xBot1 0 refScale 1] : AnglicanaLeft df bodyTop FORM-STRAIGHT SERIFS-ALL 0 true
+		local ref : new-glyph : glyph-proc
+			include : AnglicanaOffset refShape offset
 			foreach contour [items-of : currentGlyph.geometry.toBezArcs] : foreach arc [items-of contour] : foreach i [range 0 25] : begin
 				local p : arc.eval (i / 24)
 				if (p.x < refMin) : set refMin p.x
@@ -128,10 +136,12 @@ glyph-block Letter-Latin-Anglicana-W : begin
 		local margin : 0.8 * SB
 		local fitScale : (df.width - 2 * margin) / (refMax - refMin)
 
-		include : union
-			with-transform [ApparentTranslate (xBottom - dim.xBot1) 0] : with-transform [ScaleAround dim.xBot1 0 wScale 1] : AnglicanaLeft df bodyTop actualBody slabType midHClass fSquareTop
-			if fSquareTop [Rect joinY 0 (xBottom - joinHalf) (xBottom + joinHalf)] [no-shape]
-		include rightShape
+		local shape : new-glyph : glyph-proc
+			include : union
+				with-transform [ApparentTranslate (xBottom - dim.xBot1) 0] : with-transform [ScaleAround dim.xBot1 0 wScale 1] : AnglicanaLeft df bodyTop actualBody slabType midHClass fSquareTop
+				if fSquareTop [Rect joinY 0 (xBottom - joinHalf) (xBottom + joinHalf)] [no-shape]
+			include rightShape
+		include : AnglicanaOffset shape offset
 		currentGlyph.applyTransform [Scale fitScale 1] true
 		currentGlyph.applyTransform [Translate (margin - fitScale * refMin) 0] true
 

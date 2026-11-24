@@ -8,11 +8,11 @@ import {
 	RoundCapCurve,
 } from "./curve-util.mjs";
 
-export function strokeArcs(arcs, radius, contrast, fInside) {
+export function strokeArcs(arcs, radius, contrast, fInside, miter = false) {
 	let currentArcs = null;
 	for (const contour of arcs) {
-		const leftSide = offsetContour(contour, -radius, contrast);
-		const rightSide = offsetContour(contour, radius, contrast);
+		const leftSide = offsetContour(contour, -radius, contrast, miter);
+		const rightSide = offsetContour(contour, radius, contrast, miter);
 		const bezs = TypoGeom.ShapeConv.convertShapeToBez3(
 			[leftSide, rightSide],
 			GEOMETRY_PRECISION,
@@ -50,7 +50,7 @@ export function strokeArcs(arcs, radius, contrast, fInside) {
 	}
 }
 
-function offsetContour(arcs, distance, contrast) {
+function offsetContour(arcs, distance, contrast, miter) {
 	// The arcs here are guaranteed to be simple, i.e. no self-intersections.
 	const fReverse = distance < 0;
 	const offsetArcs = [];
@@ -66,18 +66,41 @@ function offsetContour(arcs, distance, contrast) {
 			Math.abs(prevEnd.x - currentStart.x) > OCCURRENT_PRECISION ||
 			Math.abs(prevEnd.y - currentStart.y) > OCCURRENT_PRECISION
 		) {
-			offsetArcs.push(
-				createCap(
-					distance < 0,
-					contrast,
-					prevOffsetedArc.bone.eval(1),
-					prevEnd,
-					prevOffsetedArc.derivative(1),
-					currentOffsetedArc.bone.eval(0),
-					currentStart,
-					currentOffsetedArc.derivative(0),
-				),
-			);
+			const dPrev = prevOffsetedArc.bone.derivative(1);
+			const dNext = currentOffsetedArc.bone.derivative(0);
+			const cross = dPrev.x * dNext.y - dPrev.y * dNext.x;
+			const scale = Math.hypot(dPrev.x, dPrev.y) * Math.hypot(dNext.x, dNext.y);
+			const dot = dPrev.x * dNext.x + dPrev.y * dNext.y;
+			const delta = { x: currentStart.x - prevEnd.x, y: currentStart.y - prevEnd.y };
+			const t = (delta.x * dNext.y - delta.y * dNext.x) / cross;
+			const tip = { x: prevEnd.x + t * dPrev.x, y: prevEnd.y + t * dPrev.y };
+			const vertex = currentOffsetedArc.bone.eval(0);
+			const limit = 4 * Math.abs(distance) * Math.max(1, contrast);
+			if (
+				miter &&
+				scale > 0 &&
+				cross * distance < 0 &&
+				dot < 0.8 * scale &&
+				Math.abs(cross) > 0.0001 * scale &&
+				Number.isFinite(t) &&
+				Math.hypot(tip.x - vertex.x, tip.y - vertex.y) <= limit
+			) {
+				offsetArcs.push(new TypoGeom.Arcs.StraightSegment(prevEnd, tip));
+				offsetArcs.push(new TypoGeom.Arcs.StraightSegment(tip, currentStart));
+			} else {
+				offsetArcs.push(
+					createCap(
+						distance < 0,
+						contrast,
+						prevOffsetedArc.bone.eval(1),
+						prevEnd,
+						prevOffsetedArc.derivative(1),
+						currentOffsetedArc.bone.eval(0),
+						currentStart,
+						currentOffsetedArc.derivative(0),
+					),
+				);
+			}
 			// offsetArcs.push(Bez3FromHermite(prevEnd, dPrevEnd, currentStart, dCurrentStart));
 		}
 

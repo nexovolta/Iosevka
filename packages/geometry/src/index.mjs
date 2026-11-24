@@ -566,13 +566,14 @@ export class BooleanGeometry extends GeometryBase {
 }
 
 export class StrokeGeometry extends GeometryBase {
-	constructor(geom, gizmo, radius, contrast, fInside) {
+	constructor(geom, gizmo, radius, contrast, fInside, miter = false) {
 		super();
 		this.m_geom = geom;
 		this.m_gizmo = gizmo;
 		this.m_radius = radius;
 		this.m_contrast = contrast;
 		this.m_fInside = fInside;
+		this.m_miter = miter;
 	}
 
 	toBezArcs() {
@@ -591,7 +592,13 @@ export class StrokeGeometry extends GeometryBase {
 		const fairizedArcs = TypoGeom.Fairize.fairizeBezierShape(arcs);
 
 		// Stroke the arcs
-		const out = strokeArcs(fairizedArcs, this.m_radius, this.m_contrast, this.m_fInside);
+		const out = strokeArcs(
+			fairizedArcs,
+			this.m_radius,
+			this.m_contrast,
+			this.m_fInside,
+			this.m_miter,
+		);
 
 		// Transform back
 		CurveUtil.InPlaceTransformBez3Shape(this.m_gizmo, out);
@@ -610,6 +617,7 @@ export class StrokeGeometry extends GeometryBase {
 			this.m_radius,
 			this.m_contrast,
 			this.m_fInside,
+			this.m_miter,
 		);
 	}
 	measureComplexity() {
@@ -623,6 +631,7 @@ export class StrokeGeometry extends GeometryBase {
 		h.f64(this.m_radius);
 		h.f64(this.m_contrast);
 		h.bool(this.m_fInside);
+		h.bool(this.m_miter);
 		h.endStruct();
 	}
 }
