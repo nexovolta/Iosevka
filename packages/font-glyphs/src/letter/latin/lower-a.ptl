@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateMultiAccentedComposition CreateTurnedLetter
-	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight OBarLeft ArcStartSerif
+	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight OBarLeft ArcStartSerif SerifedArcEnd EtBowlCurves
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar LeftwardTailedBar RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart StemCutY ApplyDiagCut
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
@@ -370,19 +370,52 @@ glyph-block Letter-Latin-Lower-A : begin
 		curvedBarRising    CURVED-BAR-RISING
 		curvedBarFalling   CURVED-BAR-FALLING
 
-	define [ItalicSwash df body cut diag] : glyph-proc
+	define [ItalicSwash df body cut] : glyph-proc
 		local sw : DoubleStorey.Sw df
+		local barY : XH * 0.5
+		local fine : sw * CThin
+		local depthRatio : ArchDepthB / (ArchDepthA + ArchDepthB)
+		local ada : XH - [mix (barY + sw / 2) (XH - O - sw) depthRatio] - [HSwToV TanSlope] * sw
+		local adb : [mix (sw + O) (barY - sw / 2) depthRatio] + [HSwToV TanSlope] * sw
 		local startX : DoubleStorey.HalfHookStartX df sw nothing
-		local barY : XH * 0.44
+		local stemBottom : match body
+			[Just DoubleStorey.Tailed] : DoubleStorey.SmoothA df
+			[Just DoubleStorey.ToothlessCorner] : begin DToothlessRise
+			[Just DoubleStorey.ToothlessRounded] : DoubleStorey.SmoothA df
+			__ : if (cut === 'bottomCut') HalfStroke 0
+		local barRight : df.rightSB + 0.1 * df.width
 		include : union
-			body df HOOK-HALF nothing cut diag (barY + sw / 2)
+			DoubleStorey.HookAndBar df HOOK-HALF stemBottom sw
+			if (body === DoubleStorey.Tailed)
+				RightwardTailedBar df.rightSB 0 (XH - [DoubleStorey.SmoothB df]) sw
+				no-shape
+			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- sw)
+			if (body === DoubleStorey.Serifed || body === DoubleStorey.FlatBottomSerifed)
+				begin [SerifFrame.fromDf df XH 0 (swRef -- sw) (swSerif -- df.mvs)].rb.outer
+				no-shape
 			dispiro
 				widths.lhs sw
 				g4.left.start (startX + sw * 0.25) (XH - O) [heading Leftward]
-				archv
-				g4.down.mid (df.leftSB + OX) [mix barY XH 0.5] [heading Downward]
-				arcvh
-				g4.right.end (df.rightSB + 0.1 * df.width) barY [heading Rightward]
+				EtBowlCurves.Upper df.leftSB df.middle barRight XH barY ada sw fine
+			dispiro
+				EtBowlCurves.Lower df.leftSB df.middle barRight barY adb sw sw fine
+				match body
+					[Just DoubleStorey.FlatBottomSerifless] : list
+						arcvh
+						flat [Arch.adjust-x.bot df.middle (sw -- sw)] 0
+						curl (df.rightSB - TINY) 0 [heading Rightward]
+					[Just DoubleStorey.FlatBottomSerifed] : list
+						arcvh
+						flat [Arch.adjust-x.bot df.middle (sw -- sw)] 0
+						curl (df.rightSB - TINY) 0 [heading Rightward]
+					[Just DoubleStorey.ToothlessCorner] : list
+						Arch.lhs 0 (sw -- sw) (blendPost -- {})
+						g4 df.rightSB DToothlessRise
+					[Just DoubleStorey.ToothlessRounded] : list
+						Arch.lhs 0 (sw -- sw)
+						flat df.rightSB ada
+						curl df.rightSB (XH - [DoubleStorey.SmoothB df]) [heading Upward]
+					__ : SerifedArcEnd.LtrLhs df.rightSB 0 sw ada sw
 
 	define [PhonotypicASwash hookStyle fSingleStorey] : glyph-proc
 		local df : include : DivFrame para.advanceScaleT 4
@@ -456,7 +489,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				then : begin
 					local df : include : DivFrame 1
 					include : df.markSet.e
-					include : ItalicSwash df body cut diag
+					include : ItalicSwash df body cut
 				else : begin
 					local baseSuffix : if (body === DoubleStorey.Tailed) [suffix.replace 'Tailed' 'Serifless'] suffix
 					include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS
@@ -784,7 +817,10 @@ glyph-block Letter-Latin-Lower-A : begin
 				then : begin
 					local df : include : DivFrame 1
 					include : df.markSet.e
-					include : ItalicSwash df DoubleStorey.Serifless '' 0
+					local swashBody DoubleStorey.Serifless
+					if (bar === SingleStorey.TailedBar || bar === SingleStorey.TailedSerifedBar) : set swashBody DoubleStorey.Tailed
+					if (bar === SingleStorey.BottomSerifedBar || bar === SingleStorey.DoubleSerifedBar) : set swashBody DoubleStorey.Serifed
+					include : ItalicSwash df swashBody [if (cut === 'bottomCut') cut '']
 				else : begin
 					local baseSuffix : if (bar === SingleStorey.TailedBar || bar === SingleStorey.TailedSerifedBar) [suffix.replace [if (bar === SingleStorey.TailedBar) 'Tailed' 'TailedSerifed'] 'Serifless'] suffix
 					include [refer-glyph "a.\(baseSuffix)"] AS_BASE ALSO_METRICS

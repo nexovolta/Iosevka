@@ -254,6 +254,11 @@ The `komi-hook` design independently controls the hooks on ԂԃԄԅԈԉԊԋԌԍ�
 `serifless`, `motion-serifed`, or `serifed`. It defaults to `serifless` in sans
 builds and `serifed` in slab builds.
 
+The tooth-bearing `ampersand` shapes support `bottom-cut`, `toothed-tailed`,
+and `flat-bottom-serifed` terminals, for example `et-bottom-cut` or
+`flat-top-flat-bottom-serifed-serifless`. The existing `et-tailed` and
+`et-toothed-tailed` choices use the same toothed tail.
+
 Broken-bowl options are available for `capital-b`, `capital-p`, `capital-thorn`,
 `cyrl-capital-be`, and `cyrl-ve`. For example,
 `capital-b = 'standard-broken-rising-serifless'` and

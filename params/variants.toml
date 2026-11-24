@@ -26424,6 +26424,121 @@ descriptionAffix = "tooth (rounded)"
 descriptionJoiner = "without"
 selectorAffix.ampersand = "toothlessRounded"
 
+[prime.ampersand.variants-extra-buildup]
+entry = "body"
+rankOffset = 90
+descriptionLeader = "Ampersand (`&`)"
+
+[prime.ampersand.variants-extra-buildup.stages.body.lower-open]
+rank = 1
+next = "terminal"
+descriptionAffix = "open contour at lower half"
+selectorAffix.ampersand = "lowerOpen"
+
+[prime.ampersand.variants-extra-buildup.stages.body.flat-top]
+rank = 2
+next = "terminal"
+descriptionAffix = "flat top"
+selectorAffix.ampersand = "flatTop"
+
+[prime.ampersand.variants-extra-buildup.stages.body.flat-top-and-bottom]
+rank = 3
+next = "terminal"
+descriptionAffix = "flat top and bottom"
+selectorAffix.ampersand = "flatTopAndBottom"
+
+[prime.ampersand.variants-extra-buildup.stages.body.et]
+rank = 4
+next = "hook"
+descriptionAffix = "body shape drawn like a ligature of `Ɛ` and `t`"
+selectorAffix.ampersand = "et"
+
+[prime.ampersand.variants-extra-buildup.stages.body.closed-et]
+rank = 5
+next = "terminal"
+descriptionAffix = "closed top with et bottom"
+selectorAffix.ampersand = "closedEt"
+
+[prime.ampersand.variants-extra-buildup.stages.body.upper-open-et]
+rank = 6
+next = "hook"
+descriptionAffix = "upper-open top with et bottom"
+selectorAffix.ampersand = "upperOpenEt"
+
+[prime.ampersand.variants-extra-buildup.stages.hook.hooked]
+rank = 1
+keyAffix = ""
+next = "top-serifs"
+selectorAffix.ampersand = ""
+
+[prime.ampersand.variants-extra-buildup.stages.hook.flat-hooked]
+rank = 2
+next = "terminal"
+descriptionAffix = "flat hook"
+selectorAffix.ampersand = "flatHook"
+
+[prime.ampersand.variants-extra-buildup.stages.hook.corner-hooked]
+rank = 3
+next = "terminal"
+descriptionAffix = "corner hook"
+selectorAffix.ampersand = "cornerHook"
+
+[prime.ampersand.variants-extra-buildup.stages.top-serifs."*"]
+next = "terminal"
+
+[prime.ampersand.variants-extra-buildup.stages.top-serifs.serifless]
+rank = 1
+keyAffix = ""
+selectorAffix.ampersand = ""
+
+[prime.ampersand.variants-extra-buildup.stages.top-serifs.serifed]
+rank = 2
+descriptionAffix = "serifed top"
+selectorAffix.ampersand = "serifed"
+
+[prime.ampersand.variants-extra-buildup.stages.top-serifs.inward-serifed]
+rank = 3
+descriptionAffix = "inward-serifed top"
+selectorAffix.ampersand = "inwardSerifed"
+
+[prime.ampersand.variants-extra-buildup.stages.terminal."*"]
+next = "serifs"
+
+[prime.ampersand.variants-extra-buildup.stages.terminal.bottom-cut]
+rank = 1
+descriptionAffix = "bottom-cut tooth"
+selectorAffix.ampersand = "bottomCut"
+
+[prime.ampersand.variants-extra-buildup.stages.terminal.toothed-tailed]
+rank = 2
+descriptionAffix = "tooth and tail"
+selectorAffix.ampersand = { if = [{ body = "et" }, { body = "closed-et" }, { body = "upper-open-et" }], then = "tailed", else = "toothedTailed" }
+
+[prime.ampersand.variants-extra-buildup.stages.terminal.flat-bottom-serifed]
+rank = 3
+descriptionAffix = "flat bottom with serif"
+selectorAffix.ampersand = "flatBottomSerifed"
+
+[prime.ampersand.variants-extra-buildup.stages.serifs."*"]
+next = "END"
+
+[prime.ampersand.variants-extra-buildup.stages.serifs.none]
+rank = 1
+keyAffix = ""
+enableIf = [{ body = "lower-open" }, { body = "et" }, { body = "closed-et" }, { body = "upper-open-et" }]
+selectorAffix.ampersand = ""
+
+[prime.ampersand.variants-extra-buildup.stages.serifs.serifless]
+rank = 2
+enableIf = [{ body = "flat-top" }, { body = "flat-top-and-bottom" }]
+selectorAffix.ampersand = "serifless"
+
+[prime.ampersand.variants-extra-buildup.stages.serifs.serifed]
+rank = 3
+enableIf = [{ body = "flat-top" }, { body = "flat-top-and-bottom" }]
+descriptionAffix = "serif at top-right"
+selectorAffix.ampersand = "serifed"
+
 
 [prime.at]
 sampler = "@"

@@ -14,7 +14,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	glyph-block-import Mark-Above : MeasureGlyphBounds
 	glyph-block-import Letter-Latin-Ezh : RevEzh
 	glyph-block-import Letter-Latin-Rams-Horn : UmShape
-	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcStart SerifedArcEnd InwardSlabArcStart ArcStartSerif
+	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifedArcStart SerifedArcEnd InwardSlabArcStart ArcStartSerif ApplyDiagCut EtBowlCurves
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
 
 	define SwAmpersand : AdviceStroke2 2.5 3 CAP
@@ -350,9 +350,27 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define FORM-FLAT-BOTTOM       1
 	define FORM-TOOTHLESS-CORNER  2
 	define FORM-TOOTHLESS-ROUNDED 3
+	define FORM-BOTTOM-CUT        4
+	define FORM-TOOTHED-TAILED    5
+	define FORM-FLAT-BOTTOM-SERIFED 6
+
+	define [BaseToothForm form] : begin
+		if (form === FORM-BOTTOM-CUT || form === FORM-TOOTHED-TAILED) : return FORM-TOOTHED
+		if (form === FORM-FLAT-BOTTOM-SERIFED) : return FORM-FLAT-BOTTOM
+		return form
+
+	define [ExtraToothStem form right depth top sw] : match form
+		[Just FORM-BOTTOM-CUT] : union
+			VBar.r right HalfStroke top sw
+			ApplyDiagCut (cut -- 'bottomCut') (side -- 'r') (x -- right) (bot -- 0) (top -- top) (sw -- sw)
+		[Just FORM-TOOTHED-TAILED] : RightwardTailedBar right 0 top sw
+		[Just FORM-FLAT-BOTTOM-SERIFED] : union
+			VBar.r right 0 top sw
+			HSerif.rb right 0 SideJut sw
+		__ : no-shape
 
 	# Match EtLowerHalf's terminal construction without changing existing Et outlines.
-	define [EtBowlEnd form right center depth barTop sw] : match form
+	define [EtBowlEnd form right center depth barTop sw] : match [BaseToothForm form]
 		[Just FORM-TOOTHED] : SerifedArcEnd.LtrLhs right 0 sw depth Stroke
 		[Just FORM-FLAT-BOTTOM] : list
 			arcvh
@@ -415,13 +433,16 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				VBar.r (xLowerOpenRight - O) ArchDepthA 0 [Math.max [AdviceStroke 5] (SwAmpersand - ShoulderFine / 2)]
 			[Just FORM-FLAT-BOTTOM] : VBar.r (xLowerOpenRight - O) 0 yLowerOpenEnd SwAmpersand
 			[Just FORM-TOOTHLESS-CORNER] : VBar.r (xLowerOpenRight - O) DToothlessRise yLowerOpenEnd SwAmpersand
-			__ : no-shape
+			__ : ExtraToothStem form (xLowerOpenRight - O) ArchDepthA yLowerOpenEnd SwAmpersand
 
 	create-glyph 'ampersand.lowerOpen' : LowerOpenRest FORM-TOOTHLESS-ROUNDED
 	create-glyph 'ampersand.lowerOpenToothlessRounded' : LowerOpenRest FORM-TOOTHLESS-ROUNDED
 	create-glyph 'ampersand.lowerOpenFlatBottom' : LowerOpenRest FORM-FLAT-BOTTOM
 	create-glyph 'ampersand.lowerOpenToothed' : LowerOpenRest FORM-TOOTHED
 	create-glyph 'ampersand.lowerOpenToothlessCorner' : LowerOpenRest FORM-TOOTHLESS-CORNER
+	create-glyph 'ampersand.lowerOpenBottomCut' : LowerOpenRest FORM-BOTTOM-CUT
+	create-glyph 'ampersand.lowerOpenToothedTailed' : LowerOpenRest FORM-TOOTHED-TAILED
+	create-glyph 'ampersand.lowerOpenFlatBottomSerifed' : LowerOpenRest FORM-FLAT-BOTTOM-SERIFED
 
 	define yEtMiddle : CAP * OverlayPos
 	define adaEt : CAP - [mix (yEtMiddle + SwAmpersand / 2) (CAP - O - SwAmpersand) (ArchDepthB / (ArchDepthA + ArchDepthB))] - [HSwToV TanSlope] * SwAmpersand
@@ -443,10 +464,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				__ : list
 					g4 xEtRight (CAP - SHook) [widths.lhs]
 					HookStart CAP
-		g4 xEtLeft (CAP - adaEt)
-		arcvh
-		flat Middle (yEtMiddle - (fineEt - SwAmpersand / 2)) [widths.heading fineEt 0 Rightward]
-		curl xEtCenterBarRight (yEtMiddle - (fineEt - SwAmpersand / 2)) [heading Rightward]
+		EtBowlCurves.Upper xEtLeft Middle xEtCenterBarRight CAP yEtMiddle adaEt SwAmpersand fineEt
 
 	define [EtUpperHalf hookType topSerif] : glyph-proc
 		include : EtUpperHalfStroke hookType topSerif
@@ -455,10 +473,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardR xEtRight CAP SwAmpersand SHook
 
 	define [EtLowerHalf form] : dispiro
-		flat xEtCenterBarRight (yEtMiddle + (fineEt - SwAmpersand / 2)) [widths.heading fineEt 0 Leftward]
-		curl Middle (yEtMiddle + (fineEt - SwAmpersand / 2)) [heading Leftward]
-		archv
-		g4 (xEtLeft + O * 2) adbEt [widths.lhs]
+		EtBowlCurves.Lower xEtLeft Middle xEtCenterBarRight yEtMiddle adbEt SwAmpersand Stroke fineEt
 		match form
 			[Just FORM-TOOTHED] : begin
 				SerifedArcEnd.LtrLhs xEtRight 0 Stroke adaEt Stroke
@@ -576,6 +591,9 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		'Toothed'          FORM-TOOTHED
 		'ToothlessCorner'  FORM-TOOTHLESS-CORNER
 		'ToothlessRounded' FORM-TOOTHLESS-ROUNDED
+		'BottomCut' FORM-BOTTOM-CUT
+		'ToothedTailed' FORM-TOOTHED-TAILED
+		'FlatBottomSerifed' FORM-FLAT-BOTTOM-SERIFED
 	define FlatTopSerifs : object
 		'Serifless' false
 		'Serifed'   true
@@ -600,7 +618,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 							VBar.r (xLowerOpenRight - OX) adaEt 0 [Math.max [AdviceStroke 5] (SwAmpersand - ShoulderFine / 2)]
 						[Just FORM-FLAT-BOTTOM] : VBar.r (xLowerOpenRight - OX) 0 yEtFlatTopEnd SwAmpersand
 						[Just FORM-TOOTHLESS-CORNER] : VBar.r (xLowerOpenRight - OX) DToothlessRise yEtFlatTopEnd SwAmpersand
-						__ : no-shape
+						__ : ExtraToothStem form (xLowerOpenRight - OX) adaEt yEtFlatTopEnd SwAmpersand
 
 	define FlatTopAndBottomConfig : object
 		'flatTopAndBottomSerifless'                 {FORM-FLAT-BOTTOM        false}
@@ -611,6 +629,12 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		'flatTopAndBottomToothlessCornerSerifed'    {FORM-TOOTHLESS-CORNER   true }
 		'flatTopAndBottomToothlessRoundedSerifless' {FORM-TOOTHLESS-ROUNDED  false}
 		'flatTopAndBottomToothlessRoundedSerifed'   {FORM-TOOTHLESS-ROUNDED  true }
+		'flatTopAndBottomBottomCutSerifless'        {FORM-BOTTOM-CUT        false}
+		'flatTopAndBottomBottomCutSerifed'          {FORM-BOTTOM-CUT        true }
+		'flatTopAndBottomToothedTailedSerifless'    {FORM-TOOTHED-TAILED    false}
+		'flatTopAndBottomToothedTailedSerifed'      {FORM-TOOTHED-TAILED    true }
+		'flatTopAndBottomFlatBottomSerifedSerifless' {FORM-FLAT-BOTTOM-SERIFED false}
+		'flatTopAndBottomFlatBottomSerifedSerifed'   {FORM-FLAT-BOTTOM-SERIFED true }
 
 	foreach {suffix {form fSerifed}} [pairs-of FlatTopAndBottomConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
@@ -627,6 +651,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yEtRightBarTop SwAmpersand
 			if (form === FORM-TOOTHED) : include : VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (SwAmpersand - ShoulderFine / 2)]
 			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yEtRightBarTop SwAmpersand
+			include : ExtraToothStem form xEtRight adaEt yEtRightBarTop SwAmpersand
 
 	define [UpperOpenRoundRest] : UpperOpenRest HOOK-ROUND TOP-SERIFLESS
 	define [UpperOpenFlatRest] : UpperOpenRest HOOK-FLAT TOP-SERIFLESS
@@ -639,6 +664,17 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define HYBRID-FLAT-BOTTOM      2
 	define HYBRID-TOOTHLESS-CORNER 3
 	define HYBRID-TOOTHLESS-ROUND  4
+	define HYBRID-BOTTOM-CUT       5
+	define HYBRID-FLAT-BOTTOM-SERIFED 6
+
+	define [ExtraEtLower kind] : match kind
+		[Just HYBRID-BOTTOM-CUT] : union
+			EtLowerHalf FORM-TOOTHED
+			ExtraToothStem FORM-BOTTOM-CUT xEtRight adaEt yEtRightBarTop Stroke
+		[Just HYBRID-FLAT-BOTTOM-SERIFED] : union
+			EtLowerHalf FORM-FLAT-BOTTOM
+			ExtraToothStem FORM-FLAT-BOTTOM-SERIFED xEtRight adaEt yEtRightBarTop Stroke
+		__ : no-shape
 
 	define [HybridEtGlyph topShape kind] : glyph-proc
 		include : intersection
@@ -661,6 +697,8 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			[Just HYBRID-TOOTHLESS-CORNER] : begin
 				include : EtLowerHalf FORM-TOOTHLESS-CORNER
 				include : VBar.r xEtRight DToothlessRise yEtRightBarTop
+			[Just HYBRID-BOTTOM-CUT] : include : ExtraEtLower kind
+			[Just HYBRID-FLAT-BOTTOM-SERIFED] : include : ExtraEtLower kind
 			__ : begin
 				include : EtLowerHalf FORM-TOOTHLESS-ROUNDED
 
@@ -680,6 +718,8 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			[Just HYBRID-TOOTHLESS-CORNER] : begin
 				include : EtLowerHalf FORM-TOOTHLESS-CORNER
 				include : VBar.r xEtRight DToothlessRise yEtRightBarTop
+			[Just HYBRID-BOTTOM-CUT] : include : ExtraEtLower kind
+			[Just HYBRID-FLAT-BOTTOM-SERIFED] : include : ExtraEtLower kind
 			__ : begin
 				include : EtLowerHalf FORM-TOOTHLESS-ROUNDED
 
@@ -696,6 +736,26 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)FlatBottom"       : HybridEtGlyph topShape HYBRID-FLAT-BOTTOM
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessCorner"  : HybridEtGlyph topShape HYBRID-TOOTHLESS-CORNER
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessRounded" : HybridEtGlyph topShape HYBRID-TOOTHLESS-ROUND
+
+	define [ExtraEtVariants prefix topShape hookType topSerif] : begin
+		create-glyph "ampersand.\(prefix)BottomCut" : if topShape
+			HybridEtGlyph topShape HYBRID-BOTTOM-CUT
+			EtGlyph hookType topSerif HYBRID-BOTTOM-CUT
+		create-glyph "ampersand.\(prefix)FlatBottomSerifed" : if topShape
+			HybridEtGlyph topShape HYBRID-FLAT-BOTTOM-SERIFED
+			EtGlyph hookType topSerif HYBRID-FLAT-BOTTOM-SERIFED
+
+	ExtraEtVariants 'et' nothing HOOK-ROUND TOP-SERIFLESS
+	ExtraEtVariants 'etSerifed' nothing HOOK-ROUND TOP-SERIFED
+	ExtraEtVariants 'etInwardSerifed' nothing HOOK-ROUND TOP-INWARD-SERIFED
+	ExtraEtVariants 'etFlatHook' nothing HOOK-FLAT TOP-SERIFLESS
+	ExtraEtVariants 'etCornerHook' nothing HOOK-CORNER TOP-SERIFLESS
+	ExtraEtVariants 'closedEt' ClosedRest HOOK-ROUND TOP-SERIFLESS
+	ExtraEtVariants 'upperOpenEt' UpperOpenRoundRest HOOK-ROUND TOP-SERIFLESS
+	ExtraEtVariants 'upperOpenEtSerifed' UpperOpenRoundSerifed HOOK-ROUND TOP-SERIFLESS
+	ExtraEtVariants 'upperOpenEtInwardSerifed' UpperOpenRoundInwardSerifed HOOK-ROUND TOP-INWARD-SERIFED
+	ExtraEtVariants 'upperOpenEtFlatHook' UpperOpenFlatRest HOOK-ROUND TOP-SERIFLESS
+	ExtraEtVariants 'upperOpenEtCornerHook' UpperOpenCornerRest HOOK-ROUND TOP-SERIFLESS
 
 	EtTopVariants '' HOOK-ROUND 'Serifed' TOP-SERIFED
 	EtTopVariants '' HOOK-ROUND 'InwardSerifed' TOP-INWARD-SERIFED

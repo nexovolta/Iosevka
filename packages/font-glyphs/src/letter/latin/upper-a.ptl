@@ -193,7 +193,8 @@ glyph-block Letter-Latin-Upper-A : begin
 			include [refer-glyph "A.\(suffix)"] AS_BASE ALSO_METRICS
 			eject-contour 'serifLT'
 			local yBar : AShape.BarPos bodyShape slabKind CAP
-			local xBowlLeft : [mix 0 SB 0.5] - [HSwToV HalfStroke]
+			local bowlGrow : if (bodyShape === BODY-ROUND-TOP || bodyShape === BODY-SQUARE-BOTTOM) [HSwToV : 0.6 * Stroke] 0
+			local xBowlLeft : [mix 0 SB 0.5] - [HSwToV HalfStroke] - bowlGrow
 			local xTurn : xBowlLeft + [BowlXDepth CAP (yBar - Stroke) xBowlLeft Middle]
 			include : difference
 				dispiro
@@ -205,7 +206,12 @@ glyph-block Letter-Latin-Upper-A : begin
 					arcvh
 					flat [Arch.adjust-x.bot xTurn] (yBar - Stroke)
 					curl Middle (yBar - Stroke) [heading Rightward]
-				AShape.Mask [DivFrame 1] bodyShape CAP Stroke
+				# Overlap the base slightly to avoid coincident-edge fragments.
+				with-transform [Translate [if bowlGrow (2 * TINY) 0] 0] : AShape.Mask [DivFrame 1] bodyShape CAP Stroke
+			if bowlGrow : begin
+				local xScale : Width / (Width + bowlGrow)
+				currentGlyph.applyTransform [Scale xScale 1] true
+				currentGlyph.applyTransform [Translate (bowlGrow * xScale) 0] true
 		create-glyph "ASquare.\(suffix)" : glyph-proc
 			local df : include : DivFrame [if fSlabTop para.advanceScaleT 1]
 			local shift : df.middle - Middle

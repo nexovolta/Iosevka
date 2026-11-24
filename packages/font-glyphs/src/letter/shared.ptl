@@ -242,6 +242,20 @@ glyph-block Letter-Shared-Shapes : begin
 		bot : if (cut === 'bottomCut') (bot + len) bot
 		top : if (cut === 'topCut') (top - len) top
 
+	glyph-block-export EtBowlCurves
+	define EtBowlCurves : namespace
+		export : define [Upper left middle barRight top barY depth sw fine] : list
+			g4 left (top - depth)
+			arcvh
+			flat middle (barY - (fine - sw / 2)) [widths.heading fine 0 Rightward]
+			curl barRight (barY - (fine - sw / 2)) [heading Rightward]
+
+		export : define [Lower left middle barRight barY depth barSw sw fine] : list
+			flat barRight (barY + (fine - barSw / 2)) [widths.heading fine 0 Leftward]
+			curl middle (barY + (fine - barSw / 2)) [heading Leftward]
+			archv
+			g4 (left + O * 2) depth [widths.lhs sw]
+
 	glyph-block-export ApplyDiagCut
 	define [ApplyDiagCut] : with-params [cut side x bot top [sw Stroke]] : begin
 		if (cut === 'bottomCut') : return : DiagCutOuterTerminal (side -- side) (end -- 'bot') (x -- x) (yEnd -- bot) (sw -- sw)
