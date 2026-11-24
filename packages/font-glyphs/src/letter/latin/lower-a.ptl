@@ -446,7 +446,8 @@ glyph-block Letter-Latin-Lower-A : begin
 		include : HBar.b (RightSB - BBD) RightSB 0 BBS
 
 	# Greek Lower Alpha
-	define [CrossingBody df top _sw _ada _adb] : glyph-proc
+	glyph-block-export CrossingBody
+	define [CrossingBody df top _sw _ada _adb extension] : glyph-proc
 		local sw  : fallback _sw    df.mvs
 		local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 		local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
@@ -466,6 +467,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			Arch.rhs.centerAt.ltr.t middle top (sw -- df.mvs) (swAfter -- fine)
 			bezControls (1 - k3) (1 - k4) (1 - k1) (1 - k2) 6
 			g4   (df.rightSB - OX * 2.00) 0 [widths.rhs.heading fine Downward]
+			if extension {[g4 [mix df.rightSB df.leftSB 0.2] (-extension) [widths.rhs fine]]} {}
 
 		set-base-anchor 'overlay' (middle - OX) [mix 0 top OverlayPos]
 		set-base-anchor 'strike'  (middle - OX) [mix 0 top 0.5]

@@ -1,6 +1,6 @@
 $$include '../../meta/macros.ptl'
 
-import [mix linreg clamp] from '@iosevka/util'
+import [mix] from '@iosevka/util'
 
 glyph-module
 
@@ -8,43 +8,98 @@ glyph-block Letter-Latin-Anglicana-W : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-Lower-AE-OE : SubDfAndShift
-	glyph-block-import Letter-Greek-Lower-Nu : NuBaseShape
-	glyph-block-import Letter-Cyrillic-Ze : CyrZe CLOSED-CIRCLE
+	glyph-block-import Letter-Latin-W : WDim WShapeImpl WSquareTopShape WConfig FORM-STRAIGHT FORM-VERTICAL FORM-CURSIVE
+	glyph-block-import Letter-Latin-W : SERIFS-NONE SERIFS-MOTION SERIFS-CYRL-OMEGA SERIFS-ALL SERIFS-ALL-OUTER SERIFS-ALL-ASYMMETRIC SERIFS-ALL-REVERSE-ASYMMETRIC SERIFS-BILATERAL-MOTION
+	glyph-block-import Letter-Latin-Lower-A : CrossingBody
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe FLAT-CONNECTION
+	glyph-block-import Letter-Shared-Shapes : SerifFrame
 
-	define [AnglicanaClosedRevOpenE subDf top sw hook ada adb] : glyph-proc
-		local ze : CyrZe CLOSED-CIRCLE CLOSED-CIRCLE top 0
-			left      -- subDf.leftSB
+	define [AnglicanaInnerOffset subDf] : HSwToV : 0.5 * (subDf.mvs - [subDf.adviceStroke 3.25])
+
+	define [AnglicanaAlphaMask subDf top cutX] : begin
+		local innerOffset : AnglicanaInnerOffset subDf
+		return : spiro-outline
+			corner (-subDf.width) (top * 1.5)
+			corner cutX (top * 1.5)
+			corner cutX (top - O)
+			corner (cutX - innerOffset) (top - O - subDf.mvs)
+			corner (cutX - innerOffset) (O + subDf.mvs)
+			corner cutX O
+			corner cutX (-top)
+			corner (-subDf.width) (-top)
+
+	define [AnglicanaJoin subDf top cutX] : begin
+		local x0 : cutX - [AnglicanaInnerOffset subDf] - [HSwToV : 0.05 * subDf.mvs]
+		local x1 : cutX + [HSwToV : 0.05 * subDf.mvs]
+		local inset : 0.05 * subDf.mvs
+		return : union
+			Rect (top - O - inset) (top - O - subDf.mvs + 0.005 * subDf.mvs) x0 x1
+			Rect (O + subDf.mvs - inset) (O + inset) x0 x1
+
+	define [AnglicanaZe subDf top cutX hook ada adb] : glyph-proc
+		local ze : CyrZe FLAT-CONNECTION FLAT-CONNECTION (top - O) O
+			left      -- (2 * cutX - subDf.rightSB)
 			right     -- subDf.rightSB
-			blend     -- 0.7
+			blend     -- 0.85
 			hook      -- hook
 			hookBot   -- hook
-			stroke    -- sw
-			xOverflow -- 0
+			stroke    -- subDf.mvs
+			xOverflow -- [Math.max 0 ([HSwToV subDf.mvs] - (subDf.rightSB - cutX) + [HSwToV : 0.6 * subDf.mvs])]
+			xo        -- OX
+			yo        -- O
 			ada       -- ada
 			adb       -- adb
-		include : ze.Shape
+		local [object midy] : ze.Dim
+		include : intersection [ze.Shape] : union
+			difference
+				Rect (top * 1.5) (-top) (-subDf.width) (subDf.width * 2)
+				AnglicanaAlphaMask subDf top cutX
+			Rect (midy + 0.7 * subDf.mvs) (midy - 0.7 * subDf.mvs) (-subDf.width) (subDf.width * 2)
 
-	define [AnglicanaHeavyT] : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
+	define [AnglicanaLeft df top bodyType slabType midHClass fSquareTop] : glyph-proc
+		local leftSlab : if (slabType === SERIFS-CYRL-OMEGA) SERIFS-NONE slabType
+		if fSquareTop : include : WSquareTopShape df top bodyType leftSlab midHClass
+		: else : include : WShapeImpl df top bodyType leftSlab midHClass
+		eject-contour 'strokeUp1'
+		eject-contour 'strokeUp2'
+		eject-contour 'strokeDown2'
+		eject-contour 'strokeExtension'
+		eject-contour 'serifRT'
+		if (slabType === SERIFS-ALL || slabType === SERIFS-ALL-REVERSE-ASYMMETRIC || (fSquareTop && (slabType === SERIFS-MOTION || slabType === SERIFS-ALL-OUTER || slabType === SERIFS-ALL-ASYMMETRIC || slabType === SERIFS-BILATERAL-MOTION))) : begin
+			eject-contour 'serifLT'
+			local sf : SerifFrame top 0 df.leftSB df.rightSB (hSplit -- 3)
+			include sf.lt.outer
 
-	define [BuildAnglicanaW bodyTop mak nuK] : glyph-proc
-		local df : include : DivFrame para.advanceScaleMM 3
-		include : df.markSet.(mak)
-		local {subDf} : SubDfAndShift 0 df OX
-		local {shift shiftR} : SubDfAndShift 1 df OX
+	define [BuildAnglicanaW bodyTop mak bodyType slabType midHClass fSquareTop] : glyph-proc
+		local outputDf : include : DivFrame para.advanceScaleMM 3
+		include : outputDf.markSet.(mak)
+		local df : DivFrame [Math.max 1.7 outputDf.adws] 3
+		local {subDf} : SubDfAndShift 1 df OX
+		local actualBody : if (bodyType === FORM-VERTICAL || bodyType === FORM-CURSIVE) FORM-STRAIGHT bodyType
+		local dim : WDim df bodyTop actualBody slabType midHClass
 		local hook : if (bodyTop === CAP) Hook SHook
 		local ada : if (bodyTop === CAP) ArchDepthA SmallArchDepthA
 		local adb : if (bodyTop === CAP) ArchDepthB SmallArchDepthB
-		local ltOs : if (bodyTop === CAP) O 0
-		local sw : df.mvs + 0
-		if [not para.isQuasiProportional] : set sw : mix sw [df.adviceThinnerStroke2 2 3 bodyTop 0.75] [AnglicanaHeavyT]
+		local shift : dim.xBot1 - subDf.leftSB - OX * 1.75
+		local cutX : 2 * subDf.middle - [mix subDf.leftSB subDf.rightSB 0.42]
+		local joinY : 0.25 * [subDf.adviceStroke 3.25]
+		local joinHalf : HSwToV joinY
 
-		include : NuBaseShape subDf bodyTop nuK ltOs sw
+		include : with-transform [ApparentTranslate (outputDf.middle - df.middle) 0] : with-transform [ScaleAround df.middle 0 (outputDf.width / df.width) 1] : union
+			AnglicanaLeft df bodyTop actualBody slabType midHClass fSquareTop
+			if fSquareTop [Rect joinY 0 (dim.xBot1 - joinHalf) (dim.xBot1 + joinHalf)] [no-shape]
+			with-transform [ApparentTranslate shift 0] : union
+				intersection
+					with-transform [ScaleAround subDf.middle (bodyTop / 2) (-1) (-1)] : CrossingBody subDf bodyTop nothing ada adb (bodyTop * 0.2)
+					AnglicanaAlphaMask subDf bodyTop cutX
+				AnglicanaZe subDf bodyTop cutX hook ada adb
+				AnglicanaJoin subDf bodyTop cutX
+		set-width outputDf.width
 
-		include : with-transform [ApparentTranslate shiftR 0]
-			AnglicanaClosedRevOpenE subDf bodyTop sw hook ada adb
+	foreach {suffix {{implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType}} [Object.entries WConfig] : do
+		local fSquareTop : suffix.startsWith 'squareTop'
+		create-glyph "AnglicanaW.\(suffix)" : BuildAnglicanaW CAP 'capital' bodyType slabType midHClass fSquareTop
+		create-glyph "anglicanaW.\(suffix)" : BuildAnglicanaW XH 'e' bodyType slabType midHClass fSquareTop
 
-	create-glyph 'AnglicanaW' 0xA7C2 : glyph-proc
-		include : BuildAnglicanaW CAP 'capital' 0.4
-
-	create-glyph 'anglicanaW' 0xA7C3 : glyph-proc
-		include : BuildAnglicanaW XH 'e' 0.4
+	select-variant 'AnglicanaW' 0xA7C2 (follow -- 'W')
+	select-variant 'anglicanaW' 0xA7C3 (follow -- 'w')
