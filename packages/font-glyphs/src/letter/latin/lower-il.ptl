@@ -208,7 +208,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : FlipAround xMiddle yJoin
 			include : clear-anchors
 
-		export : define [Casual df top bot xMiddle topKind botKind _stroke] : glyph-proc
+		export : define [DoubleTailBody df top bot xMiddle topKind botKind _stroke] : glyph-proc
 			local stroke : fallback _stroke Stroke
 			local yJoin : mix bot top 0.5
 			include : [CasualTailBody botKind] df yJoin bot xMiddle stroke
@@ -221,10 +221,10 @@ glyph-block Letter-Latin-Lower-I : begin
 
 		export : define [CasualTop df top xMiddle kind _stroke] : CasualTopBetween df top 0 xMiddle kind _stroke
 
-		export : define [DoubleTailed    df top bot xMiddle _stroke] : Casual df top bot xMiddle 'tailed'    'tailed'    _stroke
-		export : define [DoubleFlat      df top bot xMiddle _stroke] : Casual df top bot xMiddle 'flat'      'flat'      _stroke
-		export : define [DoubleSemi      df top bot xMiddle _stroke] : Casual df top bot xMiddle 'semi'      'semi'      _stroke
-		export : define [DoubleDiagonal  df top bot xMiddle _stroke] : Casual df top bot xMiddle 'diagonal'  'diagonal'  _stroke
+		export : define [DoubleTailed    df top bot xMiddle _stroke] : DoubleTailBody df top bot xMiddle 'tailed'    'tailed'    _stroke
+		export : define [DoubleFlat      df top bot xMiddle _stroke] : DoubleTailBody df top bot xMiddle 'flat'      'flat'      _stroke
+		export : define [DoubleSemi      df top bot xMiddle _stroke] : DoubleTailBody df top bot xMiddle 'semi'      'semi'      _stroke
+		export : define [DoubleDiagonal  df top bot xMiddle _stroke] : DoubleTailBody df top bot xMiddle 'diagonal'  'diagonal'  _stroke
 
 	define ILJut : namespace
 		export : define [None         df top bot xMiddle _stroke] : HSwToV : 0.5 * [fallback _stroke Stroke]
@@ -365,7 +365,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		local {topSerifs topTail topShift topHasSerif} top
 		local {bottomBody bottomTail bottomShift} bottom
 		local Body : lambda [df top bot xMiddle stroke] : glyph-proc
-			if (topTail && bottomTail) : include : ILBody.Casual df top bot xMiddle topTail bottomTail stroke
+			if (topTail && bottomTail) : include : ILBody.DoubleTailBody df top bot xMiddle topTail bottomTail stroke
 			: else : begin
 				if topTail : begin
 					local yJoin : mix bot top 0.5
@@ -398,8 +398,8 @@ glyph-block Letter-Latin-Lower-I : begin
 
 	define [SmallILConfig mode] : Object.assign [SmallILBaseConfig mode] [SmallILStageConfig mode]
 
-	glyph-block-export Casual CasualTop CasualTopBetween CasualBottom
-	define [Casual df top bot xMiddle topKind botKind _stroke] : ILBody.Casual df top bot xMiddle topKind botKind _stroke
+	glyph-block-export DoubleTailBody CasualTop CasualTopBetween CasualBottom
+	define [DoubleTailBody df top bot xMiddle topKind botKind _stroke] : ILBody.DoubleTailBody df top bot xMiddle topKind botKind _stroke
 	define [CasualTop df top xMiddle kind _stroke] : ILBody.CasualTop df top xMiddle kind _stroke
 	define [CasualTopBetween df top bot xMiddle kind _stroke] : ILBody.CasualTopBetween df top bot xMiddle kind _stroke
 	define [CasualBottom df top bot xMiddle kind _stroke] : [ILBody.CasualTailBody kind] df top bot xMiddle _stroke
@@ -412,7 +412,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			MaskAbove (yJoin + HalfStroke)
 		include : CasualTop df top xMiddle kind _stroke
 
-	define [CasualKindOf Body] : match Body
+	define [DoubleTailKindOf Body] : match Body
 		[Just ILBody.DoubleTailed]    'tailed'
 		[Just ILBody.DoubleFlat]      'flat'
 		[Just ILBody.DoubleSemi]      'semi'
@@ -464,7 +464,7 @@ glyph-block Letter-Latin-Lower-I : begin
 				eject-contour 'serifLT'
 			include : HBar.t oDf.middle (xMiddle + shift) XH (0.88 * oiSw)
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
-			local kind : fallback stageTopTail : CasualKindOf Body
+			local kind : fallback stageTopTail : DoubleTailKindOf Body
 			if kind : begin
 				local df : include : DivFrame adws
 				include : df.markSet.p
@@ -618,7 +618,7 @@ glyph-block Letter-Latin-Lower-I : begin
 			set-base-anchor 'cvDecompose' [Math.max ([xMiddleTCenter df] + HalfStroke + DotRadius) (df.rightSB - DotRadius)] [mix y0R Ascender 0.5]
 
 		create-glyph "lRTail/uncentered.\(suffix)" : glyph-proc
-			local kind : fallback stageTopTail : CasualKindOf Body
+			local kind : fallback stageTopTail : DoubleTailKindOf Body
 			if kind : begin
 				local df : include : DivFrame adws
 				include : df.markSet.p
@@ -681,9 +681,9 @@ glyph-block Letter-Latin-Lower-I : begin
 			local df : DivFrame adws
 			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
 			local yJoin : mix 0 Ascender 0.5
-			local fCasualDouble : (stageTopTail && stageBottomTail) || Body === ILBody.DoubleTailed || Body === ILBody.DoubleFlat || Body === ILBody.DoubleSemi || Body === ILBody.DoubleDiagonal
-			local yBarBot : if fCasualDouble (yJoin - HalfStroke) XH
-			local yBarTop : if fCasualDouble (yJoin + HalfStroke) (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
+			local fDoubleTailed : (stageTopTail && stageBottomTail) || Body === ILBody.DoubleTailed || Body === ILBody.DoubleFlat || Body === ILBody.DoubleSemi || Body === ILBody.DoubleDiagonal
+			local yBarBot : if fDoubleTailed (yJoin - HalfStroke) XH
+			local yBarTop : if fDoubleTailed (yJoin + HalfStroke) (Ascender - [if (Serifs !== ILSerifs.None) Stroke 0])
 			local overlay : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.overlay
 			include : LetterBarOverlay.m.in overlay.x yBarBot yBarTop
 			include : CenterInkInFrame df
