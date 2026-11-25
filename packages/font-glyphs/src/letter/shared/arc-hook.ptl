@@ -15,7 +15,7 @@ glyph-block Letter-Arc-Hook : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 
-	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook MakeCornerHookBase CornerHookOffset CornerHookOutset CornerHookDepth CornerHookEnd CornerHookStart
+	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook MakeCornerHookBase CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension CornerHookOffset CornerHookOutset CornerHookDepth CornerHookEnd CornerHookStart
 	glyph-block-export MakeMidHeightLeftHook MakeMidHeightLeftHookL
 
 	define kHook : 1 / 5
@@ -335,6 +335,32 @@ glyph-block Letter-Arc-Hook : begin
 				glyph-proc
 
 	define [MakeFlatHook] : with-params [l r t b [sw Stroke]] : Flat [new Box t b l r] (sw -- sw)
+
+	define [DeltaCutTipX xMid xEdge sw] : begin
+		local direction : if (xEdge > xMid) 1 (-1)
+		return : [mix xMid xEdge 0.95] + direction * [HSwToV : 0.2 * sw]
+
+	define [DeltaCutStart xMid xEdge yPeak yTip sw] : list
+		g4 [DeltaCutTipX xMid xEdge sw] yTip
+		alsoThru 0.5 0.7
+		g4 xMid yPeak
+		archv 2
+
+	define [DeltaCutEnd xMid xEdge yPeak yTip sw] : list
+		arcvh 2
+		g4 xMid yPeak
+		alsoThru 0.5 0.3
+		g4 [DeltaCutTipX xMid xEdge sw] yTip
+
+	define [VerticalCutExtension hook sw] : HSwToV : Math.max hook sw
+
+	define [CutArcTerminal shape x top bot sw fLeft fTop] : begin
+		local split : mix bot top 0.5
+		local endY : if fTop (top + 2 * sw + O) (bot - 2 * sw - O)
+		local keepOther : if fTop [MaskBelow split] [MaskAbove split]
+		local keepHalf : if fTop [MaskAbove split] [MaskBelow split]
+		local keepSide : if fLeft [MaskRightLine x split x endY 1] [MaskLeftLine x split x endY 1]
+		return : intersection shape : union keepOther : intersection keepHalf keepSide
 
 	define [CornerHookOffset sw] : HSwToV : 0.25 * sw
 	define [CornerHookOutset sw] : if para.isItalic [HSwToV : 0.125 * sw] 0

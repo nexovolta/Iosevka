@@ -706,6 +706,19 @@ glyph-block Letter-Cyrillic-Ze : begin
 	select-multi-dimensional-variant 'cyrl/Ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'})
 	select-multi-dimensional-variant 'cyrl/ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'})
 
+	define TresilloCutCompatibility : object
+		Rounded 'Rounded'
+		Serifed 'Serifed'
+		InwardSerifed 'InwardSerifed'
+		FlatHook 'FlatHook'
+		CornerHook 'CornerHook'
+		VerticalCut 'Rounded'
+		DiagonalCut 'Rounded'
+	foreach {topName topFallback} [pairs-of TresilloCutCompatibility] : begin
+		foreach {botName botFallback} [pairs-of TresilloCutCompatibility] : if ((topName != topFallback) || (botName != botFallback)) : begin
+			alias "Tresillo.top\(topName)Bottom\(botName)" null "Tresillo.top\(topFallback)Bottom\(botFallback)"
+			alias "tresillo.top\(topName)Bottom\(botName)" null "tresillo.top\(topFallback)Bottom\(botFallback)"
+
 	select-variant 'Tresillo' 0xA72A (follow -- 'C')
 	select-variant 'tresillo' 0xA72B (follow -- 'c')
 

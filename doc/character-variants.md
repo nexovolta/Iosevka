@@ -4,6 +4,15 @@ Double-storey `a` supports tapered `curved-bar-rising` and `curved-bar-falling` 
 for example `double-storey-serifless-curved-bar-rising` and
 `double-storey-serifless-curved-bar-falling`.
 
+The `capital-c` and `c` variants include `vertical-cut` and `diagonal-cut`
+terminals, including independent top and bottom combinations. The `question`
+and `glottal-stop` variants combine those cuts with smooth or corner bodies
+(for example, `smooth-vertical-cut` and `corner-diagonal-cut`). For
+`lower-final-sigma`, each cut applies only to the top and can be combined with
+the existing tails, such as `vertical-cut-curly-tail`. The `cyrl-capital-e`,
+`cyrl-e`, `cyrl-capital-koppa`, and `cyrl-koppa` selectors also have
+`vertical-cut` and `diagonal-cut` options.
+
 Regenerate these regular-weight SVG previews and this list with
 `npm run build -- amend-readme:character-variants`.
 

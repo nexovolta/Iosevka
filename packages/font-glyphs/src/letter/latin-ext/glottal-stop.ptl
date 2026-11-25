@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay CurlyTail PalatalHook
-	glyph-block-import Letter-Arc-Hook : MakeCornerHook Toothed Toothless
+	glyph-block-import Letter-Arc-Hook : MakeCornerHook Toothed Toothless CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	glyph-block-export AdviceGlottalStopArchDepth
 	define [AdviceGlottalStopArchDepth top sign] : begin
@@ -29,6 +29,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-export QuestionSmoothSerifedHookedShape QuestionRevSmoothSerifedHookedShape
 	glyph-block-export QuestionCornerInwardSerifedShape QuestionRevCornerInwardSerifedShape
 	glyph-block-export QuestionSmoothInwardSerifedShape QuestionRevSmoothInwardSerifedShape
+	glyph-block-export QuestionSmoothVerticalCutShape QuestionRevSmoothVerticalCutShape
+	glyph-block-export QuestionCornerVerticalCutShape QuestionRevCornerVerticalCutShape
+	glyph-block-export QuestionSmoothDiagonalCutShape QuestionRevSmoothDiagonalCutShape
+	glyph-block-export QuestionCornerDiagonalCutShape QuestionRevCornerDiagonalCutShape
 
 	define [QuestionSmoothShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
@@ -236,6 +240,60 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			flat (xMid - [HSwToV HalfStroke]) [mix stemBot XH pStem]
 			curl (xMid - [HSwToV HalfStroke]) stemBot [heading Downward]
 
+	define [CutQuestionShape top stemBot left right _hook fCorner fReverse fDiagonal fLetter] : glyph-proc
+		local hook : fallback _hook Hook
+		local xMid : mix left right 0.5
+		local terminalX : if fReverse right left
+		local otherX : if fReverse left right
+		local direction : if fReverse 1 (-1)
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		local strokeEndCor : Math.hypot 1 TanSlope
+		local pStem : if (top > [mix XH CAP 0.5]) 0.3 0.15
+		local shape : dispiro
+			if fReverse [widths.lhs] [widths.rhs]
+			if fDiagonal
+				DeltaCutStart xMid terminalX (top - O) (top - 0.2 * hook) Stroke
+				list
+					g4 (terminalX + direction * [VerticalCutExtension hook Stroke]) (top - hook)
+					HookStart top
+			if fCorner
+				list
+					if fReverse
+						g4 (left + OX) [YSmoothMidL top (yConnect - Stroke) ArchDepthA ArchDepthB]
+						g4 (right - OX) [YSmoothMidR top (yConnect - Stroke) ArchDepthA ArchDepthB]
+					arcvh
+					if fReverse
+						straight.right.end xMid (yConnect - Stroke) [heading Rightward]
+						straight.left.end xMid (yConnect - Stroke) [heading Leftward]
+				if fLetter
+					list
+						g4 otherX (top - [AdviceGlottalStopArchDepth top [if fReverse (-1) 1]])
+						alsoThru.g2 0.5 0.5 important
+						flat (xMid - direction * [HSwToV HalfStroke]) [mix stemBot XH pStem]
+						curl (xMid - direction * [HSwToV HalfStroke]) stemBot [heading Downward]
+					list
+						g4 otherX (top - [if fReverse ArchDepthA ArchDepthB] * 0.9)
+						alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+						if fReverse
+							straight.down.end (xMid + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
+							straight.down.end (xMid - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
+		include : if fDiagonal shape : CutArcTerminal shape terminalX top stemBot Stroke [not fReverse] true
+		if fCorner : include : VBar.m xMid stemBot yConnect
+
+	define [QuestionSmoothVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false false false false
+	define [QuestionRevSmoothVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false true false false
+	define [QuestionCornerVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook true false false false
+	define [QuestionRevCornerVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook true true false false
+	define [QuestionSmoothDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false false true false
+	define [QuestionRevSmoothDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false true true false
+	define [QuestionCornerDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook true false true false
+	define [QuestionRevCornerDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook true true true false
+	define [SmoothLetterVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false false false true
+	define [RevSmoothLetterVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false true false true
+	define [SmoothLetterDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false false true true
+	define [RevSmoothLetterDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false true true true
+
 	define ForwardBodies : object
 		smooth           SmoothLetterShape
 		corner           QuestionCornerShape
@@ -247,6 +305,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothSerifedHooked QuestionSmoothSerifedHookedShape
 		cornerInwardSerifed QuestionCornerInwardSerifedShape
 		smoothInwardSerifed QuestionSmoothInwardSerifedShape
+		smoothVerticalCut SmoothLetterVerticalCutShape
+		cornerVerticalCut QuestionCornerVerticalCutShape
+		smoothDiagonalCut SmoothLetterDiagonalCutShape
+		cornerDiagonalCut QuestionCornerDiagonalCutShape
 	define ReverseBodies : object
 		smooth           RevSmoothLetterShape
 		corner           QuestionRevCornerShape
@@ -258,6 +320,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothSerifedHooked QuestionRevSmoothSerifedHookedShape
 		cornerInwardSerifed QuestionRevCornerInwardSerifedShape
 		smoothInwardSerifed QuestionRevSmoothInwardSerifedShape
+		smoothVerticalCut RevSmoothLetterVerticalCutShape
+		cornerVerticalCut QuestionRevCornerVerticalCutShape
+		smoothDiagonalCut RevSmoothLetterDiagonalCutShape
+		cornerDiagonalCut QuestionRevCornerDiagonalCutShape
 
 	define [CreateGlottalFamily gn marks top hook Bodies] : begin
 		foreach {suffix Impl} [Object.entries Bodies] : do
@@ -277,6 +343,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 
 	select-variant 'glottalStop'            0x294
 	select-variant 'revGlottalStop'         0x295  (follow -- 'glottalStop')
+	select-variant 'revGlottalStop/palatalBase' (shapeFrom -- 'revGlottalStop')
 	select-variant 'capGlottalStop'         0x241  (follow -- 'glottalStop')
 	select-variant 'revCapGlottalStop'      0xA7CE (follow -- 'glottalStop')
 	select-variant 'smallGlottalStop'       0x242  (follow -- 'glottalStop')
@@ -306,7 +373,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.m.in Middle [if SLAB Stroke 0] [mix 0 Ascender 0.5] 0.5
 
-	derive-glyphs 'revGlottalStopPalatalHook' 0x1DF3A 'revGlottalStop' : lambda [src gr] : glyph-proc
+	derive-glyphs 'revGlottalStopPalatalHook' 0x1DF3A 'revGlottalStop/palatalBase' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		local attach {.x (Middle + [HSwToV HalfStroke]) .y 0}
 		include : if SLAB

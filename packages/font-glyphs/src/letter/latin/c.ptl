@@ -18,7 +18,7 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook RetroflexHook TopHook
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerifWidth ArcStartSerifDepth
 	glyph-block-import Letter-Blackboard : BBS BBD
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension CornerHookDepth
 	glyph-block-import Letter-Latin-Rams-Horn : RamsHornShape
 	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
@@ -28,6 +28,8 @@ glyph-block Letter-Latin-C : begin
 	define FLAT-CONNECTION  3
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
+	define CUT-VERTICAL     6
+	define CUT-DIAGONAL     7
 
 	glyph-block-export CShapeT
 	define [CShapeT sink offset df st sb top bot ada adb hook sw ob ox oy] : sink
@@ -41,6 +43,10 @@ glyph-block Letter-Latin-C : begin
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartR
+			[Just CUT-DIAGONAL] : DeltaCutStart df.middle (df.rightSB - offset) (top - offset - [fallback oy O]) (top - offset - 0.2 * [fallback hook Hook]) sw
+			[Just CUT-VERTICAL] : list
+				g4 (df.rightSB - offset + [VerticalCutExtension [fallback hook Hook] sw]) (top - [fallback hook Hook])
+				HookStart (top - offset) (sw -- sw) (o -- oy)
 			__ : list
 				g4   (df.rightSB - offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -54,6 +60,10 @@ glyph-block Letter-Latin-C : begin
 				curl (df.width - offset) (bot + offset)
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndR
+			[Just CUT-DIAGONAL] : DeltaCutEnd df.middle (df.rightSB - offset) (bot + offset + [fallback oy O]) (bot + offset + 0.2 * [fallback hook Hook]) sw
+			[Just CUT-VERTICAL] : list
+				HookEnd (bot + offset) (sw -- sw) (o -- oy)
+				g4 (df.rightSB - offset + [VerticalCutExtension [fallback hook Hook] sw]) (bot + [fallback hook Hook])
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
 				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
@@ -69,6 +79,10 @@ glyph-block Letter-Latin-C : begin
 				archv
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookStartL
+			[Just CUT-DIAGONAL] : DeltaCutStart df.middle (df.leftSB + offset) (top - offset - [fallback oy O]) (top - offset - 0.2 * [fallback hook Hook]) sw
+			[Just CUT-VERTICAL] : list
+				g4 (df.leftSB + offset - [VerticalCutExtension [fallback hook Hook] sw]) (top - [fallback hook Hook])
+				HookStart (top - offset) (sw -- sw) (o -- oy)
 			__ : list
 				g4   (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
@@ -86,6 +100,10 @@ glyph-block Letter-Latin-C : begin
 					curl (0 + offset) (bot + offset)
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (df.leftSB + offset) (df.rightSB - offset) (top - offset) (bot + offset) (sw -- sw)].hookEndL
+				[Just CUT-DIAGONAL] : DeltaCutEnd df.middle (df.leftSB + offset) (bot + offset + [fallback oy O]) (bot + offset + 0.2 * [fallback hook Hook]) sw
+				[Just CUT-VERTICAL] : list
+					HookEnd (bot + offset) (sw -- sw) (o -- oy)
+					g4 (df.leftSB + offset - [VerticalCutExtension [fallback hook Hook] sw]) (bot + [fallback hook Hook])
 				__ : list
 					HookEnd (bot + offset) (sw -- sw) (o -- oy)
 					g4   (df.leftSB + offset) (bot + [fallback hook Hook])
@@ -119,31 +137,45 @@ glyph-block Letter-Latin-C : begin
 		local fine : df.adviceStroke2 3 3 (XH - 0)
 		local loopTop : bot + 0.45 * (XH - 0)
 
-		include : dispiro
+		local shape : dispiro
 			match styTop
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top sw Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- sw)].hookStartR
+				[Just CUT-DIAGONAL] : list
+					widths.lhs sw
+					DeltaCutStart df.middle df.rightSB (top - O) (top - 0.2 * Hook) sw
+				[Just CUT-VERTICAL] : list [g4 (df.rightSB + [VerticalCutExtension Hook sw]) (top - Hook) [widths.lhs sw]] [HookStart top (sw -- sw)]
 				__ : list [g4 df.rightSB (top - Hook) [widths.lhs sw]] [HookStart top (sw -- sw)]
 			flatside.ld df.leftSB bot top SmallArchDepthA SmallArchDepthB
 			CurlyTail.n fine bot df.rightSB 0 bot (yLoopTop -- loopTop)
+		include : CutCShape shape df styTop SLAB-NONE top bot sw false
+
+	define [CutCShape shape df styTop styBot top bot sw fReverse] : begin
+		local answer shape
+		local terminalX : if fReverse df.leftSB df.rightSB
+		if (styTop == CUT-VERTICAL)
+			set answer : CutArcTerminal answer terminalX top bot sw fReverse true
+		if (styBot == CUT-VERTICAL)
+			set answer : CutArcTerminal answer terminalX top bot sw fReverse false
+		return answer
 
 	glyph-block-export CLetterForm
 	define [CLetterForm] : with-params [df styTop styBot top bot [ada ArchDepthA] [adb ArchDepthB] [hook Hook] [sw Stroke] [origBar nothing] [ox nothing] [oy nothing] [lowerEnd nothing] [lowerEndY nothing]] : namespace
-		export : define [base] : CShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy
+		export : define [base] : CutCShape [CShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy] df styTop styBot top bot sw false
 		export : define [topSerif] : AutoStartSerifR df styTop top hook sw
 		export : define [botSerif] : AutoEndSerifR   df styBot bot hook sw
 
-		export : define [revBase] : RevCShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy lowerEnd lowerEndY
+		export : define [revBase] : CutCShape [RevCShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy lowerEnd lowerEndY] df styTop [if lowerEnd SLAB-NONE styBot] top bot sw true
 		export : define [revTopSerif] : AutoStartSerifL df styTop top hook sw
 		export : define [revBotSerif] : AutoEndSerifL   df styBot bot hook sw
 
 		export : define [hookTop] : TopHook.toRight.arcStart df.rightSB top hook (refSw -- sw)
 
 		# Used by Cyrillic Koppa
-		export : define [baseTopOnly] : CShapeT dispiro 0 df styTop SLAB-NONE                  top bot ada adb hook sw origBar ox oy
-		export : define [descBase]    : CShapeT dispiro 0 df styTop (styBot || SLAB-CLASSICAL) top bot ada adb hook sw origBar ox oy
+		export : define [baseTopOnly] : CutCShape [CShapeT dispiro 0 df styTop SLAB-NONE top bot ada adb hook sw origBar ox oy] df styTop SLAB-NONE top bot sw false
+		export : define [descBase]    : CutCShape [CShapeT dispiro 0 df styTop (styBot || SLAB-CLASSICAL) top bot ada adb hook sw origBar ox oy] df styTop styBot top bot sw false
 
 		export : define [full]    : composite-proc [base]    [topSerif]    [botSerif]
 		export : define [revFull] : composite-proc [revBase] [revTopSerif] [revBotSerif]
@@ -179,6 +211,8 @@ glyph-block Letter-Latin-C : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
+		VerticalCut CUT-VERTICAL
+		DiagonalCut CUT-DIAGONAL
 	foreach {topName topStyle} [pairs-of CArcTypes] : begin
 		foreach {bottomName bottomStyle} [pairs-of CArcTypes] : begin
 			set CConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
@@ -271,7 +305,9 @@ glyph-block Letter-Latin-C : begin
 
 		create-glyph "oOpen/descBase.\(suffix)" : glyph-proc
 			include : MarkSet.e
-			local lf : CLetterForm [DivFrame 1] (styTop || SLAB-CLASSICAL) styBot XH 0
+			local descTop : if (styTop == CUT-VERTICAL || styTop == CUT-DIAGONAL) SLAB-NONE styTop
+			local descBot : if (styBot == CUT-VERTICAL || styBot == CUT-DIAGONAL) SLAB-NONE styBot
+			local lf : CLetterForm [DivFrame 1] (descTop || SLAB-CLASSICAL) descBot XH 0
 				ada -- SmallArchDepthA
 				adb -- SmallArchDepthB
 			include : union [lf.base] [lf.botSerif]
@@ -580,6 +616,10 @@ glyph-block Letter-Latin-C : begin
 		flatHookBaseSerifed      {SLAB-FLAT-HOOK    true }
 		cornerHook               {SLAB-CORNER-HOOK  false}
 		cornerHookBaseSerifed    {SLAB-CORNER-HOOK  true }
+		verticalCut              {CUT-VERTICAL      false}
+		verticalCutBaseSerifed   {CUT-VERTICAL      true }
+		diagonalCut              {CUT-DIAGONAL      false}
+		diagonalCutBaseSerifed   {CUT-DIAGONAL      true }
 		inwardSerifed            {SLAB-INWARD       false}
 		inwardSerifedBaseSerifed {SLAB-INWARD       true }
 		serifed                  {SLAB-CLASSICAL    false}
@@ -647,7 +687,7 @@ glyph-block Letter-Latin-C : begin
 
 	select-variant 'C/descBase'
 	select-variant 'c/descBase'
-	select-variant 'romanSixLateForm' 0x2185 (follow -- 'C/descBase')
+	select-variant 'romanSixLateForm' 0x2185
 
 	select-variant 'OOpen'      0x186  (follow -- 'C')
 	select-variant 'oOpen'      0x254  (follow -- 'c')

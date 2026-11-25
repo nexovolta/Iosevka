@@ -8,7 +8,7 @@ glyph-module
 glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : Flat MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
@@ -21,6 +21,8 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	define TOP-ROUNDED    0
 	define TOP-FLAT-HOOK  1
 	define TOP-CORNER-HOOK 2
+	define TOP-VERTICAL-CUT 3
+	define TOP-DIAGONAL-CUT 4
 
 	define [FinalSigmaEndingKnots] : begin
 		local yCurlMid : mix Descender Stroke : StrokeWidthBlend 0.5 0.49
@@ -38,10 +40,17 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	define [FinalSigmaShape tail top] : glyph-proc
 		local box : new Box XH 0 SB RightSB
 		local Arc : Flat box (sw -- Stroke)
-		include : dispiro
+		local shape : dispiro
 			match top
 				[Just TOP-FLAT-HOOK] : [MakeFlatHook SB RightSB XH 0].hookStartR
 				[Just TOP-CORNER-HOOK] : [MakeCornerHook SB RightSB XH 0].hookStartR
+				[Just TOP-VERTICAL-CUT] : list
+					widths.lhs
+					g4 (RightSB + [VerticalCutExtension Hook Stroke]) (XH - Hook)
+					HookStart XH
+				[Just TOP-DIAGONAL-CUT] : list
+					widths.lhs
+					DeltaCutStart [Arch.adjust-x.top Middle] RightSB (XH - O) (XH - 0.2 * Hook) Stroke
 				__ : list
 					widths.lhs
 					g4 RightSB (XH - Hook)
@@ -52,6 +61,7 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				[Just TAIL-DIAGONAL] : RoundedTailDiagonalKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
 				__ : Arc.hookEndR
+		include : if (top == TOP-VERTICAL-CUT) [CutArcTerminal shape RightSB XH 0 Stroke false true] shape
 		include : match tail
 			([Just TAIL-STRAIGHT] || [Just TAIL-DIAGONAL]) : ExtendBelowBaseAnchors [RoundedBendTailBot]
 			[Just TAIL-STRAIGHT-SHARP-CORNER] : CyrDescender.r RightSB 0 RightSB
@@ -118,6 +128,21 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 		include : MarkSet.e
 		include : FinalSigmaShape TAIL-DIAGONAL-SHARP-CORNER TOP-CORNER-HOOK
 
+	define CutTailStyles : object
+		CurlyTail TAIL-CURLY
+		StraightTail TAIL-STRAIGHT
+		DiagonalTail TAIL-DIAGONAL
+		StraightTailSharpCorner TAIL-STRAIGHT-SHARP-CORNER
+		DiagonalTailSharpCorner TAIL-DIAGONAL-SHARP-CORNER
+	define CutTopStyles : object
+		verticalCut TOP-VERTICAL-CUT
+		diagonalCut TOP-DIAGONAL-CUT
+	foreach {topName top} [Object.entries CutTopStyles] : do
+		foreach {tailName tail} [Object.entries CutTailStyles] : do
+			create-glyph "grek/sigmaFinal.\(topName)\(tailName)" : glyph-proc
+				include : if (tail == TAIL-CURLY) [MarkSet.p] [MarkSet.e]
+				include : FinalSigmaShape tail top
+
 	select-variant 'grek/sigmaFinal' 0x3C2
 
 	define [StigmaShape tail] : glyph-proc
@@ -172,6 +197,16 @@ glyph-block Letter-Greek-Lower-Final-Sigma : begin
 	alias 'grek/stigma.cornerHookStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
 	alias 'grek/stigma.flatHookDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
 	alias 'grek/stigma.cornerHookDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
+	alias 'grek/stigma.verticalCutCurlyTail' null 'grek/stigma.curlyTail'
+	alias 'grek/stigma.verticalCutStraightTail' null 'grek/stigma.straightTail'
+	alias 'grek/stigma.verticalCutDiagonalTail' null 'grek/stigma.diagonalTail'
+	alias 'grek/stigma.verticalCutStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
+	alias 'grek/stigma.verticalCutDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
+	alias 'grek/stigma.diagonalCutCurlyTail' null 'grek/stigma.curlyTail'
+	alias 'grek/stigma.diagonalCutStraightTail' null 'grek/stigma.straightTail'
+	alias 'grek/stigma.diagonalCutDiagonalTail' null 'grek/stigma.diagonalTail'
+	alias 'grek/stigma.diagonalCutStraightTailSharpCorner' null 'grek/stigma.straightTailSharpCorner'
+	alias 'grek/stigma.diagonalCutDiagonalTailSharpCorner' null 'grek/stigma.diagonalTailSharpCorner'
 
 	select-variant 'grek/stigma' 0x3DB (follow -- 'grek/sigmaFinal')
 
