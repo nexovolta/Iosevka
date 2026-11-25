@@ -20,6 +20,19 @@ test("ampersand tooth variants preserve existing ranks and expose each new termi
 		assert.equal(variants.get(key)?.rank, rank, key);
 	}
 
+	for (const [key, selector] of [
+		["flat-top-et", "flatTopEtSerifless"],
+		["flat-top-et-serifed", "flatTopEtSerifed"],
+		["flat-top-et-toothed", "flatTopEtToothedSerifless"],
+		["flat-top-et-toothed-serifed", "flatTopEtToothedSerifed"],
+		["flat-top-et-toothless-corner", "flatTopEtToothlessCornerSerifless"],
+		["flat-top-et-toothless-corner-serifed", "flatTopEtToothlessCornerSerifed"],
+		["flat-top-et-toothless-rounded", "flatTopEtToothlessRoundedSerifless"],
+		["flat-top-et-toothless-rounded-serifed", "flatTopEtToothlessRoundedSerifed"],
+	]) {
+		assert.equal(variants.get(key)?.selector.ampersand, selector, key);
+	}
+
 	for (const [body, selector, tops] of [
 		["lower-open", "lowerOpen", [["", ""]]],
 		[
@@ -31,8 +44,8 @@ test("ampersand tooth variants preserve existing ranks and expose each new termi
 			],
 		],
 		[
-			"flat-top-and-bottom",
-			"flatTopAndBottom",
+			"flat-top-et",
+			"flatTopEt",
 			[
 				["-serifless", "Serifless"],
 				["-serifed", "Serifed"],

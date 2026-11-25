@@ -620,23 +620,23 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 						[Just FORM-TOOTHLESS-CORNER] : VBar.r (xLowerOpenRight - OX) DToothlessRise yEtFlatTopEnd SwAmpersand
 						__ : ExtraToothStem form (xLowerOpenRight - OX) adaEt yEtFlatTopEnd SwAmpersand
 
-	define FlatTopAndBottomConfig : object
-		'flatTopAndBottomSerifless'                 {FORM-FLAT-BOTTOM        false}
-		'flatTopAndBottomSerifed'                   {FORM-FLAT-BOTTOM        true }
-		'flatTopAndBottomToothedSerifless'          {FORM-TOOTHED            false}
-		'flatTopAndBottomToothedSerifed'            {FORM-TOOTHED            true }
-		'flatTopAndBottomToothlessCornerSerifless'  {FORM-TOOTHLESS-CORNER   false}
-		'flatTopAndBottomToothlessCornerSerifed'    {FORM-TOOTHLESS-CORNER   true }
-		'flatTopAndBottomToothlessRoundedSerifless' {FORM-TOOTHLESS-ROUNDED  false}
-		'flatTopAndBottomToothlessRoundedSerifed'   {FORM-TOOTHLESS-ROUNDED  true }
-		'flatTopAndBottomBottomCutSerifless'        {FORM-BOTTOM-CUT        false}
-		'flatTopAndBottomBottomCutSerifed'          {FORM-BOTTOM-CUT        true }
-		'flatTopAndBottomToothedTailedSerifless'    {FORM-TOOTHED-TAILED    false}
-		'flatTopAndBottomToothedTailedSerifed'      {FORM-TOOTHED-TAILED    true }
-		'flatTopAndBottomFlatBottomSerifedSerifless' {FORM-FLAT-BOTTOM-SERIFED false}
-		'flatTopAndBottomFlatBottomSerifedSerifed'   {FORM-FLAT-BOTTOM-SERIFED true }
+	define FlatTopEtConfig : object
+		'flatTopEtSerifless'                  {FORM-FLAT-BOTTOM         false }
+		'flatTopEtSerifed'                    {FORM-FLAT-BOTTOM         true  }
+		'flatTopEtToothedSerifless'           {FORM-TOOTHED             false }
+		'flatTopEtToothedSerifed'             {FORM-TOOTHED             true  }
+		'flatTopEtToothlessCornerSerifless'   {FORM-TOOTHLESS-CORNER    false }
+		'flatTopEtToothlessCornerSerifed'     {FORM-TOOTHLESS-CORNER    true  }
+		'flatTopEtToothlessRoundedSerifless'  {FORM-TOOTHLESS-ROUNDED   false }
+		'flatTopEtToothlessRoundedSerifed'    {FORM-TOOTHLESS-ROUNDED   true  }
+		'flatTopEtBottomCutSerifless'         {FORM-BOTTOM-CUT          false }
+		'flatTopEtBottomCutSerifed'           {FORM-BOTTOM-CUT          true  }
+		'flatTopEtToothedTailedSerifless'     {FORM-TOOTHED-TAILED      false }
+		'flatTopEtToothedTailedSerifed'       {FORM-TOOTHED-TAILED      true  }
+		'flatTopEtFlatBottomSerifedSerifless' {FORM-FLAT-BOTTOM-SERIFED false }
+		'flatTopEtFlatBottomSerifedSerifed'   {FORM-FLAT-BOTTOM-SERIFED true  }
 
-	foreach {suffix {form fSerifed}} [pairs-of FlatTopAndBottomConfig] : do
+	foreach {suffix {form fSerifed}} [pairs-of FlatTopEtConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
 				fSerifed   -- fSerifed
