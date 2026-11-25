@@ -1,6 +1,7 @@
 $$include '../meta/macros.ptl'
 
 import [mix linreg clamp fallback SuffixCfg] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
 
 glyph-module
 
@@ -8,7 +9,7 @@ glyph-block Digits-Six : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : CodeLnum CodeOnum
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : Toothed MakeFlatHook CornerHookDepth CornerHookEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
 
 	glyph-block-export StraightBarSixShape
@@ -75,7 +76,7 @@ glyph-block Digits-Six : begin
 			HookEnd top
 			g4 (RightSB - OX) (top - Hook)
 
-	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false] [slabHook false]] : glyph-proc
+	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false]] : glyph-proc
 		include : dispiro
 			widths.rhs
 			flat SB oTop [heading Upward]
@@ -85,7 +86,17 @@ glyph-block Digits-Six : begin
 					curl SB (top - SmallArchDepthA) [heading Upward]
 					SixHookTerminal top inward
 		if inward : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
-		if slabHook : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
+
+	define [SixToothedHookFromBowl top oTop xStem] : glyph-proc
+		local arc : Toothed [new Box top 0 xStem (RightSB - OX)]
+		local yTurn : if (oTop > [SixBowlOTop top])
+			Math.min (top - 1.2 * Stroke - TINY) [Math.max (oTop + Stroke) (top - SmallArchDepthA)]
+			Math.max (oTop + Stroke) (top - SmallArchDepthA)
+		include : dispiro
+			arc.hookStartR
+			curl xStem yTurn [heading Downward]
+			flat xStem [Math.min oTop (yTurn - TINY)] [heading Downward]
+		include : arc.serifStartR
 
 	glyph-block-export OpenContourSixShape
 	define [OpenContourSixShape] : with-params [charTop [flatBowl false] [oTop [SixBowlOTop charTop]]] : glyph-proc
@@ -109,11 +120,11 @@ glyph-block Digits-Six : begin
 			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O) [widths.rhs]
 
 	glyph-block-export ClosedContourSixShape
-	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [slabHook false] [oTop [SixBowlOTop top]]] : glyph-proc
+	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [oTop [SixBowlOTop top]]] : glyph-proc
 		local arches : SixBowlArches oTop
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
-			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward) (slabHook -- slabHook)
+			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward)
 		if [not flatBowl] : include : dispiro
 			widths.rhs ShoulderFine
 			g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
@@ -128,7 +139,6 @@ glyph-block Digits-Six : begin
 					curl (SB + OX) (top - SmallArchDepthA)
 					SixHookTerminal top inward
 		if (inward && [not flatBowl]) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
-		if (slabHook && [not flatBowl]) : include : ArcStartSerif.R (RightSB - OX) top Stroke Hook
 
 	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
 		local swH : HSwToV sw
@@ -202,7 +212,13 @@ glyph-block Digits-Six : begin
 		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (inward -- true) (oTop -- [fallback _oTop [SixBowlOTop top]])
 	define [SixBodyClosedSerifedHook fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
-		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (slabHook -- true) (oTop -- [fallback _oTop [SixBowlOTop top]])
+		local oTop : fallback _oTop [SixBowlOTop top]
+		if fFlatBowl : include : union
+			SixFlatBowlOBar oTop
+			SixToothedHookFromBowl top oTop SB
+		if [not fFlatBowl] : include : union
+			SixRoundBowl oTop
+			SixToothedHookFromBowl top oTop (SB + OX)
 	define [SixBodySteepBar fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
 		include : StraightBarSixShape top (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
