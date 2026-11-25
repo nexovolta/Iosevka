@@ -13,6 +13,21 @@ the existing tails, such as `vertical-cut-curly-tail`. The `cyrl-capital-e`,
 `cyrl-e`, `cyrl-capital-koppa`, and `cyrl-koppa` selectors also have
 `vertical-cut` and `diagonal-cut` options.
 
+Cut terminals are also available for applicable `f`, `j`, `capital-j`, `r`,
+`t`, cursive `y`, `long-s`, and traditional `lower-eszet` designs. Existing
+palatal, retroflex, and implosive forms retain their original hooks.
+For `i`, `j`, and `l`, diagonal-cut top and bottom terminals can be selected
+independently of one another and of the existing diagonal-tailed designs.
+The `lower-esh` selector likewise supports independent top and bottom
+diagonal-cut terminals; its `tailed` option retains the uncut curved tails.
+For `f`, descending bottom hooks have independent `bottom-vertical-cut` and
+`bottom-diagonal-cut` options. Cyrillic `cyrl-ef` has independent top and
+bottom straight, flat-hooked, rounded-tailed, diagonal-tailed, vertical-cut,
+and diagonal-cut terminals, for example `top-diagonal-cut-bottom-vertical-cut`.
+Other supported selectors include `two`, `three`, `five`, `six`, `nine`,
+`capital-g`, `capital-s`, `s`, `capital-ezh`, `lower-ezh`, Cyrillic ze,
+`section`, `at`, `pilcrow`, and `sterling`.
+
 Regenerate these regular-weight SVG previews and this list with
 `npm run build -- amend-readme:character-variants`.
 

@@ -10,13 +10,15 @@ glyph-block Symbol-Punctuation-Section : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Latin-S : SAutoSlabStart
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	define SLAB-NONE      0
 	define SLAB-CLASSICAL 1
 	define SLAB-INWARD    2
 	define SLAB-FLAT-HOOK 4
 	define SLAB-CORNER-HOOK 5
+	define CUT-VERTICAL 6
+	define CUT-DIAGONAL 7
 
 	local top ParenTop
 	local bot ParenBot
@@ -27,11 +29,15 @@ glyph-block Symbol-Punctuation-Section : begin
 		[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke Hook
 		[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot (sw -- Stroke)].hookStartR
 		[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase SB RightSB top bot (sw -- Stroke)].hookStartR
+		[Just CUT-DIAGONAL] : DeltaCutStart Middle (RightSB - offset) (top - offset - O) (top - offset - 0.2 * Hook) Stroke
+		[Just CUT-VERTICAL] : list
+			g4 (RightSB - offset + [VerticalCutExtension Hook Stroke]) (top - Hook)
+			HookStart (top - offset)
 		__ : list
 			g4 (RightSB - offset) (top - Hook)
 			HookStart (top - offset)
 	define [s sink offset st] : begin
-		return : sink
+		local shape : sink
 			widths.lhs
 			~~~ [sStart st offset]
 			g4 (SB + offset) (top - ada)
@@ -45,6 +51,7 @@ glyph-block Symbol-Punctuation-Section : begin
 				corner Width [mix bot top 2]
 				corner Width (top - Hook - TINY)
 				corner RightSB (top - Hook - TINY)
+		return : if (st == CUT-VERTICAL) [CutArcTerminal shape (RightSB - offset) top bot Stroke false true] shape
 	define [halfShape st opposite] : glyph-proc
 		include : intersection [s dispiro 0 st] : union
 			MaskAbove SymbolMid
@@ -57,6 +64,8 @@ glyph-block Symbol-Punctuation-Section : begin
 		cornerHook    {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK}
 		serifed       {SLAB-CLASSICAL    SLAB-CLASSICAL  }
 		inwardSerifed {SLAB-INWARD       SLAB-INWARD     }
+		verticalCut   {CUT-VERTICAL      CUT-VERTICAL    }
+		diagonalCut   {CUT-DIAGONAL      CUT-DIAGONAL    }
 
 	define SectionArcTypes : object
 		Rounded SLAB-NONE
@@ -64,6 +73,8 @@ glyph-block Symbol-Punctuation-Section : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
+		VerticalCut CUT-VERTICAL
+		DiagonalCut CUT-DIAGONAL
 	foreach {topName topStyle} [pairs-of SectionArcTypes] : begin
 		foreach {bottomName bottomStyle} [pairs-of SectionArcTypes] : begin
 			set SectionConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
@@ -79,12 +90,16 @@ glyph-block Symbol-Punctuation-Section : begin
 	alias 'section/topHook.inwardSerifed' null 'section.topInwardSerifedBottomRounded'
 	alias 'section/topHook.flatHook' null 'section.topFlatHookBottomRounded'
 	alias 'section/topHook.cornerHook' null 'section.topCornerHookBottomRounded'
+	alias 'section/topHook.verticalCut' null 'section.topVerticalCutBottomRounded'
+	alias 'section/topHook.diagonalCut' null 'section.topDiagonalCutBottomRounded'
 
 	alias 'section/bottomHook.serifless' null 'section.serifless'
 	alias 'section/bottomHook.serifed' null 'section.topRoundedBottomSerifed'
 	alias 'section/bottomHook.inwardSerifed' null 'section.topRoundedBottomInwardSerifed'
 	alias 'section/bottomHook.flatHook' null 'section.topRoundedBottomFlatHook'
 	alias 'section/bottomHook.cornerHook' null 'section.topRoundedBottomCornerHook'
+	alias 'section/bottomHook.verticalCut' null 'section.topRoundedBottomVerticalCut'
+	alias 'section/bottomHook.diagonalCut' null 'section.topRoundedBottomDiagonalCut'
 
 	select-variant 'section/topHook'
 	select-variant 'section/bottomHook'

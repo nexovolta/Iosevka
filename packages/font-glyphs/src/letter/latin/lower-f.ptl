@@ -12,13 +12,15 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook nShoulder EngHook
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookOffset CornerHookOutset CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension
 
 	define CH-NONE          0
 	define CH-SERIF         1
 	define CH-EXTENSION     2
 	define CH-HOOK          3
 	define CH-DIAGONAL-HOOK 4
+	define CH-VERTICAL-CUT  5
+	define CH-DIAGONAL-CUT  6
 
 	define SYM-LEFT         0
 	define SYM-BALANCED     1
@@ -95,6 +97,16 @@ glyph-block Letter-Latin-Lower-F : begin
 			curl barRight TINY [heading Upward]
 		if fCorner : include : VBar.l xTip Descender (Descender + [CornerHookDepth Hook Stroke])
 
+	define [SmallFDownCut df barRight xTip diagonal] : glyph-proc
+		local shape : dispiro
+			widths.rhs Stroke
+			flat barRight TINY [heading Downward]
+			curl barRight (Descender + ArchDepthA)
+			if diagonal
+				DeltaCutEnd [mix xTip barRight 0.5] xTip (Descender + O) (Descender + 0.2 * Hook) Stroke
+				list [HookEnd Descender] [g4 (xTip - [VerticalCutExtension Hook Stroke]) (Descender + Hook)]
+		include : if diagonal shape [intersection shape [MaskRight xTip]]
+
 	glyph-block-export SmallFDiagonalTail
 	define [SmallFDiagonalTail df barLeft] : begin
 		local xBarMiddle : barLeft + [HSwToV HalfStroke]
@@ -109,8 +121,8 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-export StdSmallFBarLeftPos0
 	define [StdSmallFBarLeftPos0] : [mix SB RightSB 0.35] - [HSwToV QuarterStroke]
 
-	define [StandardFShape df m bh counterHook sym] : glyph-proc
-		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
+	define [StandardFShape df m bh counterHook sym cut] : glyph-proc
+		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK) || (counterHook === CH-VERTICAL-CUT) || (counterHook === CH-DIAGONAL-CUT)
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
@@ -123,7 +135,18 @@ glyph-block Letter-Latin-Lower-F : begin
 		include : LeaningAnchor.Above.Hook barLeft topHookRight
 		set-base-anchor 'overlay' (barLeft + [HSwToV HalfStroke]) (bh / 2)
 
-		include : StdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
+		if cut
+		: then : begin
+			local hookEnd : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) (df.rightSB + RBalance2 - (OX - O) + hookExtra)
+			local shape : dispiro
+				widths.lhs Stroke
+				if (cut === 'diagonal')
+					DeltaCutStart [mix barLeft0 hookEnd 0.5] hookEnd (Ascender - O) (Ascender - 0.2 * Hook) Stroke
+					list [g4 (hookEnd + [VerticalCutExtension Hook Stroke]) (Ascender - Hook * 0.75)] [HookStart Ascender]
+				flat barLeft0 (Ascender - ArchDepthA * 0.8)
+				curl barLeft0 0 [heading Downward]
+			include : if (cut === 'diagonal') shape [CutArcTerminal shape hookEnd Ascender 0 Stroke false true]
+		: else : include : StdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
 		include : Translate (barLeft - barLeft0) 0
 		include : HCrossBar.top xCrossLeft xCrossRight bh
 
@@ -134,7 +157,11 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-SERIF]         : SmallFBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
+			[Just CH-VERTICAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] false
+			[Just CH-DIAGONAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] true
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
+
+	define [CutFShape cut] : function [df m bh counterHook sym] : StandardFShape df m bh counterHook sym cut
 
 	define [NarrowStdFShapeT sink df offset barleft sw _hookExtra] : begin
 		local pAdaptive : if (para.advanceScaleF < 1) ((1 - df.adws) / (1 - para.advanceScaleF)) 0
@@ -151,7 +178,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			if offset {[corner (hookRight - offset) 0]} {}
 
 	define [NarrowStdFShape df m bh counterHook sym] : glyph-proc
-		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
+		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK) || (counterHook === CH-VERTICAL-CUT) || (counterHook === CH-DIAGONAL-CUT)
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix df.leftSB df.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
@@ -181,6 +208,8 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-SERIF]         : SmallFBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
+			[Just CH-VERTICAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] false
+			[Just CH-DIAGONAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] true
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define [NarrowFShape clcStyle fCorner] : function [df m bh counterHook sym] : glyph-proc
@@ -199,7 +228,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just 4] Jut
 			__       0
 
-		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
+		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK) || (counterHook === CH-VERTICAL-CUT) || (counterHook === CH-DIAGONAL-CUT)
 		local crossLeft  : mix 0        df.leftSB  m
 		local crossRight : mix df.width df.rightSB m
 		local balancedBarLeft : if barAtCenter
@@ -232,11 +261,15 @@ glyph-block Letter-Latin-Lower-F : begin
 			[Just CH-SERIF]         : NarrowBottomSerif df sym barLeft
 			[Just CH-EXTENSION]     : SmallFDownExtension barLeft
 			[Just CH-HOOK]          : SmallFDownHook df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)]
+			[Just CH-VERTICAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] false
+			[Just CH-DIAGONAL-CUT]  : SmallFDownCut df barRight [Math.max df.leftSB : barRight - hookSpanK * (crossRight - hookRefLeft)] true
 			[Just CH-DIAGONAL-HOOK] : SmallFDiagonalTail df barLeft
 
 	define SmallFConfig : SuffixCfg.weave
 		object # body
 			''             {StandardFShape         dfN}
+			verticalCut    {[CutFShape 'vertical']  dfN}
+			diagonalCut    {[CutFShape 'diagonal']  dfN}
 			narrow         {NarrowStdFShape        dfF}
 			flatHook       {[NarrowFShape 0]       dfF}
 			flatHookCLC1   {[NarrowFShape 1]       dfF}
@@ -248,12 +281,16 @@ glyph-block Letter-Latin-Lower-F : begin
 			cornerHookCLC2 {[NarrowFShape 2 true]  dfF}
 			cornerHookCLC3 {[NarrowFShape 3 true]  dfF}
 			cornerHookCLC4 {[NarrowFShape 4 true]  dfF}
-		function [body] : object # hooks
-			serifless      {[if body pNarrowFSide 0.95]  CH-NONE           'b' }
-			serifed        {[if body pNarrowFSide 0.95]  CH-SERIF          'b' }
-			extended       {[if body pNarrowFSide 0.95]  CH-EXTENSION      'bp'}
-			tailed         {[if body pNarrowFSide 1.00]  CH-HOOK           'bp'}
-			diagonalTailed {[if body pNarrowFSide 1.00]  CH-DIAGONAL-HOOK  'bp'}
+		function [body] : begin
+			local narrow : body && body !== 'verticalCut' && body !== 'diagonalCut'
+			return : object
+				serifless      {[if narrow pNarrowFSide 0.95]  CH-NONE           'b' }
+				serifed        {[if narrow pNarrowFSide 0.95]  CH-SERIF          'b' }
+				extended       {[if narrow pNarrowFSide 0.95]  CH-EXTENSION      'bp'}
+				tailed         {[if narrow pNarrowFSide 1.00]  CH-HOOK           'bp'}
+				diagonalTailed {[if narrow pNarrowFSide 1.00]  CH-DIAGONAL-HOOK  'bp'}
+				bottomVerticalCut {[if narrow pNarrowFSide 1.00] CH-VERTICAL-CUT 'bp'}
+				bottomDiagonalCut {[if narrow pNarrowFSide 1.00] CH-DIAGONAL-CUT 'bp'}
 		object # symmetry
 			''                                SYM-BALANCED
 			asymmetric                        SYM-LEFT
@@ -270,7 +307,12 @@ glyph-block Letter-Latin-Lower-F : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 
 		create-glyph "fPalatalHook.\(suffix)" : glyph-proc
-			include [refer-glyph "f.\(suffix)"] AS_BASE ALSO_METRICS
+			local baseSuffix : [suffix.replace 'BottomVerticalCut' 'Tailed'].replace 'BottomDiagonalCut' 'Tailed'
+			set baseSuffix : [baseSuffix.replace 'bottomVerticalCut' 'tailed'].replace 'bottomDiagonalCut' 'tailed'
+			if ([baseSuffix.startsWith 'verticalCut'] || [baseSuffix.startsWith 'diagonalCut']) : begin
+				local s : baseSuffix.slice 11
+				set baseSuffix : [s.0.toLowerCase] + [s.slice 1]
+			include [refer-glyph "f.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			local attach : currentGlyph.gizmo.unapply          currentGlyph.baseAnchors.overlay
 			local pos    : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.palatalHookPos
 			include : PalatalHook.r
@@ -306,7 +348,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		leftY0  -- yBot
 
 	define [FengTrillStdHook dfF pBar ch sym] : begin
-		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK)
+		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK) || (ch === CH-VERTICAL-CUT) || (ch === CH-DIAGONAL-CUT)
 		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
 		local barLeft : FBarLeftPos dfF sym balancedBarLeft
@@ -316,7 +358,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
 
 	define [FengTrillNarrowHook dfF pBar ch sym] : begin
-		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK)
+		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK) || (ch === CH-VERTICAL-CUT) || (ch === CH-DIAGONAL-CUT)
 		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
 		local barLeft : FBarLeftPos dfF sym balancedBarLeft
@@ -409,6 +451,8 @@ glyph-block Letter-Latin-Lower-F : begin
 			extended       {[if body pNarrowFSide 0.95]  CH-EXTENSION    }
 			tailed         {[if body pNarrowFSide 1.00]  CH-HOOK         }
 			diagonalTailed {[if body pNarrowFSide 1.00]  CH-DIAGONAL-HOOK}
+			bottomVerticalCut {[if body pNarrowFSide 1.00] CH-VERTICAL-CUT}
+			bottomDiagonalCut {[if body pNarrowFSide 1.00] CH-DIAGONAL-CUT}
 		object # symmetry
 			''                                SYM-BALANCED
 			asymmetric                        SYM-LEFT

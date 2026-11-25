@@ -21,7 +21,6 @@ const { FileList } = build.predefinedFuncs;
 const BUILD = ".build";
 const DIST = "dist";
 const IMAGES = "images";
-
 const PACKAGES = "packages";
 const TOOLS = "tools";
 
@@ -1213,6 +1212,7 @@ const PagesFastFontExportImpl = task.group(`pages:fast-font-export-impl`, async 
 // README
 
 const AmendReadme = task("amend-readme", async target => {
+	await target.need(SampleImagesCv);
 	await target.need(
 		AmendReadmeFor("README.md"),
 		AmendReadmeFor("doc/stylistic-sets.md"),
@@ -1224,15 +1224,19 @@ const AmendReadme = task("amend-readme", async target => {
 		AmendLicenseYear,
 	);
 });
+const _AmendCharacterVariants = task("amend-readme:character-variants", async target => {
+	await target.need(SampleImagesCv);
+	await target.need(AmendReadmeFor("doc/character-variants.md"));
+});
 const AmendReadmeFor = task.make(
 	f => `amend-readme::for::${f}`,
 	async (target, f) => {
 		const [version] = await target.need(Version, Parameters, UtilScripts);
 		const [rpFiles] = await target.need(ReleaseNotePackagesFile);
 		const [cm, cmi, cmo] = await target.need(
-			BuildCM("Iosevka", "Iosevka-Regular"),
-			BuildCM("Iosevka", "Iosevka-Italic"),
-			BuildCM("Iosevka", "Iosevka-Oblique"),
+			GlyphCharMap("Iosevka", "Iosevka-Regular"),
+			GlyphCharMap("Iosevka", "Iosevka-Italic"),
+			GlyphCharMap("Iosevka", "Iosevka-Oblique"),
 		);
 		return node(`tools/amend-readme/src/index.mjs`, {
 			version,
@@ -1281,61 +1285,102 @@ const AmendLicenseYear = task("amend-readme:license-year", async target => {
 // Sample Images
 
 const SampleImages = task(`sample-images`, async target => {
-	const [tasksToTake] = await target.need(SampleImagesPre, de(IMAGES));
-	const tasks = [];
-	for (const id of tasksToTake) tasks.push(ScreenShotImpl(id));
-	await target.need(tasks);
+	await target.need(SampleImagesCv, SampleImagesOther);
+});
+const SampleImagesCv = task(`sample-images:cv`, async target => {
+	const [taskIds, fontInfos] = await target.need(SampleImagesPre, SampleImageFontInfos);
+	await target.need(de(IMAGES));
+	return node("tools/generate-samples/src/render-svg.mjs", {
+		paramsDir: Path.resolve("params"),
+		taskDir: Path.resolve(IMAGE_TASKS),
+		outputDir: Path.resolve(IMAGES),
+		taskIds,
+		fontInfos,
+	});
 });
 
 const SampleImagesPre = task(`sample-images:pre`, async target => {
+	await target.need(de(IMAGE_TASKS), UtilScripts, Scripts);
+	return await node("tools/generate-samples/src/index.mjs", {
+		onlyCvSamples: true,
+		paramsDir: Path.resolve("params"),
+		outputDir: IMAGE_TASKS,
+	});
+});
+const SampleImageFontInfos = task(`sample-images:font-infos`, async target => {
+	const [fontInfos] = await target.need(
+		["Iosevka-Regular", "Iosevka-Italic"].map(name => FontInfoOf(name)),
+	);
+	return fontInfos;
+});
+
+const SampleImagesOther = task(`sample-images:other`, async target => {
+	const [taskIds] = await target.need(SampleImagesOtherPre, de(IMAGES));
+	await target.need(taskIds.map(id => ScreenShotImpl(id)));
+});
+const SampleImagesOtherPre = task(`sample-images:other:pre`, async target => {
 	const [version] = await target.need(Version, de(IMAGE_TASKS), UtilScripts);
 	const fontGroups = await target.need(
-		GroupTtfsImpl(`Iosevka`, false),
-		GroupTtfsImpl(`IosevkaSlab`, false),
-		GroupTtfsImpl(`IosevkaAile`, false),
-		GroupTtfsImpl(`IosevkaEtoile`, false),
+		GroupTtfsImpl("Iosevka", false),
+		GroupTtfsImpl("IosevkaSlab", false),
+		GroupTtfsImpl("IosevkaAile", false),
+		GroupTtfsImpl("IosevkaEtoile", false),
 	);
 	const [cm, cmi, cmo] = await target.need(
 		BuildCM("Iosevka", "Iosevka-Regular"),
 		BuildCM("Iosevka", "Iosevka-Italic"),
 		BuildCM("Iosevka", "Iosevka-Oblique"),
 	);
-	return await node("tools/generate-samples/src/index.mjs", {
-		version,
-		paramsDir: Path.resolve("params"),
-		outputDir: IMAGE_TASKS,
-		packageSnapshotTasks: await PackageSnapshotConfig(target),
-		fontGroups: fontGroups,
-		charMapPath: cm.full,
-		charMapItalicPath: cmi.full,
-		charMapObliquePath: cmo.full,
-	});
-});
-const PackageSnapshotConfig = async target => {
 	const [plan] = await target.need(BuildPlans);
-	const cfg = [];
-	for (const key in plan.buildPlans) {
-		const p = plan.buildPlans[key];
+	const packageSnapshotTasks = [];
+	for (const [key, p] of Object.entries(plan.buildPlans)) {
 		if (!p?.snapshotFamily) continue;
-		cfg.push({
+		packageSnapshotTasks.push({
 			name: `package-sample-${key}`,
 			fontFamily: p.snapshotFamily,
 			fontFeatures: p.snapshotFeature,
 		});
 	}
-	return cfg;
-};
-
+	return node("tools/generate-samples/src/index.mjs", {
+		version,
+		excludeCvSamples: true,
+		paramsDir: Path.resolve("params"),
+		outputDir: IMAGE_TASKS,
+		packageSnapshotTasks,
+		fontGroups,
+		charMapPath: cm.full,
+		charMapItalicPath: cmi.full,
+		charMapObliquePath: cmo.full,
+	});
+});
 const ScreenShotImpl = file.make(
 	img => `${IMAGES}/${img}.svg`,
 	async (target, out, id) => {
 		const [rp] = await target.need(RawPlans);
-		await target.need(SampleImagesPre, de(IMAGES));
+		await target.need(SampleImagesOtherPre, de(IMAGES));
 		await run(rp.buildOptions.snapshotGeneratorApp, [
 			`${IMAGE_TASKS}/${id}.json`,
 			"-o",
 			out.full,
 		]);
+	},
+);
+
+const GlyphCharMap = file.make(
+	(gr, f) => `${BUILD}/direct-charmap/${gr}/${f}.charmap.mpz`,
+	async (target, out, _gr, f) => {
+		const [fontInfo] = await target.need(
+			FontInfoOf(f),
+			Parameters,
+			UtilScripts,
+			Scripts,
+			de(out.dir),
+		);
+		await node("tools/generate-samples/src/write-charmap.mjs", {
+			...fontInfo,
+			paramsDir: Path.resolve("params"),
+			outputPath: out.full,
+		});
 	},
 );
 

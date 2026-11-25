@@ -9,7 +9,7 @@ glyph-block Digits-Six : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : CodeLnum CodeOnum
-	glyph-block-import Letter-Arc-Hook : Toothed MakeFlatHook CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : Toothed MakeFlatHook CornerHookDepth CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif
 
 	glyph-block-export StraightBarSixShape
@@ -72,23 +72,26 @@ glyph-block Digits-Six : begin
 		include : dispiro
 			SixFlatBowlKnots oTop left right sw oTop
 
-	define [SixHookTerminal top inward] : if inward
+	define [SixHookTerminal top inward cut] : if inward
 		list
 			Arch.rhs top (blendPost -- {})
 			g2 (RightSB - OX) (top - DToothlessRise)
-		list
-			HookEnd top
-			g4 (RightSB - OX) (top - Hook)
+		if (cut === 2)
+			DeltaCutEnd Middle (RightSB - OX) (top + O) (top - 0.2 * Hook) Stroke
+			list
+				HookEnd top
+				g4 (RightSB - OX + [if (cut === 1) [VerticalCutExtension Hook Stroke] 0]) (top - Hook)
 
-	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false]] : glyph-proc
-		include : dispiro
+	define [SixClosedStemFromBowl] : with-params [top oTop [vertical false] [inward false] [cut 0]] : glyph-proc
+		local shape : dispiro
 			widths.rhs
 			flat SB oTop [heading Upward]
 			if vertical
 				curl SB top [heading Upward]
 				list
 					curl SB (top - SmallArchDepthA) [heading Upward]
-					SixHookTerminal top inward
+					SixHookTerminal top inward cut
+		include : if (cut === 1) [CutArcTerminal shape (RightSB - OX) top (2 * [Math.max (oTop + TINY) (top - Hook - Stroke)] - top) Stroke false true] shape
 		if inward : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
 
 	define [SixToothedBody top oTop fFlatBowl] : glyph-proc
@@ -134,24 +137,26 @@ glyph-block Digits-Six : begin
 			g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O) [widths.rhs]
 
 	glyph-block-export ClosedContourSixShape
-	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [oTop [SixBowlOTop top]]] : glyph-proc
+	define [ClosedContourSixShape] : with-params [top [vertical false] [flatBowl false] [inward false] [oTop [SixBowlOTop top]] [cut 0]] : glyph-proc
 		local arches : SixBowlArches oTop
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
-			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward)
-		if [not flatBowl] : include : dispiro
-			widths.rhs ShoulderFine
-			g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
-			Arch.rhs oTop (swBefore -- ShoulderFine)
-			g4.down.mid (RightSB - OX) arches.yMiddleB
-			Arch.rhs 0
-			g4.up.mid (SB + OX) arches.yMiddleA
-			flat (SB + OX) (arches.yMiddleA + TINY) [heading Upward]
-			if vertical
-				curl (SB + OX) top [heading Upward]
-				list
-					curl (SB + OX) (top - SmallArchDepthA)
-					SixHookTerminal top inward
+			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward) (cut -- cut)
+		if [not flatBowl] : begin
+			local shape : dispiro
+				widths.rhs ShoulderFine
+				g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
+				Arch.rhs oTop (swBefore -- ShoulderFine)
+				g4.down.mid (RightSB - OX) arches.yMiddleB
+				Arch.rhs 0
+				g4.up.mid (SB + OX) arches.yMiddleA
+				flat (SB + OX) (arches.yMiddleA + TINY) [heading Upward]
+				if vertical
+					curl (SB + OX) top [heading Upward]
+					list
+						curl (SB + OX) (top - SmallArchDepthA)
+						SixHookTerminal top inward cut
+			include : if (cut === 1) [CutArcTerminal shape (RightSB - OX) top (2 * [Math.max (oTop + TINY) (top - Hook - Stroke)] - top) Stroke false true] shape
 		if (inward && [not flatBowl]) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
 
 	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
@@ -235,6 +240,13 @@ glyph-block Digits-Six : begin
 		local top : fallback _top CAP
 		include : ClosedContourSixShape top (vertical -- true) (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
 
+	define [SixBodyClosedVerticalCut fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]]) (cut -- 1)
+	define [SixBodyClosedDiagonalCut fFlatBowl _top _oTop] : glyph-proc
+		local top : fallback _top CAP
+		include : ClosedContourSixShape top (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]]) (cut -- 2)
+
 	glyph-block-export SixConfig
 	define SixConfig : SuffixCfg.weave
 		object # body
@@ -243,6 +255,8 @@ glyph-block Digits-Six : begin
 			straightBar        SixBodyStraightBar
 			closedFlatHook     SixBodyClosedFlatHook
 			closedCornerHook   SixBodyClosedCornerHook
+			closedVerticalCut  SixBodyClosedVerticalCut
+			closedDiagonalCut  SixBodyClosedDiagonalCut
 			closedInwardSerifed SixBodyClosedInwardSerifed
 			closedSerifedHook  SixBodyClosedSerifedHook
 			steepBar           SixBodySteepBar

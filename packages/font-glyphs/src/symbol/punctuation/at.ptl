@@ -9,11 +9,13 @@ glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	define TOP-SERIFLESS       0
 	define TOP-SERIFED         1
 	define TOP-INWARD-SERIFED  2
+	define TOP-VERTICAL-CUT    3
+	define TOP-DIAGONAL-CUT    4
 
 	define [ThreeFoldShape height fSolidInner] : glyph-proc
 		local top : SymbolMid + height / 2
@@ -144,7 +146,7 @@ glyph-block Symbol-Punctuation-At : begin
 			Arch.lhs atTurnBot (sw -- sw) (swBefore -- (sw * shrink))
 			flat RightSB (atTurnBot + ada)
 			curl RightSB (top - ArchDepthB) [heading Upward]
-		include : dispiro
+		local outer : dispiro
 			widths.rhs sw
 			if fFlatHook
 				[MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
@@ -153,11 +155,16 @@ glyph-block Symbol-Punctuation-At : begin
 					match topSerif
 						[Just TOP-SERIFED] : SerifedArcStart.LtrRhs SB top sw Hook
 						[Just TOP-INWARD-SERIFED] : InwardSlabArcStart.LtrRhs SB top sw Hook
+						[Just TOP-DIAGONAL-CUT] : DeltaCutStart Middle SB (top - O) (top - 0.2 * Hook) sw
+						[Just TOP-VERTICAL-CUT] : list
+							g4 (SB - [VerticalCutExtension Hook sw]) (top - Hook)
+							HookStart top (sw -- sw)
 						__ : list
 							g4 SB (top - Hook)
 							HookStart top (sw -- sw)
 			flat RightSB (top - ArchDepthB)
 			curl RightSB (atTurnBot + ada) [heading Downward]
+		include : if (topSerif === TOP-VERTICAL-CUT) [CutArcTerminal outer SB top 0 sw true true] outer
 		if fCornerHook : include : VBar.l [MakeCornerHookBase xCornerLeft RightSB top 0 (sw -- sw)].xLHook (top - [CornerHookDepth Hook sw]) top sw
 		if (topSerif === TOP-SERIFED) : include : ArcStartSerif.L SB top sw Hook
 		if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardL SB top sw Hook
@@ -181,6 +188,8 @@ glyph-block Symbol-Punctuation-At : begin
 		compactCornerHook     {CompactShape  CAP  false  true   TOP-SERIFLESS}
 		compactSerifed        {CompactShape  CAP  false  false  TOP-SERIFED}
 		compactInwardSerifed  {CompactShape  CAP  false  false  TOP-INWARD-SERIFED}
+		compactVerticalCut    {CompactShape  CAP  false  false  TOP-VERTICAL-CUT}
+		compactDiagonalCut    {CompactShape  CAP  false  false  TOP-DIAGONAL-CUT}
 
 	foreach {suffix {body height fSolidInner fCornerHook topSerif}} [Object.entries AtConfig] : do
 		create-glyph "at.\(suffix)" : body height fSolidInner fCornerHook topSerif

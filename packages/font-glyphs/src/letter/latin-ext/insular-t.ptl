@@ -9,13 +9,15 @@ glyph-block Letter-Latin-Insular-T : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Latin-C : CConfig CLetterForm
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Latin-Upper-T : TConfig TShape TLeftX
 
 	define SLAB-CLASSICAL   1
 	define SLAB-INWARD      2
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
+	define CUT-VERTICAL     6
+	define CUT-DIAGONAL     7
 
 	define InsularTSymConfig : object
 		symmetric  false
@@ -25,7 +27,7 @@ glyph-block Letter-Latin-Insular-T : begin
 		if (!fNoTopBar) : include : HBar.t SB RightSB top
 
 		local fine : Stroke * CThinB
-		include : dispiro
+		local arc : dispiro
 			straight.left.start Middle (top - Stroke + fine) [widths.lhs.heading fine Leftward]
 			archv
 			flatside.ld SB bot (top - Stroke + fine) ada adb nothing [widths.lhs]
@@ -34,9 +36,12 @@ glyph-block Letter-Latin-Insular-T : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs RightSB bot Stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top bot].hookEndR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase SB RightSB top bot].hookEndR
+				[Just CUT-DIAGONAL] : DeltaCutEnd Middle RightSB (bot + O) (bot + 0.2 * Hook) Stroke
+				[Just CUT-VERTICAL] : list [HookEnd bot] [g4 (RightSB + [VerticalCutExtension Hook Stroke]) (bot + Hook)]
 				__ : list
 					HookEnd bot
 					g4 RightSB (bot + Hook)
+		include : if (styBot === CUT-VERTICAL) [CutArcTerminal arc RightSB top bot Stroke false false] arc
 		include : [CLetterForm [DivFrame 1] 0 styBot top bot].botSerif
 
 	foreach {suffix {styTop styBot}} [Object.entries CConfig] : do

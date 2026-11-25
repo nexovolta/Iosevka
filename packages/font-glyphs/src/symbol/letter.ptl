@@ -47,7 +47,7 @@ glyph-block Symbol-Currency : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LetterObliqueBarOverlay SerifedArcStart InwardSlabArcStart ArcStartSerif
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-C : CLetterForm CConfig
 	glyph-block-import Letter-Latin-S : SConfig SStrokeImpl SAutoSlabStart
 	glyph-block-import Letter-Latin-Rams-Horn : PfennigUmShape
@@ -71,6 +71,8 @@ glyph-block Symbol-Currency : begin
 	define TOP-SERIFLESS       0
 	define TOP-SERIFED         1
 	define TOP-INWARD-SERIFED  2
+	define TOP-VERTICAL-CUT    3
+	define TOP-DIAGONAL-CUT    4
 
 	define SterlingConfig : object
 		serifless              {0  TOP-SERIFLESS       false  false}
@@ -83,6 +85,10 @@ glyph-block Symbol-Currency : begin
 		serifedFlatHook        {1  TOP-SERIFLESS       true   false}
 		seriflessCornerHook    {0  TOP-SERIFLESS       false  true }
 		serifedCornerHook      {1  TOP-SERIFLESS       false  true }
+		seriflessVerticalCut   {0  TOP-VERTICAL-CUT    false  false}
+		serifedVerticalCut     {1  TOP-VERTICAL-CUT    false  false}
+		seriflessDiagonalCut   {0  TOP-DIAGONAL-CUT    false  false}
+		serifedDiagonalCut     {1  TOP-DIAGONAL-CUT    false  false}
 
 	define xSterlingBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 	define [SterlingFootKnots xBarLeft fRial] : if fRial
@@ -97,8 +103,7 @@ glyph-block Symbol-Currency : begin
 			local xBarLeft xSterlingBarLeft
 			local hookEndX : [Math.max (xBarLeft + [HSwToV : 2.25 * Stroke]) [mix SB RightSB 0.95]] + [if (fCornerHook && para.isItalic) [HSwToV : Stroke * 0.2] 0]
 			local hk : if fCornerHook [MakeCornerHookBase xBarLeft hookEndX CAP 0] [MakeFlatHook xBarLeft hookEndX CAP 0]
-			include : union
-				if (fFlatHook || fCornerHook)
+			local mainStroke : if (fFlatHook || fCornerHook)
 					dispiro
 						widths.lhs
 						hk.hookStartR
@@ -109,11 +114,15 @@ glyph-block Symbol-Currency : begin
 						match topSerif
 							[Just TOP-SERIFED] : SerifedArcStart.RtlLhs hookEndX CAP Stroke Hook
 							[Just TOP-INWARD-SERIFED] : InwardSlabArcStart.RtlLhs hookEndX CAP Stroke Hook
+							[Just TOP-VERTICAL-CUT] : list [g4 (hookEndX + [VerticalCutExtension Hook Stroke]) (CAP - Hook * 0.85)] [HookStart CAP]
+							[Just TOP-DIAGONAL-CUT] : DeltaCutStart [mix xBarLeft hookEndX 0.5] hookEndX (CAP - O) (CAP - 0.2 * Hook) Stroke
 							__ : list
 								g4 hookEndX (CAP - Hook * 0.85)
 								HookStart CAP
 						flat xBarLeft [CAP - ArchDepthA * 0.75]
 						SterlingFootKnots xBarLeft fRial
+			include : union
+				if (topSerif === TOP-VERTICAL-CUT) [CutArcTerminal mainStroke hookEndX CAP 0 Stroke false true] mainStroke
 				HBar.b SB RightSB 0
 			if serifGrade : include : VSerif.ur RightSB 0 VJut
 			if fCornerHook : include : VBar.r hk.xRHook CAP (CAP - [CornerHookDepth Hook Stroke]) Stroke

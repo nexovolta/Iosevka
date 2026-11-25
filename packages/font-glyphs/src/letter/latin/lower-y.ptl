@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors LeaningAnchor
 	glyph-block-import Letter-Shared : CreateDependentComposite CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
 	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull VExtendedRtInner VExtendedLtFull
 
@@ -583,6 +583,19 @@ glyph-block Letter-Latin-Lower-Y : begin
 				flat (RightSB - hd.x) bottom
 				CornerHookEnd xTerminal bottom [CornerHookDepth hd.y Stroke] Stroke (-1) 1
 
+		define [Cut y0 bottom diagonal] : begin
+			local shape : dispiro
+				widths.rhs Stroke
+				flat RightSB y0 [heading Downward]
+				curl RightSB (bottom + SmallArchDepthA)
+				if diagonal
+					DeltaCutEnd [mix SB RightSB 0.5] SB (bottom + O) (bottom + 0.2 * SHook) Stroke
+					list [HookEnd bottom] [g4 (SB - [VerticalCutExtension SHook Stroke]) (bottom + SHook)]
+			return : if diagonal shape [CutArcTerminal shape SB y0 bottom Stroke true false]
+
+		export : define [VerticalCut y0 bottom] : Cut y0 bottom false
+		export : define [DiagonalCut y0 bottom] : Cut y0 bottom true
+
 		export : define [Serifs top slabKind] : glyph-proc
 			local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
 			local sf : SerifFrame.fromDf [DivFrame 1] top 0
@@ -602,6 +615,8 @@ glyph-block Letter-Latin-Lower-Y : begin
 			''         {CursiveYShape.Hook        SHook}
 			flatHook   {CursiveYShape.FlatHook    0    }
 			cornerHook {CursiveYShape.CornerHook  0    }
+			verticalCut {CursiveYShape.VerticalCut 0}
+			diagonalCut {CursiveYShape.DiagonalCut 0}
 		object # serifs
 			serifless              SLAB-NONE
 			serifed                SLAB-ALL

@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth PalatalHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-F : ySmallFBarPos
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	define TERMINAL-BASELINE   0
 	define TERMINAL-DESCENDING 1
@@ -45,27 +45,36 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			local sfHalfAsc : SerifFrame.fromDf df ([mix 0 Ascender 0.5] + HalfStroke) 0
 			include sfHalfAsc.lt.outer
 
-	define [Traditional fFlathook fCorner] : function [slab term] : glyph-proc
+	define [Traditional fFlathook fCorner fCut] : function [slab term] : glyph-proc
 		include : MarkSet.bp
 		local xHook : [mix SB RightSB 0.75] + [HSwToV HalfStroke]
 		local hd : FlatHookDepth [DivFrame 1]
-		include : if fFlathook
-			dispiro
-				widths.lhs
-				if fCorner
-					CornerHookStart xHook Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
-					list
-						flat xHook Ascender
-				curl [Math.min (SB + hd.x) (xHook - TINY - [if fCorner [HSwToV Stroke] 0])] Ascender
-				archv
-				flat SB (Ascender - hd.y)
-				curl SB 0 [heading Downward]
-			dispiro
-				widths.lhs
-				g4   xHook (Ascender - Hook)
-				HookStart Ascender
-				flat SB XH
-				curl SB 0 [heading Downward]
+		local cutShape : if fCut : dispiro
+			widths.lhs Stroke
+			if (fCut === 'diagonal')
+				DeltaCutStart [mix SB xHook 0.5] xHook (Ascender - O) (Ascender - 0.2 * Hook) Stroke
+				list [g4 (xHook + [VerticalCutExtension Hook Stroke]) (Ascender - Hook)] [HookStart Ascender]
+			flat SB XH
+			curl SB 0 [heading Downward]
+		include : if fCut
+			if (fCut === 'diagonal') cutShape [CutArcTerminal cutShape xHook Ascender 0 Stroke false true]
+			if fFlathook
+				dispiro
+					widths.lhs
+					if fCorner
+						CornerHookStart xHook Ascender [CornerHookDepth Hook Stroke] Stroke (-1) 1
+						list
+							flat xHook Ascender
+					curl [Math.min (SB + hd.x) (xHook - TINY - [if fCorner [HSwToV Stroke] 0])] Ascender
+					archv
+					flat SB (Ascender - hd.y)
+					curl SB 0 [heading Downward]
+				dispiro
+					widths.lhs
+					g4   xHook (Ascender - Hook)
+					HookStart Ascender
+					flat SB XH
+					curl SB 0 [heading Downward]
 		local t : mix 0 Ascender 0.7
 		local tm : [mix Descender t 0.625] + HalfStroke
 		local tl : [mix SB RightSB 0.35] + [HSwToV HalfStroke]
@@ -172,6 +181,8 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			traditionalBentHook      [Traditional false]
 			traditionalFlatHook      [Traditional true]
 			traditionalCornerHook    [Traditional true true]
+			traditionalVerticalCut   [Traditional false false 'vertical']
+			traditionalDiagonalCut   [Traditional false false 'diagonal']
 			sulzbacher                Sulzbacher
 			longSSLig                 LongSSLig
 		object # terminal
@@ -255,6 +266,8 @@ glyph-block Letter-Latin-Lower-Eszet : begin
 			traditionalBentHook      FlatTopScotsS
 			traditionalFlatHook      FlatTopScotsS
 			traditionalCornerHook    FlatTopScotsS
+			traditionalVerticalCut   FlatTopScotsS
+			traditionalDiagonalCut   FlatTopScotsS
 			sulzbacher                FlatTopScotsS
 			longSSLig                 FlatTopScotsS
 		object # terminal

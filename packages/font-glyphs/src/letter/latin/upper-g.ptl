@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcStartSerifWidth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay TopHook PalatalHook
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-Z : ZemlyaBottomStrokeCursive
 
 	define BODY-TOOTHED            0
@@ -33,6 +33,8 @@ glyph-block Letter-Latin-Upper-G : begin
 	define SLAB-INWARD             2
 	define SLAB-FLAT-HOOK          4
 	define SLAB-CORNER-HOOK        5
+	define SLAB-VERTICAL-CUT       6
+	define SLAB-DIAGONAL-CUT       7
 
 	define GBarPos : DesignParameters.upperGBarPos - QuarterStroke / CAP
 
@@ -82,6 +84,8 @@ glyph-block Letter-Latin-Upper-G : begin
 			[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs RightSB top Stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook SB RightSB top 0].hookStartR
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase SB RightSB top 0].hookStartR
+			[Just SLAB-VERTICAL-CUT] : list [widths.lhs] [g4 (RightSB + [VerticalCutExtension hook Stroke]) (top - hook)] [HookStart top]
+			[Just SLAB-DIAGONAL-CUT] : list [widths.lhs] [DeltaCutStart Middle RightSB (top - O) (top - 0.2 * hook) Stroke]
 			__ : list
 				widths.lhs
 				g4   RightSB (top - hook)
@@ -106,8 +110,9 @@ glyph-block Letter-Latin-Upper-G : begin
 				flat RightSB [Math.min rise : yBarTop - TINY - [HSwToV : Math.abs : TanSlope * Stroke]]
 				curl RightSB yBarTop [heading Upward]
 
+		local arc : dispiro.apply null knots
 		local body : union
-			dispiro.apply null knots
+			if (slabType === SLAB-VERTICAL-CUT) [CutArcTerminal arc RightSB top 0 Stroke false true] arc
 			match slabType
 				[Just SLAB-CLASSICAL] : ArcStartSerif.R       RightSB top Stroke hook
 				[Just SLAB-INWARD]    : ArcStartSerif.InwardR RightSB top Stroke hook
@@ -150,6 +155,8 @@ glyph-block Letter-Latin-Upper-G : begin
 			serifless        SLAB-NONE
 			flatHook         SLAB-FLAT-HOOK
 			cornerHook       SLAB-CORNER-HOOK
+			verticalCut      SLAB-VERTICAL-CUT
+			diagonalCut      SLAB-DIAGONAL-CUT
 			serifed          SLAB-CLASSICAL
 			inwardSerifed    SLAB-INWARD
 		object # crossbar
@@ -214,6 +221,8 @@ glyph-block Letter-Latin-Upper-G : begin
 			serifless               {SLAB-NONE       }
 			topFlatHook             {SLAB-FLAT-HOOK  }
 			topCornerHook           {SLAB-CORNER-HOOK}
+			topVerticalCut          {SLAB-VERTICAL-CUT}
+			topDiagonalCut          {SLAB-DIAGONAL-CUT}
 			unilateralSerifed       {SLAB-CLASSICAL  }
 			unilateralInwardSerifed {SLAB-INWARD     }
 

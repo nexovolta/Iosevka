@@ -7,7 +7,7 @@ import { parse } from "../src/variant.mjs";
 test("section sign exposes independent top and bottom hook selectors", () => {
 	const data = Toml.parse(readFileSync(new URL("../../../params/variants.toml", import.meta.url), "utf8"));
 	const variants = parse(data).primes.get("section").variants;
-	const hooks = ["serifless", "serifed", "inwardSerifed", "flatHook", "cornerHook"];
+	const hooks = ["serifless", "serifed", "inwardSerifed", "flatHook", "cornerHook", "verticalCut", "diagonalCut"];
 
 	assert.equal(variants.size, hooks.length ** 2);
 	for (const topHook of hooks) {

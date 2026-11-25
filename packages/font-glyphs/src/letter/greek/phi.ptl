@@ -12,6 +12,7 @@ glyph-block Letter-Greek-Phi : begin
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail PalatalHook OBarLeft OBarRight
 	glyph-block-import Letter-Latin-Lower-T : yShortNeck1 yShorterNeck
+	glyph-block-import Letter-Arc-Hook : DeltaCutStart DeltaCutEnd VerticalCutExtension
 
 	define [PhiRing fFlatTB] : function [df y2 y3 ada adb] : glyph-proc
 		include : VBar.m df.middle y2 y3 df.mvs
@@ -168,7 +169,7 @@ glyph-block Letter-Greek-Phi : begin
 			dispiro
 				widths.center sw
 				flat df.middle (y2 - O) [heading Downward]
-				DiagTail.L df.middle y1 ([DiagTail.StdDepth dfHook sw] - 0.5 * sw) sw
+				DiagTail.L df.middle y1 [Math.min ([DiagTail.StdDepth dfHook sw] - 0.5 * sw) (0.45 * (y2 - y1))] sw
 			dispiro
 				widths.lhs sw
 				flat xCrossLeft y1
@@ -176,6 +177,67 @@ glyph-block Letter-Greek-Phi : begin
 				archv
 				flat xBarRight [Math.min y2 (y1 + hd.y)]
 				curl xBarRight (y2 - O)
+
+	define [IndependentCursiveBar topStyle bottomStyle] : function [df y1 y2 y3 y4 sw] : glyph-proc
+		local adwsHook : quantize [mix 1 (1 / df.adws) 0.5] (1 / 6)
+		local mulHook : mix 1 adwsHook 1.5
+		local dfHook : DivFrame adwsHook 1 mulHook
+		local hd : FlatHookDepth dfHook
+		local xLeft : [mix 0 dfHook.leftSB mulHook] + (df.middle - dfHook.middle)
+		local xRight : [mix dfHook.width dfHook.rightSB mulHook] + (df.middle - dfHook.middle)
+		local barLeft : df.middle - [HSwToV : 0.5 * sw]
+		local barRight : df.middle + [HSwToV : 0.5 * sw]
+		local upperHook : Math.min Hook (y4 - y3)
+		local lowerHook : Math.min Hook (y2 - y1)
+
+		if (topStyle === 'straight') : include : VBar.m df.middle (y3 - HalfStroke) y4 sw
+		if (topStyle === 'flatHooked') : include : dispiro
+			widths.lhs sw
+			flat xRight y4
+			curl [Math.min (barLeft + hd.x) (xRight - TINY)] y4
+			archv
+			flat barLeft [Math.max y3 (y4 - hd.y)]
+			curl barLeft (y3 + O)
+		if (topStyle === 'diagonalTailed') : include : with-transform [ApparentTranslate 0 y4]
+			with-transform [ScaleAround df.middle 0 (-1) (-1)] : dispiro
+				widths.center sw
+				flat df.middle (y4 - y3 + HalfStroke) [heading Downward]
+				DiagTail.L df.middle 0 [Math.min ([DiagTail.StdDepth dfHook sw] - 0.5 * sw) (0.45 * (y4 - y3))] sw
+		if (topStyle === 'roundedTailed' || topStyle === 'verticalCut' || topStyle === 'diagonalCut') : begin
+			local shape : dispiro
+				widths.lhs sw
+				if (topStyle === 'diagonalCut')
+					DeltaCutStart [mix barLeft xRight 0.5] xRight (y4 - O) (y4 - 0.2 * upperHook) sw
+					list
+						g4 (xRight + [if (topStyle === 'verticalCut') [VerticalCutExtension upperHook sw] 0]) (y4 - upperHook)
+						HookStart y4 (sw -- sw)
+				flat barLeft [Math.max y3 (y4 - ArchDepthA)]
+				curl barLeft (y3 + O) [heading Downward]
+			include : if (topStyle === 'verticalCut') [intersection shape [MaskLeft xRight]] shape
+
+		if (bottomStyle === 'straight') : include : VBar.m df.middle y1 (y2 + HalfStroke) sw
+		if (bottomStyle === 'flatHooked') : include : dispiro
+			widths.lhs sw
+			flat xLeft y1
+			curl [Math.max (barRight - hd.x) (xLeft + TINY)] y1
+			archv
+			flat barRight [Math.min y2 (y1 + hd.y)]
+			curl barRight (y2 - O)
+		if (bottomStyle === 'diagonalTailed') : include : dispiro
+			widths.center sw
+			flat df.middle (y2 + HalfStroke) [heading Downward]
+			DiagTail.L df.middle y1 [Math.min ([DiagTail.StdDepth dfHook sw] - 0.5 * sw) (0.45 * (y2 - y1))] sw
+		if (bottomStyle === 'roundedTailed' || bottomStyle === 'verticalCut' || bottomStyle === 'diagonalCut') : begin
+			local shape : dispiro
+				widths.rhs sw
+				flat barRight (y2 - O) [heading Downward]
+				curl barRight [Math.min y2 (y1 + ArchDepthA)]
+				if (bottomStyle === 'diagonalCut')
+					DeltaCutEnd [mix xLeft barRight 0.5] xLeft (y1 + O) (y1 + 0.2 * lowerHook) sw
+					list
+						HookEnd y1 (sw -- sw)
+						g4 (xLeft - [if (bottomStyle === 'verticalCut') [VerticalCutExtension lowerHook sw] 0]) (y1 + lowerHook)
+			include : if (bottomStyle === 'verticalCut') [intersection shape [MaskRight xLeft]] shape
 
 	define [MtSerif df y4 sw] : tagged 'serifMT' : HSerif.lt df.middle y4 (Jut          - [HSwToV : 0.5 * (Stroke - sw)]) sw
 	define [MbSerif df y1 sw] : tagged 'serifMB' : HSerif.mb df.middle y1 (MidJutCenter - [HSwToV : 0.5 * (Stroke - sw)]) sw
@@ -348,6 +410,35 @@ glyph-block Letter-Greek-Phi : begin
 			include : Bar df Descender 0 XH Ascender dim.swBar
 			if sMT : include : sMT df Ascender  dim.swBar
 			if sMB : include : sMB df Descender dim.swBar
+
+	define CyrlLowerEfIndependentConfig : SuffixCfg.weave
+		object # bowl
+			''                  {[PhiRing true]              para.advanceScaleM }
+			splitBowl           {[CyrEfSplitRing 'toothed']  para.advanceScaleMM}
+			splitBowlFlatTop    {[CyrEfSplitRing 'flatTop']  para.advanceScaleMM}
+			splitBowlFlatBottom {[CyrEfSplitRing 'flatBot']  para.advanceScaleMM}
+			splitBowlFlat       {[CyrEfSplitRing 'flatTB']   para.advanceScaleMM}
+		object # top
+			topStraight 'straight'
+			topFlatHooked 'flatHooked'
+			topRoundedTailed 'roundedTailed'
+			topDiagonalTailed 'diagonalTailed'
+			topVerticalCut 'verticalCut'
+			topDiagonalCut 'diagonalCut'
+		object # bottom
+			bottomStraight 'straight'
+			bottomFlatHooked 'flatHooked'
+			bottomRoundedTailed 'roundedTailed'
+			bottomDiagonalTailed 'diagonalTailed'
+			bottomVerticalCut 'verticalCut'
+			bottomDiagonalCut 'diagonalCut'
+
+	foreach {suffix {{Bowl adws} topStyle bottomStyle}} [Object.entries CyrlLowerEfIndependentConfig] : do
+		create-glyph "cyrl/ef.\(suffix)" : glyph-proc
+			local df : include : DivFrame adws 3
+			include : df.markSet.bp
+			local dim : include : Bowl df 0 XH df.smallArchDepthA df.smallArchDepthB
+			include : [IndependentCursiveBar topStyle bottomStyle] df Descender 0 XH Ascender dim.swBar
 
 	select-variant 'cyrl/ef' 0x444
 	select-variant 'cyrl/ef.BGR' (shapeFrom -- 'cyrl/ef')

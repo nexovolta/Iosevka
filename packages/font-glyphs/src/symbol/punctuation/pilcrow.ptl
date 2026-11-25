@@ -8,7 +8,7 @@ glyph-module
 glyph-block Symbol-Punctuation-Pilcrow : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd ArcEndSerif
 
 	define [BulletShape top bot left right sw] : glyph-proc
@@ -86,6 +86,24 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 			include : VBar.m midbarX bulletBot CAP sw
 			include : VBar.l [MakeCornerHookBase xCornerLeft RightSB CAP 0 (sw -- sw)].xLHook 0 [CornerHookDepth SHook sw] sw
 
+		create-forked-glyph 'pilcrow.verticalCut' : glyph-proc
+			local stroke : dispiro
+				widths.rhs sw
+				flat RightSB CAP [heading Downward]
+				curl RightSB (0 + SmallArchDepthA)
+				HookEnd 0 (sw -- sw)
+				g4 (SB - [VerticalCutExtension SHook sw]) SHook
+			include : CutArcTerminal stroke SB CAP 0 sw true false
+			include : VBar.m midbarX bulletBot CAP sw
+
+		create-forked-glyph 'pilcrow.diagonalCut' : glyph-proc
+			include : dispiro
+				widths.rhs sw
+				flat RightSB CAP [heading Downward]
+				curl RightSB (0 + SmallArchDepthA)
+				DeltaCutEnd Middle SB O (0.2 * SHook) sw
+			include : VBar.m midbarX bulletBot CAP sw
+
 	select-variant 'pilcrow' 0xB6
 
 	create-glyph : glyph-proc
@@ -109,6 +127,13 @@ glyph-block Symbol-Punctuation-Pilcrow : begin
 			include : FlipAround Middle (CAP / 2) (-1) 1
 		create-forked-glyph 'revPilcrow.cornerHook' : glyph-proc
 			include [refer-glyph 'pilcrow.cornerHook'] AS_BASE
+			include : FlipAround Middle (CAP / 2) (-1) 1
+
+		create-forked-glyph 'revPilcrow.verticalCut' : glyph-proc
+			include [refer-glyph 'pilcrow.verticalCut'] AS_BASE
+			include : FlipAround Middle (CAP / 2) (-1) 1
+		create-forked-glyph 'revPilcrow.diagonalCut' : glyph-proc
+			include [refer-glyph 'pilcrow.diagonalCut'] AS_BASE
 			include : FlipAround Middle (CAP / 2) (-1) 1
 
 	select-variant 'revPilcrow' 0x204B

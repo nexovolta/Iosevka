@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Upper-J : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateAccentedComposition
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth ArcStartSerifWidth
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-Lower-J : FlatHookDotlessJShape
 
@@ -41,6 +41,41 @@ glyph-block Letter-Latin-Upper-J : begin
 					curl xBarRight ArchDepthB
 					HookEnd 0 (sw -- sw)
 					g4 hookx Hook
+
+	define [JCutHookBase cut] : function [df dfHook top] : glyph-proc
+		set-width df.width
+		include : df.markSet.[if (top > XH) 'capital' 'e']
+		local xBarRight : df.rightSB - JBalance2
+		set-base-anchor 'above' (xBarRight - [HSwToV : 0.75 * Stroke]) top
+		set-base-anchor 'overlay' (xBarRight - [HSwToV : 0.75 * Stroke]) (top * OverlayPos)
+		set-base-anchor 'jTopSerifAttach' (xBarRight - [HSwToV HalfStroke]) top
+		local sw : Math.min Stroke : 0.4 * (xBarRight - df.leftSB)
+		local hookx : 0.75 * df.leftSB
+		local shape : dispiro
+			widths.rhs sw
+			flat xBarRight top [heading Downward]
+			curl xBarRight ArchDepthB
+			if (cut === 'diagonal')
+				DeltaCutEnd [mix hookx xBarRight 0.5] hookx O (0.2 * Hook) sw
+				list [HookEnd 0 (sw -- sw)] [g4 (hookx - [VerticalCutExtension Hook sw]) Hook]
+		include : if (cut === 'vertical') [CutArcTerminal shape hookx top 0 sw true false] shape
+
+	define [JDescendingCutHookBase cut] : function [df dfHook top] : glyph-proc
+		set-width df.width
+		include : df.markSet.[if (top > XH) 'capDesc' 'p']
+		local center : df.middle + JBalance + [HSwToV HalfStroke]
+		set-base-anchor 'above' (center - [HSwToV HalfStroke]) top
+		set-base-anchor 'overlay' (center - [HSwToV HalfStroke]) (top / 2)
+		set-base-anchor 'jTopSerifAttach' (center - [HSwToV HalfStroke]) top
+		local hookx : center - (df.width * 0.5) - [HSwToV Stroke] + OXHook
+		local shape : dispiro
+			widths.rhs Stroke
+			flat center top [heading Downward]
+			curl center (Descender + ArchDepthA)
+			if (cut === 'diagonal')
+				DeltaCutEnd [mix hookx center 0.5] hookx (Descender + O) (Descender + 0.2 * JHook) Stroke
+				list [HookEnd Descender] [g4 (hookx - [VerticalCutExtension JHook Stroke]) (Descender + JHook)]
+		include : if (cut === 'vertical') [CutArcTerminal shape hookx top Descender Stroke true false] shape
 
 	define [JFlatHookBase df dfHook top _sw _hookScale] : glyph-proc
 		set-width df.width
@@ -194,9 +229,13 @@ glyph-block Letter-Latin-Upper-J : begin
 			bentHook             {JBentHookBase              [DivFrame 1]                   [DivFrame 1]                 }
 			flatHook             {JFlatHookBase              [DivFrame para.advanceScaleF]  [DivFrame para.advanceScaleF]}
 			cornerHook           {JCornerHookBase            [DivFrame para.advanceScaleF]  [DivFrame para.advanceScaleF]}
+			verticalCut          {[JCutHookBase 'vertical']   [DivFrame 1]                   [DivFrame 1]                 }
+			diagonalCut          {[JCutHookBase 'diagonal']   [DivFrame 1]                   [DivFrame 1]                 }
 			descendingBentHook   {JDescendingBentHookBase    [DivFrame 1]                   [DivFrame 1]                 }
 			descendingFlatHook   {JDescendingFlatHookBase    [DivFrame para.advanceScaleI]  [DivFrame para.advanceScaleI]}
 			descendingCornerHook {JDescendingCornerHookBase  [DivFrame para.advanceScaleI]  [DivFrame para.advanceScaleI]}
+			descendingVerticalCut {[JDescendingCutHookBase 'vertical'] [DivFrame 1] [DivFrame 1]}
+			descendingDiagonalCut {[JDescendingCutHookBase 'diagonal'] [DivFrame 1] [DivFrame 1]}
 		object # top bar
 			fullTopbar             JFullTopbar
 			longTopbar             JLongTopbar
@@ -240,6 +279,7 @@ glyph-block Letter-Latin-Upper-J : begin
 
 	select-variant 'J' 'J'
 	select-variant 'J/noDescend' (shapeFrom -- 'J')
+	select-variant 'J/rTailBase' (shapeFrom -- 'J')
 	link-reduced-variant 'J/sansSerif' 'J' MathSansSerif
 	select-variant 'smcpJ' 0x1D0A (follow -- 'J')
 	alias 'cyrl/Je' 0x408 'J'

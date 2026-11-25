@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-import Letter-Shared-Metrics : BowlXDepth
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay LeftHook FlatHookDepth SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Latin-Lower-E : EFlourishHook
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	glyph-block-export PBarPosY
 	define [PBarPosY top sw bp] : [mix 0 (top - sw) bp] - sw * PShape.SwBelowBar
@@ -42,6 +42,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			match hookStyle
 				[Just 'topFlatHook'] : [MakeFlatHook left df.rightSB bowlTop bowlBottom (sw -- sw)].hookStartL
 				[Just 'topCornerHook'] : [MakeCornerHook left df.rightSB bowlTop bowlBottom (sw -- sw) (hook -- hook)].hookStartL
+				[Just 'topDiagonalCut'] : DeltaCutStart [mix left right 0.5] left (bowlTop - O) (bowlTop - 0.2 * hook) sw
+				[Just 'topVerticalCut'] : list [g4 (left - [VerticalCutExtension hook sw]) (bowlTop - hook)] [HookStart bowlTop]
 				[Just 'unilateralSerifed'] : SerifedArcStart.LtrRhs left bowlTop sw hook
 				[Just 'unilateralInwardSerifed'] : InwardSlabArcStart.LtrRhs left bowlTop sw hook
 				__ : list
@@ -141,9 +143,10 @@ glyph-block Letter-Latin-Upper-P : begin
 		local-parameter : hook      -- Hook
 		local-parameter : hookStyle -- 'serifless'
 
-		include : tagged 'bowl' : dispiro
+		local bowl : dispiro
 			widths.rhs sw
 			PRotundaOutlineKnots top df mul bp overshoot sw 0 endX hook hookStyle
+		include : tagged 'bowl' : if (hookStyle === 'topVerticalCut') [CutArcTerminal bowl [mix 0 df.leftSB mul] top [PBarPosY top sw bp] sw true true] bowl
 		if (hookStyle === 'unilateralSerifed') : include : ArcStartSerif.L [mix 0 df.leftSB mul] top sw hook
 		if (hookStyle === 'unilateralInwardSerifed') : include : ArcStartSerif.InwardL [mix 0 df.leftSB mul] top sw hook
 

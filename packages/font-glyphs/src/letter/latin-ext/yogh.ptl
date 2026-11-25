@@ -8,8 +8,8 @@ glyph-block Letter-Latin-Yogh : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
-	glyph-block-import Letter-Cyrillic-Ze : CyrZe SLAB-FLAT-HOOK SLAB-CORNER-HOOK
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Cyrillic-Ze : CyrZe SLAB-FLAT-HOOK SLAB-CORNER-HOOK CUT-VERTICAL CUT-DIAGONAL
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 
 	define SLAB-NONE       0
 	define SLAB-CLASSICAL  1
@@ -30,14 +30,18 @@ glyph-block Letter-Latin-Yogh : begin
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs SB (top - offset) Stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook (SB + offset) (RightSB - offset) (top - offset) (bot + offset)].hookStartL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase (SB + offset) (RightSB - offset) (top - offset) (bot + offset)].hookStartL
+				[Just CUT-DIAGONAL] : DeltaCutStart Middle (SB + offset) (top - offset - O) (top - offset - 0.2 * Hook) Stroke [widths.rhs Stroke]
+				[Just CUT-VERTICAL] : list [g4 (SB + offset - [VerticalCutExtension Hook Stroke]) (top - Hook) [widths.rhs Stroke]] [HookStart (top - offset)]
 				__ : list [g4 SB (top - Hook) [widths.rhs]] [HookStart (top - offset)]
-		return : sink
+		local shape : sink
 			~~~ startKnots
 			g4 (RightSB - offset) yRightHalf
 			if _xEnd
 				arcvh
 			: else : alsoThruThem {{0.5 0.8} {0.75 0.92}} important
 			[if (sink == dispiro) g4 corner] xEnd yBottomTerminal
+
+		return : if (slab === CUT-VERTICAL && [not _taper]) [CutArcTerminal shape (SB + offset) top bot Stroke true true] shape
 
 	glyph-block-export LowerHalfT
 	define [LowerHalfT sink top bot kSplit _xEnd] : begin
@@ -100,6 +104,8 @@ glyph-block Letter-Latin-Yogh : begin
 		serifless               {SLAB-NONE       }
 		topFlatHook             {SLAB-FLAT-HOOK  }
 		topCornerHook           {SLAB-CORNER-HOOK}
+		topVerticalCut          {CUT-VERTICAL}
+		topDiagonalCut          {CUT-DIAGONAL}
 		unilateralSerifed       {SLAB-CLASSICAL  }
 		unilateralInwardSerifed {SLAB-INWARD     }
 

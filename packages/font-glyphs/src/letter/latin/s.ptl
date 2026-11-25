@@ -16,13 +16,15 @@ glyph-block Letter-Latin-S : begin
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart InwardSlabArcEnd
 	glyph-block-import Letter-Shared-Shapes : ArcStartSerif ArcEndSerif
 	glyph-block-import Letter-Shared-Shapes : PalatalHook RetroflexHook CyrDescender CurlyTail
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CornerHookOffset MakeMidHeightLeftHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CornerHookOffset MakeMidHeightLeftHook CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension
 
 	define SLAB-NONE        0
 	define SLAB-CLASSICAL   1
 	define SLAB-INWARD      2
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
+	define SLAB-VERTICAL-CUT 6
+	define SLAB-DIAGONAL-CUT 7
 	define CURLY-TAIL       10
 	define PHONETIC-RIGHT   11
 
@@ -47,15 +49,17 @@ glyph-block Letter-Latin-S : begin
 			~~~ [alsoThru 0.5 (0.3 - adjustFactor)]
 
 	glyph-block-export SStrokeImpl
-	define [SStrokeImpl df top bot st sb stroke refSwEss _endStroke] : begin
+	define [SStrokeImpl df top bot st sb stroke refSwEss _endStroke _unclipped] : begin
 		local ess : refSwEss * (stroke / Stroke)
 		local archDepth : AdviceSArchDepth (top - bot) (-1) stroke
-		return : dispiro
+		local shape : dispiro
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
+				[Just SLAB-VERTICAL-CUT] : list [g4 (df.rightSB + [VerticalCutExtension Hook stroke]) (top - Hook) [widths.lhs stroke]] [HookStart top (sw -- stroke)]
+				[Just SLAB-DIAGONAL-CUT] : list [widths.lhs stroke] [DeltaCutStart df.middle df.rightSB (top - O) (top - 0.2 * Hook) stroke]
 				__ : list
 					g4 ((df.rightSB + 0) - SOTop) (top - Hook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -69,6 +73,8 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
+				[Just SLAB-VERTICAL-CUT] : list [HookEnd bot (sw -- stroke)] [g4 (df.leftSB - [VerticalCutExtension Hook stroke]) (bot + Hook)]
+				[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.leftSB (bot + O) (bot + 0.2 * Hook) stroke
 				__ : if _endStroke
 					list
 						HookEnd bot (sw -- stroke) (swTerminal -- _endStroke)
@@ -77,15 +83,22 @@ glyph-block Letter-Latin-S : begin
 						HookEnd bot (sw -- stroke)
 						g4 ((df.leftSB - 0) + SOBot) (bot + Hook)
 
-	define [RevSStrokeImpl df top bot st sb stroke refSwEss] : begin
+		local clipped shape
+		if (st === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.rightSB top bot stroke false true
+		if (sb === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.leftSB top bot stroke true false
+		return clipped
+
+	define [RevSStrokeImpl df top bot st sb stroke refSwEss _unclipped] : begin
 		local ess : refSwEss * (stroke / Stroke)
 		local archDepth : AdviceSArchDepth (top - bot) (+1) stroke
-		return : dispiro
+		local shape : dispiro
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke Hook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
+				[Just SLAB-VERTICAL-CUT] : list [g4 (df.leftSB - [VerticalCutExtension Hook stroke]) (top - Hook) [widths.rhs stroke]] [HookStart top (sw -- stroke)]
+				[Just SLAB-DIAGONAL-CUT] : list [widths.rhs stroke] [DeltaCutStart df.middle df.leftSB (top - O) (top - 0.2 * Hook) stroke]
 				__ : list
 					g4   ((df.leftSB - 0) + SOTop) (top - Hook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -97,19 +110,28 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke Hook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
+				[Just SLAB-VERTICAL-CUT] : list [HookEnd bot (sw -- stroke)] [g4 (df.rightSB + [VerticalCutExtension Hook stroke]) (bot + Hook)]
+				[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.rightSB (bot + O) (bot + 0.2 * Hook) stroke
 				__ : list
 					HookEnd 0 (sw -- stroke)
 					g4   ((df.rightSB + 0) - SOBot) (bot + Hook)
 
-	define [SmallSStrokeImpl df top bot st sb stroke refSwEss] : begin
+		local clipped shape
+		if (st === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.leftSB top bot stroke true true
+		if (sb === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.rightSB top bot stroke false false
+		return clipped
+
+	define [SmallSStrokeImpl df top bot st sb stroke refSwEss _unclipped] : begin
 		local ess : refSwEss * (stroke / Stroke)
 		local archDepth : AdviceSArchDepth (top - bot) (-1) stroke
-		return : dispiro
+		local shape : dispiro
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs df.rightSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs df.rightSB top stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartR
+				[Just SLAB-VERTICAL-CUT] : list [g4 (df.rightSB + [VerticalCutExtension SHook stroke]) (top - SHook) [widths.lhs stroke]] [HookStart top (sw -- stroke)]
+				[Just SLAB-DIAGONAL-CUT] : list [widths.lhs stroke] [DeltaCutStart df.middle df.rightSB (top - O) (top - 0.2 * SHook) stroke]
 				__ : list
 					g4   ((df.rightSB + OX) - SOTop) (top - SHook) [widths.lhs stroke]
 					HookStart top (sw -- stroke)
@@ -135,19 +157,28 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB bot stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndL
+				[Just SLAB-VERTICAL-CUT] : list [HookEnd bot (sw -- stroke)] [g4 (df.leftSB - [VerticalCutExtension SHook stroke]) (bot + SHook)]
+				[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.leftSB (bot + O) (bot + 0.2 * SHook) stroke
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.leftSB - OX) + SOBot) (bot + SHook)
 
-	define [RevSmallSStrokeImpl df top bot st sb stroke refSwEss] : begin
+		local clipped shape
+		if (st === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.rightSB top bot stroke false true
+		if (sb === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.leftSB top bot stroke true false
+		return clipped
+
+	define [RevSmallSStrokeImpl df top bot st sb stroke refSwEss _unclipped] : begin
 		local ess : refSwEss * (stroke / Stroke)
 		local archDepth : AdviceSArchDepth (top - bot) (+1) stroke
-		return : dispiro
+		local shape : dispiro
 			match st
 				[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs df.leftSB top stroke SHook
 				[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs df.leftSB top stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookStartL
+				[Just SLAB-VERTICAL-CUT] : list [g4 (df.leftSB - [VerticalCutExtension SHook stroke]) (top - SHook) [widths.rhs stroke]] [HookStart top (sw -- stroke)]
+				[Just SLAB-DIAGONAL-CUT] : list [widths.rhs stroke] [DeltaCutStart df.middle df.leftSB (top - O) (top - 0.2 * SHook) stroke]
 				__ : list
 					g4   ((df.leftSB - OX) + SOTop) (top - SHook) [widths.rhs stroke]
 					HookStart top (sw -- stroke)
@@ -159,9 +190,16 @@ glyph-block Letter-Latin-S : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB bot stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB top bot (sw -- stroke)].hookEndR
+				[Just SLAB-VERTICAL-CUT] : list [HookEnd bot (sw -- stroke)] [g4 (df.rightSB + [VerticalCutExtension SHook stroke]) (bot + SHook)]
+				[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.rightSB (bot + O) (bot + 0.2 * SHook) stroke
 				__ : list
 					HookEnd bot (sw -- stroke)
 					g4   ((df.rightSB + OX) - SOBot) (bot + SHook)
+
+		local clipped shape
+		if (st === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.leftSB top bot stroke true true
+		if (sb === SLAB-VERTICAL-CUT && [not _unclipped]) : set clipped : CutArcTerminal clipped df.rightSB top bot stroke false false
+		return clipped
 
 	define [SStrokeAlt] : with-params [df top hook swStart swEnd oXLeftTop offsetLT offsetRB offsetC] : begin
 		define stroke : Math.max swStart swEnd
@@ -234,6 +272,8 @@ glyph-block Letter-Latin-S : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
+		VerticalCut SLAB-VERTICAL-CUT
+		DiagonalCut SLAB-DIAGONAL-CUT
 	foreach {topName topStyle} [pairs-of SArcTypes] : begin
 		foreach {bottomName bottomStyle} [pairs-of SArcTypes] : begin
 			set SConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
@@ -332,14 +372,22 @@ glyph-block Letter-Latin-S : begin
 			include : RevSAutoSlabEnd   df doBS 0  sw [if fDesc SHook Hook]
 
 		define [UpperSBaseWithAttach df sw] : glyph-proc
+			local start nothing
+			local probe : new-glyph : glyph-proc
+				local stroke : include : SStrokeImpl df CAP 0 doTS doBS sw EssUpper nothing true
+				set start stroke.lhsKnots.(stroke.lhsKnots.length - 1)
 			include : SAutoSlabStart df doTS CAP sw Hook
-			local stroke : include : SStrokeImpl df CAP 0 doTS doBS sw EssUpper
-			return stroke.lhsKnots.(stroke.lhsKnots.length - 1)
+			include : SStrokeImpl df CAP 0 doTS doBS sw EssUpper
+			return start
 
 		define [LowerSBaseWithAttach df sw] : glyph-proc
+			local start nothing
+			local probe : new-glyph : glyph-proc
+				local stroke : include : SmallSStrokeImpl df XH 0 doTS doBS sw EssLower true
+				set start stroke.lhsKnots.(stroke.lhsKnots.length - 1)
 			include : SAutoSlabStart df doTS XH sw Hook
-			local stroke : include : SmallSStrokeImpl df XH 0 doTS doBS sw EssLower
-			return stroke.lhsKnots.(stroke.lhsKnots.length - 1)
+			include : SmallSStrokeImpl df XH 0 doTS doBS sw EssLower
+			return start
 
 		if (!doBS || doBS == SLAB-FLAT-HOOK || doBS == SLAB-CORNER-HOOK) : create-glyph "SSwash.\(suffix)" : glyph-proc
 			local df : include DfUpper
@@ -400,6 +448,8 @@ glyph-block Letter-Latin-S : begin
 	select-variant 's/pack80' (follow -- 's')
 	link-reduced-variant 's/sansSerif' 's' MathSansSerif
 	select-variant 's/phoneticRight'
+	select-variant 's/palatalBase' (shapeFrom -- 's')
+	select-variant 's/palatalPhoneticRight' (shapeFrom -- 's/phoneticRight')
 
 	select-variant 'revS' 0x1A7 (follow -- 'S')
 	select-variant 'revs' 0x1A8 (follow -- 's')
@@ -446,12 +496,12 @@ glyph-block Letter-Latin-S : begin
 	derive-composites 'cyrl/ghayn.italic'         null 'cyrl/ghe.italic'     : FlatSlashShape Middle (XH / 2) (OverlayStroke / 2) (-0.2) (+0.75)
 	derive-composites 'cyrl/gheStrokeHook.italic' null 'cyrl/gheHook.italic' : FlatSlashShape Middle (XH / 2) (OverlayStroke / 2) (-0.2) (+0.75)
 
-	derive-composites 'sPalatalHook' 0x1D8A 's' : PalatalHook.r
+	derive-composites 'sPalatalHook' 0x1D8A 's/palatalBase' : PalatalHook.r
 		x       -- [mix [Arch.adjust-x.bot Middle] DfLower.rightSB 0.75]
 		y       -- 0
 		yAttach -- [mix O [AdviceSArchDepth XH (-1) : AdviceStroke2 2 3 XH] : archv.yFromX 0.75]
 
-	derive-composites 'sPalatalHook/phoneticRight' null 's/phoneticRight' : PalatalHook.r
+	derive-composites 'sPalatalHook/phoneticRight' null 's/palatalPhoneticRight' : PalatalHook.r
 		x       -- [mix [Arch.adjust-x.bot Middle] DfLower.rightSB 0.75]
 		y       -- 0
 		yAttach -- [mix 0 [AdviceSArchDepth XH (-1) : AdviceStroke2 2 3 XH] : archv.yFromX 0.75]

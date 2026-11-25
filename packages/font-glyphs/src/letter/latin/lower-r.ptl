@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Lower-R : begin
 	glyph-block-import Letter-Shared : CreateAccentedComposition CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
-	glyph-block-import Letter-Arc-Hook : CornerHookOutset
+	glyph-block-import Letter-Arc-Hook : CornerHookOutset CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-Lower-I : CasualTop ILTopStageConfig
 	glyph-block-import Letter-Latin-Upper-T : TShape
 
@@ -204,6 +204,26 @@ glyph-block Letter-Latin-Lower-R : begin
 			if doBottomSerif : include : rBottomLeftSerif bottom
 			if doTopSerif    : include : rTopLeftSerif    top
 
+		define [Cut diagonal] : function [df md top bottom doTopSerif doBottomSerif cut] : glyph-proc
+			define [object rBarLeftX rBottomLeftSerif rTopLeftSerif rArchMiddleX rSkew rHookRightX rHookDepthY rCorX rArchDepthA] : RDim df md nothing nothing nothing (+1)
+			local shape : dispiro
+				widths.lhs Stroke
+				if diagonal
+					DeltaCutStart (rArchMiddleX - rCorX) rHookRightX (top - O) (top - 0.2 * rHookDepthY) Stroke
+					list
+						g4.up.start (rHookRightX + [VerticalCutExtension rHookDepthY Stroke]) (top - rHookDepthY) [heading Upward]
+						arcvh 32 DesignParameters.rHookSuperness
+						g4.left.mid (rArchMiddleX - rCorX) (top - O) [widths.lhs.heading Stroke {.x (-rSkew) .y (-1)}]
+						archv 32
+				straight.down.end (rBarLeftX + [HSwToV : Stroke - ShoulderFine]) [Math.max (bottom + TINY) (top - rArchDepthA)] [widths.lhs.heading ShoulderFine Downward]
+			include : if diagonal shape [CutArcTerminal shape rHookRightX top bottom Stroke false true]
+			include : RLeftBar rBarLeftX bottom top cut
+			if doBottomSerif : include : rBottomLeftSerif bottom
+			if doTopSerif : include : rTopLeftSerif top
+
+		export : define [VerticalCut df md top bottom ts bs cut] : [Cut false] df md top bottom ts bs cut
+		export : define [DiagonalCut df md top bottom ts bs cut] : [Cut true] df md top bottom ts bs cut
+
 		define [HooklessShapeImpl doHookSerif] : function [df md top bottom doTopSerif doBottomSerif cut] : glyph-proc
 			define [object rBarLeftX rBottomLeftSerif rTopLeftSerif rArchMiddleX rHookRightX rCorX rArchTopShiftY rArchDepthA] : RDim df md nothing nothing nothing (+1)
 			define [ArcKnots] : list
@@ -265,6 +285,43 @@ glyph-block Letter-Latin-Lower-R : begin
 				curl rBarLeftX y.bot [heading Downward]
 			include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'l') (x -- rBarLeftX) (bot -- bottom) (top -- top)
 			if doBottomSerif : include : rBottomLeftSerif bottom
+
+		export : define [CutEarless kind diagonal] : function [df md top bottom doTopSerif doBottomSerif cut] : glyph-proc
+			define [object rBarLeftX rArchMiddleX rHookRightX rHookDepthY rBottomLeftSerif rTopLeftSerif rArchDepthA] : RDim df md nothing nothing nothing (+1)
+			local y : StemCutY (bot -- bottom) (top -- top) (cut -- [fallback cut ''])
+			local edge : if (kind === 'rounded') [Math.max rHookRightX : rBarLeftX + [HSwToV : 2.25 * Stroke]] rHookRightX
+			local mid : match kind
+				[Just 'flat'] : Arch.adjust-x.top rArchMiddleX
+				[Just 'corner'] : rArchMiddleX - CorrectionOMidS
+				__ : mix rBarLeftX edge 0.5
+			local shape : dispiro
+				widths.lhs Stroke
+				if diagonal
+					DeltaCutStart mid edge (top - O) (top - 0.2 * rHookDepthY) Stroke
+					if (kind === 'rounded')
+						list [g4 (edge + [VerticalCutExtension rHookDepthY Stroke]) (top - rHookDepthY)] [HookStart top]
+						list
+							g4.up.start (edge + [VerticalCutExtension rHookDepthY Stroke]) (top - rHookDepthY) [heading Upward]
+							arcvh nothing DesignParameters.rHookSuperness
+							if (kind === 'flat')
+								flat mid top
+								g4.left.mid mid (top - O) [heading Leftward]
+				match kind
+					[Just 'flat'] : curl (rBarLeftX - O) top [heading Leftward]
+					[Just 'corner'] : g4 rBarLeftX (top - DToothlessRise)
+					__ : list
+						flat rBarLeftX [Math.max (y.bot + TINY + [HSwToV : Math.abs : TanSlope * Stroke]) (top - rArchDepthA)]
+						curl rBarLeftX y.bot [heading Downward]
+			if (kind === 'flat' && diagonal)
+				include : intersection
+					HBar.t rBarLeftX (edge + [HSwToV Stroke]) top Stroke
+					MaskLeftLine (edge - [HSwToV : 0.3 * Stroke]) (top - Stroke) edge top 1
+				include : if diagonal shape [CutArcTerminal shape edge top bottom Stroke false true]
+			if (kind === 'rounded')
+				include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'l') (x -- rBarLeftX) (bot -- bottom) (top -- top)
+				include : RLeftBar rBarLeftX bottom [if (kind === 'corner') (top - DToothlessRise) top] cut
+			if doBottomSerif : include : rBottomLeftSerif bottom
+			if (doTopSerif && kind === 'flat') : include : rTopLeftSerif top
 
 		define [HooklessFlapImpl doHookSerif] : function [df md top bottom doTopSerif doBottomSerif] : glyph-proc
 			define [object rBarLeftX rBottomLeftSerif rArchMiddleX rHookRightX rCorX rArchTopShiftY rArchDepthA] : RDim df md nothing nothing nothing (+1)
@@ -416,12 +473,14 @@ glyph-block Letter-Latin-Lower-R : begin
 			diagonalTailed   'diagonal'
 			flatTailed       'flat'
 			semiTailed       'semi'
-			tailed           'tailed'
+			tailed           'maskedTailed'
 		function [ear] : begin
 			if (!ear || ear === 'diagonalTailed' || ear === 'flatTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
 				''                         {SmallRShape.Standard        dfN  RMode.Standard    RMode.StandardSerifed  }
 				hookless                   {SmallRShape.Hookless        dfN  RMode.Hookless    RMode.HooklessSerifed  }
 				cornerHooked               {SmallRShape.CornerHook      dfN  RMode.CornerHook  RMode.CornerHookSerifed}
+				verticalCut                {SmallRShape.VerticalCut     dfN  RMode.Standard    RMode.StandardSerifed  }
+				diagonalCut                {SmallRShape.DiagonalCut     dfN  RMode.Standard    RMode.StandardSerifed  }
 				compact                    {SmallRShape.Hookless        dfF  RMode.Hookless    RMode.HooklessSerifed  }
 				narrowHook                 {SmallRShape.Standard        dfF  RMode.NarrowHook  RMode.NarrowHookSerifed}
 				# `rFlap` variants
@@ -431,12 +490,18 @@ glyph-block Letter-Latin-Lower-R : begin
 				earlessRoundedNarrowHook   {SmallRShape.EarlessRounded  dfF  RMode.NarrowHook  RMode.NarrowHookSerifed}
 			if (ear === 'flatTop') : return : object
 				''            {SmallRShape.FlatTop          dfN RMode.Earless    RMode.EarlessSerifed}
+				verticalCut   {[SmallRShape.CutEarless 'flat' false] dfN RMode.Earless RMode.EarlessSerifed}
+				diagonalCut   {[SmallRShape.CutEarless 'flat' true]  dfN RMode.Earless RMode.EarlessSerifed}
 			if (ear === 'earlessCorner') : return : object
 				''            {SmallRShape.EarlessCorner    dfN RMode.Earless    RMode.EarlessSerifed}
+				verticalCut   {[SmallRShape.CutEarless 'corner' false] dfN RMode.Earless RMode.EarlessSerifed}
+				diagonalCut   {[SmallRShape.CutEarless 'corner' true]  dfN RMode.Earless RMode.EarlessSerifed}
 			if (ear === 'earlessCornerHTB') : return : object
 				''            {SmallRShape.EarlessCornerHTB dfN RMode.Earless    RMode.EarlessSerifed}
 			return : object
 				''            {SmallRShape.EarlessRounded   dfN RMode.Earless    RMode.EarlessSerifed}
+				verticalCut   {[SmallRShape.CutEarless 'rounded' false] dfN RMode.Earless RMode.EarlessSerifed}
+				diagonalCut   {[SmallRShape.CutEarless 'rounded' true]  dfN RMode.Earless RMode.EarlessSerifed}
 		function [ear body] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessCornerHTB' || ear === 'earlessRounded') : return : object
 				''         ''
@@ -493,7 +558,12 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : HBar.b (rBarLeftX - O) (rHookRightX - [Math.max (0.15 * (df.rightSB - df.leftSB)) : HSwToV QuarterStroke]) 0
 
 		create-glyph "rPalatalHook.\(suffix)" : glyph-proc
-			include [refer-glyph "r.\(suffix)"] AS_BASE ALSO_METRICS
+			local baseSuffix : suffix.replace 'VerticalCut' ''
+			set baseSuffix : baseSuffix.replace 'DiagonalCut' ''
+			if [baseSuffix.startsWith 'verticalCut'] : set baseSuffix : baseSuffix.slice 11
+			if [baseSuffix.startsWith 'diagonalCut'] : set baseSuffix : baseSuffix.slice 11
+			set baseSuffix : [baseSuffix.0.toLowerCase] + [baseSuffix.slice 1]
+			include [refer-glyph "r.\(baseSuffix)"] AS_BASE ALSO_METRICS
 			local attach : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.palatalHookAttach
 			local pos : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.palatalHookPos
 			include : PalatalHook.r (x -- pos.x) (y -- pos.y) (xLink -- attach.x)
@@ -613,10 +683,10 @@ glyph-block Letter-Latin-Lower-R : begin
 	select-variant 'rFlapPalatalHook'  0x1DF16 (follow -- 'rFlap') (shapeFrom -- 'rPalatalHook')
 	select-variant 'rRTailPalatalHook' 0x1DF37 (follow -- 'r/rTailBase')
 
-	select-variant 'SInsular' 0xA784 (follow -- 'r/rTailBase') (shapeFrom -- 'rCapLongLeg')
-	select-variant 'sInsular' 0xA785 (follow -- 'r/rTailBase') (shapeFrom -- 'rLongLeg')
-	select-variant 'FInsular' 0xA77B (follow -- 'r/rTailBase')
-	select-variant 'fInsular' 0xA77C (follow -- 'r/rTailBase')
+	select-variant 'SInsular' 0xA784 (follow -- 'r/insularBase') (shapeFrom -- 'rCapLongLeg')
+	select-variant 'sInsular' 0xA785 (follow -- 'r/insularBase') (shapeFrom -- 'rLongLeg')
+	select-variant 'FInsular' 0xA77B (follow -- 'r/insularBase')
+	select-variant 'fInsular' 0xA77C (follow -- 'r/insularBase')
 
 	CreateAccentedComposition 'turnrBar' 0x1DF50 'turnr' 'barOver'
 
@@ -965,6 +1035,7 @@ glyph-block Letter-Latin-Lower-R : begin
 		BottomFlatTailed     false
 		BottomSemiTailed     false
 		BottomDiagonalTailed false
+		BottomDiagonalCut    false
 
 	define PigtailStageConfig : object
 	foreach {topSuffix {topSerifs topTail}} [Object.entries ILTopStageConfig] : do

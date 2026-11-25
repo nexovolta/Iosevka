@@ -637,6 +637,7 @@ class VbStageAlternative {
 		const [stage, ranks] = entries[0];
 		const choice = localState.assignments.get(stage);
 		const rank = ranks?.[choice];
+		if (rank && typeof rank === "object") return this.evalVariantRank(rank, localState);
 		if (!Number.isInteger(rank) || rank < 1) {
 			throw new Error(`Missing variant rank for ${stage}.${choice}`);
 		}

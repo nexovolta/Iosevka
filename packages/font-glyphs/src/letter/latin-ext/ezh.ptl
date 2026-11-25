@@ -12,7 +12,7 @@ glyph-block Letter-Latin-Ezh : begin
 	glyph-block-import Letter-Shared-Metrics : EFVJutLength
 	glyph-block-import Letter-Shared-Shapes : CurlyTail SerifedArcEnd InwardSlabArcEnd ArcEndSerif PalatalHook RetroflexHook
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
 
 	define TERMINAL-NONE 0
@@ -122,49 +122,55 @@ glyph-block Letter-Latin-Ezh : begin
 			define [object xTopLeft xTopRight xMidLeft yMidLeft xArcTop yArcTop xArcMid yArcMid] : Dim
 			local term : if (terminal !== TERMINAL-HOOK) terminal : if (fCornerHook || hookStyle === 'cornerHook') TERMINAL-CORNER : if (fFlatHook || hookStyle === 'flatHook') TERMINAL-FLAT terminal
 
+			local bowl : dispiro
+				widths.rhs stroke
+				flat xMidLeft yMidLeft [heading Rightward]
+				curl xArcTop yArcTop
+				archv
+				match term
+					[Just TERMINAL-NONE] : list
+						if lowerEnd
+							list
+								g4 xArcMid [fallback lowerEndY yArcMid]
+								~~~ [lowerEnd]
+							list
+								g4.down.mid xArcMid yArcMid [heading Downward]
+					[Just TERMINAL-DESC] : list
+						g4 xArcMid yArcMid
+						SerifedArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
+					[Just TERMINAL-CURL] : let [fine : Math.min stroke : df.adviceStroke2 3.5 3 (yMidLeft - bottom)] : list
+						g4 xArcMid yArcMid
+						CurlyTail.n fine bottom df.leftSB df.width (bottom + 0.5 * fine)
+							yLoopTop -- ([mix yMidLeft bottom 0.5] + 0.25 * fine)
+							swBefore -- stroke
+					[Just TERMINAL-TAIL] : let [adb2 : AdviceSArchDepth (yMidLeft - bottom) (+1) stroke] : list
+						g4 xArcMid (yMidLeft - adb2)
+						~~~ [SNeck df (yMidLeft - bottom) stroke (stroke * EssRatioLower)]
+						g4 (df.leftSB  + OX) (bottom + adb2) [widths.lhs stroke]
+						HookEnd bottom (sw -- stroke)
+						g4 (df.rightSB - OX) (bottom + hook)
+					[Just TERMINAL-FLAT] : list
+						g4 xArcMid yArcMid
+						~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
+					[Just TERMINAL-CORNER] : list
+						g4 xArcMid yArcMid
+						~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke) (endInset -- [if para.isItalic (0.5 * cornerHookInset) cornerHookInset])].hookEndL]
+					__ : list
+						g4 xArcMid yArcMid
+						match hookStyle
+							[Just 'serifed'] : SerifedArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
+							[Just 'inwardSerifed'] : InwardSlabArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
+							[Just 'diagonalCut'] : DeltaCutEnd df.middle df.leftSB (bottom + O) (bottom + 0.2 * hook) stroke
+							[Just 'verticalCut'] : list
+								HookEnd bottom (sw -- stroke)
+								g4 (df.leftSB - [VerticalCutExtension hook stroke]) (bottom + hook)
+							__ : list
+								HookEnd bottom (sw -- stroke)
+								g4 (df.leftSB + [if (origBar === nothing) OX : HSwToV : 0.5 * (origBar - stroke)]) (bottom + hook)
+
 			include : union
 				if fOunceTop [OunceTop] : if fCursive [CursiveTop] [ConventionalTop]
-				dispiro
-					widths.rhs stroke
-					flat xMidLeft yMidLeft [heading Rightward]
-					curl xArcTop yArcTop
-					archv
-					match term
-						[Just TERMINAL-NONE] : list
-							if lowerEnd
-								list
-									g4 xArcMid [fallback lowerEndY yArcMid]
-									~~~ [lowerEnd]
-								list
-									g4.down.mid xArcMid yArcMid [heading Downward]
-						[Just TERMINAL-DESC] : list
-							g4 xArcMid yArcMid
-							SerifedArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
-						[Just TERMINAL-CURL] : let [fine : Math.min stroke : df.adviceStroke2 3.5 3 (yMidLeft - bottom)] : list
-							g4 xArcMid yArcMid
-							CurlyTail.n fine bottom df.leftSB df.width (bottom + 0.5 * fine)
-								yLoopTop -- ([mix yMidLeft bottom 0.5] + 0.25 * fine)
-								swBefore -- stroke
-						[Just TERMINAL-TAIL] : let [adb2 : AdviceSArchDepth (yMidLeft - bottom) (+1) stroke] : list
-							g4 xArcMid (yMidLeft - adb2)
-							~~~ [SNeck df (yMidLeft - bottom) stroke (stroke * EssRatioLower)]
-							g4 (df.leftSB  + OX) (bottom + adb2) [widths.lhs stroke]
-							HookEnd bottom (sw -- stroke)
-							g4 (df.rightSB - OX) (bottom + hook)
-						[Just TERMINAL-FLAT] : list
-							g4 xArcMid yArcMid
-							~~~ [[MakeFlatHook df.leftSB df.rightSB top bottom (sw -- stroke)].hookEndL]
-						[Just TERMINAL-CORNER] : list
-							g4 xArcMid yArcMid
-							~~~ [[MakeCornerHook df.leftSB df.rightSB top bottom (sw -- stroke) (endInset -- [if para.isItalic (0.5 * cornerHookInset) cornerHookInset])].hookEndL]
-						__ : list
-							g4 xArcMid yArcMid
-							match hookStyle
-								[Just 'serifed'] : SerifedArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
-								[Just 'inwardSerifed'] : InwardSlabArcEnd.RtlRhs df.leftSB bottom stroke hook origBar
-								__ : list
-									HookEnd bottom (sw -- stroke)
-									g4 (df.leftSB + [if (origBar === nothing) OX : HSwToV : 0.5 * (origBar - stroke)]) (bottom + hook)
+				if (terminal === TERMINAL-HOOK && hookStyle === 'verticalCut') [CutArcTerminal bowl df.leftSB yMidLeft bottom stroke true false] bowl
 
 			if (terminal === TERMINAL-HOOK && hookStyle === 'serifed') : include : ArcEndSerif.L df.leftSB bottom stroke hook
 			if (terminal === TERMINAL-HOOK && hookStyle === 'inwardSerifed') : include : ArcEndSerif.InwardL df.leftSB bottom stroke hook
@@ -258,31 +264,35 @@ glyph-block Letter-Latin-Ezh : begin
 		export : define [Shape] : glyph-proc
 			define [object xTopLeft xTopRight xMidRight yMidRight xArcTop yArcTop xArcMid yArcMid] : Dim
 
+			local bowl : dispiro
+				widths.lhs stroke
+				flat xMidRight yMidRight [heading Leftward]
+				curl xArcTop yArcTop
+				archv
+				match terminal
+					[Just TERMINAL-NONE] : list
+						if lowerEnd
+							list
+								g4 xArcMid yArcMid
+								~~~ [lowerEnd xArcMid]
+							list
+								g4.down.mid xArcMid yArcMid [heading Downward]
+					__ : list
+						g4 xArcMid yArcMid
+						match hookStyle
+							[Just 'serifed'] : SerifedArcEnd.LtrLhs RightSB bottom stroke hook origBar
+							[Just 'inwardSerifed'] : InwardSlabArcEnd.LtrLhs RightSB bottom stroke hook origBar
+							[Just 'flatHook'] : [MakeFlatHook SB RightSB top bottom (sw -- stroke)].hookEndR
+							[Just 'cornerHook'] : [MakeCornerHook SB RightSB top bottom (sw -- stroke)].hookEndR
+							[Just 'diagonalCut'] : DeltaCutEnd Middle RightSB (bottom + O) (bottom + 0.2 * hook) stroke
+							[Just 'verticalCut'] : list [HookEnd bottom (sw -- stroke)] [g4 (RightSB + [VerticalCutExtension hook stroke]) (bottom + hook)]
+							__ : list
+								HookEnd bottom (sw -- stroke)
+								g4 (RightSB - [if (origBar === nothing) OX : HSwToV : 0.5 * (origBar - stroke)]) (bottom + hook)
+
 			include : union
 				if fCursive [CursiveTop] [ConventionalTop]
-				dispiro
-					widths.lhs stroke
-					flat xMidRight yMidRight [heading Leftward]
-					curl xArcTop yArcTop
-					archv
-					match terminal
-						[Just TERMINAL-NONE] : list
-							if lowerEnd
-								list
-									g4 xArcMid yArcMid
-									~~~ [lowerEnd xArcMid]
-								list
-									g4.down.mid xArcMid yArcMid [heading Downward]
-						__ : list
-							g4 xArcMid yArcMid
-							match hookStyle
-								[Just 'serifed'] : SerifedArcEnd.LtrLhs RightSB bottom stroke hook origBar
-								[Just 'inwardSerifed'] : InwardSlabArcEnd.LtrLhs RightSB bottom stroke hook origBar
-								[Just 'flatHook'] : [MakeFlatHook SB RightSB top bottom (sw -- stroke)].hookEndR
-								[Just 'cornerHook'] : [MakeCornerHook SB RightSB top bottom (sw -- stroke)].hookEndR
-								__ : list
-									HookEnd bottom (sw -- stroke)
-									g4 (RightSB - [if (origBar === nothing) OX : HSwToV : 0.5 * (origBar - stroke)]) (bottom + hook)
+				if (terminal === TERMINAL-HOOK && hookStyle === 'verticalCut') [CutArcTerminal bowl RightSB yMidRight bottom stroke false false] bowl
 
 			if (terminal === TERMINAL-HOOK && hookStyle === 'serifed') : include : ArcEndSerif.R RightSB bottom stroke hook
 			if (terminal === TERMINAL-HOOK && hookStyle === 'inwardSerifed') : include : ArcEndSerif.InwardR RightSB bottom stroke hook
@@ -296,7 +306,7 @@ glyph-block Letter-Latin-Ezh : begin
 		straightTopSerifed {false  true }
 		cursive            {true   false}
 
-	define PhoneticEzhHooks : list 'serifless' 'serifed' 'inwardSerifed' 'flatHook' 'cornerHook'
+	define PhoneticEzhHooks : list 'serifless' 'serifed' 'inwardSerifed' 'flatHook' 'cornerHook' 'verticalCut' 'diagonalCut'
 
 	define EzhConfig : object
 		straightSerifless                   {false  false  'serifless'    }
@@ -319,6 +329,14 @@ glyph-block Letter-Latin-Ezh : begin
 		cursiveHookFlatTopSerifed           {true   true   'flatHook'     }
 		cursiveHookCornerSerifless          {true   false  'cornerHook'   }
 		cursiveHookCornerTopSerifed         {true   true   'cornerHook'   }
+		straightVerticalCutSerifless {false false 'verticalCut'}
+		straightVerticalCutTopSerifed {false true 'verticalCut'}
+		straightDiagonalCutSerifless {false false 'diagonalCut'}
+		straightDiagonalCutTopSerifed {false true 'diagonalCut'}
+		cursiveVerticalCutSerifless {true false 'verticalCut'}
+		cursiveVerticalCutTopSerifed {true true 'verticalCut'}
+		cursiveDiagonalCutSerifless {true false 'diagonalCut'}
+		cursiveDiagonalCutTopSerifed {true true 'diagonalCut'}
 
 	define LezhCasualTopConfig : object
 		topTailed  'tailed'
@@ -478,7 +496,7 @@ glyph-block Letter-Latin-Ezh : begin
 			define ezh : Ezh subDf XH Descender
 				fCursive  -- fCursive
 				fSerifed  -- fSerifed
-				hookStyle  -- hookStyle
+				hookStyle  -- [if (hookStyle === 'verticalCut' || hookStyle === 'diagonalCut') 'serifless' hookStyle]
 				pyMidLeft -- [if fCursive 0.50 0.55]
 				stroke    -- stroke
 				hook      -- SHook
@@ -503,7 +521,7 @@ glyph-block Letter-Latin-Ezh : begin
 		define ezh : Ezh [DivFrame 1] XH Descender
 			fCursive  -- fCursive
 			fSerifed  -- fSerifed
-			hookStyle -- hookStyle
+			hookStyle  -- [if (hookStyle === 'verticalCut' || hookStyle === 'diagonalCut') 'serifless' hookStyle]
 			cornerHookInset -- [Math.min [HSwToV : 1.5 * stroke] : 0.25 * (RightSB - SB)]
 			pxMidLeft -- (4/15)
 			pyMidLeft -- [if fCursive 0.50 0.55]

@@ -340,8 +340,8 @@ glyph-block Letter-Arc-Hook : begin
 		local direction : if (xEdge > xMid) 1 (-1)
 		return : [mix xMid xEdge 0.95] + direction * [HSwToV : 0.2 * sw]
 
-	define [DeltaCutStart xMid xEdge yPeak yTip sw] : list
-		g4 [DeltaCutTipX xMid xEdge sw] yTip
+	define [DeltaCutStart xMid xEdge yPeak yTip sw _widths] : list
+		g4 [DeltaCutTipX xMid xEdge sw] yTip _widths
 		alsoThru 0.5 0.7
 		g4 xMid yPeak
 		archv 2

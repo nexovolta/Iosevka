@@ -18,7 +18,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	glyph-block-import Letter-Shared-Shapes : RetroflexHook CyrDescender CyrTailDescender
 	glyph-block-import Letter-Shared-Shapes : RoundedBendTailBot RoundedTailReverseKnots StemCutY ApplyDiagCut
 	glyph-block-import Letter-Shared-Shapes : UpwardHookShape RhoticHookShape KomiHookSerifs KomiHookSerif
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Latin-S : AdviceSArchDepth SNeck
 	glyph-block-import Digits-Three : ThreeFlatHookTop ThreeFlatHookBrokenTop
 
@@ -33,6 +33,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define CLOSED-STEM      8
 	define SLAB-FLAT-HOOK   9
 	define SLAB-CORNER-HOOK 10
+	define CUT-VERTICAL    11
+	define CUT-DIAGONAL    12
 
 	define KSI-SHAPE-ROUNDED                 0
 	define KSI-SHAPE-FLAT-TOP                1
@@ -53,7 +55,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 	define StdBlend 0.65
 	define VolBlend 0.56
 
-	glyph-block-export CyrZe ZeConfig SLAB-FLAT-HOOK SLAB-CORNER-HOOK CLOSED-CIRCLE CLOSED-STEM FLAT-CONNECTION
+	glyph-block-export CyrZe ZeConfig SLAB-FLAT-HOOK SLAB-CORNER-HOOK CUT-VERTICAL CUT-DIAGONAL CLOSED-CIRCLE CLOSED-STEM FLAT-CONNECTION
 	define flex-params [CyrZe] : namespace
 		local-parameter : slabTop
 		local-parameter : slabBot
@@ -82,7 +84,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 		define [UpperShapeT sink] : begin
 			define [object stroke midx midy fine shoulderFine] : Dim
 			local middle : mix left right 0.5
-			return : sink
+			local shape : sink
 				match slabTop
 					[Just SLAB-CLASSICAL] : SerifedArcStart.LtrRhs left top stroke hook (o -- yo)
 					[Just SLAB-INWARD] : InwardSlabArcStart.LtrRhs left top stroke hook (o -- yo)
@@ -101,6 +103,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 						Arch.rhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartL
 					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookStartL
+					[Just CUT-DIAGONAL] : list [widths.rhs stroke] [DeltaCutStart middle left (top - yo) (top - 0.2 * hook) stroke]
+					[Just CUT-VERTICAL] : list [g4 (left - [VerticalCutExtension hook stroke]) (top - hook) [widths.rhs stroke]] [HookStart top (sw -- stroke) (o -- yo)]
 					__ : list
 						g4   (left - xo) (top - hook) [widths.rhs stroke]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -108,11 +112,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 				arcvh
 				flat middle (midy + (stroke / 2 - fine)) [widths.heading 0 fine Leftward]
 				curl midx   (midy + (stroke / 2 - fine)) [heading Leftward]
+			return : if (slabTop === CUT-VERTICAL) [CutArcTerminal shape left top bot stroke true true] shape
 
 		define [LowerShapeT sink lowerEnd] : begin
 			define [object stroke midx midy fine shoulderFine] : Dim
 			local middle : mix left right 0.5
-			return : sink
+			local shape : sink
 				flat midx   (midy - (stroke / 2 - fine)) [widths.heading 0 fine Rightward]
 				curl middle (midy - (stroke / 2 - fine)) [heading Rightward]
 				archv
@@ -140,9 +145,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 							curl (left + [HSwToV : stroke - shoulderFine]) midy
 						[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndL
 						[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookEndL
+						[Just CUT-DIAGONAL] : DeltaCutEnd middle left (bot + yo) (bot + 0.2 * hookBot) stroke
+						[Just CUT-VERTICAL] : list [HookEnd bot (sw -- stroke) (o -- yo)] [g4 (left - [VerticalCutExtension hookBot stroke]) (bot + hookBot)]
 						__ : list
 							HookEnd bot (sw -- stroke) (o -- yo)
 							g4   (left + xo) (bot + hookBot)
+			return : if (slabBot === CUT-VERTICAL && [not lowerEnd]) [CutArcTerminal shape left top bot stroke true false] shape
 
 		export : define [UpperShape] : UpperShapeT dispiro
 
@@ -258,7 +266,7 @@ glyph-block Letter-Cyrillic-Ze : begin
 		export : define [UpperShape] : begin
 			define [object stroke midx midy fine shoulderFine join] : Dim
 			local middle : mix left right 0.5
-			return : dispiro
+			local shape : dispiro
 				match slabTop
 					[Just SLAB-CLASSICAL] : SerifedArcStart.RtlLhs right top stroke hook (o -- yo)
 					[Just SLAB-INWARD] : InwardSlabArcStart.RtlLhs right top stroke hook (o -- yo)
@@ -277,6 +285,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 						Arch.lhs top (sw -- stroke) (swBefore -- shoulderFine) (o -- yo)
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookStartR
 					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookStartR
+					[Just CUT-DIAGONAL] : list [widths.lhs stroke] [DeltaCutStart middle right (top - yo) (top - 0.2 * hook) stroke]
+					[Just CUT-VERTICAL] : list [g4 (right + [VerticalCutExtension hook stroke]) (top - hook) [widths.lhs stroke]] [HookStart top (sw -- stroke) (o -- yo)]
 					__ : list
 						g4   (right + xo) (top - hook) [widths.lhs]
 						HookStart top (sw -- stroke) (o -- yo)
@@ -284,11 +294,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 				arcvh
 				flat [if diag [Math.min Middle (left + right - join.minTurn)] Middle] (midy + (stroke / 2 - fine)) [widths.heading fine 0 Rightward]
 				curl [if diag (left + right - join.xCut) midx] (midy + (stroke / 2 - fine)) [heading Rightward]
+			return : if (slabTop === CUT-VERTICAL) [CutArcTerminal shape right top bot stroke false true] shape
 
 		export : define [LowerShape] : begin
 			define [object stroke midx midy fine shoulderFine join] : Dim
 			local middle : mix left right 0.5
-			return : dispiro
+			local shape : dispiro
 				flat [if diag (left + right - join.xCut) midx] (midy - (stroke / 2 - fine)) [widths.heading fine 0 Leftward]
 				curl [if diag [Math.min Middle (left + right - join.minTurn)] Middle] (midy - (stroke / 2 - fine)) [heading Leftward]
 				archv
@@ -311,9 +322,12 @@ glyph-block Letter-Cyrillic-Ze : begin
 						curl (right - [HSwToV : stroke - shoulderFine]) midy
 					[Just SLAB-FLAT-HOOK] : [MakeFlatHook left right top bot (sw -- stroke)].hookEndR
 					[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase left right top bot (sw -- stroke)].hookEndR
+					[Just CUT-DIAGONAL] : DeltaCutEnd middle right (bot + yo) (bot + 0.2 * hookBot) stroke
+					[Just CUT-VERTICAL] : list [HookEnd bot (sw -- stroke) (o -- yo)] [g4 (right + [VerticalCutExtension hookBot stroke]) (bot + hookBot)]
 					__ : list
 						HookEnd bot (sw -- stroke) (o -- yo)
 						g4   (right - xo) (bot + hookBot)
+			return : if (slabBot === CUT-VERTICAL) [CutArcTerminal shape right top bot stroke false false] shape
 
 		export : define [TresilloUpperShape] : begin
 			define [object stroke midx midy fine] : Dim
@@ -380,6 +394,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 		unilateralInwardSerifedFlatHook   {SLAB-INWARD       SLAB-FLAT-HOOK  }
 		cornerHook                        {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK}
 		topCornerHook                     {SLAB-CORNER-HOOK  SLAB-NONE       }
+		topVerticalCut                    {CUT-VERTICAL      SLAB-NONE       }
+		topDiagonalCut                    {CUT-DIAGONAL      SLAB-NONE       }
 		bottomSerifedCornerHook           {SLAB-CORNER-HOOK  SLAB-CLASSICAL  }
 		bottomInwardSerifedCornerHook     {SLAB-CORNER-HOOK  SLAB-INWARD     }
 		unilateralSerifedCornerHook       {SLAB-CLASSICAL    SLAB-CORNER-HOOK}
@@ -391,6 +407,8 @@ glyph-block Letter-Cyrillic-Ze : begin
 		InwardSerifed SLAB-INWARD
 		FlatHook SLAB-FLAT-HOOK
 		CornerHook SLAB-CORNER-HOOK
+		VerticalCut CUT-VERTICAL
+		DiagonalCut CUT-DIAGONAL
 	foreach {topName topStyle} [pairs-of ZeArcTypes] : begin
 		foreach {bottomName bottomStyle} [pairs-of ZeArcTypes] : begin
 			set ZeSerifConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
@@ -705,19 +723,6 @@ glyph-block Letter-Cyrillic-Ze : begin
 
 	select-multi-dimensional-variant 'cyrl/Ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'})
 	select-multi-dimensional-variant 'cyrl/ksi/base' (follows -- {'cyrl/ksi/top' 'cyrl/ksi/tail'})
-
-	define TresilloCutCompatibility : object
-		Rounded 'Rounded'
-		Serifed 'Serifed'
-		InwardSerifed 'InwardSerifed'
-		FlatHook 'FlatHook'
-		CornerHook 'CornerHook'
-		VerticalCut 'Rounded'
-		DiagonalCut 'Rounded'
-	foreach {topName topFallback} [pairs-of TresilloCutCompatibility] : begin
-		foreach {botName botFallback} [pairs-of TresilloCutCompatibility] : if ((topName != topFallback) || (botName != botFallback)) : begin
-			alias "Tresillo.top\(topName)Bottom\(botName)" null "Tresillo.top\(topFallback)Bottom\(botFallback)"
-			alias "tresillo.top\(topName)Bottom\(botName)" null "tresillo.top\(topFallback)Bottom\(botFallback)"
 
 	select-variant 'Tresillo' 0xA72A (follow -- 'C')
 	select-variant 'tresillo' 0xA72B (follow -- 'c')

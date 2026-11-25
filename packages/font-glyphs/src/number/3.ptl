@@ -44,7 +44,7 @@ glyph-block Digits-Three : begin
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks ShiftDown CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Ezh : Ezh
 	glyph-block-import Letter-Latin-C : CLetterForm
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook Rounded Flat
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook Rounded Flat CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart SerifedArcEnd InwardSlabArcStart InwardSlabArcEnd ArcStartSerif ArcEndSerif
 
 	define SLAB-NONE        0
@@ -58,6 +58,8 @@ glyph-block Digits-Three : begin
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
 	define HOOK-SLAB   4
+	define HOOK-VERTICAL 5
+	define HOOK-DIAGONAL 6
 
 	define [ThreeShapeT sink offset sw top hookStyle _bottomHookStyle] : glyph-proc
 		local barcenter : mix 0 top HBarPos
@@ -65,20 +67,24 @@ glyph-block Digits-Three : begin
 		local fine : sw * CThin
 		local bottomHookStyle : fallback _bottomHookStyle hookStyle
 
-		include : sink
+		local upper : sink
 			widths.rhs sw
 			match hookStyle
 				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
 				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
+				[Just HOOK-DIAGONAL] : DeltaCutStart xMid (SB + offset) (top - offset - O) (top - offset - 0.2 * Hook) sw
+				[Just HOOK-VERTICAL] : list
+					g4 (SB + offset - [VerticalCutExtension Hook sw]) (top - Hook)
+					HookStart (top - offset) (sw -- sw)
 				__ : list
 					g4 (SB + offset - O) (top - Hook)
 					HookStart (top - offset) (sw -- sw)
 			g4 (RightSB - offset) [YSmoothMidR (top - offset - O) (barcenter - sw / 2) ArchDepthA ArchDepthB]
 			flat (xMid + TINY) (barcenter - (fine - sw / 2)) [widths.rhs.heading fine Leftward]
 			curl xMid (barcenter - (fine - sw / 2)) [heading Leftward]
-		include : sink
+		local lower : sink
 			widths.rhs fine
 			flat xMid (barcenter + (fine - sw / 2)) [heading Rightward]
 			curl (xMid + TINY) (barcenter + (fine - sw / 2)) [heading Rightward]
@@ -88,9 +94,15 @@ glyph-block Digits-Three : begin
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-INWARD] : InwardSlabArcEnd.RtlRhs (SB + offset) offset sw Hook
 				[Just HOOK-SLAB]   : SerifedArcEnd.RtlRhs (SB + offset) offset sw Hook
+				[Just HOOK-DIAGONAL] : DeltaCutEnd xMid (SB + offset) (offset + O) (offset + 0.2 * Hook) sw
+				[Just HOOK-VERTICAL] : list
+					HookEnd offset (sw -- sw)
+					g4 (SB + offset - [VerticalCutExtension Hook sw]) (offset + Hook)
 				__ : list
 					HookEnd offset (sw -- sw)
 					g4 (SB + offset + O) Hook
+		include : if (hookStyle === HOOK-VERTICAL) [CutArcTerminal upper (SB + offset) top 0 sw true true] upper
+		include : if (bottomHookStyle === HOOK-VERTICAL) [CutArcTerminal lower (SB + offset) top 0 sw true false] lower
 		if (hookStyle === HOOK-INWARD) : include : ArcStartSerif.InwardL (SB + offset) (top - offset) sw Hook
 		if (bottomHookStyle === HOOK-INWARD) : include : ArcEndSerif.InwardL (SB + offset) offset sw Hook
 		if (hookStyle === HOOK-SLAB) : include : ArcStartSerif.L (SB + offset) (top - offset) sw Hook
@@ -107,6 +119,7 @@ glyph-block Digits-Three : begin
 			fSerifed     -- serif
 			fFlatHook    -- (hookStyle === HOOK-FLAT)
 			fCornerHook  -- (hookStyle === HOOK-CORNER)
+			hookStyle     -- [if (hookStyle === HOOK-VERTICAL) 'verticalCut' : if (hookStyle === HOOK-DIAGONAL) 'diagonalCut' 'serifless']
 			terminal     -- [if lowerEnd 0 [if (hookStyle === HOOK-SLAB) 2 1]]
 			stroke       -- sw
 			lowerEnd     -- lowerEnd
@@ -123,6 +136,8 @@ glyph-block Digits-Three : begin
 			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
 			[Just HOOK-CORNER] SLAB-CORNER-HOOK
 			[Just HOOK-SLAB]   SLAB-CLASSICAL
+			[Just HOOK-VERTICAL] 6
+			[Just HOOK-DIAGONAL] 7
 			__                 SLAB-NONE
 
 		define [etTop] : ThreeFlatTopEtTop top nothing nothing sw _angle
@@ -158,6 +173,8 @@ glyph-block Digits-Three : begin
 		cornerHooked  {HOOK-CORNER  HOOK-CORNER}
 		inwardSerifed {HOOK-INWARD  HOOK-INWARD}
 		serifedHooked {HOOK-SLAB    HOOK-SLAB  }
+		verticalCut   {HOOK-VERTICAL HOOK-VERTICAL}
+		diagonalCut   {HOOK-DIAGONAL HOOK-DIAGONAL}
 
 	define ThreeArcTypes : object
 		Rounded HOOK-ROUND
@@ -165,6 +182,8 @@ glyph-block Digits-Three : begin
 		CornerHook HOOK-CORNER
 		InwardSerifed HOOK-INWARD
 		Serifed HOOK-SLAB
+		VerticalCut HOOK-VERTICAL
+		DiagonalCut HOOK-DIAGONAL
 	foreach {topName topStyle} [pairs-of ThreeArcTypes] : begin
 		foreach {bottomName bottomStyle} [pairs-of ThreeArcTypes] : begin
 			set ThreeBodyConfig.("top\(topName)Bottom\(bottomName)") : list topStyle bottomStyle
@@ -190,6 +209,8 @@ glyph-block Digits-Three : begin
 			flatHook    {HOOK-FLAT  }
 			cornerHook  {HOOK-CORNER}
 			serifedHook {HOOK-SLAB  }
+			verticalCut {HOOK-VERTICAL}
+			diagonalCut {HOOK-DIAGONAL}
 
 	foreach {suffix {{Shape} {fSerif} {hookStyle}}} [pairs-of ThreeFlatTopConfig] : do
 		create-glyph "three.lnum.\(suffix)" : glyph-proc

@@ -16,7 +16,7 @@ glyph-block Letter-Latin-Lower-I : begin
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagTail VerticalHook
 	glyph-block-import Letter-Shared-Shapes : CurlyTail BeltOverlay PalatalHook RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : HalfRingDescender LetterBarOverlay RightwardTailedBar
-	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHookL
+	glyph-block-import Letter-Arc-Hook : MakeMidHeightLeftHookL DeltaCutEnd
 
 	# Implementations
 
@@ -106,6 +106,22 @@ glyph-block Letter-Latin-Lower-I : begin
 			set-base-anchor 'trailing'          [mix left rightTerm 0.5] bot
 			set-base-anchor 'palatalHookAttach' [mix left rightTerm 0.5] bot
 			set-base-anchor 'palatalHookMask'   [mix left rightTerm 0.5] (bot + O + HalfStroke)
+
+		export : define [DiagonalCut df top bot xMiddle _stroke] : glyph-proc
+			local stroke : fallback _stroke Stroke
+			local fine : [AdviceStroke 3] * (stroke / Stroke)
+			local left : xMiddle - [HSwToV : 0.5 * stroke]
+			local right : mix df.leftSB df.rightSB (1.1 - [TailedDotlessIShift df])
+			local rightTerm : Math.max right (left + [HSwToV stroke] + [Math.max HookX : HSwToV : 1.1 * fine])
+			local hookDepth : Math.max (stroke * 0.9) (Hook * [StrokeWidthBlend 0.85 1] * df.adws)
+			include : dispiro
+				widths.lhs stroke
+				flat left top [heading Downward]
+				curl left (bot + SmallArchDepthB * 0.8)
+				DeltaCutEnd [mix left rightTerm 0.55] rightTerm (bot + O) (bot + 0.2 * hookDepth) stroke
+			set-base-anchor 'trailing' [mix left rightTerm 0.5] bot
+			set-base-anchor 'palatalHookAttach' [mix left rightTerm 0.5] bot
+			set-base-anchor 'palatalHookMask' [mix left rightTerm 0.5] (bot + O + HalfStroke)
 
 		export : define [FlatTailed df top bot xMiddle _stroke] : glyph-proc
 			local stroke : fallback _stroke Stroke
@@ -198,10 +214,12 @@ glyph-block Letter-Latin-Lower-I : begin
 				curl [Math.max df.rightSB : xMiddle + [Math.max tailLength HookX]] (bot + 0.5 * stroke) [heading Rightward]
 
 		export : define [CasualTailBody kind] : match kind
-			[Just 'tailed']    CasualCurly
+			[Just 'tailed']    Tailed
+			[Just 'maskedTailed'] CasualCurly
 			[Just 'flat']      FlatTailed
 			[Just 'semi']      SemiTailed
 			[Just 'diagonal']  DiagTailed
+			[Just 'diagonalCut'] DiagonalCut
 
 		define [CasualFlippedHalf df yJoin bot xMiddle kind stroke] : new-glyph : glyph-proc
 			include : [CasualTailBody kind] df yJoin bot xMiddle stroke
@@ -325,6 +343,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		'topFlatPL'                     {[ILWithCasualTop 'flat'     ILBody.PhoneticLeft]  ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0     }
 		'topSemiPL'                     {[ILWithCasualTop 'semi'     ILBody.PhoneticLeft]  ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0     }
 		'topDiagPL'                     {[ILWithCasualTop 'diagonal' ILBody.PhoneticLeft]  ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0     }
+		'topDiagonalCutPL'              {[ILWithCasualTop 'diagonalCut' ILBody.PhoneticLeft] ILSerifs.None              ILMarks.Serifless  [XMiddleT mode].PhoneticLeft       1                    0     }
 		'tau/tailless'                  {ILBody.Serifless                                  ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].Center             1                    0     }
 		'tau/hooky'                     {ILBody.HookyBottom                                ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].HookyBottom        1                    Stroke}
 		'tau/tailed'                    {ILBody.Tailed                                     ILSerifs.None               ILMarks.Serifless  [XMiddleT mode].Tailed             1                    Stroke}
@@ -350,6 +369,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		'topFlatTailed'         {ILSerifs.None               'flat'      0     false}
 		'topSemiTailed'         {ILSerifs.None               'semi'      0     false}
 		'topDiagonalTailed'     {ILSerifs.None               'diagonal'  0     false}
+		'topDiagonalCut'        {ILSerifs.None               'diagonalCut' 0    false}
 
 	define ILBottomStageConfig : object
 		'BottomSerifless'      {ILBody.Serifless        nothing     0   }
@@ -360,6 +380,7 @@ glyph-block Letter-Latin-Lower-I : begin
 		'BottomFlatTailed'     {ILBody.FlatTailed       'flat'      0   }
 		'BottomSemiTailed'     {ILBody.SemiTailed       'semi'      0   }
 		'BottomDiagonalTailed' {ILBody.DiagTailed       'diagonal'  0   }
+		'BottomDiagonalCut'    {ILBody.DiagonalCut      'diagonalCut' 0  }
 
 	define [ILStageVariantConfig mode top bottom] : begin
 		local {topSerifs topTail topShift topHasSerif} top
@@ -464,26 +485,30 @@ glyph-block Letter-Latin-Lower-I : begin
 				eject-contour 'serifLT'
 			include : HBar.t oDf.middle (xMiddle + shift) XH (0.88 * oiSw)
 		create-glyph "dotlessiRetroflexHook.\(suffix)" : glyph-proc
-			local kind : fallback stageTopTail : DoubleTailKindOf Body
-			if kind : begin
-				local df : include : DivFrame adws
-				include : df.markSet.p
-				local xMiddle : xMiddleT df
-				include : [ILWithCasualTop kind ILBody.Serifless] df XH 0 xMiddle
-				include : ILMarks.Serifless df XH 0 xMiddle
-				include : RetroflexHook.mExt xMiddle 0
-				include : ExtendBelowBaseAnchors Descender
+			local safeSuffix : [suffix.replace 'topDiagonalCut' 'topTailed'].replace 'BottomDiagonalCut' 'BottomTailed'
+			if (safeSuffix !== suffix) : begin
+				include [refer-glyph "dotlessiRetroflexHook.\(safeSuffix)"] AS_BASE ALSO_METRICS
 			: else : begin
-				include [refer-glyph "dotlessi/uncentered.\(suffix)"] AS_BASE ALSO_METRICS
-				local {attach posX maskY} : CalcPhoneticHookPos currentGlyph
-				include : RetroflexHook.r
-					x         -- posX
-					y         -- 0
-					xLink     -- attach.x
-					yOverflow -- Stroke
-					maskOut   -- [MaskAbove maskY]
-			local df : DivFrame adws
-			include : CenterInkInFrame df
+				local kind : fallback stageTopTail : DoubleTailKindOf Body
+				if kind : begin
+					local df : include : DivFrame adws
+					include : df.markSet.p
+					local xMiddle : xMiddleT df
+					include : [ILWithCasualTop kind ILBody.Serifless] df XH 0 xMiddle
+					include : ILMarks.Serifless df XH 0 xMiddle
+					include : RetroflexHook.mExt xMiddle 0
+					include : ExtendBelowBaseAnchors Descender
+				: else : begin
+					include [refer-glyph "dotlessi/uncentered.\(suffix)"] AS_BASE ALSO_METRICS
+					local {attach posX maskY} : CalcPhoneticHookPos currentGlyph
+					include : RetroflexHook.r
+						x         -- posX
+						y         -- 0
+						xLink     -- attach.x
+						yOverflow -- Stroke
+						maskOut   -- [MaskAbove maskY]
+				local df : DivFrame adws
+				include : CenterInkInFrame df
 
 		define [AiStem] : glyph-proc
 			local df : DivFrame adws
@@ -666,16 +691,20 @@ glyph-block Letter-Latin-Lower-I : begin
 			include : df.markSet.b
 
 		create-glyph "lPalatalHook.\(suffix)" : glyph-proc
-			include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
-			local {attach posX maskY} : CalcPhoneticHookPos currentGlyph
-			include : PalatalHook.r
-				x         -- posX
-				y         -- 0
-				xLink     -- attach.x
-				yOverflow -- Stroke
-				maskOut   -- [MaskAbove maskY]
-			local df : DivFrame adws
-			include : CenterInkInFrame df
+			local safeSuffix : [suffix.replace 'topDiagonalCut' 'topTailed'].replace 'BottomDiagonalCut' 'BottomTailed'
+			if (safeSuffix !== suffix) : begin
+				include [refer-glyph "lPalatalHook.\(safeSuffix)"] AS_BASE ALSO_METRICS
+			: else : begin
+				include [refer-glyph "l.\(suffix)"] AS_BASE ALSO_METRICS
+				local {attach posX maskY} : CalcPhoneticHookPos currentGlyph
+				include : PalatalHook.r
+					x         -- posX
+					y         -- 0
+					xLink     -- attach.x
+					yOverflow -- Stroke
+					maskOut   -- [MaskAbove maskY]
+				local df : DivFrame adws
+				include : CenterInkInFrame df
 
 		create-glyph "lHighBar.\(suffix)" : glyph-proc
 			local df : DivFrame adws

@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Lower-J : begin
 	glyph-block-import Letter-Shared-Shapes : DiagTail TopHook
 	glyph-block-import Letter-Blackboard : BBS BBD
 	glyph-block-import Letter-Latin-Lower-I : CasualTop
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart CutArcTerminal DeltaCutEnd VerticalCutExtension
 
 	glyph-block-export FlatHookDotlessJShape
 	define [FlatHookDotlessJShape] : with-params [df dfHook top crossLeft barCenter serif [fCorner false]] : glyph-proc
@@ -75,6 +75,22 @@ glyph-block Letter-Latin-Lower-J : begin
 				curl (xMiddle + [HSwToV HalfStroke]) (Descender + ArchDepthA)
 				HookEnd Descender (swTerminal -- swTerminal)
 				g4 hookx (Descender + JHook)
+
+		define [CutHook df top xMiddle diagonal] : glyph-proc
+			local hookx : Math.min ((xMiddle - df.middle) - [HSwToV HalfStroke] + OXHook) (xMiddle - [HSwToV : 1.5 * Stroke] + OXHook)
+			local xBar : xMiddle + [HSwToV HalfStroke]
+			set-base-anchor 'below' [mix hookx xMiddle 0.5] Descender
+			local shape : dispiro
+				widths.rhs Stroke
+				flat xBar top [heading Downward]
+				curl xBar (Descender + ArchDepthA)
+				if diagonal
+					DeltaCutEnd [mix hookx xBar 0.5] hookx (Descender + O) (Descender + 0.2 * JHook) Stroke
+					list [HookEnd Descender] [g4 (hookx - [VerticalCutExtension JHook Stroke]) (Descender + JHook)]
+			include : if diagonal shape [CutArcTerminal shape hookx top Descender Stroke true false]
+
+		export : define [VerticalCut df top xMiddle] : CutHook df top xMiddle false
+		export : define [DiagonalCut df top xMiddle] : CutHook df top xMiddle true
 
 		export : define [Straight df top xMiddle] : glyph-proc
 			include : VBar.m xMiddle Descender top
@@ -219,12 +235,15 @@ glyph-block Letter-Latin-Lower-J : begin
 		'topFlatTailed'         {JSerifs.None         'flat'      'none'    false}
 		'topSemiTailed'         {JSerifs.None         'semi'      'none'    false}
 		'topDiagonalTailed'     {JSerifs.None         'diagonal'  'none'    false}
+		'topDiagonalCut'        {JSerifs.None         'diagonalCut' 'none'  false}
 
 	define JBottomStageConfig : object
 		'BottomBentHook'       {JBody.BentHook        XMiddleT.BentHook           1                  }
 		'BottomStraight'       {JBody.Straight        XMiddleT.StraightSerifless  para.advanceScaleII}
 		'BottomFlatHook'       {JBody.FlatHook        XMiddleT.FlatHookSerifless  para.advanceScaleII}
 		'BottomCornerHook'     {JBody.CornerHook      XMiddleT.FlatHookSerifless  para.advanceScaleII}
+		'BottomVerticalCut'    {JBody.VerticalCut     XMiddleT.BentHook           1                  }
+		'BottomDiagonalCut'    {JBody.DiagonalCut     XMiddleT.BentHook           1                  }
 		'BottomDiagonalTailed' {JBody.DiagonalTailed  XMiddleT.DiagonalTailed     para.advanceScaleI }
 		'BottomNarrowBentHook' {JBody.NarrowBentHook  XMiddleT.NarrowBentHook     para.advanceScaleF }
 
@@ -291,6 +310,8 @@ glyph-block Letter-Latin-Lower-J : begin
 		if [key.includes 'straight'] : set bottom 'BottomStraight'
 		if [key.includes 'flathook'] : set bottom 'BottomFlatHook'
 		if [key.includes 'cornerhook'] : set bottom 'BottomCornerHook'
+		if [key.endsWith 'bottomverticalcut'] : set bottom 'BottomVerticalCut'
+		if [key.endsWith 'bottomdiagonalcut'] : set bottom 'BottomDiagonalCut'
 		if [key.includes 'benthook'] : set bottom 'BottomBentHook'
 		if [key.includes 'narrowbenthook'] : set bottom 'BottomNarrowBentHook'
 		if [not bottom] : throw : new Error "Unrecognized hooked dotless j variant: \(suffix)"

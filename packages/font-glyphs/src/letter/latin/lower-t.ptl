@@ -17,7 +17,7 @@ glyph-block Letter-Latin-Lower-T : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd
 	glyph-block-import Letter-Latin-S : SAutoSlabEnd AdviceSArchDepth
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart MakeFlatHook MakeCornerHookBase MakeMidHeightLeftHook
+	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookStart MakeFlatHook MakeCornerHookBase MakeMidHeightLeftHook CutArcTerminal DeltaCutEnd VerticalCutExtension
 
 	define SYM-LEFT          0
 	define SYM-BALANCED      1
@@ -91,6 +91,34 @@ glyph-block Letter-Latin-Lower-T : begin
 			set-base-anchor 'bottomRight' gEnd.x gEnd.y
 			set-base-anchor 'overlay' (g.knots.0.x + [HSwToV : 0.625 * sw]) [mix 0 XH 0.58]
 
+		export : define [Retroflex df sym top bot] : FlatHook.Retroflex df sym top bot
+
+	define [CutTBody df sym top bot _sw fFitHook fNoCrossbar diagonal] : glyph-proc
+		local sw : fallback _sw Stroke
+		define [object xLeft xHook yHook adb] : BentHook.Dims df sym [if fFitHook sw Stroke]
+		if [not fNoCrossbar] : include : BentHook.CrossBar df sym sw
+		local shape : dispiro
+			widths.lhs sw
+			flat xLeft top [heading Downward]
+			curl xLeft (bot + adb)
+			if diagonal
+				DeltaCutEnd [mix xLeft xHook 0.5] xHook (bot + O) (bot + 0.2 * yHook) sw
+				list [HookEnd bot (sw -- sw)] [g4 (xHook + [VerticalCutExtension yHook sw]) (bot + yHook)]
+		include : if diagonal shape [CutArcTerminal shape xHook top bot sw false false]
+		include : LeaningAnchor.Above.VBar.l xLeft
+		include : LeaningAnchor.Below.Hook xLeft xHook
+		set-base-anchor 'hooktopAttach' (xLeft + [HSwToV : 0.5 * sw]) top
+		set-base-anchor 'bottomRight' xHook (bot + [if diagonal (0.2 * yHook) yHook])
+		set-base-anchor 'overlay' (xLeft + [HSwToV : 0.625 * sw]) [mix 0 XH 0.58]
+
+	define VerticalCut : namespace
+		export : define BarLeftPos BentHook.BarLeftPos
+		export : define [Body df sym top bot sw fit noCrossbar] : CutTBody df sym top bot sw fit noCrossbar false
+		export : define [Retroflex df sym top bot] : FlatHook.Retroflex df sym top bot
+
+	define DiagonalCut : namespace
+		export : define BarLeftPos BentHook.BarLeftPos
+		export : define [Body df sym top bot sw fit noCrossbar] : CutTBody df sym top bot sw fit noCrossbar true
 		export : define [Retroflex df sym top bot] : FlatHook.Retroflex df sym top bot
 
 	define NarrowBentHook : namespace
@@ -285,6 +313,8 @@ glyph-block Letter-Latin-Lower-T : begin
 			diagonalTailed {dfF  DiagonalTailed}
 			flatHook       {dfF  FlatHook      }
 			cornerHook     {dfF  CornerHook    }
+			verticalCut    {dfN  VerticalCut   }
+			diagonalCut    {dfN  DiagonalCut   }
 			hookless       {dfF  Hookless      }
 		object # symmetry
 			''                             SYM-BALANCED
@@ -390,7 +420,8 @@ glyph-block Letter-Latin-Lower-T : begin
 		create-glyph "tPalatalHook.\(suffix)" : glyph-proc
 			set-width df.width
 			include : df.markSet.bp
-			include : Style.Body df sym top 0
+			local palatalStyle : if (Style === VerticalCut || Style === DiagonalCut) BentHook Style
+			include : palatalStyle.Body df sym top 0
 
 			local attach : currentGlyph.gizmo.unapply (currentGlyph.baseAnchors.palatalHookAttach || currentGlyph.baseAnchors.bottomRight)
 			include : PalatalHook.r
@@ -557,9 +588,11 @@ glyph-block Letter-Latin-Lower-T : begin
 	define SLAB-INWARD      2
 	define SLAB-FLAT-HOOK   4
 	define SLAB-CORNER-HOOK 5
+	define SLAB-VERTICAL-CUT 6
+	define SLAB-DIAGONAL-CUT 7
 	define [TsLigStrokeShape df stroke top sb] : begin
 		define archDepth : AdviceSArchDepth (XH + 0.5 * ArchDepth) (-1) stroke
-		return : dispiro
+		local shape : dispiro
 			widths.lhs stroke
 			flat [xSmallTBarLeftT df] top [heading Downward]
 			curl [xSmallTBarLeftT df] XH  [heading Downward]
@@ -570,9 +603,13 @@ glyph-block Letter-Latin-Lower-T : begin
 				[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke SHook
 				[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookEndL
 				[Just SLAB-CORNER-HOOK] : [MakeCornerHookBase df.leftSB df.rightSB XH 0 (sw -- stroke)].hookEndL
+				[Just SLAB-VERTICAL-CUT] : list [HookEnd 0 (sw -- stroke)] [g4 (df.leftSB - [VerticalCutExtension SHook stroke]) SHook]
+				[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.leftSB O (0.2 * SHook) stroke
 				__ : list
 					HookEnd 0 (sw -- stroke)
 					g4   df.leftSB (0 + SHook)
+
+		return : if (sb === SLAB-VERTICAL-CUT) [CutArcTerminal shape df.leftSB top 0 stroke true false] shape
 
 	define TSUpperConfig : object
 		bentHook            {Ascender    }
@@ -592,6 +629,8 @@ glyph-block Letter-Latin-Lower-T : begin
 		serifless              {SLAB-NONE       }
 		flatHook               {SLAB-FLAT-HOOK  }
 		cornerHook             {SLAB-CORNER-HOOK}
+		verticalCut            {SLAB-VERTICAL-CUT}
+		diagonalCut            {SLAB-DIAGONAL-CUT}
 		bilateralSerifed       {SLAB-CLASSICAL  }
 		bilateralInwardSerifed {SLAB-INWARD     }
 
@@ -608,7 +647,6 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tsLig/upperHalf'
 	select-variant 'tsLig/lowerHalf'
 
-	derive-composites 'tsLig' 0x1BE 'tsLig/upperHalf' 'tsLig/lowerHalf'
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/t' 0x1D565 : glyph-proc

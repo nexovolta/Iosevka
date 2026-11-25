@@ -10,7 +10,7 @@ glyph-block Digits-Two : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
 	glyph-block-import Letter-Latin-Glottal-Stop : AdviceGlottalStopArchDepth
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Mark-Above : FitInkAdvance MeasureGlyphBoundsInY
 	glyph-block-import Letter-Shared : PackSrc
@@ -22,6 +22,8 @@ glyph-block Digits-Two : begin
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
 	define HOOK-SLAB   4
+	define HOOK-VERTICAL 5
+	define HOOK-DIAGONAL 6
 
 	define [TwoStraightNeckArcT sink offset sw top hookStyle _left _right _hook] : begin
 		local left : fallback _left SB
@@ -32,13 +34,17 @@ glyph-block Digits-Two : begin
 		define xR : right - OX / 2
 		define yPhRight : top - archDepth * 1.5 - sw / 2 * (top / CAP - TanSlope)
 		define pStraightBarStart 0.75
-		return : sink
+		local shape : sink
 			widths.rhs sw
 			match hookStyle
 				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs left top sw hook
 				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs left top sw hook
+				[Just HOOK-DIAGONAL] : DeltaCutStart [mix left right 0.5] left (top - O) (top - 0.2 * hook) sw
+				[Just HOOK-VERTICAL] : list
+					g4 (left - [VerticalCutExtension hook sw]) (top - hook)
+					HookStart top (sw -- sw)
 				__ : list
 					g4 left (top - hook)
 					HookStart top (sw -- sw)
@@ -46,19 +52,25 @@ glyph-block Digits-Two : begin
 			flat [mix xLB xR pStraightBarStart] [mix sw yPhRight pStraightBarStart]
 			curl xLB sw [widths.lhs sw]
 
+		return : if (hookStyle === HOOK-VERTICAL) [CutArcTerminal shape left top 0 sw true true] shape
+
 	define [TwoArcShapeT sink offsetU offsetD sw top hookStyle _left _right _hook _width] : begin
 		local left : fallback _left SB
 		local right : fallback _right RightSB
 		local hook : fallback _hook Hook
 		local width : fallback _width Width
 		define archDepth : [AdviceGlottalStopArchDepth top (+1)] * 0.95
-		return : sink
+		local shape : sink
 			widths.rhs sw
 			match hookStyle
 				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (left - offsetU) top sw hook
 				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (left - offsetU) top sw hook
+				[Just HOOK-DIAGONAL] : DeltaCutStart [mix left right 0.5] (left - offsetU) (top - O) (top - 0.2 * hook) sw
+				[Just HOOK-VERTICAL] : list
+					g4 ((left - offsetU) - [VerticalCutExtension hook sw]) (top - hook)
+					HookStart top (sw -- sw)
 				__ : list
 					g4 (left - offsetU) (top - hook)
 					HookStart top (sw -- sw)
@@ -67,6 +79,8 @@ glyph-block Digits-Two : begin
 			flat (left + offsetD) 1 [widths.heading sw 0 Downward]
 			[if (sink == spiro-outline) corner curl] (left + offsetD) 0 [heading Downward]
 			if (sink == spiro-outline) {[corner (left - offsetU) 0]} {}
+
+		return : if (hookStyle === HOOK-VERTICAL) [CutArcTerminal shape (left - offsetU) top 0 sw true true] shape
 
 	define [TwoShape top slab hookStyle _left _right _sw _hook _width] : glyph-proc
 		local left : fallback _left SB
@@ -136,6 +150,8 @@ glyph-block Digits-Two : begin
 			cornerHook    HOOK-CORNER
 			inwardSerifed HOOK-INWARD
 			serifedHook   HOOK-SLAB
+			verticalCut   HOOK-VERTICAL
+			diagonalCut   HOOK-DIAGONAL
 		object
 			serifless false
 			serifed   true
@@ -198,6 +214,8 @@ glyph-block Digits-Two : begin
 				cornerHook    HOOK-CORNER
 				inwardSerifed HOOK-INWARD
 				serifedHook   HOOK-SLAB
+				verticalCut   HOOK-VERTICAL
+				diagonalCut   HOOK-DIAGONAL
 			object
 				serifless false
 				serifed   true

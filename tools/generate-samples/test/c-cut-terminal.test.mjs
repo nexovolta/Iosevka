@@ -80,6 +80,34 @@ for (const [weight, slope, capital, lower] of [
 				assert.ok(contours[0].every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
 			}
 		}
+		for (const family of ["TInsular", "tInsular", "TInsular.phonotypic"]) {
+			const name = suffix => family === "TInsular.phonotypic"
+				? `${family}.${suffix}.serifless`
+				: `${family}.${suffix}`;
+			const paths = ["Rounded", "VerticalCut", "DiagonalCut"].map(style => {
+				const glyph = glyphStore.queryByNameEnsured(name(`topRoundedBottom${style}`));
+				const contours = new Geom.SimplifyGeometry(glyph.geometry, glyph.gizmo, true).toContours();
+				assert.ok(contours.length, glyph.identifier);
+				assert.ok(contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
+				return glyphPath(glyph);
+			});
+			assert.notEqual(paths[0], paths[1], `${family}: vertical bottom cut`);
+			assert.notEqual(paths[0], paths[2], `${family}: diagonal bottom cut`);
+			assert.notEqual(paths[1], paths[2], `${family}: distinct bottom cuts`);
+		}
+		const insularSuffixes = {
+			"vertical-cut": "topVerticalCutBottomVerticalCut",
+			"diagonal-cut": "topDiagonalCutBottomDiagonalCut",
+			"top-diagonal-cut-bottom-rounded": "topDiagonalCutBottomRounded",
+			"top-rounded-bottom-vertical-cut": "topRoundedBottomVerticalCut",
+		};
+		for (const [cp, family, selection] of [[0xa786, "TInsular", capital], [0xa787, "tInsular", lower]]) {
+			assert.equal(
+				glyphPath(glyphStore.queryByUnicodeEnsured(cp)),
+				glyphPath(glyphStore.queryByNameEnsured(`${family}.${insularSuffixes[selection]}`)),
+				`${family}: selected C variant`,
+			);
+		}
 		let curlyContourCount;
 		const curlyPaths = [
 			"topRoundedBottomRounded",
