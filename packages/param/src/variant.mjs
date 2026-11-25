@@ -83,6 +83,25 @@ function applyForcedDoubleStoreyAFromUprightOblique(parsed, para, argv, variantS
 	]) {
 		variantSelector[selector] = source[selector];
 	}
+	const italicVs = para.isItalic
+		? variantSelector
+		: resolveSelectors(
+				parsed,
+				Object.assign({}, para, { isItalic: true, isOblique: false }),
+				argv,
+			);
+	if (uprightVs.a?.startsWith("singleStorey") && italicVs.a?.startsWith("singleStorey")) {
+		const eHook = variantSelector.e.match(
+			/(FlatHook|CornerHook|VerticalCut|DiagonalCut)$/,
+		)?.[1];
+		const aHook = eHook ? `Hook${eHook.replace(/Hook$/, "")}` : "";
+		for (const selector of ["a/doubleStorey", ...LIGATURE_A_SELECTORS]) {
+			variantSelector[selector] = variantSelector[selector].replace(
+				/^doubleStorey(?:Hook(?:InwardSerifed|Flat|Corner|VerticalCut|DiagonalCut))?/,
+				`doubleStorey${aHook}`,
+			);
+		}
+	}
 }
 
 class SelectorTree {

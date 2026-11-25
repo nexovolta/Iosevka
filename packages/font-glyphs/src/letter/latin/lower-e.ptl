@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-E : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcEnd InwardSlabArcEnd ArcEndSerif
 	glyph-block-import Mark-Shared-Metrics : markFine
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutEnd VerticalCutExtension
 
 	define [SmallEHook top stroke hook doSwash] : Math.min hook : if doSwash VERY-FAR
 		mix stroke ([mix 0 top DesignParameters.eBarPos] - stroke / 2) 0.554
@@ -23,6 +23,8 @@ glyph-block Letter-Latin-Lower-E : begin
 	define SLAB-INWARD     2
 	define SLAB-FLAT-HOOK  4
 	define SLAB-CORNER-HOOK 5
+	define SLAB-VERTICAL-CUT 6
+	define SLAB-DIAGONAL-CUT 7
 
 	define [SmallESerifedTerminalShape df top stroke hook tailSlab isClockwise] : begin
 		local doSwash : !isClockwise && para.isItalic && (para.slopeAngle > 0)
@@ -31,6 +33,10 @@ glyph-block Letter-Latin-Lower-E : begin
 			[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
+			[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.rightSB O (0.2 * hook) stroke
+			[Just SLAB-VERTICAL-CUT] : list
+				HookEnd 0 (sw -- stroke)
+				g4 (df.rightSB + [VerticalCutExtension hook stroke]) hook
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isClockwise)
 				g4 (df.rightSB - [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -47,6 +53,10 @@ glyph-block Letter-Latin-Lower-E : begin
 			[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
 			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
+			[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.leftSB O (0.2 * hook) stroke
+			[Just SLAB-VERTICAL-CUT] : list
+				HookEnd 0 (sw -- stroke)
+				g4 (df.leftSB - [VerticalCutExtension hook stroke]) hook
 			__ : list
 				HookEnd 0 (sw -- stroke) (suppressSwash -- isCounterClockwise)
 				g4 (df.leftSB + [if doSwash 0 0.5] * OX) [SmallEHook top stroke hook doSwash]
@@ -80,13 +90,16 @@ glyph-block Letter-Latin-Lower-E : begin
 		include : if diag
 			DiagonalHBar (df.leftSB + OX + stroke / 2 + bbd) (df.rightSB - OX) (yBarBottom + stroke / 2) (2 * rr) stroke
 			HBar.b ((df.leftSB + OX) + stroke / 2 + bbd) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
-		local path : include : dispiro
-			widths.lhs stroke
-			flat (df.rightSB - OX) (yBarBottom + rr + [if diag (stroke / 2) 0]) [heading Upward]
-			curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + [if diag (stroke / 2) 0] + TINY)]
-			Arch.lhs top (sw -- stroke)
-			flatside.ld df.leftSB 0 top ada adb
-			SmallESerifedTerminalShape df top stroke hook tailSlab cw
+		local path nothing
+		define [outline] : glyph-proc
+			set path : include : dispiro
+				widths.lhs stroke
+				flat (df.rightSB - OX) (yBarBottom + rr + [if diag (stroke / 2) 0]) [heading Upward]
+				curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + [if diag (stroke / 2) 0] + TINY)]
+				Arch.lhs top (sw -- stroke)
+				flatside.ld df.leftSB 0 top ada adb
+				SmallESerifedTerminalShape df top stroke hook tailSlab cw
+		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.rightSB top 0 stroke false false] [outline]
 
 		include : SmallETerminalSerif df top stroke hook tailSlab cw
 
@@ -117,13 +130,14 @@ glyph-block Letter-Latin-Lower-E : begin
 		include : if diag
 			DiagonalHBar (df.leftSB + OX) (df.rightSB - OX - stroke / 2) (yBarBottom + stroke / 2) (2 * rr) stroke
 			HBar.b ((df.leftSB + OX) + stroke / 2) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
-		include : dispiro
+		define [outline] : dispiro
 			widths.rhs stroke
 			flat (df.leftSB + OX) (yBarBottom - rr + [if diag (stroke / 2) 0]) [heading Upward]
 			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom - rr + [if diag (stroke / 2) 0] + TINY)]
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
 			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw
+		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.leftSB top 0 stroke true false] [outline]
 
 		include : RevSmallETerminalSerif df top stroke hook tailSlab ccw
 
@@ -150,15 +164,18 @@ glyph-block Letter-Latin-Lower-E : begin
 		local extraCurliness : if curlyBar (0.1 * (top - yBarBottom)) 0
 		local ada2 : ArchDepthAOf : (1 - DesignParameters.eBarPos) * SmallArchDepth
 		local adb2 : ArchDepthBOf : (1 - DesignParameters.eBarPos) * SmallArchDepth
-		local path : include : dispiro
-			widths.lhs stroke
-			[if curlyBar g2   flat]      xStart                                      yBarBottom
-			[if curlyBar virt curl] [mix xStart df.rightSB (0.475 + 0.1 * TanSlope)] yBarBottom [if curlyBar nothing [heading Rightward]]
-			archv
-			g4 ((df.rightSB - OX) - 0.5 * (df.width / HalfUPM) * extraCurliness) [YSmoothMidR top yBarBottom ada2 adb2]
-			Arch.lhs top (sw -- stroke)
-			flatside.ld df.leftSB 0 top ada adb
-			SmallESerifedTerminalShape df top stroke hook tailSlab cw
+		local path nothing
+		define [outline] : glyph-proc
+			set path : include : dispiro
+				widths.lhs stroke
+				[if curlyBar g2   flat]      xStart                                      yBarBottom
+				[if curlyBar virt curl] [mix xStart df.rightSB (0.475 + 0.1 * TanSlope)] yBarBottom [if curlyBar nothing [heading Rightward]]
+				archv
+				g4 ((df.rightSB - OX) - 0.5 * (df.width / HalfUPM) * extraCurliness) [YSmoothMidR top yBarBottom ada2 adb2]
+				Arch.lhs top (sw -- stroke)
+				flatside.ld df.leftSB 0 top ada adb
+				SmallESerifedTerminalShape df top stroke hook tailSlab cw
+		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.rightSB top 0 stroke false false] [outline]
 
 		include : SmallETerminalSerif df top stroke hook tailSlab cw
 
@@ -187,7 +204,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local extraCurliness : if curlyBar (0.1 * (top - yBarBottom)) 0
 		local ada2 : ArchDepthAOf : (1 - DesignParameters.eBarPos) * SmallArchDepth
 		local adb2 : ArchDepthBOf : (1 - DesignParameters.eBarPos) * SmallArchDepth
-		include : dispiro
+		define [outline] : dispiro
 			widths.rhs stroke
 			[if curlyBar g2          flat]      xStart                                     (yBarBottom + (2/3) * extraCurliness)
 			[if curlyBar g2.left.mid curl] [mix xStart df.leftSB (0.475 - 0.1 * TanSlope)] (yBarBottom - (1/3) * extraCurliness) [heading Leftward]
@@ -196,6 +213,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
 			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw
+		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.leftSB top 0 stroke true false] [outline]
 
 		include : RevSmallETerminalSerif df top stroke hook tailSlab ccw
 
@@ -302,6 +320,14 @@ glyph-block Letter-Latin-Lower-E : begin
 		diagonalCrossbarCornerHook         {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1}
 		diagonalCrossbarFallingFlatHook    {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1)}
 		diagonalCrossbarFallingCornerHook  {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1)}
+		flatCrossbarVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT}
+		flatCrossbarDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT}
+		roundedVerticalCut {SmallERoundedShape RevSmallERoundedShape SLAB-VERTICAL-CUT}
+		roundedDiagonalCut {SmallERoundedShape RevSmallERoundedShape SLAB-DIAGONAL-CUT}
+		diagonalCrossbarVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT 1}
+		diagonalCrossbarDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT 1}
+		diagonalCrossbarFallingVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT (-1)}
+		diagonalCrossbarFallingDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT (-1)}
 
 	glyph-block-export SchwaConfig
 	define SchwaConfig : object
@@ -321,6 +347,14 @@ glyph-block Letter-Latin-Lower-E : begin
 		diagonalCrossbarCornerHook         {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  1}
 		diagonalCrossbarFallingFlatHook    {SmallEShape  RevSmallEShape  SLAB-FLAT-HOOK    (-1)}
 		diagonalCrossbarFallingCornerHook  {SmallEShape  RevSmallEShape  SLAB-CORNER-HOOK  (-1)}
+		flatCrossbarVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT}
+		flatCrossbarDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT}
+		roundedVerticalCut {SmallERoundedShape RevSmallERoundedShape SLAB-VERTICAL-CUT}
+		roundedDiagonalCut {SmallERoundedShape RevSmallERoundedShape SLAB-DIAGONAL-CUT}
+		diagonalCrossbarVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT 1}
+		diagonalCrossbarDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT 1}
+		diagonalCrossbarFallingVerticalCut {SmallEShape RevSmallEShape SLAB-VERTICAL-CUT (-1)}
+		diagonalCrossbarFallingDiagonalCut {SmallEShape RevSmallEShape SLAB-DIAGONAL-CUT (-1)}
 
 	foreach {suffix {Body RevBody tailSlab diag}} [Object.entries SmallEConfig] : do
 		create-glyph "e.\(suffix)" : glyph-proc

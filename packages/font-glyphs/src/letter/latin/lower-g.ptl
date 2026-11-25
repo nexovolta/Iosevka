@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-G : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay OBarRight FlatHookDepth
 	glyph-block-import Letter-Shared-Shapes : CurlyTail PalatalHook TopHook
 	glyph-block-import Common-OShape-Variants : RoundRectShapeT
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CornerHookDepth CornerHookEnd
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CornerHookDepth CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Latin-Z : ZemlyaBottomStrokeCursive
 
 	define [OverlayW bw] : glyph-proc
@@ -27,7 +27,7 @@ glyph-block Letter-Latin-Lower-G : begin
 	define obwDoubleStorey : Math.min ((XH - Descender) * (1 / 6) - Stroke * (2 / 3)) : AdviceStroke 5
 
 	glyph-block-export DoubleStoreyLowerHook
-	define [DoubleStoreyLowerHook] : with-params [bot top [fOpen false] [fFlat false] [fCorner false] [fDisjoint false] [fSwash false] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [hook SHook] [yTip nothing] [xStart nothing]] : glyph-proc
+	define [DoubleStoreyLowerHook] : with-params [bot top [fOpen false] [fFlat false] [fCorner false] [fDisjoint false] [fSwash false] [cut nothing] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [hook SHook] [yTip nothing] [xStart nothing]] : glyph-proc
 		local fine : sw * CThin
 		local yJoin : mix 0 top DesignParameters.gBarPos
 		local obot : yJoin - sw * 0.4
@@ -48,13 +48,21 @@ glyph-block Letter-Latin-Lower-G : begin
 		local ySideR : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06
 		local ySideL : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidL groundy yArcBot adaL adbL] 1.06
 		local MakeHook : if fCorner MakeCornerHook MakeFlatHook
-		if (fDisjoint && fFlat) : include : dispiro
-			widths.rhs sw
-			flat (x0 + gapD) groundy [heading Rightward]
-			curl xArcR groundy
-			archv 4
-			g4 grightx ySideR
-			[MakeHook SB RightSB groundy bot (sw -- sw)].hookEndL
+		local endHook : match cut
+			[Just 'vertical'] : list
+				HookEnd bot (sw -- sw)
+				g4 (SB - [VerticalCutExtension hook sw]) (bot + hook)
+			[Just 'diagonal'] : DeltaCutEnd [mix SB RightSB 0.5] SB (bot + O) (bot + 0.2 * hook) sw
+			__ : [MakeHook SB RightSB groundy bot (sw -- sw)].hookEndL
+		if (fDisjoint && fFlat) : begin
+			local shape : dispiro
+				widths.rhs sw
+				flat (x0 + gapD) groundy [heading Rightward]
+				curl xArcR groundy
+				archv 4
+				g4 grightx ySideR
+				begin endHook
+			include : if (cut === 'vertical') [CutArcTerminal shape SB groundy bot sw true false] shape
 		if (fDisjoint && !fFlat) : include : dispiro
 			widths.rhs sw
 			flat (x0 + gapD) groundy [heading Rightward]
@@ -65,14 +73,16 @@ glyph-block Letter-Latin-Lower-G : begin
 			g4 gleftx ySideL
 			arcvh
 			g4 (x0 - gapD) groundy [heading Rightward]
-		if (fFlat && !fDisjoint) : include : dispiro
-			g4.left.start x0 gtipy [widths.rhs fine]
-			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
-			flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
-			curl [mix SB RightSB 0.565] groundy
-			archv 4
-			g4 grightx [mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06]
-			[MakeHook SB RightSB groundy bot (sw -- sw)].hookEndL
+		if (fFlat && !fDisjoint) : begin
+			local shape : dispiro
+				g4.left.start x0 gtipy [widths.rhs fine]
+				g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
+				flat [mix SB RightSB 0.435] groundy [widths.rhs sw]
+				curl [mix SB RightSB 0.565] groundy
+				archv 4
+				g4 grightx [mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06]
+				begin endHook
+			include : if (cut === 'vertical') [CutArcTerminal shape SB groundy bot sw true false] shape
 		if (fOpen && !fFlat && !fDisjoint) : include : dispiro
 			g4.left.start x0 gtipy [widths.rhs fine]
 			g4 ([mix SB RightSB 0.0575] + sw * 0.85) [mix gtipy groundy 0.5] [widths.rhs [mix fine sw 0.5]]
@@ -152,14 +162,14 @@ glyph-block Letter-Latin-Lower-G : begin
 					corner gm (top - Stroke - O)
 					corner gm top
 
-	define [DoubleStoreyGShape fOpen fFlat _fDisjoint ear fCorner] : glyph-proc
+	define [DoubleStoreyGShape fOpen fFlat _fDisjoint ear fCorner cut] : glyph-proc
 		local fDisjoint : fallback _fDisjoint false
 		include : MarkSet.p
 		local obot : [mix 0 XH DesignParameters.gBarPos] - Stroke * 0.4
 		local left SB
 		local right : mix Width RightSB 1.3
 		include : DoubleStoreyUpperBowl [fallback ear 'standard'] XH (obot - O) left right
-		include : DoubleStoreyLowerHook Descender XH (fOpen -- fOpen) (fFlat -- fFlat) (fCorner -- fCorner) (fDisjoint -- fDisjoint)
+		include : DoubleStoreyLowerHook Descender XH (fOpen -- fOpen) (fFlat -- fFlat) (fCorner -- fCorner) (fDisjoint -- fDisjoint) (cut -- cut)
 		local yJoin : mix 0 XH DesignParameters.gBarPos
 		local groundy : Math.round : [mix Descender yJoin 0.64] + HalfStroke
 		set-base-anchor 'overlay' Middle [mix (Descender + O) groundy 0.5]
@@ -174,6 +184,10 @@ glyph-block Letter-Latin-Lower-G : begin
 			doubleStoreyDisjointFlatHook {false true  true}
 			doubleStoreyOpenCornerHook     {true  true  false true}
 			doubleStoreyDisjointCornerHook {false true  true  true}
+			doubleStoreyOpenVerticalCut {true true false false 'vertical'}
+			doubleStoreyOpenDiagonalCut {true true false false 'diagonal'}
+			doubleStoreyDisjointVerticalCut {false true true false 'vertical'}
+			doubleStoreyDisjointDiagonalCut {false true true false 'diagonal'}
 		object # ear
 			''              'standard'
 			earlessRounded  'earlessRounded'
@@ -182,8 +196,8 @@ glyph-block Letter-Latin-Lower-G : begin
 			flatBowlSerifed 'flatBowlSerifed'
 			topCut          'topCut'
 
-	foreach {suffix {{fOpen fFlat fDisjoint fCorner} ear}} [Object.entries DoubleStoreyConfig] : do
-		create-glyph "g.\(suffix)" : DoubleStoreyGShape fOpen fFlat fDisjoint ear fCorner
+	foreach {suffix {{fOpen fFlat fDisjoint fCorner cut} ear}} [Object.entries DoubleStoreyConfig] : do
+		create-glyph "g.\(suffix)" : DoubleStoreyGShape fOpen fFlat fDisjoint ear fCorner cut
 		derive-composites "gStroke.\(suffix)" null "g.\(suffix)" [OverlayW obwDoubleStorey]
 		if (fOpen && !fFlat && !fDisjoint) : create-glyph "gInsular.phonotypic.\(suffix)" : glyph-proc
 			include : MarkSet.p
@@ -269,6 +283,20 @@ glyph-block Letter-Latin-Lower-G : begin
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat (df.rightSB - hd.x) Descender
 				CornerHookEnd xTerminal Descender [CornerHookDepth hd.y df.mvs] df.mvs (-1) 1
+		export : define [CutHook df y0 _ada _adb cut] : begin
+			local ada : fallback _ada df.smallArchDepthA
+			local shape : dispiro
+				widths.rhs df.mvs
+				flat df.rightSB y0 [heading Downward]
+				curl df.rightSB (Descender + ada)
+				if (cut === 'vertical')
+					list
+						HookEnd Descender (sw -- df.mvs)
+						g4 (df.leftSB - [VerticalCutExtension SHook df.mvs]) (Descender + SHook)
+					DeltaCutEnd df.middle df.leftSB (Descender + O) (Descender + 0.2 * SHook) df.mvs
+			return : if (cut === 'vertical') [CutArcTerminal shape df.leftSB y0 Descender df.mvs true false] shape
+		export : define [VerticalCut df y0 ada adb] : CutHook df y0 ada adb 'vertical'
+		export : define [DiagonalCut df y0 ada adb] : CutHook df y0 ada adb 'diagonal'
 		export : define [CrossedHook df y0 _ada _adb] : begin
 			local ada : fallback _ada df.smallArchDepthA
 			local adb : fallback _adb df.smallArchDepthB
@@ -388,6 +416,8 @@ glyph-block Letter-Latin-Lower-G : begin
 			singleStoreyBentHook   {SingleStorey.BentHook    SHook}
 			singleStoreyFlatHook   {SingleStorey.FlatHook    0    }
 			singleStoreyCornerHook {SingleStorey.CornerHook  0    }
+			singleStoreyVerticalCut {SingleStorey.VerticalCut 0}
+			singleStoreyDiagonalCut {SingleStorey.DiagonalCut 0}
 		object # bowl
 			''                     false
 			flatBowl               true
@@ -433,7 +463,7 @@ glyph-block Letter-Latin-Lower-G : begin
 			set-base-anchor 'overlay' subDf.middle [mix O (Descender + [Math.max hookEnd subDf.mvs]) 0.5]
 			set-base-anchor 'strike'  subDf.middle (XH / 2)
 			include : bodyShape subDf  XH fFlat
-			include : hookShape subDf (XH - hookStart)
+			include : [if (hookShape === SingleStorey.VerticalCut || hookShape === SingleStorey.DiagonalCut) SingleStorey.BentHook hookShape] subDf (XH - hookStart)
 			include : PalatalHook.r
 				x       -- df.rightSB
 				y       -- 0

@@ -2,7 +2,14 @@
 
 Double-storey `a` supports tapered `curved-bar-rising` and `curved-bar-falling` options,
 for example `double-storey-serifless-curved-bar-rising` and
-`double-storey-serifless-curved-bar-falling`.
+`double-storey-serifless-curved-bar-falling`. Its top hook also supports
+`hook-vertical-cut` and `hook-diagonal-cut` terminals.
+When both upright and italic `a` use a single-storey design, the forced
+double-storey forms follow the selected `e` hook.
+
+The `e`, `lower-schwa`, and `capital-schwa` selectors include vertical- and
+diagonal-cut hooks. The `g` selector offers both cuts on single-storey and
+open or disjoint double-storey designs.
 
 The `capital-c` and `c` variants include `vertical-cut` and `diagonal-cut`
 terminals, including independent top and bottom combinations. The `question`

@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame OBarRight OBarLeft ArcStartSerif SerifedArcEnd EtBowlCurves
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar LeftwardTailedBar RetroflexHook
 	glyph-block-import Letter-Shared-Shapes : InwardSlabArcStart StemCutY ApplyDiagCut
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-Wynn : WynnBowl
 
 	define HOOK-SLAB-NONE      0
@@ -22,6 +22,8 @@ glyph-block Letter-Latin-Lower-A : begin
 	define HOOK-HALF           3
 	define HOOK-FLAT           4
 	define HOOK-CORNER         5
+	define HOOK-VERTICAL-CUT   6
+	define HOOK-DIAGONAL-CUT   7
 	define CURVED-BAR-RISING   1
 	define CURVED-BAR-FALLING (-1)
 
@@ -62,6 +64,10 @@ glyph-block Letter-Latin-Lower-A : begin
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
 					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
+					[Just HOOK-DIAGONAL-CUT] : DeltaCutStart [mix hookLeftX barRightX 0.5] hookLeftX (XH - O) (XH - 0.2 * AHook) stroke
+					[Just HOOK-VERTICAL-CUT] : list
+						g4 (hookLeftX - [VerticalCutExtension AHook stroke]) (XH - AHook)
+						HookStart XH (sw -- stroke)
 					__ : if fine
 						list
 							g4.up.start hookLeftX (XH - AHook) [heading Upward]
@@ -75,14 +81,16 @@ glyph-block Letter-Latin-Lower-A : begin
 
 		export : define [HookAndBar df hookStyle y0 stroke fine] : glyph-proc
 			local sw : fallback stroke : Sw df
-			include : [HookAndBarT dispiro] df hookStyle y0 sw fine
+			local shape : [HookAndBarT dispiro] df hookStyle y0 sw fine
+			include : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.leftSB XH y0 sw true true] shape
 			include : match hookStyle
 				[Just HOOK-SLAB-INWARD] : ArcStartSerif.InwardL df.leftSB XH sw AHook
 				__                      : no-shape
 
 		export : define [HookAndBarMask df hookStyle y0 stroke fine] : begin
 			local sw : fallback stroke : Sw df
-			return : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
+			local shape : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
+			return : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.leftSB XH y0 sw true true] shape
 
 		define [ArcT sink] : function [df kind rise stroke fine bbd diag _barTop] : glyph-proc
 			local isMask : sink == spiro-outline
@@ -219,6 +227,10 @@ glyph-block Letter-Latin-Lower-A : begin
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
 					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
+					[Just HOOK-DIAGONAL-CUT] : DeltaCutStart [mix barLeftX hookRightX 0.5] hookRightX (XH - O) (XH - 0.2 * AHook) stroke
+					[Just HOOK-VERTICAL-CUT] : list
+						g4 (hookRightX + [VerticalCutExtension AHook stroke]) (XH - AHook)
+						HookStart XH (sw -- stroke)
 					__ : if fine
 						list
 							g4.up.start hookRightX (XH - AHook) [heading Upward]
@@ -232,14 +244,16 @@ glyph-block Letter-Latin-Lower-A : begin
 
 		export : define [HookAndBar df hookStyle y0 stroke fine] : glyph-proc
 			local sw : fallback stroke : Sw df
-			include : [HookAndBarT dispiro] df hookStyle y0 sw fine
+			local shape : [HookAndBarT dispiro] df hookStyle y0 sw fine
+			include : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.rightSB XH y0 sw false true] shape
 			include : match hookStyle
 				[Just HOOK-SLAB-INWARD] : ArcStartSerif.InwardR df.rightSB XH sw AHook
 				__                      : no-shape
 
 		export : define [HookAndBarMask df hookStyle y0 stroke fine] : begin
 			local sw : fallback stroke : Sw df
-			return : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
+			local shape : [HookAndBarT spiro-outline] df hookStyle y0 sw fine
+			return : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.rightSB XH y0 sw false true] shape
 
 		define [ArcT sink] : function [df kind rise stroke fine diag] : glyph-proc
 			local isMask : sink == spiro-outline
@@ -348,6 +362,8 @@ glyph-block Letter-Latin-Lower-A : begin
 			doubleStoreyHookInwardSerifed HOOK-SLAB-INWARD
 			doubleStoreyHookFlat          HOOK-FLAT
 			doubleStoreyHookCorner        HOOK-CORNER
+			doubleStoreyHookVerticalCut   HOOK-VERTICAL-CUT
+			doubleStoreyHookDiagonalCut   HOOK-DIAGONAL-CUT
 		function [hook] : object # cut
 			''         ''
 			bottomCut  'bottomCut'

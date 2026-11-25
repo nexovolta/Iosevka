@@ -10,6 +10,42 @@ import { buildGlyphData, glyphPath } from "../../../packages/font/src/glyph-svg.
 
 const paramsDir = fileURLToPath(new URL("../../../params", import.meta.url));
 const primes = parse(TOML.parse(await readFile(new URL("../../../params/variants.toml", import.meta.url), "utf8"))).primes;
+function assertCutTargets(glyphStore) {
+	for (const [family, code, name, selector] of [
+		["e", 0x65, "e", "e"],
+		["g", 0x67, "g", "g"],
+		["lower-schwa", 0x259, "schwa", "schwa"],
+		["capital-schwa", 0x18f, "Schwa", "Schwa"],
+	]) {
+		const glyph = glyphStore.queryByUnicodeEnsured(code);
+		const cvs = AnyCv.query(glyph);
+		for (const [key, variant] of primes.get(family).variants) {
+			if (!key.includes("vertical-cut") && !key.includes("diagonal-cut")) continue;
+			const cv = cvs.find(v => v.tag === variant.tag && v.rank === variant.rank);
+			assert.ok(cv, `${family}.${key}`);
+			assert.equal(glyphPath(glyphStore.queryByNameEnsured(cv.get(glyph))),
+				glyphPath(glyphStore.queryByNameEnsured(`${name}.${variant.selector[selector]}`)),
+				`${family}.${key}`);
+		}
+	}
+	for (const cut of ["Vertical", "Diagonal"]) {
+		const protectedGlyph = glyphStore.queryByNameEnsured(`gPalatalHook.singleStorey${cut}CutSerifless`);
+		const baseline = glyphStore.queryByNameEnsured("gPalatalHook.singleStoreyBentHookSerifless");
+		assert.equal(glyphPath(protectedGlyph), glyphPath(baseline), `g palatal ${cut}`);
+	}
+	for (const [family, name] of [["e", "reve"], ["e", "eBar"], ["e", "eFlourish"], ["e", "ae/e"], ["g", "gStroke"]]) {
+		const glyph = glyphStore.queryByNameEnsured(name);
+		const cvs = AnyCv.query(glyph);
+		for (const [key, variant] of primes.get(family).variants) {
+			if (!key.includes("vertical-cut") && !key.includes("diagonal-cut")) continue;
+			const cv = cvs.find(v => v.tag === variant.tag && v.rank === variant.rank);
+			const actual = cv ? glyphStore.queryByNameEnsured(cv.get(glyph)) : glyph;
+			assert.equal(glyphPath(actual),
+				glyphPath(glyphStore.queryByNameEnsured(`${name}.${variant.selector[family]}`)),
+				`${name}.${key}`);
+		}
+	}
+}
 test("cut CV variants propagate to glyphs and preserve protected hook forms", async () => {
 	const { para, glyphStore } = await buildGlyphData({
 		paramsDir,
@@ -17,7 +53,9 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 		menu: { family: "Iosevka", version: "34.9.0", width: 5, slope: "upright", weight: 530 },
 		featureControl: {},
 	});
+
 	assert.ok(para.enableCvSs);
+	assertCutTargets(glyphStore);
 	const glyph = glyphStore.queryByUnicodeEnsured(0x1be);
 	for (const key of ["corner-vertical-cut", "corner-diagonal-cut"]) {
 		const expected = primes.get("glottal-stop").variants.get(key);
@@ -27,6 +65,8 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 		assert.notEqual(glyphPath(target), glyphPath(glyph), key);
 	}
 	for (const [family, code, key, protectedCode, protectedFamily, protectedSelector] of [
+		["a", 0x61, "double-storey-hook-vertical-cut-serifless", 0x1d8f, "aRetroflexHook", "aRetroflexHook"],
+		["a", 0x61, "double-storey-hook-diagonal-cut-serifless", 0x1d8f, "aRetroflexHook", "aRetroflexHook"],
 		["f", 0x66, "vertical-cut-serifless", 0x1d82, "fPalatalHook", "f"],
 		["f", 0x66, "vertical-cut-bottom-diagonal-cut", 0x1d82, "fPalatalHook", "f"],
 		["cyrl-ef", 0x444, "top-diagonal-cut-bottom-vertical-cut", null],
@@ -56,6 +96,14 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 			const reference = glyphStore.queryByNameEnsured(`${protectedFamily}.${expected.selector[protectedSelector]}`);
 			assert.ok(glyphPath(target) === glyphPath(reference), key);
 		}
+	}
+	for (const [key, variant] of primes.get("a").variants) {
+		if (!key.includes("hook-vertical-cut") && !key.includes("hook-diagonal-cut")) continue;
+		const g = glyphStore.queryByUnicodeEnsured(0x61);
+		const cv = AnyCv.query(g).find(v => v.tag === variant.tag && v.rank === variant.rank);
+		assert.ok(cv, key);
+		assert.equal(glyphPath(glyphStore.queryByNameEnsured(cv.get(g))),
+			glyphPath(glyphStore.queryByNameEnsured(`a.${variant.selector.a}`)), key);
 	}
 	for (const [family, code, prefix, selector] of [
 		["i", 0x131, "dotlessi", "dotlessi"],
@@ -113,4 +161,29 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 			=== glyphPath(glyphStore.queryByNameEnsured(`fInsular.${selected.selector["r/insularBase"]}`)),
 		"insular f CV target",
 	);
+});
+
+test("lower-a cut selectors resolve in italic without changing retroflex hooks", async () => {
+	const { glyphStore } = await buildGlyphData({
+		paramsDir,
+		shape: { serifs: "sans", spacing: "term", weight: 530, width: 586, slope: "italic", slopeAngle: 9.4 },
+		menu: { family: "Iosevka", version: "34.9.0", width: 5, slope: "italic", weight: 530 },
+		featureControl: {},
+	});
+	assertCutTargets(glyphStore);
+	const g = glyphStore.queryByUnicodeEnsured(0x61);
+	const retroflex = glyphStore.queryByUnicodeEnsured(0x1d8f);
+	const cvs = AnyCv.query(g);
+	const retroflexCvs = AnyCv.query(retroflex);
+	for (const [key, variant] of primes.get("a").variants) {
+		if (!key.includes("hook-vertical-cut") && !key.includes("hook-diagonal-cut")) continue;
+		const cv = cvs.find(v => v.tag === variant.tag && v.rank === variant.rank);
+		assert.ok(cv, key);
+		assert.equal(glyphPath(glyphStore.queryByNameEnsured(cv.get(g))),
+			glyphPath(glyphStore.queryByNameEnsured(`a.${variant.selector.a}`)), key);
+		const protectedCv = retroflexCvs.find(v => v.tag === variant.tag && v.rank === variant.rank);
+		const protectedGlyph = protectedCv ? glyphStore.queryByNameEnsured(protectedCv.get(retroflex)) : retroflex;
+		assert.equal(glyphPath(protectedGlyph),
+			glyphPath(glyphStore.queryByNameEnsured(`aRetroflexHook.${variant.selector.aRetroflexHook}`)), key);
+	}
 });
