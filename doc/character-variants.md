@@ -10,6 +10,8 @@ double-storey forms follow the selected `e` hook.
 The `e`, `lower-schwa`, and `capital-schwa` selectors include vertical- and
 diagonal-cut hooks. The `g` selector offers both cuts on single-storey and
 open or disjoint double-storey designs.
+The `ampersand` selector offers both cuts on upper-open and Et top hooks,
+including upper-open tops combined with Et bottom variants.
 
 The `capital-c` and `c` variants include `vertical-cut` and `diagonal-cut`
 terminals, including independent top and bottom combinations. The `question`

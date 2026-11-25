@@ -4,13 +4,81 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import * as TOML from "@iarna/toml";
+import { calculateMetrics } from "@iosevka/font-glyphs/aesthetics";
 import { AnyCv } from "@iosevka/glyph/relation";
 import { parse } from "@iosevka/param/variant";
+import { Boolean as BooleanGeom } from "typo-geom";
 import { buildGlyphData, glyphPath } from "../../../packages/font/src/glyph-svg.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params", import.meta.url));
 const primes = parse(TOML.parse(await readFile(new URL("../../../params/variants.toml", import.meta.url), "utf8"))).primes;
+function edgeAt(glyph, y, left) {
+	const hits = [];
+	for (const contour of glyph.geometry.toBezArcs()) {
+		for (const arc of contour) {
+			let a = glyph.gizmo.unapply(arc.eval(0));
+			for (let j = 1; j <= 32; j++) {
+				const b = glyph.gizmo.unapply(arc.eval(j / 32));
+				if ((a.y <= y && b.y > y) || (b.y <= y && a.y > y)) {
+					hits.push(a.x + ((b.x - a.x) * (y - a.y)) / (b.y - a.y));
+				}
+				a = b;
+			}
+		}
+	}
+	assert.ok(hits.length, `missing outline at ${y}`);
+	return left ? Math.min(...hits) : Math.max(...hits);
+}
+
+function assertCutGeometry(glyphStore, para) {
+	const metrics = calculateMetrics(para);
+	const etStroke = metrics.AdviceStroke2(2.5, 3, metrics.CAP);
+	const etLowerCounterTop = metrics.CAP * metrics.OverlayPos
+		+ etStroke * (metrics.CThin - 0.5) - metrics.Stroke;
+	for (const family of ["e", "reve"]) {
+		for (const bar of ["flatCrossbar", "diagonalCrossbar", "diagonalCrossbarFalling"]) {
+			const cut = glyphStore.queryByNameEnsured(`${family}.${bar}VerticalCut`);
+			const reference = glyphStore.queryByNameEnsured(`${family}.${bar}FlatHook`);
+			assert.equal(BooleanGeom.removeOverlap(cut.geometry.toBezArcs(), "nonZero", 16384).length, 2, `${family}.${bar}`);
+			for (const fraction of [0.48, 0.6]) {
+				const y = fraction * para.xHeight;
+				assert.ok(Math.abs(edgeAt(cut, y, family === "reve") - edgeAt(reference, y, family === "reve")) < 1,
+					`${family}.${bar} clips the crossbar or opposite side at ${fraction} x-height`);
+			}
+		}
+	}
+	for (const name of ["ampersand.etToothlessCorner", "ampersand.upperOpenEtToothlessCorner", "ampersand.closedEtToothlessCorner"]) {
+		const glyph = glyphStore.queryByNameEnsured(name);
+		const contours = BooleanGeom.removeOverlap(glyph.geometry.toBezArcs(), "nonZero", 16384);
+		const counters = contours.map(contour => contour.map(arc =>
+			[arc.a, arc.b, arc.c, arc.d].map(point => glyph.gizmo.unapply(point))));
+		const lowerCounter = counters.find(contour => {
+			const ys = contour.flat().map(point => point.y);
+			return Math.min(...ys) > 0 && Math.max(...ys) < 0.6 * para.cap;
+		});
+		assert.ok(lowerCounter, `${name} lower counter`);
+		const maxY = Math.max(...lowerCounter.flat().map(point => point.y));
+		assert.ok(Math.abs(maxY - etLowerCounterTop) < 0.1, `${name} lower bowl is not at its legacy height`);
+		assert.ok(lowerCounter.some(points =>
+			points.every(point => Math.abs(point.y - maxY) < 0.5) &&
+			Math.abs(points[3].x - points[0].x) > 0.15 * para.stroke),
+			`${name} lower counter does not join the crossbar horizontally`);
+	}
+}
+
 function assertCutTargets(glyphStore) {
+	const ampersand = glyphStore.queryByUnicodeEnsured(0x26);
+	const ampersandCvs = AnyCv.query(ampersand);
+	for (const [key, variant] of primes.get("ampersand").variants) {
+		if (!key.includes("vertical-cut") && !key.includes("diagonal-cut")) continue;
+		const cv = ampersandCvs.find(v => v.tag === variant.tag && v.rank === variant.rank);
+		assert.ok(cv, `ampersand.${key}`);
+		assert.equal(
+			glyphPath(glyphStore.queryByNameEnsured(cv.get(ampersand))),
+			glyphPath(glyphStore.queryByNameEnsured(`ampersand.${variant.selector.ampersand}`)),
+			`ampersand.${key}`,
+		);
+	}
 	for (const [family, code, name, selector] of [
 		["e", 0x65, "e", "e"],
 		["g", 0x67, "g", "g"],
@@ -56,6 +124,7 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 
 	assert.ok(para.enableCvSs);
 	assertCutTargets(glyphStore);
+	assertCutGeometry(glyphStore, para);
 	const glyph = glyphStore.queryByUnicodeEnsured(0x1be);
 	for (const key of ["corner-vertical-cut", "corner-diagonal-cut"]) {
 		const expected = primes.get("glottal-stop").variants.get(key);
@@ -164,13 +233,14 @@ test("cut CV variants propagate to glyphs and preserve protected hook forms", as
 });
 
 test("lower-a cut selectors resolve in italic without changing retroflex hooks", async () => {
-	const { glyphStore } = await buildGlyphData({
+	const { para, glyphStore } = await buildGlyphData({
 		paramsDir,
 		shape: { serifs: "sans", spacing: "term", weight: 530, width: 586, slope: "italic", slopeAngle: 9.4 },
 		menu: { family: "Iosevka", version: "34.9.0", width: 5, slope: "italic", weight: 530 },
 		featureControl: {},
 	});
 	assertCutTargets(glyphStore);
+	assertCutGeometry(glyphStore, para);
 	const g = glyphStore.queryByUnicodeEnsured(0x61);
 	const retroflex = glyphStore.queryByUnicodeEnsured(0x1d8f);
 	const cvs = AnyCv.query(g);

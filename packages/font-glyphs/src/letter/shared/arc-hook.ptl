@@ -355,7 +355,8 @@ glyph-block Letter-Arc-Hook : begin
 	define [VerticalCutExtension hook sw] : HSwToV : Math.max hook sw
 
 	define [CutArcTerminal shape x top bot sw fLeft fTop] : begin
-		local split : mix bot top 0.5
+		local depth : Math.min ((top - bot) / 2) ([Math.max Hook SHook] + sw)
+		local split : if fTop (top - depth) (bot + depth)
 		local endY : if fTop (top + 2 * sw + O) (bot - 2 * sw - O)
 		local keepOther : if fTop [MaskBelow split] [MaskAbove split]
 		local keepHalf : if fTop [MaskAbove split] [MaskBelow split]
