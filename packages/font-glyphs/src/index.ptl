@@ -12,7 +12,7 @@ extern isFinite
 
 $$include './meta/macros.ptl'
 
-export : define [buildGlyphs para recursive] : begin
+export : define [buildGlyphs para recursive includeAutoBuilds] : begin
 	# Execution and dependency management
 	local $Exec$ : new GlyphBuildExecutor recursive
 
@@ -110,7 +110,7 @@ export : define [buildGlyphs para recursive] : begin
 
 	# Auto-builds
 	run-glyph-module './auto-build/recursive-build.mjs'
-	if [not recursive] : begin
+	if ([not recursive] || includeAutoBuilds) : begin
 		run-glyph-module './auto-build/accents.mjs'
 		run-glyph-module './auto-build/transformed.mjs'
 		run-glyph-module './auto-build/composite.mjs'

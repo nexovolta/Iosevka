@@ -1679,7 +1679,12 @@ glyph-block Autobuild-Pnonetic-Ligatures : begin
 
 	define [createPhoneticLigatures tfm prefix adws mockNParts _shrink kKern demands] : begin
 		local {ww0 wwM shrink kern} : PhoneticDimensions tfm adws mockNParts _shrink kKern
-		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix '' demands
+		local neededDemands {}
+		foreach demand [items-of demands] : begin
+			local name : CircNameNoCheck demand.0 prefix demand.1 ''
+			if [glyph-is-needed name] : neededDemands.push demand
+		if [not neededDemands.length] : return nothing
+		local jobs : CollectJobs DECOMPOSABLE NOT-CENTERED ALLOW-PROPORTIONAL prefix '' neededDemands
 
 		foreach {gn unicode parts mak} [items-of jobs.nonDecomposable] : if (unicode === 0xA777)
 			jobs.relApplications.push {LocalizedForm.PTMN gn 'tum.phonotypic'}

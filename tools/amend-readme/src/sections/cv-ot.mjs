@@ -61,5 +61,6 @@ export default async function processCvOt(argv, dirs) {
 }
 
 export function sampleImageCountEmOfCv(cv) {
-	return cv.hotChars.length * (cv.slopeDependent ? 2 : 1);
+	const samples = cv.descSampleText.length ? cv.descSampleText : cv.hotChars;
+	return samples.length * (cv.slopeDependent ? 2 : 1);
 }

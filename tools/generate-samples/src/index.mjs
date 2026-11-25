@@ -19,9 +19,8 @@ import Weights from "./templates/weights.mjs";
 export default main;
 
 class Generator {
-	constructor(outputDir, fontFiles) {
+	constructor(outputDir) {
 		this.outputDir = outputDir;
-		this.fontFiles = fontFiles;
 		this.tasksGenerated = [];
 	}
 	async add(name, template, args) {
@@ -29,7 +28,6 @@ class Generator {
 			const fullName = `${name}.${theme}`;
 			const argsWithTheme = { ...args, theme };
 			const generated = template(argsWithTheme);
-			generated.fontFiles = this.fontFiles;
 			const jsonPath = path.join(this.outputDir, `${fullName}.json`);
 			await fs.promises.writeFile(jsonPath, JSON.stringify(generated, null, "  "));
 			this.tasksGenerated.push(fullName);
@@ -39,11 +37,13 @@ class Generator {
 
 async function main(argv) {
 	const variantsData = await parseVariantsData(argv);
+	const tasks = new Generator(argv.outputDir);
+
+	if (argv.onlyCvSamples) {
+		await addCvTasks(tasks, variantsData);
+		return tasks.tasksGenerated;
+	}
 	const ligationData = await parseLigationData(argv);
-	const tasks = new Generator(
-		argv.outputDir,
-		argv.fontGroups.map(fg => path.resolve(process.cwd(), "dist", fg, "TTF", "*.ttf")),
-	);
 
 	// Common
 	await tasks.add("grand-title", GrandTitle, {});
@@ -120,18 +120,30 @@ async function main(argv) {
 	}
 
 	// CV
-	for (const cv of [...variantsData.specials, ...variantsData.primes]) {
+	if (!argv.excludeCvSamples) await addCvTasks(tasks, variantsData);
+
+	return tasks.tasksGenerated;
+}
+
+export async function addCvTasks(tasks, variantsData) {
+	const specialKeys = new Set(variantsData.specials.map(cv => cv.key));
+	for (const cv of [
+		...variantsData.specials,
+		...variantsData.primes.filter(cv => !specialKeys.has(cv.key)),
+	]) {
 		if (!cv.tag && !cv.isSpecial) continue;
+		const previewText = cv.descSampleText?.length ? cv.descSampleText : cv.hotChars;
+		if (!previewText?.length)
+			throw new Error(`Missing preview text for character variant ${cv.key}.`);
 		for (const variant of cv.variants) {
 			await tasks.add(`cv-${cv.key}-${variant.key}`, CharVariant, {
 				fontFeatures: variant.snapshotFeatureApplication || {
 					[variant.tag || cv.tag]: variant.rank,
 				},
+				variants: { design: { [cv.key]: variant.key } },
 				slopeDependent: !!cv.slopeDependent,
-				hotChars: cv.hotChars,
+				previewText,
 			});
 		}
 	}
-
-	return tasks.tasksGenerated;
 }

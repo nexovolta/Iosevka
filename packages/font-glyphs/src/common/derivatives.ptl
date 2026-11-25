@@ -223,6 +223,9 @@ glyph-block Common-Derivatives : begin
 		local gndSource : Fn gnSources null null
 		local gSource : query-glyph gndSource
 		linksGnMap.set [keyOfGnList gnSources] gndSource
+		if gSource : foreach gn [items-of gnSources] : begin
+			local component : query-glyph gn
+			if component : gSource.addVariantForRecursiveBuild component
 
 		local mesh : getGrMesh gnSources Query query-glyph
 

@@ -22,10 +22,10 @@ export class MdCol {
 	}
 }
 
-export function ImgX(path, w) {
-	const widthProp = w ? ` width=${w}` : ``;
+export function ImgX(assetPath, width) {
+	const widthProp = width ? ` width="${Number(width)}"` : "";
 	return (
-		`<img src="${path}.light.svg#gh-light-mode-only"${widthProp}/>` +
-		`<img src="${path}.dark.svg#gh-dark-mode-only"${widthProp}/>`
+		`<img src="${assetPath}.light.svg#gh-light-mode-only"${widthProp}/>` +
+		`<img src="${assetPath}.dark.svg#gh-dark-mode-only"${widthProp}/>`
 	);
 }
