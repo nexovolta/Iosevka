@@ -57,16 +57,20 @@ glyph-block Digits-Six : begin
 				list
 					corner fh.xRHook top
 
-	define [SixFlatBowlOBar] : with-params [oTop [left SB] [right RightSB] [sw Stroke]] : glyph-proc
+	define [SixFlatBowlKnots oTop left right sw yStart] : begin
 		local arches : SixBowlArches oTop
-		include : dispiro
-			flat left oTop [widths.lhs.heading sw Downward]
+		return : list
+			flat left yStart [widths.lhs.heading sw Downward]
 			curl left [Math.min arches.adb (oTop - TINY)]
 			Arch.lhs 0 (sw -- sw)
 			flatside.ru right 0 oTop arches.ada arches.adb
 			arcvh
 			flat [Arch.adjust-x.top [mix left right 0.5] (sw -- sw)] oTop
 			curl (left + TINY) oTop [heading Leftward]
+
+	define [SixFlatBowlOBar] : with-params [oTop [left SB] [right RightSB] [sw Stroke]] : glyph-proc
+		include : dispiro
+			SixFlatBowlKnots oTop left right sw oTop
 
 	define [SixHookTerminal top inward] : if inward
 		list
@@ -87,15 +91,25 @@ glyph-block Digits-Six : begin
 					SixHookTerminal top inward
 		if inward : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
 
-	define [SixToothedHookFromBowl top oTop xStem] : glyph-proc
+	define [SixToothedBody top oTop fFlatBowl] : glyph-proc
+		local xStem : if fFlatBowl SB (SB + OX)
+		local arches : SixBowlArches oTop
 		local arc : Toothed [new Box top 0 xStem (RightSB - OX)]
 		local yTurn : if (oTop > [SixBowlOTop top])
 			Math.min (top - 1.2 * Stroke - TINY) [Math.max (oTop + Stroke) (top - SmallArchDepthA)]
 			Math.max (oTop + Stroke) (top - SmallArchDepthA)
 		include : dispiro
 			arc.hookStartR
-			curl xStem yTurn [heading Downward]
-			flat xStem [Math.min oTop (yTurn - TINY)] [heading Downward]
+			flat xStem yTurn [heading Downward]
+			if fFlatBowl
+				SixFlatBowlKnots oTop SB RightSB Stroke [Math.min oTop (yTurn - TINY)]
+				list
+					curl xStem (arches.yMiddleA + TINY) [heading Downward]
+					g4.down.mid xStem arches.yMiddleA
+					Arch.lhs 0
+					g4.up.mid (RightSB - OX) arches.yMiddleB
+					Arch.lhs oTop (swAfter -- ShoulderFine)
+					g4 (xStem + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA [widths.lhs ShoulderFine]
 		include : arc.serifStartR
 
 	glyph-block-export OpenContourSixShape
@@ -213,12 +227,7 @@ glyph-block Digits-Six : begin
 	define [SixBodyClosedSerifedHook fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
 		local oTop : fallback _oTop [SixBowlOTop top]
-		if fFlatBowl : include : union
-			SixFlatBowlOBar oTop
-			SixToothedHookFromBowl top oTop SB
-		if [not fFlatBowl] : include : union
-			SixRoundBowl oTop
-			SixToothedHookFromBowl top oTop (SB + OX)
+		include : SixToothedBody top oTop fFlatBowl
 	define [SixBodySteepBar fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
 		include : StraightBarSixShape top (xTerminalMix -- 0.28) (flatBowl -- fFlatBowl) (oTop -- [fallback _oTop [SixBowlOTop top]])
