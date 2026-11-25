@@ -77,9 +77,10 @@ Examples worth tracing include [9](../packages/font-glyphs/src/number/9.ptl),
 [Cyrillic de](../packages/font-glyphs/src/letter/cyrillic/de.ptl), and
 [Cyrillic dzzhe](../packages/font-glyphs/src/letter/cyrillic/dzzhe-zhwe.ptl).
 
-Greek lowercase iota in [lower-il](../packages/font-glyphs/src/letter/latin/lower-il.ptl)
-is a top-hook-only cut-hook consumer: add the new variants to the top terminal
-only. Do not extend them to any bottom hook or tail forms.
+Greek lowercase final sigma in
+[lower-final-sigma](../packages/font-glyphs/src/letter/greek/lower-final-sigma.ptl)
+gets cut-hook variants only on its top hook. Do not apply them to its descender
+tail or other tail variants.
 
 ### Requested question, glottal-stop, r and t coverage
 
@@ -114,8 +115,8 @@ only. Do not extend them to any bottom hook or tail forms.
    cut to applicable consumers and their existing variant combinations.
    Treat custom Flat-only geometry and helper-only consumers as separate
    design decisions; do not silently change unrelated tails. For Greek lower
-   iota, add cuts only at the top hook. Maintain component attachment, metrics,
-   anchors and composed-glyph behavior.
+   final sigma, add cuts only at the top hook and preserve its descender tail.
+   Maintain component attachment, metrics, anchors and composed-glyph behavior.
 5. Add named selectors, OpenType mappings, sampler/preview text and descriptions
    in [variants.toml](../params/variants.toml) and the existing variant
    documentation generation workflow. Keep current defaults and old selector
