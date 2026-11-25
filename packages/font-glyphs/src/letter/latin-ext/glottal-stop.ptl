@@ -1,6 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
+import [Box] from '@iosevka/geometry/box'
 
 glyph-module
 
@@ -9,7 +10,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay CurlyTail PalatalHook
-	glyph-block-import Letter-Arc-Hook : MakeCornerHook
+	glyph-block-import Letter-Arc-Hook : MakeCornerHook Toothed Toothless
 
 	glyph-block-export AdviceGlottalStopArchDepth
 	define [AdviceGlottalStopArchDepth top sign] : begin
@@ -24,6 +25,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	glyph-block-export QuestionSmoothFlatHookedShape QuestionRevSmoothFlatHookedShape
 	glyph-block-export QuestionCornerCornerHookedShape QuestionRevCornerCornerHookedShape
 	glyph-block-export QuestionSmoothCornerHookedShape QuestionRevSmoothCornerHookedShape
+	glyph-block-export QuestionCornerSerifedHookedShape QuestionRevCornerSerifedHookedShape
+	glyph-block-export QuestionSmoothSerifedHookedShape QuestionRevSmoothSerifedHookedShape
+	glyph-block-export QuestionCornerInwardSerifedShape QuestionRevCornerInwardSerifedShape
+	glyph-block-export QuestionSmoothInwardSerifedShape QuestionRevSmoothInwardSerifedShape
 
 	define [QuestionSmoothShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
@@ -165,6 +170,44 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 			alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
 			straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
 
+	define [QuestionSerifedShape top stemBot left right _hook fCorner fReverse fInward] : glyph-proc
+		local hook : fallback _hook Hook
+		local ArcType : if fInward Toothless Toothed
+		local arc : ArcType [new Box top 0 left right] (hook -- hook)
+		local yBowlBot : BowlFloor top stemBot
+		local yConnect : YConnectT top yBowlBot
+		local strokeEndCor : Math.hypot 1 TanSlope
+		include : dispiro
+			if fReverse [arc.hookStartR] [arc.hookStartL]
+			if fCorner
+				list
+					if fReverse
+						g4 (left + OX) [YSmoothMidL top (yConnect - Stroke) ArchDepthA ArchDepthB]
+						g4 (right - OX) [YSmoothMidR top (yConnect - Stroke) ArchDepthA ArchDepthB]
+					arcvh
+					if fReverse
+						straight.right.end [mix left right 0.5] (yConnect - Stroke) [heading Rightward]
+						straight.left.end [mix left right 0.5] (yConnect - Stroke) [heading Leftward]
+				list
+					if fReverse
+						g4 left (top - ArchDepthA * 0.9)
+						g4 right (top - ArchDepthB * 0.9)
+					alsoThru.g2 0.5 0.45 [widths.center EssQuestion]
+					if fReverse
+						straight.down.end ([mix left right 0.5] + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
+						straight.down.end ([mix left right 0.5] - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
+		if fCorner : include : VBar.m [mix left right 0.5] stemBot yConnect
+		include : if fReverse [arc.serifStartR] [arc.serifStartL]
+
+	define [QuestionCornerSerifedHookedShape top bot left right hook] : QuestionSerifedShape top bot left right hook true false false
+	define [QuestionRevCornerSerifedHookedShape top bot left right hook] : QuestionSerifedShape top bot left right hook true true false
+	define [QuestionSmoothSerifedHookedShape top bot left right hook] : QuestionSerifedShape top bot left right hook false false false
+	define [QuestionRevSmoothSerifedHookedShape top bot left right hook] : QuestionSerifedShape top bot left right hook false true false
+	define [QuestionCornerInwardSerifedShape top bot left right hook] : QuestionSerifedShape top bot left right hook true false true
+	define [QuestionRevCornerInwardSerifedShape top bot left right hook] : QuestionSerifedShape top bot left right hook true true true
+	define [QuestionSmoothInwardSerifedShape top bot left right hook] : QuestionSerifedShape top bot left right hook false false true
+	define [QuestionRevSmoothInwardSerifedShape top bot left right hook] : QuestionSerifedShape top bot left right hook false true true
+
 	define [SmoothLetterShape top stemBot left right _hook] : glyph-proc
 		local hook : fallback _hook Hook
 		local adb : AdviceGlottalStopArchDepth top (+1)
@@ -200,6 +243,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothFlatHooked QuestionSmoothFlatHookedShape
 		cornerCornerHooked QuestionCornerCornerHookedShape
 		smoothCornerHooked QuestionSmoothCornerHookedShape
+		cornerSerifedHooked QuestionCornerSerifedHookedShape
+		smoothSerifedHooked QuestionSmoothSerifedHookedShape
+		cornerInwardSerifed QuestionCornerInwardSerifedShape
+		smoothInwardSerifed QuestionSmoothInwardSerifedShape
 	define ReverseBodies : object
 		smooth           RevSmoothLetterShape
 		corner           QuestionRevCornerShape
@@ -207,6 +254,10 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothFlatHooked QuestionRevSmoothFlatHookedShape
 		cornerCornerHooked QuestionRevCornerCornerHookedShape
 		smoothCornerHooked QuestionRevSmoothCornerHookedShape
+		cornerSerifedHooked QuestionRevCornerSerifedHookedShape
+		smoothSerifedHooked QuestionRevSmoothSerifedHookedShape
+		cornerInwardSerifed QuestionRevCornerInwardSerifedShape
+		smoothInwardSerifed QuestionRevSmoothInwardSerifedShape
 
 	define [CreateGlottalFamily gn marks top hook Bodies] : begin
 		foreach {suffix Impl} [Object.entries Bodies] : do

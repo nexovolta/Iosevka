@@ -7776,7 +7776,11 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-glottal-stop-smooth-flat-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-flat-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-corner-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-smooth-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="6"> </td>
+<td><img src="../images/cv-glottal-stop-corner-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td>1</td>
@@ -7785,7 +7789,11 @@ Regenerate these regular-weight SVG previews and this list with
 <td>4</td>
 <td>5</td>
 <td>6</td>
-<td colspan="6"> </td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td rowspan="10"><code>VXFP</code></td>
@@ -18431,7 +18439,11 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-question-smooth-flat-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-smooth-flat-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-question-corner-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-corner-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-question-smooth-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-smooth-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="6"> </td>
+<td><img src="../images/cv-question-corner-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-corner-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-question-smooth-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-smooth-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-question-corner-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-corner-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-question-smooth-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-question-smooth-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td>1</td>
@@ -18440,7 +18452,11 @@ Regenerate these regular-weight SVG previews and this list with
 <td>4</td>
 <td>5</td>
 <td>6</td>
-<td colspan="6"> </td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td rowspan="2"><code>VXAQ</code></td>
