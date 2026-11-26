@@ -22,6 +22,10 @@ the existing tails, such as `vertical-cut-curly-tail`. The `cyrl-capital-e`,
 `cyrl-e`, `cyrl-capital-koppa`, and `cyrl-koppa` selectors also have
 `vertical-cut` and `diagonal-cut` options.
 
+`lower-lambda`, `cyrl-capital-u`, and `cyrl-u` offer independent counterparts
+to the `y` designs, including cursive vertical- and diagonal-cut hooks.
+Lambda's y-based designs are vertically mirrored; its existing options remain available.
+
 Cut terminals are also available for applicable `f`, `j`, `capital-j`, `r`,
 `t`, cursive `y`, `long-s`, and traditional `lower-eszet` designs. Existing
 palatal, retroflex, and implosive forms retain their original hooks.

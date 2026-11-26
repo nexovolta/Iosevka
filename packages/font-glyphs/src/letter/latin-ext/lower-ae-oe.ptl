@@ -494,6 +494,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define [overlapMask] : intersection
 			refer-glyph mask
 			with-transform [ApparentTranslate (-[HSwToV : 0.125 * df.mvs]) 0] [refer-glyph mask]
+			MaskLeft aSub.rightSB
 		include : union
 			difference [refer-glyph src]
 				union
@@ -501,7 +502,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					intersection
 						MaskAbove (XH - [DoubleStorey.SmoothB aSub])
 						MaskLeft (aSub.rightSB + [HSwToV df.mvs])
-			difference [refer-glyph rightStroke] [overlapMask]
+			refer-glyph rightStroke
 
 	derive-multi-part-glyphs-baked 'av' 0xA739 {'av/a' 'av/v' 'av/aMask' 'av/vRight'}
 		function [srcs gr] : glyph-proc

@@ -677,20 +677,24 @@ glyph-block Letter-Latin-Lower-Y : begin
 				bot   -- (Descender + Stroke)
 				space -- {[if hookEnd (SB + [HSwToV Stroke]) 0] Width}
 
-		if (slabKind === SLAB-NONE) : begin
+		do
 			create-glyph "grek/lambda.\(suffix)" : glyph-proc
 				include : MarkSet.b
 				include : FlipAsLambda Ascender 0 : glyph-proc
-					include : CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
-					include : hookShape Ascender 0
+					include : union
+						CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
+						hookShape Ascender 0
+						CursiveYShape.Serifs Ascender slabKind
 
 			create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
 				include : MarkSet.b
 				include : union
 					FlatSlashShape (RightSB - [HSwToV HalfStroke]) [mix 0 Ascender 0.8] (OverlayStroke / 2)
 					FlipAsLambda Ascender 0 : glyph-proc
-						include : CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
-						include : hookShape Ascender 0
+						include : union
+							CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
+							hookShape Ascender 0
+							CursiveYShape.Serifs Ascender slabKind
 
 	create-glyph 'grek/lambda.squareBottomSerifless' : glyph-proc
 		include : MarkSet.b
