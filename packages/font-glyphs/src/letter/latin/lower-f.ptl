@@ -121,7 +121,7 @@ glyph-block Letter-Latin-Lower-F : begin
 	glyph-block-export StdSmallFBarLeftPos0
 	define [StdSmallFBarLeftPos0] : [mix SB RightSB 0.35] - [HSwToV QuarterStroke]
 
-	define [StandardFShape df m bh counterHook sym cut] : glyph-proc
+	define [StandardFShape df m bh counterHook sym cut _crossBar] : glyph-proc
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK) || (counterHook === CH-VERTICAL-CUT) || (counterHook === CH-DIAGONAL-CUT)
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
@@ -148,7 +148,8 @@ glyph-block Letter-Latin-Lower-F : begin
 			include : if (cut === 'diagonal') shape [CutArcTerminal shape hookEnd Ascender 0 Stroke false true]
 		: else : include : StdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
 		include : Translate (barLeft - barLeft0) 0
-		include : HCrossBar.top xCrossLeft xCrossRight bh
+		local crossBar : fallback _crossBar HCrossBar.top
+		include : crossBar xCrossLeft xCrossRight bh
 
 		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
 		local hookSpanK : if (sym === SYM-LEFT) 0.5 1
@@ -177,7 +178,7 @@ glyph-block Letter-Latin-Lower-F : begin
 			[if offset corner curl] (barleft + offset) 0 [heading Downward]
 			if offset {[corner (hookRight - offset) 0]} {}
 
-	define [NarrowStdFShape df m bh counterHook sym] : glyph-proc
+	define [NarrowStdFShape df m bh counterHook sym _cut _crossBar] : glyph-proc
 		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK) || (counterHook === CH-VERTICAL-CUT) || (counterHook === CH-DIAGONAL-CUT)
 		local crossRight : mix df.width df.rightSB m
 		local barLeft0 : [mix df.leftSB df.rightSB 0.35] - [HSwToV QuarterStroke]
@@ -199,7 +200,8 @@ glyph-block Letter-Latin-Lower-F : begin
 
 		include : NarrowStdFShapeT dispiro df 0 barLeft0 Stroke hookExtra
 		include : Translate (barLeft - barLeft0) 0
-		include : HCrossBar.top xCrossLeft xCrossRight bh
+		local crossBar : fallback _crossBar HCrossBar.top
+		include : crossBar xCrossLeft xCrossRight bh
 
 		local hookRefLeft : if (sym === SYM-LEFT) balancedBarLeft barLeft
 		local hookSpanK : if (sym === SYM-LEFT) 0.4 0.75
@@ -341,6 +343,15 @@ glyph-block Letter-Latin-Lower-F : begin
 		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
 		return : FBarLeftPos dfF sym balancedBarLeft
 
+	define [FengTrillCrossBar xl xr y _s] : begin
+		local s : fallback _s Stroke
+		if (!TanSlope) : return : HCrossBar.top xl xr y s
+		return : spiro-outline
+			corner xl y
+			corner xr y
+			corner xr (y - s)
+			corner xl (y - s)
+
 	define [FengTrillShape Body fNarrow pBar ch yBar sym] : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 2
 		include : df.markSet.bp
@@ -363,7 +374,7 @@ glyph-block Letter-Latin-Lower-F : begin
 		local toothDepth : CornerHookDepth Hook sw
 		local compress : df.width / (xEngPart + dfEng.width)
 		local bodyG : new-glyph : glyph-proc
-			include : Body dfLeft pBar yBar ch sym
+			include : Body dfLeft pBar yBar ch sym null FengTrillCrossBar
 
 		include : with-transform [Scale compress 1] : glyph-proc
 			include : intersection bodyG [MaskBelow yJoin]
@@ -375,7 +386,7 @@ glyph-block Letter-Latin-Lower-F : begin
 				flat barLeft yJoin [heading Downward]
 				curl barLeft (yJoin - sw) [heading Downward]
 			foreach [k : list 1 2 3] : include : VBar.r (barLeft + vsw + k * pitch) (Ascender - toothDepth) Ascender toothSw
-			include : HCrossBar.top barLeft (xN + [HSwToV Stroke]) yBar
+			include : FengTrillCrossBar barLeft (xN + [HSwToV Stroke]) yBar
 		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
 			with-transform [Scale compress 1] : glyph-proc
 				include : VBar.l dfEng.leftSB 0 XH Stroke
