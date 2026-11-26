@@ -32,9 +32,7 @@ function edgeAt(glyph, y, left) {
 
 function assertCutGeometry(glyphStore, para) {
 	const metrics = calculateMetrics(para);
-	const etStroke = metrics.AdviceStroke2(2.5, 3, metrics.CAP);
-	const etLowerCounterTop = metrics.CAP * metrics.OverlayPos
-		+ etStroke * (metrics.CThin - 0.5) - metrics.Stroke;
+	const etLowerCounterTop = (metrics.CAP - metrics.Stroke) / 2;
 	for (const family of ["e", "reve"]) {
 		for (const bar of ["flatCrossbar", "diagonalCrossbar", "diagonalCrossbarFalling"]) {
 			const cut = glyphStore.queryByNameEnsured(`${family}.${bar}VerticalCut`);
@@ -58,7 +56,7 @@ function assertCutGeometry(glyphStore, para) {
 		});
 		assert.ok(lowerCounter, `${name} lower counter`);
 		const maxY = Math.max(...lowerCounter.flat().map(point => point.y));
-		assert.ok(Math.abs(maxY - etLowerCounterTop) < 0.1, `${name} lower bowl is not at its legacy height`);
+		assert.ok(Math.abs(maxY - etLowerCounterTop) < 0.1, `${name} lower crossbar is not centered on half cap height`);
 		assert.ok(lowerCounter.some(points =>
 			points.every(point => Math.abs(point.y - maxY) < 0.5) &&
 			Math.abs(points[3].x - points[0].x) > 0.15 * para.stroke),

@@ -116,6 +116,26 @@ for (const [weight, width, spacing] of [
 				Math.abs(points[3].x - points[0].x) > metrics.Stroke),
 			"cursive lambda corner terminal is too long");
 		}
+		if (width === 586) {
+			const metrics = calculateMetrics(para);
+			for (const family of ["et", "upperOpenEt", "closedEt"]) {
+				const hooks = family === "closedEt" ? [""] : ["", "FlatHook", "CornerHook", "VerticalCut", "DiagonalCut", "Serifed", "InwardSerifed"];
+				for (const hook of hooks) {
+					for (const bottom of ["Toothed", "Tailed", "FlatBottom", "ToothlessCorner", "ToothlessRounded", "BottomCut", "FlatBottomSerifed"]) {
+						const name = `ampersand.${family}${hook}${bottom}`;
+						const g = glyph(name);
+						const segments = BooleanGeom.removeOverlap(g.geometry.toBezArcs(), "nonZero", 16384)
+							.flatMap(contour => contour.map(arc =>
+								[arc.a, arc.b, arc.c, arc.d].map(p => g.gizmo.unapply(p))));
+						for (const y of [(metrics.CAP + metrics.Stroke) / 2, (metrics.CAP - metrics.Stroke) / 2]) {
+							assert.ok(segments.some(points => points.every(p => Math.abs(p.y - y) < 0.1) &&
+								Math.abs(points[3].x - points[0].x) > 0.1 * metrics.Stroke),
+							`${name}: crossbar is not centered at half cap height`);
+						}
+					}
+				}
+			}
+		}
 	});
 }
 
