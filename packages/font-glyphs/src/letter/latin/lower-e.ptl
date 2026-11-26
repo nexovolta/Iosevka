@@ -26,13 +26,13 @@ glyph-block Letter-Latin-Lower-E : begin
 	define SLAB-VERTICAL-CUT 6
 	define SLAB-DIAGONAL-CUT 7
 
-	define [SmallESerifedTerminalShape df top stroke hook tailSlab isClockwise cutTop] : begin
+	define [SmallESerifedTerminalShape df top stroke hook tailSlab isClockwise cutTop cornerTop shortenCorner] : begin
 		local doSwash : !isClockwise && para.isItalic && (para.slopeAngle > 0)
 		return : match tailSlab
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.LtrLhs df.rightSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndR
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke) (depthLimit -- [if (para.isItalic || shortenCorner) cornerTop VERY-FAR]) (extension -- [if para.isItalic [HSwToV : 0.25 * stroke] 0]) (shorten -- shortenCorner)].hookEndR
 			[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.rightSB O (0.2 * hook) stroke
 			[Just SLAB-VERTICAL-CUT] : list
 				HookEnd 0 (sw -- stroke)
@@ -46,13 +46,13 @@ glyph-block Letter-Latin-Lower-E : begin
 		[Just SLAB-INWARD]    : ArcEndSerif.InwardR df.rightSB 0 stroke hook
 		__                    : no-shape
 
-	define [RevSmallESerifedTerminalShape df top stroke hook tailSlab isCounterClockwise cutTop] : begin
+	define [RevSmallESerifedTerminalShape df top stroke hook tailSlab isCounterClockwise cutTop cornerTop shortenCorner] : begin
 		local doSwash : !isCounterClockwise && para.isItalic && (para.slopeAngle < 0)
 		return : match tailSlab
 			[Just SLAB-CLASSICAL] : SerifedArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-INWARD] : InwardSlabArcEnd.RtlRhs df.leftSB 0 stroke hook
 			[Just SLAB-FLAT-HOOK] : [MakeFlatHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
-			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke)].hookEndL
+			[Just SLAB-CORNER-HOOK] : [MakeCornerHook df.leftSB df.rightSB top 0 (sw -- stroke) (depthLimit -- [if (para.isItalic || shortenCorner) cornerTop VERY-FAR]) (extension -- [if para.isItalic [HSwToV : 0.25 * stroke] 0]) (shorten -- shortenCorner)].hookEndL
 			[Just SLAB-DIAGONAL-CUT] : DeltaCutEnd df.middle df.leftSB O (0.2 * hook) stroke
 			[Just SLAB-VERTICAL-CUT] : list
 				HookEnd 0 (sw -- stroke)
@@ -80,6 +80,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
 		local-parameter : diag     -- 0
+		local-parameter : shortenCorner -- true
 
 		local tailSlab : if turned styTop styBot
 		local cw : turned && (tailSlab != nothing)
@@ -88,6 +89,7 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		local rr : diag * 0.08 * top
 		local cutTop : Math.max (0.6 * stroke) : Math.min (hook + stroke) (yBarBottom + rr - 0.1 * stroke)
+		local cornerTop : Math.min cutTop (yBarBottom - [Math.abs rr] - 0.2 * stroke)
 		include : if diag
 			DiagonalHBar (df.leftSB + OX + stroke / 2 + bbd) (df.rightSB - OX) (yBarBottom + stroke / 2) (2 * rr) stroke
 			HBar.b ((df.leftSB + OX) + stroke / 2 + bbd) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
@@ -99,7 +101,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				curl (df.rightSB - OX) [Math.max (top - adb) (yBarBottom + rr + [if diag (stroke / 2) 0] + TINY)]
 				Arch.lhs top (sw -- stroke)
 				flatside.ld df.leftSB 0 top ada adb
-				SmallESerifedTerminalShape df top stroke hook tailSlab cw cutTop
+				SmallESerifedTerminalShape df top stroke hook tailSlab cw cutTop cornerTop shortenCorner
 		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.rightSB (2 * cutTop) 0 stroke false false] [outline]
 
 		include : SmallETerminalSerif df top stroke hook tailSlab cw
@@ -121,6 +123,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
 		local-parameter : diag     -- 0
+		local-parameter : shortenCorner -- true
 
 		local tailSlab : if turned styTop styBot
 		local ccw : turned && (tailSlab != nothing)
@@ -129,6 +132,7 @@ glyph-block Letter-Latin-Lower-E : begin
 
 		local rr : diag * 0.08 * top
 		local cutTop : Math.max (0.6 * stroke) : Math.min (hook + stroke) (yBarBottom - rr - 0.1 * stroke)
+		local cornerTop : Math.min cutTop (yBarBottom - [Math.abs rr] - 0.2 * stroke)
 		include : if diag
 			DiagonalHBar (df.leftSB + OX) (df.rightSB - OX - stroke / 2) (yBarBottom + stroke / 2) (2 * rr) stroke
 			HBar.b ((df.leftSB + OX) + stroke / 2) ((df.rightSB - OX) - stroke / 2) yBarBottom stroke
@@ -138,7 +142,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			curl (df.leftSB + OX) [Math.max (top - ada) (yBarBottom - rr + [if diag (stroke / 2) 0] + TINY)]
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
-			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw cutTop
+			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw cutTop cornerTop shortenCorner
 		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.leftSB (2 * cutTop) 0 stroke true false] [outline]
 
 		include : RevSmallETerminalSerif df top stroke hook tailSlab ccw
@@ -157,6 +161,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : turned   -- false
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
+		local-parameter : shortenCorner -- true
 
 		local tailSlab : if turned styTop styBot
 		local cw : turned && (tailSlab != nothing)
@@ -177,7 +182,7 @@ glyph-block Letter-Latin-Lower-E : begin
 				g4 ((df.rightSB - OX) - 0.5 * (df.width / HalfUPM) * extraCurliness) [YSmoothMidR top yBarBottom ada2 adb2]
 				Arch.lhs top (sw -- stroke)
 				flatside.ld df.leftSB 0 top ada adb
-				SmallESerifedTerminalShape df top stroke hook tailSlab cw cutTop
+				SmallESerifedTerminalShape df top stroke hook tailSlab cw cutTop cutTop shortenCorner
 		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.rightSB (2 * cutTop) 0 stroke false false] [outline]
 
 		include : SmallETerminalSerif df top stroke hook tailSlab cw
@@ -198,6 +203,7 @@ glyph-block Letter-Latin-Lower-E : begin
 		local-parameter : turned   -- false
 		local-parameter : styTop   -- nothing
 		local-parameter : styBot   -- nothing
+		local-parameter : shortenCorner -- true
 
 		local tailSlab : if turned styTop styBot
 		local ccw : turned && (tailSlab != nothing)
@@ -216,7 +222,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			g4 (df.leftSB + OX) [YSmoothMidL top yBarBottom ada2 adb2]
 			Arch.rhs top (sw -- stroke)
 			flatside.rd df.rightSB 0 top ada adb
-			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw cutTop
+			RevSmallESerifedTerminalShape df top stroke hook tailSlab ccw cutTop cutTop shortenCorner
 		include : if (tailSlab === SLAB-VERTICAL-CUT) [CutArcTerminal [outline] df.leftSB (2 * cutTop) 0 stroke true false] [outline]
 
 		include : RevSmallETerminalSerif df top stroke hook tailSlab ccw
@@ -506,6 +512,7 @@ glyph-block Letter-Latin-Lower-E : begin
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
 			include : Body [DivFrame 1] CAP
+				shortenCorner -- false
 				hook   -- Hook
 				ada    -- ArchDepthA
 				adb    -- ArchDepthB

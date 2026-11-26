@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-G : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay OBarRight FlatHookDepth
 	glyph-block-import Letter-Shared-Shapes : CurlyTail PalatalHook TopHook
 	glyph-block-import Common-OShape-Variants : RoundRectShapeT
-	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CornerHookDepth CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
+	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CornerHookDepthShortened CornerHookDepthFitted CornerHookOffset CornerHookOutset CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Latin-Z : ZemlyaBottomStrokeCursive
 
 	define [OverlayW bw] : glyph-proc
@@ -47,13 +47,14 @@ glyph-block Letter-Latin-Lower-G : begin
 		local gapD : Math.min gap : Math.max 0 (xArcR - x0 - minRun)
 		local ySideR : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidR groundy yArcBot adaL adbL] 1.06
 		local ySideL : Math.min (groundy - TINY) : mix yArcBot [YSmoothMidL groundy yArcBot adaL adbL] 1.06
-		local MakeHook : if fCorner MakeCornerHook MakeFlatHook
 		local endHook : match cut
 			[Just 'vertical'] : list
 				HookEnd bot (sw -- sw)
 				g4 (SB - [VerticalCutExtension hook sw]) (bot + hook)
 			[Just 'diagonal'] : DeltaCutEnd [mix SB RightSB 0.5] SB (bot + O) (bot + 0.2 * hook) sw
-			__ : [MakeHook SB RightSB groundy bot (sw -- sw)].hookEndL
+			__ : if fCorner
+				[MakeCornerHook SB RightSB groundy bot (sw -- sw) (extension -- [if para.isItalic [HSwToV : 0.25 * sw] 0]) (shorten -- true)].hookEndL
+				[MakeFlatHook SB RightSB groundy bot (sw -- sw)].hookEndL
 		if (fDisjoint && fFlat) : begin
 			local shape : dispiro
 				widths.rhs sw
@@ -276,13 +277,26 @@ glyph-block Letter-Latin-Lower-G : begin
 		export : define [CornerHook df y0 _ada _adb] : begin
 			local hd : FlatHookDepth df (9 / 8)
 			local xTerminal : Math.min (df.rightSB - hd.x - TINY - [HSwToV df.mvs]) : mix df.leftSB df.rightSB (1 / 5)
+			if para.isItalic : set xTerminal : Math.min xTerminal : Math.max df.leftSB (xTerminal - 0.1 * (df.rightSB - df.leftSB))
+			local depth : CornerHookDepthShortened [CornerHookDepthFitted hd.y df.mvs (-Descender)] df.mvs
+			if para.isItalic : begin
+				local xStub : xTerminal + [CornerHookOffset df.mvs] - [CornerHookOutset df.mvs]
+				return : union
+					dispiro
+						widths.rhs df.mvs
+						flat df.rightSB y0 [heading Downward]
+						curl df.rightSB (Descender + hd.y)
+						arcvh.superness DesignParameters.tightHookSuperness
+						flat (df.rightSB - hd.x) Descender
+						flat xStub Descender [heading Leftward]
+					VBar.l xStub Descender (Descender + depth) df.mvs
 			return : dispiro
 				widths.rhs df.mvs
 				flat df.rightSB y0 [heading Downward]
 				curl df.rightSB (Descender + hd.y)
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat (df.rightSB - hd.x) Descender
-				CornerHookEnd xTerminal Descender [CornerHookDepth hd.y df.mvs] df.mvs (-1) 1
+				CornerHookEnd xTerminal Descender depth df.mvs (-1) 1
 		export : define [CutHook df y0 _ada _adb cut] : begin
 			local ada : fallback _ada df.smallArchDepthA
 			local shape : dispiro

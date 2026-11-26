@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors LeaningAnchor
 	glyph-block-import Letter-Shared : CreateDependentComposite CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : uBowl FlatHookDepth SerifFrame
-	glyph-block-import Letter-Arc-Hook : CornerHookDepth CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
+	glyph-block-import Letter-Arc-Hook : CornerHookDepthShortened CornerHookDepthFitted CornerHookOffset CornerHookOutset CornerHookEnd CutArcTerminal DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay BeltOverlay TopHook
 	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopYJoin VCornerHalfWidth VSerifs VMotionSerifs VTopRightMotionSerifs VExtendedRtFull VExtendedRtInner VExtendedLtFull
 
@@ -572,16 +572,29 @@ glyph-block Letter-Latin-Lower-Y : begin
 				flat (RightSB - hd.x) bottom
 				curl xTerminal bottom
 
-		export : define [CornerHook y0 bottom] : begin
+		export : define [CornerHook y0 bottom bodyBottom] : begin
 			local hd : FlatHookDepth [DivFrame 1] (9 / 8)
 			local xTerminal : Math.min (RightSB - hd.x - TINY - [HSwToV Stroke]) : mix SB RightSB (1 / 5)
+			if para.isItalic : set xTerminal : Math.min xTerminal : Math.max SB (xTerminal - 0.1 * (RightSB - SB))
+			local depth : CornerHookDepthShortened [CornerHookDepthFitted hd.y Stroke (bodyBottom - bottom)] Stroke
+			if para.isItalic : begin
+				local xStub : xTerminal + [CornerHookOffset Stroke] - [CornerHookOutset Stroke]
+				return : union
+					dispiro
+						widths.rhs
+						flat RightSB y0 [heading Downward]
+						curl RightSB (bottom + hd.y)
+						arcvh
+						flat (RightSB - hd.x) bottom
+						flat xStub bottom [heading Leftward]
+					VBar.l xStub bottom (bottom + depth) Stroke
 			return : dispiro
 				widths.rhs
 				flat RightSB y0 [heading Downward]
 				curl RightSB (bottom + hd.y)
 				arcvh
 				flat (RightSB - hd.x) bottom
-				CornerHookEnd xTerminal bottom [CornerHookDepth hd.y Stroke] Stroke (-1) 1
+				CornerHookEnd xTerminal bottom depth Stroke (-1) 1
 
 		define [Cut y0 bottom diagonal] : begin
 			local shape : dispiro
@@ -604,6 +617,17 @@ glyph-block Letter-Latin-Lower-Y : begin
 				if [not doSlabMotion] : include sf.rt.inner
 			if ([not doSlabTop] && doSlabMotion) : include sf.lt.outer
 			if ([not doSlabTop] && doSlabTopRightMotion) : include sf.rt.inner
+
+		export : define [LambdaSerifs slabKind] : glyph-proc
+			local {doSlabTop doSlabBottom doSlabMotion doSlabTopRightMotion} slabKind
+			local sf : SerifFrame.fromDf [DivFrame 1] Ascender 0
+			local overlap : HSwToV : 0.05 * Stroke
+			include : with-transform [ApparentTranslate overlap 0] : glyph-proc
+				if doSlabTop : begin
+					include sf.lb.outer
+					if [not doSlabMotion] : include sf.rb.inner
+				if ([not doSlabTop] && doSlabMotion) : include sf.lb.outer
+				if ([not doSlabTop] && doSlabTopRightMotion) : include sf.rb.inner
 
 	define CursiveYConfig : SuffixCfg.weave
 		object # body
@@ -630,7 +654,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2)
 			include : CursiveYShape.Arc XH 0 fFlatHump
-			include : hookShape XH Descender
+			include : hookShape XH Descender 0
 			include : CursiveYShape.Serifs XH slabKind
 
 		create-glyph "yBelowdot/base.\(suffix)" : glyph-proc
@@ -644,7 +668,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'overlay' Middle [mix (O - Descender) [Math.max hookEnd Stroke] 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2 - Descender)
 			include : CursiveYShape.Arc CAP (CAP - XH) fFlatHump
-			include : hookShape CAP 0
+			include : hookShape CAP 0 (CAP - XH)
 			include : CursiveYShape.Serifs CAP slabKind
 
 		if (slabKind !== SLAB-ALL) : create-glyph "yHookRight.\(suffix)" : glyph-proc
@@ -652,7 +676,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			set-base-anchor 'overlay' Middle [mix O (Descender + [Math.max hookEnd Stroke]) 0.5]
 			set-base-anchor 'strike'  Middle (XH / 2)
 			include : CursiveYShape.Arc XH 0 fFlatHump
-			include : hookShape (XH - TailY - HalfStroke) Descender
+			include : hookShape (XH - TailY - HalfStroke) Descender 0
 			include : TopHook.toRight.rBarInner RightSB 0 XH
 			include : CursiveYShape.Serifs XH slabKind
 			eject-contour 'serifRT'
@@ -665,7 +689,7 @@ glyph-block Letter-Latin-Lower-Y : begin
 			include : difference
 				CursiveYShape.Arc XH 0 fFlatHump
 				intersection [MaskAbove yCut] [MaskRight Middle]
-			include : hookShape yCut Descender
+			include : hookShape yCut Descender 0
 			include : CursiveYShape.Serifs XH slabKind
 			eject-contour 'serifRT'
 
@@ -680,11 +704,12 @@ glyph-block Letter-Latin-Lower-Y : begin
 		do
 			create-glyph "grek/lambda.\(suffix)" : glyph-proc
 				include : MarkSet.b
-				include : FlipAsLambda Ascender 0 : glyph-proc
-					include : union
-						CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
-						hookShape Ascender 0
-						CursiveYShape.Serifs Ascender slabKind
+				include : union
+					FlipAsLambda Ascender 0 : glyph-proc
+						include : union
+							CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
+							hookShape Ascender 0 (Ascender - XH)
+					CursiveYShape.LambdaSerifs slabKind
 
 			create-glyph "latn/lambdaStroke.\(suffix)" : glyph-proc
 				include : MarkSet.b
@@ -693,8 +718,8 @@ glyph-block Letter-Latin-Lower-Y : begin
 					FlipAsLambda Ascender 0 : glyph-proc
 						include : union
 							CursiveYShape.Arc Ascender (Ascender - XH) fFlatHump
-							hookShape Ascender 0
-							CursiveYShape.Serifs Ascender slabKind
+							hookShape Ascender 0 (Ascender - XH)
+					CursiveYShape.LambdaSerifs slabKind
 
 	create-glyph 'grek/lambda.squareBottomSerifless' : glyph-proc
 		include : MarkSet.b

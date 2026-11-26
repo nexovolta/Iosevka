@@ -63,7 +63,7 @@ glyph-block Letter-Latin-Lower-A : begin
 						g4.right.start hookLeftX (XH - O)
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
-					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartL
+					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke) (extension -- [if para.isItalic [HSwToV : 0.25 * stroke] 0]) (shorten -- true)].hookStartL
 					[Just HOOK-DIAGONAL-CUT] : DeltaCutStart [mix hookLeftX barRightX 0.5] hookLeftX (XH - O) (XH - 0.2 * AHook) stroke
 					[Just HOOK-VERTICAL-CUT] : list
 						g4 (hookLeftX - [VerticalCutExtension AHook stroke]) (XH - AHook)
@@ -226,7 +226,7 @@ glyph-block Letter-Latin-Lower-A : begin
 						g4.left.start hookRightX (XH - O)
 						archv
 					[Just HOOK-FLAT] : [MakeFlatHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
-					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke)].hookStartR
+					[Just HOOK-CORNER] : [MakeCornerHook df.leftSB df.rightSB XH 0 (sw -- stroke) (extension -- [if para.isItalic [HSwToV : 0.25 * stroke] 0]) (shorten -- true)].hookStartR
 					[Just HOOK-DIAGONAL-CUT] : DeltaCutStart [mix barLeftX hookRightX 0.5] hookRightX (XH - O) (XH - 0.2 * AHook) stroke
 					[Just HOOK-VERTICAL-CUT] : list
 						g4 (hookRightX + [VerticalCutExtension AHook stroke]) (XH - AHook)

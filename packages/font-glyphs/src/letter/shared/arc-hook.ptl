@@ -15,7 +15,7 @@ glyph-block Letter-Arc-Hook : begin
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 	glyph-block-import Mark-Above : MeasureGlyphBoundsInY
 
-	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook MakeCornerHookBase CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension CornerHookOffset CornerHookOutset CornerHookDepth CornerHookEnd CornerHookStart
+	glyph-block-export Toothed Toothless Rounded Flat MakeFlatHook MakeCornerHook MakeCornerHookBase CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension CornerHookOffset CornerHookOutset CornerHookDepth CornerHookDepthShortened CornerHookDepthFitted CornerHookEnd CornerHookStart
 	glyph-block-export MakeMidHeightLeftHook MakeMidHeightLeftHookL
 
 	define kHook : 1 / 5
@@ -373,6 +373,12 @@ glyph-block Letter-Arc-Hook : begin
 
 	define [CornerHookDepth hook sw] : ArcStartInwardSerifDepth hook sw
 
+	define [CornerHookDepthShortened depth sw] : if para.isItalic [Math.min depth (sw + 0.75 * [Math.max 0 (depth - sw)])] depth
+
+	define [CornerHookDepthFitted hook sw available] : begin
+		local depth : CornerHookDepth hook sw
+		return : if para.isItalic [Math.min depth : Math.max sw (available - O - 0.3 * sw)] depth
+
 	define [CornerHookEnd x y depth sw dirBar dirStub] : begin
 		local miterDirection : if para.isItalic (-1) 1
 		local xOut : x + dirBar * (miterDirection * [CornerHookOffset sw] + [CornerHookOutset sw])
@@ -397,11 +403,12 @@ glyph-block Letter-Arc-Hook : begin
 			corner xOut (y - dirStub * depth) wStub
 			corner xOut y wCorner
 
-	define [MakeCornerHook] : with-params [l r t b [sw Stroke] [hook Hook] [endInset 0]] : namespace
+	define [MakeCornerHook] : with-params [l r t b [sw Stroke] [hook Hook] [endInset 0] [depthLimit VERY-FAR] [extension 0] [shorten false]] : namespace
 		local box : new Box t b l r
 		local flatHook : MakeFlatHook l r t b (sw -- sw)
 		local fh : MakeCornerHookBase l r t b (sw -- sw)
-		local depth : CornerHookDepth hook sw
+		local depth : Math.min depthLimit : CornerHookDepth hook sw
+		if shorten : set depth : CornerHookDepthShortened depth sw
 		local w : HSwToV sw
 
 		export : define yLT fh.yLT
@@ -423,31 +430,33 @@ glyph-block Letter-Arc-Hook : begin
 
 		local midX : mix box.l box.r 0.5
 		local midShift : (box.r - box.l) * (-0.05)
-		local xGuardL : if para.isItalic (flatHook.xLHook + [CornerHookOffset sw] - [CornerHookOutset sw]) fh.xLHook
-		local xGuardR : if para.isItalic (flatHook.xRHook - [CornerHookOffset sw] + [CornerHookOutset sw]) fh.xRHook
+		local hookL : if extension [Math.max box.l (flatHook.xLHook - extension)] flatHook.xLHook
+		local hookR : if extension [Math.min box.r (flatHook.xRHook + extension)] flatHook.xRHook
+		local xGuardL : if para.isItalic (hookL + [CornerHookOffset sw] - [CornerHookOutset sw]) fh.xLHook
+		local xGuardR : if para.isItalic (hookR - [CornerHookOffset sw] + [CornerHookOutset sw]) fh.xRHook
 
 		export : define [hookStartL] : begin
 			return : list
-				~~~ [CornerHookStart flatHook.xLHook box.t depth sw 1 1]
+				~~~ [CornerHookStart hookL box.t depth sw 1 1]
 				curl [Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.top (midX + midShift) sw] box.t [heading Rightward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookStartR] : begin
 			return : list
-				~~~ [CornerHookStart flatHook.xRHook box.t depth sw (-1) 1]
+				~~~ [CornerHookStart hookR box.t depth sw (-1) 1]
 				curl [Math.min (xGuardR - w - TanSlope * sw) : Arch.adjust-x.top (midX - midShift) sw] box.t [heading Leftward]
 				archv.superness DesignParameters.tightHookSuperness
 		export : define [hookEndL] : begin
 			local originalFlatX : Math.max (xGuardL + w + TanSlope * sw) : Arch.adjust-x.bot (midX + midShift) sw
-			local endX : Math.min (flatHook.xLHook + endInset) (originalFlatX - 0.5 * w)
+			local endX : Math.min (hookL + endInset) (originalFlatX - 0.5 * w)
 			local italicClearance : if para.isItalic ([CornerHookOffset sw] + [Math.max 0 : TanSlope * sw]) 0
 			local flatLimit : Math.max (endX + w) (box.r - 1.25 * w)
 			local flatX : if endInset [Math.max originalFlatX : Math.min (endX + w + italicClearance) flatLimit] originalFlatX
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat flatX box.b [widths.rhs.heading sw Leftward]
-				~~~ [CornerHookEnd [if endInset endX flatHook.xLHook] box.b depth sw (-1) 1]
+				~~~ [CornerHookEnd [if endInset endX hookL] box.b depth sw (-1) 1]
 		export : define [hookEndR] : begin
 			return : list
 				arcvh.superness DesignParameters.tightHookSuperness
 				flat [Math.min (xGuardR - w - TanSlope * sw) : Arch.adjust-x.bot (midX - midShift) sw] box.b [widths.lhs.heading sw Rightward]
-				~~~ [CornerHookEnd flatHook.xRHook box.b depth sw 1 1]
+				~~~ [CornerHookEnd hookR box.b depth sw 1 1]

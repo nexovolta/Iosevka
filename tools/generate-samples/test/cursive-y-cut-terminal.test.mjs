@@ -75,6 +75,17 @@ for (const [slope, selection] of [
 					`${suffix} must have continuous joins`,
 				);
 			}
+			for (const hook of ["", "FlatHook", "CornerHook", "VerticalCut", "DiagonalCut"]) {
+				for (const family of ["grek/lambda", "latn/lambdaStroke"]) {
+					const contourCount = serif => BooleanGeom.removeOverlap(
+						glyph(`${family}.cursive${hump}${hook}${serif}`).geometry.toBezArcs(), "nonZero", 16384,
+					).length;
+					const baseCount = contourCount("Serifless");
+					for (const serif of ["Serifed", "MotionSerifed", "TopRightMotionSerifed", "BilateralMotionSerifed"]) {
+						assert.equal(contourCount(serif), baseCount, `${family} ${hump} ${hook} ${serif}: detached serif`);
+					}
+				}
+			}
 		}
 		for (const [code, source] of [
 			[0x423, "yCap.cursiveDiagonalCutSerifless"],
