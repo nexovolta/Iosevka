@@ -26,25 +26,25 @@ glyph-block Letter-Cyrillic-Upper-Komi-De-Dje : begin
 			include : df.markSet.capital
 
 			include : RevYeriUpper.Shape CAP
-				left   -- df.leftSB
-				right  -- (df.middle - [HSwToV : (0.5 - CThinB) * df.mvs])
+				left -- df.leftSB
+				right -- (df.middle - [HSwToV : (0.5 - CThinB) * df.mvs])
 				stroke -- df.mvs
 				swVBar -- (df.mvs * CThinB)
-				fSlab  -- false
-				fOpen  -- fOpen
+				fSlab -- false
+				fOpen -- fOpen
 			if slabs : include : tagged 'serifRT' : if (slabs === PShape.SlabMotion)
 				HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) CAP SideJut df.mvs
 				HSerif.mt df.middle CAP (Jut - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
 			include : UpwardHookShape
-				left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
-				right  -- df.rightSB
+				left -- (df.middle - [HSwToV : 0.5 * df.mvs])
+				right -- df.rightSB
 				ybegin -- CAP
-				yend   -- (CAP / 2 + HalfStroke)
-				ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
-				adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
-				sw     -- df.mvs
+				yend -- (CAP / 2 + HalfStroke)
+				ada -- (ArchDepthA * (2 / df.hPack) * df.adws)
+				adb -- (ArchDepthB * (2 / df.hPack) * df.adws)
+				sw -- df.mvs
 			local sf2 : [SerifFrame.fromDf df (CAP / 2 + HalfStroke) 0].slice 1 2
 			include : KomiHookSerif sf2 hookSerifs
 
-	select-variant 'cyrl/DeKomi'  0x500 (follow -- 'P')
+	select-variant 'cyrl/DeKomi' 0x500 (follow -- 'P')
 	select-multi-dimensional-variant 'cyrl/DjeKomi' 0x502 (follows -- {'P' 'cyrl/komiHook'})

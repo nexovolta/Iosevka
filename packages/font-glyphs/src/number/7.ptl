@@ -32,11 +32,11 @@ glyph-block Digits-Seven : begin
 		MaskAbove 0
 		dispiro
 			widths.rhs
-			g4.down.start RightSB        [mix top 0 0] [heading Downward]
-			alsoThru.g2   0.5            0.5
-			g4.down.mid   SevenBendKnotX 0             [heading Downward]
-			alsoThru.g2   0.5            0.5
-			g4.down.end   RightSB        [mix top 0 2] [heading Downward]
+			g4.down.start RightSB [mix top 0 0] [heading Downward]
+			alsoThru.g2 0.5 0.5
+			g4.down.mid SevenBendKnotX 0 [heading Downward]
+			alsoThru.g2 0.5 0.5
+			g4.down.end RightSB [mix top 0 2] [heading Downward]
 
 	define [SevenSquareYShoulder top] : top - Stroke - [Math.max (0.12 * top) Stroke]
 	define [SevenSquareYFoot top] : Math.max (0.14 * top) Stroke
@@ -174,20 +174,20 @@ glyph-block Digits-Seven : begin
 
 	local SevenConfig : SuffixCfg.weave
 		object # body
-			straight              StraightBody
-			bend                  BendBody
-			curly                 CurlyBody
-			square                SquareBody
-			verticalTop           VerticalTopBody
-			verticalBottom        VerticalBottomBody
+			straight StraightBody
+			bend BendBody
+			curly CurlyBody
+			square SquareBody
+			verticalTop VerticalTopBody
+			verticalBottom VerticalBottomBody
 		function [body] : object # serif
-			serifless             nothing
-			serifed               StartSerif
-			baseSerifed           [BottomSerif body]
-			fullSerifed           [FullSerif body]
+			serifless nothing
+			serifed StartSerif
+			baseSerifed [BottomSerif body]
+			fullSerifed [FullSerif body]
 		function [body] : object # crossbar
-			''                    nothing
-			crossbar              [CrossbarOnStem body]
+			'' nothing
+			crossbar [CrossbarOnStem body]
 
 	foreach {suffix {Body Serif Crossbar}} [Object.entries SevenConfig] : do
 		create-glyph "seven.lnum.\(suffix)" : glyph-proc
@@ -222,5 +222,5 @@ glyph-block Digits-Seven : begin
 				Rect CAP 0 0 RightSB
 				union
 					HBar.b xTerm (xTerm + kDiag * BBD) 0 BBS
-					ExtLineCenter tr         (CAP - BBS) (xTerm + kDiag * BBD) 0 BBS 2
-					ExtLineCenter (tr - BBD) (CAP - BBS) xTerm                 0 BBS 2
+					ExtLineCenter tr (CAP - BBS) (xTerm + kDiag * BBD) 0 BBS 2
+					ExtLineCenter (tr - BBD) (CAP - BBS) xTerm 0 BBS 2

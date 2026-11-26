@@ -97,12 +97,12 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export PShapeOutline
 	define flex-params [PShapeOutline] : glyph-proc
 		local-parameter : top
-		local-parameter : df        -- [DivFrame 1]
-		local-parameter : mul       -- PShape.defaultMul
-		local-parameter : bp        -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- PShape.defaultMul
+		local-parameter : bp -- PShape.BarPos
 		local-parameter : overshoot -- PShape.defaultOvershoot
-		local-parameter : sw        -- df.mvs
-		local-parameter : offset    -- 0
+		local-parameter : sw -- df.mvs
+		local-parameter : offset -- 0
 
 		include : spiro-outline
 			PShapeOutlineKnots top df mul bp overshoot sw offset
@@ -110,14 +110,14 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export PShape
 	define flex-params [PShape] : glyph-proc
 		local-parameter : top
-		local-parameter : df        -- [DivFrame 1]
-		local-parameter : mul       -- PShape.defaultMul
-		local-parameter : bp        -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- PShape.defaultMul
+		local-parameter : bp -- PShape.BarPos
 		local-parameter : overshoot -- PShape.defaultOvershoot
-		local-parameter : sw        -- df.mvs
-		local-parameter : slab      -- null
-		local-parameter : withBar   -- true
-		local-parameter : diag      -- 0
+		local-parameter : sw -- df.mvs
+		local-parameter : slab -- null
+		local-parameter : withBar -- true
+		local-parameter : diag -- 0
 
 		local bowlBottom : PBarPosY top sw bp
 		local turnRadius : BowlXDepth top bowlBottom df.leftSB df.rightSB sw
@@ -133,14 +133,14 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export PRotundaShape
 	define flex-params [PRotundaShape] : glyph-proc
 		local-parameter : top
-		local-parameter : df        -- [DivFrame 1]
-		local-parameter : mul       -- PShape.defaultMul
-		local-parameter : bp        -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- PShape.defaultMul
+		local-parameter : bp -- PShape.BarPos
 		local-parameter : overshoot -- PShape.defaultOvershoot
-		local-parameter : sw        -- df.mvs
-		local-parameter : slab      -- null
-		local-parameter : endX      -- SB
-		local-parameter : hook      -- Hook
+		local-parameter : sw -- df.mvs
+		local-parameter : slab -- null
+		local-parameter : endX -- SB
+		local-parameter : hook -- Hook
 		local-parameter : hookStyle -- 'serifless'
 
 		local bowl : dispiro
@@ -153,13 +153,13 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export RevPShape
 	define flex-params [RevPShape] : glyph-proc
 		local-parameter : top
-		local-parameter : df        -- [DivFrame 1]
-		local-parameter : mul       -- PShape.defaultMul
-		local-parameter : bp        -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- PShape.defaultMul
+		local-parameter : bp -- PShape.BarPos
 		local-parameter : overshoot -- PShape.defaultOvershoot
-		local-parameter : sw        -- df.mvs
-		local-parameter : slab      -- null
-		local-parameter : withBar   -- true
+		local-parameter : sw -- df.mvs
+		local-parameter : slab -- null
+		local-parameter : withBar -- true
 
 		include : tagged 'bowl' : dispiro
 			widths.lhs sw
@@ -216,20 +216,20 @@ glyph-block Letter-Latin-Upper-P : begin
 	glyph-block-export PConfig
 	define PConfig : SuffixCfg.weave
 		object # openness
-			closed           false
-			open             true
-			brokenRising     1
-			brokenFalling    (-1)
+			closed false
+			open true
+			brokenRising 1
+			brokenFalling (-1)
 		object # serifs
-			serifless        null
-			motionSerifed    PShape.SlabMotion
-			serifed          PShape.SlabAsymmetric
+			serifless null
+			motionSerifed PShape.SlabMotion
+			serifed PShape.SlabAsymmetric
 
 	foreach {suffix {fGap slabs}} [Object.entries PConfig] : do
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
 		define diag : if (fGap === true) 0 fGap
 		define swCap : AdviceStroke2 2 3 CAP
-		define swXH  : AdviceStroke2 2 3 XH
+		define swXH : AdviceStroke2 2 3 XH
 
 		create-glyph "P.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -261,7 +261,7 @@ glyph-block Letter-Latin-Upper-P : begin
 		create-glyph "PStrokeBottom.\(suffix)" : glyph-proc
 			include [refer-glyph "P.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
-				x   -- [mix 0 SB PShape.defaultMul]
+				x -- [mix 0 SB PShape.defaultMul]
 				bot -- [if fSlabBot swCap 0]
 				top -- [PBarPosY CAP swCap PShape.BarPos]
 
@@ -284,8 +284,8 @@ glyph-block Letter-Latin-Upper-P : begin
 			local xStem : [mix 0 subDf.leftSB PShape.defaultMul] + shift
 			local yBarTop : [PBarPosY CAP sw PShape.BarPos] + sw
 			include : EFlourishHook df yBarTop
-				xClip  -- xStem
-				xJoin  -- (subDf.middle + shift)
+				xClip -- xStem
+				xJoin -- (subDf.middle + shift)
 				stroke -- sw
 
 		create-glyph "PSquirrelTail.\(suffix)" : glyph-proc
@@ -332,7 +332,7 @@ glyph-block Letter-Latin-Upper-P : begin
 			define yBarPos2 : Math.max
 				mix yBase (yBarPos1 - swCap / 2) (1 / 2)
 				[mix yBase (yBarPos1 - swCap / 2) (2 / 3)] - OverlayStroke / 2
-			include : HOverlayBar xCrossBarLeft xPLeft         yBarPos1 swCap
+			include : HOverlayBar xCrossBarLeft xPLeft yBarPos1 swCap
 			include : HOverlayBar xCrossBarLeft xCrossBarRight yBarPos2
 
 		create-glyph "currency/pesoSign.\(suffix)" : glyph-proc
@@ -371,9 +371,9 @@ glyph-block Letter-Latin-Upper-P : begin
 	create-glyph 'PStroke/overlay' : glyph-proc
 		local swCap : AdviceStroke2 2 3 CAP
 		include : LetterBarOverlay.l.in
-			x     -- [mix 0 SB PShape.defaultMul]
-			bot   -- ([PBarPosY CAP swCap PShape.BarPos] + swCap)
-			top   -- (CAP - swCap)
+			x -- [mix 0 SB PShape.defaultMul]
+			bot -- ([PBarPosY CAP swCap PShape.BarPos] + swCap)
+			top -- (CAP - swCap)
 			space -- {0 (RightSB - [HSwToV swCap])}
 	derive-composites 'PStroke' 0x2C63 'P' 'PStroke/overlay'
 
@@ -388,7 +388,7 @@ glyph-block Letter-Latin-Upper-P : begin
 		include : difference
 			PShape CAP (sw -- BBS) (mul -- mul) (overshoot -- overshoot) (slab -- null)
 			Rect (CAP - BBS) 0 (sb + [HSwToV : 0.5 * BBS]) (sb + BBD)
-		include : VBar.l  sb        0 CAP BBS
+		include : VBar.l sb 0 CAP BBS
 		include : VBar.l (sb + BBD) 0 CAP BBS
 		include : HBar.b sb (sb + BBD) 0 BBS
 		include : intersection

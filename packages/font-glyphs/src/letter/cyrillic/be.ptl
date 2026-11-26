@@ -12,16 +12,16 @@ glyph-block Letter-Cyrillic-Be : begin
 
 	define BeConfig : SuffixCfg.weave
 		object
-			''            'flat'
-			open          'open'
-			brokenRising  'brokenRising'
+			'' 'flat'
+			open 'open'
+			brokenRising 'brokenRising'
 			brokenFalling 'brokenFalling'
 		object
-			serifless        {false  false  false}
-			topSerifed       {false  true   false}
-			bilateralSerifed {true   true   false}
-			motionSerifed    {false  true   true }
-			fullSerifed      {true   true   true }
+			serifless {false false false}
+			topSerifed {false true false}
+			bilateralSerifed {true true false}
+			motionSerifed {false true true }
+			fullSerifed {true true true }
 
 	foreach {suffix {bowl {doSerifLT doSerifRT doSerifLB}}} [Object.entries BeConfig] : do
 		create-glyph "cyrl/Be.\(suffix)" : glyph-proc
@@ -51,7 +51,7 @@ glyph-block Letter-Cyrillic-Be : begin
 			if doSerifLB : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut stroke
 
 	select-variant 'cyrl/Be' 0x411
-	select-variant 'latn/Be' 0x182 (shapeFrom -- 'cyrl/Be')    (follow -- 'cyrl/Be')
+	select-variant 'latn/Be' 0x182 (shapeFrom -- 'cyrl/Be') (follow -- 'cyrl/Be')
 	select-variant 'latn/De' 0x18B (shapeFrom -- 'cyrl/revBe') (follow -- 'cyrl/Be')
 
 	define [StandardBody] : glyph-proc
@@ -64,9 +64,9 @@ glyph-block Letter-Cyrillic-Be : begin
 			Arch.rhs yRingTop (swBefore -- ShoulderFine)
 			flatside.rd RightSB 0 yRingTop ada adb
 			Arch.rhs 0
-			flatside.lu SB      0 yRingTop ada adb
+			flatside.lu SB 0 yRingTop ada adb
 			alsoThruThem {{0.30 0.85} {0.65 0.925}} important g4
-			g4   (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
+			g4 (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
 
 	define [FlatTopBody] : glyph-proc
 		local yRingTop : Math.min (XH + O) (XH - QuarterStroke)
@@ -79,14 +79,14 @@ glyph-block Letter-Cyrillic-Be : begin
 			archv
 			flatside.rd RightSB 0 yRingTop ada adb
 			Arch.rhs 0
-			flatside.lu SB      0 yRingTop ada adb
+			flatside.lu SB 0 yRingTop ada adb
 			alsoThruThem {{0.30 0.85} {0.65 0.925}} important g4
-			g4   (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
+			g4 (RightSB - [HSwToV : 0.0625 * Stroke]) Ascender [heading Rightward]
 
 	define BeSmallConfig : SuffixCfg.weave
 		object # body
-			standard  StandardBody
-			flatTop   FlatTopBody
+			standard StandardBody
+			flatTop FlatTopBody
 
 	foreach {suffix {Body}} [Object.entries BeSmallConfig] : do
 		create-glyph "cyrl/be.\(suffix)" : glyph-proc
@@ -94,6 +94,6 @@ glyph-block Letter-Cyrillic-Be : begin
 			include : Body
 
 	alias 'cyrl/be.serbianRounded' null 'grek/delta.rounded'
-	alias 'cyrl/be.serbianFlatTop'  null 'grek/delta.flatTop'
+	alias 'cyrl/be.serbianFlatTop' null 'grek/delta.flatTop'
 
 	select-variant 'cyrl/be' 0x431

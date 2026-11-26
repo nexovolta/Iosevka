@@ -29,7 +29,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include : composite-proc sf.lt.outer sf.rb.outer
-					if ([not para.isItalic] && sf.enoughSpaceForFullSerifs) : begin
+					if ((!para.isItalic) && sf.enoughSpaceForFullSerifs) : begin
 						include : composite-proc sf.mt.left sf.rt.inner
 		local aybPositionedSerifs : SuffixCfg.weave
 			object
@@ -66,17 +66,17 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : VBar.l df.leftSB Descender XH df.mvs
 				local barPosB : barPos - df.mvs / 2
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- barPosB
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : [ArmHBar.normal df].base
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include sf.lt.outer
-					if [not para.isItalic] : include sf.lb.fullSide
+					if (!para.isItalic) : include sf.lb.fullSide
 		local benPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0
@@ -101,12 +101,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.p
 				include : VBar.l df.leftSB 0 XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- Descender
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : [ArmHBar.right df fSerif].base
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
@@ -144,12 +144,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.b
 				local barPosT : barPos + df.mvs / 2
 				include : uBowl.shape
-					top    -- Ascender
+					top -- Ascender
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB 0 barPosT df.mvs
 				include : [ArmHBar.normal df].high
 				if fSerif : begin
@@ -179,12 +179,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.b
 				include : VBar.l df.leftSB Descender XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : [ArmHBar.normal df].desc
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH Descender
@@ -216,12 +216,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.bp
 				include : VBar.l df.leftSB Descender Ascender df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df Ascender Descender
 					local sf2 : SerifFrame.fromDf df XH 0
@@ -260,29 +260,29 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local subDf : df.slice 3 2
 				include : VBar.l df.leftSB Descender Ascender df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- (XH / 2 - TINY)
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- (df.middle + [HSwToV : 0.5 * df.mvs])
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- (df.middle + [HSwToV : 0.5 * df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				include : uBowl.shape
-					top    -- (XH / 2 + TINY)
+					top -- (XH / 2 + TINY)
 					bottom -- 0
-					left   -- (df.middle - [HSwToV : 0.5 * df.mvs])
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- (df.middle - [HSwToV : 0.5 * df.mvs])
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				include : VBar.r df.rightSB 0 XH df.mvs
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df Ascender Descender
 					local sf2 : SerifFrame.fromDf df XH 0
 					include : composite-proc sf.lt.outer sf2.rb.outer
-					if [not para.isItalic] : begin
+					if (!para.isItalic) : begin
 						include : composite-proc sf.lb.fullSide sf2.rt.inner
 		local xehPositionedSerifs : SuffixCfg.weave
 			object
@@ -318,12 +318,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local df : include : DivFrame 1
 				include : df.markSet.bp
 				include : uBowl.shape
-					top    -- Ascender
+					top -- Ascender
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB Descender XH df.mvs
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df Ascender 0
@@ -362,12 +362,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.b
 				include : VBar.l df.leftSB 0 Ascender df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df Ascender 0
 					include sf.lt.outer
@@ -403,17 +403,17 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.p
 				include : VBar.l df.leftSB 0 XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- Descender
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : [ArmHBar.right df fSerif].desc
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include sf.lt.outer
-					if [not para.isItalic] : include sf.lb.full
+					if (!para.isItalic) : include sf.lb.full
 		local ghatPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0
@@ -437,12 +437,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local df : include : DivFrame 1
 				include : df.markSet.b
 				include : uBowl.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB 0 Ascender df.mvs
 				include : [ArmHBar.right df fSerif].asc
 				if fSerif : begin
@@ -472,18 +472,18 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local df : include : DivFrame 1
 				include : df.markSet.b
 				include : uBowl.shape
-					top    -- Ascender
+					top -- Ascender
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB 0 XH df.mvs
 				include : [ArmHBar.left df fSerif].asc
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include sf.rb.outer
-					if [not para.isItalic] : include sf.rt.inner
+					if (!para.isItalic) : include sf.rt.inner
 		local nuPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0
@@ -508,12 +508,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.e
 				include : VBar.l df.leftSB 0 XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include sf.lt.outer
@@ -554,7 +554,7 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include : composite-proc sf.lt.outer
 						if para.isItalic sf.rb.outer sf.rb.fullSide
-					if ([not para.isItalic] && sf.enoughSpaceForFullSerifs) : begin
+					if ((!para.isItalic) && sf.enoughSpaceForFullSerifs) : begin
 						include : composite-proc sf.mt.left sf.rt.inner
 		local pehPositionedSerifs : SuffixCfg.weave
 			object
@@ -589,17 +589,17 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local df : include : DivFrame 1
 				include : df.markSet.e
 				include : uBowl.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB 0 XH df.mvs
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include : composite-proc sf.lt.outer sf.rb.outer
-					if [not para.isItalic] : include sf.rt.inner
+					if (!para.isItalic) : include sf.rt.inner
 		local sehPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0
@@ -628,12 +628,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				local df : include : DivFrame 1
 				include : df.markSet.bp
 				include : uBowl.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.rightSB - [HSwToV df.mvs])
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				include : VBar.r df.rightSB Descender Ascender df.mvs
 				include : [ArmHBar.right df fSerif].desc
 				if fSerif : begin
@@ -666,28 +666,28 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.e
 				local subDf : df.slice 3 2
 				include : uBowl.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.middle - [HSwToV : 0.5 * df.mvs])
+					left -- df.leftSB
+					right -- (df.middle - [HSwToV : 0.5 * df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				include : VBar.m df.middle 0 XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.middle + [HSwToV : 0.5 * df.mvs])
-					right  -- df.rightSB
+					left -- (df.middle + [HSwToV : 0.5 * df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					include sf.lt.outer
-					include : if (para.isItalic || [not sf.enoughSpaceForFullSerifs]) sf.rb.outer
+					include : if (para.isItalic || (!sf.enoughSpaceForFullSerifs)) sf.rb.outer
 						composite-proc sf.mt.left sf.mb.right sf.rb.full
 		local tiunPositionedSerifs : SuffixCfg.weave
 			object
@@ -722,12 +722,12 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.b
 				include : VBar.l df.leftSB Descender XH df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.leftSB + [HSwToV df.mvs])
-					right  -- df.rightSB
+					left -- (df.leftSB + [HSwToV df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
+					fine -- df.shoulderFine
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					local sf2 : SerifFrame.fromDf df XH 0
@@ -764,30 +764,30 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.bp
 				local subDf : df.slice 3 2
 				include : uBowl.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- df.leftSB
-					right  -- (df.middle - [HSwToV : 0.5 * df.mvs])
+					left -- df.leftSB
+					right -- (df.middle - [HSwToV : 0.5 * df.mvs])
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				include : VBar.m df.middle Descender Ascender df.mvs
 				include : nShoulder.shape
-					top    -- XH
+					top -- XH
 					bottom -- 0
-					left   -- (df.middle + [HSwToV : 0.5 * df.mvs])
-					right  -- df.rightSB
+					left -- (df.middle + [HSwToV : 0.5 * df.mvs])
+					right -- df.rightSB
 					stroke -- df.mvs
-					fine   -- df.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- df.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH 0
 					local sf2 : SerifFrame.fromDf df Ascender Descender
 					include : composite-proc sf.lt.outer sf2.mt.left
-						if (para.isItalic || [not sf.enoughSpaceForFullSerifs]) sf.rb.outer sf.rb.full
-					if [not para.isItalic] : include sf2.mb.fullCenter
+						if (para.isItalic || (!sf.enoughSpaceForFullSerifs)) sf.rb.outer sf.rb.full
+					if (!para.isItalic) : include sf2.mb.fullCenter
 		local piurPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0
@@ -822,20 +822,20 @@ glyph-block Letter-Armenian-Lower-U-Group : begin
 				include : df.markSet.b
 				local subDf : DivFrame (0.75 * para.advanceScaleM) 2
 				include : uBowl.shape
-					top    -- Ascender
+					top -- Ascender
 					bottom -- 0
-					left   -- subDf.leftSB
-					right  -- (subDf.rightSB - [HSwToV subDf.mvs])
+					left -- subDf.leftSB
+					right -- (subDf.rightSB - [HSwToV subDf.mvs])
 					stroke -- subDf.mvs
-					fine   -- subDf.shoulderFine
-					ada    -- subDf.smallArchDepthA
-					adb    -- subDf.smallArchDepthB
+					fine -- subDf.shoulderFine
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 				include : VBar.r subDf.rightSB 0 XH subDf.mvs
 				include : HBar.b (subDf.rightSB - [HSwToV : 0.5 * subDf.mvs]) df.rightSB 0 subDf.mvs
 				if fSerif : begin
 					local sf : SerifFrame.fromDf subDf Ascender 0
 					include sf.lt.outer
-					if [not para.isItalic] : begin
+					if (!para.isItalic) : begin
 						local sf2 : SerifFrame.fromDf subDf XH 0
 						include sf2.rt.inner
 		local ewPositionedSerifs : SuffixCfg.weave

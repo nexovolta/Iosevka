@@ -16,15 +16,15 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-Wynn : WynnBowl
 
-	define HOOK-SLAB-NONE      0
+	define HOOK-SLAB-NONE 0
 	define HOOK-SLAB-CLASSICAL 1 # TODO
-	define HOOK-SLAB-INWARD    2
-	define HOOK-HALF           3
-	define HOOK-FLAT           4
-	define HOOK-CORNER         5
-	define HOOK-VERTICAL-CUT   6
-	define HOOK-DIAGONAL-CUT   7
-	define CURVED-BAR-RISING   1
+	define HOOK-SLAB-INWARD 2
+	define HOOK-HALF 3
+	define HOOK-FLAT 4
+	define HOOK-CORNER 5
+	define HOOK-VERTICAL-CUT 6
+	define HOOK-DIAGONAL-CUT 7
+	define CURVED-BAR-RISING 1
 	define CURVED-BAR-FALLING (-1)
 
 	glyph-block-export DoubleStorey
@@ -85,7 +85,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.leftSB XH y0 sw true true] shape
 			include : match hookStyle
 				[Just HOOK-SLAB-INWARD] : ArcStartSerif.InwardL df.leftSB XH sw AHook
-				__                      : no-shape
+				__ : no-shape
 
 		export : define [HookAndBarMask df hookStyle y0 stroke fine] : begin
 			local sw : fallback stroke : Sw df
@@ -95,12 +95,12 @@ glyph-block Letter-Latin-Lower-A : begin
 		define [ArcT sink] : function [df kind rise stroke fine bbd diag _barTop] : glyph-proc
 			local isMask : sink == spiro-outline
 			local barTop : fallback _barTop : [mix 0 XH DesignParameters.aBarPos] + stroke * (0.5 + DesignParameters.aBarStrokeAdj)
-			local ada  : df.archDepthAOf (SmallArchDepth * 0.9) stroke
-			local adb  : df.archDepthBOf (SmallArchDepth * 0.9) stroke
-			local ada2 :    ArchDepthAOf (SmallArchDepth * DesignParameters.aBarPos)
-			local adb2 :    ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
+			local ada : df.archDepthAOf (SmallArchDepth * 0.9) stroke
+			local adb : df.archDepthBOf (SmallArchDepth * 0.9) stroke
+			local ada2 : ArchDepthAOf (SmallArchDepth * DesignParameters.aBarPos)
+			local adb2 : ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
 			local leftSlopeS : 0.1 * (df.width / HalfUPM)
-			local leftSlope  : clamp (-1) (+1) (leftSlopeS - TanSlope)
+			local leftSlope : clamp (-1) (+1) (leftSlopeS - TanSlope)
 			local rr : [fallback diag 0] * 0.09 * XH
 			local xStart : df.rightSB - [HSwToV stroke] * 0.5
 			local xEnd : mix df.leftSB df.rightSB 0.42
@@ -134,7 +134,7 @@ glyph-block Letter-Latin-Lower-A : begin
 					1 : if rise
 						list
 							Arch.lhs 0 (sw -- stroke) (blendPost -- {})
-							g4   df.rightSB rise
+							g4 df.rightSB rise
 						list
 							arcvh
 							flat [Arch.adjust-x.bot [mix (df.leftSB + OX) df.rightSB 0.5] (sw -- stroke)] 0
@@ -147,33 +147,33 @@ glyph-block Letter-Latin-Lower-A : begin
 		export : define [Arc df kind rise _sw _fine _bbd _diag _barTop] : [ArcT dispiro] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
-			fallback _bbd  0
+			fallback _bbd 0
 			fallback _diag 0
 			fallback _barTop nothing
 
 		export : define [ArcMask df kind rise _sw _fine _bbd _diag] : [ArcT spiro-outline] df kind rise
 			fallback _sw : Sw df
 			fallback _fine df.shoulderFine
-			fallback _bbd  0
+			fallback _bbd 0
 			fallback _diag 0
 
 		export : define [Serifless df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 0         0 _sw nothing nothing diag _barTop
+			Arc df 0 0 _sw nothing nothing diag _barTop
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
 		export : define [Serifed df hookStyle _sw cut diag _barTop] : union
-			Serifless  df hookStyle _sw cut diag _barTop
+			Serifless df hookStyle _sw cut diag _barTop
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].rb.outer
 
 		export : define [Tailed df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
-			Arc        df 0         0            _sw nothing nothing diag _barTop
+			Arc df 0 0 _sw nothing nothing diag _barTop
 			RightwardTailedBar df.rightSB 0 (XH - [SmoothB df]) [fallback _sw : Sw df]
 
 		export : define [FlatBottomSerifless df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 1         0 _sw nothing nothing diag _barTop
+			Arc df 1 0 _sw nothing nothing diag _barTop
 			ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
 		export : define [FlatBottomSerifed df hookStyle _sw cut diag _barTop] : union
@@ -182,18 +182,18 @@ glyph-block Letter-Latin-Lower-A : begin
 
 		export : define [ToothlessCorner df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle DToothlessRise _sw
-			Arc        df 1         DToothlessRise _sw nothing nothing diag _barTop
+			Arc df 1 DToothlessRise _sw nothing nothing diag _barTop
 
 		export : define [ToothlessRounded df hookStyle _sw cut diag _barTop] : union
 			HookAndBar df hookStyle [SmoothA df] _sw
-			Arc        df 2         [SmoothA df]   _sw nothing nothing diag _barTop
+			Arc df 2 [SmoothA df] _sw nothing nothing diag _barTop
 
 		export : define [Mask shapeFn df _sw diag] : match shapeFn
-			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw nothing nothing diag
-			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw nothing nothing diag
-			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw nothing nothing diag
-			[Just ToothlessRounded]    : ArcMask df 2 [SmoothA df]   _sw nothing nothing diag
-			__                         : ArcMask df 0 0              _sw nothing nothing diag
+			[Just FlatBottomSerifless] : ArcMask df 1 0 _sw nothing nothing diag
+			[Just FlatBottomSerifed] : ArcMask df 1 0 _sw nothing nothing diag
+			[Just ToothlessCorner] : ArcMask df 1 DToothlessRise _sw nothing nothing diag
+			[Just ToothlessRounded] : ArcMask df 2 [SmoothA df] _sw nothing nothing diag
+			__ : ArcMask df 0 0 _sw nothing nothing diag
 
 	define RevDoubleStorey : namespace
 		export : define [Sw df] : df.adviceStroke2 2 3 XH
@@ -248,7 +248,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			include : if (hookStyle === HOOK-VERTICAL-CUT) [CutArcTerminal shape df.rightSB XH y0 sw false true] shape
 			include : match hookStyle
 				[Just HOOK-SLAB-INWARD] : ArcStartSerif.InwardR df.rightSB XH sw AHook
-				__                      : no-shape
+				__ : no-shape
 
 		export : define [HookAndBarMask df hookStyle y0 stroke fine] : begin
 			local sw : fallback stroke : Sw df
@@ -258,12 +258,12 @@ glyph-block Letter-Latin-Lower-A : begin
 		define [ArcT sink] : function [df kind rise stroke fine diag] : glyph-proc
 			local isMask : sink == spiro-outline
 			local barTop : [mix 0 XH DesignParameters.aBarPos] + stroke * (0.5 + DesignParameters.aBarStrokeAdj)
-			local ada  : df.archDepthAOf (SmallArchDepth * 0.9) stroke
-			local adb  : df.archDepthBOf (SmallArchDepth * 0.9) stroke
-			local ada2 :    ArchDepthAOf (SmallArchDepth * DesignParameters.aBarPos)
-			local adb2 :    ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
+			local ada : df.archDepthAOf (SmallArchDepth * 0.9) stroke
+			local adb : df.archDepthBOf (SmallArchDepth * 0.9) stroke
+			local ada2 : ArchDepthAOf (SmallArchDepth * DesignParameters.aBarPos)
+			local adb2 : ArchDepthBOf (SmallArchDepth * DesignParameters.aBarPos)
 			local rightSlopeS : 0.1 * (df.width / HalfUPM)
-			local rightSlope  : clamp (-1) (+1) (rightSlopeS + TanSlope)
+			local rightSlope : clamp (-1) (+1) (rightSlopeS + TanSlope)
 			local rr : [fallback diag 0] * 0.09 * XH
 			local xStart : df.leftSB + [HSwToV stroke] * 0.5
 			local xEnd : mix df.rightSB df.leftSB 0.42
@@ -297,7 +297,7 @@ glyph-block Letter-Latin-Lower-A : begin
 					1 : if rise
 						list
 							Arch.rhs 0 (sw -- stroke) (blendPost -- {})
-							g4   df.leftSB rise
+							g4 df.leftSB rise
 						list
 							arcvh
 							flat [Arch.adjust-x.bot [mix (df.rightSB - OX) df.leftSB 0.5] (sw -- stroke)] 0
@@ -319,21 +319,21 @@ glyph-block Letter-Latin-Lower-A : begin
 
 		export : define [Serifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 0         0 _sw nothing diag
+			Arc df 0 0 _sw nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
 		export : define [Serifed df hookStyle _sw cut diag] : union
-			Serifless  df hookStyle _sw cut diag
+			Serifless df hookStyle _sw cut diag
 			begin [SerifFrame.fromDf df XH 0 (swRef -- [fallback _sw : Sw df]) (swSerif -- df.mvs)].lb.outer
 
 		export : define [Tailed df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
-			Arc        df 0         0            _sw nothing diag
+			Arc df 0 0 _sw nothing diag
 			LeftwardTailedBar df.leftSB 0 (XH - [SmoothA df]) [fallback _sw : Sw df]
 
 		export : define [FlatBottomSerifless df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [if (cut === 'bottomCut') HalfStroke 0] _sw
-			Arc        df 1         0 _sw nothing diag
+			Arc df 1 0 _sw nothing diag
 			ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- XH) (sw -- [fallback _sw : Sw df])
 
 		export : define [FlatBottomSerifed df hookStyle _sw cut diag] : union
@@ -342,49 +342,49 @@ glyph-block Letter-Latin-Lower-A : begin
 
 		export : define [ToothlessCorner df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle DToothlessRise _sw
-			Arc        df 1         DToothlessRise _sw nothing diag
+			Arc df 1 DToothlessRise _sw nothing diag
 
 		export : define [ToothlessRounded df hookStyle _sw cut diag] : union
 			HookAndBar df hookStyle [SmoothB df] _sw
-			Arc        df 2         [SmoothB df] _sw nothing diag
+			Arc df 2 [SmoothB df] _sw nothing diag
 
 		export : define [Mask shapeFn df _sw diag] : match shapeFn
-			[Just FlatBottomSerifless] : ArcMask df 1 0              _sw nothing diag
-			[Just FlatBottomSerifed]   : ArcMask df 1 0              _sw nothing diag
-			[Just ToothlessCorner]     : ArcMask df 1 DToothlessRise _sw nothing diag
-			[Just ToothlessRounded]    : ArcMask df 2 [SmoothB df]   _sw nothing diag
-			__                         : ArcMask df 0 0              _sw nothing diag
+			[Just FlatBottomSerifless] : ArcMask df 1 0 _sw nothing diag
+			[Just FlatBottomSerifed] : ArcMask df 1 0 _sw nothing diag
+			[Just ToothlessCorner] : ArcMask df 1 DToothlessRise _sw nothing diag
+			[Just ToothlessRounded] : ArcMask df 2 [SmoothB df] _sw nothing diag
+			__ : ArcMask df 0 0 _sw nothing diag
 
 	glyph-block-export DoubleStoreyConfig DoubleStoreyDiagConfig
 	define DoubleStoreyConfig : SuffixCfg.weave
 		object # Hook style
-			doubleStorey                  HOOK-SLAB-NONE
+			doubleStorey HOOK-SLAB-NONE
 			doubleStoreyHookInwardSerifed HOOK-SLAB-INWARD
-			doubleStoreyHookFlat          HOOK-FLAT
-			doubleStoreyHookCorner        HOOK-CORNER
-			doubleStoreyHookVerticalCut   HOOK-VERTICAL-CUT
-			doubleStoreyHookDiagonalCut   HOOK-DIAGONAL-CUT
+			doubleStoreyHookFlat HOOK-FLAT
+			doubleStoreyHookCorner HOOK-CORNER
+			doubleStoreyHookVerticalCut HOOK-VERTICAL-CUT
+			doubleStoreyHookDiagonalCut HOOK-DIAGONAL-CUT
 		function [hook] : object # cut
-			''         ''
-			bottomCut  'bottomCut'
+			'' ''
+			bottomCut 'bottomCut'
 		function [hook cut] : begin
 			if (cut === 'bottomCut') : return : object
 				serifless {DoubleStorey.Serifless RevDoubleStorey.Serifless RightSB}
 			return : object
-				serifless           {DoubleStorey.Serifless            RevDoubleStorey.Serifless            RightSB            }
-				serifed             {DoubleStorey.Serifed              RevDoubleStorey.Serifed              (RightSB + SideJut)}
-				tailed              {DoubleStorey.Tailed               RevDoubleStorey.Tailed               (RightSB + SideJut)}
-				flatBottomSerifless {DoubleStorey.FlatBottomSerifless  RevDoubleStorey.FlatBottomSerifless  RightSB            }
-				flatBottomSerifed   {DoubleStorey.FlatBottomSerifed    RevDoubleStorey.FlatBottomSerifed    (RightSB + SideJut)}
-				toothlessCorner     {DoubleStorey.ToothlessCorner      RevDoubleStorey.ToothlessCorner      null               }
-				toothlessRounded    {DoubleStorey.ToothlessRounded     RevDoubleStorey.ToothlessRounded     null               }
+				serifless {DoubleStorey.Serifless RevDoubleStorey.Serifless RightSB }
+				serifed {DoubleStorey.Serifed RevDoubleStorey.Serifed (RightSB + SideJut)}
+				tailed {DoubleStorey.Tailed RevDoubleStorey.Tailed (RightSB + SideJut)}
+				flatBottomSerifless {DoubleStorey.FlatBottomSerifless RevDoubleStorey.FlatBottomSerifless RightSB }
+				flatBottomSerifed {DoubleStorey.FlatBottomSerifed RevDoubleStorey.FlatBottomSerifed (RightSB + SideJut)}
+				toothlessCorner {DoubleStorey.ToothlessCorner RevDoubleStorey.ToothlessCorner null }
+				toothlessRounded {DoubleStorey.ToothlessRounded RevDoubleStorey.ToothlessRounded null }
 
 	define DoubleStoreyDiagConfig : SuffixCfg.weave DoubleStoreyConfig : object
-		''         0
-		diagonalBar        0.5
+		'' 0
+		diagonalBar 0.5
 		diagonalBarFalling (-0.5)
-		curvedBarRising    CURVED-BAR-RISING
-		curvedBarFalling   CURVED-BAR-FALLING
+		curvedBarRising CURVED-BAR-RISING
+		curvedBarFalling CURVED-BAR-FALLING
 
 	define [ItalicSwash df body cut] : glyph-proc
 		local sw : DoubleStorey.Sw df
@@ -485,7 +485,7 @@ glyph-block Letter-Latin-Lower-A : begin
 				no-shape
 
 	foreach {suffix {{hookStyle cut {body revBody xTrailing}} diag}} [Object.entries DoubleStoreyDiagConfig] : do
-		if [not para.isItalic] : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash hookStyle false
+		if (!para.isItalic) : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash hookStyle false
 		do
 			create-glyph "a.\(suffix)" : make [DivFrame 1]
 			if (!hookStyle) : begin
@@ -496,7 +496,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local sw : DoubleStorey.Sw df
 			local bp : [mix 0 XH DesignParameters.aBarPos] + sw * DesignParameters.aBarStrokeAdj
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
-			set-base-anchor 'strike'  df.middle bp
+			set-base-anchor 'strike' df.middle bp
 			if xTrailing : set-base-anchor 'trailing' xTrailing 0
 			include : body df [fallback _hookStyle hookStyle] nothing cut diag
 
@@ -512,7 +512,7 @@ glyph-block Letter-Latin-Lower-A : begin
 					eject-contour 'serifRB'
 					include : RetroflexHook.rExt RightSB 0
 						yAttach -- [DoubleStorey.SmoothA : DivFrame 1]
-						sw      -- [DoubleStorey.Sw      : DivFrame 1]
+						sw -- [DoubleStorey.Sw : DivFrame 1]
 
 		create-glyph "reva.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
@@ -520,7 +520,7 @@ glyph-block Letter-Latin-Lower-A : begin
 			local sw : RevDoubleStorey.Sw df
 			local bp : [mix 0 XH DesignParameters.aBarPos] + sw * DesignParameters.aBarStrokeAdj
 			set-base-anchor 'overlay' df.middle [mix 0 (bp + sw / 2) 0.5]
-			set-base-anchor 'strike'  df.middle bp
+			set-base-anchor 'strike' df.middle bp
 			include : revBody df hookStyle nothing cut diag
 
 		if (body === DoubleStorey.Serifless) : begin
@@ -549,7 +549,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	# Greek Lower Alpha
 	glyph-block-export CrossingBody
 	define [CrossingBody df top _sw _ada _adb fStraightTerminal _terminalInset] : glyph-proc
-		local sw  : fallback _sw    df.mvs
+		local sw : fallback _sw df.mvs
 		local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 		local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 		local middle : mix df.leftSB df.rightSB 0.42
@@ -562,7 +562,7 @@ glyph-block Letter-Latin-Lower-A : begin
 		local terminalInset : fallback _terminalInset 0
 		local hookSlope : (hookStartX - middle) * 0.15 / (top * 0.4 - terminalInset)
 		include : dispiro
-			g4   (df.rightSB - OX * 1.75) top [widths.rhs.heading fine Downward]
+			g4 (df.rightSB - OX * 1.75) top [widths.rhs.heading fine Downward]
 			bezControls (0 + k1) (0 + k2) (0 + k3) (0 + k4) 6
 			Arch.rhs.centerAt.rtl.b middle 0 (sw -- sw) (swBefore -- fine)
 			archv
@@ -578,7 +578,7 @@ glyph-block Letter-Latin-Lower-A : begin
 					bezControls (1 - k3) (1 - k4) (1 - k1) (1 - k2) 6
 					g4 (df.rightSB - OX * 2) 0 [widths.rhs.heading fine Downward]
 		set-base-anchor 'overlay' (middle - OX) [mix 0 top OverlayPos]
-		set-base-anchor 'strike'  (middle - OX) [mix 0 top 0.5]
+		set-base-anchor 'strike' (middle - OX) [mix 0 top 0.5]
 
 	create-glyph 'a.crossing' : glyph-proc
 		local df : include : DivFrame 1
@@ -615,60 +615,60 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-export SingleStorey
 	define SingleStorey : namespace
 		export : define [FullBarBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarRight.shape
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 			include : bar df top sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- sw)
 		export : define [FlatTopBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarRight.earlessCorner
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
-				rise  -- 0
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
+				rise -- 0
 			include : bar df top sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- top) (sw -- sw)
 		export : define [EarlessCornerBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarRight.earlessCorner
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 			include : bar df (top - DToothlessRise) sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- sw)
 		export : define [EarlessRoundedBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarRight.earlessRounded
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 				yTerminal -- ada
 			include : bar df (top - adb) sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- (top - adb)) (sw -- sw)
@@ -696,60 +696,60 @@ glyph-block Letter-Latin-Lower-A : begin
 
 	define RevSingleStorey : namespace
 		export : define [FullBarBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarLeft.shape
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 			include : bar df top sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- top) (sw -- sw)
 		export : define [FlatTopBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarLeft.earlessCorner
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
-				rise  -- 0
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
+				rise -- 0
 			include : bar df top sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- top) (sw -- sw)
 		export : define [EarlessCornerBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarLeft.earlessCorner
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 			include : bar df (top - DToothlessRise) sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- (top - DToothlessRise)) (sw -- sw)
 		export : define [EarlessRoundedBody df top bar cut _sw _ada _adb] : glyph-proc
-			local sw  : fallback _sw    df.mvs
+			local sw : fallback _sw df.mvs
 			local ada : fallback _ada : df.archDepthAOf SmallArchDepth sw
 			local adb : fallback _adb : df.archDepthBOf SmallArchDepth sw
 			include : OBarLeft.earlessRounded
-				top   -- top
-				left  -- df.leftSB
+				top -- top
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- (ShoulderFine * (sw / Stroke))
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- (ShoulderFine * (sw / Stroke))
+				ada -- ada
+				adb -- adb
 				yTerminal -- adb
 			include : bar df (top - ada) sw cut
 			include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- df.leftSB) (bot -- 0) (top -- (top - ada)) (sw -- sw)
@@ -776,34 +776,34 @@ glyph-block Letter-Latin-Lower-A : begin
 	glyph-block-export SingleStoreyConfig
 	define SingleStoreyConfig : SuffixCfg.weave
 		object # ear
-			singleStorey               {SingleStorey.FullBarBody         RevSingleStorey.FullBarBody       }
-			singleStoreyFlatTop        {SingleStorey.FlatTopBody         RevSingleStorey.FlatTopBody       }
-			singleStoreyEarlessCorner  {SingleStorey.EarlessCornerBody   RevSingleStorey.EarlessCornerBody }
-			singleStoreyEarlessRounded {SingleStorey.EarlessRoundedBody  RevSingleStorey.EarlessRoundedBody}
+			singleStorey {SingleStorey.FullBarBody RevSingleStorey.FullBarBody }
+			singleStoreyFlatTop {SingleStorey.FlatTopBody RevSingleStorey.FlatTopBody }
+			singleStoreyEarlessCorner {SingleStorey.EarlessCornerBody RevSingleStorey.EarlessCornerBody }
+			singleStoreyEarlessRounded {SingleStorey.EarlessRoundedBody RevSingleStorey.EarlessRoundedBody}
 		function [ear] : begin
 			if (ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
-				''         ''
-				bottomCut  'bottomCut'
+				'' ''
+				bottomCut 'bottomCut'
 			return : object
-				''         ''
-				topCut     'topCut'
-				bottomCut  'bottomCut'
+				'' ''
+				topCut 'topCut'
+				bottomCut 'bottomCut'
 		function [ear cut] : begin
 			if (cut === 'bottomCut') : return : object
 				serifless {SingleStorey.SeriflessBar RevSingleStorey.SeriflessBar}
 			if (cut === 'topCut' || ear === 'singleStoreyEarlessCorner' || ear === 'singleStoreyEarlessRounded') : return : object
-				serifless {SingleStorey.SeriflessBar      RevSingleStorey.SeriflessBar    }
-				serifed   {SingleStorey.BottomSerifedBar  RevSingleStorey.BottomSerifedBar}
-				tailed    {SingleStorey.TailedBar         RevSingleStorey.TailedBar       }
+				serifless {SingleStorey.SeriflessBar RevSingleStorey.SeriflessBar }
+				serifed {SingleStorey.BottomSerifedBar RevSingleStorey.BottomSerifedBar}
+				tailed {SingleStorey.TailedBar RevSingleStorey.TailedBar }
 			return : object
-				serifless     {SingleStorey.SeriflessBar      RevSingleStorey.SeriflessBar    }
-				serifed       {SingleStorey.BottomSerifedBar  RevSingleStorey.BottomSerifedBar}
-				doubleSerifed {SingleStorey.DoubleSerifedBar  RevSingleStorey.DoubleSerifedBar}
-				tailed        {SingleStorey.TailedBar         RevSingleStorey.TailedBar       }
-				tailedSerifed {SingleStorey.TailedSerifedBar  RevSingleStorey.TailedSerifedBar}
+				serifless {SingleStorey.SeriflessBar RevSingleStorey.SeriflessBar }
+				serifed {SingleStorey.BottomSerifedBar RevSingleStorey.BottomSerifedBar}
+				doubleSerifed {SingleStorey.DoubleSerifedBar RevSingleStorey.DoubleSerifedBar}
+				tailed {SingleStorey.TailedBar RevSingleStorey.TailedBar }
+				tailedSerifed {SingleStorey.TailedSerifedBar RevSingleStorey.TailedSerifedBar}
 
 	foreach {suffix {{body revBody} cut {bar revBar}}} [Object.entries SingleStoreyConfig] : do
-		if [not para.isItalic] : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash HOOK-SLAB-NONE true
+		if (!para.isItalic) : create-glyph "aSwash.phonotypic.\(suffix)" : PhonotypicASwash HOOK-SLAB-NONE true
 		create-glyph "turnAScript.phonotypic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
@@ -854,14 +854,14 @@ glyph-block Letter-Latin-Lower-A : begin
 
 	select-variant 'cyrl/a' 0x430 (shapeFrom -- 'a') (follow -- 'a')
 
-	CreateTurnedLetter 'turna'      0x250 'a/doubleStorey' HalfAdvance (XH / 2)
-	CreateTurnedLetter 'turna.UPPH' null  'a'              HalfAdvance (XH / 2)
+	CreateTurnedLetter 'turna' 0x250 'a/doubleStorey' HalfAdvance (XH / 2)
+	CreateTurnedLetter 'turna.UPPH' null 'a' HalfAdvance (XH / 2)
 
 	select-variant 'aRetroflexHook' 0x1D8F
 	link-reduced-variant 'aRetroflexHook/doubleStorey' 'aRetroflexHook'
 
 	select-variant 'aSwash' 0x1DF69 (follow -- [conditional-follow para.isItalic 'a/doubleStorey' 'a'])
-	if [not para.isItalic] : select-variant 'aSwash.phonotypic' (follow -- 'a')
+	if (!para.isItalic) : select-variant 'aSwash.phonotypic' (follow -- 'a')
 	select-variant 'aRoundTop.upright' (follow -- 'a/doubleStorey') (shapeFrom -- 'reva')
 
 	select-variant 'grek/alpha' 0x3B1 (shapeFrom -- 'a')
@@ -880,7 +880,7 @@ glyph-block Letter-Latin-Lower-A : begin
 	CreateTurnedLetter 'turnaScript.UPPH' null 'a.crossing' HalfAdvance (XH / 2)
 
 	select-variant 'aScriptRetroflexHook.slab.upright' (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.slab.upright')
-	select-variant 'aScriptRetroflexHook.slab.italic'  (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.slab.italic')
+	select-variant 'aScriptRetroflexHook.slab.italic' (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.slab.italic')
 	orthographic-italic 'aScriptRetroflexHook.slab' null
 	select-variant 'aScriptRetroflexHook.sans' (shapeFrom -- 'aRetroflexHook') (follow -- 'aRetroflexHook/singleStorey.sans')
 	orthographic-slab SLAB 'aScriptRetroflexHook' 0x1D90
@@ -888,76 +888,76 @@ glyph-block Letter-Latin-Lower-A : begin
 	CreateAccentedComposition 'aScriptBar' 0xAB30 'aScript' 'hStrike'
 
 	select-variant 'revaScript.slab.upright' (shapeFrom -- 'reva') (follow -- 'a/singleStorey.slab.upright')
-	select-variant 'revaScript.slab.italic'  (shapeFrom -- 'reva') (follow -- 'a/singleStorey.slab.italic')
+	select-variant 'revaScript.slab.italic' (shapeFrom -- 'reva') (follow -- 'a/singleStorey.slab.italic')
 	orthographic-italic 'revaScript.slab' null
 	select-variant 'revaScript.sans' (shapeFrom -- 'reva') (follow -- 'a/singleStorey.sans')
 	orthographic-slab SLAB 'revaScript' null
 	CreateTurnedLetter 'invaScript' 0xAB64 'revaScript' HalfAdvance (XH / 2)
 
-	CreateAccentedComposition 'aGrave'      0xE0   'a' 'graveAbove'
-	CreateAccentedComposition 'aAcute'      0xE1   'a' 'acuteAbove'
-	CreateAccentedComposition 'aCircumflex' 0xE2   'a' 'circumflexAbove'
-	CreateAccentedComposition 'aTilde'      0xE3   'a' 'tildeAbove'
-	CreateAccentedComposition 'aDieresis'   0xE4   'a' 'dieresisAbove'
-	CreateAccentedComposition 'aRing'       0xE5   'a' 'ringAbove'
-	CreateAccentedComposition 'aMacron'     0x101  'a' 'macronAbove'
-	CreateAccentedComposition 'aBreve'      0x103  'a' 'breveAbove'
-	CreateAccentedComposition 'aOgonek'     0x105  'a' 'ogonekBelow'
-	CreateAccentedComposition 'aCaron'      0x1CE  'a' 'caronAbove'
-	CreateAccentedComposition 'aDblGrave'   0x201  'a' 'doubleGraveAbove'
-	CreateAccentedComposition 'aInvBreve'   0x203  'a' 'invBreveAbove'
-	CreateAccentedComposition 'aDot'        0x227  'a' 'dotAbove'
-	CreateAccentedComposition 'aBelowring'  0x1E01 'a' 'ringBelow'
-	CreateAccentedComposition 'aBelowdot'   0x1EA1 'a' 'dotBelow'
-	CreateAccentedComposition 'aHook'       0x1EA3 'a' 'hookAbove'
-	CreateAccentedComposition 'aBar'        0x1DF41 'a' 'hStrike'
+	CreateAccentedComposition 'aGrave' 0xE0 'a' 'graveAbove'
+	CreateAccentedComposition 'aAcute' 0xE1 'a' 'acuteAbove'
+	CreateAccentedComposition 'aCircumflex' 0xE2 'a' 'circumflexAbove'
+	CreateAccentedComposition 'aTilde' 0xE3 'a' 'tildeAbove'
+	CreateAccentedComposition 'aDieresis' 0xE4 'a' 'dieresisAbove'
+	CreateAccentedComposition 'aRing' 0xE5 'a' 'ringAbove'
+	CreateAccentedComposition 'aMacron' 0x101 'a' 'macronAbove'
+	CreateAccentedComposition 'aBreve' 0x103 'a' 'breveAbove'
+	CreateAccentedComposition 'aOgonek' 0x105 'a' 'ogonekBelow'
+	CreateAccentedComposition 'aCaron' 0x1CE 'a' 'caronAbove'
+	CreateAccentedComposition 'aDblGrave' 0x201 'a' 'doubleGraveAbove'
+	CreateAccentedComposition 'aInvBreve' 0x203 'a' 'invBreveAbove'
+	CreateAccentedComposition 'aDot' 0x227 'a' 'dotAbove'
+	CreateAccentedComposition 'aBelowring' 0x1E01 'a' 'ringBelow'
+	CreateAccentedComposition 'aBelowdot' 0x1EA1 'a' 'dotBelow'
+	CreateAccentedComposition 'aHook' 0x1EA3 'a' 'hookAbove'
+	CreateAccentedComposition 'aBar' 0x1DF41 'a' 'hStrike'
 	CreateAccentedComposition 'aRightHalfRingTR' 0x1E9A 'a' 'rightHalfRingTR'
 
-	CreateMultiAccentedComposition 'aDieresisMacron'     0x1DF  'a' {'dieresisAbove'   'macronAbove'}
-	CreateMultiAccentedComposition 'aDotMacron'          0x1E1  'a' {'dotAbove'        'macronAbove'}
-	CreateMultiAccentedComposition 'aRingAcute'          0x1FB  'a' {'ringAbove'       'acuteAbove'}
-	CreateMultiAccentedComposition 'aCircumflexAcute'    0x1EA5 'a' {'circumflexAbove' 'acuteAbove'}
-	CreateMultiAccentedComposition 'aCircumflexGrave'    0x1EA7 'a' {'circumflexAbove' 'graveAbove'}
-	CreateMultiAccentedComposition 'aCircumflexHook'     0x1EA9 'a' {'circumflexAbove' 'hookAbove'}
-	CreateMultiAccentedComposition 'aCircumflexTilde'    0x1EAB 'a' {'circumflexAbove' 'tildeAbove'}
-	CreateMultiAccentedComposition 'aBelowdotCircumflex' 0x1EAD 'a' {'dotBelow'        'circumflexAbove'}
-	CreateMultiAccentedComposition 'aBreveAcute'         0x1EAF 'a' {'breveAbove'      'acuteAbove'}
-	CreateMultiAccentedComposition 'aBreveGrave'         0x1EB1 'a' {'breveAbove'      'graveAbove'}
-	CreateMultiAccentedComposition 'aBreveHook'          0x1EB3 'a' {'breveAbove'      'hookAbove'}
-	CreateMultiAccentedComposition 'aBreveTilde'         0x1EB5 'a' {'breveAbove'      'tildeAbove'}
-	CreateMultiAccentedComposition 'aBelowdotBreve'      0x1EB7 'a' {'dotBelow'        'breveAbove'}
+	CreateMultiAccentedComposition 'aDieresisMacron' 0x1DF 'a' {'dieresisAbove' 'macronAbove'}
+	CreateMultiAccentedComposition 'aDotMacron' 0x1E1 'a' {'dotAbove' 'macronAbove'}
+	CreateMultiAccentedComposition 'aRingAcute' 0x1FB 'a' {'ringAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aCircumflexAcute' 0x1EA5 'a' {'circumflexAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aCircumflexGrave' 0x1EA7 'a' {'circumflexAbove' 'graveAbove'}
+	CreateMultiAccentedComposition 'aCircumflexHook' 0x1EA9 'a' {'circumflexAbove' 'hookAbove'}
+	CreateMultiAccentedComposition 'aCircumflexTilde' 0x1EAB 'a' {'circumflexAbove' 'tildeAbove'}
+	CreateMultiAccentedComposition 'aBelowdotCircumflex' 0x1EAD 'a' {'dotBelow' 'circumflexAbove'}
+	CreateMultiAccentedComposition 'aBreveAcute' 0x1EAF 'a' {'breveAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aBreveGrave' 0x1EB1 'a' {'breveAbove' 'graveAbove'}
+	CreateMultiAccentedComposition 'aBreveHook' 0x1EB3 'a' {'breveAbove' 'hookAbove'}
+	CreateMultiAccentedComposition 'aBreveTilde' 0x1EB5 'a' {'breveAbove' 'tildeAbove'}
+	CreateMultiAccentedComposition 'aBelowdotBreve' 0x1EB7 'a' {'dotBelow' 'breveAbove'}
 
-	CreateAccentedComposition 'aGrave/doubleStorey'      null 'a/doubleStorey' 'graveAbove'
-	CreateAccentedComposition 'aAcute/doubleStorey'      null 'a/doubleStorey' 'acuteAbove'
+	CreateAccentedComposition 'aGrave/doubleStorey' null 'a/doubleStorey' 'graveAbove'
+	CreateAccentedComposition 'aAcute/doubleStorey' null 'a/doubleStorey' 'acuteAbove'
 	CreateAccentedComposition 'aCircumflex/doubleStorey' null 'a/doubleStorey' 'circumflexAbove'
-	CreateAccentedComposition 'aTilde/doubleStorey'      null 'a/doubleStorey' 'tildeAbove'
-	CreateAccentedComposition 'aDieresis/doubleStorey'   null 'a/doubleStorey' 'dieresisAbove'
-	CreateAccentedComposition 'aRing/doubleStorey'       null 'a/doubleStorey' 'ringAbove'
-	CreateAccentedComposition 'aMacron/doubleStorey'     null 'a/doubleStorey' 'macronAbove'
-	CreateAccentedComposition 'aBreve/doubleStorey'      null 'a/doubleStorey' 'breveAbove'
-	CreateAccentedComposition 'aOgonek/doubleStorey'     null 'a/doubleStorey' 'ogonekBelow'
-	CreateAccentedComposition 'aWedge/doubleStorey'      null 'a/doubleStorey' 'caronAbove'
-	CreateAccentedComposition 'aDblGrave/doubleStorey'   null 'a/doubleStorey' 'doubleGraveAbove'
-	CreateAccentedComposition 'aInvBreve/doubleStorey'   null 'a/doubleStorey' 'invBreveAbove'
-	CreateAccentedComposition 'aDot/doubleStorey'        null 'a/doubleStorey' 'dotAbove'
-	CreateAccentedComposition 'aBelowring/doubleStorey'  null 'a/doubleStorey' 'ringBelow'
-	CreateAccentedComposition 'aBelowdot/doubleStorey'   null 'a/doubleStorey' 'dotBelow'
-	CreateAccentedComposition 'aHook/doubleStorey'       null 'a/doubleStorey' 'hookAbove'
-	CreateAccentedComposition 'aBar/doubleStorey'        null 'a/doubleStorey' 'hStrike'
+	CreateAccentedComposition 'aTilde/doubleStorey' null 'a/doubleStorey' 'tildeAbove'
+	CreateAccentedComposition 'aDieresis/doubleStorey' null 'a/doubleStorey' 'dieresisAbove'
+	CreateAccentedComposition 'aRing/doubleStorey' null 'a/doubleStorey' 'ringAbove'
+	CreateAccentedComposition 'aMacron/doubleStorey' null 'a/doubleStorey' 'macronAbove'
+	CreateAccentedComposition 'aBreve/doubleStorey' null 'a/doubleStorey' 'breveAbove'
+	CreateAccentedComposition 'aOgonek/doubleStorey' null 'a/doubleStorey' 'ogonekBelow'
+	CreateAccentedComposition 'aWedge/doubleStorey' null 'a/doubleStorey' 'caronAbove'
+	CreateAccentedComposition 'aDblGrave/doubleStorey' null 'a/doubleStorey' 'doubleGraveAbove'
+	CreateAccentedComposition 'aInvBreve/doubleStorey' null 'a/doubleStorey' 'invBreveAbove'
+	CreateAccentedComposition 'aDot/doubleStorey' null 'a/doubleStorey' 'dotAbove'
+	CreateAccentedComposition 'aBelowring/doubleStorey' null 'a/doubleStorey' 'ringBelow'
+	CreateAccentedComposition 'aBelowdot/doubleStorey' null 'a/doubleStorey' 'dotBelow'
+	CreateAccentedComposition 'aHook/doubleStorey' null 'a/doubleStorey' 'hookAbove'
+	CreateAccentedComposition 'aBar/doubleStorey' null 'a/doubleStorey' 'hStrike'
 	CreateAccentedComposition 'aRightHalfRing/doubleStorey' null 'a/doubleStorey' 'rightHalfRingAbove'
 
-	CreateMultiAccentedComposition 'aDieresisMacron/doubleStorey'     null 'a/doubleStorey' {'dieresisAbove'   'macronAbove'}
-	CreateMultiAccentedComposition 'aDotMacron/doubleStorey'          null 'a/doubleStorey' {'dotAbove'        'macronAbove'}
-	CreateMultiAccentedComposition 'aRingAcute/doubleStorey'          null 'a/doubleStorey' {'ringAbove'       'acuteAbove'}
-	CreateMultiAccentedComposition 'aCircumflexAcute/doubleStorey'    null 'a/doubleStorey' {'circumflexAbove' 'acuteAbove'}
-	CreateMultiAccentedComposition 'aCircumflexGrave/doubleStorey'    null 'a/doubleStorey' {'circumflexAbove' 'graveAbove'}
-	CreateMultiAccentedComposition 'aCircumflexHook/doubleStorey'     null 'a/doubleStorey' {'circumflexAbove' 'hookAbove'}
-	CreateMultiAccentedComposition 'aCircumflexTilde/doubleStorey'    null 'a/doubleStorey' {'circumflexAbove' 'tildeAbove'}
-	CreateMultiAccentedComposition 'aBelowdotCircumflex/doubleStorey' null 'a/doubleStorey' {'dotBelow'        'circumflexAbove'}
-	CreateMultiAccentedComposition 'aBreveAcute/doubleStorey'         null 'a/doubleStorey' {'breveAbove'      'acuteAbove'}
-	CreateMultiAccentedComposition 'aBreveGrave/doubleStorey'         null 'a/doubleStorey' {'breveAbove'      'graveAbove'}
-	CreateMultiAccentedComposition 'aBreveHook/doubleStorey'          null 'a/doubleStorey' {'breveAbove'      'hookAbove'}
-	CreateMultiAccentedComposition 'aBreveTilde/doubleStorey'         null 'a/doubleStorey' {'breveAbove'      'tildeAbove'}
-	CreateMultiAccentedComposition 'aBelowdotBreve/doubleStorey'      null 'a/doubleStorey' {'dotBelow'        'breveAbove'}
+	CreateMultiAccentedComposition 'aDieresisMacron/doubleStorey' null 'a/doubleStorey' {'dieresisAbove' 'macronAbove'}
+	CreateMultiAccentedComposition 'aDotMacron/doubleStorey' null 'a/doubleStorey' {'dotAbove' 'macronAbove'}
+	CreateMultiAccentedComposition 'aRingAcute/doubleStorey' null 'a/doubleStorey' {'ringAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aCircumflexAcute/doubleStorey' null 'a/doubleStorey' {'circumflexAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aCircumflexGrave/doubleStorey' null 'a/doubleStorey' {'circumflexAbove' 'graveAbove'}
+	CreateMultiAccentedComposition 'aCircumflexHook/doubleStorey' null 'a/doubleStorey' {'circumflexAbove' 'hookAbove'}
+	CreateMultiAccentedComposition 'aCircumflexTilde/doubleStorey' null 'a/doubleStorey' {'circumflexAbove' 'tildeAbove'}
+	CreateMultiAccentedComposition 'aBelowdotCircumflex/doubleStorey' null 'a/doubleStorey' {'dotBelow' 'circumflexAbove'}
+	CreateMultiAccentedComposition 'aBreveAcute/doubleStorey' null 'a/doubleStorey' {'breveAbove' 'acuteAbove'}
+	CreateMultiAccentedComposition 'aBreveGrave/doubleStorey' null 'a/doubleStorey' {'breveAbove' 'graveAbove'}
+	CreateMultiAccentedComposition 'aBreveHook/doubleStorey' null 'a/doubleStorey' {'breveAbove' 'hookAbove'}
+	CreateMultiAccentedComposition 'aBreveTilde/doubleStorey' null 'a/doubleStorey' {'breveAbove' 'tildeAbove'}
+	CreateMultiAccentedComposition 'aBelowdotBreve/doubleStorey' null 'a/doubleStorey' {'dotBelow' 'breveAbove'}
 
 	CreateAccentedComposition 'aSbRsbUnderlineBelow' null 'a' 'sbRsbUnderlineBelow'

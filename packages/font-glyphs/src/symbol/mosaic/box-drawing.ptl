@@ -11,10 +11,10 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 
 	for-width-kinds WideWidth4
 
-		define top     fontMetrics.os2.sTypoAscender
-		define bottom  fontMetrics.os2.sTypoDescender
-		define left    0
-		define right   MosaicWidth
+		define top fontMetrics.os2.sTypoAscender
+		define bottom fontMetrics.os2.sTypoDescender
+		define left 0
+		define right MosaicWidth
 
 		local light : AdviceStroke 3.5
 		local heavy : Math.max (light * 2) (Width * 0.15)
@@ -100,7 +100,7 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 				local ticktop midy
 				if a : include : VBar.r [mix left right (1 / 3)] tickbot ticktop light
 				if b : include : VBar.r [mix left right (2 / 3)] tickbot ticktop light
-				if c : include : VBar.r           right          tickbot ticktop light
+				if c : include : VBar.r right tickbot ticktop light
 
 		define [vlinetick unicode a b c d rev] : begin
 			create-glyph [MangleName : NameUni unicode] [MangleUnicode unicode] : glyph-proc
@@ -180,8 +180,8 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 				include : ForceUpright
 				local stopH : [Math.max u d] - light * 1 - [HSwToV : 0.5 * light]
 				local stopV : [Math.max l r] - light * 1.5
-				local capH  : [Math.max u d] - light * 1
-				local capV  : [Math.max l r] - light * 1
+				local capH : [Math.max u d] - light * 1
+				local capV : [Math.max l r] - light * 1
 				if l : begin
 					include : HBar.m left (midx - stopH) (midy + (l - light)) light
 					if (l > light) : include : HBar.m left (midx - stopH) (midy - (l - light)) light
@@ -194,10 +194,10 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 				if u : begin
 					include : VBar.m (midx + (u - light)) (midy + stopV) top light
 					if (u > light) : include : VBar.m (midx - (u - light)) (midy + stopV) top light
-				if (stopH > 0 && [not u]) : include : HBar.m (midx - stopH - [HSwToV light]) (midx + stopH + [HSwToV light]) (midy + capV) light
-				if (stopH > 0 && [not d]) : include : HBar.m (midx - stopH - [HSwToV light]) (midx + stopH + [HSwToV light]) (midy - capV) light
-				if (stopV > 0 && [not l]) : include : VBar.m (midx - capH) (midy - stopV - light) (midy + stopV + light) light
-				if (stopV > 0 && [not r]) : include : VBar.m (midx + capH) (midy - stopV - light) (midy + stopV + light) light
+				if (stopH > 0 && (!u)) : include : HBar.m (midx - stopH - [HSwToV light]) (midx + stopH + [HSwToV light]) (midy + capV) light
+				if (stopH > 0 && (!d)) : include : HBar.m (midx - stopH - [HSwToV light]) (midx + stopH + [HSwToV light]) (midy - capV) light
+				if (stopV > 0 && (!l)) : include : VBar.m (midx - capH) (midy - stopV - light) (midy + stopV + light) light
+				if (stopV > 0 && (!r)) : include : VBar.m (midx + capH) (midy - stopV - light) (midy + stopV + light) light
 
 		define [complexBoxDraw unicodeStart U D L R fn dl] : begin
 			local order {
@@ -225,9 +225,9 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 				local masked {(U * u) (D * d) (L * l) (R * r)}
 				foreach existing [items-of existings] : if ('' + existing === '' + masked) : set newcome false
 				if newcome : begin
-					if ([not dl]
-						||  ([not masked.0] || [not masked.1] || (masked.0 === masked.1))
-						&& ([not masked.2] || [not masked.3] || (masked.2 === masked.3))
+					if ((!dl)
+						|| ((!masked.0) || (!masked.1) || (masked.0 === masked.1))
+						&& ((!masked.2) || (!masked.3) || (masked.2 === masked.3))
 						&& (masked.0 > light || masked.1 > light || masked.2 > light || masked.3 > light)
 					) : begin
 						[fallback fn boxdraw].apply null {(unicodeStart + n) :: masked}
@@ -311,44 +311,44 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 			include : ForceUpright
 			include : dispiro
 				widths.center light
-				flat midx bottom               [heading Upward]
+				flat midx bottom [heading Upward]
 				curl midx (midy - bdArcRadius) [heading Upward]
 				arcvh
 				flat (midx + bdArcRadius) midy [heading Rightward]
-				curl right midy          [heading Rightward]
+				curl right midy [heading Rightward]
 
 		create-glyph [MangleName : NameUni 0x256E] [MangleUnicode 0x256E] : glyph-proc
 			set-width MosaicWidth
 			include : ForceUpright
 			include : dispiro
 				widths.center light
-				flat midx bottom               [heading Upward]
+				flat midx bottom [heading Upward]
 				curl midx (midy - bdArcRadius) [heading Upward]
 				arcvh
 				flat (midx - bdArcRadius) midy [heading Leftward]
-				curl left midy                    [heading Leftward]
+				curl left midy [heading Leftward]
 
 		create-glyph [MangleName : NameUni 0x256F] [MangleUnicode 0x256F] : glyph-proc
 			set-width MosaicWidth
 			include : ForceUpright
 			include : dispiro
 				widths.center light
-				flat midx top                  [heading Downward]
+				flat midx top [heading Downward]
 				curl midx (midy + bdArcRadius) [heading Downward]
 				arcvh
 				flat (midx - bdArcRadius) midy [heading Leftward]
-				curl left midy                    [heading Leftward]
+				curl left midy [heading Leftward]
 
 		create-glyph [MangleName : NameUni 0x2570] [MangleUnicode 0x2570] : glyph-proc
 			set-width MosaicWidth
 			include : ForceUpright
 			include : dispiro
 				widths.center light
-				flat midx top                  [heading Downward]
+				flat midx top [heading Downward]
 				curl midx (midy + bdArcRadius) [heading Downward]
 				arcvh
 				flat (midx + bdArcRadius) midy [heading Rightward]
-				curl right midy          [heading Rightward]
+				curl right midy [heading Rightward]
 
 		# Corner Diagonals
 		create-glyph [MangleName : NameUni 0x2571] [MangleUnicode 0x2571] : glyph-proc
@@ -401,8 +401,8 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 		define [DiamondBarRaw hStart vStart hEnd vEnd] : begin
 			define zStartX : mix left right hStart
 			define zStartY : mix bottom top vStart
-			define zEndX   : mix left right hEnd
-			define zEndY   : mix bottom top vEnd
+			define zEndX : mix left right hEnd
+			define zEndY : mix bottom top vEnd
 			return : dispiro
 				widths.center light
 				corner [mix zStartX zEndX (-1)] [mix zStartY zEndY (-1)]
@@ -417,10 +417,10 @@ glyph-block Symbol-Mosaic-Box-Drawing : begin
 		define [DiamondBoxDrawing unicode a b c d] : begin
 			create-glyph [MangleName : NameUni unicode] [MangleUnicode unicode] : glyph-proc
 				local candidates {}
-				if a : candidates.push [DiamondBarRaw 0.5 1  0 0.5]
-				if b : candidates.push [DiamondBarRaw 1 0.5  0.5 1]
-				if c : candidates.push [DiamondBarRaw 0 0.5  0.5 0]
-				if d : candidates.push [DiamondBarRaw 0.5 0  1 0.5]
+				if a : candidates.push [DiamondBarRaw 0.5 1 0 0.5]
+				if b : candidates.push [DiamondBarRaw 1 0.5 0.5 1]
+				if c : candidates.push [DiamondBarRaw 0 0.5 0.5 0]
+				if d : candidates.push [DiamondBarRaw 0.5 0 1 0.5]
 
 				set-width MosaicWidth
 				include : ForceUpright

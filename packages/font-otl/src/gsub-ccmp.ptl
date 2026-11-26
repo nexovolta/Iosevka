@@ -54,18 +54,18 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 	Ccmp-Group 'Mark transforms' : begin
 		define groupGrekUpperTonos {}
-		define groupLF             {}
-		define dotlessFrom         {}
-		define dotlessTo           {}
+		define groupLF {}
+		define dotlessFrom {}
+		define dotlessTo {}
 
 		foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.'): begin
-			if g.baseAnchors.lf             : groupLF.push gn
+			if g.baseAnchors.lf : groupLF.push gn
 			if g.baseAnchors.grekUpperTonos : groupGrekUpperTonos.push gn
 			if [Dotless.get g] : begin
 				dotlessFrom.push gn
-				dotlessTo.push   [Dotless.get g]
+				dotlessTo.push [Dotless.get g]
 
-		define [IotaLF]           : UkMapToLookup UnicodeKnowledge.iotaBelowToLfTf
+		define [IotaLF] : UkMapToLookup UnicodeKnowledge.iotaBelowToLfTf
 		define [GrekUpperTonosTf] : UkMapToLookup UnicodeKnowledge.upperGrekMarkToTonosTf
 
 		# Dotless transform
@@ -97,15 +97,15 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				'parenOver' {'leftParenOver' 'rightParenOver'}
 
 	Ccmp-Group 'Tie Mark Transform' : begin
-		define TieMarkFrom         {}
-		define TieMarkTo           {}
-		define TieGlyphs           {}
+		define TieMarkFrom {}
+		define TieMarkTo {}
+		define TieGlyphs {}
 
 		foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.') : begin
 			if [TieGlyph.get g] : TieGlyphs.push gid
 			if [TieMark.get g] : begin
 				TieMarkFrom.push gid
-				TieMarkTo.push   [TieMark.get g]
+				TieMarkTo.push [TieMark.get g]
 
 		define lookupTieMarkLigature : gsub.createLookup : object
 			.type 'gsub_ligature'
@@ -168,18 +168,18 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 
 		foreach {mkCenter mkLeaning} [items-of LeaningAnchorMap] : begin
 			local basesToConsider {}
-			local markFrom        {}
-			local markTo          {}
-			local markSpacer      {}
-			local splitMapping    {}
+			local markFrom {}
+			local markTo {}
+			local markSpacer {}
+			local splitMapping {}
 
 			foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 				if (![markGlyphs.all.has gn] && g.baseAnchors.(mkLeaning)) : basesToConsider.push gn
 				if (g.markAnchors.(mkCenter) && [LeaningMark.get g] && [LeaningMarkSpacer.get g]) : begin
-					markFrom.push       gn
-					markTo.push         [LeaningMark.get g]
-					markSpacer.push     [LeaningMarkSpacer.get g]
-					splitMapping.push   {gn {[LeaningMarkSpacer.get g] [LeaningMark.get g]}}
+					markFrom.push gn
+					markTo.push [LeaningMark.get g]
+					markSpacer.push [LeaningMarkSpacer.get g]
+					splitMapping.push {gn {[LeaningMarkSpacer.get g] [LeaningMark.get g]}}
 
 			define lookupTurnMarkIntoLeaningAndSpacer : gsub.createLookup : object
 				.type 'gsub_multiple'
@@ -190,25 +190,25 @@ export : define [buildCCMP gsub glyphStore markGlyphs] : begin
 				.ignoreGlyphs [filterMarkByClassNegated markGlyphs mkCenter]
 				.rules : list
 					object
-						.match         {[basesToConsider.concat markSpacer] markFrom}
-						.inputBegins   1
-						.inputEnds     2
-						.apply         {{.at 1 .lookup lookupTurnMarkIntoLeaningAndSpacer}}
+						.match {[basesToConsider.concat markSpacer] markFrom}
+						.inputBegins 1
+						.inputEnds 2
+						.apply {{.at 1 .lookup lookupTurnMarkIntoLeaningAndSpacer}}
 
 	Ccmp-Group 'Rhotic Hook Transform' : begin
-		define superscripts        {}
-		define subscripts          {}
+		define superscripts {}
+		define subscripts {}
 
 		foreach {gn g} [glyphStore.namedEntries] : if (gn.(0) !== '.') : begin
 			if [IsSuperscript.get g] : superscripts.push gn
-			if [IsSubscript.get g]   : subscripts.push gn
+			if [IsSubscript.get g] : subscripts.push gn
 
 		export-lookup : gsub.createLookup : object
 			.type 'gsub_chaining'
 			.ignoreGlyphs anyMark
 			.rules : list
 				chain-rule superscripts ({'rhoticHook'} ~> {'rhoticHook/sup'})
-				chain-rule subscripts   ({'rhoticHook'} ~> {'rhoticHook/sub'})
+				chain-rule subscripts ({'rhoticHook'} ~> {'rhoticHook/sub'})
 
 	Ccmp-Group 'Tone Transform' : begin
 		define [ToneToToneStart toneEnd] : begin
@@ -336,11 +336,11 @@ export : define [buildCCMPPostCvSs gsub ccmp glyphStore markGlyphs] : begin
 	local rec : gsub.beginBlock
 
 	define triggerGlyphs_Normal {}
-	define triggerGlyphs_Y      {}
+	define triggerGlyphs_Y {}
 	foreach {gid g} [glyphStore.namedEntries] : if (gid.(0) !== '.'): begin
 		if g.baseAnchors.trailing : piecewise
-			[OgonekTrY.get g] : triggerGlyphs_Y.push      gid
-			true              : triggerGlyphs_Normal.push gid
+			[OgonekTrY.get g] : triggerGlyphs_Y.push gid
+			true : triggerGlyphs_Normal.push gid
 
 	define ogonekSpacerNormal : gsub.createLookup : object
 		.type 'gsub_multiple'
@@ -355,14 +355,14 @@ export : define [buildCCMPPostCvSs gsub ccmp glyphStore markGlyphs] : begin
 		.rules : list
 			object
 				.match {triggerGlyphs_Y [Object.keys UnicodeKnowledge.ogonekBelowToTRTf_Y]}
-				.inputBegins   1
-				.inputEnds     2
-				.apply         {{.at 1 .lookup ogonekSpacerY}}
+				.inputBegins 1
+				.inputEnds 2
+				.apply {{.at 1 .lookup ogonekSpacerY}}
 			object
 				.match {triggerGlyphs_Normal [Object.keys UnicodeKnowledge.ogonekBelowToTRTf]}
-				.inputBegins   1
-				.inputEnds     2
-				.apply         {{.at 1 .lookup ogonekSpacerNormal}}
+				.inputBegins 1
+				.inputEnds 2
+				.apply {{.at 1 .lookup ogonekSpacerNormal}}
 
 	gsub.endBlock rec
 

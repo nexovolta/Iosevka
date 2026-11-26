@@ -8,7 +8,7 @@ define-operator '~>' 880 'right' : syntax-rules
 	`(@l ~> @r) `{.left @l .right @r}
 
 ### The operator indicating a "delay" for the knot controls. Equivalent to a call to [decor@].
-define-operator prefix '~~~'  : syntax-rules
+define-operator prefix '~~~' : syntax-rules
 	`(~~~ @x) : dirty `[decor@ @x]
 
 ### Exponentiation operator
@@ -24,7 +24,7 @@ define-macro Just : begin
 		set m.toPattern : lambda [form env w] : match form
 			`[Just @x] : object
 				whether : lambda [t] : ex `(@t === @x) env
-				assign  : lambda [t locallyQ] : ex `[begin] env
+				assign : lambda [t locallyQ] : ex `[begin] env
 
 	return m
 
@@ -88,7 +88,7 @@ define-macro lift-@ : syntax-rules
 			return mapObj
 
 		define [addDeps mapObj form] : begin
-			if [not : Array.isArray form] : return nothing
+			if (![Array.isArray form]) : return nothing
 
 			local unquoteId : isUnquote form
 			if unquoteId : begin
@@ -99,7 +99,7 @@ define-macro lift-@ : syntax-rules
 				addDeps mapObj form.(j)
 
 		define [transform form] : begin
-			if [not : Array.isArray form] : return form
+			if (![Array.isArray form]) : return form
 
 			# Handle definitions
 			local unquoteDef : isUnquoteAssign form
@@ -148,13 +148,13 @@ define-macro $$InitFlexParameters$$ : syntax-rules
 		local ps `[begin
 			[local $-flex-arguments : {}.slice.call arguments 0]
 			[local @tb {}]
-			[for [local @t 0] (@t < $-flex-arguments.length) [inc @t] : if [not : $-flex-arguments.(@t) <@ $NamedParameterPair$] : @tb.push $-flex-arguments.(@t)]
+			[for [local @t 0] (@t < $-flex-arguments.length) [inc @t] : if (![$-flex-arguments.(@t) <@ $NamedParameterPair$]) : @tb.push $-flex-arguments.(@t)]
 		]
 
 		local declarations `[begin]
 		local namedAssigns `[begin]
 		local indexAssigns `[begin]
-		local tearDowns    `[begin]
+		local tearDowns `[begin]
 
 		local j 0
 		foreach $pf [items-of $pairs] : begin
@@ -351,7 +351,7 @@ define-macro glyph-block-export : syntax-rules
 define-macro for-width-kinds : syntax-rules
 	`[for-width-kinds @_desired @::_body] : dirty `[ do \\
 		define WidthKinds {
-			{0 '.NWID' $Capture$.Metrics.Width      1}
+			{0 '.NWID' $Capture$.Metrics.Width 1}
 			{1 '.WWID' $Capture$.Metrics.WideWidth0 2}
 		}
 		foreach {FMosaicWide MosaicNameSuffix MosaicWidth MosaicWidthScalar} [items-of WidthKinds] : do
@@ -421,7 +421,7 @@ define-macro glyph-block : syntax-rules
 			$Capture_Ext$.$Exec$.defineGlyphBlock $Capture_Ext$ @blockName
 				function [$Capture$ $ExportCapture$] : begin
 					define [object @::[captureImports.filter : lambda [x] variableSet.(x)]] $Capture$
-					define [object @::[metricImports.filter  : lambda [x] variableSet.(x)]] $Capture$.Metrics
+					define [object @::[metricImports.filter : lambda [x] variableSet.(x)]] $Capture$.Metrics
 					define [object @::[spiroFnImports.filter : lambda [x] variableSet.(x)]] $Capture$.SpiroFns
 					define [object @::spiroFnImportsAlways] $Capture$.SpiroFns
 					define [object @::[booleFnImports.filter : lambda [x] variableSet.(x)]] $Capture$.BooleFns

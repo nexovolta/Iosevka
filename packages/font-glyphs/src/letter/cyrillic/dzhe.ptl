@@ -10,10 +10,10 @@ glyph-block Letter-Cyrillic-Dzhe : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
-	define SERIF-NONE      0
-	define SERIF-MOTION    1
-	define SERIF-ALL       2
-	define SERIF-TR        3
+	define SERIF-NONE 0
+	define SERIF-MOTION 1
+	define SERIF-ALL 2
+	define SERIF-TR 3
 	define SERIF-BILATERAL 4
 
 	define [CyrDzheShape top serifType] : glyph-proc
@@ -25,8 +25,8 @@ glyph-block Letter-Cyrillic-Dzhe : begin
 		include : ExtendBelowBaseAnchors desc
 		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
 			include : match serifType
-				[Just SERIF-MOTION]    : begin sf.lt.outer
-				[Just SERIF-TR]        : begin sf.rt.inner
+				[Just SERIF-MOTION] : begin sf.lt.outer
+				[Just SERIF-TR] : begin sf.rt.inner
 				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.inner
 				__ : glyph-proc
 					include sf.lt.full
@@ -35,10 +35,10 @@ glyph-block Letter-Cyrillic-Dzhe : begin
 					include sf.rb.outer
 
 	define DzheConfig : object
-		serifless              SERIF-NONE
-		motionSerifed          SERIF-MOTION
-		serifed                SERIF-ALL
-		topRightMotionSerifed  SERIF-TR
+		serifless SERIF-NONE
+		motionSerifed SERIF-MOTION
+		serifed SERIF-ALL
+		topRightMotionSerifed SERIF-TR
 		bilateralMotionSerifed SERIF-BILATERAL
 
 	foreach {suffix serifType} [Object.entries DzheConfig] : do

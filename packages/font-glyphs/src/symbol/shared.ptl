@@ -27,12 +27,12 @@ glyph-block Shared-Symbol-Shapes : begin
 			include : dispiro
 				widths.center sw
 				if (xsJoin === nothing) {} : if diagJoinS
-					list [g2                   xsJoin SymbolMid]
+					list [g2 xsJoin SymbolMid]
 					list [straight.right.start xsJoin SymbolMid]
 				begin knots
 				if (xfJoin === nothing) {} : if diagJoinF
-					list [g2                   xfJoin SymbolMid]
-					list [straight.right.end   xfJoin SymbolMid]
+					list [g2 xfJoin SymbolMid]
+					list [straight.right.end xfJoin SymbolMid]
 
 		define [WaveShape] : with-params [left right xsJoin xfJoin diagJoinS diagJoinF [waveCount 1] [unitWidth Width]] : WaveShapeImpl (unitWidth * -left) (unitWidth * (1 + right)) (-left * waveCount) ((1 + right) * waveCount) xsJoin xfJoin diagJoinS diagJoinF
 		return WaveShape

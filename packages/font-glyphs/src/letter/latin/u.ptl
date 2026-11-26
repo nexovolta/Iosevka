@@ -33,18 +33,18 @@ glyph-block Letter-Latin-U : begin
 			local y : StemCutY 0 yTR [fallback cut '']
 			include : union
 				uBowl.shape
-					top     -- yTL
-					bottom  -- 0
-					left    -- df.leftSB
-					right   -- (df.rightSB - [HSwToV sw])
-					stroke  -- sw
-					fine    -- (ShoulderFine * (sw / Stroke))
-					ada     -- ada
-					adb     -- adb
+					top -- yTL
+					bottom -- 0
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV sw])
+					stroke -- sw
+					fine -- (ShoulderFine * (sw / Stroke))
+					ada -- ada
+					adb -- adb
 					rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
 				tagged 'strokeR' : URightBar df.rightSB 0 yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			set-base-anchor 'strike'  df.middle (top / 2)
+			set-base-anchor 'strike' df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [Tailed df top sw fHookLeft fShortLeg cut] : glyph-proc
@@ -54,19 +54,19 @@ glyph-block Letter-Latin-U : begin
 			local y : StemCutY 0 yTR [fallback cut '']
 			include : union
 				uBowl.shape
-					top     -- yTL
-					bottom  -- 0
-					left    -- df.leftSB
-					right   -- (df.rightSB - [HSwToV sw])
-					stroke  -- sw
-					fine    -- (ShoulderFine * (sw / Stroke))
-					ada     -- ada
-					adb     -- adb
+					top -- yTL
+					bottom -- 0
+					left -- df.leftSB
+					right -- (df.rightSB - [HSwToV sw])
+					stroke -- sw
+					fine -- (ShoulderFine * (sw / Stroke))
+					ada -- ada
+					adb -- adb
 					rightY0 -- [Math.min (ada + TINY) (y.top - 0)]
 				tagged 'strokeR' : RightwardTailedBar df.rightSB y.bot y.top (sw -- sw)
 				ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- 0) (top -- yTR) (sw -- sw)
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			set-base-anchor 'strike'  df.middle (top / 2)
+			set-base-anchor 'strike' df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [FlatBottom df top sw fHookLeft fShortLeg cut] : glyph-proc
@@ -74,17 +74,17 @@ glyph-block Letter-Latin-U : begin
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			include : union
 				uBowl.toothlessCorner
-					top     -- yTL
-					bottom  -- 0
-					left    -- df.leftSB
-					right   -- df.rightSB
-					stroke  -- sw
-					ada     -- ada
-					adb     -- adb
-					rise    -- 0
+					top -- yTL
+					bottom -- 0
+					left -- df.leftSB
+					right -- df.rightSB
+					stroke -- sw
+					ada -- ada
+					adb -- adb
+					rise -- 0
 				tagged 'strokeR' : URightBar df.rightSB 0 yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			set-base-anchor 'strike'  df.middle (top / 2)
+			set-base-anchor 'strike' df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [ToothlessCorner df top sw fHookLeft fShortLeg cut] : glyph-proc
@@ -92,32 +92,32 @@ glyph-block Letter-Latin-U : begin
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			include : union
 				uBowl.toothlessCorner
-					top     -- yTL
-					bottom  -- 0
-					left    -- df.leftSB
-					right   -- df.rightSB
-					stroke  -- sw
-					ada     -- ada
-					adb     -- adb
+					top -- yTL
+					bottom -- 0
+					left -- df.leftSB
+					right -- df.rightSB
+					stroke -- sw
+					ada -- ada
+					adb -- adb
 				tagged 'strokeR' : URightBar df.rightSB DToothlessRise yTR sw cut
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			set-base-anchor 'strike'  df.middle (top / 2)
+			set-base-anchor 'strike' df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 		export : define [ToothlessRounded df top sw fHookLeft fShortLeg cut] : glyph-proc
 			local yTL : top - [if fHookLeft (TailY + HalfStroke) 0]
 			local yTR : if fShortLeg [mix [Math.min ada : YSmoothMidR top 0 ada adb] top 0.5] top
 			include : uBowl.toothlessRounded
-				top     -- yTL
-				bottom  -- 0
-				left    -- df.leftSB
-				right   -- df.rightSB
-				stroke  -- sw
-				ada     -- ada
-				adb     -- adb
+				top -- yTL
+				bottom -- 0
+				left -- df.leftSB
+				right -- df.rightSB
+				stroke -- sw
+				ada -- ada
+				adb -- adb
 				rightY0 -- yTR
 			if fHookLeft : include : TopHook.toLeft.lBarInner df.leftSB [Math.min (adb + TINY) (yTL - 0)] top (sw -- sw)
-			set-base-anchor 'strike'  df.middle (top / 2)
+			set-base-anchor 'strike' df.middle (top / 2)
 			set-base-anchor 'overlay' df.middle (top / 2)
 
 	define UUpper : UShapeGroup ArchDepthA ArchDepthB
@@ -148,20 +148,20 @@ glyph-block Letter-Latin-U : begin
 			return : composite-proc sf.lt.outer sf.rt.inner
 
 		export : define [Toothed df top _sw] : glyph-proc
-			include : Toothless   df top _sw
+			include : Toothless df top _sw
 			include : BottomRight df top _sw
 
 		export : define [ToothedReversed df top _sw] : glyph-proc
-			include : Toothless  df top _sw
+			include : Toothless df top _sw
 			include : BottomLeft df top _sw
 
 		export : define [SmallToothed df top _sw] : glyph-proc
 			include : SmallToothless df top _sw
-			include : BottomRight    df top _sw
+			include : BottomRight df top _sw
 
 		export : define [SmallToothedReversed df top _sw] : glyph-proc
 			include : SmallToothless df top _sw
-			include : BottomLeft     df top _sw
+			include : BottomLeft df top _sw
 
 		export : define [BilateralMotion df top _sw _offset] : begin
 			local sf : SerifFrame.fromDf df top 0 (swRef -- _sw)
@@ -190,20 +190,20 @@ glyph-block Letter-Latin-U : begin
 
 		export : define [MotionToothed df top _sw] : glyph-proc
 			include : MotionToothless df top _sw
-			include : BottomRight     df top _sw
+			include : BottomRight df top _sw
 
 		export : define [MotionToothedReversed df top _sw] : glyph-proc
 			include : MotionToothless df top _sw
-			include : BottomLeft      df top _sw
+			include : BottomLeft df top _sw
 
 	define [ReversedUSerifs slabs] : piecewise
-		(slabs === USerifs.BottomRight)  USerifs.BottomLeft
+		(slabs === USerifs.BottomRight) USerifs.BottomLeft
 		(slabs === USerifs.MotionToothed) USerifs.MotionToothedReversed
-		(slabs === USerifs.Toothed)      USerifs.ToothedReversed
+		(slabs === USerifs.Toothed) USerifs.ToothedReversed
 		(slabs === USerifs.SmallToothed) USerifs.SmallToothedReversed
 		(slabs === USerifs.TopRightMotion) USerifs.TopLeftInner
 		(slabs === USerifs.BilateralMotionInnerRt) USerifs.BilateralMotionInnerLt
-		true                             slabs
+		true slabs
 
 	define [ReversedUBody shapeGroup Base suffix] : if [suffix.startsWith 'toothlessRounded.'] shapeGroup.Toothed Base
 
@@ -218,27 +218,27 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
 		object # body
-			toothed          {shapeGroup.Toothed           RightSB              0             }
-			tailed           {shapeGroup.Tailed            (RightSB + SideJut)  0             }
-			flatBottom       {shapeGroup.FlatBottom        RightSB              0             }
-			toothlessCorner  {shapeGroup.ToothlessCorner   RightSB              DToothlessRise}
-			toothlessRounded {shapeGroup.ToothlessRounded  null                 null          }
+			toothed {shapeGroup.Toothed RightSB 0 }
+			tailed {shapeGroup.Tailed (RightSB + SideJut) 0 }
+			flatBottom {shapeGroup.FlatBottom RightSB 0 }
+			toothlessCorner {shapeGroup.ToothlessCorner RightSB DToothlessRise}
+			toothlessRounded {shapeGroup.ToothlessRounded null null }
 		function [body] : begin
 			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
-				''         ''
+				'' ''
 			return : object
-				''         ''
-				bottomCut  'bottomCut'
+				'' ''
+				bottomCut 'bottomCut'
 		function [body cut] : object # serifs
-			serifless              {no-shape                 false}
-			bottomRightSerifed     {USerifs.BottomRight      false}
-			bilateralMotionSerifed {USerifs.BilateralMotion  true }
+			serifless {no-shape false}
+			bottomRightSerifed {USerifs.BottomRight false}
+			bilateralMotionSerifed {USerifs.BilateralMotion true }
 			motionSerifed : match body
 				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') {USerifs.MotionToothless true} {USerifs.MotionToothed true}]
-				__                                        {USerifs.MotionToothless true}
+				__ {USerifs.MotionToothless true}
 			serifed : match body
-				([Just 'toothed'] || [Just 'flatBottom']) {USerifs.Toothed         true}
-				__                                        {USerifs.Toothless       true}
+				([Just 'toothed'] || [Just 'flatBottom']) {USerifs.Toothed true}
+				__ {USerifs.Toothless true}
 
 	foreach {suffix {{Base xRB yRB} cut {Slabs fSlabLT}}} [Object.entries : CapitalUConfigT UUpper] : do
 		local revBody : ReversedUBody UUpper Base suffix
@@ -246,7 +246,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "U.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.capital
-			include : Base  df CAP Stroke nothing nothing cut
+			include : Base df CAP Stroke nothing nothing cut
 			include : Slabs df CAP Stroke
 
 		create-glyph "UBar.phonotypic.\(suffix)" : glyph-proc
@@ -261,10 +261,10 @@ glyph-block Letter-Latin-U : begin
 			create-glyph "URTail.\(suffix).\(qSuffix)" : glyph-proc
 				local df : include : DivFrame 1
 				local uSlabs : piecewise
-					(Slabs === USerifs.BottomRight)   no-shape
-					(Slabs === USerifs.Toothed)       USerifs.Toothless
+					(Slabs === USerifs.BottomRight) no-shape
+					(Slabs === USerifs.Toothed) USerifs.Toothless
 					(Slabs === USerifs.MotionToothed) USerifs.MotionToothless
-					true                              Slabs
+					true Slabs
 				local joinY : CAP / 2
 				local qBottom : new-glyph : glyph-proc
 					include : intersection
@@ -284,7 +284,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "smcpU.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : Base  df XH Stroke nothing nothing cut
+			include : Base df XH Stroke nothing nothing cut
 			include : Slabs df XH Stroke
 
 		create-glyph "UReversed.\(suffix)" : glyph-proc
@@ -311,29 +311,29 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
 		object # tooth
-			toothed          {shapeGroup.Toothed           RightSB              0             }
-			tailed           {shapeGroup.Tailed            (RightSB + SideJut)  0             }
-			flatBottom       {shapeGroup.FlatBottom        RightSB              0             }
-			toothlessCorner  {shapeGroup.ToothlessCorner   RightSB              DToothlessRise}
-			toothlessRounded {shapeGroup.ToothlessRounded  null                 null          }
-			descBase         {shapeGroup.Toothed           RightSB              0             }
+			toothed {shapeGroup.Toothed RightSB 0 }
+			tailed {shapeGroup.Tailed (RightSB + SideJut) 0 }
+			flatBottom {shapeGroup.FlatBottom RightSB 0 }
+			toothlessCorner {shapeGroup.ToothlessCorner RightSB DToothlessRise}
+			toothlessRounded {shapeGroup.ToothlessRounded null null }
+			descBase {shapeGroup.Toothed RightSB 0 }
 		function [tooth] : begin
 			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
-				''         ''
+				'' ''
 			return : object
-				''         ''
-				bottomCut  'bottomCut'
+				'' ''
+				bottomCut 'bottomCut'
 		function [tooth cut] : object # serifs
-			serifless                  no-shape
-			bottomRightSerifed         USerifs.BottomRight
+			serifless no-shape
+			bottomRightSerifed USerifs.BottomRight
 			motionSerifed : match tooth
 				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') USerifs.MotionToothless USerifs.MotionToothed]
-				__                                        USerifs.MotionToothless
+				__ USerifs.MotionToothless
 			serifed : match tooth
 				([Just 'toothed'] || [Just 'flatBottom']) USerifs.SmallToothed
-				__                                        USerifs.SmallToothless
-			topRightMotionSerifed      USerifs.TopRightMotion
-			bilateralMotionSerifed     USerifs.BilateralMotionInnerRt
+				__ USerifs.SmallToothless
+			topRightMotionSerifed USerifs.TopRightMotion
+			bilateralMotionSerifed USerifs.BilateralMotionInnerRt
 
 	# The u of the ou digraph follows u, drawn in a narrower frame
 	define OuU : UShapeGroup (SmallArchDepthA * 0.75 * [DivFrame para.advanceScaleM 3].adws) (SmallArchDepthB * 0.75 * [DivFrame para.advanceScaleM 3].adws)
@@ -365,7 +365,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "u.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : UBase  df XH Stroke
+			include : UBase df XH Stroke
 			include : Slabs df XH Stroke
 
 		create-glyph "uBar.phonotypic.\(suffix)" : glyph-proc
@@ -385,7 +385,7 @@ glyph-block Letter-Latin-U : begin
 			include : df.markSet.p
 			include : union [UBase df XH Stroke] : dispiro
 				widths.rhs
-				flat df.leftSB      Descender        [heading Upward]
+				flat df.leftSB Descender [heading Upward]
 				curl df.leftSB [mix Descender 0 0.5] [heading Upward]
 				straight.up.end df.leftSB SmallArchDepthB [widths.rhs.heading [AdviceStroke 4] Upward]
 			include : Slabs df XH Stroke
@@ -394,7 +394,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/tse.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.e
-			include : UBase  df XH Stroke
+			include : UBase df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : CyrDescender.rSideJut df.rightSB 0
@@ -411,7 +411,7 @@ glyph-block Letter-Latin-U : begin
 		create-glyph "cyrl/tswe.italic.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.p
-			include : UBase  df XH Stroke
+			include : UBase df XH Stroke
 			include : Slabs df XH Stroke
 			eject-contour 'serifRB'
 			include : CyrCurlDescender.rSideJut df.rightSB 0
@@ -555,14 +555,14 @@ glyph-block Letter-Latin-U : begin
 			refer-glyph src
 			Rect (XH / 2 + gap / 2) (XH / 2 - gap / 2) [mix 0 Width (-2)] [mix 0 Width 3]
 
-	select-variant 'turnh'     0x265 (follow -- 'uLongLeg')
+	select-variant 'turnh' 0x265 (follow -- 'uLongLeg')
 	select-variant 'uShortLeg' 0xAB4E
 
 	select-variant 'uHookLeft' 0xAB52
 	select-variant 'uHookLeft.phonotypic' (follow -- 'uHookLeft')
-	select-variant 'uRTail'    0x1DF7B
+	select-variant 'uRTail' 0x1DF7B
 
-	select-variant 'turnhHookLeft'      0x2AE (follow -- 'uHookLeftLongLeg')
+	select-variant 'turnhHookLeft' 0x2AE (follow -- 'uHookLeftLongLeg')
 	select-variant 'turnhHookLeftRTail' 0x2AF (follow -- 'uHookLeftLongLegRTail')
 
 	select-variant 'uSideways' 0x1D1D (follow -- 'u')
@@ -584,7 +584,7 @@ glyph-block Letter-Latin-U : begin
 	select-variant 'cyrl/dzhe.italic/base' (shapeFrom -- 'u') (follow -- 'cyrl/tse.italic')
 	CreateAccentedComposition 'cyrl/dzhe.italic' null 'cyrl/dzhe.italic/base' 'descenderBarBelow'
 
-	alias 'cyrl/i.BGR'   null 'cyrl/i.italic'
+	alias 'cyrl/i.BGR' null 'cyrl/i.italic'
 	alias 'cyrl/tse.BGR' null 'cyrl/tse.italic'
 
 	CreateAccentedComposition 'cyrl/iBreve.BGR' null 'cyrl/i.BGR' 'breveAbove'
@@ -601,10 +601,10 @@ glyph-block Letter-Latin-U : begin
 	derive-glyphs 'uWithLightCentralizationStroke' null 'u' : function [src gr] : glyph-proc
 		include : MarkSet.p
 		include : refer-glyph src
-		local fine      : AdviceStroke 4
-		local outStand  : SB * 0.75 + fine * 0.25
+		local fine : AdviceStroke 4
+		local outStand : SB * 0.75 + fine * 0.25
 		local outStandY : SmallArchDepthB / 2 - Descender * 0.6
-		local yTurn     : SmallArchDepthB / 2
+		local yTurn : SmallArchDepthB / 2
 		include : difference
 			dispiro
 				widths.lhs fine
@@ -614,8 +614,8 @@ glyph-block Letter-Latin-U : begin
 
 	CreateAccentedComposition 'uDieresis' 0xFC 'u' 'dieresisAbove'
 
-	CreateAccentedComposition 'UBar'     0x244   'U'     'hStrike'
-	CreateAccentedComposition 'uBar'     0x289   'u'     'hStrike'
+	CreateAccentedComposition 'UBar' 0x244 'U' 'hStrike'
+	CreateAccentedComposition 'uBar' 0x289 'u' 'hStrike'
 	CreateAccentedComposition 'turnhBar' 0x1DF3E 'turnh' 'hStrike'
 
 	# Sideways dieresis for U+1D1E

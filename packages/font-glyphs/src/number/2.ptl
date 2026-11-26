@@ -17,11 +17,11 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Latin-Lower-T : BentTHook
 	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
-	define HOOK-ROUND  0
-	define HOOK-FLAT   1
+	define HOOK-ROUND 0
+	define HOOK-FLAT 1
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
-	define HOOK-SLAB   4
+	define HOOK-SLAB 4
 	define HOOK-VERTICAL 5
 	define HOOK-DIAGONAL 6
 
@@ -37,10 +37,10 @@ glyph-block Digits-Two : begin
 		local shape : sink
 			widths.rhs sw
 			match hookStyle
-				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
+				[Just HOOK-FLAT] : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs left top sw hook
-				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs left top sw hook
+				[Just HOOK-SLAB] : SerifedArcStart.LtrRhs left top sw hook
 				[Just HOOK-DIAGONAL] : DeltaCutStart [mix left right 0.5] left (top - O) (top - 0.2 * hook) sw
 				[Just HOOK-VERTICAL] : list
 					g4 (left - [VerticalCutExtension hook sw]) (top - hook)
@@ -63,10 +63,10 @@ glyph-block Digits-Two : begin
 		local shape : sink
 			widths.rhs sw
 			match hookStyle
-				[Just HOOK-FLAT]   : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
+				[Just HOOK-FLAT] : [MakeFlatHook left right top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook left right top 0 (sw -- sw) (hook -- hook)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (left - offsetU) top sw hook
-				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (left - offsetU) top sw hook
+				[Just HOOK-SLAB] : SerifedArcStart.LtrRhs (left - offsetU) top sw hook
 				[Just HOOK-DIAGONAL] : DeltaCutStart [mix left right 0.5] (left - offsetU) (top - O) (top - 0.2 * hook) sw
 				[Just HOOK-VERTICAL] : list
 					g4 ((left - offsetU) - [VerticalCutExtension hook sw]) (top - hook)
@@ -144,17 +144,17 @@ glyph-block Digits-Two : begin
 	define TwoHookedConfig : SuffixCfg.weave
 		object
 			straightNeck true
-			curlyNeck    false
+			curlyNeck false
 		object
-			flatHook      HOOK-FLAT
-			cornerHook    HOOK-CORNER
+			flatHook HOOK-FLAT
+			cornerHook HOOK-CORNER
 			inwardSerifed HOOK-INWARD
-			serifedHook   HOOK-SLAB
-			verticalCut   HOOK-VERTICAL
-			diagonalCut   HOOK-DIAGONAL
+			serifedHook HOOK-SLAB
+			verticalCut HOOK-VERTICAL
+			diagonalCut HOOK-DIAGONAL
 		object
 			serifless false
-			serifed   true
+			serifed true
 
 	foreach {suffix {fStraight hookStyle fSlab}} [pairs-of TwoHookedConfig] : do
 		local Shape : if fStraight TwoStraightNeckShape TwoShape
@@ -183,8 +183,8 @@ glyph-block Digits-Two : begin
 			include : spiro-outline
 				corner (xRight - [HSwToV : 0.5 * cor * swSlash]) yTop
 				corner (xRight + [HSwToV : 0.5 * cor * swSlash]) yTop
-				corner (xLeft  + [HSwToV : 0.5 * cor * swSlash]) yBot
-				corner (xLeft  - [HSwToV : 0.5 * cor * swSlash]) yBot
+				corner (xLeft + [HSwToV : 0.5 * cor * swSlash]) yBot
+				corner (xLeft - [HSwToV : 0.5 * cor * swSlash]) yBot
 
 		define [TwoBaseWithSlash xBarLeft xBarRight xSlashRefLeft sw] : glyph-proc
 			include : HBar.b xBarLeft xBarRight 0 sw
@@ -207,18 +207,18 @@ glyph-block Digits-Two : begin
 		define RumTwoConfig : SuffixCfg.weave
 			object
 				straightNeck true
-				curlyNeck    false
+				curlyNeck false
 			object
-				''            HOOK-ROUND
-				flatHook      HOOK-FLAT
-				cornerHook    HOOK-CORNER
+				'' HOOK-ROUND
+				flatHook HOOK-FLAT
+				cornerHook HOOK-CORNER
 				inwardSerifed HOOK-INWARD
-				serifedHook   HOOK-SLAB
-				verticalCut   HOOK-VERTICAL
-				diagonalCut   HOOK-DIAGONAL
+				serifedHook HOOK-SLAB
+				verticalCut HOOK-VERTICAL
+				diagonalCut HOOK-DIAGONAL
 			object
 				serifless false
-				serifed   true
+				serifed true
 
 		foreach {suffix {fStraight hookStyle fSlab}} [pairs-of RumTwoConfig] : do
 			create-glyph "RumRotunda.\(suffix)" : glyph-proc
@@ -272,36 +272,36 @@ glyph-block Digits-Two : begin
 		define [LumLSrc src] : begin
 			local suffix : if (src == 'l') [fallback para.variantSelector.l 'serifless'] : src.slice 2
 			local mapped : match suffix
-				[Just 'serifless']             'hooky'
-				[Just 'seriflessDec']          'hookyDec'
-				[Just 'tailed']                'flatTailed'
-				[Just 'tailedDec']             'flatTailedDec'
-				[Just 'tailedSerifed']         'serifedFlatTailed'
-				[Just 'diagonalTailed']        'flatTailed'
-				[Just 'diagonalTailedDec']     'flatTailedDec'
+				[Just 'serifless'] 'hooky'
+				[Just 'seriflessDec'] 'hookyDec'
+				[Just 'tailed'] 'flatTailed'
+				[Just 'tailedDec'] 'flatTailedDec'
+				[Just 'tailedSerifed'] 'serifedFlatTailed'
+				[Just 'diagonalTailed'] 'flatTailed'
+				[Just 'diagonalTailedDec'] 'flatTailedDec'
 				[Just 'serifedDiagonalTailed'] 'serifedFlatTailed'
-				[Just 'semiTailed']            'flatTailed'
-				[Just 'semiTailedDec']         'flatTailedDec'
-				[Just 'serifedSemiTailed']     'serifedFlatTailed'
-				[Just 'doubleTailed']          'doubleFlatTailed'
-				[Just 'doubleTailedDec']       'doubleFlatTailedDec'
-				[Just 'doubleSemiTailed']      'doubleFlatTailed'
-				[Just 'doubleSemiTailedDec']   'doubleFlatTailedDec'
-				[Just 'doubleDiagTailed']      'doubleFlatTailed'
-				[Just 'doubleDiagTailedDec']   'doubleFlatTailedDec'
-				__                             suffix
+				[Just 'semiTailed'] 'flatTailed'
+				[Just 'semiTailedDec'] 'flatTailedDec'
+				[Just 'serifedSemiTailed'] 'serifedFlatTailed'
+				[Just 'doubleTailed'] 'doubleFlatTailed'
+				[Just 'doubleTailedDec'] 'doubleFlatTailedDec'
+				[Just 'doubleSemiTailed'] 'doubleFlatTailed'
+				[Just 'doubleSemiTailedDec'] 'doubleFlatTailedDec'
+				[Just 'doubleDiagTailed'] 'doubleFlatTailed'
+				[Just 'doubleDiagTailedDec'] 'doubleFlatTailedDec'
+				__ suffix
 			local gn : 'l.' + mapped
 			if [query-glyph gn] : return gn
 			return src
 
-		derive-glyphs 'dum'     0xA771 'd'     : lambda [src gr] : glyph-proc
+		derive-glyphs 'dum' 0xA771 'd' : lambda [src gr] : glyph-proc
 			include : MakeUmAt [PackSrc 'd' src] para.advanceScaleM
-		derive-glyphs 'lum'     0xA772 'l'     : lambda [src gr] : glyph-proc
+		derive-glyphs 'lum' 0xA772 'l' : lambda [src gr] : glyph-proc
 			include : MakeUmAt [LumLSrc src] 1
-		derive-glyphs 'mum'     0xA773 'm'     : lambda [src gr] : glyph-proc
+		derive-glyphs 'mum' 0xA773 'm' : lambda [src gr] : glyph-proc
 			local heavyT : clamp 0 1 : linreg 80 0 para.canonicalStrokeWidthMax 1 Stroke
 			include : MakeUmAt [PackSrc 'm' src] para.advanceScaleMM (Stroke * [mix 1 0.88 heavyT])
-		derive-glyphs 'num'     0xA774 'n'     : lambda [src gr] : glyph-proc
+		derive-glyphs 'num' 0xA774 'n' : lambda [src gr] : glyph-proc
 			include : MakeUmAt [PackSrc 'n' src] para.advanceScaleM
 		derive-glyphs 'smcpRum' 0xA776 'smcpR' : lambda [src gr] : glyph-proc
 			include : MakeUmAt [PackSrc 'smcpR' src] para.advanceScaleM
@@ -325,10 +325,10 @@ glyph-block Digits-Two : begin
 			local base src
 			if (prefix === 'd') : begin
 				local suffix : if (src === 'd') para.variantSelector.d : src.slice 2
-				if [not suffix] : throw : new Error "Cannot select toothless PTMN d for \(src)"
+				if (!suffix) : throw : new Error "Cannot select toothless PTMN d for \(src)"
 				set suffix : suffix.replace [regex '^(toothed|tailed|flatBottom)(BottomCut)?'] 'toothlessRounded'
 				set base : 'd.' + suffix
-				if [not : query-glyph base] : throw : new Error "Cannot find toothless PTMN d \(base)"
+				if (![query-glyph base]) : throw : new Error "Cannot find toothless PTMN d \(base)"
 			local packed : if (prefix === 'r') base : PackSrc prefix base [if (prefix === 't') 'phonotypic' 'packPTMN']
 			local letter : new-glyph : glyph-proc
 				include [refer-glyph packed] AS_BASE ALSO_METRICS
@@ -340,9 +340,9 @@ glyph-block Digits-Two : begin
 			local yJoin : if (prefix === 'l') (0.62 * Ascender) : Math.min (0.55 * XH) : Math.max (0.35 * XH) (1.1 * sw)
 			local yMeasure : if (prefix === 'l') (0.7 * Ascender) : if (prefix === 'r') (0.2 * XH) yJoin
 			local bounds : include : MeasureGlyphBoundsInY (yMeasure - 0.08 * XH) (yMeasure + 0.08 * XH)
-			if [not bounds] : throw : new Error "Cannot attach PTMN hook to \(src)"
+			if (!bounds) : throw : new Error "Cannot attach PTMN hook to \(src)"
 			local overlay letter.baseAnchors.overlay
-			if (prefix === 'r' && [not overlay]) : throw : new Error "Cannot find PTMN r stem in \(src)"
+			if (prefix === 'r' && (!overlay)) : throw : new Error "Cannot find PTMN r stem in \(src)"
 			local xLeft : if (prefix === 'r') ([letter.gizmo.unapply overlay].x - swX / 2) (bounds.xMax - swX)
 			local hookExtra : if (prefix === 'l') (0.10 * Width) 0
 			local xHook : [Math.max (xLeft + [Math.max (2.25 * swX) (0.24 * Width)]) (letter.advanceWidth - SB)] + hookExtra
@@ -368,7 +368,7 @@ glyph-block Digits-Two : begin
 		derive-glyphs 'num.phonotypic' null 'n' : PhonotypicUm 'n' para.advanceScaleM
 		derive-glyphs 'rum.phonotypic' null 'r' : PhonotypicUm 'r' 1
 		derive-glyphs 'tum.phonotypic' null 't' : PhonotypicUm 't' para.advanceScaleM
-		if [not para.isQuasiProportional] : begin
+		if (!para.isQuasiProportional) : begin
 			derive-glyphs 'tum' 0xA777 't' : lambda [src gr] : glyph-proc
 				include [refer-glyph src] AS_BASE ALSO_METRICS
 				local overlay currentGlyph.baseAnchors.overlay
@@ -387,8 +387,8 @@ glyph-block Digits-Two : begin
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/two' 0x1D7DA : glyph-proc
 		include : MarkSet.capital
-		include : TwoArcShapeT dispiro 0   BBD BBS CAP
+		include : TwoArcShapeT dispiro 0 BBD BBS CAP
 		include : intersection
-			TwoArcShapeT dispiro       BBD 0   BBS CAP
-			TwoArcShapeT spiro-outline 0   BBD BBS CAP
+			TwoArcShapeT dispiro BBD 0 BBS CAP
+			TwoArcShapeT spiro-outline 0 BBD BBS CAP
 		include : HBar.b (SB + [HSwToV : 0.5 * BBS]) RightSB 0 BBS

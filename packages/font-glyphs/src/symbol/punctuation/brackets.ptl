@@ -19,7 +19,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
 	glyph-block-import Letter-Latin-Upper-P : SquirrelTailHook
 
-	define MosaicTop    fontMetrics.os2.sTypoAscender
+	define MosaicTop fontMetrics.os2.sTypoAscender
 	define MosaicBottom fontMetrics.os2.sTypoDescender
 	define MosaicHeight : MosaicTop - MosaicBottom
 
@@ -27,10 +27,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 	define Paren : namespace
 		export : define [Dim] : with-params [df [delta 0] [dp DesignParameters] [sw Stroke]] : object
 			outside : [mix df.leftSB df.rightSB dp.parenOutside] - delta - [HSwToV dp.parenOutsideSwAdj] * sw + O
-			inside  : [mix df.leftSB df.rightSB dp.parenInside]          - [HSwToV dp.parenInsideSwAdj]  * sw
-			bottom  : [mix SymbolMid ParenBot (1 + dp.parenOvershoot)] - delta
-			top     : [mix SymbolMid ParenTop (1 + dp.parenOvershoot)] + delta
-			mid       SymbolMid
+			inside : [mix df.leftSB df.rightSB dp.parenInside] - [HSwToV dp.parenInsideSwAdj] * sw
+			bottom : [mix SymbolMid ParenBot (1 + dp.parenOvershoot)] - delta
+			top : [mix SymbolMid ParenTop (1 + dp.parenOvershoot)] + delta
+			mid SymbolMid
 
 		export : define [Shape] : with-params [df [sw Stroke] [dp DesignParameters]] : begin
 			local dim : Dim df (delta -- 0) (dp -- dp) (sw -- sw)
@@ -80,25 +80,25 @@ glyph-block Symbol-Punctuation-Brackets : begin
 					}
 
 	define LargeContourDp : object
-		parenOutside           (0.25 * DesignParameters.parenOutside)
-		parenInside            DesignParameters.parenInside
-		parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-		parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-		parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-		parenOvershoot         DesignParameters.parenOvershoot
+		parenOutside (0.25 * DesignParameters.parenOutside)
+		parenInside DesignParameters.parenInside
+		parenOutsideSwAdj DesignParameters.parenOutsideSwAdj
+		parenInsideSwAdj DesignParameters.parenInsideSwAdj
+		parenCurliness [mix 1 DesignParameters.parenCurliness 0.5]
+		parenOvershoot DesignParameters.parenOvershoot
 	define FlatArcDp : object
-		parenOutside           (0.5 * DesignParameters.parenOutside)
-		parenInside            DesignParameters.parenInside
-		parenOutsideSwAdj      DesignParameters.parenOutsideSwAdj
-		parenInsideSwAdj       DesignParameters.parenInsideSwAdj
-		parenCurliness         [mix 1 DesignParameters.parenCurliness 0.5]
-		parenOvershoot         DesignParameters.parenOvershoot
+		parenOutside (0.5 * DesignParameters.parenOutside)
+		parenInside DesignParameters.parenInside
+		parenOutsideSwAdj DesignParameters.parenOutsideSwAdj
+		parenInsideSwAdj DesignParameters.parenInsideSwAdj
+		parenCurliness [mix 1 DesignParameters.parenCurliness 0.5]
+		parenOvershoot DesignParameters.parenOvershoot
 
 	glyph-block-export ParenVariantDp
 	define [ParenVariantDp suffix] : piecewise
 		(suffix === 'largeContour') LargeContourDp
-		(suffix === 'flatArc')      FlatArcDp
-		true                        DesignParameters
+		(suffix === 'flatArc') FlatArcDp
+		true DesignParameters
 
 	do 'Paren glyphs'
 		define [NormalShape df] : Paren.Shape df df.mvs
@@ -120,17 +120,17 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local ringSw : AdviceStroke 4
 			local innerR : Math.max (halfStem + 0.35 * ringSw) (1.1 * ringSw)
 			return : object
-				cx     (dim.outside + halfStem)
-				cy     dim.mid
-				r      (innerR + ringSw)
+				cx (dim.outside + halfStem)
+				cy dim.mid
+				r (innerR + ringSw)
 				innerR innerR
 				punchR (innerR + 0.5 * ringSw)
 				ringSw ringSw
 
 		define SimpleParenConfig : object
-			'normal'       NormalShape
+			'normal' NormalShape
 			'largeContour' LargeContourShape
-			'flatArc'      FlatArcShape
+			'flatArc' FlatArcShape
 
 		foreach {suffix shape} [pairs-of SimpleParenConfig] : begin
 			create-glyph "parenLeft.\(suffix)" : shape [DivFrame 1]
@@ -149,9 +149,9 @@ glyph-block Symbol-Punctuation-Brackets : begin
 						RingAt ring.cx ring.cy (ring.punchR + O)
 					RingStrokeAt ring.cx ring.cy ring.r ring.ringSw
 
-			turned "parenRight.\(suffix)"            null "parenLeft.\(suffix)"            Middle SymbolMid
-			turned "doubleParenRight.\(suffix)"      null "doubleParenLeft.\(suffix)"      Middle SymbolMid
-			turned "parenRightMiddleRing.\(suffix)"  null "parenLeftMiddleRing.\(suffix)"  Middle SymbolMid
+			turned "parenRight.\(suffix)" null "parenLeft.\(suffix)" Middle SymbolMid
+			turned "doubleParenRight.\(suffix)" null "doubleParenLeft.\(suffix)" Middle SymbolMid
+			turned "parenRightMiddleRing.\(suffix)" null "parenLeftMiddleRing.\(suffix)" Middle SymbolMid
 
 			create-glyph "parenLeftUHalf.\(suffix)" : intersection
 				refer-glyph "parenLeft.\(suffix)"
@@ -163,11 +163,11 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			turned "parenRightUHalf.\(suffix)" null "parenLeftLHalf.\(suffix)" Middle SymbolMid
 			turned "parenRightLHalf.\(suffix)" null "parenLeftUHalf.\(suffix)" Middle SymbolMid
 
-		select-variant 'parenLeft'  '('
+		select-variant 'parenLeft' '('
 		select-variant 'parenRight' ')'
-		select-variant 'doubleParenLeft'  0x2E28 (follow -- 'parenLeft')
+		select-variant 'doubleParenLeft' 0x2E28 (follow -- 'parenLeft')
 		select-variant 'doubleParenRight' 0x2E29 (follow -- 'parenRight')
-		select-variant 'parenLeftMiddleRing'  0x2E62 (follow -- 'parenLeft')
+		select-variant 'parenLeftMiddleRing' 0x2E62 (follow -- 'parenLeft')
 		select-variant 'parenRightMiddleRing' 0x2E63 (follow -- 'parenRight')
 
 		create-glyph 'longDivision' 0x27CC : glyph-proc
@@ -213,10 +213,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			set currentGlyph.gizmo GlobalTransform
 			include GlobalTransform
 
-		select-variant 'parenLeftUHalf'   0x2E59 (follow -- 'parenLeft')
-		select-variant 'parenRightUHalf'  0x2E5A (follow -- 'parenRight')
-		select-variant 'parenLeftLHalf'   0x2E5B (follow -- 'parenLeft')
-		select-variant 'parenRightLHalf'  0x2E5C (follow -- 'parenRight')
+		select-variant 'parenLeftUHalf' 0x2E59 (follow -- 'parenLeft')
+		select-variant 'parenRightUHalf' 0x2E5A (follow -- 'parenRight')
+		select-variant 'parenLeftLHalf' 0x2E5B (follow -- 'parenLeft')
+		select-variant 'parenRightLHalf' 0x2E5C (follow -- 'parenRight')
 
 		create-glyph 'tortoiseShellBracketLeft' 0x3014 : glyph-proc
 			local df : DivFrame 1
@@ -262,9 +262,9 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : ForceUpright
 			include : Paren.LowerShape [DivFrame 1] Stroke
 
-		turned 'parenRightupper'     0x239E 'parenLeftLower'     Middle SymbolMid
+		turned 'parenRightupper' 0x239E 'parenLeftLower' Middle SymbolMid
 		turned 'parenRightExtension' 0x239F 'parenLeftExtension' Middle SymbolMid
-		turned 'parenRightLower'     0x23A0 'parenLeftUpper'     Middle SymbolMid
+		turned 'parenRightLower' 0x23A0 'parenLeftUpper' Middle SymbolMid
 
 		create-glyph 'whiteParenLeft' 0x2985 : glyph-proc
 			local df : DivFrame 1
@@ -384,7 +384,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 						close
 		create-glyph 'whiteTortoiseShellBracketLeft' 0x27EC : WhiteTortoiseShellShape
 		turned 'whiteTortoiseShellBracketRight' 0x27ED 'whiteTortoiseShellBracketLeft' Middle SymbolMid
-		alias 'cjkWhiteTortoiseShellBracketLeft'  0x3018 'whiteTortoiseShellBracketLeft'
+		alias 'cjkWhiteTortoiseShellBracketLeft' 0x3018 'whiteTortoiseShellBracketLeft'
 		alias 'cjkWhiteTortoiseShellBracketRight' 0x3019 'whiteTortoiseShellBracketRight'
 
 		create-glyph 'blackTortoiseShellBracketLeft' 0x2997 : glyph-proc
@@ -423,15 +423,15 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : union
 				HBar.b hDim.l hDim.r ParenBot
 				HBar.t hDim.l hDim.r ParenTop
-				VBar.l      hDim.l                 ParenBot ParenTop sw
+				VBar.l hDim.l ParenBot ParenTop sw
 				VBar.m [mix hDim.l hDim.r (1 / 2)] ParenBot ParenTop sw
 
 		create-glyph 'bracketBarLeft' 0x2045 : glyph-proc
 			local hDim : Bracket.HDim
 			include : union
-				HBar.b hDim.l hDim.r      ParenBot
+				HBar.b hDim.l hDim.r ParenBot
 				HBar.m hDim.l hDim.r [mix ParenBot ParenTop 0.5]
-				HBar.t hDim.l hDim.r               ParenTop
+				HBar.t hDim.l hDim.r ParenTop
 				VBar.l hDim.l ParenBot ParenTop
 
 		create-glyph 'bracketUnderbarLeft' 0x298B : glyph-proc
@@ -503,18 +503,18 @@ glyph-block Symbol-Punctuation-Brackets : begin
 				Bracket.Shape [mix SymbolMid ParenTop p] [mix SymbolMid ParenBot p]
 
 		turned 'bracketRight' ']' 'bracketLeft' Middle SymbolMid
-		turned 'bracketBarRight'        0x2046 'bracketBarLeft'       Middle SymbolMid
-		turned 'bracketStrokeRight'     0x2E56 'bracketStrokeLeft'    Middle SymbolMid
-		turned 'bracketDblStrokeRight'  0x2E58 'bracketDblStrokeLeft' Middle SymbolMid
-		turned 'bracketRightUpper'      0x23A4 'bracketLeftLower'     Middle SymbolMid
-		turned 'bracketRightExtension'  0x23A5 'bracketLeftExtension' Middle SymbolMid
-		turned 'bracketRightLower'      0x23A6 'bracketLeftUpper'     Middle SymbolMid
-		turned 'dblBracketRight'        0x27E7 'dblBracketLeft'       Middle SymbolMid
-		alias 'whiteSquareBracketLeft'  0x301A 'dblBracketLeft'
+		turned 'bracketBarRight' 0x2046 'bracketBarLeft' Middle SymbolMid
+		turned 'bracketStrokeRight' 0x2E56 'bracketStrokeLeft' Middle SymbolMid
+		turned 'bracketDblStrokeRight' 0x2E58 'bracketDblStrokeLeft' Middle SymbolMid
+		turned 'bracketRightUpper' 0x23A4 'bracketLeftLower' Middle SymbolMid
+		turned 'bracketRightExtension' 0x23A5 'bracketLeftExtension' Middle SymbolMid
+		turned 'bracketRightLower' 0x23A6 'bracketLeftUpper' Middle SymbolMid
+		turned 'dblBracketRight' 0x27E7 'dblBracketLeft' Middle SymbolMid
+		alias 'whiteSquareBracketLeft' 0x301A 'dblBracketLeft'
 		alias 'whiteSquareBracketRight' 0x301B 'dblBracketRight'
-		turned 'barBarRight'            0x2E21 'barBarLeft'           Middle SymbolMid
-		turned 'bracketRightUHalf'      0x2E23 'bracketLeftLHalf'     Middle SymbolMid
-		turned 'bracketRightLHalf'      0x2E25 'bracketLeftUHalf'     Middle SymbolMid
+		turned 'barBarRight' 0x2E21 'barBarLeft' Middle SymbolMid
+		turned 'bracketRightUHalf' 0x2E23 'bracketLeftLHalf' Middle SymbolMid
+		turned 'bracketRightLHalf' 0x2E25 'bracketLeftUHalf' Middle SymbolMid
 
 		create-glyph 'ligExtBracketRight' : glyph-proc
 			include [refer-glyph 'ligExtBracketLeft'] AS_BASE ALSO_METRICS
@@ -537,9 +537,9 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			define xTip : mix SB RightSB dp.braceOutside
 			include : dispiro
 				flat (xIns + [fallback ext 0]) top [widths.center.heading sw Leftward]
-				curl (xIns - TINY)             top [heading Leftward]
+				curl (xIns - TINY) top [heading Leftward]
 				archv
-				flat parenCenter (top    - radius) [heading Downward]
+				flat parenCenter (top - radius) [heading Downward]
 				curl parenCenter (bottom + radius) [heading Downward]
 				arcvh
 				straight.left.end xTip bottom [heading Leftward]
@@ -550,10 +550,10 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			define xTip : mix SB RightSB dp.braceOutside
 			include : dispiro
 				flat (xIns + [fallback ext 0]) bottom [widths.center.heading sw Leftward]
-				curl (xIns - TINY)             bottom [heading Leftward]
+				curl (xIns - TINY) bottom [heading Leftward]
 				archv
 				flat parenCenter (bottom + radius) [heading Upward]
-				curl parenCenter (top    - radius) [heading Upward]
+				curl parenCenter (top - radius) [heading Upward]
 				arcvh
 				straight.left.end xTip top [heading Leftward]
 
@@ -571,7 +571,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			define [object parenCenter radius] : Dim
 			include : intersection [Bracket.Mask]
 				union
-					UpperHalfShape (top + MosaicHeight) [mix bottom top 0.5]    sw
+					UpperHalfShape (top + MosaicHeight) [mix bottom top 0.5] sw
 					LowerHalfShape [mix bottom top 0.5] (bottom - MosaicHeight) sw
 
 		export : define [ExtensionShape top bottom sw] : glyph-proc
@@ -586,45 +586,45 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			local hs : sw / 2
 			local xIns : mix SB RightSB dp.braceInside
 			local xOus : mix SB RightSB dp.braceOutside
-			local m1   : mix xIns xOus (dp.braceCurlyM1 * (1 + 0.5 * pFlatIn))
-			local m2   : mix xIns xOus (dp.braceCurlyM2 * (1 + 0.5 * pFlatOut))
+			local m1 : mix xIns xOus (dp.braceCurlyM1 * (1 + 0.5 * pFlatIn))
+			local m2 : mix xIns xOus (dp.braceCurlyM2 * (1 + 0.5 * pFlatOut))
 			local braceRadiusLowLimit : (ParenTop - SymbolMid - sw) * (1 / 3) + hs
-			local radius1 : (sw / 16) + [mix [Math.min (xIns - m1)   braceRadiusLowLimit] sw (0.75 * pFlatIn)]
-			local radius2 : (sw / 16) + [mix [Math.min (m2   - xOus) braceRadiusLowLimit] sw (0.75 * pFlatOut)] - hs
+			local radius1 : (sw / 16) + [mix [Math.min (xIns - m1) braceRadiusLowLimit] sw (0.75 * pFlatIn)]
+			local radius2 : (sw / 16) + [mix [Math.min (m2 - xOus) braceRadiusLowLimit] sw (0.75 * pFlatOut)] - hs
 			local ess : mix sw (EssUpper * sw / Stroke) 0.25
 			local top : mix SymbolMid ParenTop (1 + dp.braceOvershoot)
 			local bot : mix SymbolMid ParenBot (1 + dp.braceOvershoot)
 
-			local flatLengthIn  : Math.max 0.1 : pFlatIn  * (xIns - xOus)
+			local flatLengthIn : Math.max 0.1 : pFlatIn * (xIns - xOus)
 			local flatLengthOut : Math.max 0.1 : pFlatOut * (xIns - xOus)
 			local fine : sw * CThin
 
 			include : dispiro
 				flat (xIns + [fallback ext 0]) (top - hs) [widths.center.heading sw Leftward]
-				curl (xIns - flatLengthIn)     (top - hs) [heading Leftward]
+				curl (xIns - flatLengthIn) (top - hs) [heading Leftward]
 				archv.superness (2.2 + pFlatIn)
-				g4.down.mid m1 (top       - radius1) [heading Downward]
+				g4.down.mid m1 (top - radius1) [heading Downward]
 				alsoThru 0.5 0.5 [widths.center ess]
 				g4.down.mid m2 (SymbolMid + radius2) [widths.center.heading sw Downward]
 				arcvh
 				flat (xOus + flatLengthOut) (SymbolMid + (sw - fine) / 2) [widths.center.heading fine Leftward]
-				curl  xOus                  (SymbolMid + (sw - fine) / 2) [heading Leftward]
+				curl xOus (SymbolMid + (sw - fine) / 2) [heading Leftward]
 
 			include : dispiro
 				flat (xIns + [fallback ext 0]) (bot + hs) [widths.center.heading sw Leftward]
-				curl (xIns - flatLengthIn)     (bot + hs) [heading Leftward]
+				curl (xIns - flatLengthIn) (bot + hs) [heading Leftward]
 				archv.superness (2.2 + pFlatIn)
-				g4.up.mid m1 (bot       + radius1) [heading Upward]
+				g4.up.mid m1 (bot + radius1) [heading Upward]
 				alsoThru 0.5 0.5 [widths.center ess]
 				g4.up.mid m2 (SymbolMid - radius2) [widths.center.heading sw Upward]
 				arcvh
 				flat (xOus + flatLengthOut) (SymbolMid - (sw - fine) / 2) [widths.center.heading fine Leftward]
-				curl  xOus                  (SymbolMid - (sw - fine) / 2) [heading Leftward]
+				curl xOus (SymbolMid - (sw - fine) / 2) [heading Leftward]
 
 	glyph-block-export Brace
 	define Brace : BraceT
 	define BraceLarge : BraceT {
-		.braceInside  [mix DesignParameters.braceInside  (1 - DesignParameters.braceOutside) 0.5]
+		.braceInside [mix DesignParameters.braceInside (1 - DesignParameters.braceOutside) 0.5]
 		.braceOutside [mix DesignParameters.braceOutside (1 - DesignParameters.braceInside ) 0.5]
 	}
 
@@ -686,8 +686,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 		do 'Curly'
 			define CurlyBraceConfig : object
-				curly             {0     0   }
-				curlyFlatBoundary {0.25  0.05}
+				curly {0 0 }
+				curlyFlatBoundary {0.25 0.05}
 
 			foreach {suffix {pFlatIn pFlatOut}} [Object.entries CurlyBraceConfig] : do
 				create-glyph "braceLeft.\(suffix)" : Brace.CurlyShape Stroke pFlatIn pFlatOut
@@ -711,13 +711,13 @@ glyph-block Symbol-Punctuation-Brackets : begin
 
 				turned "whiteBraceRight.\(suffix)" null "whiteBraceLeft.\(suffix)" Middle SymbolMid
 
-		select-variant 'braceLeft'  '{'
+		select-variant 'braceLeft' '{'
 		select-variant 'braceRight' '}'
 
-		select-variant 'ligExtBraceLeft'  (follow -- 'braceLeft')
+		select-variant 'ligExtBraceLeft' (follow -- 'braceLeft')
 		select-variant 'ligExtBraceRight' (follow -- 'braceRight')
 
-		select-variant 'whiteBraceLeft'  0x2983 (follow -- 'braceLeft')
+		select-variant 'whiteBraceLeft' 0x2983 (follow -- 'braceLeft')
 		select-variant 'whiteBraceRight' 0x2984 (follow -- 'braceRight')
 
 	do 'Angle Bracket'
@@ -771,13 +771,13 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		turned 'angleDotRight' 0x2992 'angleDotLeft' Middle SymbolMid
 
 		turned 'zNotationAngleRight' 0x298A 'zNotationAngleLeft' Middle SymbolMid
-		turned 'angleRight'          0x232A 'angleLeft'          Middle SymbolMid
-		turned 'dblAngleRight'       0x27EB 'dblAngleLeft'       Middle SymbolMid
-		alias 'mathAngleLeft'  0x27E8 'angleLeft'
+		turned 'angleRight' 0x232A 'angleLeft' Middle SymbolMid
+		turned 'dblAngleRight' 0x27EB 'dblAngleLeft' Middle SymbolMid
+		alias 'mathAngleLeft' 0x27E8 'angleLeft'
 		alias 'mathAngleRight' 0x27E9 'angleRight'
-		alias 'cjkAngleBracketLeft'       0x3008 'angleLeft'
-		alias 'cjkAngleBracketRight'      0x3009 'angleRight'
-		alias 'cjkDoubleAngleBracketLeft'  0x300A 'dblAngleLeft'
+		alias 'cjkAngleBracketLeft' 0x3008 'angleLeft'
+		alias 'cjkAngleBracketRight' 0x3009 'angleRight'
+		alias 'cjkDoubleAngleBracketLeft' 0x300A 'dblAngleLeft'
 		alias 'cjkDoubleAngleBracketRight' 0x300B 'dblAngleRight'
 
 	do 'Sideways U Bracket'
@@ -799,8 +799,8 @@ glyph-block Symbol-Punctuation-Brackets : begin
 			include : HBar.b [mix SB RightSB DesignParameters.bracketOutside] [mix SB RightSB DesignParameters.bracketInside] ParenBot
 			include : VBar.l [mix SB RightSB DesignParameters.bracketOutside] ParenBot ParenTop
 
-		turned 'floorRight'   0x230B 'ceilingLeft' Middle SymbolMid
-		turned 'ceilingRight' 0x2309 'floorLeft'   Middle SymbolMid
+		turned 'floorRight' 0x230B 'ceilingLeft' Middle SymbolMid
+		turned 'ceilingRight' 0x2309 'floorLeft' Middle SymbolMid
 
 	define [EnlargeCjkInk df bottomAligned uniform _maxScale] : glyph-proc
 		local left VERY-FAR
@@ -819,7 +819,7 @@ glyph-block Symbol-Punctuation-Brackets : begin
 		local yCenter : if bottomAligned bottom ((bottom + top) / 2)
 		local kx : Math.min maxScale (df.width * 0.99 / (right - left))
 		local ky : Math.min maxScale [Math.max 1 ((Ascender - yCenter) / (top - yCenter))]
-		if [not bottomAligned] : set ky : Math.min ky [Math.max 1 ((yCenter - Descender) / (yCenter - bottom))]
+		if (!bottomAligned) : set ky : Math.min ky [Math.max 1 ((yCenter - Descender) / (yCenter - bottom))]
 		if uniform : begin
 			set kx : Math.min kx ky
 			set ky kx

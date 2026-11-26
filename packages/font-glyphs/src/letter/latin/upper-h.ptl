@@ -18,51 +18,51 @@ glyph-block Letter-Latin-Upper-H : begin
 	glyph-block-import Letter-Shared-Shapes : LeftHook MidHook EngHook UpwardHookShape KomiHookSerifs KomiHookSerif
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender PalatalHook
 
-	define SLAB-NONE                   0
-	define SLAB-TL                     1
-	define SLAB-TL-BR                  2
-	define SLAB-TAILED                 3
-	define SLAB-ALL                    4
-	define SLAB-ALL-BGR                5
-	define SLAB-TAILED-BGR             6
-	define SLAB-TR                      7
-	define SLAB-BILATERAL-MOTION        8
+	define SLAB-NONE 0
+	define SLAB-TL 1
+	define SLAB-TL-BR 2
+	define SLAB-TAILED 3
+	define SLAB-ALL 4
+	define SLAB-ALL-BGR 5
+	define SLAB-TAILED-BGR 6
+	define SLAB-TR 7
+	define SLAB-BILATERAL-MOTION 8
 
 	define flex-params [HShape] : glyph-proc
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- df.mvs
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- df.mvs
+		local-parameter : diag -- 0
 
 		include : tagged 'strokeL' : VBar.l df.leftSB 0 top stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar df.rightSB 0 top stroke
-			VBar.r             df.rightSB 0 top stroke
+			VBar.r df.rightSB 0 top stroke
 		include : tagged 'crossbar' : if diag
 			DiagonalHBar (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] (diag * 0.16 * top) stroke
 			HBar.m (df.leftSB - O) (df.rightSB + O) [mix 0 top HBarPos] stroke
 
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
-			[Just SLAB-TL]         : begin          sf.lt.outer
-			[Just SLAB-TR]         : begin                         sf.rt.inner
+			[Just SLAB-TL] : begin sf.lt.outer
+			[Just SLAB-TR] : begin sf.rt.inner
 			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
-			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer                        sf.rb.outer
-			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full  sf.lb.full
-			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.lb.full sf.rb.full
-			[Just SLAB-ALL-BGR]    : composite-proc sf.lt.outer sf.rt.inner sf.lb.full sf.rb.full
+			[Just SLAB-TL-BR] : composite-proc sf.lt.outer sf.rb.outer
+			[Just SLAB-TAILED] : composite-proc sf.lt.full sf.rt.full sf.lb.full
+			[Just SLAB-ALL] : composite-proc sf.lt.full sf.rt.full sf.lb.full sf.rb.full
+			[Just SLAB-ALL-BGR] : composite-proc sf.lt.outer sf.rt.inner sf.lb.full sf.rb.full
 			[Just SLAB-TAILED-BGR] : composite-proc sf.lt.outer sf.rt.inner sf.lb.full
-			__                     : glyph-proc
+			__ : glyph-proc
 
 	define flex-params [TurnedHShape] : glyph-proc
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- df.mvs
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- df.mvs
+		local-parameter : diag -- 0
 
 		include : LeaningAnchor.Below.VBar.r df.rightSB stroke
 		local barPos : mix 0 top HBarPos
@@ -78,33 +78,33 @@ glyph-block Letter-Latin-Upper-H : begin
 			VBar.l df.leftSB (barPos - stroke / 2) top stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar df.rightSB 0 top stroke
-			VBar.r             df.rightSB 0 top stroke
+			VBar.r df.rightSB 0 top stroke
 		include : tagged 'crossbar' : if diag
 			DiagonalHBar (df.leftSB - O) (df.rightSB + O) barPos rise stroke
 			HBar.m (df.leftSB - O) (df.rightSB + O) barPos stroke
 
 		local sf : SerifFrame.fromDf df top 0 (swRef -- stroke)
 		include : match slabType
-			[Just SLAB-TL]         : begin          sf.lt.outer
-			[Just SLAB-TR]         : begin                         sf.rt.inner
+			[Just SLAB-TL] : begin sf.lt.outer
+			[Just SLAB-TR] : begin sf.rt.inner
 			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
-			[Just SLAB-TL-BR]      : composite-proc sf.lt.outer             sf.rb.outer
-			[Just SLAB-TAILED]     : composite-proc sf.lt.full  sf.rt.full
-			[Just SLAB-ALL]        : composite-proc sf.lt.full  sf.rt.full  sf.rb.fullSide
-			__                     : glyph-proc
+			[Just SLAB-TL-BR] : composite-proc sf.lt.outer sf.rb.outer
+			[Just SLAB-TAILED] : composite-proc sf.lt.full sf.rt.full
+			[Just SLAB-ALL] : composite-proc sf.lt.full sf.rt.full sf.rb.fullSide
+			__ : glyph-proc
 
 	define flex-params [LeftHalfHShape] : glyph-proc
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- df.mvs
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- df.mvs
+		local-parameter : diag -- 0
 
-		local xMockLeft   : mix 0 df.leftSB 1.5
-		local xMockRight  : mix df.width df.rightSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
+		local xMockLeft : mix 0 df.leftSB 1.5
+		local xMockRight : mix df.width df.rightSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
 		local xMockMiddle : mix (xMockLeft - [if (slabType === SLAB-NONE) 0 SideJut]) xMockRight 0.5
-		local xLeft  : xMockLeft  + (df.middle - xMockMiddle)
+		local xLeft : xMockLeft + (df.middle - xMockMiddle)
 		local xRight : xMockRight + (df.middle - xMockMiddle)
 		local barPos : mix 0 top HBarPos
 		local rise : diag * 0.16 * top * (xRight - xLeft + O) / (df.rightSB - df.leftSB + 2 * O)
@@ -118,29 +118,29 @@ glyph-block Letter-Latin-Upper-H : begin
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
-			[Just SLAB-TL]         : begin          sf.lt.outer
+			[Just SLAB-TL] : begin sf.lt.outer
 			[Just SLAB-BILATERAL-MOTION] : begin sf.lt.outer
-			[Just SLAB-TL-BR]      : begin          sf.lt.outer
-			[Just SLAB-TAILED]     : composite-proc sf.lt.fullSide sf.lb.fullSide
-			[Just SLAB-ALL]        : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
+			[Just SLAB-TL-BR] : begin sf.lt.outer
+			[Just SLAB-TAILED] : composite-proc sf.lt.fullSide sf.lb.fullSide
+			[Just SLAB-ALL] : composite-proc sf.lt.fullSide sf.lb.fullSide : tagged 'serifMR' : new-glyph : glyph-proc
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				local midJut : DiagonalMiddleSerifLength rise (xRight - xLeft + O) stroke jutMid [HSwToV swVJut]
 				include : VSerif.mr xRight (barPos + rise / 2 + [DiagonalMiddleSerifShift rise (xRight - xLeft + O) stroke midJut 1]) midJut swVJut
-			__                     : glyph-proc
+			__ : glyph-proc
 
 	define flex-params [RightHalfHShape] : glyph-proc
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- df.mvs
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- df.mvs
+		local-parameter : diag -- 0
 
-		local xMockLeft   : mix 0 df.leftSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
-		local xMockRight  : mix df.width df.rightSB 1.5
+		local xMockLeft : mix 0 df.leftSB : EFMidBarShrinkK df (slabType === SLAB-ALL)
+		local xMockRight : mix df.width df.rightSB 1.5
 		local xMockMiddle : mix xMockLeft (xMockRight + [if (slabType === SLAB-NONE) 0 SideJut]) 0.5
-		local xLeft  : xMockLeft  + (df.middle - xMockMiddle)
+		local xLeft : xMockLeft + (df.middle - xMockMiddle)
 		local xRight : xMockRight + (df.middle - xMockMiddle)
 		local barPos : mix 0 top HBarPos
 		local rise : diag * 0.16 * top * (xRight - xLeft + O) / (df.rightSB - df.leftSB + 2 * O)
@@ -149,32 +149,32 @@ glyph-block Letter-Latin-Upper-H : begin
 		include : LeaningAnchor.Below.VBar.r xRight stroke
 		include : tagged 'strokeR' : if fTailed
 			RightwardTailedBar xRight 0 top stroke
-			VBar.r             xRight 0 top stroke
+			VBar.r xRight 0 top stroke
 		include : tagged 'crossbar' : if diag
 			DiagonalHBar xLeft (xRight + O) barPos rise stroke
 			HBar.m xLeft (xRight + O) barPos stroke
 
 		local sf : SerifFrame top 0 xLeft xRight (swRef -- stroke)
 		include : match slabType
-			[Just SLAB-TR]         : begin          sf.rt.inner
+			[Just SLAB-TR] : begin sf.rt.inner
 			[Just SLAB-BILATERAL-MOTION] : begin sf.rt.inner
-			[Just SLAB-TL-BR]      : begin                         sf.rb.outer
-			[Just SLAB-TAILED]     : begin          sf.rt.fullSide
-			[Just SLAB-ALL]        : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
+			[Just SLAB-TL-BR] : begin sf.rb.outer
+			[Just SLAB-TAILED] : begin sf.rt.fullSide
+			[Just SLAB-ALL] : composite-proc sf.rt.fullSide sf.rb.fullSide : tagged 'serifML' : new-glyph : glyph-proc
 				local {jutTop jutBot jutMid} : EFVJutLength top 0 HBarPos stroke
 				local swVJut : VJutStroke * (stroke / Stroke)
 				local midJut : DiagonalMiddleSerifLength rise (xRight - xLeft + O) stroke jutMid [HSwToV swVJut]
 				include : VSerif.ml xLeft (barPos - rise / 2 + [DiagonalMiddleSerifShift rise (xRight - xLeft + O) stroke midJut (-1)]) midJut swVJut
-			__                     : glyph-proc
+			__ : glyph-proc
 
 	define flex-params [EnGheShape] : glyph-proc
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- [Math.min [df.adviceThinnerStroke 2.75 1.00] [df.adviceThinnerStroke 2.00 0.75]]
-		local-parameter : serifTR  -- SLAB
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- [Math.min [df.adviceThinnerStroke 2.75 1.00] [df.adviceThinnerStroke 2.00 0.75]]
+		local-parameter : serifTR -- SLAB
+		local-parameter : diag -- 0
 
 		local subDf : DivFrame (0.75 * df.adws) 2
 		include : HShape subDf top slabType fTailed stroke diag
@@ -190,11 +190,11 @@ glyph-block Letter-Latin-Upper-H : begin
 		local-parameter : df
 		local-parameter : top
 		local-parameter : slabType
-		local-parameter : fTailed  -- false
-		local-parameter : stroke   -- df.mvs
-		local-parameter : serifTR  -- SLAB
-		local-parameter : yend     -- XH
-		local-parameter : diag     -- 0
+		local-parameter : fTailed -- false
+		local-parameter : stroke -- df.mvs
+		local-parameter : serifTR -- SLAB
+		local-parameter : yend -- XH
+		local-parameter : diag -- 0
 
 		local subDf : df.slice 3 2
 		include : HShape subDf top slabType fTailed stroke diag
@@ -202,13 +202,13 @@ glyph-block Letter-Latin-Upper-H : begin
 		eject-contour 'serifRB'
 
 		include : UpwardHookShape
-			left   -- (subDf.rightSB - [HSwToV stroke])
-			right  -- df.rightSB
+			left -- (subDf.rightSB - [HSwToV stroke])
+			right -- df.rightSB
 			ybegin -- top
-			yend   -- yend
-			ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
-			adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
-			sw     -- stroke
+			yend -- yend
+			ada -- (ArchDepthA * (2 / df.hPack) * df.adws)
+			adb -- (ArchDepthB * (2 / df.hPack) * df.adws)
+			sw -- stroke
 
 		if serifTR : begin
 			local sf2 : [SerifFrame.fromDf df yend 0 (swRef -- stroke)].slice 1 2
@@ -222,48 +222,48 @@ glyph-block Letter-Latin-Upper-H : begin
 	define HConfig : SuffixCfg.combine
 		SuffixCfg.weave
 			object # tail
-				''                          false
-				tailed                      true
+				'' false
+				tailed true
 			function [tail] : object # serifs
-				serifless                   SLAB-NONE
-				topLeftSerifed              SLAB-TL
+				serifless SLAB-NONE
+				topLeftSerifed SLAB-TL
 				topLeftBottomRightSerifed : match tail
-					[Just 'tailed']     SLAB-TL
-					__                  SLAB-TL-BR
-				serifed                   : match tail
-					[Just 'tailed']     SLAB-TAILED
-					__                  SLAB-ALL
-				serifedBGR                : match tail
-					[Just 'tailed']     SLAB-TAILED-BGR
-					__                  SLAB-ALL-BGR
-				topRightMotionSerifed       SLAB-TR
-				bilateralMotionSerifed      SLAB-BILATERAL-MOTION
+					[Just 'tailed'] SLAB-TL
+					__ SLAB-TL-BR
+				serifed : match tail
+					[Just 'tailed'] SLAB-TAILED
+					__ SLAB-ALL
+				serifedBGR : match tail
+					[Just 'tailed'] SLAB-TAILED-BGR
+					__ SLAB-ALL-BGR
+				topRightMotionSerifed SLAB-TR
+				bilateralMotionSerifed SLAB-BILATERAL-MOTION
 		object
 			serifedExceptBottomRight {false SLAB-TAILED}
-			diagonalCrossbar        {false SLAB-NONE 1}
+			diagonalCrossbar {false SLAB-NONE 1}
 			diagonalCrossbarFalling {false SLAB-NONE (-1)}
-			tailedDiagonalCrossbar        {true SLAB-NONE 1}
+			tailedDiagonalCrossbar {true SLAB-NONE 1}
 			tailedDiagonalCrossbarFalling {true SLAB-NONE (-1)}
-			serifedExceptBottomRightDiagonalCrossbar        {false SLAB-TAILED 1}
+			serifedExceptBottomRightDiagonalCrossbar {false SLAB-TAILED 1}
 			serifedExceptBottomRightDiagonalCrossbarFalling {false SLAB-TAILED (-1)}
 		SuffixCfg.weave
 			object
 				'' false
 				tailed true
 			function [tail] : object
-				serifless                  SLAB-NONE
-				topLeftSerifed             SLAB-TL
-				topLeftBottomRightSerifed  : if (tail === 'tailed') SLAB-TL SLAB-TL-BR
-				serifed                    : if (tail === 'tailed') SLAB-TAILED SLAB-ALL
-				serifedBGR                 : if (tail === 'tailed') SLAB-TAILED-BGR SLAB-ALL-BGR
-				topRightMotionSerifed      SLAB-TR
-				bilateralMotionSerifed     SLAB-BILATERAL-MOTION
+				serifless SLAB-NONE
+				topLeftSerifed SLAB-TL
+				topLeftBottomRightSerifed : if (tail === 'tailed') SLAB-TL SLAB-TL-BR
+				serifed : if (tail === 'tailed') SLAB-TAILED SLAB-ALL
+				serifedBGR : if (tail === 'tailed') SLAB-TAILED-BGR SLAB-ALL-BGR
+				topRightMotionSerifed SLAB-TR
+				bilateralMotionSerifed SLAB-BILATERAL-MOTION
 			object
-				diagonalCrossbar        1
+				diagonalCrossbar 1
 				diagonalCrossbarFalling (-1)
 
 	define EnGheGheConfig : object
-		serifless       false
+		serifless false
 		topRightSerifed true
 
 	foreach {suffix {fTailed slabType diag}} [Object.entries HConfig] : do
@@ -469,12 +469,12 @@ glyph-block Letter-Latin-Upper-H : begin
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/H' 0x210D : glyph-proc
 		include : MarkSet.capital
-		include : VBar.l SB      0 CAP BBS
+		include : VBar.l SB 0 CAP BBS
 		include : VBar.r RightSB 0 CAP BBS
-		include : VBar.l (SB      + BBD) 0 CAP BBS
+		include : VBar.l (SB + BBD) 0 CAP BBS
 		include : VBar.r (RightSB - BBD) 0 CAP BBS
 		include : HBar.m (SB + BBD) (RightSB - BBD) [mix 0 CAP HBarPos] BBS
 		include : HBar.t SB (SB + BBD) CAP BBS
-		include : HBar.b SB (SB + BBD) 0   BBS
+		include : HBar.b SB (SB + BBD) 0 BBS
 		include : HBar.t (RightSB - BBD) RightSB CAP BBS
-		include : HBar.b (RightSB - BBD) RightSB 0   BBS
+		include : HBar.b (RightSB - BBD) RightSB 0 BBS

@@ -12,7 +12,7 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 	define guilTop : mix SymbolMid ParenTop 0.5
 	define guilBot : mix SymbolMid ParenBot 0.5
 	define extension 0.55
-	define guilLeft  : mix Middle SB extension
+	define guilLeft : mix Middle SB extension
 	define guilRight : mix Middle RightSB extension
 
 	create-glyph 'singleGuillemetLeft.straight' : glyph-proc
@@ -24,12 +24,12 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 		include : intersection
 			MaskAboveLine guilLeft SymbolMid guilRight [mix SymbolMid guilBot 0.5] 2
 			dispiro
-				flat guilLeft  SymbolMid [widths.rhs sw]
+				flat guilLeft SymbolMid [widths.rhs sw]
 				curl guilRight guilTop [widths.center fine]
 		include : intersection
 			MaskBelowLine guilLeft SymbolMid guilRight [mix SymbolMid guilTop 0.5] 2
 			dispiro
-				flat guilLeft  SymbolMid [widths.lhs sw]
+				flat guilLeft SymbolMid [widths.lhs sw]
 				curl guilRight guilBot [widths.center fine]
 
 		include : Translate (-(RightSB - SB) * 0.05) 0
@@ -43,13 +43,13 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 		include : intersection
 			MaskAboveLine guilLeft SymbolMid guilRight [mix SymbolMid guilBot 0.5] 2
 			dispiro
-				g4 guilLeft  (SymbolMid + sw * 0.25) [widths.rhs sw]
+				g4 guilLeft (SymbolMid + sw * 0.25) [widths.rhs sw]
 				quadControls 0.6 0.3
 				g4 guilRight guilTop [widths.center fine]
 		include : intersection
 			MaskBelowLine guilLeft SymbolMid guilRight [mix SymbolMid guilTop 0.5] 2
 			dispiro
-				g4 guilLeft  (SymbolMid - sw * 0.25) [widths.lhs sw]
+				g4 guilLeft (SymbolMid - sw * 0.25) [widths.lhs sw]
 				quadControls 0.6 0.3
 				g4 guilRight guilBot [widths.center fine]
 		include : VBar.l guilLeft (SymbolMid - sw * 0.25) (SymbolMid + sw * 0.25) sw
@@ -98,7 +98,7 @@ glyph-block Symbol-Punctuation-Guillemet : begin
 		include : Translate (-(RightSB - SB) * 0.05) 0
 
 	create-glyph 'singleGuillemetLeft.straightVerticalTerminal' : GuillemetTerminalShape false true
-	create-glyph 'singleGuillemetLeft.curlyHorizontalTerminal'  : GuillemetTerminalShape true false
+	create-glyph 'singleGuillemetLeft.curlyHorizontalTerminal' : GuillemetTerminalShape true false
 
 	select-variant 'singleGuillemetLeft' 0x2039 (follow -- 'guillemet')
 

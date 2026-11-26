@@ -16,10 +16,10 @@ glyph-block Symbol-Mosaic-Teletext : begin
 		define cw : (r - l) / w
 		define ch : (t - b) / h
 		include : spiro-outline
-			corner (l + column * cw + gap)       (t - row * ch - gap)
+			corner (l + column * cw + gap) (t - row * ch - gap)
 			corner (l + (column + 1) * cw - gap) (t - row * ch - gap)
 			corner (l + (column + 1) * cw - gap) (t - (row + 1) * ch + gap)
-			corner (l + column * cw + gap)       (t - (row + 1) * ch + gap)
+			corner (l + column * cw + gap) (t - (row + 1) * ch + gap)
 
 	define [MosaicPattern t b l r w h bits] : glyph-proc
 		if (bits.length > 0) : include : union
@@ -27,10 +27,10 @@ glyph-block Symbol-Mosaic-Teletext : begin
 			MosaicPattern t b l r w h : bits.slice 1
 
 	for-width-kinds WideWidth4
-		define top     fontMetrics.os2.sTypoAscender
-		define bottom  fontMetrics.os2.sTypoDescender
-		define left    0
-		define right   MosaicWidth
+		define top fontMetrics.os2.sTypoAscender
+		define bottom fontMetrics.os2.sTypoDescender
+		define left 0
+		define right MosaicWidth
 
 		define gap : 0.05 * (top - bottom)
 

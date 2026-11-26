@@ -10,17 +10,17 @@ glyph-block Letter-Cyrillic-Tse : begin
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph CreateDependentComposite
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender CyrCurlDescender
 
-	define SERIF-NONE      0
-	define SERIF-MOTION    1
-	define SERIF-ALL       2
-	define SERIF-TR        3
+	define SERIF-NONE 0
+	define SERIF-MOTION 1
+	define SERIF-ALL 2
+	define SERIF-TR 3
 	define SERIF-BILATERAL 4
 
 	define [CyrTseSerifs top serifType] : glyph-proc
 		if (serifType !== SERIF-NONE) : let [sf : SerifFrame.fromDf [DivFrame 1] top 0] : begin
 			include : match serifType
-				[Just SERIF-MOTION]    : begin sf.lt.outer
-				[Just SERIF-TR]        : begin sf.rt.inner
+				[Just SERIF-MOTION] : begin sf.lt.outer
+				[Just SERIF-TR] : begin sf.rt.inner
 				[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.inner
 				__ : glyph-proc
 					include sf.lt.full
@@ -29,19 +29,19 @@ glyph-block Letter-Cyrillic-Tse : begin
 					include sf.rb.outer
 
 	define [CyrTseShape top fRev serifType] : glyph-proc
-		include : VBar.l SB      0 top
+		include : VBar.l SB 0 top
 		include : VBar.r RightSB 0 top
 		include : HBar.b SB RightSB 0
 		include : if fRev
-			CyrDescender.lSideJut SB      0
+			CyrDescender.lSideJut SB 0
 			CyrDescender.rSideJut RightSB 0
 		include : CyrTseSerifs top serifType
 
 	define TseConfig : object
-		serifless              SERIF-NONE
-		motionSerifed          SERIF-MOTION
-		serifed                SERIF-ALL
-		topRightMotionSerifed  SERIF-TR
+		serifless SERIF-NONE
+		motionSerifed SERIF-MOTION
+		serifed SERIF-ALL
+		topRightMotionSerifed SERIF-TR
 		bilateralMotionSerifed SERIF-BILATERAL
 
 	foreach {suffix serifType} [Object.entries TseConfig] : do
@@ -67,7 +67,7 @@ glyph-block Letter-Cyrillic-Tse : begin
 	select-variant 'cyrl/revtse.upright' (follow -- 'cyrl/tse.upright')
 
 	define TeBarConfig : object
-		serifless     false
+		serifless false
 		motionSerifed true
 
 	define [CyrTeTseShape df top teSerifs serifType] : glyph-proc
@@ -80,10 +80,10 @@ glyph-block Letter-Cyrillic-Tse : begin
 
 		include : dispiro
 			widths.rhs sw
-			flat xTopBarLeft  top [if teSerifs [heading Rightward] null]
+			flat xTopBarLeft top [if teSerifs [heading Rightward] null]
 			curl xTopBarRight top [if teSerifs [heading Rightward] null]
 
-		include : VBar.l left  0 top sw
+		include : VBar.l left 0 top sw
 		include : VBar.r right 0 top sw
 		include : HBar.b left right 0 sw
 
@@ -91,8 +91,8 @@ glyph-block Letter-Cyrillic-Tse : begin
 		include : CyrDescender.rSideJut right 0 (sideJut -- sf.sideJut)
 
 		if (serifType !== SERIF-NONE) : include : match serifType
-			[Just SERIF-MOTION]    : begin sf.lt.outer
-			[Just SERIF-TR]        : begin sf.rt.inner
+			[Just SERIF-MOTION] : begin sf.lt.outer
+			[Just SERIF-TR] : begin sf.rt.inner
 			[Just SERIF-BILATERAL] : composite-proc sf.lt.outer sf.rt.inner
 			__ : glyph-proc
 				include sf.rt.full
@@ -101,7 +101,7 @@ glyph-block Letter-Cyrillic-Tse : begin
 
 		if teSerifs : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
-			include : VSerif.dl xTopBarLeft  top VJut swVJut
+			include : VSerif.dl xTopBarLeft top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
 	foreach {suffixTse serifType} [Object.entries TseConfig] : do

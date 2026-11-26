@@ -26,8 +26,8 @@ glyph-block Mark-Adjustment : begin
 	glyph-block-export TurnMarks
 	define [TurnMarks cx cy _df] : glyph-proc
 		# Get position of existing marks, prior to flipping
-		local bAbove        : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.above
-		local bBelow        : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.below
+		local bAbove : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.above
+		local bBelow : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.below
 		local bLeaningAbove : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.leaningAbove
 		local bLeaningBelow : currentGlyph.gizmo.unapplyIfPresent currentGlyph.baseAnchors.leaningBelow
 
@@ -69,7 +69,7 @@ glyph-block Mark-Adjustment : begin
 	define LeaningAnchor : namespace
 		define [SetProcImpl mkCenter mkLeaning x] : glyph-proc
 			local existing currentGlyph.baseAnchors.(mkCenter)
-			if [not existing] : return nothing
+			if (!existing) : return nothing
 			local existingNT : currentGlyph.gizmo.unapply existing
 			currentGlyph.setBaseAnchor mkLeaning x existingNT.y
 

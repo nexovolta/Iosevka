@@ -38,7 +38,7 @@ glyph-block Symbol-Geometric-Ballot-Box : for-width-kinds WideWidth1
 	define bbGap : Math.max (Geom.Size / 6) [AdviceStroke 5 Geom.Scalar]
 	define swMark : Math.min GeometryStroke : AdviceStroke 5 Geom.Scalar
 	define lightSwMark : UnicodeWeightGrade 300 Geom.Scalar GeometryStroke
-	define boldSwMark  : UnicodeWeightGrade 700 Geom.Scalar GeometryStroke
+	define boldSwMark : UnicodeWeightGrade 700 Geom.Scalar GeometryStroke
 	define bbSize : Geom.Size - bbGap - swMark * 0.75
 	define circXSize : (Geom.Size - bbGap) * Math.SQRT1_2 - swMark * 0.75
 
@@ -83,19 +83,19 @@ glyph-block Symbol-Geometric-Ballot-Box : for-width-kinds WideWidth1
 		define [RightFingerpostFill cx cy r] : begin
 			define skew : r * 1 / 4
 			return : spiro-outline
-				corner (cx - r)        (cy + r / 1.5)
+				corner (cx - r) (cy + r / 1.5)
 				corner (cx + r - skew) (cy + r / 1.5)
-				corner (cx + r + skew)  cy
+				corner (cx + r + skew) cy
 				corner (cx + r - skew) (cy - r / 1.5)
-				corner (cx - r)        (cy - r / 1.5)
+				corner (cx - r) (cy - r / 1.5)
 
 		define [LeftFingerpostFill cx cy r] : begin
 			define skew : r * 1 / 4
 			return : spiro-outline
-				corner (cx + r)        (cy - r / 1.5)
-				corner (cx + r)        (cy + r / 1.5)
+				corner (cx + r) (cy - r / 1.5)
+				corner (cx + r) (cy + r / 1.5)
 				corner (cx - r + skew) (cy + r / 1.5)
-				corner (cx - r - skew)  cy
+				corner (cx - r - skew) cy
 				corner (cx - r + skew) (cy - r / 1.5)
 
 		create-glyph [MangleName 'UpArrowInRectangle'] [MangleUnicode 0x2BB9] : glyph-proc

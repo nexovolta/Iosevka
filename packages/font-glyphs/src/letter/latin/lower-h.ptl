@@ -16,16 +16,16 @@ glyph-block Letter-Latin-Lower-H : begin
 	glyph-block-import Letter-Shared-Shapes : TopHook PalatalHook EngHook RetroflexHook
 
 	define [SmallHTopLeftSerif tailed hookTop] : glyph-proc
-		if [not hookTop] : include : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
+		if (!hookTop) : include : tagged 'serifLT' : HSerif.lt SB Ascender SideJut
 
 	define [SmallHSerifs tailed hookTop] : glyph-proc
 		include : SmallHTopLeftSerif tailed hookTop
 		include : tagged 'serifLB' : HSerif.mb (SB + [HSwToV HalfStroke]) 0 Jut
-		if [not tailed] : include : tagged 'serifRB' : HSerif.mb (RightSB - [HSwToV HalfStroke]) 0 Jut
+		if (!tailed) : include : tagged 'serifRB' : HSerif.mb (RightSB - [HSwToV HalfStroke]) 0 Jut
 
 	define [SmallHMotionSerifs tailed hookTop] : glyph-proc
 		include : SmallHTopLeftSerif tailed hookTop
-		if [not tailed] : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut
+		if (!tailed) : include : tagged 'serifRB' : HSerif.rb RightSB 0 SideJut
 
 	define [HBar.mOverlay fHasTopSerif] : glyph-proc
 		local barSpaceTop : Ascender - [if fHasTopSerif Stroke 0]
@@ -44,14 +44,14 @@ glyph-block Letter-Latin-Lower-H : begin
 
 	define [SmallHHump] : with-params [fFlatHump [bottom 0]] : glyph-proc
 		if fFlatHump : include : nShoulder.earlessCorner
-			left   -- SB
-			right  -- RightSB
-			top    -- XH
+			left -- SB
+			right -- RightSB
+			top -- XH
 			bottom -- bottom
-			rise   -- 0
-		if [not fFlatHump] : include : nShoulder.shape
-			left   -- (SB + [HSwToV Stroke])
-			right  -- RightSB
+			rise -- 0
+		if (!fFlatHump) : include : nShoulder.shape
+			left -- (SB + [HSwToV Stroke])
+			right -- RightSB
 			bottom -- bottom
 
 	define [HDigraphJut dfH] : Math.min Jut (0.3 * (dfH.rightSB - dfH.leftSB))
@@ -60,46 +60,46 @@ glyph-block Letter-Latin-Lower-H : begin
 	define [HDigraphSerifs dfH sw topLeft fTailed] : glyph-proc
 		include : HDigraphLT dfH sw topLeft
 		include : tagged 'serifLB' : HSerif.mb (dfH.leftSB + [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
-		if [not fTailed] : include : tagged 'serifRB' : HSerif.mb (dfH.rightSB - [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
+		if (!fTailed) : include : tagged 'serifRB' : HSerif.mb (dfH.rightSB - [HSwToV (0.5 * sw)]) 0 [HDigraphJut dfH]
 	define [HDigraphMotionSerifs dfH sw topLeft fTailed] : glyph-proc
 		include : HDigraphLT dfH sw topLeft
-		if [not fTailed] : include : tagged 'serifRB' : HSerif.rb dfH.rightSB 0 [Math.min SideJut [HDigraphJut dfH]]
+		if (!fTailed) : include : tagged 'serifRB' : HSerif.rb dfH.rightSB 0 [Math.min SideJut [HDigraphJut dfH]]
 
 	glyph-block-export HDigraphBody HDigraphConfig
 	define [HDigraphBody] : with-params [dfH sw [Serifs null] [topLeft true] [fFlatHump false] [fTailed false]] : glyph-proc
 		include : VBar.l dfH.leftSB 0 Ascender sw
 		local yBot : if fTailed (XH - dfH.smallArchDepthB + O) 0
 		if fFlatHump : include : nShoulder.earlessCorner
-			left   -- dfH.leftSB
-			right  -- dfH.rightSB
-			top    -- XH
+			left -- dfH.leftSB
+			right -- dfH.rightSB
+			top -- XH
 			bottom -- yBot
-			rise   -- 0
+			rise -- 0
 			stroke -- sw
-			ada    -- dfH.smallArchDepthA
-			adb    -- dfH.smallArchDepthB
-		if [not fFlatHump] : include : nShoulder.shape
-			left   -- (dfH.leftSB + [HSwToV sw])
-			right  -- dfH.rightSB
+			ada -- dfH.smallArchDepthA
+			adb -- dfH.smallArchDepthB
+		if (!fFlatHump) : include : nShoulder.shape
+			left -- (dfH.leftSB + [HSwToV sw])
+			right -- dfH.rightSB
 			bottom -- yBot
 			stroke -- sw
-			fine   -- (ShoulderFine * (sw / Stroke))
-			ada    -- dfH.smallArchDepthA
-			adb    -- dfH.smallArchDepthB
+			fine -- (ShoulderFine * (sw / Stroke))
+			ada -- dfH.smallArchDepthA
+			adb -- dfH.smallArchDepthB
 		if fTailed : include : RightwardTailedBar dfH.rightSB 0 (XH - dfH.smallArchDepthB) sw
 		if Serifs : include : Serifs dfH sw topLeft fTailed
 
 	define HDigraphConfig : SuffixCfg.weave
 		object # hump
-			''        false
-			flatHump  true
+			'' false
+			flatHump true
 		object # tail
 			straight false
-			tailed   true
+			tailed true
 		object # serifs
-			serifless      false
-			serifed        HDigraphSerifs
-			motionSerifed  HDigraphMotionSerifs
+			serifless false
+			serifed HDigraphSerifs
+			motionSerifed HDigraphMotionSerifs
 			topLeftSerifed HDigraphLT
 	glyph-block-export BakedHDigraphSuffix
 	define BakedHDigraphSuffix : if (para.variantSelector.h && HDigraphConfig.(para.variantSelector.h)) para.variantSelector.h 'straightSerifless'
@@ -107,26 +107,26 @@ glyph-block Letter-Latin-Lower-H : begin
 	glyph-block-export HConfig
 	define HConfig : SuffixCfg.weave
 		object # hump
-			''        false
-			flatHump  true
+			'' false
+			flatHump true
 		object # tail
 			straight false
-			tailed   true
+			tailed true
 		object # serifs
-			serifless      {null                false}
-			serifed        {SmallHSerifs        true }
-			motionSerifed  {SmallHMotionSerifs  true }
-			topLeftSerifed {SmallHTopLeftSerif  true }
+			serifless {null false}
+			serifed {SmallHSerifs true }
+			motionSerifed {SmallHMotionSerifs true }
+			topLeftSerifed {SmallHTopLeftSerif true }
 
 	foreach {suffix {fFlatHump fTailed {Serifs fHasTopSerif}}} [Object.entries HConfig] : do
 		create-glyph "h.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			set-base-anchor 'overlay' Middle (XH / 2)
-			set-base-anchor 'strike'  Middle (XH / 2)
+			set-base-anchor 'strike' Middle (XH / 2)
 			include : LeaningAnchor.Above.VBar.l SB
 			include : VBar.l SB 0 Ascender
 			if fTailed : include : SmallHHump fFlatHump (bottom -- (XH - SmallArchDepthB + O))
-			if [not fTailed] : include : SmallHHump fFlatHump
+			if (!fTailed) : include : SmallHHump fFlatHump
 			if fTailed : include : RightwardTailedBar RightSB 0 (XH - SmallArchDepthB)
 			if Serifs : include : Serifs fTailed false
 
@@ -137,19 +137,19 @@ glyph-block Letter-Latin-Lower-H : begin
 		create-glyph "hHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			set-base-anchor 'overlay' Middle (XH / 2)
-			set-base-anchor 'strike'  Middle (XH / 2)
+			set-base-anchor 'strike' Middle (XH / 2)
 			include : LeaningAnchor.Above.VBar.l SB
 			include : TopHook.toRight.lBarInner SB 0 Ascender
 			if fTailed : include : SmallHHump fFlatHump (bottom -- (XH - SmallArchDepthB + O))
-			if [not fTailed] : include : SmallHHump fFlatHump
+			if (!fTailed) : include : SmallHHump fFlatHump
 			if fTailed : include : RightwardTailedBar RightSB 0 (XH - SmallArchDepthB)
 			if Serifs : include : Serifs fTailed true
 
-		if [not fTailed] : begin
+		if (!fTailed) : begin
 			create-glyph "heng.\(suffix)" : glyph-proc
 				include : MarkSet.bp
 				set-base-anchor 'overlay' Middle (XH / 2)
-				set-base-anchor 'strike'  Middle (XH / 2)
+				set-base-anchor 'strike' Middle (XH / 2)
 				include : LeaningAnchor.Above.VBar.l SB
 				include : VBar.l SB 0 Ascender
 				include : SmallHHump fFlatHump
@@ -163,7 +163,7 @@ glyph-block Letter-Latin-Lower-H : begin
 			create-glyph "hengHookTop.\(suffix)" : glyph-proc
 				include : MarkSet.bp
 				set-base-anchor 'overlay' Middle (XH / 2)
-				set-base-anchor 'strike'  Middle (XH / 2)
+				set-base-anchor 'strike' Middle (XH / 2)
 				include : LeaningAnchor.Above.VBar.l SB
 				include : TopHook.toRight.lBarInner SB 0 Ascender
 				include : SmallHHump fFlatHump
@@ -172,23 +172,23 @@ glyph-block Letter-Latin-Lower-H : begin
 
 	select-variant 'h' 'h'
 	link-reduced-variant 'h/sansSerif' 'h' MathSansSerif
-	select-variant 'hStroke'     0x127 (follow -- 'h')
-	select-variant 'hHookTop'    0x266
-	select-variant 'heng'        0xA727
-	select-variant 'cyrl/dje'    0x452 (follow -- 'heng') (shapeFrom -- 'hengStroke')
+	select-variant 'hStroke' 0x127 (follow -- 'h')
+	select-variant 'hHookTop' 0x266
+	select-variant 'heng' 0xA727
+	select-variant 'cyrl/dje' 0x452 (follow -- 'heng') (shapeFrom -- 'hengStroke')
 	select-variant 'hengHookTop' 0x267
 
 	link-reduced-variant 'h/descBase' 'h'
-	derive-composites 'hDescender'   0x2C68 'h/descBase' [CyrDescender.rSideJut RightSB 0]
-	derive-composites 'hPalatalHook' 0xA795 'h/descBase' [PalatalHook.rSideJut  RightSB 0]
+	derive-composites 'hDescender' 0x2C68 'h/descBase' [CyrDescender.rSideJut RightSB 0]
+	derive-composites 'hPalatalHook' 0xA795 'h/descBase' [PalatalHook.rSideJut RightSB 0]
 
 	link-reduced-variant 'hStroke/descBase' 'hStroke' (follow -- 'h/descBase')
-	derive-composites 'hStrokePalatalHook' 0x1DF32 'hStroke/descBase' [PalatalHook.rSideJut  RightSB 0]
+	derive-composites 'hStrokePalatalHook' 0x1DF32 'hStroke/descBase' [PalatalHook.rSideJut RightSB 0]
 
 	select-variant 'cyrl/tshe' 0x45B (follow -- 'h') (shapeFrom -- 'hStroke')
 	select-variant 'cyrl/shha' 0x4BB (follow -- 'h') (shapeFrom -- 'h')
-	alias 'cyrl/shhaDescender' 0x527  'hDescender'
-	select-variant 'cyrl/hwe'  0xA695 (follow -- 'hHookTop') (shapeFrom -- 'hHookTop')
+	alias 'cyrl/shhaDescender' 0x527 'hDescender'
+	select-variant 'cyrl/hwe' 0xA695 (follow -- 'hHookTop') (shapeFrom -- 'hHookTop')
 
 	derive-multi-part-glyphs 'hDot' 0x1E23 {'h' 'dotAbove'} : lambda [srcs gr] : glyph-proc
 		local {base mark} srcs

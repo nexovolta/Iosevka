@@ -18,107 +18,107 @@ glyph-block Letter-Latin-W : begin
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
 
 	glyph-block-export FORM-CURLY FORM-STRAIGHT FORM-VERTICAL FORM-CURSIVE
-	define FORM-CURLY                      0
-	define FORM-STRAIGHT                   1
-	define FORM-VERTICAL                   2
-	define FORM-DOUBLE-V                   3
-	define FORM-ASYMMETRIC                 4
-	define FORM-CURSIVE                    5
-	define FORM-CYRL-OMEGA                 6
-	define FORM-CURLY-ASYMMETRIC           7
+	define FORM-CURLY 0
+	define FORM-STRAIGHT 1
+	define FORM-VERTICAL 2
+	define FORM-DOUBLE-V 3
+	define FORM-ASYMMETRIC 4
+	define FORM-CURSIVE 5
+	define FORM-CYRL-OMEGA 6
+	define FORM-CURLY-ASYMMETRIC 7
 
-	define MIDH-OTHER             0
-	define MIDH-TOP               1
-	define MIDH-ALMOST-TOP        2
+	define MIDH-OTHER 0
+	define MIDH-TOP 1
+	define MIDH-ALMOST-TOP 2
 
 	glyph-block-export SERIFS-NONE SERIFS-MOTION SERIFS-CYRL-OMEGA SERIFS-ALL SERIFS-ALL-OUTER SERIFS-ALL-ASYMMETRIC SERIFS-ALL-REVERSE-ASYMMETRIC SERIFS-BILATERAL-MOTION
-	define SERIFS-NONE            0
-	define SERIFS-AUTO            1
-	define SERIFS-MOTION          2
-	define SERIFS-DOUBLE-V        3
-	define SERIFS-ASYMMETRIC      4
-	define SERIFS-CURSIVE         5
-	define SERIFS-CYRL-OMEGA      6
-	define SERIFS-ALL             7
-	define SERIFS-ALL-OUTER       8
-	define SERIFS-ALL-ASYMMETRIC  9
+	define SERIFS-NONE 0
+	define SERIFS-AUTO 1
+	define SERIFS-MOTION 2
+	define SERIFS-DOUBLE-V 3
+	define SERIFS-ASYMMETRIC 4
+	define SERIFS-CURSIVE 5
+	define SERIFS-CYRL-OMEGA 6
+	define SERIFS-ALL 7
+	define SERIFS-ALL-OUTER 8
+	define SERIFS-ALL-ASYMMETRIC 9
 	define SERIFS-ALL-REVERSE-ASYMMETRIC 10
 	define SERIFS-TOP-RIGHT-MOTION 11
 	define SERIFS-BILATERAL-MOTION 12
 
-	define CwFineOuter            5.0
-	define CwFineInner            6.0
-	define CwFineOuterStraight    5.5
-	define CwFineInnerStraight    5.5
-	define CwFineInnerDoubleV     4.25
-	define CwOuterStrokeCurly     2.5
+	define CwFineOuter 5.0
+	define CwFineInner 6.0
+	define CwFineOuterStraight 5.5
+	define CwFineInnerStraight 5.5
+	define CwFineInnerDoubleV 4.25
+	define CwOuterStrokeCurly 2.5
 	define CwOuterStrokeStraight1 2.5
 	define CwOuterStrokeStraight2 3.0
-	define CwDoubleV              3.625
-	define CwCyrlOmega            3.00
-	define CwWCoCurly             5.0
-	define CwWCoStraight          3.5
-	define CwWCoDoubleV           3.5
-	define PXBot1Curly            0.25
-	define PXBot1Straight         0.235
+	define CwDoubleV 3.625
+	define CwCyrlOmega 3.00
+	define CwWCoCurly 5.0
+	define CwWCoStraight 3.5
+	define CwWCoDoubleV 3.5
+	define PXBot1Curly 0.25
+	define PXBot1Straight 0.235
 
 	define [WMidHeight df top bodyType midHClass] : match bodyType
-		[Just FORM-CURLY]    : top * 0.6
+		[Just FORM-CURLY] : top * 0.6
 		[Just FORM-VERTICAL] : top * 0.55
 		[Just FORM-STRAIGHT] : WMidHeightExt (top * 0.72) top bodyType midHClass
-		[Just FORM-CURSIVE]  : WMidHeightExt [mix [df.adviceStroke 3.25] top (11 / 16)] top bodyType midHClass
+		[Just FORM-CURSIVE] : WMidHeightExt [mix [df.adviceStroke 3.25] top (11 / 16)] top bodyType midHClass
 		[Just FORM-CURLY-ASYMMETRIC] : WMidHeightExt top top bodyType midHClass
-		__                   : WMidHeightExt top top bodyType midHClass
+		__ : WMidHeightExt top top bodyType midHClass
 	define [WMidHeightExt midh top bodyType midHClass] : match midHClass
-		[Just MIDH-TOP]            top
-		[Just MIDH-ALMOST-TOP]   : top - Stroke
-		[Just MIDH-OTHER]          midh
+		[Just MIDH-TOP] top
+		[Just MIDH-ALMOST-TOP] : top - Stroke
+		[Just MIDH-OTHER] midh
 
 	glyph-block-export WDim WShapeImpl WSquareTopShape WConfig
 	define [WDim df top bodyType slabType midHClass] : begin
 		local CwOuterStrokeStraight : if (midHClass === MIDH-OTHER) CwOuterStrokeStraight1 CwOuterStrokeStraight2
 		local strokeOuter : match bodyType
-			[Just FORM-CURLY]                      : AdviceStroke CwOuterStrokeCurly    : Math.sqrt df.adws
-			[Just FORM-CURLY-ASYMMETRIC]           : AdviceStroke CwOuterStrokeCurly    : Math.sqrt df.adws
-			[Just FORM-STRAIGHT]                   : AdviceStroke CwOuterStrokeStraight : Math.sqrt df.adws
-			[Just FORM-DOUBLE-V]                   : AdviceStroke CwDoubleV             : Math.sqrt df.adws
-			[Just FORM-ASYMMETRIC]                 : AdviceStroke CwDoubleV             : Math.sqrt df.adws
-			[Just FORM-CYRL-OMEGA]                 : AdviceStroke CwCyrlOmega           : Math.sqrt df.adws
+			[Just FORM-CURLY] : AdviceStroke CwOuterStrokeCurly : Math.sqrt df.adws
+			[Just FORM-CURLY-ASYMMETRIC] : AdviceStroke CwOuterStrokeCurly : Math.sqrt df.adws
+			[Just FORM-STRAIGHT] : AdviceStroke CwOuterStrokeStraight : Math.sqrt df.adws
+			[Just FORM-DOUBLE-V] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-ASYMMETRIC] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-CYRL-OMEGA] : AdviceStroke CwCyrlOmega : Math.sqrt df.adws
 		local fineOuter : match bodyType
-			[Just FORM-CURLY]                      : AdviceStroke CwFineOuter           df.adws
-			[Just FORM-CURLY-ASYMMETRIC]           : AdviceStroke CwFineOuter           df.adws
-			[Just FORM-STRAIGHT]                   : AdviceStroke CwFineOuterStraight : Math.sqrt df.adws
-			[Just FORM-DOUBLE-V]                   : AdviceStroke CwDoubleV           : Math.sqrt df.adws
-			[Just FORM-ASYMMETRIC]                 : AdviceStroke CwDoubleV           : Math.sqrt df.adws
-			[Just FORM-CYRL-OMEGA]                 : AdviceStroke CwCyrlOmega         : Math.sqrt df.adws
+			[Just FORM-CURLY] : AdviceStroke CwFineOuter df.adws
+			[Just FORM-CURLY-ASYMMETRIC] : AdviceStroke CwFineOuter df.adws
+			[Just FORM-STRAIGHT] : AdviceStroke CwFineOuterStraight : Math.sqrt df.adws
+			[Just FORM-DOUBLE-V] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-ASYMMETRIC] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-CYRL-OMEGA] : AdviceStroke CwCyrlOmega : Math.sqrt df.adws
 		local fineInner : match bodyType
-			[Just FORM-CURLY]                      : AdviceStroke CwFineInner           df.adws
-			[Just FORM-CURLY-ASYMMETRIC]           : AdviceStroke CwFineInner           df.adws
-			[Just FORM-STRAIGHT]                   : AdviceStroke CwFineInnerStraight : Math.sqrt df.adws
-			[Just FORM-DOUBLE-V]                   : AdviceStroke CwDoubleV           : Math.sqrt df.adws
-			[Just FORM-ASYMMETRIC]                 : AdviceStroke CwDoubleV           : Math.sqrt df.adws
-			[Just FORM-CYRL-OMEGA]                 : AdviceStroke CwCyrlOmega         : Math.sqrt df.adws
+			[Just FORM-CURLY] : AdviceStroke CwFineInner df.adws
+			[Just FORM-CURLY-ASYMMETRIC] : AdviceStroke CwFineInner df.adws
+			[Just FORM-STRAIGHT] : AdviceStroke CwFineInnerStraight : Math.sqrt df.adws
+			[Just FORM-DOUBLE-V] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-ASYMMETRIC] : AdviceStroke CwDoubleV : Math.sqrt df.adws
+			[Just FORM-CYRL-OMEGA] : AdviceStroke CwCyrlOmega : Math.sqrt df.adws
 		local fineHeight : (fineOuter + fineInner) / 2
 
 		local wCo : match bodyType
-			[Just FORM-CURLY]                      : AdviceStroke CwWCoCurly    df.adws
-			[Just FORM-CURLY-ASYMMETRIC]           : AdviceStroke CwWCoCurly    df.adws
-			[Just FORM-STRAIGHT]                   : AdviceStroke CwWCoStraight df.adws
-			[Just FORM-DOUBLE-V]                   : AdviceStroke CwWCoDoubleV  df.adws
-			[Just FORM-ASYMMETRIC]                 : AdviceStroke CwWCoDoubleV  df.adws
-			[Just FORM-CYRL-OMEGA]                 : AdviceStroke CwWCoDoubleV  df.adws
+			[Just FORM-CURLY] : AdviceStroke CwWCoCurly df.adws
+			[Just FORM-CURLY-ASYMMETRIC] : AdviceStroke CwWCoCurly df.adws
+			[Just FORM-STRAIGHT] : AdviceStroke CwWCoStraight df.adws
+			[Just FORM-DOUBLE-V] : AdviceStroke CwWCoDoubleV df.adws
+			[Just FORM-ASYMMETRIC] : AdviceStroke CwWCoDoubleV df.adws
+			[Just FORM-CYRL-OMEGA] : AdviceStroke CwWCoDoubleV df.adws
 		local wCo2 : match bodyType
-			[Just FORM-CYRL-OMEGA] : AdviceStroke CwCyrlOmega   df.adws
-			_                        wCo
+			[Just FORM-CYRL-OMEGA] : AdviceStroke CwCyrlOmega df.adws
+			_ wCo
 
 		local kWCoShrink CThin
 		local pxBot1 : match bodyType
-			[Just FORM-CURLY]                      0.25
-			[Just FORM-CURLY-ASYMMETRIC]           0.3
-			[Just FORM-STRAIGHT]                   0.235
-			[Just FORM-DOUBLE-V]                   0.315
-			[Just FORM-ASYMMETRIC]                 0.3
-			[Just FORM-CYRL-OMEGA]                 0.265
+			[Just FORM-CURLY] 0.25
+			[Just FORM-CURLY-ASYMMETRIC] 0.3
+			[Just FORM-STRAIGHT] 0.235
+			[Just FORM-DOUBLE-V] 0.315
+			[Just FORM-ASYMMETRIC] 0.3
+			[Just FORM-CYRL-OMEGA] 0.265
 
 		local botMixOffset : HSwToV : 0.5 * wCo2
 		local xBot1 : [if bodyType O 0] + [mix (df.leftSB + botMixOffset) (df.rightSB - botMixOffset) pxBot1]
@@ -131,7 +131,7 @@ glyph-block Letter-Latin-W : begin
 				mix (df.leftSB + botMixOffset) (df.rightSB - botMixOffset) (2 * pxBot1)
 			__
 				if (bodyType < FORM-DOUBLE-V) df.middle
-		local xLeft2  : df.width - xRight1
+		local xLeft2 : df.width - xRight1
 
 		local corWCo : DiagCorDs wMidHeight (xRight1 - xBot1) wCo
 		local wCoCr : corWCo * wCo
@@ -143,44 +143,44 @@ glyph-block Letter-Latin-W : begin
 		local corFInner : DiagCorDs wMidHeight (xRight1 - xBot1) fineInner
 		local fineInnerCr : Math.min wCoCr : corFInner * fineInner
 		local fineInnerCrTop : match bodyType
-			[Just FORM-DOUBLE-V]                   fineInnerCr
-			[Just FORM-ASYMMETRIC]                 fineInnerCr
-			[Just FORM-CYRL-OMEGA]                 fineInnerCr
-			[Just FORM-CURLY-ASYMMETRIC]           fineInnerCr
-			__                                   : kWCoShrink * wCoCr
+			[Just FORM-DOUBLE-V] fineInnerCr
+			[Just FORM-ASYMMETRIC] fineInnerCr
+			[Just FORM-CYRL-OMEGA] fineInnerCr
+			[Just FORM-CURLY-ASYMMETRIC] fineInnerCr
+			__ : kWCoShrink * wCoCr
 
 		local curlyStraightSegLength : match bodyType
-			[Just FORM-CURLY]             0.25
-			[Just FORM-CURLY-ASYMMETRIC]  0.25
-			__                 0.05
+			[Just FORM-CURLY] 0.25
+			[Just FORM-CURLY-ASYMMETRIC] 0.25
+			__ 0.05
 
 		return : object xBot1 xBot2 strokeOuter strokeOuterCr fineOuter fineOuterCr fineInner fineInnerCr fineInnerCrTop fineHeight wMidHeight wMidHeightExt xRight1 xLeft2 wCoCr curlyStraightSegLength
 
 	define [WSerifs df top bodyType slabType dim] : glyph-proc
 		local oSlabPos : match bodyType
-			[Just FORM-CURLY]                      0
-			[Just FORM-CURLY-ASYMMETRIC]  0
-			[Just FORM-VERTICAL]          0
-			[Just FORM-CYRL-OMEGA]                 0
-			__                                   : O * 2
+			[Just FORM-CURLY] 0
+			[Just FORM-CURLY-ASYMMETRIC] 0
+			[Just FORM-VERTICAL] 0
+			[Just FORM-CYRL-OMEGA] 0
+			__ : O * 2
 
-		local sf  : SerifFrame top 0 df.leftSB df.rightSB (hSplit -- 3)
+		local sf : SerifFrame top 0 df.leftSB df.rightSB (hSplit -- 3)
 		local sfm : SerifFrame top 0 (df.leftSB + oSlabPos) (df.rightSB - oSlabPos) (hSplit -- 3)
 
 		include : match slabType
-			[Just SERIFS-NONE]           : glyph-proc
-			[Just SERIFS-AUTO]           : NeedSlab SLAB : composite-proc sf.lt.full [VExtendedRtFull sf]
-			[Just SERIFS-ALL]            : composite-proc sf.lt.full [VExtendedRtFull sf]
-			[Just SERIFS-ALL-OUTER]      : composite-proc sfm.lt.outer sfm.rt.outer
+			[Just SERIFS-NONE] : glyph-proc
+			[Just SERIFS-AUTO] : NeedSlab SLAB : composite-proc sf.lt.full [VExtendedRtFull sf]
+			[Just SERIFS-ALL] : composite-proc sf.lt.full [VExtendedRtFull sf]
+			[Just SERIFS-ALL-OUTER] : composite-proc sfm.lt.outer sfm.rt.outer
 			[Just SERIFS-ALL-ASYMMETRIC] : composite-proc sfm.lt.outer [VExtendedRtFull sfm]
 			[Just SERIFS-ALL-REVERSE-ASYMMETRIC] : composite-proc sfm.lt.full sfm.rt.outer
-			[Just SERIFS-MOTION]         : begin sfm.lt.outer
+			[Just SERIFS-MOTION] : begin sfm.lt.outer
 			[Just SERIFS-TOP-RIGHT-MOTION] : VExtendedRtInner sfm
 			[Just SERIFS-BILATERAL-MOTION] : composite-proc sfm.lt.outer [VExtendedRtInner sfm]
-			[Just SERIFS-DOUBLE-V]       : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.outer
-			[Just SERIFS-ASYMMETRIC]     : NeedSlab SLAB : composite-proc sfm.lt.outer [VExtendedRtFull sfm]
-			[Just SERIFS-CURSIVE]        : NeedSlab SLAB sf.lt.outer
-			[Just SERIFS-CYRL-OMEGA]     : begin
+			[Just SERIFS-DOUBLE-V] : NeedSlab SLAB : composite-proc sfm.lt.outer sfm.rt.outer
+			[Just SERIFS-ASYMMETRIC] : NeedSlab SLAB : composite-proc sfm.lt.outer [VExtendedRtFull sfm]
+			[Just SERIFS-CURSIVE] : NeedSlab SLAB sf.lt.outer
+			[Just SERIFS-CYRL-OMEGA] : begin
 				local jut : Math.min Jut : [HSwToV : 0.5 * dim.strokeOuter] + 0.375 * (dim.xLeft2 - df.leftSB - [HSwToV : 1.5 * dim.strokeOuter])
 				NeedSlab SLAB : composite-proc
 					HSerif.mtAsymmetric (df.leftSB + [HSwToV : 0.5 * dim.strokeOuter]) dim.wMidHeight jut jut
@@ -189,15 +189,15 @@ glyph-block Letter-Latin-W : begin
 	### W and w
 	define [WAsymmetricInnerClipRight df dim] : spiro-outline
 		corner dim.xLeft2 dim.wMidHeight
-		corner dim.xBot2  0
-		corner df.width  0
-		corner df.width  dim.wMidHeight
+		corner dim.xBot2 0
+		corner df.width 0
+		corner df.width dim.wMidHeight
 
 	define [WAsymmetricInnerClipLeft df dim] : spiro-outline
 		corner dim.xRight1 dim.wMidHeight
-		corner dim.xBot1  0
-		corner 0  0
-		corner 0  dim.wMidHeight
+		corner dim.xBot1 0
+		corner 0 0
+		corner 0 dim.wMidHeight
 
 	define [WShapeImpl df top bodyType slabType midHClass _fReverse] : glyph-proc
 		local fReverse : fallback _fReverse false
@@ -209,11 +209,11 @@ glyph-block Letter-Latin-W : begin
 				flat df.leftSB top [heading Downward]
 				curl df.leftSB (top * (1 - dim.curlyStraightSegLength)) [heading Downward]
 				quadControls 0 0.3 6 unimportant
-				g4   (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
+				g4 (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
 			_ : dispiro
 				widths.lhs dim.strokeOuterCr
 				flat (df.leftSB + O * 2) top [heading Downward]
-				g4   (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
+				g4 (dim.xBot1 - [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.lhs.heading dim.fineOuterCr Downward]
 
 		include : tagged 'strokeUp2' : match bodyType
 			([Just FORM-CURLY] || [Just FORM-CYRL-OMEGA] || [Just FORM-CURLY-ASYMMETRIC]) : dispiro
@@ -221,44 +221,44 @@ glyph-block Letter-Latin-W : begin
 				flat df.rightSB top [heading Downward]
 				curl df.rightSB (top * (1 - dim.curlyStraightSegLength)) [heading Downward]
 				quadControls 0 0.3 6 unimportant
-				g4   (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
+				g4 (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
 			_ : dispiro
 				widths.rhs dim.strokeOuterCr
 				flat (df.rightSB - O * 2) top [heading Downward]
-				g4   (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
+				g4 (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
 
 		local kTopShift : match bodyType
-			[Just FORM-DOUBLE-V]                   0
-			[Just FORM-ASYMMETRIC]        0
-			[Just FORM-CYRL-OMEGA]        0
-			[Just FORM-CURLY-ASYMMETRIC]  0
-			__                            1
+			[Just FORM-DOUBLE-V] 0
+			[Just FORM-ASYMMETRIC] 0
+			[Just FORM-CYRL-OMEGA] 0
+			[Just FORM-CURLY-ASYMMETRIC] 0
+			__ 1
 		local k1 0.5
 		local k2 : 1 - k1
-		local shiftT  : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
-		local shiftB  : HSwToV               (0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr   )
+		local shiftT : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
+		local shiftB : HSwToV (0.5 * dim.wCoCr - 0.5 * dim.fineOuterCr )
 
 		local innerUp : dispiro
 			flat (dim.xRight1 - shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-			curl (dim.xBot1   + shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+			curl (dim.xBot1 + shiftB) 0 [widths.center.heading dim.fineOuterCr Downward]
 		local innerDown : match bodyType
 			[Just FORM-CYRL-OMEGA] : dispiro
 				flat (dim.xLeft2 - [HSwToV : 0.5 * dim.strokeOuter]) dim.wMidHeight [widths.lhs.heading dim.strokeOuter Downward]
 				curl (dim.xLeft2 - [HSwToV : 0.5 * dim.strokeOuter]) (dim.wMidHeight * (1 - dim.curlyStraightSegLength)) [heading Downward]
 				quadControls 0 0.3 6 unimportant
-				g4   (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+				g4 (dim.xBot2 - shiftB) 0 [widths.center.heading dim.fineOuterCr Downward]
 			_ : dispiro
 				flat (dim.xLeft2 + shiftT) dim.wMidHeight [widths.center.heading dim.fineInnerCrTop Downward]
-				curl (dim.xBot2  - shiftB) 0              [widths.center.heading dim.fineOuterCr    Downward]
+				curl (dim.xBot2 - shiftB) 0 [widths.center.heading dim.fineOuterCr Downward]
 
 		local clipUp : match bodyType
 			[Just FORM-CYRL-OMEGA] : spiro-outline
-				corner df.width   (dim.wMidHeight + 1)
+				corner df.width (dim.wMidHeight + 1)
 				corner dim.xLeft2 (dim.wMidHeight + 1)
-				flat dim.xLeft2    dim.wMidHeight
-				curl dim.xLeft2   (dim.wMidHeight * (1 - dim.curlyStraightSegLength))
+				flat dim.xLeft2 dim.wMidHeight
+				curl dim.xLeft2 (dim.wMidHeight * (1 - dim.curlyStraightSegLength))
 				quadControls 0 0.3 6 unimportant
-				corner (dim.xBot2 - shiftB)   0
+				corner (dim.xBot2 - shiftB) 0
 				corner df.width 0
 			([Just FORM-ASYMMETRIC] || [Just FORM-CURLY-ASYMMETRIC]) : WAsymmetricInnerClipRight df dim
 			_ : no-shape
@@ -275,30 +275,30 @@ glyph-block Letter-Latin-W : begin
 	define [WSquareTopOuterLeft df top dim hw yJoin xBot] : union
 		dispiro
 			widths.lhs dim.strokeOuter
-			corner df.leftSB top   [heading Downward]
+			corner df.leftSB top [heading Downward]
 			corner df.leftSB yJoin [heading Downward]
 		spiro-outline
-			corner df.leftSB        yJoin
+			corner df.leftSB yJoin
 			corner (df.leftSB + hw) yJoin
-			corner xBot             0
-			corner (xBot - hw)      0
+			corner xBot 0
+			corner (xBot - hw) 0
 	define [WSquareTopOuterRight df top dim hw yJoin xBot yTop] : union
 		dispiro
 			widths.rhs dim.strokeOuter
-			corner df.rightSB yTop  [heading Downward]
+			corner df.rightSB yTop [heading Downward]
 			corner df.rightSB yJoin [heading Downward]
 		spiro-outline
-			corner df.rightSB        yJoin
+			corner df.rightSB yJoin
 			corner (df.rightSB - hw) yJoin
-			corner xBot              0
-			corner (xBot + hw)       0
+			corner xBot 0
+			corner (xBot + hw) 0
 
 	define [WInnerBody df top bodyType dim _fReverse] : glyph-proc
 		local fReverse : fallback _fReverse false
 		local kTopShift : match bodyType
-			[Just FORM-DOUBLE-V]   0
+			[Just FORM-DOUBLE-V] 0
 			[Just FORM-ASYMMETRIC] 0
-			__                     1
+			__ 1
 		local shiftT : HSwToV : kTopShift * (0.5 * dim.wCoCr - 0.5 * dim.fineInnerCrTop)
 		# Outward edge of each inner diagonal sits on the shared baseline vertex.
 		local innerUp : dispiro
@@ -346,11 +346,11 @@ glyph-block Letter-Latin-W : begin
 
 		include : tagged 'strokeUp2' : WSquareTopOuterRight df top dim hw yJoin dim.xBot2 yHook
 		include : VerticalHook.r
-			x      -- df.rightSB
-			y      -- yHook
+			x -- df.rightSB
+			y -- yHook
 			xDepth -- TailX
 			yDepth -- (-TailY)
-			sw     -- dim.strokeOuter
+			sw -- dim.strokeOuter
 
 	define [WSquareTopHookRightReverseAsymmetricShape df top asymBodyType slabType midHClass] : glyph-proc
 		include : WSquareTopHookRightShape df top asymBodyType slabType midHClass true
@@ -371,11 +371,11 @@ glyph-block Letter-Latin-W : begin
 			g4 (dim.xBot2 + [HSwToV : 0.5 * dim.wCoCr]) 0 [widths.rhs.heading dim.fineOuterCr Downward]
 
 		include : VerticalHook.r
-			x      -- df.rightSB
-			y      -- (top - TailY - 0.5 * dim.strokeOuter - O)
+			x -- df.rightSB
+			y -- (top - TailY - 0.5 * dim.strokeOuter - O)
 			xDepth -- TailX
 			yDepth -- (-TailY)
-			sw     -- dim.strokeOuter
+			sw -- dim.strokeOuter
 
 	define [VYShape df top straightBar bottomShape slabKind] : glyph-proc
 		# Y -> W configs
@@ -487,7 +487,7 @@ glyph-block Letter-Latin-W : begin
 			flat x1 top [heading Downward]
 			curl x1 (fine + rInY) [heading Downward]
 			arcvh 16
-			g4   [Math.min ([mix (x1 + [HSwToV fine]) (df.middle - [HSwToV : 0.5 * fine]) 0.5] - [HSwToV : fine - mfine]) (x1 + [HSwToV fine] + rInY)] O [heading {.x (TanSlope + (0.5 * (fine - mfine) / fine)) .y 1}]
+			g4 [Math.min ([mix (x1 + [HSwToV fine]) (df.middle - [HSwToV : 0.5 * fine]) 0.5] - [HSwToV : fine - mfine]) (x1 + [HSwToV fine] + rInY)] O [heading {.x (TanSlope + (0.5 * (fine - mfine) / fine)) .y 1}]
 			archv 16
 			flat (df.middle + [HSwToV : mfine - fine / 2]) y3 [widths.heading mfine 0 Upward]
 			curl (df.middle + [HSwToV : mfine - fine / 2]) y4 [heading Upward]
@@ -496,7 +496,7 @@ glyph-block Letter-Latin-W : begin
 		: then : begin
 			local fWh : fHookRight === 'wh'
 			local yStart : if fWh (top - O) ((top - O) - TailY - 0.5 * fine)
-			if [not fWh] : include : VerticalHook.r df.rightSB yStart TailX (-TailY) fine
+			if (!fWh) : include : VerticalHook.r df.rightSB yStart TailX (-TailY) fine
 			include : dispiro
 				widths.rhs fine
 				flat (df.width - x1) yStart [heading Downward]
@@ -516,73 +516,73 @@ glyph-block Letter-Latin-W : begin
 		local sf : SerifFrame top 0 x1 df.rightSB
 		include : match slabType
 			[Just SERIFS-CURSIVE] : NeedSlab SLAB sf.lt.outer
-			[Just SERIFS-MOTION]  : begin sf.lt.outer
+			[Just SERIFS-MOTION] : begin sf.lt.outer
 			[Just SERIFS-TOP-RIGHT-MOTION] : VExtendedRtInner sf
 			[Just SERIFS-BILATERAL-MOTION] : composite-proc sf.lt.outer [VExtendedRtInner sf]
-			___                   : glyph-proc
+			___ : glyph-proc
 
-	define [WCursiveImpl      df top bodyType slabType midHClass] : WCursiveImplImpl false df top bodyType slabType midHClass
-	define [WHookRightCursive df top bodyType slabType midHClass] : WCursiveImplImpl true  df top bodyType slabType midHClass
+	define [WCursiveImpl df top bodyType slabType midHClass] : WCursiveImplImpl false df top bodyType slabType midHClass
+	define [WHookRightCursive df top bodyType slabType midHClass] : WCursiveImplImpl true df top bodyType slabType midHClass
 
 	define WConfig : SuffixCfg.weave
 		# Body
 		object
-			straight                           {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
-			straightAlmostFlatTop              {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
-			straightFlatTop                    {WShapeImpl                        WHookRightShape                            FORM-STRAIGHT          MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
-			straightAsymmetric                 {WShapeImpl                        WHookRightShape                            FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			straightReverseAsymmetric          {WReverseAsymmetricShape           WHookRightReverseAsymmetricShape           FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			straightDoubleV                    {WShapeImpl                        WHookRightShape                            FORM-DOUBLE-V          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			straightVerticalSides              {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-OTHER       para.advanceScaleM   para.advanceScaleT }
-			straightVerticalSidesAlmostFlatTop {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-ALMOST-TOP  para.advanceScaleM   para.advanceScaleT }
-			straightVerticalSidesFlatTop       {WVertSides                        WVSHookRightShape                          FORM-VERTICAL          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			roundedVerticalSides               {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-OTHER       para.advanceScaleMM  para.advanceScaleMM}
-			roundedVerticalSidesAlmostFlatTop  {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleMM}
-			roundedVerticalSidesFlatTop        {WRounded                          WHookRightRounded                          FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleMM}
-			roundedSingleArch                  {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-OTHER       para.advanceScaleMM  para.advanceScaleMM}
-			roundedSingleArchAlmostFlatTop     {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleMM}
-			roundedSingleArchFlatTop           {WRoundedSingleArch                WHookRightRoundedSingleArch                FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleMM}
-			curly                              {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
-			curlyAlmostFlatTop                 {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
-			curlyFlatTop                       {WShapeImpl                        WHookRightShape                            FORM-CURLY             MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
-			curlyAsymmetric                    {WShapeImpl                        WHookRightShape                            FORM-CURLY-ASYMMETRIC  MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			curlyReverseAsymmetric             {WReverseAsymmetricShape           WHookRightReverseAsymmetricShape           FORM-CURLY-ASYMMETRIC  MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			squareTop                          {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-OTHER       para.advanceScaleM   para.advanceScaleM }
-			squareTopAlmostFlatTop             {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-ALMOST-TOP  para.advanceScaleMM  para.advanceScaleM }
-			squareTopFlatTop                   {WSquareTopShape                   WSquareTopHookRightShape                   FORM-STRAIGHT          MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
-			squareTopAsymmetric                {WSquareTopShape                   WSquareTopHookRightShape                   FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			squareTopReverseAsymmetric         {WSquareTopReverseAsymmetricShape  WSquareTopHookRightReverseAsymmetricShape  FORM-ASYMMETRIC        MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			squareTopDoubleV                   {WSquareTopShape                   WSquareTopHookRightShape                   FORM-DOUBLE-V          MIDH-TOP         para.advanceScaleM   para.advanceScaleT }
-			cursive                            {WCursiveImpl                      WHookRightCursive                          FORM-CURSIVE           MIDH-OTHER       para.advanceScaleMM  para.advanceScaleM }
-			cursiveFlatTop                     {WCursiveImpl                      WHookRightCursive                          FORM-CURSIVE           MIDH-TOP         para.advanceScaleMM  para.advanceScaleM }
-			cyrlOmega                          {WShapeImpl                        WHookRightShape                            FORM-CYRL-OMEGA        MIDH-OTHER       para.advanceScaleMM  para.advanceScaleM }
+			straight {WShapeImpl WHookRightShape FORM-STRAIGHT MIDH-OTHER para.advanceScaleM para.advanceScaleM }
+			straightAlmostFlatTop {WShapeImpl WHookRightShape FORM-STRAIGHT MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM }
+			straightFlatTop {WShapeImpl WHookRightShape FORM-STRAIGHT MIDH-TOP para.advanceScaleMM para.advanceScaleM }
+			straightAsymmetric {WShapeImpl WHookRightShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			straightReverseAsymmetric {WReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			straightDoubleV {WShapeImpl WHookRightShape FORM-DOUBLE-V MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			straightVerticalSides {WVertSides WVSHookRightShape FORM-VERTICAL MIDH-OTHER para.advanceScaleM para.advanceScaleT }
+			straightVerticalSidesAlmostFlatTop {WVertSides WVSHookRightShape FORM-VERTICAL MIDH-ALMOST-TOP para.advanceScaleM para.advanceScaleT }
+			straightVerticalSidesFlatTop {WVertSides WVSHookRightShape FORM-VERTICAL MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			roundedVerticalSides {WRounded WHookRightRounded FORM-CURLY MIDH-OTHER para.advanceScaleMM para.advanceScaleMM}
+			roundedVerticalSidesAlmostFlatTop {WRounded WHookRightRounded FORM-CURLY MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM}
+			roundedVerticalSidesFlatTop {WRounded WHookRightRounded FORM-CURLY MIDH-TOP para.advanceScaleMM para.advanceScaleMM}
+			roundedSingleArch {WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-OTHER para.advanceScaleMM para.advanceScaleMM}
+			roundedSingleArchAlmostFlatTop {WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleMM}
+			roundedSingleArchFlatTop {WRoundedSingleArch WHookRightRoundedSingleArch FORM-CURLY MIDH-TOP para.advanceScaleMM para.advanceScaleMM}
+			curly {WShapeImpl WHookRightShape FORM-CURLY MIDH-OTHER para.advanceScaleM para.advanceScaleM }
+			curlyAlmostFlatTop {WShapeImpl WHookRightShape FORM-CURLY MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM }
+			curlyFlatTop {WShapeImpl WHookRightShape FORM-CURLY MIDH-TOP para.advanceScaleMM para.advanceScaleM }
+			curlyAsymmetric {WShapeImpl WHookRightShape FORM-CURLY-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			curlyReverseAsymmetric {WReverseAsymmetricShape WHookRightReverseAsymmetricShape FORM-CURLY-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			squareTop {WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT MIDH-OTHER para.advanceScaleM para.advanceScaleM }
+			squareTopAlmostFlatTop {WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT MIDH-ALMOST-TOP para.advanceScaleMM para.advanceScaleM }
+			squareTopFlatTop {WSquareTopShape WSquareTopHookRightShape FORM-STRAIGHT MIDH-TOP para.advanceScaleMM para.advanceScaleM }
+			squareTopAsymmetric {WSquareTopShape WSquareTopHookRightShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			squareTopReverseAsymmetric {WSquareTopReverseAsymmetricShape WSquareTopHookRightReverseAsymmetricShape FORM-ASYMMETRIC MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			squareTopDoubleV {WSquareTopShape WSquareTopHookRightShape FORM-DOUBLE-V MIDH-TOP para.advanceScaleM para.advanceScaleT }
+			cursive {WCursiveImpl WHookRightCursive FORM-CURSIVE MIDH-OTHER para.advanceScaleMM para.advanceScaleM }
+			cursiveFlatTop {WCursiveImpl WHookRightCursive FORM-CURSIVE MIDH-TOP para.advanceScaleMM para.advanceScaleM }
+			cyrlOmega {WShapeImpl WHookRightShape FORM-CYRL-OMEGA MIDH-OTHER para.advanceScaleMM para.advanceScaleM }
 
 		# Serifs
 		function [body] : if (body == 'cyrlOmega')
-			then : object [''  SERIFS-CYRL-OMEGA]
+			then : object ['' SERIFS-CYRL-OMEGA]
 			else : object
-				serifless              SERIFS-NONE
-				motionSerifed          SERIFS-MOTION
-				topRightMotionSerifed  SERIFS-TOP-RIGHT-MOTION
+				serifless SERIFS-NONE
+				motionSerifed SERIFS-MOTION
+				topRightMotionSerifed SERIFS-TOP-RIGHT-MOTION
 				bilateralMotionSerifed SERIFS-BILATERAL-MOTION
-				serifed     : match body
-					[Just 'straightAsymmetric']           SERIFS-ALL-ASYMMETRIC
-					[Just 'straightReverseAsymmetric']    SERIFS-ALL-REVERSE-ASYMMETRIC
-					[Just 'curlyAsymmetric']              SERIFS-ALL-ASYMMETRIC
-					[Just 'curlyReverseAsymmetric']       SERIFS-ALL-REVERSE-ASYMMETRIC
-					[Just 'squareTopAsymmetric']          SERIFS-ALL-ASYMMETRIC
-					[Just 'squareTopReverseAsymmetric']   SERIFS-ALL-REVERSE-ASYMMETRIC
-					[Just 'straightDoubleV']              SERIFS-ALL-OUTER
-					[Just 'squareTopDoubleV']             SERIFS-ALL-OUTER
-					[Just 'squareTopFlatTop']             SERIFS-ALL-OUTER
-					[Just 'straightFlatTop']              SERIFS-ALL-OUTER
+				serifed : match body
+					[Just 'straightAsymmetric'] SERIFS-ALL-ASYMMETRIC
+					[Just 'straightReverseAsymmetric'] SERIFS-ALL-REVERSE-ASYMMETRIC
+					[Just 'curlyAsymmetric'] SERIFS-ALL-ASYMMETRIC
+					[Just 'curlyReverseAsymmetric'] SERIFS-ALL-REVERSE-ASYMMETRIC
+					[Just 'squareTopAsymmetric'] SERIFS-ALL-ASYMMETRIC
+					[Just 'squareTopReverseAsymmetric'] SERIFS-ALL-REVERSE-ASYMMETRIC
+					[Just 'straightDoubleV'] SERIFS-ALL-OUTER
+					[Just 'squareTopDoubleV'] SERIFS-ALL-OUTER
+					[Just 'squareTopFlatTop'] SERIFS-ALL-OUTER
+					[Just 'straightFlatTop'] SERIFS-ALL-OUTER
 					[Just 'straightVerticalSidesFlatTop'] SERIFS-ALL-OUTER
-					[Just 'roundedVerticalSidesFlatTop']  SERIFS-ALL-OUTER
-					[Just 'roundedSingleArchFlatTop']     SERIFS-ALL-OUTER
-					[Just 'curlyFlatTop']                 SERIFS-ALL-OUTER
-					[Just 'cursive']                      SERIFS-MOTION
-					[Just 'cursiveFlatTop']               SERIFS-MOTION
-					__                                    SERIFS-ALL
+					[Just 'roundedVerticalSidesFlatTop'] SERIFS-ALL-OUTER
+					[Just 'roundedSingleArchFlatTop'] SERIFS-ALL-OUTER
+					[Just 'curlyFlatTop'] SERIFS-ALL-OUTER
+					[Just 'cursive'] SERIFS-MOTION
+					[Just 'cursiveFlatTop'] SERIFS-MOTION
+					__ SERIFS-ALL
 
 	foreach {suffix {{implT hookRightImplT bodyType midHClass adwsUpper adwsLower} slabType}} [pairs-of WConfig] : do
 		create-glyph "W.\(suffix)" : glyph-proc
@@ -691,7 +691,7 @@ glyph-block Letter-Latin-W : begin
 	select-variant 'latn/wh' 0x1DF65 (follow -- 'w')
 	# VY
 	foreach {suffix {{straightBar fSquareTop} bottomShape slabKind}} [Object.entries NonCursiveYConfig] : do
-		if [not fSquareTop] : begin
+		if (!fSquareTop) : begin
 			create-glyph "VY.\(suffix)" : glyph-proc
 				local df : include : DivFrame adwsLower 3
 				include : df.markSet.p
@@ -740,4 +740,4 @@ glyph-block Letter-Latin-W : begin
 			BBVShape (SB + offset) RightSB kdW ksW top
 
 	create-glyph 'mathbb/W' 0x1D54E : composite-proc [MarkSet.capital] [BBWShape CAP]
-	create-glyph 'mathbb/w' 0x1D568 : composite-proc [MarkSet.e]       [BBWShape XH]
+	create-glyph 'mathbb/w' 0x1D568 : composite-proc [MarkSet.e] [BBWShape XH]

@@ -10,10 +10,10 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 	glyph-block-import Shared-Symbol-Shapes : TriangleShape
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim
 
-	define top     fontMetrics.os2.sTypoAscender
-	define bottom  fontMetrics.os2.sTypoDescender
-	define left    0
-	define right   MosaicWidth
+	define top fontMetrics.os2.sTypoAscender
+	define bottom fontMetrics.os2.sTypoDescender
+	define left 0
+	define right MosaicWidth
 
 	define midx : mix left right 0.5
 	define midy : mix bottom top 0.5
@@ -103,7 +103,7 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 			include : VBar.m midx bottom (Geom.Bot + boxDrawingStroke * 2) boxDrawingStroke
 
 	do 'Antenna'
-		define rodLeft  : Geom.Left  + [HSwToV : boxDrawingStroke / 2]
+		define rodLeft : Geom.Left + [HSwToV : boxDrawingStroke / 2]
 		define rodRight : Geom.Right - [HSwToV : boxDrawingStroke / 2]
 		define rodTop Geom.Top
 		create-glyph [MangleName 'antenna'] [MangleUnicode 0x1CC08] : glyph-proc
@@ -135,7 +135,7 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 			local mask : (right - left) / (segs * 2)
 			include : difference
 				HZigzag.fromCenter midy left right amplitude segs 0 boxDrawingStroke 1
-				MaskLeftLine  (left + mask) bottom (left + mask) (midy - boxDrawingStroke / 2)
+				MaskLeftLine (left + mask) bottom (left + mask) (midy - boxDrawingStroke / 2)
 				MaskRightLine (right - mask) (midy + boxDrawingStroke / 2) (right - mask) top
 
 		create-glyph [MangleName 'resistorVert'] [MangleUnicode 0x1CC0A] : glyph-proc
@@ -193,9 +193,9 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 			set-width MosaicWidth
 			include : ForceUpright
 			include : multicell.Split top bottom left right 1 3 CoilImpl : list
-				list 0 0 [MangleName 'inductorLeftThird']   [MangleUnicode 0x1CC0B]
+				list 0 0 [MangleName 'inductorLeftThird'] [MangleUnicode 0x1CC0B]
 				list 0 1 [MangleName 'inductorMiddleThird'] [MangleUnicode 0x1CC0C]
-				list 0 2 [MangleName 'inductorRightThird']  [MangleUnicode 0x1CC0D]
+				list 0 2 [MangleName 'inductorRightThird'] [MangleUnicode 0x1CC0D]
 
 	do 'Diode'
 		define diodeGap : MosaicWidth / 9
@@ -230,7 +230,7 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 			Rect top bottom left (midx + [HSwToV : 0.5 * boxDrawingStroke])
 			union
 				ExtLineCenter midx bottom left midy boxDrawingStroke 1
-				ExtLineCenter left midy   midx top  boxDrawingStroke 1
+				ExtLineCenter left midy midx top boxDrawingStroke 1
 
 		create-glyph [MangleName 'transistorPNP'] [MangleUnicode 0x1CC10] : glyph-proc
 			set-width MosaicWidth
@@ -309,7 +309,7 @@ glyph-block Symbol-Pictograph-Schematic : for-width-kinds WideWidth4 : begin
 			: else : begin
 				include : HBar.t left midx top boxDrawingStroke
 				include : HBar.b left midx bottom boxDrawingStroke
-				include : VBar.m midx (midy + spread - boxDrawingStroke) top    boxDrawingStroke
+				include : VBar.m midx (midy + spread - boxDrawingStroke) top boxDrawingStroke
 				include : VBar.m midx bottom (midy - spread + boxDrawingStroke) boxDrawingStroke
 				include : difference
 					HBar.t midx (right - ringSize) (midy + spread) boxDrawingStroke

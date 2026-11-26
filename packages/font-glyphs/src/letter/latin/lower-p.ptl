@@ -43,105 +43,105 @@ glyph-block Letter-Latin-Lower-P : begin
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.toothlessCorner (rise -- 0)
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 			else : OBarLeft.shape
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 		include : PBar left sw cut
 
 	define [FlatTopBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut '']] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.flatTopAndBottom
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 			else : OBarLeft.earlessCorner (rise -- 0)
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 		include : PBar left sw cut
 
 	define [EarlessCornerBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut '']] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.earlessCornerFlat
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 			else : OBarLeft.earlessCorner
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 		include : PBar left sw cut (XH - DToothlessRise)
 
 	define [EarlessRoundedBody] : with-params [[left SB] [right RightSB] [sw Stroke] [ada SmallArchDepthA] [adb SmallArchDepthB] [fFlat false] [cut '']] : glyph-proc
 		local fine : ShoulderFine * (sw / Stroke)
 		include : tagged 'bowl' : if fFlat
 			then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 			else : OBarLeft.earlessRounded (yTerminal -- Descender)
-				left  -- left
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 
 	define [SmallPSerifLT df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lt.outer
 	define [SmallPSerifLB df top _sw] : return [SerifFrame.fromDf df top Descender (swRef -- _sw)].lb.fullSide
 
-	define [FullSerifs  df top _sw] : composite-proc [SmallPSerifLT df top _sw] [SmallPSerifLB df top _sw]
+	define [FullSerifs df top _sw] : composite-proc [SmallPSerifLT df top _sw] [SmallPSerifLB df top _sw]
 	define [MotionSerif df top _sw] : SmallPSerifLT df top _sw
 	define [BottomSerif df top _sw] : SmallPSerifLB df top _sw
 
 	glyph-block-export : PConfig
 	define PConfig : SuffixCfg.weave
 		object # ear
-			eared                EaredBody
-			flatTop              FlatTopBody
-			earlessCorner        EarlessCornerBody
-			earlessRounded       EarlessRoundedBody
+			eared EaredBody
+			flatTop FlatTopBody
+			earlessCorner EarlessCornerBody
+			earlessRounded EarlessRoundedBody
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded') : return : object
-				''         ''
+				'' ''
 			return : object
-				''         ''
-				topCut     'topCut'
+				'' ''
+				topCut 'topCut'
 		function [ear cut] : object # bowl
-			''        false
-			flatBowl  true
+			'' false
+			flatBowl true
 		object # serifs
-			serifless     {no-shape     false  false}
-			motionSerifed {MotionSerif  true   false}
-			bottomSerifed {BottomSerif  false  true }
-			serifed       {FullSerifs   true   true }
+			serifless {no-shape false false}
+			motionSerifed {MotionSerif true false}
+			bottomSerifed {BottomSerif false true }
+			serifed {FullSerifs true true }
 
 	define [PBowlKind Body] : begin
 		if (Body === FlatTopBody) : return 'flatTop'
@@ -165,7 +165,7 @@ glyph-block Letter-Latin-Lower-P : begin
 		create-glyph "pStrokeBottom.\(suffix)" : glyph-proc
 			include [refer-glyph "p.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
-				x   -- SB
+				x -- SB
 				bot -- (Descender + [if doBS Stroke 0])
 				top -- 0
 
@@ -199,19 +199,19 @@ glyph-block Letter-Latin-Lower-P : begin
 			local adb : subDf.smallArchDepthB + 0
 			include : with-transform [ApparentTranslate shift 0] : glyph-proc
 				include : Body
-					left  -- xBodyLeft
+					left -- xBodyLeft
 					right -- xBodyRight
-					sw    -- sw
-					ada   -- ada
-					adb   -- adb
+					sw -- sw
+					ada -- ada
+					adb -- adb
 					fFlat -- fFlat
-					cut   -- cut
+					cut -- cut
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
 			local xStem : xBodyLeft + shift
 			include : EFlourishHook df sw
-				xClip  -- xStem
-				xJoin  -- (subDf.middle + shift)
+				xClip -- xStem
+				xJoin -- (subDf.middle + shift)
 				stroke -- sw
 
 		create-glyph "pSquirrelTail.\(suffix)" : glyph-proc
@@ -232,28 +232,28 @@ glyph-block Letter-Latin-Lower-P : begin
 				if (Body === EarlessRoundedBody) : begin
 					include : tagged 'bowl' : if fFlat
 						then : OBarLeft.earlessRoundedFlat (yTerminal -- Descender)
-							left  -- xBodyLeft
+							left -- xBodyLeft
 							right -- xBodyRight
-							sw    -- sw
-							fine  -- fine
-							ada   -- ada
-							adb   -- adb
+							sw -- sw
+							fine -- fine
+							ada -- ada
+							adb -- adb
 						else : OBarLeft.earlessRounded (yTerminal -- Descender)
-							left  -- xBodyLeft
+							left -- xBodyLeft
 							right -- xBodyRight
-							sw    -- sw
-							fine  -- fine
-							ada   -- ada
-							adb   -- adb
+							sw -- sw
+							fine -- fine
+							ada -- ada
+							adb -- adb
 				: else : begin
 					include : tagged 'bowl' : OBarLeft.toothlessCorner
-						rise  -- 0
-						left  -- xBodyLeft
+						rise -- 0
+						left -- xBodyLeft
 						right -- xBodyRight
-						sw    -- sw
-						fine  -- fine
-						ada   -- ada
-						adb   -- adb
+						sw -- sw
+						fine -- fine
+						ada -- ada
+						adb -- adb
 					include : PBar xBodyLeft sw cut
 				include : Serifs subDf XH sw
 				include : LeaningAnchor.Below.VBar.l xBodyLeft
@@ -295,14 +295,14 @@ glyph-block Letter-Latin-Lower-P : begin
 
 	define ThornConfig : SuffixCfg.weave
 		object # body
-			''                 SmallThornEaredBody
-			flatTop            SmallThornFlatTopBody
-			flatBottom         SmallThornFlatBottomBody
-			flatTopAndBottom   SmallThornFlatTopAndBottomBody
+			'' SmallThornEaredBody
+			flatTop SmallThornFlatTopBody
+			flatBottom SmallThornFlatBottomBody
+			flatTopAndBottom SmallThornFlatTopAndBottomBody
 		object # serifs
-			serifless     {no-shape     false  false}
-			motionSerifed {MotionSerif  true   false}
-			serifed       {FullSerifs   true   true }
+			serifless {no-shape false false}
+			motionSerifed {MotionSerif true false}
+			serifed {FullSerifs true true }
 
 	foreach {suffix {Body {Serifs doTS doBS}}} [Object.entries ThornConfig] : do
 		local yOverlay : mix 0 (Descender + [if doBS Stroke 0]) 0.5
@@ -323,7 +323,7 @@ glyph-block Letter-Latin-Lower-P : begin
 		create-glyph "thornStrokeBottom.\(suffix)" : glyph-proc
 			include [refer-glyph "thorn.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
-				x   -- SB
+				x -- SB
 				bot -- (Descender + [if doBS Stroke 0])
 				top -- 0
 
@@ -337,7 +337,7 @@ glyph-block Letter-Latin-Lower-P : begin
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : dispiro
 			widths.center [AdviceStroke 4]
-			flat [mix SB RightSB 0.5]   (HalfStroke + XH * 0.25)
+			flat [mix SB RightSB 0.5] (HalfStroke + XH * 0.25)
 			curl [mix SB RightSB 0.875] (HalfStroke - XH * 0.25)
 
 	derive-glyphs 'pHookTop' 0x1A5 'p/hookTopBase' : function [src gr] : glyph-proc
@@ -356,4 +356,4 @@ glyph-block Letter-Latin-Lower-P : begin
 			VBar.r (RightSB - BBD - OX) 0 XH BBS
 		include : OBarLeft.shape
 			left -- (SB + BBD)
-			sw   -- BBS
+			sw -- BBS

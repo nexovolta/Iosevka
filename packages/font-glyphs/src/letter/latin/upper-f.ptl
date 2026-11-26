@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Upper-F : begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
 
 	define kSB 1.5
-	define xFBarLeft     : [mix 0     SB      kSB] - 0
+	define xFBarLeft : [mix 0 SB kSB] - 0
 	define xRevFBarRight : [mix Width RightSB kSB] + 0
 
 	define [FShape top serifLT serifLB serifRT serifRM _stroke _jutTop _diag] : glyph-proc
@@ -30,59 +30,59 @@ glyph-block Letter-Latin-Upper-F : begin
 
 		if serifLT : include : HSerif.lt xFBarLeft top SideJut stroke
 		if serifLB : include : tagged 'serifLB' : union
-			HSerif.lb (xFBarLeft + [HSwToV : 0.5 * stroke]) 0 (Jut        - [HSwToV : 0.5 * (Stroke - stroke)]) stroke
+			HSerif.lb (xFBarLeft + [HSwToV : 0.5 * stroke]) 0 (Jut - [HSwToV : 0.5 * (Stroke - stroke)]) stroke
 			HSerif.rb (xFBarLeft + [HSwToV : 0.5 * stroke]) 0 (MidJutSide - [HSwToV : 0.5 * (Stroke - stroke)]) stroke
 
 		local {jutTop jutBot jutMid} : EFVJutLength top 0 nothing stroke _jutTop
 		local swVJut : VJutStroke * (stroke / Stroke)
-		if serifRT : include : VSerif.dr RightSB      top    jutTop swVJut
+		if serifRT : include : VSerif.dr RightSB top jutTop swVJut
 		local midJut : DiagonalMiddleSerifLength (_diag * 0.16 * top) (xMidBarRight - (xFBarLeft - O)) stroke jutMid [HSwToV swVJut]
 		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) (xMidBarRight - (xFBarLeft - O)) stroke midJut 1]
 		if serifRM : include : VSerif.mr xMidBarRight yMidEnd midJut swVJut
 
 	define FConfig : object
-		serifless             {false  false  false  false}
-		topLeftSerifed        {true   false  false  false}
-		serifed               {true   true   true   false}
-		serifedCapped         {true   true   true   true}
-		capped                {false  false  false  true}
-		topLeftSerifedCapped  {true   false  false  true}
-		diagonalCrossbar                             {false  false  false  false  1}
-		diagonalCrossbarTopLeftSerifed               {true   false  false  false  1}
-		diagonalCrossbarSerifed                      {true   true   true   false  1}
-		diagonalCrossbarSerifedCapped                {true   true   true   true   1}
-		diagonalCrossbarCapped                       {false  false  false  true   1}
-		diagonalCrossbarTopLeftSerifedCapped         {true   false  false  true   1}
-		diagonalCrossbarFalling                      {false  false  false  false  (-1)}
-		diagonalCrossbarFallingTopLeftSerifed        {true   false  false  false  (-1)}
-		diagonalCrossbarFallingSerifed               {true   true   true   false  (-1)}
-		diagonalCrossbarFallingSerifedCapped         {true   true   true   true   (-1)}
-		diagonalCrossbarFallingCapped                {false  false  false  true   (-1)}
-		diagonalCrossbarFallingTopLeftSerifedCapped  {true   false  false  true   (-1)}
+		serifless {false false false false}
+		topLeftSerifed {true false false false}
+		serifed {true true true false}
+		serifedCapped {true true true true}
+		capped {false false false true}
+		topLeftSerifedCapped {true false false true}
+		diagonalCrossbar {false false false false 1}
+		diagonalCrossbarTopLeftSerifed {true false false false 1}
+		diagonalCrossbarSerifed {true true true false 1}
+		diagonalCrossbarSerifedCapped {true true true true 1}
+		diagonalCrossbarCapped {false false false true 1}
+		diagonalCrossbarTopLeftSerifedCapped {true false false true 1}
+		diagonalCrossbarFalling {false false false false (-1)}
+		diagonalCrossbarFallingTopLeftSerifed {true false false false (-1)}
+		diagonalCrossbarFallingSerifed {true true true false (-1)}
+		diagonalCrossbarFallingSerifedCapped {true true true true (-1)}
+		diagonalCrossbarFallingCapped {false false false true (-1)}
+		diagonalCrossbarFallingTopLeftSerifedCapped {true false false true (-1)}
 
 	foreach {suffix {lt lb rt rm diag}} [Object.entries FConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP
-		define swXH  : AdviceStroke2 2 3 XH
+		define swXH : AdviceStroke2 2 3 XH
 
 		create-glyph "F.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LeaningAnchor.Below.VBar.l xFBarLeft swCap
 			include : FShape CAP lt lb rt rm swCap nothing diag
 
-		if [not rm] : create-glyph "currency/frenchFrancSign.\(suffix)" : glyph-proc
+		if (!rm) : create-glyph "currency/frenchFrancSign.\(suffix)" : glyph-proc
 			include [refer-glyph "F.\(suffix)"] AS_BASE ALSO_METRICS
 
 			eject-contour 'crossBar'
 			include : LetterBarOverlay.l.in
-				x   -- xFBarLeft
+				x -- xFBarLeft
 				bot -- 0
 				top -- CAP
-				py  -- 0.375
+				py -- 0.375
 			include : LetterBarOverlay.l.in
-				x   -- xFBarLeft
+				x -- xFBarLeft
 				bot -- 0
 				top -- (CAP - swCap)
-				py  -- 0.625
+				py -- 0.625
 
 		create-glyph "FBar.\(suffix)" : glyph-proc
 			include [refer-glyph "F.\(suffix)"] AS_BASE ALSO_METRICS
@@ -90,12 +90,12 @@ glyph-block Letter-Latin-Upper-F : begin
 			local swVJut : VJutStroke * (swCap / Stroke)
 			local xRight : piecewise
 				rm : [mix Width RightSB : EFMidBarShrinkK [DivFrame 1] rt] - [HSwToV swVJut]
-				rt :            RightSB                                    - [HSwToV swVJut]
-				true      Width
+				rt : RightSB - [HSwToV swVJut]
+				true Width
 			include : LetterBarOverlay.l.in
-				x     -- xFBarLeft
-				bot   -- (barPos + swCap / 2)
-				top   -- (CAP - swCap)
+				x -- xFBarLeft
+				bot -- (barPos + swCap / 2)
+				top -- (CAP - swCap)
 				space -- {0 xRight}
 
 		create-glyph "smcpF.\(suffix)" : glyph-proc
@@ -106,14 +106,14 @@ glyph-block Letter-Latin-Upper-F : begin
 	select-variant 'F' 'F'
 	link-reduced-variant 'F/sansSerif' 'F' MathSansSerif
 	select-variant 'smcpF' 0xA730 (follow -- 'F')
-	select-variant 'FBar'  0xA798 (follow -- 'F')
+	select-variant 'FBar' 0xA798 (follow -- 'F')
 	select-variant 'currency/frenchFrancSign' 0x20A3
 
 	alias 'cyrl/Ghayn.BSH' null 'F'
 	alias 'cyrl/ghayn.BSH' null 'smcpF'
 
-	CreateTurnedLetter 'turnF' 0x2132 'F'     HalfAdvance (CAP / 2)
-	CreateTurnedLetter 'turnf' 0x214E 'smcpF' HalfAdvance (XH  / 2)
+	CreateTurnedLetter 'turnF' 0x2132 'F' HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'turnf' 0x214E 'smcpF' HalfAdvance (XH / 2)
 
 	derive-glyphs 'FHookBottom' 0x191 'F' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

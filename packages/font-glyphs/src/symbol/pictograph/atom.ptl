@@ -12,7 +12,7 @@ glyph-block Symbol-Pictograph-Atom : begin
 	for-width-kinds WideWidth1 : do
 		define Geom : GeometricDim MosaicUnitWidth MosaicWidth
 		define pEllipse : 3 / 7
-		define N    3
+		define N 3
 		define NN : 4 * N
 		create-glyph [MangleName 'atomSymbol'] [MangleUnicode 0x269B] : glyph-proc
 			set-width Geom.Width
@@ -23,7 +23,7 @@ glyph-block Symbol-Pictograph-Atom : begin
 				foreach m [range 0 NN] : begin
 					local phi : 2 * Math.PI * (m / NN)
 					local px : pEllipse * Geom.Size * [Math.cos phi]
-					local py :            Geom.Size * [Math.sin phi]
+					local py : Geom.Size * [Math.sin phi]
 
 					knots.push : g2
 						Geom.MidX + [Math.cos theta] * px - [Math.sin theta] * py

@@ -31,11 +31,11 @@ glyph-block AutoBuild-Accents : begin
 	local foundDecompositions {.}
 
 	local goalCodes : range 0x0000 0x1FFFF
-	foreach code goalCodes : if [not : glyphStore.queryByUnicode code] : do
-		local parts    {}
+	foreach code goalCodes : if (![glyphStore.queryByUnicode code]) : do
+		local parts {}
 		local allFound true
 
-		local customDecomp   UnicodeKnowledge.decompOverrides.(code)
+		local customDecomp UnicodeKnowledge.decompOverrides.(code)
 
 		local str : String.fromCodePoint code
 		local nfd : str.normalize 'NFD'
@@ -44,7 +44,7 @@ glyph-block AutoBuild-Accents : begin
 		: then : begin
 			foreach partName customDecomp : begin
 				local part : glyphStore.queryByName partName
-				if [not part]
+				if (!part)
 				: then : set allFound false
 				: else : parts.push part
 
@@ -52,7 +52,7 @@ glyph-block AutoBuild-Accents : begin
 			local nfdChars : Array.from nfd
 			foreach partChar [items-of nfdChars] : begin
 				local part : glyphStore.queryByUnicode [partChar.codePointAt 0]
-				if [not part]
+				if (!part)
 				: then : set allFound false
 				: else : parts.push part
 
@@ -61,9 +61,9 @@ glyph-block AutoBuild-Accents : begin
 			TransformGlyphCompositionSequence parts
 			set foundDecompositions.(glyphName) {glyphName code parts}
 
-	local s_goalName  nothing
-	local s_code      nothing
-	local s_parts     nothing
+	local s_goalName nothing
+	local s_code nothing
+	local s_parts nothing
 
 	define [recursivelyDecompose g sink] : begin
 		local decomposition : CvDecompose.get g
@@ -81,23 +81,23 @@ glyph-block AutoBuild-Accents : begin
 			if (part.markAnchors && part.markAnchors.bottomRight) : begin
 				eject-contour 'serifRB'
 				set nonTrivial true
-		if ([not nonTrivial] && [AnyDerivingCv.query s_parts.0]) : begin
+		if ((!nonTrivial) && [AnyDerivingCv.query s_parts.0]) : begin
 			local decomposeParts {}
 			foreach part [items-of s_parts] : recursivelyDecompose part decomposeParts
 			CvDecompose.set currentGlyph decomposeParts
 
 	define [RootGlyphProc goalName code parts] : begin
 		set s_goalName goalName
-		set s_code   code
-		set s_parts  parts
+		set s_code code
+		set s_parts parts
 		return : create-glyph goalName code construction
 
 	define [NeedBuildMesh glyphName part0Name] : begin
 		define g : query-glyph glyphName
 		define part0 : query-glyph part0Name
-		if [not g] : return false
-		if [not part0] : return false
-		if [not : CvDecompose.get g] : return true
+		if (!g) : return false
+		if (!part0) : return false
+		if (![CvDecompose.get g]) : return true
 		if [DotlessOrNot.query part0] : return true
 		return false
 
@@ -110,14 +110,14 @@ glyph-block AutoBuild-Accents : begin
 
 		if [NeedBuildMesh glyphName part0Name] : begin
 			local dstTree {}
-			local targetNameMap  {.}
+			local targetNameMap {.}
 			set targetNameMap.(part0Name) glyphName
 			local tree : getGrTree part0Name {DotlessOrNot AnyDerivingCv} query-glyph
 			foreach [{gr origBase relBase} : items-of tree] : begin
 				local origGN targetNameMap.(origBase)
-				if [not origGN] : throw : new Error 'Unreachable'
-				local relGN  : suggestMappedName targetNameMap relBase [gr.amendName origGN]
+				if (!origGN) : throw : new Error 'Unreachable'
+				local relGN : suggestMappedName targetNameMap relBase [gr.amendName origGN]
 				local parts1 : parts.slice 0
 				set parts1.0 : query-glyph relBase
-				if [not : query-glyph relGN] : RootGlyphProc relGN null parts1
+				if (![query-glyph relGN]) : RootGlyphProc relGN null parts1
 				if [query-glyph origGN] : gr.set [query-glyph origGN] relGN

@@ -24,33 +24,33 @@ glyph-block Letter-Cyrillic-Yery : begin
 
 		include : if fBackYer
 			CyrYerShape Yeri top
-				left   -- df.leftSB
-				right  -- xMiddle
+				left -- df.leftSB
+				right -- xMiddle
 				stroke -- stroke
-				jut    -- jut
+				jut -- jut
 			Yeri top
-				left   -- df.leftSB
-				right  -- xMiddle
+				left -- df.leftSB
+				right -- xMiddle
 				stroke -- stroke
-				jut    -- jut
+				jut -- jut
 
 		include : if fTailed
 			RightwardTailedBar df.rightSB 0 top stroke
-			VBar.r             df.rightSB 0 top stroke
+			VBar.r df.rightSB 0 top stroke
 
 		local motionI : (iSerif === 'tr') || (iSerif === 'bilateral') || (iSerif === 'explicitTr')
 		local explicitI : (iSerif === 'none') || (iSerif === 'bottom') || (iSerif === 'explicitTr') || (iSerif === 'full')
 		local doITop : if explicitI
 			(iSerif === 'explicitTr') || (iSerif === 'full')
 			motionI || (SLAB && Yeri.useFullSerifs)
-		local doIBot : [not fTailed] && [if explicitI ((iSerif === 'bottom') || (iSerif === 'full')) ([not motionI] && SLAB)]
+		local doIBot : (!fTailed) && [if explicitI ((iSerif === 'bottom') || (iSerif === 'full')) ((!motionI) && SLAB)]
 		if doITop : include : tagged 'serifRT' : if motionI
 			HSerif.lt (df.rightSB - [HSwToV stroke]) top (jut - [HSwToV : 0.5 * stroke]) stroke
 			HSerif.mt (df.rightSB - [HSwToV : 0.5 * stroke]) top jut stroke
 		if doIBot : include : tagged 'serifRB' : if (iSerif === 'full' || (!explicitI && Yeri.useFullSerifs))
 			HSerif.mb (df.rightSB - [HSwToV : 0.5 * stroke]) 0 jut stroke
 			HSerif.rb df.rightSB 0 (jut - [HSwToV : 0.5 * stroke]) stroke
-		if ((iSerif === 'bilateral') && [not SLAB]) : include : tagged 'serifYeriLT'
+		if ((iSerif === 'bilateral') && (!SLAB)) : include : tagged 'serifYeriLT'
 			HSerif.lt df.leftSB top (jut - [HSwToV : 0.5 * stroke]) stroke
 
 	define YeryBodies : Object.fromEntries : [Object.entries YeriConfig].map : lambda [entry] : begin
@@ -58,19 +58,19 @@ glyph-block Letter-Cyrillic-Yery : begin
 	define YeryConfig : SuffixCfg.weave
 		begin YeryBodies
 		object # Tail
-			''            false
-			tailed        true
+			'' false
+			tailed true
 		object # I-stem serifs
-			''                      'auto'
-			topRightMotionSerifed    'tr'
-			bilateralMotionSerifed   'bilateral'
-			iSerifless               'none'
-			iBottomRightSerifed      'bottom'
-			iTopRightMotionSerifed   'explicitTr'
-			iSerifed                 'full'
+			'' 'auto'
+			topRightMotionSerifed 'tr'
+			bilateralMotionSerifed 'bilateral'
+			iSerifless 'none'
+			iBottomRightSerifed 'bottom'
+			iTopRightMotionSerifed 'explicitTr'
+			iSerifed 'full'
 
 	foreach {suffix {{Uc Lc} fTailed iSerif}} [Object.entries YeryConfig] : do
-		if [not fTailed] : begin
+		if (!fTailed) : begin
 			create-glyph "cyrl/Yery.\(suffix)" : glyph-proc
 				local df : include : DivFrame para.advanceScaleM 3
 				include : df.markSet.capital
@@ -89,8 +89,8 @@ glyph-block Letter-Cyrillic-Yery : begin
 			include : df.markSet.e
 			include : [CyrYeryShape true] Lc df XH fTailed iSerif
 
-	select-variant 'cyrl/Yery'     0x42B
+	select-variant 'cyrl/Yery' 0x42B
 	select-variant 'cyrl/YeryBack' 0xA650
 
-	select-variant 'cyrl/yery'     0x44B
+	select-variant 'cyrl/yery' 0x44B
 	select-variant 'cyrl/yeryBack' 0xA651

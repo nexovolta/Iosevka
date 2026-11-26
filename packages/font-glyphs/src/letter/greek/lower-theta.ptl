@@ -13,17 +13,17 @@ glyph-block Letter-Greek-Lower-Theta : begin
 
 	define [ThetaShapeBase shapeT] : namespace
 		define [outlineT sink offsetX offsetY top] : shapeT sink (top - offsetY) (0 + offsetY) (SB + offsetX) (RightSB - offsetX)
-		export : define [Shape top] : outlineT dispiro       0 0 top
-		export : define [Mask  top] : outlineT spiro-outline 1 1 top
+		export : define [Shape top] : outlineT dispiro 0 0 top
+		export : define [Mask top] : outlineT spiro-outline 1 1 top
 
 	define Capsule : ThetaShapeBase OShapeT
-	define Oval    : ThetaShapeBase OvalShapeT
+	define Oval : ThetaShapeBase OvalShapeT
 	define Diamond : ThetaShapeBase DiamondShapeT
 
 	define ThetaConfig : object
-		'capsule' {Capsule  [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB]}
-		'oval'    {Oval     [YSmoothMidR       Ascender 0 SmallArchDepthA SmallArchDepthB]}
-		'diamond' {Diamond  null                                                          }
+		'capsule' {Capsule [ArchDepthAClamped Ascender 0 SmallArchDepthA SmallArchDepthB]}
+		'oval' {Oval [YSmoothMidR Ascender 0 SmallArchDepthA SmallArchDepthB]}
+		'diamond' {Diamond null }
 
 	define [PhonotypicTheta ShapeBase] : glyph-proc
 		include : MarkSet.b
@@ -117,7 +117,7 @@ glyph-block Letter-Greek-Lower-Theta : begin
 	select-variant 'grek/theta/nonCursive' (shapeFrom -- 'grek/theta')
 
 	alias 'grek/thetaSymbol' 0x03D1 'grek/theta.cursive'
-	alias 'grek/theta.UPPH'  null   'grek/theta.cursive'
+	alias 'grek/theta.UPPH' null 'grek/theta.cursive'
 
 	define [ThetaPalatalHook src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

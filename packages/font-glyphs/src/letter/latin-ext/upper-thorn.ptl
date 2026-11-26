@@ -24,7 +24,7 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 	glyph-block-export ThornShapeImpl
 	define [ThornShapeImpl top slabTop slabBot yBowlBot yBowlTop fOpen] : glyph-proc
 		local xTurn : Math.max
-			RightSB       - [BowlXDepth yBowlTop yBowlBot xThornBarLeft RightSB Stroke]
+			RightSB - [BowlXDepth yBowlTop yBowlBot xThornBarLeft RightSB Stroke]
 			xThornBarLeft + [HSwToV Stroke]
 		local diag : if (fOpen === true) 0 fOpen
 		local join : if diag [BrokenBarJoin xThornBarLeft Width Stroke [Arch.adjust-x.bot xTurn] (yBowlBot + Stroke) diag] null
@@ -36,7 +36,7 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 					flat xThornBarLeft yBowlTop [heading Rightward]
 					curl [Arch.adjust-x.top xTurn] yBowlTop
 					archv
-					g4   (RightSB - OX) [YSmoothMidR yBowlTop yBowlBot ArchDepthA ArchDepthB]
+					g4 (RightSB - OX) [YSmoothMidR yBowlTop yBowlBot ArchDepthA ArchDepthB]
 					arcvh
 					flat [if diag [Math.max join.minTurn [Arch.adjust-x.bot xTurn]] [Arch.adjust-x.bot xTurn]] yBowlBot
 					curl [if diag join.xCut xThornBarLeft] yBowlBot [heading Leftward]
@@ -46,13 +46,13 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 					local sf : SerifFrame top 0 xThornBarLeft RightSB
 					if slabBot
 						then : include : composite-proc sf.lt.fullSide sf.lb.fullSide
-						else : include   sf.lt.outer
+						else : include sf.lt.outer
 			if (fOpen === true)
 				PShape.OpenGap
 					top -- yBowlTop
 					bot -- (yBowlBot - 0.5 * Stroke - TINY)
-					bp  -- ((yBowlBot + Stroke * PShape.SwBelowBar) / (yBowlTop - Stroke))
-					sw  -- Stroke
+					bp -- ((yBowlBot + Stroke * PShape.SwBelowBar) / (yBowlTop - Stroke))
+					sw -- Stroke
 				no-shape
 
 		include : LeaningAnchor.Above.VBar.l xThornBarLeft
@@ -70,17 +70,17 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 
 	define ThornConfig : SuffixCfg.weave
 		object # symmetry
-			''            ThornShape
-			asymmetric    ThornAsymmetricShape
+			'' ThornShape
+			asymmetric ThornAsymmetricShape
 		object # openness
-			''            false
-			open          true
-			brokenRising  1
+			'' false
+			open true
+			brokenRising 1
 			brokenFalling (-1)
 		object # serifs
-			serifless     {false  false}
-			motionSerifed {true   false}
-			serifed       {true   true }
+			serifless {false false}
+			motionSerifed {true false}
+			serifed {true true }
 
 	foreach {suffix {Body fOpen {doST doSB}}} [Object.entries ThornConfig] : do
 		create-glyph "Thorn.\(suffix)" : glyph-proc
@@ -96,7 +96,7 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 					CAP - [yThornBowlAsymmetricBot CAP doST]
 					begin fOpen
 				include : LetterBarOverlay.l.in
-					x   -- xThornBarLeft
+					x -- xThornBarLeft
 					top -- (CAP - [if doST Stroke 0])
 					bot -- (CAP - [yThornBowlAsymmetricBot CAP doST])
 
@@ -104,7 +104,7 @@ glyph-block Letter-Latin-Upper-Thorn : begin
 			create-glyph "ThornStrokeBottom.\(suffix)" : glyph-proc
 				include [refer-glyph "Thorn.\(suffix)"] AS_BASE ALSO_METRICS
 				include : LetterBarOverlay.l.in
-					x   -- xThornBarLeft
+					x -- xThornBarLeft
 					bot -- [if doSB Stroke 0]
 					top -- [yThornBowlAsymmetricBot CAP doSB]
 

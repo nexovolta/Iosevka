@@ -26,10 +26,10 @@ glyph-block Letter-Latin-Lower-DB-QP : begin
 		local {sw fine ada adb xMidL xMidR} : PairParams df
 		return : DivFrame.fromParams : object
 			width : 0 + xMidR + df.sb
-			sb    : 0 + df.sb
+			sb : 0 + df.sb
 			hPack : 0 + 1
-			mvs   : 0 + sw
-			ox    : 0 + 0
+			mvs : 0 + sw
+			ox : 0 + 0
 
 	define [BarOf side] : if (side === 'l') OBarRight OBarLeft
 
@@ -93,7 +93,7 @@ glyph-block Letter-Latin-Lower-DB-QP : begin
 		local found nothing
 		foreach {suffix item} [Object.entries config] : do
 			if (suffix === want) : set found item
-		if [not found] : throw : new Error "Missing config for suffix '\(want)'"
+		if (!found) : throw : new Error "Missing config for suffix '\(want)'"
 		return found
 
 	foreach {suffix {Body cut fFlat {topSerif bottomSerif}}} [Object.entries DConfig] : do

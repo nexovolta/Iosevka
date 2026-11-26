@@ -67,23 +67,23 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		return : if para.isItalic sf.lt.outer : composite-proc sf.lt.full sf.rt.full
 
 	define GammaUpperSerifConfig : object
-		''                    GammaUpperAutoSerifs
-		serifless             no-shape
-		motionSerifed         GammaMotionSerifs
+		'' GammaUpperAutoSerifs
+		serifless no-shape
+		motionSerifed GammaMotionSerifs
 		topRightMotionSerifed GammaTopRightMotionSerifs
 		bilateralMotionSerifed GammaBilateralMotionSerifs
-		serifed               GammaFullSerifs
+		serifed GammaFullSerifs
 
 	define GammaLowerSerifConfig : object
-		''                    GammaLowerAutoSerifs
-		serifless             no-shape
-		motionSerifed         GammaMotionSerifs
+		'' GammaLowerAutoSerifs
+		serifless no-shape
+		motionSerifed GammaMotionSerifs
 		topRightMotionSerifed GammaTopRightMotionSerifs
 		bilateralMotionSerifed GammaBilateralMotionSerifs
-		serifed               GammaFullSerifs
+		serifed GammaFullSerifs
 
 	define GammaUpperBodyConfig : object
-		''             false
+		'' false
 		triangleBottom true
 	define GammaUpperConfig : SuffixCfg.weave GammaUpperBodyConfig GammaUpperSerifConfig
 
@@ -110,8 +110,8 @@ glyph-block Letter-Latin-Rams-Horn : begin
 			local tinyGap : Math.max (Width / 32) : AdviceStroke 24
 			include : difference
 				PalatalHook.r df.rightSB 0
-					xLink   -- subDf.middle
-					refSw   -- [mix subDf.mvs fine 0.5]
+					xLink -- subDf.middle
+					refSw -- [mix subDf.mvs fine 0.5]
 					maskOut -- [intersection [MaskBelow 0] [MaskLeft : subDf.middle + d + tinyGap]]
 				LatinGammaShape subDf XH Descender true
 
@@ -151,7 +151,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local k2 0.7
 		local kIntersection : fallback _kInt 0.15
 
-		local lExt : df.leftSB  + 0.75 * OX
+		local lExt : df.leftSB + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
 
 		local dfLoop : DivFrame [fallback _loopAdws 1]
@@ -161,7 +161,7 @@ glyph-block Letter-Latin-Rams-Horn : begin
 
 		local d : 0.25 * (rInner - lInner) * k1 * [fallback _loopSlope TanSlope]
 
-		local sw   : fallback _sw : AdviceStroke : if SLAB 3.50 2.75
+		local sw : fallback _sw : AdviceStroke : if SLAB 3.50 2.75
 		local fine : Math.min sw : fallback _fine : AdviceStroke : if SLAB 3.75 3.50
 		local coFine : mix sw fine : kIntersection / k2
 		local fillOffset : sw * 0.25
@@ -179,17 +179,17 @@ glyph-block Letter-Latin-Rams-Horn : begin
 					then : list
 					else : list
 						flat rInner top [widths.rhs.heading sw Rightward]
-						curl rExt   top [heading Rightward]
+						curl rExt top [heading Rightward]
 			if fFill
 				then : spiro-outline
 					corner df.middle ([mix top bottom kIntersection] - fillOffset)
 					g4.down.mid ([mix df.middle rInner k1] - fillOffset) ([mix top bottom k2] - d)
 					g4.left.mid [Arch.adjust-x.bot df.middle (sw -- fine)] (bottom + fillOffset)
-					g4.up.mid   ([mix df.middle lInner k1] + fillOffset) ([mix top bottom k2] + d)
+					g4.up.mid ([mix df.middle lInner k1] + fillOffset) ([mix top bottom k2] + d)
 					close
 				else : no-shape
 
-		if (SLAB && [not omitLeft] && [not omitRight]) : begin
+		if (SLAB && (!omitLeft) && (!omitRight)) : begin
 			local swSlab : Math.min VJutStroke : df.adviceStroke 4.5
 			include : VSerif.dl lExt (top - sw) (VJut * (sw / Stroke) - sw) swSlab
 			include : VSerif.dr rExt (top - sw) (VJut * (sw / Stroke) - sw) swSlab
@@ -242,10 +242,10 @@ glyph-block Letter-Latin-Rams-Horn : begin
 		local k2 0.7
 		local yJoin : mix bottom top 0.42
 		local loopH : top - yJoin
-		local sw   : fallback _stroke : Math.min Stroke : AdviceStroke2 [if SLAB 3.25 2.75] 3.75 loopH umAdws
+		local sw : fallback _stroke : Math.min Stroke : AdviceStroke2 [if SLAB 3.25 2.75] 3.75 loopH umAdws
 		local fine : Math.min sw : fallback _fine : AdviceStroke2 [if SLAB 3.50 3.00] 4.00 loopH umAdws
 
-		local lExt : df.leftSB  + 0.75 * OX
+		local lExt : df.leftSB + 0.75 * OX
 		local rExt : df.rightSB - 0.75 * OX
 		local dfLoop : DivFrame umAdws 1 umAdws
 		local lInner : Math.max (lExt + TINY) : df.middle - (dfLoop.rightSB - dfLoop.leftSB) / 2

@@ -18,18 +18,18 @@ glyph-block Letter-Shoulder-Bowl : begin
 		local-parameter : arcCEnd
 
 		local-parameter : box
-		local-parameter : ada   -- SmallArchDepthA
-		local-parameter : adb   -- SmallArchDepthB
-		local-parameter : sw    -- Stroke
+		local-parameter : ada -- SmallArchDepthA
+		local-parameter : adb -- SmallArchDepthB
+		local-parameter : sw -- Stroke
 
 		local-parameter : barSw -- [ArcStartSerifWidth sw]
-		local-parameter : hook  -- Hook
-		local-parameter : ox    -- OX
+		local-parameter : hook -- Hook
+		local-parameter : ox -- OX
 
 		define realAda : ArchDepthAClamped box.t box.b ada adb
 		define realAdb : ArchDepthBClamped box.t box.b ada adb
 		export : define ArcStart : arcCStart box (ada -- realAda) (adb -- realAdb) (sw -- sw) (barSw -- barSw) (hook -- hook)
-		export : define ArcEnd   : arcCEnd   box (ada -- realAda) (adb -- realAdb) (sw -- sw) (barSw -- barSw) (hook -- hook)
+		export : define ArcEnd : arcCEnd box (ada -- realAda) (adb -- realAdb) (sw -- sw) (barSw -- barSw) (hook -- hook)
 
 		export : define shape : namespace
 			export : define [arcL] : dispiro
@@ -71,12 +71,12 @@ glyph-block Letter-Shoulder-Bowl : begin
 		local-parameter : arcC
 
 		local-parameter : box
-		local-parameter : ada   -- SmallArchDepthA
-		local-parameter : adb   -- SmallArchDepthB
-		local-parameter : sw    -- Stroke
+		local-parameter : ada -- SmallArchDepthA
+		local-parameter : adb -- SmallArchDepthB
+		local-parameter : sw -- Stroke
 
 		local-parameter : barSw -- [ArcStartSerifWidth sw]
-		local-parameter : hook  -- Hook
+		local-parameter : hook -- Hook
 
 		export : define Arc : arcC box (ada -- ada) (adb -- adb) (sw -- sw) (barSw -- barSw) (hook -- hook)
 
@@ -84,38 +84,38 @@ glyph-block Letter-Shoulder-Bowl : begin
 			export : define [arcLT] : dispiro
 				Arc.arcStartL
 				flat box.r (box.t - adb)
-				curl box.r  box.b [widths.rhs.heading sw Downward]
+				curl box.r box.b [widths.rhs.heading sw Downward]
 			export : define [arcRB] : dispiro
-				flat box.l  box.t [widths.lhs.heading sw Downward]
+				flat box.l box.t [widths.lhs.heading sw Downward]
 				curl box.l (box.b + adb)
 				Arc.arcEndR
 			export : define [hookLT] : dispiro
 				Arc.hookStartL
 				flat box.r (box.t - adb)
-				curl box.r  box.b [widths.rhs.heading sw Downward]
+				curl box.r box.b [widths.rhs.heading sw Downward]
 			export : define [hookRB] : dispiro
-				flat box.l  box.t [widths.lhs.heading sw Downward]
+				flat box.l box.t [widths.lhs.heading sw Downward]
 				curl box.l (box.b + adb)
 				Arc.hookEndR
 
 		export : define mask : namespace
 			export : define [arcLT] : spiro-outline
 				Arc.arcStartL
-				flat   box.r (box.t - adb)
-				corner box.r  box.b
+				flat box.r (box.t - adb)
+				corner box.r box.b
 				corner Arc.xLArc box.b
 			export : define [arcRB] : spiro-outline
 				corner Arc.xRArc box.t
-				corner box.l  box.t
-				curl   box.l (box.b + adb)
+				corner box.l box.t
+				curl box.l (box.b + adb)
 				Arc.arcEndR
 			export : define [hookLT] : spiro-outline
 				Arc.hookStartL
-				flat   box.r (box.t - adb)
-				corner box.r  box.b
+				flat box.r (box.t - adb)
+				corner box.r box.b
 				corner Arc.xLHook box.b
 			export : define [hookRB] : spiro-outline
 				corner Arc.xRHook box.t
-				corner box.l  box.t
-				curl   box.l (box.b + adb)
+				corner box.l box.t
+				curl box.l (box.b + adb)
 				Arc.hookEndR

@@ -13,19 +13,19 @@ export : define [buildGsubTexture gsub glyphStore markGlyphs cvs] : begin
 	define {chain-rule reverse-rule} : gsub.ChainRuleBuilder
 	define look-around null
 
-	local extLFrom  {}
-	local extRFrom  {}
+	local extLFrom {}
+	local extRFrom {}
 	local extLRFrom {}
-	local extLTo    {}
-	local extRTo    {}
-	local extLRTo   {}
+	local extLTo {}
+	local extRTo {}
+	local extLRTo {}
 
-	local shrLFrom  {}
-	local shrRFrom  {}
+	local shrLFrom {}
+	local shrRFrom {}
 	local shrLRFrom {}
-	local shrLTo    {}
-	local shrRTo    {}
-	local shrLRTo   {}
+	local shrLTo {}
+	local shrRTo {}
+	local shrLRTo {}
 
 	local anyInfluence : new Set
 
@@ -53,24 +53,24 @@ export : define [buildGsubTexture gsub glyphStore markGlyphs cvs] : begin
 		.ignoreGlyphs anyMark
 		.rules : list
 			chain-rule # Extension to both sides
-				[{}.concat shrRTo shrLRTo]     ~> look-around
-				extLRFrom                      ~> extLRTo
+				[{}.concat shrRTo shrLRTo] ~> look-around
+				extLRFrom ~> extLRTo
 				[{}.concat shrLFrom shrLRFrom] ~> look-around
 			chain-rule # Shrink to both sides
-				[{}.concat extRTo extLRTo]     ~> look-around
-				shrLRFrom                      ~> shrLRTo
+				[{}.concat extRTo extLRTo] ~> look-around
+				shrLRFrom ~> shrLRTo
 				[{}.concat extLFrom extLRFrom] ~> look-around
 			chain-rule # Extension to the left
-				[{}.concat shrRTo shrLRTo]     ~> look-around
-				extLFrom                       ~> extLTo
+				[{}.concat shrRTo shrLRTo] ~> look-around
+				extLFrom ~> extLTo
 			chain-rule # Shrink to the left
-				[{}.concat extRTo extLRTo]     ~> look-around
-				shrLFrom                       ~> shrLTo
+				[{}.concat extRTo extLRTo] ~> look-around
+				shrLFrom ~> shrLTo
 			chain-rule # Extension to the right
-				extRFrom                       ~> extRTo
+				extRFrom ~> extRTo
 				[{}.concat shrLFrom shrLRFrom] ~> look-around
 			chain-rule # Shrink to the right
-				shrRFrom                       ~> shrRTo
+				shrRFrom ~> shrRTo
 				[{}.concat extLFrom extLRFrom] ~> look-around
 
 	txtr.addLookup sub

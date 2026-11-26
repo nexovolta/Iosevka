@@ -13,13 +13,13 @@ glyph-block Letter-Cyrillic-Tje : begin
 	glyph-block-import Letter-Latin-Upper-T : TConfig
 	glyph-block-import Letter-Cyrillic-Yeri : YeriConfig YeriBarPos
 
-	define [xTeMidBarLeft  df] : [mix df.leftSB df.rightSB 0.3] + OX
+	define [xTeMidBarLeft df] : [mix df.leftSB df.rightSB 0.3] + OX
 	define [xYeriBowlRight df] : df.rightSB - OX
 
 	define [CyrTjeStroke df top] : df.adviceThinnerStroke2 2.75 3 top
 
 	define [LeftHalf df top sw slabTop slabBot] : glyph-proc
-		local left  : xTeMidBarLeft  df
+		local left : xTeMidBarLeft df
 		local right : xYeriBowlRight df
 
 		local xTopBarLeft : df.leftSB - SideJut
@@ -29,7 +29,7 @@ glyph-block Letter-Cyrillic-Tje : begin
 		if slabTop : begin
 			local {jutTop jutBot jutMid} : EFVJutLength top 0 YeriBarPos sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
-			include : VSerif.dl xTopBarLeft  top jutTop swVJut
+			include : VSerif.dl xTopBarLeft top jutTop swVJut
 			include : VSerif.dr xTopBarRight top jutTop swVJut
 
 		if slabBot : begin
@@ -38,10 +38,10 @@ glyph-block Letter-Cyrillic-Tje : begin
 
 	define [RightHalf Yeri df top sw] : glyph-proc
 		include : Yeri top
-			left   -- [xTeMidBarLeft  df]
-			right  -- [xYeriBowlRight df]
+			left -- [xTeMidBarLeft df]
+			right -- [xYeriBowlRight df]
 			stroke -- sw
-			fSlab  -- false
+			fSlab -- false
 
 	foreach {suffix {adws doST doSB}} [Object.entries TConfig] : do
 		create-glyph "cyrl/Tje/leftHalf.\(suffix)" : glyph-proc
@@ -74,16 +74,16 @@ glyph-block Letter-Cyrillic-Tje : begin
 			DependentSelector.set currentGlyph : if (suffix === 'corner' || Lc.hasFlatBottom) 'full' 'reduced'
 
 	select-variant 'cyrl/Tje/leftHalf/full'
-		follow    -- 'T'
+		follow -- 'T'
 		shapeFrom -- 'cyrl/Tje/leftHalf'
 	select-variant 'cyrl/tje.upright/leftHalf/full'
-		follow    -- 'T'
+		follow -- 'T'
 		shapeFrom -- 'cyrl/tje.upright/leftHalf'
 	select-variant 'cyrl/Tje/leftHalf/reduced'
-		follow    -- 'T/rTailBase'
+		follow -- 'T/rTailBase'
 		shapeFrom -- 'cyrl/Tje/leftHalf'
 	select-variant 'cyrl/tje.upright/leftHalf/reduced'
-		follow    -- 'T/rTailBase'
+		follow -- 'T/rTailBase'
 		shapeFrom -- 'cyrl/tje.upright/leftHalf'
 
 	select-variant 'cyrl/Tje/rightHalf'
@@ -92,8 +92,8 @@ glyph-block Letter-Cyrillic-Tje : begin
 		follow -- 'cyrl/tje/rightHalf'
 
 	CreateDependentComposite 'cyrl/Tje' 0x1C89 'cyrl/Tje/rightHalf' : object
-		full    'cyrl/Tje/leftHalf/full'
+		full 'cyrl/Tje/leftHalf/full'
 		reduced 'cyrl/Tje/leftHalf/reduced'
 	CreateDependentComposite 'cyrl/tje.upright' null 'cyrl/tje.upright/rightHalf' : object
-		full    'cyrl/tje.upright/leftHalf/full'
+		full 'cyrl/tje.upright/leftHalf/full'
 		reduced 'cyrl/tje.upright/leftHalf/reduced'

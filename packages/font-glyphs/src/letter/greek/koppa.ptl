@@ -10,27 +10,27 @@ glyph-block Letter-Greek-Koppa : begin
 
 	create-glyph 'grek/Koppa' 0x3DE : glyph-proc
 		include : MarkSet.capital
-		define x1   : SB + [HSwToV QuarterStroke] - O
+		define x1 : SB + [HSwToV QuarterStroke] - O
 		define x1co : Width - x1
-		define x2   : mix SB RightSB 0.3
+		define x2 : mix SB RightSB 0.3
 		define x2co : Width - x2
 		include : intersection
 			MaskAbove (CAP / 2 - HalfStroke)
-			MaskBelow  CAP
-			ExtLineCenter x1   (CAP / 2 - HalfStroke) x2   CAP Stroke 2
+			MaskBelow CAP
+			ExtLineCenter x1 (CAP / 2 - HalfStroke) x2 CAP Stroke 2
 		include : intersection
-			MaskAbove  0
+			MaskAbove 0
 			MaskBelow (CAP / 2 + HalfStroke)
-			ExtLineCenter x1co (CAP / 2 + HalfStroke) x2co 0   Stroke 2
+			ExtLineCenter x1co (CAP / 2 + HalfStroke) x2co 0 Stroke 2
 		include : HBar.m (x1 + [HSwToV HalfStroke]) (x1co - [HSwToV HalfStroke]) (CAP / 2)
 		if SLAB : begin
 			define kSerifShift : 0.45 * ((0.3 * (RightSB - SB)) / (CAP / 2 + HalfStroke))
-			include : HSerif.mb (x2co + kSerifShift * Stroke) 0    Jut
-			include : HSerif.mt (x2   - kSerifShift * Stroke) CAP  Jut
+			include : HSerif.mb (x2co + kSerifShift * Stroke) 0 Jut
+			include : HSerif.mt (x2 - kSerifShift * Stroke) CAP Jut
 
 	create-glyph 'grek/koppa' 0x3DF : glyph-proc
 		include : MarkSet.b
-		local y1   : mix 0 Ascender 0.4
+		local y1 : mix 0 Ascender 0.4
 		local y1co : mix 0 Ascender 0.6
 		include : intersection
 			VBar.l SB 0 Ascender
@@ -49,14 +49,14 @@ glyph-block Letter-Greek-Koppa : begin
 		include : intersection
 			ExtLineCenter SB y1 RightSB y1co Stroke 2
 			MaskRight SB
-			MaskLeft  RightSB
+			MaskLeft RightSB
 
 glyph-block Letter-Greek-Qoppa : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
 	define QoppaConfig : object
-		serifless   false
+		serifless false
 		baseSerifed true
 
 	foreach {suffix fBaseSerif} [pairs-of QoppaConfig] : begin

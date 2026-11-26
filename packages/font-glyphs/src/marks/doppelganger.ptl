@@ -17,7 +17,7 @@ glyph-block Mark-Doppelganger : begin
 			local srcGn gns.0
 			local src : query-glyph srcGn
 			local toGN : gr.amendName srcGn
-			if [not : query-glyph toGN] : begin
+			if (![query-glyph toGN]) : begin
 				create-glyph toGN : glyph-proc
 					include [refer-glyph srcGn] AS_BASE ALSO_METRICS
 					set currentGlyph.markAnchors.(akTo) currentGlyph.markAnchors.(akFrom)
@@ -35,7 +35,7 @@ glyph-block Mark-Doppelganger : begin
 			local src : query-glyph srcGn
 			local toGN : gr.amendName srcGn
 
-			if [not : query-glyph toGN] : begin
+			if (![query-glyph toGN]) : begin
 				create-glyph toGN : glyph-proc
 					include [refer-glyph srcGn] AS_BASE ALSO_METRICS
 					currentGlyph.clearGeometry

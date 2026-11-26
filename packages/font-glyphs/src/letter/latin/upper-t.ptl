@@ -18,14 +18,14 @@ glyph-block Letter-Latin-Upper-T : begin
 	glyph-block-import Letter-Latin-Upper-J : JConfig
 
 	glyph-block-export TLeftX TRightX
-	define [TLeftX  df] : df.leftSB  + 0.75 * OX
+	define [TLeftX df] : df.leftSB + 0.75 * OX
 	define [TRightX df] : df.rightSB - 0.75 * OX
 	glyph-block-export TShape
 	define [TShape df top doTopSerifs doBottomSerif fBottomSerifRightHalfOnly fShortSerifs _sw] : glyph-proc
 		local sw : fallback _sw Stroke
 		include : tagged 'strokeV' : VBar.m df.middle 0 top sw
 
-		local l : TLeftX  df
+		local l : TLeftX df
 		local r : TRightX df
 
 		include : tagged 'strokeLT' : HBar.t l df.middle top sw
@@ -52,19 +52,19 @@ glyph-block Letter-Latin-Upper-T : begin
 		include : tagged 'strokeRT' : HBar.t (left + [HSwToV : 0.5 * sw]) xTopBarRight top sw
 
 		include : tagged 'strokeV' : UpwardHookShape
-			left   -- left
-			right  -- right
+			left -- left
+			right -- right
 			ybegin -- top
-			yend   -- (top / 2 + HalfStroke)
-			ada    -- (ArchDepthA * (2 / df.hPack) * df.adws)
-			adb    -- (ArchDepthB * (2 / df.hPack) * df.adws)
-			sw     -- sw
+			yend -- (top / 2 + HalfStroke)
+			ada -- (ArchDepthA * (2 / df.hPack) * df.adws)
+			adb -- (ArchDepthB * (2 / df.hPack) * df.adws)
+			sw -- sw
 
 		if doTopSerifs : begin
 			local {jutTop jutBot jutMid} : EFVJutLength top 0 (0.5 - (sw / 2 - HalfStroke) / top) sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : tagged 'serifRT' : VSerif.dr xTopBarRight top jutTop swVJut
-			include : tagged 'serifLT' : VSerif.dl xTopBarLeft  top jutTop swVJut
+			include : tagged 'serifLT' : VSerif.dl xTopBarLeft top jutTop swVJut
 		include : KomiHookSerif [SerifFrame (top / 2 + HalfStroke) 0 left right (swRef -- sw)] hookSerifs
 
 	define [CyrTeMidHookShape pArc] : function [df top doTopSerifs doBottomSerif] : glyph-proc
@@ -80,18 +80,18 @@ glyph-block Letter-Latin-Upper-T : begin
 
 		include : tagged 'strokeV' : VBar.l left 0 top sw
 		include : MidHook.general
-			left   -- (left + [HSwToV sw])
-			right  -- right
-			top    -- ([mix 0 top HBarPos] + sw / 4)
-			ada    -- (ArchDepthA * pArc)
-			adb    -- (ArchDepthB * pArc)
-			sw     -- sw
+			left -- (left + [HSwToV sw])
+			right -- right
+			top -- ([mix 0 top HBarPos] + sw / 4)
+			ada -- (ArchDepthA * pArc)
+			adb -- (ArchDepthB * pArc)
+			sw -- sw
 
 		if doTopSerifs : begin
 			local {jutTop jutBot jutMid} : EFVJutLength top 0 (HBarPos - (sw / 4 + O) / top) sw
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
 			include : tagged 'serifRT' : VSerif.dr xTopBarRight top jutTop swVJut
-			include : tagged 'serifLT' : VSerif.dl xTopBarLeft  top jutTop swVJut
+			include : tagged 'serifLT' : VSerif.dl xTopBarLeft top jutTop swVJut
 
 		if doBottomSerif : begin
 			local jut : Math.max Jut : mix [HSwToV HalfStroke] MidJutCenter ((6 / 7) * df.adws)
@@ -125,10 +125,10 @@ glyph-block Letter-Latin-Upper-T : begin
 
 	glyph-block-export TConfig
 	define TConfig : object
-		serifless     {1                   false  false  false}
-		motionSerifed {para.advanceScaleT  true   false  false}
-		serifed       {para.advanceScaleT  true   true   false}
-		baseSerifed   {para.advanceScaleT  true   true   true }
+		serifless {1 false false false}
+		motionSerifed {para.advanceScaleT true false false}
+		serifed {para.advanceScaleT true true false}
+		baseSerifed {para.advanceScaleT true true true }
 
 	foreach {suffix {adws doST doSB fShort}} [Object.entries TConfig] : do
 		create-glyph "T.\(suffix)" : glyph-proc
@@ -143,8 +143,8 @@ glyph-block Letter-Latin-Upper-T : begin
 			set-base-anchor 'bottomRight' (df.middle + [HSwToV HalfStroke]) 0
 			include : TShape df CAP doST doSB nothing fShort
 			include : CyrDescender.rSideJut
-				x   -- (df.middle + [HSwToV HalfStroke])
-				y   -- 0
+				x -- (df.middle + [HSwToV HalfStroke])
+				y -- 0
 				jut -- [if doSB MidJutCenter Jut]
 
 		create-glyph "TStroke.\(suffix)" : glyph-proc
@@ -210,8 +210,8 @@ glyph-block Letter-Latin-Upper-T : begin
 			include : df.markSet.e
 			include : TShape df XH doST doSB nothing fShort
 			include : CyrDescender.rSideJut
-				x   -- (df.middle + [HSwToV HalfStroke])
-				y   -- 0
+				x -- (df.middle + [HSwToV HalfStroke])
+				y -- 0
 				jut -- [if doSB MidJutCenter Jut]
 
 		create-glyph "cyrl/TeMidHook.\(suffix)" : glyph-proc
@@ -259,11 +259,11 @@ glyph-block Letter-Latin-Upper-T : begin
 				local esBot : 0 - (LongVJut - QuarterStroke) - 0.5 * subDf.mvs
 				local p : (esTop - esBot) / (XH - 0)
 				local es : CLetterForm subDf 3 styBot esTop esBot
-					hook   -- (Hook * p)
-					sw     -- subDf.mvs
-					ox     -- (0.5 * O)
-					ada    -- (ada * p)
-					adb    -- (adb * p)
+					hook -- (Hook * p)
+					sw -- subDf.mvs
+					ox -- (0.5 * O)
+					ada -- (ada * p)
+					adb -- (adb * p)
 				return : difference
 					with-transform [ApparentTranslate (esLeft - subDf.leftSB) 0] [es.full]
 					intersection [MaskAbove O] [MaskRight df.middle]
@@ -313,9 +313,9 @@ glyph-block Letter-Latin-Upper-T : begin
 	select-variant 'smcpICap' 0xA7AE (follow -- 'T')
 
 	select-variant 'smcpT' 0x1D1B (follow -- 'T')
-	select-variant 'TStroke'   0x166 (follow -- 'T')
+	select-variant 'TStroke' 0x166 (follow -- 'T')
 	select-variant 'THookLeft' 0x1AC (follow -- 'T')
-	select-variant 'TRTail'    0x1AE (follow -- 'T/rTailBase')
+	select-variant 'TRTail' 0x1AE (follow -- 'T/rTailBase')
 	select-multi-dimensional-variant 'TRTail.phonotypic' (follows -- {'T/rTailBase' 'J/rTailBase'})
 
 	CreateTurnedLetter 'turnT' 0xA7B1 'T' HalfAdvance (CAP / 2)
@@ -349,12 +349,12 @@ glyph-block Letter-Latin-Upper-T : begin
 	select-variant 'currency/tengeSign' 0x20B8 (follow -- 'T')
 
 	CreateAccentedComposition 'TCedilla' 0x0162 'T' 'cedillaBelow'
-	CreateAccentedComposition 'TComma'   0x021A 'T' 'commaBelow'
+	CreateAccentedComposition 'TComma' 0x021A 'T' 'commaBelow'
 
 	define [SampiShape df top bottom doTopSerifs doBottomSerif] : glyph-proc
 		define kSampiDepth 0.45
 
-		local l : TLeftX  df
+		local l : TLeftX df
 		local r : TRightX df
 
 		include : VBar.m df.middle top bottom

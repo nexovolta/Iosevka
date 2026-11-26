@@ -11,18 +11,18 @@ glyph-block Symbol-Math-Frame : begin
 	glyph-block-export MathEnclosureSw
 	define MathEnclosureSw : AdviceStroke 4
 
-	local kBox      : 2 / 3
-	local leftBox   : mix 0     SB      kBox
-	local rightBox  : mix Width RightSB kBox
+	local kBox : 2 / 3
+	local leftBox : mix 0 SB kBox
+	local rightBox : mix Width RightSB kBox
 	local radiusBox : (rightBox - leftBox) / 2
-	local topBox    : SymbolMid + radiusBox
+	local topBox : SymbolMid + radiusBox
 	local bottomBox : SymbolMid - radiusBox
 
-	local kCircle      : 2 / 3
-	local leftCircle   : mix 0     SB      kCircle
-	local rightCircle  : mix Width RightSB kCircle
+	local kCircle : 2 / 3
+	local leftCircle : mix 0 SB kCircle
+	local rightCircle : mix Width RightSB kCircle
 	local radiusCircle : (rightCircle - leftCircle) / 2
-	local topCircle    : SymbolMid + radiusCircle
+	local topCircle : SymbolMid + radiusCircle
 	local bottomCircle : SymbolMid - radiusCircle
 
 	create-glyph 'mathO/outline' : glyph-proc
@@ -70,8 +70,8 @@ glyph-block Symbol-Math-Frame : begin
 
 	create-glyph 'mathBox/outline' : glyph-proc
 		include : spiro-outline
-			corner leftBox  topBox
-			corner leftBox  bottomBox
+			corner leftBox topBox
+			corner leftBox bottomBox
 			corner rightBox bottomBox
 			corner rightBox topBox
 
@@ -79,11 +79,11 @@ glyph-block Symbol-Math-Frame : begin
 		include : intersection [refer-glyph 'mathBox/outline'] : union
 			dispiro
 				widths.lhs MathEnclosureSw
-				flat leftBox  topBox
-				curl leftBox  bottomBox
+				flat leftBox topBox
+				curl leftBox bottomBox
 			dispiro
 				widths.lhs MathEnclosureSw
-				flat leftBox  bottomBox
+				flat leftBox bottomBox
 				curl rightBox bottomBox
 			dispiro
 				widths.lhs MathEnclosureSw
@@ -92,15 +92,15 @@ glyph-block Symbol-Math-Frame : begin
 			dispiro
 				widths.lhs MathEnclosureSw
 				flat rightBox topBox
-				curl leftBox  topBox
+				curl leftBox topBox
 
 	for-width-kinds WideWidth1
 		local mathWidth : MathOperatorWidth MosaicWidth FMosaicWide
 		local mathMiddle : mathWidth / 2
 		local radiusBig : (TackTop - TackBot) / 2 * [Math.sqrt MosaicWidthScalar]
-		local leftBig   : mathMiddle - radiusBig
-		local rightBig  : mathMiddle + radiusBig
-		local topBig    : SymbolMid + radiusBig
+		local leftBig : mathMiddle - radiusBig
+		local rightBig : mathMiddle + radiusBig
+		local topBig : SymbolMid + radiusBig
 		local bottomBig : SymbolMid - radiusBig
 
 		create-glyph [MangleName 'mathOBig/outline'] : glyph-proc

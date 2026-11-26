@@ -11,9 +11,9 @@ glyph-block Letter-Latin-Yogh : begin
 	glyph-block-import Letter-Cyrillic-Ze : CyrZe SLAB-FLAT-HOOK SLAB-CORNER-HOOK CUT-VERTICAL CUT-DIAGONAL
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 
-	define SLAB-NONE       0
-	define SLAB-CLASSICAL  1
-	define SLAB-INWARD     2
+	define SLAB-NONE 0
+	define SLAB-CLASSICAL 1
+	define SLAB-INWARD 2
 	define [PhantomBotYOfUpperHalf top bot kSplit] : [mix bot top kSplit] - QuarterStroke
 	define [TopYOfLowerHalf top bot kSplit] : [mix bot top kSplit] + 0.06 * Stroke
 
@@ -41,7 +41,7 @@ glyph-block Letter-Latin-Yogh : begin
 			: else : alsoThruThem {{0.5 0.8} {0.75 0.92}} important
 			[if (sink == dispiro) g4 corner] xEnd yBottomTerminal
 
-		return : if (slab === CUT-VERTICAL && [not _taper]) [CutArcTerminal shape (SB + offset) top bot Stroke true true] shape
+		return : if (slab === CUT-VERTICAL && (!(_taper))) [CutArcTerminal shape (SB + offset) top bot Stroke true true] shape
 
 	glyph-block-export LowerHalfT
 	define [LowerHalfT sink top bot kSplit _xEnd] : begin
@@ -81,10 +81,10 @@ glyph-block Letter-Latin-Yogh : begin
 
 	define [EtShape slab top bot hook ada adb] : glyph-proc
 		local ze : CyrZe slab SLAB-NONE top bot
-			hook   -- hook
+			hook -- hook
 			barPos -- OverlayPos
-			ada    -- ada
-			adb    -- adb
+			ada -- ada
+			adb -- adb
 			stroke -- [AdviceStroke2 2 3 : top - [Math.max bot 0]]
 		define [object stroke midx midy fine] : ze.Dim
 		include : ze.UpperShape
@@ -101,13 +101,13 @@ glyph-block Letter-Latin-Yogh : begin
 			g4 (SB + [HSwToV : 0.1 * stroke]) (bot + O)
 
 	define Config : object
-		serifless               {SLAB-NONE       }
-		topFlatHook             {SLAB-FLAT-HOOK  }
-		topCornerHook           {SLAB-CORNER-HOOK}
-		topVerticalCut          {CUT-VERTICAL}
-		topDiagonalCut          {CUT-DIAGONAL}
-		unilateralSerifed       {SLAB-CLASSICAL  }
-		unilateralInwardSerifed {SLAB-INWARD     }
+		serifless {SLAB-NONE }
+		topFlatHook {SLAB-FLAT-HOOK }
+		topCornerHook {SLAB-CORNER-HOOK}
+		topVerticalCut {CUT-VERTICAL}
+		topDiagonalCut {CUT-DIAGONAL}
+		unilateralSerifed {SLAB-CLASSICAL }
+		unilateralInwardSerifed {SLAB-INWARD }
 
 	foreach {suffix {slabTop}} [Object.entries Config] : do
 		create-glyph "Yogh.\(suffix)" : glyph-proc
@@ -125,5 +125,5 @@ glyph-block Letter-Latin-Yogh : begin
 
 	select-variant 'Yogh' 0x21C (follow -- 'cyrl/Ze/topSerif')
 	select-variant 'yogh' 0x21D (follow -- 'cyrl/ze/topSerif')
-	select-variant 'Et'   0xA76A (follow -- 'cyrl/Ze/topSerif')
-	select-variant 'et'   0xA76B (follow -- 'cyrl/ze/topSerif')
+	select-variant 'Et' 0xA76A (follow -- 'cyrl/Ze/topSerif')
+	select-variant 'et' 0xA76B (follow -- 'cyrl/ze/topSerif')

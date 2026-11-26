@@ -13,17 +13,17 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 	glyph-block-import Symbol-Pictograph-Stick-Figure : StickFigureKit WithD4Transform D4Transform
 	glyph-block-import Symbol-Geometric-Shared : GeometricDim
 
-	define top     fontMetrics.os2.sTypoAscender
-	define bottom  fontMetrics.os2.sTypoDescender
-	define left    0
-	define right   MosaicWidth
+	define top fontMetrics.os2.sTypoAscender
+	define bottom fontMetrics.os2.sTypoDescender
+	define left 0
+	define right MosaicWidth
 
 	define midX : mix left right 0.5
 	define midY : mix top bottom 0.5
 
 	define uiTop : mix ParenBot ParenTop 0.95
 	define uiBot : mix ParenBot ParenTop 0.05
-	define uiLeft  : left + SB
+	define uiLeft : left + SB
 	define uiRight : right - SB
 
 	define Geom : GeometricDim MosaicUnitWidth MosaicWidth
@@ -33,7 +33,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 
 	define squareBox : new Box Geom.Top Geom.Bot Geom.Left Geom.Right
 	define [SidewaysBox box _left2 _right2] : begin
-		local left2  : fallback _left2  box.left
+		local left2 : fallback _left2 box.left
 		local right2 : fallback _right2 box.right
 		local newHeight : (box.right - box.left) * (right2 - left2) / (box.top - box.bottom)
 		local midX : mix left2 right2 0.5
@@ -41,7 +41,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 
 		return : new Box
 			midY + (right2 - midX)
-			midY + (left2  - midX)
+			midY + (left2 - midX)
 			midX - newHeight / 2
 			midX + newHeight / 2
 
@@ -65,20 +65,20 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 	do 'Top-down Vehicles'
 		define scaffold : object
 		set scaffold.xWheelFront : 1.5 / 9
-		set scaffold.xWheel      : 1 / 9
-		set scaffold.xWheelRear  : 0.5 / 9
-		set scaffold.wheelDiam   : 3 / 9
-		set scaffold.yAxle  : scaffold.wheelDiam / 2
+		set scaffold.xWheel : 1 / 9
+		set scaffold.xWheelRear : 0.5 / 9
+		set scaffold.wheelDiam : 3 / 9
+		set scaffold.yAxle : scaffold.wheelDiam / 2
 
 		define [Car box fJut fWindow fSymmetric rot bodyWidth _sw] : glyph-proc
 			local yBody : if fJut 0 scaffold.yAxle
 			local xFront : if fSymmetric scaffold.xWheel scaffold.xWheelFront
-			local xRear  : if fSymmetric scaffold.xWheel scaffold.xWheelRear
+			local xRear : if fSymmetric scaffold.xWheel scaffold.xWheelRear
 
 			local sw : fallback _sw smallGraphicSw
 			local tfm : D4Transform midX rot 0
 			local Kit : StickFigureKit box tfm sw
-			local Kit2 : if [not fSymmetric] Kit : StickFigureKit box tfm (sw * 2)
+			local Kit2 : if (!fSymmetric) Kit : StickFigureKit box tfm (sw * 2)
 
 			local shape : union
 				Kit2.RoundSeg xFront 1 xFront (1 - scaffold.wheelDiam)
@@ -96,31 +96,31 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 					Kit.Box (1 / 2 - bodyWidth / 6) (1 - yBody - 1 / 9) (1 / 2 + bodyWidth / 6) (1 - yBody - 3 / 9)
 				include shape
 
-		create-glyph [MangleName 'goKartUp']     [MangleUnicode 0x1CC00] : glyph-proc
+		create-glyph [MangleName 'goKartUp'] [MangleUnicode 0x1CC00] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 0 0 0 0 0
-		create-glyph [MangleName 'goKartRight']  [MangleUnicode 0x1CC01] : glyph-proc
+		create-glyph [MangleName 'goKartRight'] [MangleUnicode 0x1CC01] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 0 0 0 3 0
-		create-glyph [MangleName 'raceCarLeft']  [MangleUnicode 0x1CC97] : glyph-proc
+		create-glyph [MangleName 'raceCarLeft'] [MangleUnicode 0x1CC97] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 1 1 1 (3 / 9)
-		create-glyph [MangleName 'raceCarUp']    [MangleUnicode 0x1CC98] : glyph-proc
+		create-glyph [MangleName 'raceCarUp'] [MangleUnicode 0x1CC98] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 1 1 0 (3 / 9)
 		create-glyph [MangleName 'raceCarRight'] [MangleUnicode 0x1CC99] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 1 1 3 (3 / 9)
-		create-glyph [MangleName 'raceCarDown']  [MangleUnicode 0x1CC9A] : glyph-proc
+		create-glyph [MangleName 'raceCarDown'] [MangleUnicode 0x1CC9A] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 1 1 2 (3 / 9)
-		create-glyph [MangleName 'raceCarHori']  [MangleUnicode 0x1CC9B] : glyph-proc
+		create-glyph [MangleName 'raceCarHori'] [MangleUnicode 0x1CC9B] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 0 1 1 (3 / 9)
-		create-glyph [MangleName 'raceCarVert']  [MangleUnicode 0x1CC9C] : glyph-proc
+		create-glyph [MangleName 'raceCarVert'] [MangleUnicode 0x1CC9C] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 1 0 1 0 (3 / 9)
-		create-glyph [MangleName 'goKartVert']   [MangleUnicode 0x1CC9D] : glyph-proc
+		create-glyph [MangleName 'goKartVert'] [MangleUnicode 0x1CC9D] : glyph-proc
 			set-width MosaicWidth
 			include : Car squareBox 0 0 1 0 (3 / 9)
 
@@ -140,17 +140,17 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 				yMiddle box.yMid
 				armRaiseK 0.4
 				headSize : height / 2.5
-				legSize  : (Width - SB * 2) * scale
-				armSize  : (Width - SB) * scale
+				legSize : (Width - SB * 2) * scale
+				armSize : (Width - SB) * scale
 
-			set scaffold.yPelvis    : scaffold.bot + scaffold.legSize / 2
-			set scaffold.xLeftFoot  : scaffold.xMiddle - scaffold.legSize / 2
+			set scaffold.yPelvis : scaffold.bot + scaffold.legSize / 2
+			set scaffold.xLeftFoot : scaffold.xMiddle - scaffold.legSize / 2
 			set scaffold.xRightFoot : scaffold.xMiddle + scaffold.legSize / 2
-			set scaffold.yNeck      : scaffold.top - scaffold.headSize
-			set scaffold.xLeftHead  : scaffold.xMiddle - scaffold.headSize / 2
+			set scaffold.yNeck : scaffold.top - scaffold.headSize
+			set scaffold.xLeftHead : scaffold.xMiddle - scaffold.headSize / 2
 			set scaffold.xRightHead : scaffold.xMiddle + scaffold.headSize / 2
-			set scaffold.xLeftArm   : scaffold.xMiddle - scaffold.armSize / 2
-			set scaffold.xRightArm  : scaffold.xMiddle + scaffold.armSize / 2
+			set scaffold.xLeftArm : scaffold.xMiddle - scaffold.armSize / 2
+			set scaffold.xRightArm : scaffold.xMiddle + scaffold.armSize / 2
 			set scaffold.yShoulder : lambda [p] : mix scaffold.yPelvis scaffold.yNeck p
 
 			return scaffold
@@ -357,18 +357,18 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 		set scaffold.tipHeight : 1 / 4
 
 		define [RightRocket box] : glyph-proc
-			local rocketLeft  : box.mixY (0.5 + scaffold.width / 2)
+			local rocketLeft : box.mixY (0.5 + scaffold.width / 2)
 			local rocketRight : box.mixY (0.5 - scaffold.width / 2)
 			local rocketBase : box.mixX scaffold.baseHeight
-			local rocketTip  : box.mixX (1 - scaffold.tipHeight)
+			local rocketTip : box.mixX (1 - scaffold.tipHeight)
 
 			include : union
 				spiro-outline
-					corner box.left   box.yMid
+					corner box.left box.yMid
 					corner rocketBase rocketRight
-					corner rocketTip  rocketRight
-					corner box.right  box.yMid
-					corner rocketTip  rocketLeft
+					corner rocketTip rocketRight
+					corner box.right box.yMid
+					corner rocketTip rocketLeft
 					corner rocketBase rocketLeft
 				intersection [MaskAbove box.yMid] : dispiro
 					widths.center smallGraphicSw
@@ -409,11 +409,11 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 					corner [box.mixX scaffold.tailX] box.yMid
 					corner (box.left + graphicSw) box.top
 				spiro-outline
-					curl (bombLeft + radius)  box.top
+					curl (bombLeft + radius) box.top
 					archv
 					g4 bombLeft box.yMid
 					arcvh
-					flat (bombLeft + radius)  box.bottom
+					flat (bombLeft + radius) box.bottom
 					curl (box.right - radius) box.bottom
 					archv
 					g4 box.right box.yMid
@@ -436,12 +436,12 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 
 	do 'Frog'
 		define scaffold : object
-		set scaffold.bodyX  1
-		set scaffold.bodyY  0.9
-		set scaffold.legY   0.7
-		set scaffold.legY2  0.6
-		set scaffold.legX   0.2
-		set scaffold.legX2  0.4
+		set scaffold.bodyX 1
+		set scaffold.bodyY 0.9
+		set scaffold.legY 0.7
+		set scaffold.legY2 0.6
+		set scaffold.legX 0.2
+		set scaffold.legX2 0.4
 		set scaffold.sw graphicSw
 
 		define [UpFrog box tfm] : glyph-proc
@@ -457,7 +457,7 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 					Kit.RoundSeg 0.5 0.5 0.5 1 0 1
 					Kit.RoundSeg 0.5 scaffold.legY2 0 scaffold.legY 0 1
 					Kit.RoundSeg 0.5 scaffold.legY2 1 scaffold.legY 0 1
-					Kit.RoundSeg      scaffold.legX2  0.5      scaffold.legX  0 0 1
+					Kit.RoundSeg scaffold.legX2 0.5 scaffold.legX 0 0 1
 					Kit.RoundSeg (1 - scaffold.legX2) 0.5 (1 - scaffold.legX) 0 0 1
 				Ellipse.Outline.AtDimens
 					[box.mixY scaffold.bodyY] - scaffold.sw
@@ -474,32 +474,32 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 
 	do 'Moon Lander'
 		define scaffold : object
-		set scaffold.tipSize     0.2
-		set scaffold.headWidth   0.8
-		set scaffold.headHeight  (3 / 8)
-		set scaffold.bodyWidth   0.4
+		set scaffold.tipSize 0.2
+		set scaffold.headWidth 0.8
+		set scaffold.headHeight (3 / 8)
+		set scaffold.bodyWidth 0.4
 		set scaffold.slantHeight (3 / 8)
-		set scaffold.baseWidth   0.2
-		set scaffold.windowWidth     0.2
-		set scaffold.windowTopWidth  0.12
+		set scaffold.baseWidth 0.2
+		set scaffold.windowWidth 0.2
+		set scaffold.windowTopWidth 0.12
 		set scaffold.windowArchDepth 0.1
-		set scaffold.windowBot       (3 / 8)
-		set scaffold.windowTop       (6 / 8)
-		set scaffold.footLen      0.25
-		set scaffold.legHeight    0.4
+		set scaffold.windowBot (3 / 8)
+		set scaffold.windowTop (6 / 8)
+		set scaffold.footLen 0.25
+		set scaffold.legHeight 0.4
 		set scaffold.legTopHeight 0.5
 
 		define [Moonlander top bottom left right sw] : glyph-proc
 			local midX : mix left right 0.5
 			local y1 : mix top bottom scaffold.headHeight
 			local y2 : mix bottom top scaffold.slantHeight
-			local bodyLeft  : mix left right (0.5 - scaffold.bodyWidth / 2)
+			local bodyLeft : mix left right (0.5 - scaffold.bodyWidth / 2)
 			local bodyRight : mix left right (0.5 + scaffold.bodyWidth / 2)
 
 			local windowTop : mix bottom top scaffold.windowTop
 			local windowBot : mix bottom top scaffold.windowBot
-			local windowY3  : mix bottom top (scaffold.windowTop - scaffold.windowArchDepth)
-			local windowLeft  : mix left right (0.5 - scaffold.windowWidth / 2)
+			local windowY3 : mix bottom top (scaffold.windowTop - scaffold.windowArchDepth)
+			local windowLeft : mix left right (0.5 - scaffold.windowWidth / 2)
 			local windowRight : mix left right (0.5 + scaffold.windowWidth / 2)
 
 			local legY2 : mix bottom top scaffold.legHeight
@@ -517,11 +517,11 @@ glyph-block Symbol-Pictograph-Game-Sprite : for-width-kinds WideWidth4
 						corner [mix left right (0.5 + scaffold.baseWidth / 2)] bottom
 						corner bodyRight y2
 						corner bodyRight y1
-					HBar.b left  [mix left right scaffold.footLen] bottom sw
+					HBar.b left [mix left right scaffold.footLen] bottom sw
 					HBar.b right [mix right left scaffold.footLen] bottom sw
-					VBar.l left  bottom legY2 sw
+					VBar.l left bottom legY2 sw
 					VBar.r right bottom legY2 sw
-					dispiro [widths.rhs sw] [flat left  legY2] [curl midX legY3]
+					dispiro [widths.rhs sw] [flat left legY2] [curl midX legY3]
 					dispiro [widths.lhs sw] [flat right legY2] [curl midX legY3]
 				spiro-outline
 					corner windowLeft windowY3

@@ -22,14 +22,14 @@ glyph-block Letter-Latin-C : begin
 	glyph-block-import Letter-Latin-Rams-Horn : RamsHornShape
 	glyph-block-import Letter-Greek-Lower-Rho-Symbol : RhoSymbolShape
 
-	define SLAB-NONE        0
-	define SLAB-CLASSICAL   1
-	define SLAB-INWARD      2
-	define FLAT-CONNECTION  3
-	define SLAB-FLAT-HOOK   4
+	define SLAB-NONE 0
+	define SLAB-CLASSICAL 1
+	define SLAB-INWARD 2
+	define FLAT-CONNECTION 3
+	define SLAB-FLAT-HOOK 4
 	define SLAB-CORNER-HOOK 5
-	define CUT-VERTICAL     6
-	define CUT-DIAGONAL     7
+	define CUT-VERTICAL 6
+	define CUT-DIAGONAL 7
 
 	glyph-block-export CShapeT
 	define [CShapeT sink offset df st sb top bot ada adb hook sw ob ox oy] : sink
@@ -48,7 +48,7 @@ glyph-block Letter-Latin-C : begin
 				g4 (df.rightSB - offset + [VerticalCutExtension [fallback hook Hook] sw]) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
 			__ : list
-				g4   (df.rightSB - offset) (top - [fallback hook Hook])
+				g4 (df.rightSB - offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
 		flatside.ld (df.leftSB + offset) bot top ada adb ox
 		match sb
@@ -66,7 +66,7 @@ glyph-block Letter-Latin-C : begin
 				g4 (df.rightSB - offset + [VerticalCutExtension [fallback hook Hook] sw]) (bot + [fallback hook Hook])
 			__ : list
 				HookEnd (bot + offset) (sw -- sw) (o -- oy)
-				g4   (df.rightSB - offset) (bot + [fallback hook Hook])
+				g4 (df.rightSB - offset) (bot + [fallback hook Hook])
 
 	define [RevCShapeT sink offset df st sb top bot ada adb hook sw ob ox oy lowerEnd lowerEndY] : sink
 		widths.rhs sw
@@ -84,7 +84,7 @@ glyph-block Letter-Latin-C : begin
 				g4 (df.leftSB + offset - [VerticalCutExtension [fallback hook Hook] sw]) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
 			__ : list
-				g4   (df.leftSB + offset) (top - [fallback hook Hook])
+				g4 (df.leftSB + offset) (top - [fallback hook Hook])
 				HookStart (top - offset) (sw -- sw) (o -- oy)
 		if (lowerEnd && lowerEndY !== nothing)
 			g4 (df.rightSB - offset - [fallback ox OX]) lowerEndY
@@ -106,34 +106,34 @@ glyph-block Letter-Latin-C : begin
 					g4 (df.leftSB + offset - [VerticalCutExtension [fallback hook Hook] sw]) (bot + [fallback hook Hook])
 				__ : list
 					HookEnd (bot + offset) (sw -- sw) (o -- oy)
-					g4   (df.leftSB + offset) (bot + [fallback hook Hook])
+					g4 (df.leftSB + offset) (bot + [fallback hook Hook])
 
 	define [AutoStartSerifR df sty y hook sw] : match sty
-		[Just SLAB-CLASSICAL] : ArcStartSerif.R       df.rightSB y [fallback sw Stroke] [fallback hook Hook]
-		[Just SLAB-INWARD]    : ArcStartSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CLASSICAL] : ArcStartSerif.R df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-INWARD] : ArcStartSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xRHook (y - [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) y [fallback sw Stroke]
-		__                    : no-shape
+		__ : no-shape
 
 	define [AutoStartSerifL df sty y hook sw] : match sty
-		[Just SLAB-CLASSICAL] : ArcStartSerif.L       df.leftSB y [fallback sw Stroke] [fallback hook Hook]
-		[Just SLAB-INWARD]    : ArcStartSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CLASSICAL] : ArcStartSerif.L df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-INWARD] : ArcStartSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xLHook (y - [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) y [fallback sw Stroke]
-		__                    : no-shape
+		__ : no-shape
 
 	define [AutoEndSerifR df sty y hook sw] : match sty
-		[Just SLAB-CLASSICAL] : ArcEndSerif.R       df.rightSB y [fallback sw Stroke] [fallback hook Hook]
-		[Just SLAB-INWARD]    : ArcEndSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CLASSICAL] : ArcEndSerif.R df.rightSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-INWARD] : ArcEndSerif.InwardR df.rightSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xRHook y (y + [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) [fallback sw Stroke]
-		__                    : no-shape
+		__ : no-shape
 
 	define [AutoEndSerifL df sty y hook sw] : match sty
-		[Just SLAB-CLASSICAL] : ArcEndSerif.L       df.leftSB y [fallback sw Stroke] [fallback hook Hook]
-		[Just SLAB-INWARD]    : ArcEndSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-CLASSICAL] : ArcEndSerif.L df.leftSB y [fallback sw Stroke] [fallback hook Hook]
+		[Just SLAB-INWARD] : ArcEndSerif.InwardL df.leftSB y [fallback sw Stroke] [fallback hook Hook]
 		[Just SLAB-CORNER-HOOK] : VBar.l [MakeCornerHookBase df.leftSB df.rightSB y 0 (sw -- [fallback sw Stroke])].xLHook y (y + [CornerHookDepth [fallback hook Hook] [fallback sw Stroke]]) [fallback sw Stroke]
-		__                    : no-shape
+		__ : no-shape
 
 	define [CCurlyTailShape df styTop top bot] : glyph-proc
-		local sw   : df.adviceStroke2 2 3 (XH - 0)
+		local sw : df.adviceStroke2 2 3 (XH - 0)
 		local fine : df.adviceStroke2 3 3 (XH - 0)
 		local loopTop : bot + 0.45 * (XH - 0)
 
@@ -165,47 +165,47 @@ glyph-block Letter-Latin-C : begin
 	define [CLetterForm] : with-params [df styTop styBot top bot [ada ArchDepthA] [adb ArchDepthB] [hook Hook] [sw Stroke] [origBar nothing] [ox nothing] [oy nothing] [lowerEnd nothing] [lowerEndY nothing]] : namespace
 		export : define [base] : CutCShape [CShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy] df styTop styBot top bot sw false
 		export : define [topSerif] : AutoStartSerifR df styTop top hook sw
-		export : define [botSerif] : AutoEndSerifR   df styBot bot hook sw
+		export : define [botSerif] : AutoEndSerifR df styBot bot hook sw
 
 		export : define [revBase] : CutCShape [RevCShapeT dispiro 0 df styTop styBot top bot ada adb hook sw origBar ox oy lowerEnd lowerEndY] df styTop [if lowerEnd SLAB-NONE styBot] top bot sw true
 		export : define [revTopSerif] : AutoStartSerifL df styTop top hook sw
-		export : define [revBotSerif] : AutoEndSerifL   df styBot bot hook sw
+		export : define [revBotSerif] : AutoEndSerifL df styBot bot hook sw
 
 		export : define [hookTop] : TopHook.toRight.arcStart df.rightSB top hook (refSw -- sw)
 
 		# Used by Cyrillic Koppa
 		export : define [baseTopOnly] : CutCShape [CShapeT dispiro 0 df styTop SLAB-NONE top bot ada adb hook sw origBar ox oy] df styTop SLAB-NONE top bot sw false
-		export : define [descBase]    : CutCShape [CShapeT dispiro 0 df styTop (styBot || SLAB-CLASSICAL) top bot ada adb hook sw origBar ox oy] df styTop styBot top bot sw false
+		export : define [descBase] : CutCShape [CShapeT dispiro 0 df styTop (styBot || SLAB-CLASSICAL) top bot ada adb hook sw origBar ox oy] df styTop styBot top bot sw false
 
-		export : define [full]    : composite-proc [base]    [topSerif]    [botSerif]
+		export : define [full] : composite-proc [base] [topSerif] [botSerif]
 		export : define [revFull] : composite-proc [revBase] [revTopSerif] [revBotSerif]
 
 	glyph-block-export CConfig
 	define CConfig : object
-		serifless                         {SLAB-NONE         SLAB-NONE       }
-		flatHook                          {SLAB-FLAT-HOOK    SLAB-FLAT-HOOK  }
-		cornerHook                        {SLAB-CORNER-HOOK  SLAB-CORNER-HOOK}
-		topFlatHook                       {SLAB-FLAT-HOOK    SLAB-NONE       }
-		topCornerHook                     {SLAB-CORNER-HOOK  SLAB-NONE       }
-		topVerticalCut                    {CUT-VERTICAL      SLAB-NONE       }
-		topDiagonalCut                    {CUT-DIAGONAL      SLAB-NONE       }
-		bottomFlatHook                    {SLAB-NONE         SLAB-FLAT-HOOK  }
-		bottomCornerHook                  {SLAB-NONE         SLAB-CORNER-HOOK}
-		bottomSerifed                     {SLAB-NONE         SLAB-CLASSICAL  }
-		bottomInwardSerifed               {SLAB-NONE         SLAB-INWARD     }
-		unilateralSerifed                 {SLAB-CLASSICAL    SLAB-NONE       }
-		bilateralSerifed                  {SLAB-CLASSICAL    SLAB-CLASSICAL  }
-		unilateralInwardSerifed           {SLAB-INWARD       SLAB-NONE       }
-		bilateralInwardSerifed            {SLAB-INWARD       SLAB-INWARD     }
-		hybridSerifed1                    {SLAB-INWARD       SLAB-CLASSICAL  }
-		unilateralSerifedFlatHook         {SLAB-CLASSICAL    SLAB-FLAT-HOOK  }
-		unilateralInwardSerifedFlatHook   {SLAB-INWARD       SLAB-FLAT-HOOK  }
-		bottomSerifedFlatHook             {SLAB-FLAT-HOOK    SLAB-CLASSICAL  }
-		bottomInwardSerifedFlatHook       {SLAB-FLAT-HOOK    SLAB-INWARD     }
-		unilateralSerifedCornerHook       {SLAB-CLASSICAL    SLAB-CORNER-HOOK}
-		unilateralInwardSerifedCornerHook {SLAB-INWARD       SLAB-CORNER-HOOK}
-		bottomSerifedCornerHook           {SLAB-CORNER-HOOK  SLAB-CLASSICAL  }
-		bottomInwardSerifedCornerHook     {SLAB-CORNER-HOOK  SLAB-INWARD     }
+		serifless {SLAB-NONE SLAB-NONE }
+		flatHook {SLAB-FLAT-HOOK SLAB-FLAT-HOOK }
+		cornerHook {SLAB-CORNER-HOOK SLAB-CORNER-HOOK}
+		topFlatHook {SLAB-FLAT-HOOK SLAB-NONE }
+		topCornerHook {SLAB-CORNER-HOOK SLAB-NONE }
+		topVerticalCut {CUT-VERTICAL SLAB-NONE }
+		topDiagonalCut {CUT-DIAGONAL SLAB-NONE }
+		bottomFlatHook {SLAB-NONE SLAB-FLAT-HOOK }
+		bottomCornerHook {SLAB-NONE SLAB-CORNER-HOOK}
+		bottomSerifed {SLAB-NONE SLAB-CLASSICAL }
+		bottomInwardSerifed {SLAB-NONE SLAB-INWARD }
+		unilateralSerifed {SLAB-CLASSICAL SLAB-NONE }
+		bilateralSerifed {SLAB-CLASSICAL SLAB-CLASSICAL }
+		unilateralInwardSerifed {SLAB-INWARD SLAB-NONE }
+		bilateralInwardSerifed {SLAB-INWARD SLAB-INWARD }
+		hybridSerifed1 {SLAB-INWARD SLAB-CLASSICAL }
+		unilateralSerifedFlatHook {SLAB-CLASSICAL SLAB-FLAT-HOOK }
+		unilateralInwardSerifedFlatHook {SLAB-INWARD SLAB-FLAT-HOOK }
+		bottomSerifedFlatHook {SLAB-FLAT-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedFlatHook {SLAB-FLAT-HOOK SLAB-INWARD }
+		unilateralSerifedCornerHook {SLAB-CLASSICAL SLAB-CORNER-HOOK}
+		unilateralInwardSerifedCornerHook {SLAB-INWARD SLAB-CORNER-HOOK}
+		bottomSerifedCornerHook {SLAB-CORNER-HOOK SLAB-CLASSICAL }
+		bottomInwardSerifedCornerHook {SLAB-CORNER-HOOK SLAB-INWARD }
 
 	define CArcTypes : object
 		Rounded SLAB-NONE
@@ -322,7 +322,7 @@ glyph-block Letter-Latin-C : begin
 			local fine : 0.5 * OverlayStroke
 			include : dispiro
 				widths.center (2 * fine)
-				flat (SB      + O + fine) [mix XH 0 1.05]
+				flat (SB + O + fine) [mix XH 0 1.05]
 				curl (RightSB - O - fine) [mix 0 XH 1.05]
 
 		create-glyph "oOpenSlash.\(suffix)" : glyph-proc
@@ -330,7 +330,7 @@ glyph-block Letter-Latin-C : begin
 			local fine : 0.5 * OverlayStroke
 			include : dispiro
 				widths.center (2 * fine)
-				flat (SB      + O + fine) [mix XH 0 1.05]
+				flat (SB + O + fine) [mix XH 0 1.05]
 				curl (RightSB - O - fine) [mix 0 XH 1.05]
 
 		create-glyph "revcSideways.\(suffix)" : glyph-proc
@@ -463,7 +463,7 @@ glyph-block Letter-Latin-C : begin
 			local lf : CLetterForm df styTop styBot top 0
 				ada -- ada
 				adb -- adb
-				sw  -- sw
+				sw -- sw
 			include : lf.revFull
 
 			local xMidBarLeft : if (fMidSerif && !fCapital) df.middle : mix df.leftSB df.rightSB 0.35
@@ -489,7 +489,7 @@ glyph-block Letter-Latin-C : begin
 			local lf : CLetterForm df styTop styBot top 0
 				ada -- ada
 				adb -- adb
-				sw  -- sw
+				sw -- sw
 			include : lf.full
 
 			local xMidBarRight : if (fMidSerif && !fCapital) df.middle : mix df.rightSB df.leftSB 0.35
@@ -543,7 +543,7 @@ glyph-block Letter-Latin-C : begin
 			include : CyrYeShape false true [DivFrame 1] XH SmallArchDepthA SmallArchDepthB
 
 		define DiagCfg : object
-			DiagonalCrossbar        1
+			DiagonalCrossbar 1
 			DiagonalCrossbarFalling (-1)
 		foreach {dsuf dval0} [Object.entries DiagCfg] : do
 			local dval : CyrillicEDiagonal styTop styBot dval0
@@ -599,7 +599,7 @@ glyph-block Letter-Latin-C : begin
 				local ink : HSwToV : ArcStartSerifWidth Stroke
 				local coInk : HSwToV : Stroke - [ArcStartSerifWidth Stroke]
 				include : union
-					HSerif.rb (RightSB - 0.5 * ink) Descender (Jut        - 0.5 * coInk)
+					HSerif.rb (RightSB - 0.5 * ink) Descender (Jut - 0.5 * coInk)
 					HSerif.lb (RightSB - 0.5 * ink) Descender (MidJutSide - 0.5 * coInk)
 
 	define [CyrKoppaShapeT base top fBaseSerif] : union
@@ -612,20 +612,20 @@ glyph-block Letter-Latin-C : begin
 			no-shape
 
 	define KoppaConfig : object
-		serifless                {SLAB-NONE         false}
-		baseSerifed              {SLAB-NONE         true }
-		flatHook                 {SLAB-FLAT-HOOK    false}
-		flatHookBaseSerifed      {SLAB-FLAT-HOOK    true }
-		cornerHook               {SLAB-CORNER-HOOK  false}
-		cornerHookBaseSerifed    {SLAB-CORNER-HOOK  true }
-		verticalCut              {CUT-VERTICAL      false}
-		verticalCutBaseSerifed   {CUT-VERTICAL      true }
-		diagonalCut              {CUT-DIAGONAL      false}
-		diagonalCutBaseSerifed   {CUT-DIAGONAL      true }
-		inwardSerifed            {SLAB-INWARD       false}
-		inwardSerifedBaseSerifed {SLAB-INWARD       true }
-		serifed                  {SLAB-CLASSICAL    false}
-		serifedBaseSerifed       {SLAB-CLASSICAL    true }
+		serifless {SLAB-NONE false}
+		baseSerifed {SLAB-NONE true }
+		flatHook {SLAB-FLAT-HOOK false}
+		flatHookBaseSerifed {SLAB-FLAT-HOOK true }
+		cornerHook {SLAB-CORNER-HOOK false}
+		cornerHookBaseSerifed {SLAB-CORNER-HOOK true }
+		verticalCut {CUT-VERTICAL false}
+		verticalCutBaseSerifed {CUT-VERTICAL true }
+		diagonalCut {CUT-DIAGONAL false}
+		diagonalCutBaseSerifed {CUT-DIAGONAL true }
+		inwardSerifed {SLAB-INWARD false}
+		inwardSerifedBaseSerifed {SLAB-INWARD true }
+		serifed {SLAB-CLASSICAL false}
+		serifedBaseSerifed {SLAB-CLASSICAL true }
 
 	foreach {suffix {styTop fBaseSerif}} [Object.entries KoppaConfig] : do
 		create-glyph "cyrl/Koppa.\(suffix)" : glyph-proc
@@ -691,9 +691,9 @@ glyph-block Letter-Latin-C : begin
 	select-variant 'c/descBase'
 	select-variant 'romanSixLateForm' 0x2185
 
-	select-variant 'OOpen'      0x186  (follow -- 'C')
-	select-variant 'oOpen'      0x254  (follow -- 'c')
-	select-variant 'smcpOOpen'  0x1D10 (follow -- 'OOpen')
+	select-variant 'OOpen' 0x186 (follow -- 'C')
+	select-variant 'oOpen' 0x254 (follow -- 'c')
+	select-variant 'smcpOOpen' 0x1D10 (follow -- 'OOpen')
 	select-variant 'oOpenSlash' 0xAB3F (follow -- 'oOpen')
 	select-variant 'oOpenSideways' 0x1D12 (follow -- 'oOpen')
 
@@ -740,7 +740,7 @@ glyph-block Letter-Latin-C : begin
 		include : with-transform
 			ApparentTranslate
 				[Arch.adjust-x.bot Middle] - markMiddle
-				0                          + AccentClearance
+				0 + AccentClearance
 			refer-glyph mark
 		include [refer-glyph base] AS_BASE ALSO_METRICS
 		include : ExtendBelowBaseAnchors (0 - AccentHeight)
@@ -760,7 +760,7 @@ glyph-block Letter-Latin-C : begin
 		include : with-transform
 			ApparentTranslate
 				[Arch.adjust-x.bot Middle] - markMiddle
-				0                          + AccentClearance
+				0 + AccentClearance
 			refer-glyph mark
 		include [refer-glyph base] AS_BASE ALSO_METRICS
 		include : ExtendBelowBaseAnchors (0 - AccentHeight)
@@ -789,22 +789,22 @@ glyph-block Letter-Latin-C : begin
 
 	define CentConfig : SuffixCfg.weave
 		object # slope
-			''          0
-			'slanted'   0.08
+			'' 0
+			'slanted' 0.08
 		object # body
-			open        0
-			through     1
+			open 0
+			through 1
 			interrupted 2
 		object # height
-			''    {0                   XH                  (Descender / 2)  (XH - Descender / 2)  'std'}
-			'cap' {(CAP / 2 - XH / 2)  (CAP / 2 + XH / 2)  0                CAP                   'cap'}
+			'' {0 XH (Descender / 2) (XH - Descender / 2) 'std'}
+			'cap' {(CAP / 2 - XH / 2) (CAP / 2 + XH / 2) 0 CAP 'cap'}
 
 	foreach {suffix {sl fillType {bMask tMask bot top selector}}} [pairs-of CentConfig] : do
 		define [xBot df] : mix df.leftSB df.rightSB (0.5 - sl)
 		define [xTop df] : mix df.leftSB df.rightSB (0.5 + sl)
 
 		define swBarThick : AdviceStroke 3
-		define swBarFine  : AdviceStroke [StrokeWidthBlend 3.0 5.5]
+		define swBarFine : AdviceStroke [StrokeWidthBlend 3.0 5.5]
 
 		define [FullBar df sw] : dispiro
 			flat [xBot df] bot [widths.center.heading sw Downward]
@@ -814,19 +814,19 @@ glyph-block Letter-Latin-C : begin
 			local cofine : AdviceStroke 4
 			return : union
 				dispiro
-					flat [xTop df]      top          [widths.center.heading cofine    Downward]
+					flat [xTop df] top [widths.center.heading cofine Downward]
 					curl df.middle [mix top bot 0.5] [widths.center.heading swBarFine Downward]
 				dispiro
-					flat [xBot df]      bot          [widths.center.heading cofine    Upward]
+					flat [xBot df] bot [widths.center.heading cofine Upward]
 					curl df.middle [mix bot top 0.5] [widths.center.heading swBarFine Upward]
 
 		define [OutlineMask df] : lift-@ : spiro-outline
-			curl     (@x1 = df.leftSB + HalfStroke)  (@y2 - SmallArchDepthA)
-			Arch.rhs (sw -- Stroke)                  (@y2 = tMask - HalfStroke)
-			flat     (@x3 = df.rightSB - HalfStroke) (@y2 - SmallArchDepthB)
-			curl      @x3                            (@y5 + SmallArchDepthA)
-			Arch.rhs (sw -- Stroke)                  (@y5 = bMask + HalfStroke)
-			flat      @x1                            (@y5 + SmallArchDepthB)
+			curl (@x1 = df.leftSB + HalfStroke) (@y2 - SmallArchDepthA)
+			Arch.rhs (sw -- Stroke) (@y2 = tMask - HalfStroke)
+			flat (@x3 = df.rightSB - HalfStroke) (@y2 - SmallArchDepthB)
+			curl @x3 (@y5 + SmallArchDepthA)
+			Arch.rhs (sw -- Stroke) (@y5 = bMask + HalfStroke)
+			flat @x1 (@y5 + SmallArchDepthB)
 
 		define [InterruptMask df] : begin
 			define gap : Math.max (XH / 8) [AdviceStroke2 6 6 XH]
@@ -841,7 +841,7 @@ glyph-block Letter-Latin-C : begin
 			include : match fillType
 				[Just 1] : intersection [FullBar df swBarFine] [OutlineMask df]
 				[Just 2] : intersection [InterruptBar df] [difference [OutlineMask df] [InterruptMask df]]
-				__       : no-shape
+				__ : no-shape
 
 	select-variant 'cent/bar' (follow -- 'cent')
 

@@ -16,9 +16,9 @@ glyph-block Letter-Cyrillic-De : begin
 	glyph-block-export BottomExtension
 	local BottomExtension : (-LongVJut) + QuarterStroke
 
-	define SERIF-NONE   0
+	define SERIF-NONE 0
 	define SERIF-MOTION 1
-	define SERIF-ALL    2
+	define SERIF-ALL 2
 
 	define [DeSerifTypeOf _serifType] : fallback _serifType : if SLAB SERIF-ALL SERIF-NONE
 	define [DeOverflow left right serifType] : if (serifType !== SERIF-NONE) SideJut : (right - left) * 0.075
@@ -28,10 +28,10 @@ glyph-block Letter-Cyrillic-De : begin
 		local serifType : DeSerifTypeOf _serifType
 		local fLegs : fallback _fLegs true
 		local descenderOverflow : DeOverflow left right serifType
-		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
+		local xTopLeft : mix left right : StrokeWidthBlend 0.15 0.10
 		local xTopRight : mix left right : StrokeWidthBlend 0.95 0.96
 		local swOuter : fallback _sw Stroke
-		local swVJut  : VJutStroke * (swOuter / Stroke)
+		local swVJut : VJutStroke * (swOuter / Stroke)
 		local desc : fallback _desc BottomExtension
 
 		include : HBar.b xTopLeft xTopRight 0 swOuter
@@ -45,7 +45,7 @@ glyph-block Letter-Cyrillic-De : begin
 	define [CyrDeShape fCapital top left right _sw _desc _serifType _fLegs] : glyph-proc
 		local serifType : DeSerifTypeOf _serifType
 		local descenderOverflow : DeOverflow left right serifType
-		local xTopLeft  : mix left right : StrokeWidthBlend 0.15 0.10
+		local xTopLeft : mix left right : StrokeWidthBlend 0.15 0.10
 		local xTopRight : mix left right : StrokeWidthBlend 0.95 0.96
 		local swOuter : fallback _sw Stroke
 		local swInner : Math.min
@@ -60,7 +60,7 @@ glyph-block Letter-Cyrillic-De : begin
 			widths.lhs swInner
 			flat xTopLeft top [heading Downward]
 			curl xTopLeft [mix top (0 + swOuter + TailY - swInner / 2) 0.75]
-			g4   left     (0 + swOuter)
+			g4 left (0 + swOuter)
 
 		include : match serifType
 			[Just SERIF-ALL] : dispiro
@@ -98,18 +98,18 @@ glyph-block Letter-Cyrillic-De : begin
 		local sw : fallback _sw Stroke
 		local desc : fallback _desc BottomExtension
 		include : DeltaShape
-			df            -- df
-			fBarStraight  -- fBarStraight
+			df -- df
+			fBarStraight -- fBarStraight
 			fSquareBottom -- fSquareBottom
-			top           -- top
-			bottom        -- 0
-			sw            -- sw
+			top -- top
+			bottom -- 0
+			sw -- sw
 		if (serifType !== SERIF-NONE) : include : ASerifs df top sw A-SLAB-TOP fSquareBottom
 		include : CyrDeDeltaFeet serifType df sw desc _fLegs
-		local xTopLeft  : df.middle - [HSwToV : 0.5 * sw]
+		local xTopLeft : df.middle - [HSwToV : 0.5 * sw]
 		local xTopRight : 0 + df.rightSB
-		local swOuter   sw
-		local swInner   sw
+		local swOuter sw
+		local swInner sw
 		return : object xTopLeft xTopRight swOuter swInner desc
 
 	define [CyrDweDeltaLeftJut df top asc sw jutSw fBarStraight fSquareBottom] : glyph-proc
@@ -122,7 +122,7 @@ glyph-block Letter-Cyrillic-De : begin
 			include : dispiro
 				widths.rhs jutSw
 				flat xPeak top
-				curl xAsc  asc
+				curl xAsc asc
 		: else : begin
 			local cornerHW : VCornerHalfWidth * (sw / Stroke)
 			local sbScale : if fBarStraight VStraightSbShrink 1
@@ -132,42 +132,42 @@ glyph-block Letter-Cyrillic-De : begin
 			include : dispiro
 				widths.rhs jutSw
 				flat xPeak top
-				curl xAsc  asc
+				curl xAsc asc
 
-	define BODY-TRAPEZOID  0
+	define BODY-TRAPEZOID 0
 	define BODY-TRIANGULAR 1
-	define BODY-CURLY      2
-	define BODY-SQUARE     3
-	define BODY-CURSIVE    4
+	define BODY-CURLY 2
+	define BODY-SQUARE 3
+	define BODY-CURSIVE 4
 
 	define [CyrDweTick bodyType de top asc] : glyph-proc
 		local jutSw : Math.min de.swInner : VJutStroke * (de.swOuter / Stroke)
 		include : match bodyType
 			[Just BODY-TRAPEZOID] : VBar.l de.xTopLeft (top + O) asc jutSw
-			[Just BODY-TRIANGULAR] : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true  false
-			[Just BODY-CURLY]      : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw false false
-			[Just BODY-SQUARE]     : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true  true
-			__                     : VBar.l de.xTopLeft (top + O) asc jutSw
+			[Just BODY-TRIANGULAR] : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true false
+			[Just BODY-CURLY] : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw false false
+			[Just BODY-SQUARE] : CyrDweDeltaLeftJut [DivFrame 1] top asc de.swOuter jutSw true true
+			__ : VBar.l de.xTopLeft (top + O) asc jutSw
 
 	glyph-block-export DeConfig BODY-TRAPEZOID BODY-TRIANGULAR BODY-CURLY BODY-SQUARE BODY-CURSIVE
 	glyph-block-export SERIF-NONE SERIF-MOTION SERIF-ALL
 	define DeConfig : SuffixCfg.weave
 		object
-			standard    BODY-TRAPEZOID
-			triangular  BODY-TRIANGULAR
-			curly       BODY-CURLY
-			square      BODY-SQUARE
-			cursive     BODY-CURSIVE
+			standard BODY-TRAPEZOID
+			triangular BODY-TRIANGULAR
+			curly BODY-CURLY
+			square BODY-SQUARE
+			cursive BODY-CURSIVE
 		function [body] : begin
 			if (body === 'cursive') : return : object
-				''    true
+				'' true
 			return : object
-				''        true
-				legless   false
+				'' true
+				legless false
 		object
-			serifless     SERIF-NONE
+			serifless SERIF-NONE
 			motionSerifed SERIF-MOTION
-			serifed       SERIF-ALL
+			serifed SERIF-ALL
 
 	define DeUprightSuffixes {}
 	foreach {suffix {bodyType fLegs serifType}} [Object.entries DeConfig] : do
@@ -182,13 +182,13 @@ glyph-block Letter-Cyrillic-De : begin
 			DependentSelector.set currentGlyph selector
 
 	define [CyrDeBodyShape bodyType fCapital top serifType _sw _desc _df _fLegs] : match bodyType
-		[Just BODY-TRAPEZOID]  : CyrDeShape fCapital top [if _df _df.leftSB SB] [if _df _df.rightSB RightSB] _sw _desc serifType _fLegs
-		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType _df _sw _desc _fLegs
-		[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType _df _sw _desc _fLegs
-		[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType _df _sw _desc _fLegs
+		[Just BODY-TRAPEZOID] : CyrDeShape fCapital top [if _df _df.leftSB SB] [if _df _df.rightSB RightSB] _sw _desc serifType _fLegs
+		[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true false top serifType _df _sw _desc _fLegs
+		[Just BODY-CURLY] : CyrDeDeltaLikeShape false false top serifType _df _sw _desc _fLegs
+		[Just BODY-SQUARE] : CyrDeDeltaLikeShape true true top serifType _df _sw _desc _fLegs
 
 	define CyrSoftDeGheConfig : object
-		serifless       false
+		serifless false
 		topRightSerifed true
 
 	define [CyrSoftDeShape vSlab] : function [fCapital df top bodyType serifType _sw _desc _fLegs] : glyph-proc
@@ -199,10 +199,10 @@ glyph-block Letter-Cyrillic-De : begin
 		local deDf : df.slice 3 2
 
 		local [object xTopRight] : include : match bodyType
-			[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType deDf sw _desc _fLegs
-			[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType deDf sw _desc _fLegs
-			[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType deDf sw _desc _fLegs
-			__                     : CyrDeShape fCapital top df.leftSB xm sw _desc serifType _fLegs
+			[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true false top serifType deDf sw _desc _fLegs
+			[Just BODY-CURLY] : CyrDeDeltaLikeShape false false top serifType deDf sw _desc _fLegs
+			[Just BODY-SQUARE] : CyrDeDeltaLikeShape true true top serifType deDf sw _desc _fLegs
+			__ : CyrDeShape fCapital top df.leftSB xm sw _desc serifType _fLegs
 
 		local fDeltaLike : (bodyType === BODY-TRIANGULAR) || (bodyType === BODY-CURLY) || (bodyType === BODY-SQUARE)
 		local xJoin : if fDeltaLike [deDf.middle + [HSwToV : 0.5 * sw]] xTopRight
@@ -273,14 +273,14 @@ glyph-block Letter-Cyrillic-De : begin
 					local zeBot : de.desc - 0.5 * sw
 					local p : (zeTop - zeBot) / (CAP - 0)
 					local ze : CyrZe 3 styBot zeTop zeBot
-						left   -- zeLeft
-						right  -- zeRight
-						hook   -- (Hook * p)
+						left -- zeLeft
+						right -- zeRight
+						hook -- (Hook * p)
 						stroke -- sw
-						xo     -- (0.5 * O)
+						xo -- (0.5 * O)
 						barPos -- 0.5
-						ada    -- (ada * p)
-						adb    -- (adb * p)
+						ada -- (ada * p)
+						adb -- (adb * p)
 					return : union [ze.Shape] [ze.AutoEndSerifL]
 
 				if (!desc && (!styTop || styTop == SLAB-FLAT-HOOK || styTop == SLAB-CORNER-HOOK)) : begin
@@ -325,7 +325,7 @@ glyph-block Letter-Cyrillic-De : begin
 		return : list
 			straight.up.start ((df.rightSB - OX) - [HSwToV : sw - fine]) (yRingTop - adb) [widths.lhs fine]
 			Arch.lhs yRingTop (sw -- sw) (swBefore -- fine)
-			flatside.ld df.leftSB  0 yRingTop ada adb
+			flatside.ld df.leftSB 0 yRingTop ada adb
 			Arch.lhs 0 (sw -- sw)
 			flatside.ru df.rightSB 0 yRingTop ada adb
 			quadControls 0 0.8
@@ -335,13 +335,13 @@ glyph-block Letter-Cyrillic-De : begin
 		local [object yRingTop ada adb fine] : CyrDeItalicMetrics df sw
 		return : union
 			OBarRight.toothlessRoundedFlat (yTerminal -- yRingTop)
-				top   -- yRingTop
-				left  -- df.leftSB
+				top -- yRingTop
+				left -- df.leftSB
 				right -- df.rightSB
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 			dispiro
 				widths.lhs sw
 				# Overlap the bowl terminal and continue its outer edge.
@@ -403,15 +403,15 @@ glyph-block Letter-Cyrillic-De : begin
 
 				local shift : df.width - subDf.width
 				local ze : CyrZe 1 styBot XH Descender
-					left      -- ((subDf.leftSB  + OX) + shift)
-					right     -- ((subDf.rightSB - OX) + shift)
-					blend     -- 0.7
-					hook      -- SHook
-					stroke    -- df.mvs
+					left -- ((subDf.leftSB + OX) + shift)
+					right -- ((subDf.rightSB - OX) + shift)
+					blend -- 0.7
+					hook -- SHook
+					stroke -- df.mvs
 					xOverflow -- 0
-					barPos    -- 0.55
-					ada       -- SmallArchDepthA
-					adb       -- SmallArchDepthB
+					barPos -- 0.55
+					ada -- SmallArchDepthA
+					adb -- SmallArchDepthB
 				include : union [ze.Shape] [ze.AutoEndSerifL]
 
-	select-variant 'cyrl/dzze.italic'  (follow -- 'cyrl/dzze.italic/ze')
+	select-variant 'cyrl/dzze.italic' (follow -- 'cyrl/dzze.italic/ze')

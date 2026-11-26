@@ -19,7 +19,7 @@ glyph-block Letter-Latin-Upper-I : begin
 	glyph-block-export ISerifs
 	define ISerifs : namespace
 		export : define [Impl jut] : function [df top _kSerif] : glyph-proc
-			include : tagged 'serifMB' : HSerif.mb df.middle 0   jut
+			include : tagged 'serifMB' : HSerif.mb df.middle 0 jut
 			include : tagged 'serifMT' : HSerif.mt df.middle top jut
 			set-base-anchor 'trailing' (df.middle + jut) 0
 
@@ -38,10 +38,10 @@ glyph-block Letter-Latin-Upper-I : begin
 
 	glyph-block-export UpperIConfig
 	define UpperIConfig : object
-		'straight'     {para.advanceScaleI   ISerifs.None }
-		'serifless'    {para.advanceScaleII  ISerifs.None }
-		'serifed'      {para.advanceScaleI   ISerifs.Long }
-		'shortSerifed' {para.advanceScaleII  ISerifs.Short}
+		'straight' {para.advanceScaleI ISerifs.None }
+		'serifless' {para.advanceScaleII ISerifs.None }
+		'serifed' {para.advanceScaleI ISerifs.Long }
+		'shortSerifed' {para.advanceScaleII ISerifs.Short}
 
 	foreach {suffix {adws Serifs}} [Object.entries UpperIConfig] : do
 		create-glyph "I.\(suffix)" : glyph-proc
@@ -87,14 +87,14 @@ glyph-block Letter-Latin-Upper-I : begin
 			include : df.markSet.capital
 			include : IShape df CAP adws
 			include : Serifs df CAP adws
-			local xMidLeft  : [mix df.leftSB  df.rightSB 0.125] - [HSwToV HalfStroke]
-			local xMidRight : [mix df.rightSB df.leftSB  0.125] + [HSwToV HalfStroke]
+			local xMidLeft : [mix df.leftSB df.rightSB 0.125] - [HSwToV HalfStroke]
+			local xMidRight : [mix df.rightSB df.leftSB 0.125] + [HSwToV HalfStroke]
 			local yBar : mix 0 CAP OverlayPos
 			include : HBar.m xMidLeft xMidRight yBar
 			if (Serifs !== ISerifs.None) : begin
 				local {jutTop jutBot jutMid} : EFVJutLength CAP 0 OverlayPos
 				local swVJut : Math.min VJutStroke : VSwToH : 0.625 * ((df.middle - [HSwToV HalfStroke]) - xMidLeft)
-				include : VSerif.ml xMidLeft  yBar jutMid swVJut
+				include : VSerif.ml xMidLeft yBar jutMid swVJut
 				include : VSerif.mr xMidRight yBar jutMid swVJut
 
 	select-variant 'I' 'I'
@@ -150,4 +150,4 @@ glyph-block Letter-Latin-Upper-I : begin
 		include : MarkSet.capital
 		include : BBBarCenter Middle 0 CAP
 		include : HBar.t (Middle - BBD / 2 - Jut) (Middle + BBD / 2 + Jut) CAP BBS
-		include : HBar.b (Middle - BBD / 2 - Jut) (Middle + BBD / 2 + Jut) 0   BBS
+		include : HBar.b (Middle - BBD / 2 - Jut) (Middle + BBD / 2 + Jut) 0 BBS

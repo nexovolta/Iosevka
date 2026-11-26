@@ -15,25 +15,25 @@ glyph-block Symbol-Punctuation-Dashes : begin
 
 	do 'underscore'
 		define [OpenBoxSide y] : union
-			VBar.l SB      y (y + openBoxGap) OperatorStroke
+			VBar.l SB y (y + openBoxGap) OperatorStroke
 			VBar.r RightSB y (y + openBoxGap) OperatorStroke
 		define [OpenBoxShoulderSide y] : union
 			OpenBoxSide y
-			HBar.t [mix 0     SB      0.25] SB      (y + openBoxGap) OperatorStroke
+			HBar.t [mix 0 SB 0.25] SB (y + openBoxGap) OperatorStroke
 			HBar.t [mix Width RightSB 0.25] RightSB (y + openBoxGap) OperatorStroke
 
 		glyph-block-export UnderScoreConfig
 		define UnderScoreConfig : object
-			aboveBaseline {0        }
-			high          {(-Stroke)}
-			low           {Descender}
+			aboveBaseline {0 }
+			high {(-Stroke)}
+			low {Descender}
 
 		define joiningOverlap : (-Width) / 6
 
 		foreach {suffix {yBar}} [Object.entries UnderScoreConfig] : do
 			create-glyph "underscore.\(suffix)" : HBar.b SB RightSB yBar
 			create-glyph "doubleUnderscore.\(suffix)" : composite-proc
-				HBar.b SB RightSB  yBar
+				HBar.b SB RightSB yBar
 				HBar.b SB RightSB (yBar - openBoxGap)
 			create-glyph "openBox.\(suffix)" : composite-proc
 				HBar.b SB RightSB yBar
@@ -42,9 +42,9 @@ glyph-block Symbol-Punctuation-Dashes : begin
 				HBar.b SB RightSB yBar
 				OpenBoxShoulderSide (yBar + HalfStroke)
 
-		select-variant 'underscore'       '_'
-		select-variant 'openBox'          0x2423 (follow -- 'underscore')
-		select-variant 'openBoxShoulder'  0x237D (follow -- 'underscore')
+		select-variant 'underscore' '_'
+		select-variant 'openBox' 0x2423 (follow -- 'underscore')
+		select-variant 'openBoxShoulder' 0x237D (follow -- 'underscore')
 		select-variant 'doubleUnderscore' 0x2017 (follow -- 'underscore')
 
 	create-glyph 'hyphen' '-' : glyph-proc
@@ -123,11 +123,11 @@ glyph-block Symbol-Punctuation-Dashes : begin
 		local df : include : DivFrame para.advanceScaleF
 		include : dispiro
 			widths.center
-			g4 df.leftSB  SymbolMid [heading Rightward]
+			g4 df.leftSB SymbolMid [heading Rightward]
 			g4 df.middle (SymbolMid + 2 * O)
 			g4 df.rightSB SymbolMid [heading Rightward]
 
-	alias 'softhyphen' 0xAD  'hyphen'
+	alias 'softhyphen' 0xAD 'hyphen'
 	alias 'gpHyphen' 0x2010 'hyphen'
 	alias 'nbHyphen' 0x2011 'hyphen'
 	alias 'hyphenBullet' 0x2043 'hyphen'

@@ -10,11 +10,11 @@ glyph-block Letter-Cyrillic-Sha : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar SerifFrame
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrCurlDescender
 
-	define SERIF-NONE       0
-	define SERIF-MOTION     1
-	define SERIF-ALL        2
-	define SERIF-TR         3
-	define SERIF-BILATERAL  4
+	define SERIF-NONE 0
+	define SERIF-MOTION 1
+	define SERIF-ALL 2
+	define SERIF-TR 3
+	define SERIF-BILATERAL 4
 	define SERIF-TRILATERAL 5
 
 	glyph-block-export CyrShaShape
@@ -22,12 +22,12 @@ glyph-block Letter-Cyrillic-Sha : begin
 		local cofine : fine * df.mvs / Stroke
 		local cut : mix 0 (top - bot - cofine) 0.45
 		local yMidBot : if (fShortStem && fInv) (bot + cut) bot
-		local yMidTop : if (fShortStem && [not fInv]) (top - cut) top
+		local yMidTop : if (fShortStem && (!fInv)) (top - cut) top
 		include : union
 			[if fInv HBar.t HBar.b] df.leftSB df.rightSB [if fInv top bot] fine
-			VBar.l df.leftSB  bot top cofine
+			VBar.l df.leftSB bot top cofine
 			VBar.r df.rightSB bot top cofine
-			VBar.m df.middle  yMidBot yMidTop cofine
+			VBar.m df.middle yMidBot yMidTop cofine
 
 		if (serifType !== SERIF-NONE) : begin
 			local sf : SerifFrame.fromDf df top bot (swSerif -- cofine)
@@ -39,37 +39,37 @@ glyph-block Letter-Cyrillic-Sha : begin
 			if (serifType === SERIF-TRILATERAL) : begin
 				if fInv : then : begin
 					include sf.lb.outer
-					if [not fShortStem] : include sf.mb.full
+					if (!fShortStem) : include sf.mb.full
 					include sf.rb.inner
 				: else : begin
 					include sf.lt.outer
-					if [not fShortStem] : include sf.mt.full
+					if (!fShortStem) : include sf.mt.full
 					include sf.rt.inner
 			if (serifType === SERIF-ALL) : begin
 				if fInv : then : begin
 					include : composite-proc sf.lt.outer sf.rt.outer
 					if sf.enoughSpaceForFullSerifs : begin
 						include sf.lb.full
-						if [not fShortStem] : include sf.mb.full
+						if (!fShortStem) : include sf.mb.full
 						include sf.rb.full
 					: else : include : composite-proc sf.lb.outer sf.rb.outer
 				: else : begin
 					include : composite-proc sf.lb.outer sf.rb.outer
 					if sf.enoughSpaceForFullSerifs : begin
 						include sf.lt.full
-						if [not fShortStem] : include sf.mt.full
+						if (!fShortStem) : include sf.mt.full
 						include sf.rt.full
 					: else : include : composite-proc sf.lt.outer sf.rt.outer
 
 	define ShaConfig : SuffixCfg.weave
 		object # stem
-			''        false
+			'' false
 			shortStem true
 		object # serifs
-			serifless              SERIF-NONE
-			motionSerifed          SERIF-MOTION
-			serifed                SERIF-ALL
-			topRightMotionSerifed  SERIF-TR
+			serifless SERIF-NONE
+			motionSerifed SERIF-MOTION
+			serifed SERIF-ALL
+			topRightMotionSerifed SERIF-TR
 			bilateralMotionSerifed SERIF-BILATERAL
 			trilateralMotionSerifed SERIF-TRILATERAL
 

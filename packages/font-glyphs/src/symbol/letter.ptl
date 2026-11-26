@@ -65,30 +65,30 @@ glyph-block Symbol-Currency : begin
 			local angle : Math.PI * (j / 2 + 0.25)
 			include : dispiro
 				widths.center sw
-				flat (Middle + radius * 0.87       * [Math.cos angle]) (SymbolMid + radius * 0.87       * [Math.sin angle])
+				flat (Middle + radius * 0.87 * [Math.cos angle]) (SymbolMid + radius * 0.87 * [Math.sin angle])
 				curl (Middle + radius * Math.SQRT2 * [Math.cos angle]) (SymbolMid + radius * Math.SQRT2 * [Math.sin angle])
 
-	define TOP-SERIFLESS       0
-	define TOP-SERIFED         1
-	define TOP-INWARD-SERIFED  2
-	define TOP-VERTICAL-CUT    3
-	define TOP-DIAGONAL-CUT    4
+	define TOP-SERIFLESS 0
+	define TOP-SERIFED 1
+	define TOP-INWARD-SERIFED 2
+	define TOP-VERTICAL-CUT 3
+	define TOP-DIAGONAL-CUT 4
 
 	define SterlingConfig : object
-		serifless              {0  TOP-SERIFLESS       false  false}
-		serifed                {1  TOP-SERIFLESS       false  false}
-		seriflessSerifed       {0  TOP-SERIFED         false  false}
-		serifedSerifed         {1  TOP-SERIFED         false  false}
-		seriflessInwardSerifed {0  TOP-INWARD-SERIFED  false  false}
-		serifedInwardSerifed   {1  TOP-INWARD-SERIFED  false  false}
-		seriflessFlatHook      {0  TOP-SERIFLESS       true   false}
-		serifedFlatHook        {1  TOP-SERIFLESS       true   false}
-		seriflessCornerHook    {0  TOP-SERIFLESS       false  true }
-		serifedCornerHook      {1  TOP-SERIFLESS       false  true }
-		seriflessVerticalCut   {0  TOP-VERTICAL-CUT    false  false}
-		serifedVerticalCut     {1  TOP-VERTICAL-CUT    false  false}
-		seriflessDiagonalCut   {0  TOP-DIAGONAL-CUT    false  false}
-		serifedDiagonalCut     {1  TOP-DIAGONAL-CUT    false  false}
+		serifless {0 TOP-SERIFLESS false false}
+		serifed {1 TOP-SERIFLESS false false}
+		seriflessSerifed {0 TOP-SERIFED false false}
+		serifedSerifed {1 TOP-SERIFED false false}
+		seriflessInwardSerifed {0 TOP-INWARD-SERIFED false false}
+		serifedInwardSerifed {1 TOP-INWARD-SERIFED false false}
+		seriflessFlatHook {0 TOP-SERIFLESS true false}
+		serifedFlatHook {1 TOP-SERIFLESS true false}
+		seriflessCornerHook {0 TOP-SERIFLESS false true }
+		serifedCornerHook {1 TOP-SERIFLESS false true }
+		seriflessVerticalCut {0 TOP-VERTICAL-CUT false false}
+		serifedVerticalCut {1 TOP-VERTICAL-CUT false false}
+		seriflessDiagonalCut {0 TOP-DIAGONAL-CUT false false}
+		serifedDiagonalCut {1 TOP-DIAGONAL-CUT false false}
 
 	define xSterlingBarLeft : [mix SB RightSB 0.2] - Stroke * 0.1
 	define [SterlingFootKnots xBarLeft fRial] : if fRial
@@ -141,7 +141,7 @@ glyph-block Symbol-Currency : begin
 			include : LetterBarOverlay.l xSterlingBarLeft (CAP * 0.37)
 			include : LetterBarOverlay.l xSterlingBarLeft (CAP * 0.60 - OverlayStroke * 0.25)
 
-	select-variant 'currency/sterlingSign'   0xA3
+	select-variant 'currency/sterlingSign' 0xA3
 	select-variant 'currency/liraSymbolSign' 0x20A4 (follow -- 'currency/sterlingSign')
 
 	foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
@@ -417,7 +417,7 @@ glyph-block Symbol-Currency : begin
 
 	define TurkLiraConfig : object
 		serifless {0}
-		serifed   {1}
+		serifed {1}
 
 	foreach {suffix {serifGrade}} [Object.entries TurkLiraConfig] : do
 		create-glyph "currency/turkishLiraSign.\(suffix)" : glyph-proc
@@ -436,7 +436,7 @@ glyph-block Symbol-Currency : begin
 			include : LetterObliqueBarOverlay.l xBarLeft (CAP * 0.37)
 			include : LetterObliqueBarOverlay.l xBarLeft (CAP * 0.60 - OverlayStroke * 0.25)
 			if serifGrade : begin
-				include : HSerif.lb (xBarLeft + [HSwToV HalfStroke]) 0   Jut
+				include : HSerif.lb (xBarLeft + [HSwToV HalfStroke]) 0 Jut
 				include : HSerif.lt (xBarLeft + [HSwToV HalfStroke]) CAP Jut
 				include : HSerif.rt (xBarLeft + [HSwToV HalfStroke]) CAP MidJutSide
 
@@ -451,7 +451,7 @@ glyph-block Symbol-Currency : begin
 
 		local vswPlusGap : ((df.rightSB - df.leftSB) - [HSwToV df.mvs]) / 3
 		local barShrink : Math.min (XH * 0.3) ((vswPlusGap - [HSwToV df.mvs]) + df.mvs * 1.5)
-		include : VBar.l  df.leftSB               0  XH              df.mvs
+		include : VBar.l df.leftSB 0 XH df.mvs
 		include : VBar.l (df.leftSB + vswPlusGap) 0 (XH - barShrink) df.mvs
 		include : lift-@ : dispiro
 			widths.rhs df.mvs
@@ -479,7 +479,7 @@ glyph-block Symbol-Currency : begin
 
 		if SLAB : begin
 			local jut : Jut - [HSwToV : 0.5 * (Stroke - df.mvs)]
-			include : HSerif.mb (df.leftSB  + [HSwToV : 0.5 * df.mvs]) 0 jut df.mvs
+			include : HSerif.mb (df.leftSB + [HSwToV : 0.5 * df.mvs]) 0 jut df.mvs
 			include : HSerif.mb (df.rightSB - [HSwToV : 0.5 * df.mvs]) 0 jut df.mvs
 
 	create-glyph 'currency/lariSign' 0x20BE : glyph-proc
@@ -507,7 +507,7 @@ glyph-block Symbol-Currency-Letter-Derived : begin
 	glyph-block-import Letter-Shared-Shapes : LetterObliqueBarOverlay
 
 	derive-composites 'currency/colonSign' 0x20A1 'C' 'dblLongSlash'
-	derive-composites 'currency/millSign'  0x20A5 'm' 'shortSlash'
+	derive-composites 'currency/millSign' 0x20A5 'm' 'shortSlash'
 
 	create-glyph 'currency/dblBarOverCap/adwsN' : glyph-proc
 		local sw : Math.min OverlayStroke : AdviceStroke2 2 4 CAP
@@ -515,8 +515,8 @@ glyph-block Symbol-Currency-Letter-Derived : begin
 		include : HBar.b [mix 0 SB 0.5] [mix Width RightSB 0.5] (CAP / 2 + gap / 2) sw
 		include : HBar.t [mix 0 SB 0.5] [mix Width RightSB 0.5] (CAP / 2 - gap / 2) sw
 
-	derive-composites 'currency/nairaSign'         0x20A6 'currency/nairaSign/base'         'currency/dblBarOverCap/adwsN'
-	derive-composites 'currency/hryvniaSign'       0x20B4 'revS'                            'currency/dblBarOverCap/adwsN'
+	derive-composites 'currency/nairaSign' 0x20A6 'currency/nairaSign/base' 'currency/dblBarOverCap/adwsN'
+	derive-composites 'currency/hryvniaSign' 0x20B4 'revS' 'currency/dblBarOverCap/adwsN'
 	derive-composites 'currency/emiratiDirhamSign' 0x20C3 'currency/emiratiDirhamSign/base' 'currency/dblBarOverCap/adwsN'
 
 	derive-composites 'currency/dongSign' 0x20AB 'dStroke' 'sbRsbUnderlineBelow'
@@ -525,19 +525,19 @@ glyph-block Symbol-Currency-Letter-Derived : begin
 		set-width 0
 		set-mark-anchor 'overlay' Middle (CAP / 2)
 		include : LetterObliqueBarOverlay.m.in
-			x   -- Middle
+			x -- Middle
 			bot -- 0
 			top -- CAP
-			py  -- 0.35
+			py -- 0.35
 		include : LetterObliqueBarOverlay.m.in
-			x   -- Middle
+			x -- Middle
 			bot -- 0
 			top -- (CAP - Stroke)
-			py  -- 0.65
+			py -- 0.65
 	derive-composites 'currency/tugrikSign' 0x20AE 'T' 'currency/tugrikSign/overlay'
 
 	derive-composites 'currency/guaraniSign' 0x20B2 'G' 'longVStrokeOver'
-	derive-composites 'currency/cediSign'    0x20B5 'C' 'longVStrokeOver'
+	derive-composites 'currency/cediSign' 0x20B5 'C' 'longVStrokeOver'
 
 	derive-composites 'currency/somSign' 0x20C0 'smcpC' 'sbRsbUnderlineBelow'
 
@@ -553,12 +553,12 @@ glyph-block Symbol-Letter : begin
 	glyph-block-import Mark-Adjustment : ExtendAboveBaseAnchors ExtendBelowBaseAnchors
 
 	alias 'eulerConst' 0x2107 'latn/Epsilon'
-	alias 'scruple'    0x2108 'cyrl/E'
+	alias 'scruple' 0x2108 'cyrl/E'
 
 	alias 'Ohm' 0x2126 'grek/Omega'
 	alias 'Mho' 0x2127 'latn/Upsilon'
 
-	alias 'letterLike/kelvinSign'   0x212A 'K'
+	alias 'letterLike/kelvinSign' 0x212A 'K'
 	alias 'letterLike/angstromSign' 0x212B 'ARing'
 
 	do 'Centre line, prescription, response, versicle, property line'
@@ -829,8 +829,8 @@ glyph-block Symbol-Letter : begin
 		local sw : clamp para.canonicalStrokeWidthMin para.canonicalStrokeWidthMax [UnicodeWeightGrade 900]
 		include : VBar.m Middle 0 XH sw
 		include : HSerif.lt (Middle - [HSwToV : 0.5 * sw]) XH (LongJut / 2)
-		include : HSerif.lb (Middle - [HSwToV : 0.5 * sw]) 0  (LongJut / 2)
-		include : HSerif.rb (Middle + [HSwToV : 0.5 * sw]) 0  (LongJut / 2)
+		include : HSerif.lb (Middle - [HSwToV : 0.5 * sw]) 0 (LongJut / 2)
+		include : HSerif.rb (Middle + [HSwToV : 0.5 * sw]) 0 (LongJut / 2)
 		include : DotAt Middle aboveMarkMid (DotRadius * (sw / Stroke))
 
 	turned 'turnAmpersand' 0x214B 'ampersand' Middle (CAP / 2)
@@ -866,7 +866,7 @@ glyph-block Symbol-Cyrl-Thousands : begin
 
 	create-glyph 'cyrl/thousandsSign' 0x482 : glyph-proc
 		local fine : AdviceStroke 3
-		include : ExtLineCenter      SB                      Descender                 RightSB                        XH      fine (-0.1)
+		include : ExtLineCenter SB Descender RightSB XH fine (-0.1)
 		include : ExtLineCenter [mix SB RightSB (+0.1)] [mix Descender XH 0.8] [mix SB RightSB (+1.1)] [mix Descender XH 0.5] fine (-0.1)
 		include : ExtLineCenter [mix SB RightSB (-0.1)] [mix Descender XH 0.5] [mix SB RightSB (+0.9)] [mix Descender XH 0.2] fine (-0.1)
 
@@ -881,15 +881,15 @@ glyph-block Symbol-Letter-Phonetic : begin
 
 		include : dispiro
 			widths.rhs
-			g4.up.start (SB      + OX) 0 [heading Upward]
+			g4.up.start (SB + OX) 0 [heading Upward]
 			Arch.rhs (0 + archHeight)
 			g4.down.end (RightSB - OX) 0 [heading Downward]
 
 		include : dispiro
 			widths.lhs
-			g4.down.start (SB      + OX) XH [heading Downward]
+			g4.down.start (SB + OX) XH [heading Downward]
 			Arch.lhs (XH - archHeight)
-			g4.up.end     (RightSB - OX) XH [heading Upward]
+			g4.up.end (RightSB - OX) XH [heading Upward]
 
 	create-glyph 'cyrl/invLowKavykaKavyka' 0x2E46 : glyph-proc
 		local df : include : DivFrame para.advanceScaleSp
@@ -897,14 +897,14 @@ glyph-block Symbol-Letter-Phonetic : begin
 
 		include : CyrKavykaShape
 			xMiddle -- df.middle
-			width   -- (2 * (markExtend * 1.5))
-			top     -- XH
-			bottom  -- (XH - AccentHeight)
-			hs      -- markHalfStroke
+			width -- (2 * (markExtend * 1.5))
+			top -- XH
+			bottom -- (XH - AccentHeight)
+			hs -- markHalfStroke
 
 		include : CyrInvKavykaShape
 			xMiddle -- df.middle
-			width   -- (2 * (markExtend * 1.5))
-			top     -- (0 + AccentHeight)
-			bottom  -- 0
-			hs      -- markHalfStroke
+			width -- (2 * (markExtend * 1.5))
+			top -- (0 + AccentHeight)
+			bottom -- 0
+			hs -- markHalfStroke

@@ -12,14 +12,14 @@ glyph-block Symbol-Pictograph-Checking-Marks : begin
 
 	for-width-kinds WideWidth1 : do
 		define Geom : GeometricDim MosaicUnitWidth MosaicWidth
-		define lightSw  : UnicodeWeightGrade 300  Geom.Scalar GeometryStroke
-		define boldSw   : UnicodeWeightGrade 700  Geom.Scalar GeometryStroke
-		define heavySw  : UnicodeWeightGrade 900  Geom.Scalar GeometryStroke
+		define lightSw : UnicodeWeightGrade 300 Geom.Scalar GeometryStroke
+		define boldSw : UnicodeWeightGrade 700 Geom.Scalar GeometryStroke
+		define heavySw : UnicodeWeightGrade 900 Geom.Scalar GeometryStroke
 
 		define ptMaxWidth : MosaicWidth - SB
 		define ptHeight0 : 1.5 * (Width - SB / 2) * (MosaicWidthScalar ** (1 / 4))
-		define ptHeight  : (ptHeight0 ** 2) / [Math.hypot ptHeight0 : Math.min ptHeight0 ptMaxWidth]
-		define ptWidth  : Math.min ptMaxWidth ptHeight
+		define ptHeight : (ptHeight0 ** 2) / [Math.hypot ptHeight0 : Math.min ptHeight0 ptMaxWidth]
+		define ptWidth : Math.min ptMaxWidth ptHeight
 		define ptMidX : MosaicWidth / 2
 		define plainBox : Box.fromPointAndSize (MosaicWidth / 2) SymbolMid ptWidth ptHeight
 		define ptSB : (MosaicWidth - ptWidth) / 2
@@ -88,24 +88,24 @@ glyph-block Symbol-Pictograph-Checking-Marks : begin
 
 	do 'Decorative angular brackets'
 		define Geom : GeometricDim Width Width
-		define mediumSw : UnicodeWeightGrade 500  Geom.Scalar GeometryStroke
-		define heavySw  : UnicodeWeightGrade 900  Geom.Scalar GeometryStroke
+		define mediumSw : UnicodeWeightGrade 500 Geom.Scalar GeometryStroke
+		define heavySw : UnicodeWeightGrade 900 Geom.Scalar GeometryStroke
 		define xHeavySw : UnicodeWeightGrade 1100 Geom.Scalar GeometryStroke
 
 		define HeightConfig : object
 			# suffix    width scale   height scale
-			tall   {1.00  1.00}
-			middle {0.80  0.75}
-			short  {0.55  0.50}
+			tall {1.00 1.00}
+			middle {0.80 0.75}
+			short {0.55 0.50}
 
 		define CharConfig : list
 			#    unicode   sw        side
-			list 0x276C    mediumSw  1
-			list 0x276D    mediumSw  0
-			list 0x276E    heavySw   1
-			list 0x276F    heavySw   0
-			list 0x2770    xHeavySw  1
-			list 0x2771    xHeavySw  0
+			list 0x276C mediumSw 1
+			list 0x276D mediumSw 0
+			list 0x276E heavySw 1
+			list 0x276F heavySw 0
+			list 0x2770 xHeavySw 1
+			list 0x2771 xHeavySw 0
 
 		foreach {unicode sw side} [items-of CharConfig] : begin
 			foreach {suffix {widthScale heightScale}} [pairs-of HeightConfig] : begin

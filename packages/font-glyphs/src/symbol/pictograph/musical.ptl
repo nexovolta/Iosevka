@@ -84,7 +84,7 @@ glyph-block Symbol-Pictograph-Musical : begin
 		glyph-block-import Symbol-Arrow-Shared : ArrowShape
 		local nsTop PictTop
 		local nsBot PictBot
-		local fine  : AdviceStroke 3.5
+		local fine : AdviceStroke 3.5
 		local fine2 : AdviceStroke 4
 		local lAcc : SB - fine * 0
 		local rAcc : RightSB + fine * 0
@@ -100,16 +100,16 @@ glyph-block Symbol-Pictograph-Musical : begin
 		local rNat : rAcc - hsp * krNat
 
 		local halfVFine : HSwToV : 0.5 * fine
-		local xUpSharp   : rSharp - halfVFine
+		local xUpSharp : rSharp - halfVFine
 		local xDownSharp : rSharp - halfVFine
-		local xUpFlat    : lFlat  + halfVFine
-		local xDownFlat  : lFlat  + halfVFine
-		local xUpNat     : lNat   + halfVFine
-		local xDownNat   : rNat   - halfVFine
+		local xUpFlat : lFlat + halfVFine
+		local xDownFlat : lFlat + halfVFine
+		local xUpNat : lNat + halfVFine
+		local xDownNat : rNat - halfVFine
 		local arrowWidth : (RightSB - SB) * 0.35
 		local arrowSpace : Math.max (0.9 * arrowWidth) (ParenTop - PictTop)
-		local arrowTop   : nsTop + arrowSpace
-		local arrowBot   : nsBot - arrowSpace
+		local arrowTop : nsTop + arrowSpace
+		local arrowBot : nsBot - arrowSpace
 
 		create-glyph 'sharpTone' 0x266F : glyph-proc
 			include : dispiro
@@ -125,7 +125,7 @@ glyph-block Symbol-Pictograph-Musical : begin
 
 		define [FlatToneShape _l _r _sw] : glyph-proc
 			local yTerminal : mix nsBot nsTop 0.55
-			local curly  0.65
+			local curly 0.65
 			local curly2 1.1
 			local curly3 0.3
 			local l : fallback _l lFlat
@@ -146,21 +146,21 @@ glyph-block Symbol-Pictograph-Musical : begin
 					dispiro [archShapeT 1]
 				difference
 					spiro-outline
-						corner l     (nsBot - UPM)
-						archShapeT    0
-						corner l     (yTerminal + 1)
-						corner l      nsTop
-						corner Width  nsTop
+						corner l (nsBot - UPM)
+						archShapeT 0
+						corner l (yTerminal + 1)
+						corner l nsTop
+						corner Width nsTop
 						corner Width (nsBot - UPM)
 					spiro-outline
-						corner  0                yTerminal
-						corner  0                nsTop
+						corner 0 yTerminal
+						corner 0 nsTop
 						corner (l + [HSwToV sw]) nsTop
 						corner (l + [HSwToV sw]) yTerminal
 				spiro-outline
-					corner  l        (nsBot - UPM)
-					corner  l         nsTop
-					corner (l - UPM)  nsTop
+					corner l (nsBot - UPM)
+					corner l nsTop
+					corner (l - UPM) nsTop
 					corner (l - UPM) (nsBot - UPM)
 
 		create-glyph 'flatTone' 0x266D : glyph-proc
@@ -169,23 +169,23 @@ glyph-block Symbol-Pictograph-Musical : begin
 		create-glyph 'naturalTone' 0x266E : glyph-proc
 			local k : 0.25 - (QuarterStroke / (nsTop - nsBot))
 
-			local barLeft  : VBar.l lNat [mix nsBot nsTop k] nsTop fine
+			local barLeft : VBar.l lNat [mix nsBot nsTop k] nsTop fine
 			local barRight : VBar.r rNat nsBot [mix nsBot nsTop (1 - k)] fine
 			local diagLow : dispiro
 				widths.lhs fine
-				flat   lNat  [mix nsBot nsTop k]
-				curl   rNat ([mix nsBot nsTop k] + (rNat - lNat) * skew)
+				flat lNat [mix nsBot nsTop k]
+				curl rNat ([mix nsBot nsTop k] + (rNat - lNat) * skew)
 			local belowDiagLow : spiro-outline
-				corner lNat  [mix nsBot nsTop k]
+				corner lNat [mix nsBot nsTop k]
 				corner rNat ([mix nsBot nsTop k] + (rNat - lNat) * skew)
 				corner rNat nsBot
 				corner lNat nsBot
 			local diagHigh : dispiro
 				widths.lhs fine
-				flat   rNat  [mix nsBot nsTop (1 - k)]
-				curl   lNat ([mix nsBot nsTop (1 - k)] - (rNat - lNat) * skew)
+				flat rNat [mix nsBot nsTop (1 - k)]
+				curl lNat ([mix nsBot nsTop (1 - k)] - (rNat - lNat) * skew)
 			local aboveDiagHigh : spiro-outline
-				corner rNat  [mix nsBot nsTop (1 - k)]
+				corner rNat [mix nsBot nsTop (1 - k)]
 				corner lNat ([mix nsBot nsTop (1 - k)] - (rNat - lNat) * skew)
 				corner lNat nsTop
 				corner rNat nsTop
@@ -227,14 +227,14 @@ glyph-block Symbol-Pictograph-Musical : begin
 						VBar.m cx b t cofine
 						HBar.m lAcc rAcc cy [HSwToV cofine]
 				spiro-outline
-					corner (cx - size)    (cy + size)
-					g4      cx            (cy + size * p)
-					corner (cx + size)    (cy + size)
-					g4     (cx + size * p) cy
-					corner (cx + size)    (cy - size)
-					g4      cx            (cy - size * p)
-					corner (cx - size)    (cy - size)
-					g4     (cx - size * p) cy
+					corner (cx - size) (cy + size)
+					g4 cx (cy + size * p)
+					corner (cx + size) (cy + size)
+					g4 (cx + size * p) cy
+					corner (cx + size) (cy - size)
+					g4 cx (cy - size * p)
+					corner (cx - size) (cy - size)
+					g4 (cx - size * p) cy
 					close
 
 		create-glyph 'dblFlatTone' 0x1D12B : glyph-proc

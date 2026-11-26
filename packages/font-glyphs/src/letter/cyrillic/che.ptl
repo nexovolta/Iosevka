@@ -15,49 +15,49 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-export BODY
 	define BODY : object
 		STRAIGHT 0
-		TAILED   1
+		TAILED 1
 
 	glyph-block-export SERIFS
 	define SERIFS : object
-		NONE           0
-		TL             1
-		BR             2
-		TL-BR          3
-		ALL            4
-		TOP            5
-		ALL-BGR        6
-		TOP-BGR        7
-		RT             8
-		BILATERAL      9
-		BILATERAL-BGR  10
+		NONE 0
+		TL 1
+		BR 2
+		TL-BR 3
+		ALL 4
+		TOP 5
+		ALL-BGR 6
+		TOP-BGR 7
+		RT 8
+		BILATERAL 9
+		BILATERAL-BGR 10
 
 	define flex-params [CheBowl] : begin
 		local-parameter : left
 		local-parameter : right
 		local-parameter : top
 		local-parameter : bottom
-		local-parameter : ada       -- ArchDepthA
-		local-parameter : adb       -- ArchDepthB
-		local-parameter : stroke    -- Stroke
+		local-parameter : ada -- ArchDepthA
+		local-parameter : adb -- ArchDepthB
+		local-parameter : stroke -- Stroke
 		local-parameter : fFlatHump -- false
 
 		define xMid : [mix left right 0.5] + [HSwToV : 0.2 * stroke]
 		define rise : DToothlessRise + 0.25 * stroke
 		if fFlatHump : return : uBowl.toothlessCorner
-			left    -- left
-			right   -- right
-			top     -- top
-			bottom  -- bottom
-			ada     -- ada
-			adb     -- adb
-			stroke  -- stroke
-			rise    -- 0
+			left -- left
+			right -- right
+			top -- top
+			bottom -- bottom
+			ada -- ada
+			adb -- adb
+			stroke -- stroke
+			rise -- 0
 		return : dispiro
 			widths.lhs stroke
 			flat left top [heading Downward]
 			curl left [Math.min (bottom + adb) (top - TINY)]
 			Arch.lhs.centerAt.ltr.b xMid bottom (sw -- stroke)
-			g4   right (bottom + rise)
+			g4 right (bottom + rise)
 
 	glyph-block-export CyrCheShape
 	define [CyrCheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs] [fFlatHump false]] : glyph-proc
@@ -65,42 +65,42 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		include : tagged 'strokeR' : match bodyType
 			[Just BODY.TAILED] : RightwardTailedBar df.rightSB 0 top sw
-			__                 : VBar.r             df.rightSB 0 top sw
+			__ : VBar.r df.rightSB 0 top sw
 
 		include : CheBowl
-			left      -- df.leftSB
-			right     -- df.rightSB
-			top       -- top
-			bottom    -- (yBar - sw / 2)
-			stroke    -- sw
+			left -- df.leftSB
+			right -- df.rightSB
+			top -- top
+			bottom -- (yBar - sw / 2)
+			stroke -- sw
 			fFlatHump -- fFlatHump
 
 		local sf : SerifFrame.fromDf df top 0
 		include : tagged 'serifLT' : match slabType
-			[Just SERIFS.ALL]           sf.lt.full
-			[Just SERIFS.TOP]           sf.lt.full
-			[Just SERIFS.ALL-BGR]       sf.lt.outer
-			[Just SERIFS.TOP-BGR]       sf.lt.outer
-			[Just SERIFS.TL-BR]         sf.lt.outer
-			[Just SERIFS.TL]            sf.lt.outer
-			[Just SERIFS.BILATERAL]     sf.lt.outer
+			[Just SERIFS.ALL] sf.lt.full
+			[Just SERIFS.TOP] sf.lt.full
+			[Just SERIFS.ALL-BGR] sf.lt.outer
+			[Just SERIFS.TOP-BGR] sf.lt.outer
+			[Just SERIFS.TL-BR] sf.lt.outer
+			[Just SERIFS.TL] sf.lt.outer
+			[Just SERIFS.BILATERAL] sf.lt.outer
 			[Just SERIFS.BILATERAL-BGR] sf.lt.outer
-			__                       [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'SerifRT' : match slabType
-			[Just SERIFS.ALL]           sf.rt.full
-			[Just SERIFS.TOP]           sf.rt.full
-			[Just SERIFS.ALL-BGR]       sf.rt.inner
-			[Just SERIFS.TOP-BGR]       sf.rt.inner
-			[Just SERIFS.RT]            sf.rt.inner
-			[Just SERIFS.BILATERAL]     sf.rt.inner
+			[Just SERIFS.ALL] sf.rt.full
+			[Just SERIFS.TOP] sf.rt.full
+			[Just SERIFS.ALL-BGR] sf.rt.inner
+			[Just SERIFS.TOP-BGR] sf.rt.inner
+			[Just SERIFS.RT] sf.rt.inner
+			[Just SERIFS.BILATERAL] sf.rt.inner
 			[Just SERIFS.BILATERAL-BGR] sf.rt.inner
-			__                       [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'SerifRB' : match slabType
-			[Just SERIFS.ALL]        sf.rb.fullSide
-			[Just SERIFS.ALL-BGR]    sf.rb.fullSide
-			[Just SERIFS.TL-BR]      sf.rb.outer
-			[Just SERIFS.BR]         sf.rb.outer
-			__                       [glyph-proc]
+			[Just SERIFS.ALL] sf.rb.fullSide
+			[Just SERIFS.ALL-BGR] sf.rb.fullSide
+			[Just SERIFS.TL-BR] sf.rb.outer
+			[Just SERIFS.BR] sf.rb.outer
+			__ [glyph-proc]
 
 	glyph-block-import Letter-Latin-Lower-M : EarlessCornerDoubleArchSmallMShape
 	define [CyrCcheShape] : with-params [df top pyBar bodyType slabType [sw df.mvs] [fFlatHump false]] : glyph-proc
@@ -108,7 +108,7 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		include : tagged 'strokeR' : match bodyType
 			[Just BODY.TAILED] : RightwardTailedBar df.rightSB 0 top sw
-			__                 : VBar.r             df.rightSB 0 top sw
+			__ : VBar.r df.rightSB 0 top sw
 
 		include : new-glyph : glyph-proc
 			include : EarlessCornerDoubleArchSmallMShape df (top - (yBar - sw / 2)) 0 0 0
@@ -117,33 +117,33 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		local sf : SerifFrame.fromDf df top 0
 		include : tagged 'serifLT' : match slabType
-			[Just SERIFS.ALL]           [if sf.enoughSpaceForFullSerifs sf.lt.full sf.lt.outer]
-			[Just SERIFS.TOP]           [if sf.enoughSpaceForFullSerifs sf.lt.full sf.lt.outer]
-			[Just SERIFS.TL-BR]         sf.lt.outer
-			[Just SERIFS.TL]            sf.lt.outer
-			[Just SERIFS.BILATERAL]     sf.lt.outer
+			[Just SERIFS.ALL] [if sf.enoughSpaceForFullSerifs sf.lt.full sf.lt.outer]
+			[Just SERIFS.TOP] [if sf.enoughSpaceForFullSerifs sf.lt.full sf.lt.outer]
+			[Just SERIFS.TL-BR] sf.lt.outer
+			[Just SERIFS.TL] sf.lt.outer
+			[Just SERIFS.BILATERAL] sf.lt.outer
 			[Just SERIFS.BILATERAL-BGR] sf.lt.outer
-			__                     [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'serifMT' : match slabType
-			[Just SERIFS.ALL]           [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
-			[Just SERIFS.TOP]           [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
-			[Just SERIFS.TL]            sf.mt.left
-			[Just SERIFS.BILATERAL]     sf.mt.left
+			[Just SERIFS.ALL] [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
+			[Just SERIFS.TOP] [if sf.enoughSpaceForFullSerifs sf.mt.full [glyph-proc]]
+			[Just SERIFS.TL] sf.mt.left
+			[Just SERIFS.BILATERAL] sf.mt.left
 			[Just SERIFS.BILATERAL-BGR] sf.mt.left
-			__                     [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'SerifRT' : match slabType
-			[Just SERIFS.ALL]           [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
-			[Just SERIFS.TOP]           [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
-			[Just SERIFS.TL]            sf.rt.inner
-			[Just SERIFS.RT]            sf.rt.inner
-			[Just SERIFS.BILATERAL]     sf.rt.inner
+			[Just SERIFS.ALL] [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
+			[Just SERIFS.TOP] [if sf.enoughSpaceForFullSerifs sf.rt.full sf.rt.outer]
+			[Just SERIFS.TL] sf.rt.inner
+			[Just SERIFS.RT] sf.rt.inner
+			[Just SERIFS.BILATERAL] sf.rt.inner
 			[Just SERIFS.BILATERAL-BGR] sf.rt.inner
-			__                     [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'SerifRB' : match slabType
-			[Just SERIFS.ALL]      sf.rb.fullSide
-			[Just SERIFS.TL-BR]    sf.rb.outer
-			[Just SERIFS.BR]       sf.rb.outer
-			__                     [glyph-proc]
+			[Just SERIFS.ALL] sf.rb.fullSide
+			[Just SERIFS.TL-BR] sf.rb.outer
+			[Just SERIFS.BR] sf.rb.outer
+			__ [glyph-proc]
 
 	define [CyrTcheShape] : with-params [df top pyBar bodyType slabType [sw [AdviceStroke 2.75]] [teSerifs SLAB] [fFlatHump false]] : glyph-proc
 		local yBar : mix 0 top : fallback pyBar 0.5
@@ -153,14 +153,14 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		include : tagged 'strokeR' : match bodyType
 			[Just BODY.TAILED] : RightwardTailedBar right 0 top sw
-			__                 : VBar.r             right 0 top sw
+			__ : VBar.r right 0 top sw
 
 		include : CheBowl
-			left      -- left
-			right     -- right
-			top       -- top
-			bottom    -- (yBar - sw / 2)
-			stroke    -- sw
+			left -- left
+			right -- right
+			top -- top
+			bottom -- (yBar - sw / 2)
+			stroke -- sw
 			fFlatHump -- fFlatHump
 
 		local xTopBarLeft : df.leftSB - SideJut
@@ -168,26 +168,26 @@ glyph-block Letter-Cyrillic-Che : begin
 
 		include : dispiro
 			widths.rhs sw
-			flat xTopBarLeft  top [if teSerifs [heading Rightward] null]
+			flat xTopBarLeft top [if teSerifs [heading Rightward] null]
 			curl xTopBarRight top [if teSerifs [heading Rightward] null]
 
 		local sf : SerifFrame top 0 left right (swRef -- sw)
 		include : tagged 'SerifRT' : match slabType
-			[Just SERIFS.ALL]      sf.rt.outer
-			[Just SERIFS.TOP]      sf.rt.outer
-			[Just SERIFS.RT]       sf.rt.inner
+			[Just SERIFS.ALL] sf.rt.outer
+			[Just SERIFS.TOP] sf.rt.outer
+			[Just SERIFS.RT] sf.rt.inner
 			[Just SERIFS.BILATERAL] sf.rt.inner
 			[Just SERIFS.BILATERAL-BGR] sf.rt.inner
-			__                     [glyph-proc]
+			__ [glyph-proc]
 		include : tagged 'SerifRB' : match slabType
-			[Just SERIFS.ALL]      sf.rb.fullSide
-			[Just SERIFS.TL-BR]    sf.rb.outer
-			[Just SERIFS.BR]       sf.rb.outer
-			__                     [glyph-proc]
+			[Just SERIFS.ALL] sf.rb.fullSide
+			[Just SERIFS.TL-BR] sf.rb.outer
+			[Just SERIFS.BR] sf.rb.outer
+			__ [glyph-proc]
 
 		if teSerifs : begin
 			local swVJut : Math.min (VJutStroke * (sw / Stroke)) : VSwToH : 0.625 * (left - xTopBarLeft)
-			include : VSerif.dl xTopBarLeft  top VJut swVJut
+			include : VSerif.dl xTopBarLeft top VJut swVJut
 			include : VSerif.dr xTopBarRight top VJut swVJut
 
 	define [CheVBarBarShape top pyBar fFlatHump] : begin
@@ -199,13 +199,13 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-export CheCapConfig
 	define CheCapConfig : SuffixCfg.weave
 		object # hump
-			''        false
-			flatHump  true
+			'' false
+			flatHump true
 		object # serifs
-			serifless              SERIFS.NONE
-			motionSerifed          SERIFS.TL
-			serifed                SERIFS.ALL
-			topRightMotionSerifed  SERIFS.RT
+			serifless SERIFS.NONE
+			motionSerifed SERIFS.TL
+			serifed SERIFS.ALL
+			topRightMotionSerifed SERIFS.RT
 			bilateralMotionSerifed SERIFS.BILATERAL
 
 	foreach {suffix {fFlatHump slabType}} [Object.entries CheCapConfig] : do
@@ -230,8 +230,8 @@ glyph-block Letter-Cyrillic-Che : begin
 	select-variant 'cyrl/Cche' 0xA686 (follow -- 'cyrl/Che')
 
 	define TcheConfig : object
-		serifless     {false  false}
-		motionSerifed {true   false}
+		serifless {false false}
+		motionSerifed {true false}
 
 	foreach {suffixChe {fFlatHump slabType}} [Object.entries CheCapConfig] : do
 		DefineSelectorGlyph 'cyrl/Tche' suffixChe [DivFrame para.advanceScaleT] 'capital'
@@ -242,7 +242,7 @@ glyph-block Letter-Cyrillic-Che : begin
 				local df : DivFrame para.advanceScaleT
 				include : LeaningAnchor.Below.VBar.r df.rightSB
 				include : CyrTcheShape df CAP [if (slabType !== SERIFS.NONE) 0.45 0.35] BODY.STRAIGHT slabType
-					teSerifs  -- doST
+					teSerifs -- doST
 					fFlatHump -- fFlatHump
 		select-variant "cyrl/Tche.\(suffixChe)" (follow -- 'T/rTailBase')
 
@@ -254,21 +254,21 @@ glyph-block Letter-Cyrillic-Che : begin
 	glyph-block-export CheConfig
 	define CheConfig : SuffixCfg.weave
 		object # hump
-			''        false
-			flatHump  true
+			'' false
+			flatHump true
 		object # body
 			standard {BODY.STRAIGHT}
-			tailed   {BODY.TAILED  }
+			tailed {BODY.TAILED }
 		function [hump body] : object # serifs
 			serifless {SERIFS.NONE SERIFS.NONE}
 			motionSerifed : match body
-				[Just 'standard'] {SERIFS.TL-BR  SERIFS.TL-BR}
-				__                {SERIFS.TL     SERIFS.TL   }
+				[Just 'standard'] {SERIFS.TL-BR SERIFS.TL-BR}
+				__ {SERIFS.TL SERIFS.TL }
 			serifed : match body
-				[Just 'standard'] {SERIFS.ALL  SERIFS.ALL-BGR}
-				__                {SERIFS.TOP  SERIFS.TOP-BGR}
-			topRightMotionSerifed  {SERIFS.RT         SERIFS.RT           }
-			bilateralMotionSerifed {SERIFS.BILATERAL  SERIFS.BILATERAL-BGR}
+				[Just 'standard'] {SERIFS.ALL SERIFS.ALL-BGR}
+				__ {SERIFS.TOP SERIFS.TOP-BGR}
+			topRightMotionSerifed {SERIFS.RT SERIFS.RT }
+			bilateralMotionSerifed {SERIFS.BILATERAL SERIFS.BILATERAL-BGR}
 
 	foreach {suffix {fFlatHump {body} {slabType slabTypeBGR}}} [pairs-of CheConfig] : do
 		create-glyph "cyrl/che.\(suffix)" : glyph-proc
@@ -308,7 +308,7 @@ glyph-block Letter-Cyrillic-Che : begin
 				set-mark-anchor 'cvDecompose' 0 0
 				include : LeaningAnchor.Below.VBar.r cyrTcheDf.rightSB
 				include : CyrTcheShape cyrTcheDf XH [if (slabType !== SERIFS.NONE) 0.45 0.4] body slabType
-					teSerifs  -- doST
+					teSerifs -- doST
 					fFlatHump -- fFlatHump
 
 		select-variant "cyrl/tche.upright.\(suffix)" (follow -- 'T/rTailBase')

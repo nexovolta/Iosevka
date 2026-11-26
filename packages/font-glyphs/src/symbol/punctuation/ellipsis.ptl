@@ -9,7 +9,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 
-	glyph-block-export  EllipsisDotRadius
+	glyph-block-export EllipsisDotRadius
 	define [EllipsisDotRadius nDots space] : begin
 		return : 0.5 * [AdviceStroke (nDots + 1.5) (space / Width)] * PeriodSize / Stroke
 
@@ -17,15 +17,15 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 		local xMid : mix l r 0.5
 		local yMid : mix bottom top 0.5
 		include : DrawAt [mix xMid l p] (bottom + radius) (radius - overshoot)
-		include : DrawAt xMid           yMid              (radius - overshoot)
-		include : DrawAt [mix xMid r p] (top - radius)    (radius - overshoot)
+		include : DrawAt xMid yMid (radius - overshoot)
+		include : DrawAt [mix xMid r p] (top - radius) (radius - overshoot)
 
 	define [VFourDotShape DrawAt radius overshoot xMid bottom top] : glyph-proc
 		local [yp p] : mix (bottom + radius) (top - radius) p
-		include : DrawAt xMid [yp 0]       (radius - overshoot)
+		include : DrawAt xMid [yp 0] (radius - overshoot)
 		include : DrawAt xMid [yp (1 / 3)] (radius - overshoot)
 		include : DrawAt xMid [yp (2 / 3)] (radius - overshoot)
-		include : DrawAt xMid [yp 1]       (radius - overshoot)
+		include : DrawAt xMid [yp 1] (radius - overshoot)
 
 	define [VNDotShape nDots DrawAt radius overshoot xMid bottom top] : glyph-proc
 		local [yp p] : mix (bottom + radius) (top - radius) p
@@ -45,12 +45,12 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 				local width : MosaicWidth * [mix 1 para.advanceScaleI (MosaicWidthScalar - 1)]
 				set-width width
 				local radius : [EllipsisDotRadius 2 MosaicWidth] * kDotRadius
-				local left  : mix 0 width (1 / 4)
+				local left : mix 0 width (1 / 4)
 				local right : mix 0 width (3 / 4)
-				include : DrawAt left  radius (radius - overshoot)
+				include : DrawAt left radius (radius - overshoot)
 				include : DrawAt right radius (radius - overshoot)
 
-		select-variant [MangleName 'oneDotLeader']  [MangleUnicode 0x2024] (follow -- 'punctuationDot')
+		select-variant [MangleName 'oneDotLeader'] [MangleUnicode 0x2024] (follow -- 'punctuationDot')
 		select-variant [MangleName 'twoDotsLeader'] [MangleUnicode 0x2025] (follow -- 'punctuationDot')
 
 		# Ellipsis glyphs: {dotShape} × {density}
@@ -60,7 +60,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 			create-glyph "\[MangleName 'ellipsis'].\(dotSuffix).normal" : glyph-proc
 				set-width MosaicWidth
 				local radius : [EllipsisDotRadius 3 MosaicWidth] * kDotRadius
-				local left  : mix 0 MosaicWidth (1 / 6)
+				local left : mix 0 MosaicWidth (1 / 6)
 				local right : mix 0 MosaicWidth (5 / 6)
 				include : VThreeDotsShape DrawAt radius overshoot left right (+1) 0 (2 * radius)
 				create-forked-glyph "\[MangleName 'mathCDots'].\(dotSuffix).normal" : glyph-proc
@@ -73,7 +73,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 				local width : MosaicWidth * [mix 1 para.advanceScaleI (MosaicWidthScalar - 1)]
 				set-width width
 				local radius : [EllipsisDotRadius 3 width] * kDotRadius
-				local left  : mix 0 width (3 / 16)
+				local left : mix 0 width (3 / 16)
 				local right : mix 0 width (13 / 16)
 				include : VThreeDotsShape DrawAt radius overshoot left right (+1) 0 (2 * radius)
 				create-forked-glyph "\[MangleName 'mathCDots'].\(dotSuffix).dense" : glyph-proc
@@ -84,13 +84,13 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 			# Normal math vertical/diagonal dots
 			create-glyph : glyph-proc
 				set-width MosaicWidth
-				local left  : mix 0 MosaicWidth (1 / 6)
+				local left : mix 0 MosaicWidth (1 / 6)
 				local right : mix 0 MosaicWidth (5 / 6)
 				local top : SymbolMid + [Math.max (right - [mix left right 0.5]) ([mix PlusTop OperTop 0.5] - SymbolMid)]
 				local bot : SymbolMid - [Math.max ([mix left right 0.5] - left) (SymbolMid - [mix PlusBot OperBot 0.5])]
 				local radius : [EllipsisDotRadius 3 : Math.min MosaicWidth (top - bot)] * kDotRadius
 				create-forked-glyph "\[MangleName 'mathCVDots'].\(dotSuffix).normal" : glyph-proc
-					include : VThreeDotsShape DrawAt radius overshoot left right   0  (bot - radius) (top + radius)
+					include : VThreeDotsShape DrawAt radius overshoot left right 0 (bot - radius) (top + radius)
 					include : ApparentScaleX (mathWidth / MosaicWidth)
 					set-width mathWidth
 				create-forked-glyph "\[MangleName 'mathCD1Dots'].\(dotSuffix).normal" : glyph-proc
@@ -106,13 +106,13 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 			create-glyph : glyph-proc
 				local width : MosaicWidth * [mix 1 para.advanceScaleI (MosaicWidthScalar - 1)]
 				set-width width
-				local left  : mix 0 width (3 / 16)
+				local left : mix 0 width (3 / 16)
 				local right : mix 0 width (13 / 16)
 				local top : SymbolMid + [Math.max (right - [mix left right 0.5]) ([mix PlusTop OperTop 0.5] - SymbolMid)]
 				local bot : SymbolMid - [Math.max ([mix left right 0.5] - left) (SymbolMid - [mix PlusBot OperBot 0.5])]
 				local radius : [EllipsisDotRadius 3 : Math.min width (top - bot)] * kDotRadius
 				create-forked-glyph "\[MangleName 'mathCVDots'].\(dotSuffix).dense" : glyph-proc
-					include : VThreeDotsShape DrawAt radius overshoot left right   0  (bot - radius) (top + radius)
+					include : VThreeDotsShape DrawAt radius overshoot left right 0 (bot - radius) (top + radius)
 					include : ApparentScaleX (mathWidth / width)
 					set-width mathWidth
 				create-forked-glyph "\[MangleName 'mathCD1Dots'].\(dotSuffix).dense" : glyph-proc
@@ -124,11 +124,11 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 					include : ApparentScaleX (mathWidth / width)
 					set-width mathWidth
 
-		select-multi-dimensional-variant [MangleName 'ellipsis']    [MangleUnicode 0x2026]
+		select-multi-dimensional-variant [MangleName 'ellipsis'] [MangleUnicode 0x2026]
 			follows -- {'punctuationDot' 'ellipsisDensity'}
-		select-multi-dimensional-variant [MangleName 'mathCDots']   [MangleUnicode 0x22EF]
+		select-multi-dimensional-variant [MangleName 'mathCDots'] [MangleUnicode 0x22EF]
 			follows -- {'punctuationDot' 'ellipsisDensity'}
-		select-multi-dimensional-variant [MangleName 'mathCVDots']  [MangleUnicode 0x22EE]
+		select-multi-dimensional-variant [MangleName 'mathCVDots'] [MangleUnicode 0x22EE]
 			follows -- {'punctuationDot' 'ellipsisDensity'}
 		select-multi-dimensional-variant [MangleName 'mathCD1Dots'] [MangleUnicode 0x22F1]
 			follows -- {'punctuationDot' 'ellipsisDensity'}
@@ -159,7 +159,7 @@ glyph-block Symbol-Punctuation-Ellipsis : begin
 			local radius : kDotRadius * [EllipsisDotRadius 7 (ParenTop - ParenBot)]
 			include : VNDotShape 6 DrawAt radius overshoot df.middle ParenBot ParenTop
 
-	select-variant 'triColon'  0x205D (follow -- 'punctuationDot')
+	select-variant 'triColon' 0x205D (follow -- 'punctuationDot')
 	select-variant 'quadColon' 0x205E (follow -- 'punctuationDot')
 	select-variant 'mathTriColon' 0x2AF6 (follow -- 'punctuationDot')
 	select-variant 'mathQuadColon' 0x2999 (follow -- 'punctuationDot')

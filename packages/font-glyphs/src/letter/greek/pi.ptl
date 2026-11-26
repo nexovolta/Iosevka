@@ -14,12 +14,12 @@ glyph-block Letter-Greek-Pi : begin
 	glyph-block-import Letter-Shared-Shapes : SerifFrame CyrDescender MidHook
 
 	define TERMINAL-STRAIGHT 0
-	define TERMINAL-TAILED   1
+	define TERMINAL-TAILED 1
 	define TERMINAL-DIAGONAL 2
 
-	define SERIF-NONE   0
+	define SERIF-NONE 0
 	define SERIF-MOTION 1
-	define SERIF-ALL    2
+	define SERIF-ALL 2
 
 	glyph-block-export PiShape
 	define flex-params [PiShape] : glyph-proc
@@ -27,11 +27,11 @@ glyph-block Letter-Greek-Pi : begin
 		local-parameter : top
 		local-parameter : bottom
 		local-parameter : shrinkRate -- 0.05
-		local-parameter : fine       -- Stroke
-		local-parameter : doSerif    -- false
-		local-parameter : serifType  -- [if doSerif SERIF-ALL SERIF-NONE]
-		local-parameter : endShrink  -- 0
-		local-parameter : terminal   -- TERMINAL-STRAIGHT
+		local-parameter : fine -- Stroke
+		local-parameter : doSerif -- false
+		local-parameter : serifType -- [if doSerif SERIF-ALL SERIF-NONE]
+		local-parameter : endShrink -- 0
+		local-parameter : terminal -- TERMINAL-STRAIGHT
 
 		local hasSerif : serifType !== SERIF-NONE
 		local shrink : if hasSerif 0 (shrinkRate * (df.rightSB - df.leftSB))
@@ -39,9 +39,9 @@ glyph-block Letter-Greek-Pi : begin
 		include : HBar.t (df.leftSB - endexpand) (df.rightSB + endexpand) top fine
 		include : VBar.l (df.leftSB + shrink) bottom (top - fine / 2) fine
 		include : match terminal
-			[Just TERMINAL-TAILED]   : RightwardTailedBar     (df.rightSB - shrink) bottom (top - fine / 2) fine
+			[Just TERMINAL-TAILED] : RightwardTailedBar (df.rightSB - shrink) bottom (top - fine / 2) fine
 			[Just TERMINAL-DIAGONAL] : RightwardDiagTailedBar (df.rightSB - shrink) bottom (top - fine / 2) fine
-			__                       : VBar.r                 (df.rightSB - shrink) bottom (top - fine / 2) fine
+			__ : VBar.r (df.rightSB - shrink) bottom (top - fine / 2) fine
 
 		if (serifType !== SERIF-NONE) : begin
 			local sf : SerifFrame top bottom (df.leftSB + shrink) (df.rightSB - shrink) (swRef -- fine)
@@ -49,12 +49,12 @@ glyph-block Letter-Greek-Pi : begin
 				[Just SERIF-MOTION] : begin sf.lt.outer
 				__ : composite-proc sf.lt.outer sf.rt.outer sf.lb.full : match terminal
 					[Just TERMINAL-STRAIGHT] sf.rb.full
-					__                       [no-shape]
+					__ [no-shape]
 
 	define PeConfig : object
-		serifless     SERIF-NONE
+		serifless SERIF-NONE
 		motionSerifed SERIF-MOTION
-		serifed       SERIF-ALL
+		serifed SERIF-ALL
 
 	foreach {suffix serifType} [Object.entries PeConfig] : do
 		create-glyph "grek/Pi.\(suffix)" : glyph-proc
@@ -88,12 +88,12 @@ glyph-block Letter-Greek-Pi : begin
 
 	define SmallPiConfig : SuffixCfg.weave
 		object # body
-			''           {SmallPiShrink  false}
-			smallCapital {0              SLAB }
+			'' {SmallPiShrink false}
+			smallCapital {0 SLAB }
 		object # tail
-			tailless         TERMINAL-STRAIGHT
-			tailed           TERMINAL-TAILED
-			diagonalTailed   TERMINAL-DIAGONAL
+			tailless TERMINAL-STRAIGHT
+			tailed TERMINAL-TAILED
+			diagonalTailed TERMINAL-DIAGONAL
 
 	foreach {suffix {{shrink slab} tail}} [pairs-of SmallPiConfig] : do
 		create-glyph "grek/pi.\(suffix)" : glyph-proc
@@ -107,7 +107,7 @@ glyph-block Letter-Greek-Pi : begin
 		local xm : df.middle + [HSwToV : 0.5 * df.mvs]
 		include : HBar.t df.leftSB xm top df.mvs
 		include : VBar.l df.leftSB 0 (top - df.mvs / 2) df.mvs
-		include : VBar.r xm        0 (top - df.mvs / 2) df.mvs
+		include : VBar.r xm 0 (top - df.mvs / 2) df.mvs
 		include : MidHook.m df top
 
 		if (serifType !== SERIF-NONE) : begin
@@ -115,7 +115,7 @@ glyph-block Letter-Greek-Pi : begin
 			include : match serifType
 				[Just SERIF-MOTION] : begin sf.lt.outer
 				__ : if sf.enoughSpaceForFullSerifs
-					composite-proc sf.lt.outer sf.rt.outer sf.lb.full  sf.rb.full
+					composite-proc sf.lt.outer sf.rt.outer sf.lb.full sf.rb.full
 					composite-proc sf.lt.outer sf.rt.outer sf.lb.outer sf.rb.outer
 
 	foreach {suffix serifType} [Object.entries PeConfig] : do

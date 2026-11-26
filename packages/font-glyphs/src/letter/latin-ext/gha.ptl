@@ -10,13 +10,13 @@ glyph-block Letter-Latin-Gha : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar RightwardDiagTailedBar StemCutY ApplyDiagCut
 	glyph-block-import Mark-Adjustment : LeaningAnchor
 
-	define TERMINAL-NORMAL  0
-	define TERMINAL-TAILED  1
-	define TERMINAL-DIAG    2
+	define TERMINAL-NORMAL 0
+	define TERMINAL-TAILED 1
+	define TERMINAL-DIAG 2
 
-	define SLAB-NONE        0
-	define SLAB-OUTER       1
-	define SLAB-FULL        2
+	define SLAB-NONE 0
+	define SLAB-OUTER 1
+	define SLAB-FULL 2
 
 	define [GhaShape df terminal top bot ada adb slabType cut] : glyph-proc
 		local sw : df.adviceThinnerStroke 2 0.75
@@ -25,46 +25,46 @@ glyph-block Letter-Latin-Gha : begin
 
 		include : union [VBar.r subDf.rightSB (0 + DToothlessRise) (top - DToothlessRise) sw] : dispiro
 			widths.lhs sw
-			g4   subDf.rightSB (top - DToothlessRise)
-			Arch.lhs top (sw -- sw) (blendPre  -- {})
+			g4 subDf.rightSB (top - DToothlessRise)
+			Arch.lhs top (sw -- sw) (blendPre -- {})
 			flatside.ld subDf.leftSB 0 top (ada * 0.75 * df.adws) (adb * 0.75 * df.adws)
-			Arch.lhs 0   (sw -- sw) (blendPost -- {})
-			g4   subDf.rightSB (0   + DToothlessRise)
+			Arch.lhs 0 (sw -- sw) (blendPost -- {})
+			g4 subDf.rightSB (0 + DToothlessRise)
 
 		local y : StemCutY (bot -- bot) (top -- top) (cut -- [fallback cut ''])
 		include : match terminal
-			[Just TERMINAL-TAILED] : RightwardTailedBar     df.rightSB y.bot y.top sw
-			[Just TERMINAL-DIAG]   : RightwardDiagTailedBar df.rightSB y.bot y.top sw
-			__                     : VBar.r                 df.rightSB y.bot y.top sw
+			[Just TERMINAL-TAILED] : RightwardTailedBar df.rightSB y.bot y.top sw
+			[Just TERMINAL-DIAG] : RightwardDiagTailedBar df.rightSB y.bot y.top sw
+			__ : VBar.r df.rightSB y.bot y.top sw
 		include : ApplyDiagCut (cut -- [fallback cut '']) (side -- 'r') (x -- df.rightSB) (bot -- bot) (top -- top) (sw -- sw)
 		include : dispiro
 			widths.lhs sw
-			flat (subDf.rightSB - [HSwToV : 0.5 * sw])        (top - DToothlessRise - sw) [heading Rightward]
+			flat (subDf.rightSB - [HSwToV : 0.5 * sw]) (top - DToothlessRise - sw) [heading Rightward]
 			curl (subDf.rightSB - [HSwToV : 0.5 * sw] + TINY) (top - DToothlessRise - sw) [heading Rightward]
 			alsoThru 0.5 0.15
-			g4   (df.rightSB - [HSwToV sw]) top [widths.rhs sw]
+			g4 (df.rightSB - [HSwToV sw]) top [widths.rhs sw]
 
 		include : tagged 'serifRB' : match slabType
 			[Just SLAB-OUTER] : HSerif.rb df.rightSB bot SideJut sw
-			[Just SLAB-FULL]  : if bot
+			[Just SLAB-FULL] : if bot
 				union
-					HSerif.rb (df.rightSB - [HSwToV : 0.5 * sw]) bot (Jut        - [HSwToV : 0.5 * (Stroke - sw)]) sw
+					HSerif.rb (df.rightSB - [HSwToV : 0.5 * sw]) bot (Jut - [HSwToV : 0.5 * (Stroke - sw)]) sw
 					HSerif.lb (df.rightSB - [HSwToV : 0.5 * sw]) bot (MidJutSide - [HSwToV : 0.5 * (Stroke - sw)]) sw
 				begin
-					HSerif.mb (df.rightSB - [HSwToV : 0.5 * sw]) bot (Jut        - [HSwToV : 0.5 * (Stroke - sw)]) sw
-			__                : no-shape
+					HSerif.mb (df.rightSB - [HSwToV : 0.5 * sw]) bot (Jut - [HSwToV : 0.5 * (Stroke - sw)]) sw
+			__ : no-shape
 
 		if bot : include : LeaningAnchor.Below.VBar.r df.rightSB sw
 
 	define GhaConfig : SuffixCfg.weave
 		object # cut
-			''          ''
+			'' ''
 		object # terminal/serifs
-			serifless               {TERMINAL-NORMAL  SLAB-NONE }
-			motionBottomSerifed     {TERMINAL-NORMAL  SLAB-OUTER}
-			bottomSerifed           {TERMINAL-NORMAL  SLAB-FULL }
-			tailedSerifless         {TERMINAL-TAILED  SLAB-NONE }
-			diagonalTailedSerifless {TERMINAL-DIAG    SLAB-NONE }
+			serifless {TERMINAL-NORMAL SLAB-NONE }
+			motionBottomSerifed {TERMINAL-NORMAL SLAB-OUTER}
+			bottomSerifed {TERMINAL-NORMAL SLAB-FULL }
+			tailedSerifless {TERMINAL-TAILED SLAB-NONE }
+			diagonalTailedSerifless {TERMINAL-DIAG SLAB-NONE }
 
 	foreach {suffix {cut {terminal slabType}}} [pairs-of GhaConfig] : do
 		create-glyph "Gha.\(suffix)" : glyph-proc

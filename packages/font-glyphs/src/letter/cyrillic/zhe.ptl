@@ -11,7 +11,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 	glyph-block-export Zhe
 	define Zhe : namespace
-		define [ZheSw df]  : df.adviceStroke 3.3
+		define [ZheSw df] : df.adviceStroke 3.3
 		define [ZheSw2 df] : df.adviceStroke 4.0
 		define [ZheSw3 df] : df.adviceStroke 3.7
 		define [Overshoot fSlab df] : if fSlab 0 : O * 3 * df.adws
@@ -40,9 +40,9 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			define sw : ZheSw df
 			define fineK 0.1
 			return : CyrDescender.rSideJut
-				x       -- (df.rightSB - fineK * sw - [Overshoot fSlab df])
-				y       -- 0
-				refSw   -- sw
+				x -- (df.rightSB - fineK * sw - [Overshoot fSlab df])
+				y -- 0
+				refSw -- sw
 				sideJut -- SideJut
 
 		export : define [StraightLegs fSlab fHalf df bot top] : begin
@@ -54,8 +54,8 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			define attach2Y : [mix bot top 0.72] + fine
 
 			define [mask] : spiro-outline
-				corner (df.leftSB  + overshoot + TINY) top
-				corner attach1X              (attach1Y + TINY)
+				corner (df.leftSB + overshoot + TINY) top
+				corner attach1X (attach1Y + TINY)
 				corner (df.width - attach1X) (attach1Y + TINY)
 				corner (df.rightSB - overshoot - TINY) top
 
@@ -68,9 +68,9 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 			local leftHalf : union
 				intersection [MaskLeft df.middle]
-					ExtLineLhs (df.leftSB  + overshoot) top attach1X attach1Y fine 4
+					ExtLineLhs (df.leftSB + overshoot) top attach1X attach1Y fine 4
 				intersection [MaskLeft df.middle] : difference
-					ExtLineRhs (df.leftSB  + overshoot) bot attach1X attach2Y fine 4
+					ExtLineRhs (df.leftSB + overshoot) bot attach1X attach2Y fine 4
 					mask
 
 			local fullShape : if fHalf rightHalf : union rightHalf leftHalf
@@ -86,8 +86,8 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			define attach1Y : mix bot top : if fSlab 0.325 0.375
 			define attach2Y : mix bot top 0.75
 
-			define [upperCurvature] : bezControls  0 0.3 0.5 0.75 8
-			define [lowerCurvature] : quadControls 0 0.3          8
+			define [upperCurvature] : bezControls 0 0.3 0.5 0.75 8
+			define [lowerCurvature] : quadControls 0 0.3 8
 
 			local rightHalf : union
 				dispiro
@@ -107,7 +107,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 			local leftHalf : union
 				dispiro
-					g4.down.start (df.leftSB  + overshoot) top [widths.lhs.heading fine Downward]
+					g4.down.start (df.leftSB + overshoot) top [widths.lhs.heading fine Downward]
 					upperCurvature
 					g4 attach1X attach1Y [widths.lhs fine2]
 				difference
@@ -116,7 +116,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 						lowerCurvature
 						g4 attach1X attach2Y [widths.center fine2]
 					intersection [MaskLeft df.middle] : spiro-outline
-						corner.down.start (df.leftSB  + overshoot + TINY) top
+						corner.down.start (df.leftSB + overshoot + TINY) top
 						lowerCurvature
 						corner attach1X (attach1Y + TINY)
 						corner df.middle top
@@ -125,7 +125,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 			return : intersection [MaskBelow top] [MaskAbove bot] fullShape
 
-		export : define [TouchingLegs   fSlab fHalf df bot top] : ConnectedLegsImpl 1.00 fSlab fHalf df bot top
+		export : define [TouchingLegs fSlab fHalf df bot top] : ConnectedLegsImpl 1.00 fSlab fHalf df bot top
 		export : define [ConnectingLegs fSlab fHalf df bot top] : ConnectedLegsImpl 0.60 fSlab fHalf df bot top
 		export : define [InverseStraightLegs fSlab fHalf df bot top] : remove-holes : new-glyph : glyph-proc
 			include : StraightLegs fSlab fHalf df bot top
@@ -218,23 +218,23 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			return : union fullShape : HBar.m [if fHalf df.middle (midX + 0.5 * fine)] (df.width - (midX + 0.5 * fine)) midY fine
 
 		export : define [Shape Legs fSlab fMidSlab df bot top midTop] : glyph-proc
-			include : CenterBar fMidSlab    df bot top midTop
-			include : Legs      fSlab false df bot top
+			include : CenterBar fMidSlab df bot top midTop
+			include : Legs fSlab false df bot top
 			include : LegSerifs fSlab false df bot top
 
 		export : define [HalfShape Legs fSlab fMidSlab df bot top midTop] : glyph-proc
-			include : CenterBar fMidSlab   df bot top midTop
-			include : Legs      fSlab true df bot top
+			include : CenterBar fMidSlab df bot top midTop
+			include : Legs fSlab true df bot top
 			include : LegSerifs fSlab true df bot top
 
 	define ZheConfig : object
-		straight           {Zhe.StraightLegs         SLAB   SLAB}
-		curly              {Zhe.CurlyLegs            SLAB   SLAB}
-		symmetricTouching  {Zhe.TouchingLegs         SLAB   SLAB}
-		symmetricConnected {Zhe.ConnectingLegs       SLAB   SLAB}
-		inverseConnected   {Zhe.InverseStraightLegs  SLAB   SLAB}
-		roundedConnected   {Zhe.RoundedLegs          SLAB   SLAB}
-		cursive            {Zhe.CursiveLegs          false  SLAB}
+		straight {Zhe.StraightLegs SLAB SLAB}
+		curly {Zhe.CurlyLegs SLAB SLAB}
+		symmetricTouching {Zhe.TouchingLegs SLAB SLAB}
+		symmetricConnected {Zhe.ConnectingLegs SLAB SLAB}
+		inverseConnected {Zhe.InverseStraightLegs SLAB SLAB}
+		roundedConnected {Zhe.RoundedLegs SLAB SLAB}
+		cursive {Zhe.CursiveLegs false SLAB}
 
 	foreach {suffix {legShape fSlab fMidSlab}} [Object.entries ZheConfig] : do
 		create-glyph "cyrl/Zhe.\(suffix)" : glyph-proc
@@ -262,8 +262,8 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			include : df.markSet.b
 			include : Zhe.Shape legShape fSlab fMidSlab df 0 XH Ascender
 
-	select-variant 'cyrl/Zhe'          0x416
+	select-variant 'cyrl/Zhe' 0x416
 	select-variant 'cyrl/ZheDescender' 0x496 (follow -- 'cyrl/Zhe')
-	select-variant 'cyrl/zhe'          0x436
-	select-variant 'cyrl/zhe.BGR'            (follow -- 'cyrl/zhe')
+	select-variant 'cyrl/zhe' 0x436
+	select-variant 'cyrl/zhe.BGR' (follow -- 'cyrl/zhe')
 	select-variant 'cyrl/zheDescender' 0x497 (follow -- 'cyrl/zhe')

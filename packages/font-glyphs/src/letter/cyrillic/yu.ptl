@@ -16,9 +16,9 @@ glyph-block Letter-Cyrillic-Yu : begin
 	glyph-block-import Letter-Latin-Lower-H : HDigraphBody HDigraphConfig BakedHDigraphSuffix
 	glyph-block-import Letter-Latin-Long-S : LongSUpperHalf LongSLowerHalf
 
-	define SLAB-ALL        1
-	define SLAB-LOWER      2
-	define SLAB-BULGARIAN  3
+	define SLAB-ALL 1
+	define SLAB-LOWER 2
+	define SLAB-BULGARIAN 3
 
 	define [CyrYuShape df slabType top oTop ada adb serifType] : glyph-proc
 		local sw : df.adviceThinnerStroke 2 0.75
@@ -31,9 +31,9 @@ glyph-block Letter-Cyrillic-Yu : begin
 
 		include : Iotation.[if (slabType === SLAB-BULGARIAN) 'ascender' 'full'] df top
 			hBarRight -- (((subDf.leftSB + OX) + [HSwToV : 0.5 * sw]) + shift)
-			hBarY     -- (oTop / 2)
-			fCapital  -- (slabType === SLAB-ALL)
-			swRef     -- sw
+			hBarY -- (oTop / 2)
+			fCapital -- (slabType === SLAB-ALL)
+			swRef -- sw
 			serifType -- serifType
 
 	foreach {suffix serifType} [Object.entries IotationSerifConfig] : do
@@ -64,18 +64,18 @@ glyph-block Letter-Cyrillic-Yu : begin
 		include : OShape oTop 0 subDf.leftSB subDf.rightSB sw (ada * 0.75 * df.adws) (adb * 0.75 * df.adws)
 
 		include : Iotation.RevShape df top
-			hBarLeft   -- ((subDf.rightSB - OX) - [HSwToV : 0.5 * sw])
-			hBarY      -- (oTop / 2)
-			swRef      -- sw
-			fTailed    -- fTailed
-			serifType  -- [IotationSerifFromSelector : if (top === CAP) 'cyrl/Yu' 'cyrl/yu']
+			hBarLeft -- ((subDf.rightSB - OX) - [HSwToV : 0.5 * sw])
+			hBarY -- (oTop / 2)
+			swRef -- sw
+			fTailed -- fTailed
+			serifType -- [IotationSerifFromSelector : if (top === CAP) 'cyrl/Yu' 'cyrl/yu']
 
 	define YuRevConfig : object
-		straight  false
-		tailed    true
+		straight false
+		tailed true
 
 	foreach {suffix fTailed} [Object.entries YuRevConfig] : do
-		if [not fTailed] : create-glyph "cyrl/revYu.\(suffix)" : glyph-proc
+		if (!fTailed) : create-glyph "cyrl/revYu.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3
 			include : df.markSet.capital
 			include : CyrRevYuShape df CAP CAP ArchDepthA ArchDepthB fTailed
@@ -158,7 +158,7 @@ glyph-block Letter-Cyrillic-Yu : begin
 			local lf : CLetterForm cDf styTop styBot XH Descender
 				ada -- [cDf.archDepthAOf SmallArchDepth L.sw]
 				adb -- [cDf.archDepthBOf SmallArchDepth L.sw]
-				sw  -- L.sw
+				sw -- L.sw
 			include : intersection [MaskLeft (xStem + 0.5 * [HSwToV L.sw])] [lf.full]
 			include : refer-glyph 'latn/chStretched/h'
 			include : CenterInkInFrame L.df

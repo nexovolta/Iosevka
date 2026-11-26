@@ -12,14 +12,14 @@ glyph-block Letter-Greek-Lower-Xi : begin
 	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrTailDescender RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedBendTailBot
 	glyph-block-import Mark-Adjustment : ExtendBelowBaseAnchors
 
-	define SHAPE-ROUNDED    0
-	define SHAPE-FLAT-TOP   1
-	define SHAPE-FLAT-HOOK  2
+	define SHAPE-ROUNDED 0
+	define SHAPE-FLAT-TOP 1
+	define SHAPE-FLAT-HOOK 2
 	define SHAPE-CORNER-HOOK 3
 
-	define TAIL-CURLY                 0
-	define TAIL-STRAIGHT              1
-	define TAIL-DIAGONAL              2
+	define TAIL-CURLY 0
+	define TAIL-STRAIGHT 1
+	define TAIL-DIAGONAL 2
 	define TAIL-STRAIGHT-SHARP-CORNER 3
 	define TAIL-DIAGONAL-SHARP-CORNER 4
 
@@ -32,11 +32,11 @@ glyph-block Letter-Greek-Lower-Xi : begin
 			[HSwToV Stroke] + 2 * [Math.max TightBendInnerRadius (0.25 * Stroke)]
 		return : list
 			arcvh 16
-			g4   [mix (xLowerArcLeft + [HSwToV Stroke]) (RightSB - [HSwToV Stroke]) 0.6] 0 [heading Rightward]
+			g4 [mix (xLowerArcLeft + [HSwToV Stroke]) (RightSB - [HSwToV Stroke]) 0.6] 0 [heading Rightward]
 			archv 16
 			g4.down.mid (RightSB - [HSwToV Stroke]) yCurlMid [heading Downward]
 			arcvh 16
-			flat                    (RightSB - hookIn)      (Descender + Stroke)
+			flat (RightSB - hookIn) (Descender + Stroke)
 			curl [Math.min Middle : (RightSB - hookIn) - 1] (Descender + Stroke)
 
 	define [LowerXiShape shape tail] : glyph-proc
@@ -49,47 +49,47 @@ glyph-block Letter-Greek-Lower-Xi : begin
 		local fineTop : Stroke * CThinB
 		local xBarStart : mix SB RightSB : match shape
 			[Just SHAPE-FLAT-TOP] 0.750
-			__                   0.625
+			__ 0.625
 		local xBarEnd : mix SB RightSB : match shape
 			[Just SHAPE-FLAT-TOP] 0.850
-			__                   0.750
+			__ 0.750
 		local yBarTop : mix Stroke Ascender pyBar
 		local yBarBot : yBarTop - Stroke
 
 		local xUpperArcLeft : match shape
 			[Just SHAPE-FLAT-TOP] : [mix SB RightSB 0.075] + OX
-			__                    :      SB                + 0
+			__ : SB + 0
 		local xLowerArcLeft : match shape
 			[Just SHAPE-FLAT-TOP] : [mix SB RightSB 0.025] + OX * 2
-			__                    :      SB                + OX * 2
+			__ : SB + OX * 2
 
 		local box : new Box yBarTop 0 xLowerArcLeft RightSB
 		local Arc : Flat box (sw -- Stroke)
 
 		include : match shape
 			[Just SHAPE-FLAT-TOP] : HBar.t SB RightSB Ascender
-			__                    : glyph-proc
+			__ : glyph-proc
 
 		include : dispiro
 			match shape
 				[Just SHAPE-FLAT-HOOK] : [MakeFlatHook SB RightSB Ascender 0].hookStartR
 				[Just SHAPE-CORNER-HOOK] : [MakeCornerHook SB RightSB Ascender 0].hookStartR
 				[Just SHAPE-FLAT-TOP] : list
-					flat                    xBarEnd    ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
+					flat xBarEnd ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
 					curl [Arch.adjust-x.top xBarStart] ((Ascender - Stroke) + fineTop) [widths.lhs fineTop]
 					archv 16
 				__ : list
-					g4   (RightSB + O) (Ascender - Hook) [widths.lhs]
+					g4 (RightSB + O) (Ascender - Hook) [widths.lhs]
 					HookStart Ascender
-			g4   xUpperArcLeft [YSmoothMidL Ascender yBarBot adaTop adbTop] [widths.lhs]
+			g4 xUpperArcLeft [YSmoothMidL Ascender yBarBot adaTop adbTop] [widths.lhs]
 			arcvh 16
 			flat [Arch.adjust-x.bot xBarStart] (yBarTop - fineMid) [widths.lhs.heading fineMid Rightward]
-			curl                    xBarEnd    (yBarTop - fineMid) [widths.lhs.heading fineMid Rightward]
+			curl xBarEnd (yBarTop - fineMid) [widths.lhs.heading fineMid Rightward]
 		include : dispiro
-			flat                    xBarEnd    (yBarBot + fineMid) [widths.lhs.heading fineMid Leftward]
+			flat xBarEnd (yBarBot + fineMid) [widths.lhs.heading fineMid Leftward]
 			curl [Arch.adjust-x.top xBarStart] (yBarBot + fineMid) [widths.lhs.heading fineMid Leftward]
 			archv 16
-			g4   xLowerArcLeft [mix 0 [YSmoothMidL yBarTop 0 adaBot adbBot] 0.9] [widths.lhs]
+			g4 xLowerArcLeft [mix 0 [YSmoothMidL yBarTop 0 adaBot adbBot] 0.9] [widths.lhs]
 			match tail
 				[Just TAIL-CURLY] : XiCurlyTailKnots xLowerArcLeft
 				[Just TAIL-STRAIGHT] : RoundedTailStraightKnots Stroke RightSB [widths.rhs.heading Stroke Rightward]
@@ -110,19 +110,19 @@ glyph-block Letter-Greek-Lower-Xi : begin
 
 	create-glyph : glyph-proc
 		include : MarkSet.b
-		create-forked-glyph 'grek/xi.roundedStraightTail' : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT
+		create-forked-glyph 'grek/xi.roundedStraightTail' : LowerXiShape SHAPE-ROUNDED TAIL-STRAIGHT
 		create-forked-glyph 'grek/xi.flatTopStraightTail' : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT
 		create-forked-glyph 'grek/xi.flatHookStraightTail' : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT
 		create-forked-glyph 'grek/xi.cornerHookStraightTail' : LowerXiShape SHAPE-CORNER-HOOK TAIL-STRAIGHT
-		create-forked-glyph 'grek/xi.roundedDiagonalTail' : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL
+		create-forked-glyph 'grek/xi.roundedDiagonalTail' : LowerXiShape SHAPE-ROUNDED TAIL-DIAGONAL
 		create-forked-glyph 'grek/xi.flatTopDiagonalTail' : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL
 		create-forked-glyph 'grek/xi.flatHookDiagonalTail' : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL
 		create-forked-glyph 'grek/xi.cornerHookDiagonalTail' : LowerXiShape SHAPE-CORNER-HOOK TAIL-DIAGONAL
-		create-forked-glyph 'grek/xi.roundedStraightTailSharpCorner' : LowerXiShape SHAPE-ROUNDED  TAIL-STRAIGHT-SHARP-CORNER
+		create-forked-glyph 'grek/xi.roundedStraightTailSharpCorner' : LowerXiShape SHAPE-ROUNDED TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph 'grek/xi.flatTopStraightTailSharpCorner' : LowerXiShape SHAPE-FLAT-TOP TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph 'grek/xi.flatHookStraightTailSharpCorner' : LowerXiShape SHAPE-FLAT-HOOK TAIL-STRAIGHT-SHARP-CORNER
 		create-forked-glyph 'grek/xi.cornerHookStraightTailSharpCorner' : LowerXiShape SHAPE-CORNER-HOOK TAIL-STRAIGHT-SHARP-CORNER
-		create-forked-glyph 'grek/xi.roundedDiagonalTailSharpCorner' : LowerXiShape SHAPE-ROUNDED  TAIL-DIAGONAL-SHARP-CORNER
+		create-forked-glyph 'grek/xi.roundedDiagonalTailSharpCorner' : LowerXiShape SHAPE-ROUNDED TAIL-DIAGONAL-SHARP-CORNER
 		create-forked-glyph 'grek/xi.flatTopDiagonalTailSharpCorner' : LowerXiShape SHAPE-FLAT-TOP TAIL-DIAGONAL-SHARP-CORNER
 		create-forked-glyph 'grek/xi.flatHookDiagonalTailSharpCorner' : LowerXiShape SHAPE-FLAT-HOOK TAIL-DIAGONAL-SHARP-CORNER
 		create-forked-glyph 'grek/xi.cornerHookDiagonalTailSharpCorner' : LowerXiShape SHAPE-CORNER-HOOK TAIL-DIAGONAL-SHARP-CORNER

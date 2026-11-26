@@ -13,9 +13,9 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 	glyph-block-import Letter-Shared-Shapes : nShoulder uBowl SerifFrame KomiHookSerifs KomiHookSerif
 
 	define HConfig : object
-		straightSerifless                {false  false}
-		straightTopLeftSerifed           {true   false}
-		straightSerifedExceptBottomRight {true   true }
+		straightSerifless {false false}
+		straightTopLeftSerifed {true false}
+		straightSerifedExceptBottomRight {true true }
 
 	foreach {suffix {serifLT serifLB}} [pairs-of HConfig] : do
 		local df : DivFrame para.advanceScaleMM 3
@@ -31,22 +31,22 @@ glyph-block Letter-Latin-Lower-Hwair : begin
 				include : VBar.l df.leftSB 0 Ascender df.mvs
 				include : let [yJoin : mix 0 XH 0.5] : union
 					nShoulder.shape
-						top     -- XH
-						bottom  -- (yJoin - TINY)
-						left    -- (df.leftSB + [HSwToV df.mvs])
-						right   -- (df.middle + [HSwToV : 0.5 * df.mvs])
-						stroke  -- df.mvs
-						fine    -- df.shoulderFine
-						ada     -- ada
-						adb     -- adb
+						top -- XH
+						bottom -- (yJoin - TINY)
+						left -- (df.leftSB + [HSwToV df.mvs])
+						right -- (df.middle + [HSwToV : 0.5 * df.mvs])
+						stroke -- df.mvs
+						fine -- df.shoulderFine
+						ada -- ada
+						adb -- adb
 					uBowl.toothlessRounded
-						top     -- (yJoin + TINY)
-						bottom  -- 0
-						left    -- (df.middle - [HSwToV : 0.5 * df.mvs])
-						right   -- df.rightSB
-						stroke  -- df.mvs
-						ada     -- ada
-						adb     -- adb
+						top -- (yJoin + TINY)
+						bottom -- 0
+						left -- (df.middle - [HSwToV : 0.5 * df.mvs])
+						right -- df.rightSB
+						stroke -- df.mvs
+						ada -- ada
+						adb -- adb
 						rightY0 -- XH
 				local sf : SerifFrame.fromDf df Ascender 0
 				if serifLT : include : tagged 'serifLT' sf.lt.outer

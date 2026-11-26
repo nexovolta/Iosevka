@@ -19,8 +19,8 @@ glyph-block Symbol-Math-Logicals : begin
 		include : refer-glyph 'minus'
 		include : VBar.l SB (SymbolMid - 0.55 * (RightSB - SB)) SymbolMid OperatorStroke
 
-	turned 'turnNegate' 0x2319 'negate'    Middle SymbolMid
-	turned 'invNegate'  null   'revNegate' Middle SymbolMid
+	turned 'turnNegate' 0x2319 'negate' Middle SymbolMid
+	turned 'invNegate' null 'revNegate' Middle SymbolMid
 
 	local top TackTop
 	local bot TackBot
@@ -45,27 +45,27 @@ glyph-block Symbol-Math-Logicals : begin
 	turned 'bot' 0x22A5 'top' Middle SymbolMid
 
 	create-glyph 'assert' 0x22A6 : glyph-proc
-		local l : mix Middle SB      DesignParameters.logic_narrow_shrink
+		local l : mix Middle SB DesignParameters.logic_narrow_shrink
 		local r : mix Middle RightSB DesignParameters.logic_narrow_shrink
 		include : HBar.m l r SymbolMid OperatorStroke
 		include : VBar.l l top bot OperatorStroke
 
 	create-glyph 'models' 0x22A7 : glyph-proc
-		local l : mix Middle SB      DesignParameters.logic_narrow_shrink
+		local l : mix Middle SB DesignParameters.logic_narrow_shrink
 		local r : mix Middle RightSB DesignParameters.logic_narrow_shrink
 		include : HBar.m l r [mix SymbolMid top (1 / 3)] OperatorStroke
 		include : HBar.m l r [mix SymbolMid bot (1 / 3)] OperatorStroke
 		include : VBar.l l top bot OperatorStroke
 
 	create-glyph 'tautology' 0x22A8 : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		include : HBar.m l r [mix SymbolMid top (1 / 3)] OperatorStroke
 		include : HBar.m l r [mix SymbolMid bot (1 / 3)] OperatorStroke
 		include : VBar.l l top bot OperatorStroke
 
 	create-glyph 'forces' 0x22A9 : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		local vs : AdviceStroke 4
 		local m : mix l (r - vs) (3 / 5)
@@ -74,7 +74,7 @@ glyph-block Symbol-Math-Logicals : begin
 		include : VBar.m m top bot vs
 
 	create-glyph 'tripleBarForces' 0x22AA : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		local vs : AdviceStroke 5
 		local m : mix l (r - vs) (3 / 4)
@@ -84,7 +84,7 @@ glyph-block Symbol-Math-Logicals : begin
 		include : VBar.m ([mix l m (1/2)] + [HSwToV : 0.25 * vs]) top bot vs
 
 	create-glyph 'doubleForces' 0x22AB : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		local vs : AdviceStroke 4
 		local m : mix l (r - vs) (3 / 5)
@@ -94,7 +94,7 @@ glyph-block Symbol-Math-Logicals : begin
 		include : VBar.m m top bot vs
 
 	create-glyph 'intercalate' 0x22BA : glyph-proc
-		local l : mix Middle SB      DesignParameters.logic_narrow_shrink
+		local l : mix Middle SB DesignParameters.logic_narrow_shrink
 		local r : mix Middle RightSB DesignParameters.logic_narrow_shrink
 		include : HBar.t l r top OperatorStroke
 		include : VBar.m Middle top bot OperatorStroke
@@ -145,10 +145,10 @@ glyph-block Symbol-Math-Logicals : begin
 		include : VBar.l r top bot vs
 		local t : mix SymbolMid top (1 / 3)
 		local b : mix SymbolMid bot (1 / 3)
-		include : HBar.m df.leftSB l          t OperatorStroke
-		include : HBar.m df.leftSB l          b OperatorStroke
-		include : HBar.m r         df.rightSB t OperatorStroke
-		include : HBar.m r         df.rightSB b OperatorStroke
+		include : HBar.m df.leftSB l t OperatorStroke
+		include : HBar.m df.leftSB l b OperatorStroke
+		include : HBar.m r df.rightSB t OperatorStroke
+		include : HBar.m r df.rightSB b OperatorStroke
 
 	create-glyph 'dashvvdash' 0x27DB : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 4
@@ -158,11 +158,11 @@ glyph-block Symbol-Math-Logicals : begin
 		local r : Math.min (df.middle + sbInner) ([mix df.rightSB df.leftSB (1 / 3)] - [HSwToV : 0.5 * vs])
 		include : VBar.r l top bot vs
 		include : VBar.l r top bot vs
-		include : HBar.m df.leftSB l          SymbolMid OperatorStroke
-		include : HBar.m r         df.rightSB SymbolMid OperatorStroke
+		include : HBar.m df.leftSB l SymbolMid OperatorStroke
+		include : HBar.m r df.rightSB SymbolMid OperatorStroke
 
 	create-glyph 'gleichStark' 0x29E6 : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		include : HBar.m l r [mix SymbolMid top (1 / 3)] OperatorStroke
 		include : HBar.m l r [mix SymbolMid bot (1 / 3)] OperatorStroke
@@ -210,19 +210,19 @@ glyph-block Symbol-Math-Logicals : begin
 	create-glyph 'naryWhiteVerticalBar' 0x2AFF : WhiteVerticalBar BgOpTop BgOpBot
 
 	create-glyph 'ordinarilySatisfies' 0x2AE2 : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		include : HBar.m l r [mix SymbolMid top (1 / 2)] OperatorStroke
-		include : HBar.m l r      SymbolMid              OperatorStroke
+		include : HBar.m l r SymbolMid OperatorStroke
 		include : HBar.m l r [mix SymbolMid bot (1 / 2)] OperatorStroke
 		include : VBar.l l top bot OperatorStroke
 
-	turned 'turnForces'       0x2AE3 'forces'       Middle SymbolMid
-	turned 'turnTautology'    0x2AE4 'tautology'    Middle SymbolMid
+	turned 'turnForces' 0x2AE3 'forces' Middle SymbolMid
+	turned 'turnTautology' 0x2AE4 'tautology' Middle SymbolMid
 	turned 'turnDoubleForces' 0x2AE5 'doubleForces' Middle SymbolMid
 
 	create-glyph 0x2AE6 : glyph-proc
-		local l : mix Middle SB      1
+		local l : mix Middle SB 1
 		local r : mix Middle RightSB 1
 		local vs : AdviceStroke 4
 		local m : mix l (r - vs) (3 / 5)
@@ -252,7 +252,7 @@ glyph-block Symbol-Math-Logicals : begin
 
 	create-glyph 'doubleTop' 0x2AEA : glyph-proc
 		local vs : AdviceStroke 4
-		include : VBar.m [mix Middle SB      (2 / 5)] top bot vs
+		include : VBar.m [mix Middle SB (2 / 5)] top bot vs
 		include : VBar.m [mix Middle RightSB (2 / 5)] top bot vs
 		include : HBar.t SB RightSB top OperatorStroke
 
@@ -283,5 +283,5 @@ glyph-block Symbol-Math-Logicals : begin
 	turned 'barRingBelow' 0x2AF0 'barRingAbove' Middle SymbolMid
 	turned 'topRingBelow' 0x2AF1 'botRingAbove' Middle SymbolMid
 
-	create-glyph 'interleave'    0x2AF4 : TripleBarShape Middle top     bot     OperatorStroke
+	create-glyph 'interleave' 0x2AF4 : TripleBarShape Middle top bot OperatorStroke
 	create-glyph 'bigInterleave' 0x2AFC : TripleBarShape Middle BgTkTop BgTkBot OperatorStroke

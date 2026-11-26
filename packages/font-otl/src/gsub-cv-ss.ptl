@@ -9,13 +9,13 @@ define look-around null
 
 class CvLookupManager
 	public [new table tag feature] : begin
-		set this.table   table
-		set this.tag     tag
+		set this.table table
+		set this.tag tag
 		set this.feature feature
 
-		set this.decompositionLookup  null
-		set this.alternatesLookup     null
-		set this.singleSubstLookups   {}
+		set this.decompositionLookup null
+		set this.alternatesLookup null
+		set this.singleSubstLookups {}
 		set this.cherryPickingLookups {}
 
 	public [addDecompositionLookup lookup] : begin
@@ -110,7 +110,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 				local gPart : glyphStore.queryByNameEnsured part
 				foreach [gr : items-of : AnyCv.query gPart] : if gr.tag : begin
 					local lookup : [cvs.get gr.tag].createDecompositionSubst
-					if [not lookup.substitutions.(gn)] : set lookup.substitutions.(gn) parts
+					if (!lookup.substitutions.(gn)) : set lookup.substitutions.(gn) parts
 
 	do 'cvxx / ssxx'
 		local grSetUsedBySs : new Set
@@ -136,7 +136,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 				if (subst && subst != gn) : begin
 					if (gr.tag && gr.rank) : begin
 						local cvAlt : [cvs.get gr.tag].createAlternateSubst
-						if [not cvAlt.substitutions.(gn)] : set cvAlt.substitutions.(gn) {}
+						if (!cvAlt.substitutions.(gn)) : set cvAlt.substitutions.(gn) {}
 						set cvAlt.substitutions.(gn).(gr.rank - 1) : glyphStore.ensureExists subst
 					if [grSetUsedBySs.has gr] : begin
 						local cvSingle : [cvs.get gr.tag].createSingleSubstFor gr.rank
@@ -164,7 +164,7 @@ export : define [buildCVSS gsub para glyphStore] : begin
 		foreach cv [items-of sortedCvs] : begin
 			if cv.alternatesLookup : begin
 				local st cv.alternatesLookup.substitutions
-				foreach {k v} [pairs-of st] : foreach idx [range 0 v.length] : if [not v.(idx)]
+				foreach {k v} [pairs-of st] : foreach idx [range 0 v.length] : if (!v.(idx))
 					set v.(idx) k
 			cv.linkDeps
 

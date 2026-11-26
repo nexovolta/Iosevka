@@ -41,7 +41,7 @@ glyph-block Symbol-Other-Phonetic : begin
 			corner Middle (XH - triangleSize * 2.75)
 			corner (Middle + triangleSize * 1.35) XH
 
-	define [yOfTone tone]        : mix (OperatorStroke / 2) (CAP - OperatorStroke / 2) (tone / 4)
+	define [yOfTone tone] : mix (OperatorStroke / 2) (CAP - OperatorStroke / 2) (tone / 4)
 	define [yOfToneNeutral tone] : mix DotRadius (CAP - DotRadius) (tone / 4)
 	define [yOfToneDepart a b p] : mix (CAP * a + OperatorStroke / 2) (CAP * b - OperatorStroke / 2) p
 	define [ToneCorner] : with-params [left a b pos [swV OperatorStroke] [swH OperatorStroke]] : glyph-proc
@@ -89,8 +89,8 @@ glyph-block Symbol-Other-Phonetic : begin
 				Rect CAP 0 0 Middle
 				dispiro
 					widths.center OperatorStroke
-					corner (0 - Width / 2)         [yOfTone toneStart]
-					corner (Width + Width / 2)     [yOfTone : mix toneStart toneEnd 2]
+					corner (0 - Width / 2) [yOfTone toneStart]
+					corner (Width + Width / 2) [yOfTone : mix toneStart toneEnd 2]
 			include : VBar.m Middle 0 CAP OperatorStroke
 		create-glyph ('toneSandhiEnd' + toneStart + toneEnd) : glyph-proc
 			Joining.set currentGlyph Joining.Classes.Left
@@ -110,19 +110,19 @@ glyph-block Symbol-Other-Phonetic : begin
 					intersection
 						dispiro
 							widths.center OperatorStroke
-							corner (0 - Width / 2)     [yOfTone toneStart]
+							corner (0 - Width / 2) [yOfTone toneStart]
 							corner (Width + Width / 2) [yOfTone : mix toneStart toneMid 2]
 						dispiro
 							widths.center OperatorStroke
-							corner (0 - Width / 2)     [yOfTone : mix toneEnd toneMid 2]
+							corner (0 - Width / 2) [yOfTone : mix toneEnd toneMid 2]
 							corner (Width + Width / 2) [yOfTone toneEnd]
 					dispiro
 						widths.center OperatorStroke
 						corner (0 - Width / 2) [yOfTone toneStart]
-						corner (Width / 2)     [yOfTone toneMid]
+						corner (Width / 2) [yOfTone toneMid]
 					dispiro
 						widths.center OperatorStroke
-						corner (Width / 2)         [yOfTone toneMid]
+						corner (Width / 2) [yOfTone toneMid]
 						corner (Width + Width / 2) [yOfTone toneEnd]
 		create-glyph ('toneSandhiMid' + toneStart + toneMid + toneEnd) : glyph-proc
 			include [refer-glyph ('toneMid' + toneStart + toneMid + toneEnd)] AS_BASE ALSO_METRICS
@@ -130,10 +130,10 @@ glyph-block Symbol-Other-Phonetic : begin
 
 	# Departing tones
 	local DepartingToneConfig : list
-		list 'departingToneYin'  0x2EA  0    0.5  0
-		list 'departingToneYang' 0x2EB  0    0.5  0.5
-		list 'beginHighTone'     0x2F9  0.6  1    1.0
-		list 'beginLowTone'      0x2FB  0    0.4  0
+		list 'departingToneYin' 0x2EA 0 0.5 0
+		list 'departingToneYang' 0x2EB 0 0.5 0.5
+		list 'beginHighTone' 0x2F9 0.6 1 1.0
+		list 'beginLowTone' 0x2FB 0 0.4 0
 	foreach {name code a b pos} [items-of DepartingToneConfig] : begin
 		create-glyph name code : glyph-proc
 			include : ToneCorner true a b pos
@@ -216,8 +216,8 @@ glyph-block Symbol-Other-Phonetic : begin
 			include : Regizmo
 
 	local EnteringToneConfig : list
-		list 'endHighTone'       0x2FA  0.6  1    1.0
-		list 'endLowTone'        0x2FC  0    0.4  0
+		list 'endHighTone' 0x2FA 0.6 1 1.0
+		list 'endLowTone' 0x2FC 0 0.4 0
 	foreach {name code a b pos} [items-of EnteringToneConfig] : begin
 		create-glyph name code : glyph-proc
 			include : ToneCorner false a b pos
@@ -275,8 +275,8 @@ glyph-block Symbol-Other-Phonetic : begin
 		create-glyph 'rightTranspositionBracket' 0x2E0A : union [with-transform [ScaleAround Middle 0 (-1) 1] : Transposition] [no-shape]
 
 	local DblToneConfig : list
-		list 'stressAndHighTone'     0xA720  0.6  1    1.0
-		list 'stressAndLowTone'      0xA721  0    0.4  0
+		list 'stressAndHighTone' 0xA720 0.6 1 1.0
+		list 'stressAndLowTone' 0xA721 0 0.4 0
 	foreach {name code a b pos} [items-of DblToneConfig] : begin
 		create-glyph name code : glyph-proc
 			local df : include : DivFrame 1 3.75

@@ -13,7 +13,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 	define [CenterDigraphInFrame df] : glyph-proc
 		local b : include : MeasureGlyphBounds
-		if [not b] : return nothing
+		if (!b) : return nothing
 		local xShift : df.middle - [mix b.xMin b.xMax 0.5]
 		if ([Math.abs xShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate xShift 0] true
 
@@ -38,18 +38,18 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 			local {subDf} : SubDfAndShift 0 df
 			set-base-anchor 'aBar' subDf.middle [AShape.BarPos bodyShape slabKind height]
 
-		define SLAB-NONE    0
-		define SLAB-TOP     1
-		define SLAB-LEFT    2
-		define SLAB-RIGHT   4
+		define SLAB-NONE 0
+		define SLAB-TOP 1
+		define SLAB-LEFT 2
+		define SLAB-RIGHT 4
 
 		define ALetters : object
-			''   {0xA732  para.advanceScaleMM  'capital'  CAP}
-			smcp {null    para.advanceScaleM   'e'        XH }
+			'' {0xA732 para.advanceScaleMM 'capital' CAP}
+			smcp {null para.advanceScaleM 'e' XH }
 
 		foreach {prefix {code adws mk height}} [Object.entries ALetters] : do
 			foreach {suffix {bodyShape slabKind diag}} [Object.entries AConfig] : do
-				define skLeft  : maskOffBits slabKind SLAB-RIGHT
+				define skLeft : maskOffBits slabKind SLAB-RIGHT
 				define skRight : maskOffBits slabKind SLAB-LEFT
 
 				create-glyph "\(prefix)AA/left.\(suffix)" : AHalfLeft [DivFrame adws 3.5] height bodyShape skLeft mk diag
@@ -85,12 +85,12 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 						local subDf : df.slice 3 2
 						include : union
 							MaskAbove : [AShape.BarPos bodyShape slabKind CAP] - df.mvs
-							MaskLeft  : subDf.width / 2
+							MaskLeft : subDf.width / 2
 						include : AShape.LetterBottomRightRemoved subDf bodyShape slabKind CAP df.mvs diag
 
-			select-variant "\(prefix)AA/left"       (follow -- 'A')
-			select-variant "\(prefix)AA/left/mask"  (follow -- 'A')
-			select-variant "\(prefix)AA/right"      (follow -- 'A')
+			select-variant "\(prefix)AA/left" (follow -- 'A')
+			select-variant "\(prefix)AA/left/mask" (follow -- 'A')
+			select-variant "\(prefix)AA/right" (follow -- 'A')
 			select-variant "\(prefix)AA/right/mask" (follow -- 'A')
 
 			derive-multi-part-glyphs-baked "\(prefix)AA" code
@@ -134,7 +134,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		select-variant 'AU/U'
 
 	do 'AU'
-		select-variant 'AU/A'      (follow -- 'A')
+		select-variant 'AU/A' (follow -- 'A')
 		select-variant 'AU/A/mask' (follow -- 'A')
 		derive-multi-part-glyphs-baked 'AU' 0xA736 {'AU/A' 'AU/A/mask' 'AU/U'}
 			function [srcs gr] : glyph-proc
@@ -157,23 +157,23 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 
 		define AVVConfig : SuffixCfg.weave
 			object # body
-				straight  {true   0}
-				curly     {false  0}
-				squareTop {true   1}
+				straight {true 0}
+				curly {false 0}
+				squareTop {true 1}
 			object # serifs
-				''                    AVVAutoSerifs
-				serifless             no-shape
-				motionSerifed         VMotionSerifs
+				'' AVVAutoSerifs
+				serifless no-shape
+				motionSerifed VMotionSerifs
 				topRightMotionSerifed VTopRightMotionSerifs
 				bilateralMotionSerifed VBilateralMotionSerifs
-				serifed               VSerifs
+				serifed VSerifs
 
 		foreach {suffix {{fStraightBar fSquareTop} Serifs}} [Object.entries AVVConfig] : do
 			local fSerifStraight : if fSquareTop 0 fStraightBar
 			create-glyph "AV/V.\(suffix)" : glyph-proc
 				include : with-transform [ApparentTranslate shiftAV 0] : glyph-proc
 					if fSquareTop : include : VSquareTopShape subDfAV CAP dfAV.mvs
-					if [not fSquareTop] : include : VShape subDfAV fStraightBar CAP (sw -- dfAV.mvs)
+					if (!fSquareTop) : include : VShape subDfAV fStraightBar CAP (sw -- dfAV.mvs)
 					include : Serifs subDfAV fSerifStraight CAP dfAV.mvs
 					eject-contour 'serifLT'
 					eject-contour 'strokeDown'
@@ -221,7 +221,7 @@ glyph-block Letter-Latin-Upper-AA-AO : begin
 		define shiftAY : subDfAY.rightSB - subDfAY.middle
 
 		foreach {suffix {{straightBar fSquareTop} bottomShape slabKind}} [Object.entries NonCursiveYConfig] : do
-			if [not fSquareTop] : begin
+			if (!fSquareTop) : begin
 				local {doSlabBottom doSlabMotion} slabKind
 				local ySlabKind {false doSlabBottom doSlabMotion false}
 				create-glyph "AY/Y.\(suffix)" : glyph-proc

@@ -469,17 +469,17 @@ glyph-block Symbol-Math-Geometry : begin
 
 		local bot : ParenBot + halfSw
 		local top : ParenTop - halfSw
-		local left  : Middle - [Math.max (radiusBox / 4) (halfVSw * 1.1)] - halfVSw
+		local left : Middle - [Math.max (radiusBox / 4) (halfVSw * 1.1)] - halfVSw
 		local right : Middle + [Math.max (radiusBox / 4) (halfVSw * 1.1)] + halfVSw
 
 		foreach t [range 0 till N] : begin
 			local cl : left + halfVSw
 			local cr : right - halfVSw
-			local pm   0.875
+			local pm 0.875
 			knots.push : g2.right.mid [mix cl cr 0.5] [mix bot top ((t + 0/8) / N)] [heading Rightward]
-			knots.push : g2.up.mid    cr              [mix bot top ((t + 2/8) / N)] [heading Upward]
-			knots.push : g2.left.mid  [mix cl cr 0.5] [mix bot top ((t + 4/8) / N)] [heading Leftward]
-			knots.push : g2.up.mid    cl              [mix bot top ((t + 6/8) / N)] [heading Upward]
+			knots.push : g2.up.mid cr [mix bot top ((t + 2/8) / N)] [heading Upward]
+			knots.push : g2.left.mid [mix cl cr 0.5] [mix bot top ((t + 4/8) / N)] [heading Leftward]
+			knots.push : g2.up.mid cl [mix bot top ((t + 6/8) / N)] [heading Upward]
 
 		include : dispiro
 			widths.center stroke
@@ -490,15 +490,15 @@ glyph-block Symbol-Math-Geometry : begin
 	do 'Zigzags'
 		create-glyph 'vertZigzag' 0x299A : intersection [MaskAbove ParenBot] [MaskBelow ParenTop]
 			VZigzag.fromSide Middle ParenBot ParenTop (radiusBox / 4) 9 0 GeometryStroke
-		create-glyph 'wigglyFenceLeft'  0x29D8 : intersection [MaskAbove ParenBot] [MaskBelow ParenTop]
+		create-glyph 'wigglyFenceLeft' 0x29D8 : intersection [MaskAbove ParenBot] [MaskBelow ParenTop]
 			VZigzag.fromSide Middle ParenBot ParenTop (radiusBox / 4) 10 1 GeometryStroke
 		create-glyph 'wigglyFenceRight' 0x29D9 : intersection [MaskAbove ParenBot] [MaskBelow ParenTop]
 			VZigzag.fromSide Middle ParenBot ParenTop (radiusBox / 4) 10 0 GeometryStroke
 
 		define space : (rightBox - leftBox - [HSwToV GeometryStroke] * 2) / 3
 		create-glyph 'doubleWigglyFenceLeft' 0x29DA : glyph-proc
-			include : with-transform [ApparentTranslate   space  0] : refer-glyph 'wigglyFenceLeft'
+			include : with-transform [ApparentTranslate space 0] : refer-glyph 'wigglyFenceLeft'
 			include : with-transform [ApparentTranslate (-space) 0] : refer-glyph 'wigglyFenceLeft'
 		create-glyph 'doubleWigglyFenceRight' 0x29DB : glyph-proc
-			include : with-transform [ApparentTranslate   space  0] : refer-glyph 'wigglyFenceRight'
+			include : with-transform [ApparentTranslate space 0] : refer-glyph 'wigglyFenceRight'
 			include : with-transform [ApparentTranslate (-space) 0] : refer-glyph 'wigglyFenceRight'

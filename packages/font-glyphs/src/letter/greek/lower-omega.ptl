@@ -55,15 +55,15 @@ glyph-block Letter-Greek-Lower-Omega : begin
 				include : GenericLowerOmegaShape df top terminal
 
 	define OmegaConfig : object
-		round                             {'round'     'round' }
-		almostFlatTop                     {'round'     'almost'}
-		flatTop                           {'round'     'flat'  }
-		broad                             {'broad'     'round' }
-		broadAlmostFlatTop                {'broad'     'almost'}
-		broadFlatTop                      {'broad'     'flat'  }
-		roundedVerticalSides              {'vertical'  'round' }
-		roundedVerticalSidesAlmostFlatTop {'vertical'  'almost'}
-		roundedVerticalSidesFlatTop       {'vertical'  'flat'  }
+		round {'round' 'round' }
+		almostFlatTop {'round' 'almost'}
+		flatTop {'round' 'flat' }
+		broad {'broad' 'round' }
+		broadAlmostFlatTop {'broad' 'almost'}
+		broadFlatTop {'broad' 'flat' }
+		roundedVerticalSides {'vertical' 'round' }
+		roundedVerticalSidesAlmostFlatTop {'vertical' 'almost'}
+		roundedVerticalSidesFlatTop {'vertical' 'flat' }
 
 	define [LowerOmegaWithLoopShape df top body terminal] : glyph-proc
 		local stroke : df.adviceThinnerStroke 3
@@ -102,9 +102,9 @@ glyph-block Letter-Greek-Lower-Omega : begin
 		include : dispiro
 			widths.lhs sw
 			g4 df.middle yCross [widths.lhs coFine]
-			g4.up.mid    [mix df.middle rInner k1] ([mix 0 loopTop k2] + d) [widths.lhs loopFine]
+			g4.up.mid [mix df.middle rInner k1] ([mix 0 loopTop k2] + d) [widths.lhs loopFine]
 			Arch.lhs loopTop (sw -- loopFine)
-			g4.down.mid  [mix df.middle lInner k1] ([mix 0 loopTop k2] - d)
+			g4.down.mid [mix df.middle lInner k1] ([mix 0 loopTop k2] - d)
 			g4 df.middle yCross [widths.lhs coFine]
 
 	define [ClosedOmegaShape df top fLongLeg _body _terminal] : glyph-proc
@@ -197,4 +197,4 @@ glyph-block Letter-Greek-Lower-Omega : begin
 	CreateTurnedLetter 'grek/turnomega' null 'grek/omega' HalfAdvance (XH / 2)
 
 	CreateTurnedLetter 'latn/turnOmegaClosed' 0x1DF76 'latn/OmegaClosed' HalfAdvance (CAP / 2)
-	CreateTurnedLetter 'latn/turnomegaClosed' 0x1DF77 'latn/omegaClosed' HalfAdvance (XH  / 2)
+	CreateTurnedLetter 'latn/turnomegaClosed' 0x1DF77 'latn/omegaClosed' HalfAdvance (XH / 2)

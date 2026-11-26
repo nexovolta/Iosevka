@@ -35,7 +35,7 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 
 		define WaveShape : CreateWaveShape waveDist WaveSw
 		define rightTBias : (MosaicWidth / MosaicUnitWidth) - 1
-		define freeCoT      : arrowSB / MosaicWidth
+		define freeCoT : arrowSB / MosaicWidth
 		define connectedCoT : (arrowSB / MosaicWidth) + (9 / 32) * MosaicWidthScalar
 
 		local mag : arrowRSB - arrowSB
@@ -115,28 +115,28 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 		define [SquiggleArrowBarSide kMag1 kMag2 l r kL kR y0] : begin
 			local mag : r - l
 			local p : (mag - o - halfArrowSw * 1.1) / mag
-			local p2   0.75
+			local p2 0.75
 			local p2L : mix 1 p2 [mix 1 kL (1 / 2)]
 			local p2R : mix 1 p2 [mix 1 kR (1 / 2)]
 
 			local innerStops : 3 * MosaicWidthScalar
 			local knots {}
 
-			knots.push : corner [mix l r : mix 0 (1 - p) kL]  y0
-			knots.push : corner [mix l r (1 - p2L)]      y0
+			knots.push : corner [mix l r : mix 0 (1 - p) kL] y0
+			knots.push : corner [mix l r (1 - p2L)] y0
 			foreach j [range 0 innerStops] : begin
 				knots.push : corner
 					mix l r : mix (1 - p2L) p2R ((j + 1 / 2) / innerStops)
 					y0 + waveArrowAmplitude * [if (j % 2) kMag1 kMag2]
-			knots.push : corner [mix l r p2R]      y0
-			knots.push : corner [mix l r : mix 1 p kR]  y0
+			knots.push : corner [mix l r p2R] y0
+			knots.push : corner [mix l r : mix 1 p kR] y0
 
 			return knots
 
 		define [SquiggleArrowBar kL kR] : begin
 			return : spiro-outline
-				SquiggleArrowBarSide   0.3 (-0.25) arrowSB arrowRSB kL kR (SymbolMid + halfArrowSw)
-				[SquiggleArrowBarSide  0.25 (-0.3) arrowSB arrowRSB kL kR (SymbolMid - halfArrowSw)].reverse
+				SquiggleArrowBarSide 0.3 (-0.25) arrowSB arrowRSB kL kR (SymbolMid + halfArrowSw)
+				[SquiggleArrowBarSide 0.25 (-0.3) arrowSB arrowRSB kL kR (SymbolMid - halfArrowSw)].reverse
 
 		create-glyph [MangleName 'squiggleArrowLeft'] [MangleUnicode 0x21DC] : glyph-proc
 			set-width MosaicWidth
@@ -154,8 +154,8 @@ glyph-block Symbol-Arrow-Wave : for-width-kinds WideWidth1
 
 			define [LongSquiggleArrowBar kL kR] : begin
 				return : spiro-outline
-					SquiggleArrowBarSide   0.3 (-0.25) l r kL kR (SymbolMid + halfArrowSw)
-					[SquiggleArrowBarSide  0.25 (-0.3) l r kL kR (SymbolMid - halfArrowSw)].reverse
+					SquiggleArrowBarSide 0.3 (-0.25) l r kL kR (SymbolMid + halfArrowSw)
+					[SquiggleArrowBarSide 0.25 (-0.3) l r kL kR (SymbolMid - halfArrowSw)].reverse
 
 			create-glyph 'longSquiggleArrowLeft' 0x2B33 : glyph-proc
 				set-width MosaicWidth

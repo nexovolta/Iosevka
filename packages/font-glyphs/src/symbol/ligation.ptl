@@ -31,7 +31,7 @@ glyph-block Symbol-Ligation : begin
 	define arrowheadSlope : 1 / LessSlope
 
 	local arrowExtend : clamp 0 Width (RightSB - 0.5 * OperatorStroke * arrowheadSlope)
-	local arrowJ      : clamp 0 Width (SB + 0.5 * OperatorStroke * arrowheadSlope)
+	local arrowJ : clamp 0 Width (SB + 0.5 * OperatorStroke * arrowheadSlope)
 
 	local dblExtend : clamp 0 Width (RightSB - EqualHalfSpace * arrowheadSlope)
 	local dblArrowJ : clamp 0 Width (SB + EqualHalfSpace * arrowheadSlope)
@@ -42,8 +42,8 @@ glyph-block Symbol-Ligation : begin
 
 	do 'Arrow Bar'
 		define [ArrowBarConfig extend kern join doubleBar] : begin
-			define cleft   0
-			define cright  Width
+			define cleft 0
+			define cright Width
 			define arrowr : if doubleBar
 				Width + SB + [HSwToV OperatorStroke]
 				Width + extend
@@ -54,28 +54,28 @@ glyph-block Symbol-Ligation : begin
 			define zright : cright + SB
 
 			define lk : object
-				f  {SB                   false} # Free end
-				x  {(SB - Width)         false} # !='s bar shape, extension to left
-				y  {(-join - Width)      false} # -!-'s second bar, more to left
-				l  {arrowl               false} # <-
-				l1 {(arrowl - kern)      false} # <<-
-				lx {[mix arrowl 0 0.5]   false} # Bar right after <!--'s exclam
-				m  {(0 - RodBarHOffset)  false} # |-
-				j  {(-join)              false} # >-
-				j1 {(-join - kern)       false} # >>-
-				c  {cleft                true } # Connected rod
-				z  {zleft                true } # Connected rod
+				f {SB false} # Free end
+				x {(SB - Width) false} # !='s bar shape, extension to left
+				y {(-join - Width) false} # -!-'s second bar, more to left
+				l {arrowl false} # <-
+				l1 {(arrowl - kern) false} # <<-
+				lx {[mix arrowl 0 0.5] false} # Bar right after <!--'s exclam
+				m {(0 - RodBarHOffset) false} # |-
+				j {(-join) false} # >-
+				j1 {(-join - kern) false} # >>-
+				c {cleft true } # Connected rod
+				z {zleft true } # Connected rod
 
 			define rk : object
-				f  {RightSB                  false} # Free end
-				p  {(arrowr - Width)         false} # bar in :> when ">" is turned into an arrow
-				r  {arrowr                   false} # ->
-				r1 {(arrowr + kern)          false} # ->>
-				m  {(Width + RodBarHOffset)  false} # -|
-				j  {(Width + join)           false} # -<
-				j1 {(Width + join + kern)    false} # -<<
-				c  {cright                   true } # Connected rods
-				z  {zright                   true } # Connected rods
+				f {RightSB false} # Free end
+				p {(arrowr - Width) false} # bar in :> when ">" is turned into an arrow
+				r {arrowr false} # ->
+				r1 {(arrowr + kern) false} # ->>
+				m {(Width + RodBarHOffset) false} # -|
+				j {(Width + join) false} # -<
+				j1 {(Width + join + kern) false} # -<<
+				c {cright true } # Connected rods
+				z {zright true } # Connected rods
 
 			define result {}
 			foreach [l : items-of : Object.keys lk] : foreach [r : items-of : Object.keys rk]
@@ -86,14 +86,14 @@ glyph-block Symbol-Ligation : begin
 		define [HyphenShape.joinCap x] : JunctDiamond x SymbolMid OperatorStroke
 
 		define Shapes : object
-			'plus'   {PlusShape    HyphenNotch  {arrowExtend arrowheadsKern arrowJ    0}}
-			'hyphen' {HyphenShape  HyphenNotch  {arrowExtend arrowheadsKern arrowJ    0}}
-			'equal'  {EqualShape   EqualHole    {dblExtend   arrowheadsKern dblArrowJ 1}}
-			'ident'  {IdentShape   IdentHole    {dblExtend   arrowheadsKern dblArrowJ 1}}
+			'plus' {PlusShape HyphenNotch {arrowExtend arrowheadsKern arrowJ 0}}
+			'hyphen' {HyphenShape HyphenNotch {arrowExtend arrowheadsKern arrowJ 0}}
+			'equal' {EqualShape EqualHole {dblExtend arrowheadsKern dblArrowJ 1}}
+			'ident' {IdentShape IdentHole {dblExtend arrowheadsKern dblArrowJ 1}}
 
 		define NotchConfig : object
 			'withoutNotch' {false}
-			'withNotch'    {true }
+			'withNotch' {true }
 
 		foreach {prefix {Shape Notch {extend kern join fDB}}} [Object.entries Shapes] : do
 			foreach {lS rS {left capLeft} {right capRight}} [items-of : ArrowBarConfig extend kern join fDB] : do
@@ -103,11 +103,11 @@ glyph-block Symbol-Ligation : begin
 						include : difference
 							union
 								Shape left right
-								if capLeft  [Shape.joinCap left]  [no-shape]
+								if capLeft [Shape.joinCap left] [no-shape]
 								if capRight [Shape.joinCap right] [no-shape]
-							if (fNotch && left < (SB - Width))       [Notch (-Width)]    [no-shape]
-							if (fNotch && left < SB)                 [Notch 0]           [no-shape]
-							if (fNotch && right > RightSB)           [Notch Width]       [no-shape]
+							if (fNotch && left < (SB - Width)) [Notch (-Width)] [no-shape]
+							if (fNotch && left < SB) [Notch 0] [no-shape]
+							if (fNotch && right > RightSB) [Notch Width] [no-shape]
 							if (fNotch && right > (RightSB + Width)) [Notch (2 * Width)] [no-shape]
 
 				select-variant "\(prefix).lig.\(lS)\(rS)"
@@ -120,39 +120,39 @@ glyph-block Symbol-Ligation : begin
 		glyph-block-import Shared-Symbol-Shapes : CreateWaveShape
 		define WaveShape : CreateWaveShape (EqualHalfSpace + 0.5 * OperatorStroke) OperatorStroke (-1 / 4)
 
-		define LR  (2  / 32)
-		define LR1 (9  / 32)
-		define Z   (1  / 4)
-		define F   (-1 / 4)
-		define C   0
-		define J   (-1 / 8)
+		define LR (2 / 32)
+		define LR1 (9 / 32)
+		define Z (1 / 4)
+		define F (-1 / 4)
+		define C 0
+		define J (-1 / 8)
 
 		define lk : object
-			l  {LR   (-arrowExtend)                   false}
-			l1 {LR1  (-arrowExtend - arrowheadsKern)  false}
-			f  {F    nothing                          false}
-			z  {Z    nothing                          false}
-			c  {C    nothing                          false}
-			m  {J    (0 - RodBarHOffset)              true }
-			j  {J    (-arrowJ)                        true }
-			j1 {J    (-arrowJ - arrowheadsKern)       true }
+			l {LR (-arrowExtend) false}
+			l1 {LR1 (-arrowExtend - arrowheadsKern) false}
+			f {F nothing false}
+			z {Z nothing false}
+			c {C nothing false}
+			m {J (0 - RodBarHOffset) true }
+			j {J (-arrowJ) true }
+			j1 {J (-arrowJ - arrowheadsKern) true }
 
 		define rk : object
-			r  {LR   (Width + arrowExtend)                   false}
-			r1 {LR1  (Width + arrowExtend + arrowheadsKern)  false}
-			f  {F    nothing                                 false}
-			z  {Z    nothing                                 false}
-			c  {C    nothing                                 false}
-			m  {J    (Width + RodBarHOffset)                 true }
-			j  {J    (Width + arrowJ)                        true }
-			j1 {J    (Width + arrowJ + arrowheadsKern)       true }
+			r {LR (Width + arrowExtend) false}
+			r1 {LR1 (Width + arrowExtend + arrowheadsKern) false}
+			f {F nothing false}
+			z {Z nothing false}
+			c {C nothing false}
+			m {J (Width + RodBarHOffset) true }
+			j {J (Width + arrowJ) true }
+			j1 {J (Width + arrowJ + arrowheadsKern) true }
 
 		foreach [lS : items-of : Object.keys lk] : foreach [rS : items-of : Object.keys rk] : create-glyph"wave.lig.\(lS)\(rS)" : glyph-proc
 			include : SetJoiningKind lS rS
 			local {tL jL djL} lk.(lS)
 			local {tR jR djR} rk.(rS)
 			include : WaveShape
-				left  -- tL
+				left -- tL
 				right -- tR
 				xsJoin -- jL
 				xfJoin -- jR
@@ -198,16 +198,16 @@ glyph-block Symbol-Ligation : begin
 			create-aliased-glyph 'greater.lig.shift0.anti'
 			create-aliased-glyph 'greater.lig.shiftN0'
 			create-aliased-glyph 'greater.lig.shiftN0.mid'
-			create-forked-glyph 'greater.lig.shift0h'      : ArrowShiftTranslate   0.5
-			create-forked-glyph 'greater.lig.shift1'       : ArrowShiftTranslate   1.0
-			create-forked-glyph 'greater.lig.shift1.head'  : ArrowShiftTranslate   1.0
-			create-forked-glyph 'greater.lig.shift1h'      : ArrowShiftTranslate   1.5
-			create-forked-glyph 'greater.lig.shift2'       : ArrowShiftTranslate   2.0
-			create-forked-glyph 'greater.lig.shiftN0h'     : ArrowShiftTranslate (-0.5)
-			create-forked-glyph 'greater.lig.shiftN1'      : ArrowShiftTranslate (-1.0)
+			create-forked-glyph 'greater.lig.shift0h' : ArrowShiftTranslate 0.5
+			create-forked-glyph 'greater.lig.shift1' : ArrowShiftTranslate 1.0
+			create-forked-glyph 'greater.lig.shift1.head' : ArrowShiftTranslate 1.0
+			create-forked-glyph 'greater.lig.shift1h' : ArrowShiftTranslate 1.5
+			create-forked-glyph 'greater.lig.shift2' : ArrowShiftTranslate 2.0
+			create-forked-glyph 'greater.lig.shiftN0h' : ArrowShiftTranslate (-0.5)
+			create-forked-glyph 'greater.lig.shiftN1' : ArrowShiftTranslate (-1.0)
 			create-forked-glyph 'greater.lig.shiftN1.anti' : ArrowShiftTranslate (-1.0)
-			create-forked-glyph 'greater.lig.shiftN1h'     : ArrowShiftTranslate (-1.5)
-			create-forked-glyph 'greater.lig.shiftN2'      : ArrowShiftTranslate (-2.0)
+			create-forked-glyph 'greater.lig.shiftN1h' : ArrowShiftTranslate (-1.5)
+			create-forked-glyph 'greater.lig.shiftN2' : ArrowShiftTranslate (-2.0)
 
 		create-glyph 'less.lig.shift0' : glyph-proc
 			include [refer-glyph 'less'] AS_BASE ALSO_METRICS
@@ -216,16 +216,16 @@ glyph-block Symbol-Ligation : begin
 			create-aliased-glyph 'less.lig.shift0.anti'
 			create-aliased-glyph 'less.lig.shiftN0'
 			create-aliased-glyph 'less.lig.shiftN0.mid'
-			create-forked-glyph 'less.lig.shift0h'      : ArrowShiftTranslate (-0.5)
-			create-forked-glyph 'less.lig.shift1'       : ArrowShiftTranslate (-1.0)
-			create-forked-glyph 'less.lig.shift1.head'  : ArrowShiftTranslate (-1.0)
-			create-forked-glyph 'less.lig.shift1h'      : ArrowShiftTranslate (-1.5)
-			create-forked-glyph 'less.lig.shift2'       : ArrowShiftTranslate (-2.0)
-			create-forked-glyph 'less.lig.shiftN0h'     : ArrowShiftTranslate   0.5
-			create-forked-glyph 'less.lig.shiftN1'      : ArrowShiftTranslate   1.0
-			create-forked-glyph 'less.lig.shiftN1.anti' : ArrowShiftTranslate   1.0
-			create-forked-glyph 'less.lig.shiftN1h'     : ArrowShiftTranslate   1.5
-			create-forked-glyph 'less.lig.shiftN2'      : ArrowShiftTranslate   2.0
+			create-forked-glyph 'less.lig.shift0h' : ArrowShiftTranslate (-0.5)
+			create-forked-glyph 'less.lig.shift1' : ArrowShiftTranslate (-1.0)
+			create-forked-glyph 'less.lig.shift1.head' : ArrowShiftTranslate (-1.0)
+			create-forked-glyph 'less.lig.shift1h' : ArrowShiftTranslate (-1.5)
+			create-forked-glyph 'less.lig.shift2' : ArrowShiftTranslate (-2.0)
+			create-forked-glyph 'less.lig.shiftN0h' : ArrowShiftTranslate 0.5
+			create-forked-glyph 'less.lig.shiftN1' : ArrowShiftTranslate 1.0
+			create-forked-glyph 'less.lig.shiftN1.anti' : ArrowShiftTranslate 1.0
+			create-forked-glyph 'less.lig.shiftN1h' : ArrowShiftTranslate 1.5
+			create-forked-glyph 'less.lig.shiftN2' : ArrowShiftTranslate 2.0
 
 		define [ArrowHeadHole] : Rect (SymbolMid + EqualHalfSpace - 0.5 * OperatorStroke) (SymbolMid - EqualHalfSpace + 0.5 * OperatorStroke) (-Width) (2 * Width)
 
@@ -269,7 +269,7 @@ glyph-block Symbol-Ligation : begin
 			create-glyph "underscore.lig.cc.\(suffix)" : glyph-proc
 				Joining.set currentGlyph Joining.Classes.Left
 				include : HBar.b 0 Width yBar
-				include : JunctDiamond 0     (yBar + HalfStroke) Stroke
+				include : JunctDiamond 0 (yBar + HalfStroke) Stroke
 				include : JunctDiamond Width (yBar + HalfStroke) Stroke
 
 			# _|_ shapes
@@ -291,27 +291,27 @@ glyph-block Symbol-Ligation : begin
 
 	do 'Inequality'
 		define Neq : namespace
-			export : define Sw   OperatorStroke
+			export : define Sw OperatorStroke
 			export : define Dr : Sw / Stroke * DotRadius
 			export : define DotGap : Math.max ((ParenTop - ParenBot) / 8) [AdviceStroke 5]
 
 			export : define PlacementSuffixes : object
-				'1l' {0  Joining.Classes.Right}
-				'2l' {1  Joining.Classes.Right}
-				'3l' {2  Joining.Classes.Right}
-				'4l' {3  Joining.Classes.Right}
-				'1m' {0  Joining.Classes.Mid  }
-				'2m' {1  Joining.Classes.Mid  }
-				'3m' {2  Joining.Classes.Mid  }
-				'4m' {3  Joining.Classes.Mid  }
+				'1l' {0 Joining.Classes.Right}
+				'2l' {1 Joining.Classes.Right}
+				'3l' {2 Joining.Classes.Right}
+				'4l' {3 Joining.Classes.Right}
+				'1m' {0 Joining.Classes.Mid }
+				'2m' {1 Joining.Classes.Mid }
+				'3m' {2 Joining.Classes.Mid }
+				'4m' {3 Joining.Classes.Mid }
 
 			export : define BarShapeSuffixes : object
-				vertical              {0      false}
-				slightlySlanted       {0.375  false}
-				moreSlanted           {0.75   false}
-				verticalDotted        {0      true }
-				slightlySlantedDotted {0.375  true }
-				moreSlantedDotted     {0.75   true }
+				vertical {0 false}
+				slightlySlanted {0.375 false}
+				moreSlanted {0.75 false}
+				verticalDotted {0 true }
+				slightlySlantedDotted {0.375 true }
+				moreSlantedDotted {0.75 true }
 
 			export : define [DependentGlyphBuilder src] : glyph-proc
 				local {bar dot} src
@@ -330,12 +330,12 @@ glyph-block Symbol-Ligation : begin
 		foreach {place {shift joinCls}} [Object.entries Neq.PlacementSuffixes] : do
 			foreach {barSuffix {slope fDotted}} [Object.entries Neq.BarShapeSuffixes] : do
 				create-glyph "neq.\(place)/barPart.\(barSuffix)" : glyph-proc
-					define yUp     BgOpTop
+					define yUp BgOpTop
 					define yDown : BgOpBot + [if fDotted (2 * Neq.Dr + Neq.DotGap) 0]
 
 					define xCenter : Width * (1 / 2 + shift / 2)
-					define xUp     : xCenter + slope * (yUp   - SymbolMid)
-					define xDown   : xCenter + slope * (yDown - SymbolMid)
+					define xUp : xCenter + slope * (yUp - SymbolMid)
+					define xDown : xCenter + slope * (yDown - SymbolMid)
 
 					include : dispiro
 						widths.center Neq.Sw
@@ -349,31 +349,31 @@ glyph-block Symbol-Ligation : begin
 						set-base-anchor 'cvDecompose' xDotCenter yDotCenter
 
 			select-variant "neq.allow-dot.\(place)/barPart"
-				follow    -- 'neq.allow-dot'
+				follow -- 'neq.allow-dot'
 				shapeFrom -- "neq.\(place)/barPart"
 			select-variant "neq.bar-only.\(place)/barPart"
-				follow    -- 'neq.bar-only'
+				follow -- 'neq.bar-only'
 				shapeFrom -- "neq.\(place)/barPart"
 
 			derive-multi-part-glyphs "neq.allow-dot.\(place)" null {"neq.allow-dot.\(place)/barPart" 'neq/dotPart'} Neq.DependentGlyphBuilder
-			derive-multi-part-glyphs "neq.bar-only.\(place)"  null {"neq.bar-only.\(place)/barPart"  'neq/dotPart'} Neq.DependentGlyphBuilder
+			derive-multi-part-glyphs "neq.bar-only.\(place)" null {"neq.bar-only.\(place)/barPart" 'neq/dotPart'} Neq.DependentGlyphBuilder
 
 	do '<| , |> and <>'
 		glyph-block-import Symbol-Math-Relation-Inequality : LessShape GreaterShape
 		glyph-block-import Symbol-Punctuation-Slashes-And-Number-Sign : slashDefaultLeft slashDefaultRight
 
-		define koTriangle     : 1 / 6
-		define koTag            0
+		define koTriangle : 1 / 6
+		define koTag 0
 
-		define kiShrunk         0
-		define kiExtend         1
-		define kiExtend2        2
+		define kiShrunk 0
+		define kiExtend 1
+		define kiExtend2 2
 
-		local [trigLeft k]   : mix SB RightSB k
-		local [trigRight k]  : mix RightSB (Width * 1.5 - [HSwToV : 1.5 * OperatorStroke]) k
+		local [trigLeft k] : mix SB RightSB k
+		local [trigRight k] : mix RightSB (Width * 1.5 - [HSwToV : 1.5 * OperatorStroke]) k
 		local [dHTriangle kOut kIn] : LessSlope * ([trigRight kIn] - [trigLeft kOut])
 
-		define [TrigLeftShape  kOut kIn shift] : LessShape (SymbolMid + [dHTriangle kOut kIn]) (SymbolMid - [dHTriangle kOut kIn]) ([trigLeft kOut] + shift) ([trigRight kIn] + shift)
+		define [TrigLeftShape kOut kIn shift] : LessShape (SymbolMid + [dHTriangle kOut kIn]) (SymbolMid - [dHTriangle kOut kIn]) ([trigLeft kOut] + shift) ([trigRight kIn] + shift)
 		define [TrigRightShape kOut kIn shift] : GreaterShape (SymbolMid + [dHTriangle kOut kIn]) (SymbolMid - [dHTriangle kOut kIn]) (Width - [trigRight kIn] + shift) (Width - [trigLeft kOut] + shift)
 
 		create-glyph 'less.lig.trig' : glyph-proc
@@ -442,7 +442,7 @@ glyph-block Symbol-Ligation : begin
 	do 'Chaining Plus (shifted middle bars)'
 		define NotchConfig : object
 			'withoutNotch' {false}
-			'withNotch'    {true }
+			'withNotch' {true }
 
 		foreach {suffix {fNotch}} [pairs-of NotchConfig] : do
 			create-glyph "plus.lig.fc.s.\(suffix)" : glyph-proc

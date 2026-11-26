@@ -13,71 +13,71 @@ glyph-block Letter-Latin-Upper-M : begin
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 	glyph-block-import Letter-Shared-Shapes : SerifFrame EngHook CyrTailDescender RightwardTailedBar
 
-	define FORM-FLAT      0
-	define FORM-HANGING   1
-	define FORM-TURN-W    2
-	define FORM-SAN       3
+	define FORM-FLAT 0
+	define FORM-HANGING 1
+	define FORM-TURN-W 2
+	define FORM-SAN 3
 	define FORM-SAN-SMALL 4
 	define FORM-ALMOST-FLAT 5
-	define FORM-YSTEM     6
+	define FORM-YSTEM 6
 
 	define BODY-STANDARD 0
 	define BODY-VERTICAL 1
-	define BODY-SAN      2
+	define BODY-SAN 2
 	define BODY-SAN-SMALL 3
 
 	define MID-HANGING 0
-	define MID-FLAT    1
-	define MID-ALMOST  2
-	define MID-YSTEM       3
+	define MID-FLAT 1
+	define MID-ALMOST 2
+	define MID-YSTEM 3
 	define MID-YSTEM-ALMOST 4
 
-	define SLAB-NONE            0
-	define SLAB-AUTO            1
-	define SLAB-MOTION          2
-	define SLAB-SMALL-CYRILLIC  3
-	define SLAB-FULL            4
+	define SLAB-NONE 0
+	define SLAB-AUTO 1
+	define SLAB-MOTION 2
+	define SLAB-SMALL-CYRILLIC 3
+	define SLAB-FULL 4
 
 	glyph-block-export MShape
 	define [MShape] : with-params [top df form slabType slanted [kMidHang df.adws] [middleYExt nothing] [tailed false]] : glyph-proc
 		local sidesSlope : if slanted 0.04 0.00
-		local xLeftTop  : df.leftSB  + (top - 0) * sidesSlope
+		local xLeftTop : df.leftSB + (top - 0) * sidesSlope
 		local xRightTop : df.rightSB - (top - 0) * sidesSlope
 
 		local fHasBottomInnerSerif : match slabType
-			[Just SLAB-FULL]     true
-			[Just SLAB-AUTO]     SLAB
-			__                   false
+			[Just SLAB-FULL] true
+			[Just SLAB-AUTO] SLAB
+			__ false
 
 		local swSideBot : match form
 			[Just FORM-SAN-SMALL] : df.adviceStroke 2.50
-			[Just FORM-SAN]       : df.adviceStroke 2.50
-			[Just FORM-TURN-W]    : df.adviceStroke 2.50
-			[Just FORM-HANGING]   : df.adviceStroke 2.50
-			[Just FORM-YSTEM]     : df.adviceStroke 2.50
-			__                    : df.adviceStroke 2.75
+			[Just FORM-SAN] : df.adviceStroke 2.50
+			[Just FORM-TURN-W] : df.adviceStroke 2.50
+			[Just FORM-HANGING] : df.adviceStroke 2.50
+			[Just FORM-YSTEM] : df.adviceStroke 2.50
+			__ : df.adviceStroke 2.75
 		local swSideTop : match form
 			[Just FORM-SAN-SMALL] : df.adviceStroke 3.00
-			[Just FORM-SAN]       : df.adviceStroke 3.00
-			[Just FORM-TURN-W]    : df.adviceStroke 3.00
-			__                    : df.adviceStroke 4.00
+			[Just FORM-SAN] : df.adviceStroke 3.00
+			[Just FORM-TURN-W] : df.adviceStroke 3.00
+			__ : df.adviceStroke 4.00
 		local swMiddle : df.adviceStroke 4.50
 		local middleY : match form
 			[Just FORM-SAN-SMALL] : mix 0 top 0.55
-			[Just FORM-SAN]       : mix 0 top 0.55
-			[Just FORM-TURN-W]    : mix 0 top 0.45
-			[Just FORM-YSTEM]     : mix 0 top 0.45
-			[Just FORM-HANGING]   : mix 0 top : 0.30 / (kMidHang * kMidHang)
+			[Just FORM-SAN] : mix 0 top 0.55
+			[Just FORM-TURN-W] : mix 0 top 0.45
+			[Just FORM-YSTEM] : mix 0 top 0.45
+			[Just FORM-HANGING] : mix 0 top : 0.30 / (kMidHang * kMidHang)
 			[Just FORM-ALMOST-FLAT] : Math.max Stroke : if fHasBottomInnerSerif swSideBot Stroke
-			__                    : if fHasBottomInnerSerif swSideBot 0
+			__ : if fHasBottomInnerSerif swSideBot 0
 		local kMidShift : match form
 			[Just FORM-FLAT] 0.75
 			[Just FORM-ALMOST-FLAT] 0.75
-			__               0.50
+			__ 0.50
 		local kMidBotStrokeShrink : mix df.adws 1 : match form
 			[Just FORM-FLAT] 1.50
 			[Just FORM-ALMOST-FLAT] 1.50
-			__               1.00
+			__ 1.00
 		local swMiddleShrink : kMidBotStrokeShrink * swMiddle
 
 		include : tagged 'strokeLeftBar' : dispiro
@@ -98,11 +98,11 @@ glyph-block Letter-Latin-Upper-M : begin
 		if (middleYExt !== nothing) : include : VBar.m df.middle middleYExt middleY swMiddleShrink
 
 		local sfT : SerifFrame top 0 xLeftTop xRightTop
-			swRef  -- swSideBot
+			swRef -- swSideBot
 			hSplit -- 3
 			fForceSymmetric -- (form !== FORM-FLAT && form !== FORM-ALMOST-FLAT)
 		local sfB : SerifFrame top 0 df.leftSB df.rightSB
-			swRef  -- swSideBot
+			swRef -- swSideBot
 			hSplit -- 3
 			fForceSymmetric -- (form !== FORM-FLAT && form !== FORM-ALMOST-FLAT)
 		include : match slabType
@@ -111,7 +111,7 @@ glyph-block Letter-Latin-Upper-M : begin
 			[Just SLAB-AUTO] : NeedSlab SLAB : composite-proc sfT.lt.outer sfT.rt.outer sfB.lb.full [if tailed [no-shape] sfB.rb.full]
 			[Just SLAB-MOTION] : begin sfT.lt.outer
 			[Just SLAB-SMALL-CYRILLIC] : composite-proc sfT.lt.outer
-				if para.isItalic [no-shape]   sfT.rt.outer
+				if para.isItalic [no-shape] sfT.rt.outer
 				if para.isItalic sfB.lb.outer sfB.lb.full
 				if tailed [no-shape] : if para.isItalic sfB.rb.outer sfB.rb.full
 
@@ -124,12 +124,12 @@ glyph-block Letter-Latin-Upper-M : begin
 		local xTopBarRightEnd : mix df.width df.rightSB : if vSlab 0.25 0.375
 
 		local swSideBot : match form
-			[Just FORM-SAN-SMALL] : AdviceStroke 2.5  subDf.adws
-			[Just FORM-SAN]       : AdviceStroke 2.5  subDf.adws
-			[Just FORM-TURN-W]    : AdviceStroke 2.5  subDf.adws
-			[Just FORM-HANGING]   : AdviceStroke 2.5  subDf.adws
-			[Just FORM-YSTEM]     : AdviceStroke 2.5  subDf.adws
-			__                    : AdviceStroke 2.75 subDf.adws
+			[Just FORM-SAN-SMALL] : AdviceStroke 2.5 subDf.adws
+			[Just FORM-SAN] : AdviceStroke 2.5 subDf.adws
+			[Just FORM-TURN-W] : AdviceStroke 2.5 subDf.adws
+			[Just FORM-HANGING] : AdviceStroke 2.5 subDf.adws
+			[Just FORM-YSTEM] : AdviceStroke 2.5 subDf.adws
+			__ : AdviceStroke 2.75 subDf.adws
 
 		include : MShape top subDf form slabType slanted (kMidHang -- df.adws) (middleYExt -- middleYExt)
 
@@ -141,50 +141,50 @@ glyph-block Letter-Latin-Upper-M : begin
 	define MConfig : SuffixCfg.combine
 		SuffixCfg.weave
 			object # sides
-				''            false
-				slantedSides  true
+				'' false
+				slantedSides true
 			object # body
-				''              BODY-STANDARD
-				verticalMiddle  BODY-VERTICAL
+				'' BODY-STANDARD
+				verticalMiddle BODY-VERTICAL
 			object # middle
-				hanging           MID-HANGING
-				flatBottom        MID-FLAT
-				almostFlatBottom  MID-ALMOST
-				yShaped           MID-YSTEM
+				hanging MID-HANGING
+				flatBottom MID-FLAT
+				almostFlatBottom MID-ALMOST
+				yShaped MID-YSTEM
 				yShapedAlmostFlat MID-YSTEM-ALMOST
 			object # serifs
-				serifless     SLAB-NONE
+				serifless SLAB-NONE
 				motionSerifed SLAB-MOTION
-				smallCyrl     SLAB-SMALL-CYRILLIC
-				serifed       SLAB-FULL
+				smallCyrl SLAB-SMALL-CYRILLIC
+				serifed SLAB-FULL
 		object # Greek San variants
-			grekCapitalSan {false  BODY-SAN        MID-HANGING  SLAB-AUTO}
-			grekSmallSan   {false  BODY-SAN-SMALL  MID-HANGING  SLAB-NONE}
+			grekCapitalSan {false BODY-SAN MID-HANGING SLAB-AUTO}
+			grekSmallSan {false BODY-SAN-SMALL MID-HANGING SLAB-NONE}
 
 	define CyrSoftEmGheConfig : object
-		serifless       false
+		serifless false
 		topRightSerifed true
 
 	define [MFormOf bodyKind midKind] : match bodyKind
-		[Just BODY-SAN]       FORM-SAN
+		[Just BODY-SAN] FORM-SAN
 		[Just BODY-SAN-SMALL] FORM-SAN-SMALL
-		[Just BODY-VERTICAL]  FORM-TURN-W
+		[Just BODY-VERTICAL] FORM-TURN-W
 		__ : match midKind
-			[Just MID-HANGING]      FORM-HANGING
-			[Just MID-YSTEM]        FORM-YSTEM
+			[Just MID-HANGING] FORM-HANGING
+			[Just MID-YSTEM] FORM-YSTEM
 			[Just MID-YSTEM-ALMOST] FORM-YSTEM
-			[Just MID-ALMOST]       FORM-ALMOST-FLAT
-			[Just MID-FLAT]         FORM-FLAT
-			__                      FORM-HANGING
+			[Just MID-ALMOST] FORM-ALMOST-FLAT
+			[Just MID-FLAT] FORM-FLAT
+			__ FORM-HANGING
 
 	define [MMiddleYExtOf bodyKind midKind] : match midKind
-		[Just MID-YSTEM]        TINY
+		[Just MID-YSTEM] TINY
 		[Just MID-YSTEM-ALMOST] Stroke
 		__ : if (bodyKind === BODY-VERTICAL)
 			then : match midKind
 				[Just MID-ALMOST] Stroke
-				[Just MID-FLAT]   TINY
-				__                nothing
+				[Just MID-FLAT] TINY
+				__ nothing
 			else nothing
 
 	foreach {suffix {slanted bodyKind midKind slab}} [Object.entries MConfig] : do
@@ -248,24 +248,24 @@ glyph-block Letter-Latin-Upper-M : begin
 
 	define EmConfig : SuffixCfg.weave
 		object # sides
-			''            false
-			slantedSides  true
+			'' false
+			slantedSides true
 		object # body
-			''              BODY-STANDARD
-			verticalMiddle  BODY-VERTICAL
+			'' BODY-STANDARD
+			verticalMiddle BODY-VERTICAL
 		object # middle
-			hanging           MID-HANGING
-			flatBottom        MID-FLAT
-			almostFlatBottom  MID-ALMOST
-			yShaped           MID-YSTEM
+			hanging MID-HANGING
+			flatBottom MID-FLAT
+			almostFlatBottom MID-ALMOST
+			yShaped MID-YSTEM
 			yShapedAlmostFlat MID-YSTEM-ALMOST
 		object # tail
-			''      0
-			tailed  1
+			'' 0
+			tailed 1
 		object # serifs
-			serifless     SLAB-NONE
+			serifless SLAB-NONE
 			motionSerifed SLAB-MOTION
-			smallCyrl     SLAB-SMALL-CYRILLIC
+			smallCyrl SLAB-SMALL-CYRILLIC
 
 	foreach {suffix {slanted bodyKind midKind tailed slab}} [Object.entries EmConfig] : do
 		if (!tailed || !slanted) : begin
@@ -314,7 +314,7 @@ glyph-block Letter-Latin-Upper-M : begin
 
 		include : MarkSet.capital
 		include : VBar.l df.leftSB 0 CAP bbs
-		include : BBBarRight df.rightSB  0 CAP (bbd -- bbd) (bbs -- bbs)
+		include : BBBarRight df.rightSB 0 CAP (bbd -- bbd) (bbs -- bbs)
 		local xLeft : df.leftSB + [HSwToV : 0.5 * bbs]
 		local xRight : df.rightSB - bbd - [HSwToV : 0.5 * bbs]
 		local xMiddle : mix xLeft xRight 0.5
@@ -326,10 +326,10 @@ glyph-block Letter-Latin-Upper-M : begin
 			intersection
 				Rect CAP yTurnPos xLeft xRight
 				union
-					ExtLineCenter xLeft                 CAP xMiddle                 yTurnPos bbs 2
+					ExtLineCenter xLeft CAP xMiddle yTurnPos bbs 2
 					ExtLineCenter (xLeft + kDiag * bbd) CAP (xMiddle + kDiag * bbd) yTurnPos bbs 2
 			spiro-outline
-				corner [mix 0      Width   (+4)] [mix CAP yTurnPos (-1)]
+				corner [mix 0 Width (+4)] [mix CAP yTurnPos (-1)]
 				corner [mix xRight xMiddle (-1)] [mix CAP yTurnPos (-1)]
 				corner [mix xRight xMiddle (+2)] [mix CAP yTurnPos (+2)]
-				corner [mix 0      Width   (+4)] [mix CAP yTurnPos (+2)]
+				corner [mix 0 Width (+4)] [mix CAP yTurnPos (+2)]

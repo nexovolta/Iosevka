@@ -26,7 +26,7 @@ export : define [buildGlyphs para recursive includeAutoBuilds] : begin
 
 	# Glyph metrics and parameters
 	define DivFrame : LetterModel.SetupBuilders Metrics
-	define MarkSet    [DivFrame 1 2].markSet
+	define MarkSet [DivFrame 1 2].markSet
 
 	# Anchor parameters
 	define {AS_BASE ALSO_METRICS} {'AS-BASE' 'ALSO-METRICS'}
@@ -37,11 +37,11 @@ export : define [buildGlyphs para recursive includeAutoBuilds] : begin
 	# Spiro kit and boole kit
 	define SpiroFns : SpiroKit.SetupBuilders : object
 		globalTransform Metrics.GlobalTransform
-		Contrast        Metrics.Contrast
-		Stroke          Metrics.Stroke
+		Contrast Metrics.Contrast
+		Stroke Metrics.Stroke
 		CorrectionOMidX Metrics.CorrectionOMidX
-		TINY            Metrics.TINY
-		Superness       DesignParameters.superness
+		TINY Metrics.TINY
+		Superness DesignParameters.superness
 	define BooleFns : BooleKit.SetupBuilders : object
 		globalTransform Metrics.GlobalTransform
 
@@ -110,7 +110,7 @@ export : define [buildGlyphs para recursive includeAutoBuilds] : begin
 
 	# Auto-builds
 	run-glyph-module './auto-build/recursive-build.mjs'
-	if ([not recursive] || includeAutoBuilds) : begin
+	if ((!recursive) || includeAutoBuilds) : begin
 		run-glyph-module './auto-build/accents.mjs'
 		run-glyph-module './auto-build/transformed.mjs'
 		run-glyph-module './auto-build/composite.mjs'

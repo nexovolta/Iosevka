@@ -24,7 +24,7 @@ glyph-block Letter-Latin-Upper-Q : begin
 			archv
 			flatside.ru df.rightSB 0 top ArchDepthA ArchDepthB nothing [widths.lhs sw]
 			Arch.lhs top
-			flatside.ld df.leftSB  0 top ArchDepthA ArchDepthB
+			flatside.ld df.leftSB 0 top ArchDepthA ArchDepthB
 			arcvh
 			flat [Arch.adjust-x.bot df.middle] 0
 			curl tailRB 0
@@ -180,13 +180,13 @@ glyph-block Letter-Latin-Upper-Q : begin
 
 	define [QDetachedTail df] : dispiro
 		widths.lhs Stroke
-		corner df.middle             yObliqueTailStart [heading Rightward]
-		corner [xDetachedTailEnd df] yObliqueTailEnd   [heading Rightward]
+		corner df.middle yObliqueTailStart [heading Rightward]
+		corner [xDetachedTailEnd df] yObliqueTailEnd [heading Rightward]
 
 	define [QDetachedBendTail df] : union [QDetachedTail df] : dispiro
 		widths.lhs Stroke
-		corner [xBendTailStart df] yBendTailStart    [heading Rightward]
-		corner df.middle           yObliqueTailStart [heading Rightward]
+		corner [xBendTailStart df] yBendTailStart [heading Rightward]
+		corner df.middle yObliqueTailStart [heading Rightward]
 
 	define [QSwashyTail df top sw] : glyph-proc
 		define fine : df.adviceStroke 3.5
@@ -223,35 +223,35 @@ glyph-block Letter-Latin-Upper-Q : begin
 
 	glyph-block-export QConfig
 	define QConfig : object
-		straight             {QStdBody               Stroke            QStraightTail       'capDesc'  'p'}
-		curlyTailed          {QStdBody               Stroke            QCurlyTail          'capDesc'  'p'}
-		crossingCurlyTailed  {QStdBody               QInnerVertSw      QCrossingCurlyTail  'capDesc'  'p'}
-		crossing             {QStdBody               QInnerDiagSw      QCrossing           'capital'  'e'}
-		crossingBaseline     {QStdBody               QInnerDiagSw      QCrossingBaseline   'capital'  'e'}
-		verticalCrossing     {QStdBody               QInnerVertSw      QVerticalCrossing   'capDesc'  'p'}
-		horizontalTailed     {QHorizontalTailedBody  [AdviceStroke 3]  no-shape            'capital'  'e'}
-		detachedTailed       {QStdBody               Stroke            QDetachedTail       'capDesc'  'p'}
-		detachedBendTailed   {QStdBody               Stroke            QDetachedBendTail   'capDesc'  'p'}
-		openSwash            {QOpenSwashyBody        Stroke            no-shape            'capDesc'  'p'}
-		closedSwash          {QStdBody               Stroke            QSwashyTail         'capDesc'  'p'}
-		hookyCrossing        {QStdBody               QInnerVertSw      QHookyCrossingTail  'capDesc'  'p'}
-		hooky                {QStdBody               Stroke            QHookyTail          'capDesc'  'p'}
-		vertical             {QStdBody               Stroke            QVerticalTail       'capDesc'  'p'}
-		openStraightTailed   {QOpenStraightBody      Stroke            no-shape            'capDesc'  'p'}
-		closedStraightTailed {QStdBody               Stroke            QStraightSwashTail  'capDesc'  'p'}
+		straight {QStdBody Stroke QStraightTail 'capDesc' 'p'}
+		curlyTailed {QStdBody Stroke QCurlyTail 'capDesc' 'p'}
+		crossingCurlyTailed {QStdBody QInnerVertSw QCrossingCurlyTail 'capDesc' 'p'}
+		crossing {QStdBody QInnerDiagSw QCrossing 'capital' 'e'}
+		crossingBaseline {QStdBody QInnerDiagSw QCrossingBaseline 'capital' 'e'}
+		verticalCrossing {QStdBody QInnerVertSw QVerticalCrossing 'capDesc' 'p'}
+		horizontalTailed {QHorizontalTailedBody [AdviceStroke 3] no-shape 'capital' 'e'}
+		detachedTailed {QStdBody Stroke QDetachedTail 'capDesc' 'p'}
+		detachedBendTailed {QStdBody Stroke QDetachedBendTail 'capDesc' 'p'}
+		openSwash {QOpenSwashyBody Stroke no-shape 'capDesc' 'p'}
+		closedSwash {QStdBody Stroke QSwashyTail 'capDesc' 'p'}
+		hookyCrossing {QStdBody QInnerVertSw QHookyCrossingTail 'capDesc' 'p'}
+		hooky {QStdBody Stroke QHookyTail 'capDesc' 'p'}
+		vertical {QStdBody Stroke QVerticalTail 'capDesc' 'p'}
+		openStraightTailed {QOpenStraightBody Stroke no-shape 'capDesc' 'p'}
+		closedStraightTailed {QStdBody Stroke QStraightSwashTail 'capDesc' 'p'}
 
 	foreach {suffix {body swTailInner tailShape mkCapital mkSmcp}} [Object.entries QConfig] : do
 		create-glyph "Q.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.(mkCapital)
 			set-base-anchor 'strike' df.middle (CAP / 2)
-			include : body      df CAP Stroke
+			include : body df CAP Stroke
 			include : tailShape df CAP swTailInner
 
 		create-glyph "smcpQ.\(suffix)" : glyph-proc
 			local df : include : DivFrame 1
 			include : df.markSet.(mkSmcp)
-			include : body      df XH Stroke
+			include : body df XH Stroke
 			include : tailShape df XH swTailInner
 
 		create-glyph "QSideways.\(suffix)" : glyph-proc
@@ -277,7 +277,7 @@ glyph-block Letter-Latin-Upper-Q : begin
 		include : intersection
 			QInner
 			union
-				VBar.l (SB      + BBD) 0 CAP BBS
+				VBar.l (SB + BBD) 0 CAP BBS
 				VBar.r (RightSB - BBD) 0 CAP BBS
 
 		define terminalX : Middle + HookX

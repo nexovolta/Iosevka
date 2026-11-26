@@ -19,11 +19,11 @@ glyph-block LetterLike-Fraktur-Lower-D : begin
 		local dBox : S.box Ascender 0 df.leftSB df.rightSB
 
 		include : lift-@ : fraktur-stroke S
-			corner             (@xT = [oBox.xp PHexTop]) (@yT = oBox.top)
-			corner             (@xL = oBox.left)         [slY @xT @yT @xL SlopeA]
-			corner              @xL                      [slY @xB @yB @xL SlopeB]
-			corner             (@xB = [oBox.xp PHexBot]) (@yB = oBox.bot)
-			straight.up.mid    (oBox.right - OX)          oBox.yMid
-			[g4.sl SlopeB].mid  @xT                       @yT
-			g2                  @xL                      [slY @xT @yT @xL SlopeB]
-			[g2.sr SlopeA].end [oBox.xp 0.25]             dBox.top                 [change-pen T]
+			corner (@xT = [oBox.xp PHexTop]) (@yT = oBox.top)
+			corner (@xL = oBox.left) [slY @xT @yT @xL SlopeA]
+			corner @xL [slY @xB @yB @xL SlopeB]
+			corner (@xB = [oBox.xp PHexBot]) (@yB = oBox.bot)
+			straight.up.mid (oBox.right - OX) oBox.yMid
+			[g4.sl SlopeB].mid @xT @yT
+			g2 @xL [slY @xT @yT @xL SlopeB]
+			[g2.sr SlopeA].end [oBox.xp 0.25] dBox.top [change-pen T]

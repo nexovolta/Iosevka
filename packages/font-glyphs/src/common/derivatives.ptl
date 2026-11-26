@@ -15,7 +15,7 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export query-glyph
 	define [query-glyph id] : begin
-		if [not id] : return nothing
+		if (!id) : return nothing
 		return : glyphStore.queryByName id
 
 	glyph-block-export refer-glyph
@@ -26,7 +26,7 @@ glyph-block Common-Derivatives : begin
 			set this.id id
 		public [applyToGlyph target copyAnchors copyWidth] : begin
 			local goal : query-glyph this.id
-			if [not goal] : throw : new Error "Cannot find glyph '\(this.id)'"
+			if (!goal) : throw : new Error "Cannot find glyph '\(this.id)'"
 			target.includeGlyph goal copyAnchors copyWidth
 
 	###############################################################################################
@@ -35,16 +35,16 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export select-variant
 	define [select-variant] : with-params [name unicode [shapeFrom name] [follow name]] : begin
-		if [not : glyph-is-needed name] : return nothing
+		if (![glyph-is-needed name]) : return nothing
 
 		local atlas : queryCvAtlas para follow
-		if [not atlas.targetSuffix] : begin
+		if (!atlas.targetSuffix) : begin
 			throw : new Error "Variant for \(atlas.primarySelectorName) is not assigned."
 
 		local g : create-glyph name unicode : glyph-proc
 			local fromGlyphName : shapeFrom + '.' + atlas.targetSuffix
 			local fromGlyph : query-glyph fromGlyphName
-			if [not fromGlyph] : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
+			if (!fromGlyph) : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
 
 			include fromGlyph AS_BASE ALSO_METRICS
 			currentGlyph.cloneRankFromGlyph fromGlyph
@@ -68,12 +68,12 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export select-multi-dimensional-variant
 	define [select-multi-dimensional-variant] : with-params [name unicode [shapeFrom name] [follows {name}]] : begin
-		if [not : glyph-is-needed name] : return nothing
+		if (![glyph-is-needed name]) : return nothing
 
 		local atlases {}
 		foreach rawSelector [items-of follows] : begin
 			local atlas : queryCvAtlas para rawSelector
-			if [not atlas.targetSuffix] : begin
+			if (!atlas.targetSuffix) : begin
 				throw : new Error "Variant for \(atlas.primarySelectorName) is not assigned."
 			atlases.push atlas
 
@@ -82,7 +82,7 @@ glyph-block Common-Derivatives : begin
 		local g : create-glyph name unicode : glyph-proc
 			local fromGlyphName : shapeFrom + '.' + combinedSuffix
 			local fromGlyph : query-glyph fromGlyphName
-			if [not fromGlyph] : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
+			if (!fromGlyph) : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
 
 			include fromGlyph AS_BASE ALSO_METRICS
 			currentGlyph.cloneRankFromGlyph fromGlyph
@@ -97,7 +97,7 @@ glyph-block Common-Derivatives : begin
 		foreach product [items-of : cartesianProductOfAtlases atlases] : begin
 			local fromGlyphName : shapeFrom + '.' + product.combinedSuffix
 			local fromGlyph : query-glyph fromGlyphName
-			if [not fromGlyph] : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
+			if (!fromGlyph) : throw : new Error "Cannot find glyph '\(fromGlyphName)'"
 
 			g.addVariantForRecursiveBuild fromGlyph
 
@@ -106,7 +106,7 @@ glyph-block Common-Derivatives : begin
 					local alterProduct : product.alter i cv
 					local dstName : shapeFrom + '.' + alterProduct.combinedSuffix
 					local dstGlyph : query-glyph dstName
-					if [not dstGlyph] : throw : new Error "Cannot find glyph '\(dstName)'"
+					if (!dstGlyph) : throw : new Error "Cannot find glyph '\(dstName)'"
 
 					if cv.variant.tag : begin
 						cv.variant.set fromGlyph dstName
@@ -156,12 +156,12 @@ glyph-block Common-Derivatives : begin
 		if existing : return existing
 
 		local primarySelector : resolvePrimarySelector rawSelector
-		local allSelectors    : resolveAllSelectors    rawSelector
+		local allSelectors : resolveAllSelectors rawSelector
 
 		local atlas : object
 			primarySelectorName primarySelector
-			targetSuffix        para.variantSelector.(primarySelector)
-			allVariants         {}
+			targetSuffix para.variantSelector.(primarySelector)
+			allVariants {}
 
 		foreach selector [items-of allSelectors]
 			foreach {kPrime prime} para.variants.primes
@@ -171,10 +171,10 @@ glyph-block Common-Derivatives : begin
 					local isTarget : isPrimary && suffix === atlas.targetSuffix
 					local isTagged : suffix && variant.tag && variant.rank
 					if (isTagged || (suffix && isTarget)) : atlas.allVariants.push : object
-						suffix    suffix
-						variant   variant
+						suffix suffix
+						variant variant
 						isPrimary isPrimary
-						isTarget  isTarget
+						isTarget isTarget
 
 		CvAtlasQueryCache.set rawSelector atlas
 		return atlas
@@ -203,7 +203,7 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export link-reduced-variant
 	define [link-reduced-variant] : with-params [dstGid srcGid gr follow shapeFrom] : begin
-		if [not : query-glyph dstGid] : select-variant dstGid (shapeFrom -- [fallback shapeFrom srcGid]) (follow -- [fallback follow dstGid])
+		if (![query-glyph dstGid]) : select-variant dstGid (shapeFrom -- [fallback shapeFrom srcGid]) (follow -- [fallback follow dstGid])
 		if (gr && [query-glyph srcGid]) : gr.set [query-glyph srcGid] dstGid
 
 	glyph-block-export alias-reduced-variant
@@ -232,7 +232,7 @@ glyph-block Common-Derivatives : begin
 		# Build related derivatives
 		foreach {gr from to} [items-of mesh] : begin
 			local key : keyOfGnList to
-			if [not : linksGnMap.has key] : begin
+			if (![linksGnMap.has key]) : begin
 				local gnDerivedTo : Fn to gr from
 				linksGnMap.set key gnDerivedTo
 
@@ -242,7 +242,7 @@ glyph-block Common-Derivatives : begin
 		# Link related derivatives
 		foreach {gr from to} [items-of mesh] : begin
 			local gndFrom : linksGnMap.get [keyOfGnList from]
-			local gndTo   : linksGnMap.get [keyOfGnList to]
+			local gndTo : linksGnMap.get [keyOfGnList to]
 			if (gndFrom && gndTo && [query-glyph gndFrom] && [query-glyph gndTo]) : begin
 				gr.set [query-glyph gndFrom] gndTo
 				if FnLink : FnLink gndFrom gndTo from to
@@ -252,22 +252,22 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export derive-glyphs
 	define [derive-glyphs dstGid dstUnicode srcGid Fn] : begin
-		if [not : glyph-is-needed dstGid] : return nothing
+		if (![glyph-is-needed dstGid]) : return nothing
 
 		DeriveMeshT {srcGid} AnyDerivingCv : function [gns gr] : begin
 			local gn gns.0
-			local gnDst : if [not gr] dstGid "\(dstGid)/derive{\(gn)}"
-			local unicodeDst : if [not gr] dstUnicode null
+			local gnDst : if (!gr) dstGid "\(dstGid)/derive{\(gn)}"
+			local unicodeDst : if (!gr) dstUnicode null
 			create-glyph gnDst unicodeDst : Fn gn gr
 			return gnDst
 
 	glyph-block-export derive-multi-part-glyphs
 	define [derive-multi-part-glyphs dstGid dstUnicode gnSoruces Fn] : begin
-		if [not : glyph-is-needed dstGid] : return nothing
+		if (![glyph-is-needed dstGid]) : return nothing
 
 		DeriveMeshT gnSoruces AnyDerivingCv : function [gns gr] : begin
-			local gnDst : if [not gr] dstGid "\(dstGid)/derive{\[gns.join '}{']}"
-			local unicodeDst : if [not gr] dstUnicode null
+			local gnDst : if (!gr) dstGid "\(dstGid)/derive{\[gns.join '}{']}"
+			local unicodeDst : if (!gr) dstUnicode null
 			create-glyph gnDst unicodeDst : Fn gns gr
 			return gnDst
 
@@ -275,13 +275,13 @@ glyph-block Common-Derivatives : begin
 	# Use only for digraphs/multigraphs, not accented or derived letters.
 	glyph-block-export derive-multi-part-glyphs-baked
 	define [derive-multi-part-glyphs-baked dstGid dstUnicode gnSources Fn] : begin
-		if [not : glyph-is-needed dstGid] : return nothing
+		if (![glyph-is-needed dstGid]) : return nothing
 		create-glyph dstGid dstUnicode : Fn gnSources null
 		return dstGid
 
 	glyph-block-export derive-composites
 	define [derive-composites dstGid dstUnicode srcGid] : begin
-		if [not : glyph-is-needed dstGid] : return nothing
+		if (![glyph-is-needed dstGid]) : return nothing
 		local components : {}.slice.call arguments 2
 		local refs {}
 		foreach part [items-of components] : if ([typeof part] === 'string')
@@ -290,7 +290,7 @@ glyph-block Common-Derivatives : begin
 		return : derive-multi-part-glyphs dstGid dstUnicode refs : function [srcs] : glyph-proc
 			local rid 0
 			foreach j [range 0 components.length] : begin
-				local asBase      : if (j === 0) AS_BASE      nothing
+				local asBase : if (j === 0) AS_BASE nothing
 				local alsoMetrics : if (j === 0) ALSO_METRICS nothing
 				local part components.(j)
 
@@ -304,8 +304,8 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export alias
 	define [alias dstGid dstUnicode srcGid] : begin
-		if [not dstGid] : throw : new Error 'Target ID not specified'
-		if [not : glyph-is-needed srcGid] : return nothing
+		if (!dstGid) : throw : new Error 'Target ID not specified'
+		if (![glyph-is-needed srcGid]) : return nothing
 
 		local glyphSrc : glyphStore.queryByNameEnsured srcGid
 		local glyphDst : create-glyph dstGid dstUnicode : glyph-proc
@@ -337,7 +337,7 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export turned
 	define [turned newid unicode id _x _y mark] : begin
-		if [not newid] : throw : new Error 'Target ID not specified'
+		if (!newid) : throw : new Error 'Target ID not specified'
 		derive-glyphs newid unicode id
 			lambda [src gr] : glyph-proc
 				include [refer-glyph src] AS_BASE ALSO_METRICS
@@ -355,7 +355,7 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export HCombine
 	define [HCombine newid unicode id1 id2 spacing] : begin
-		if [not newid] : throw : new Error 'Target ID not specified'
+		if (!newid) : throw : new Error 'Target ID not specified'
 		create-glyph newid unicode : glyph-proc
 			include [refer-glyph id1] AS_BASE ALSO_METRICS
 			include : Translate (-spacing) 0
@@ -364,12 +364,12 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export HDual
 	define [HDual newid unicode id spacing] : begin
-		if [not newid] : throw : new Error 'Target ID not specified'
+		if (!newid) : throw : new Error 'Target ID not specified'
 		return : HCombine newid unicode id id spacing
 
 	glyph-block-export VCombine
 	define [VCombine newid unicode id1 id2 spacing] : begin
-		if [not newid] : throw : new Error 'Target ID not specified'
+		if (!newid) : throw : new Error 'Target ID not specified'
 		create-glyph newid unicode : glyph-proc
 			include [refer-glyph id2] AS_BASE ALSO_METRICS
 			include : Translate (-spacing * TanSlope) (-spacing)
@@ -378,7 +378,7 @@ glyph-block Common-Derivatives : begin
 
 	glyph-block-export VDual
 	define [VDual newid unicode id spacing] : begin
-		if [not newid] : throw : new Error 'Target ID not specified'
+		if (!newid) : throw : new Error 'Target ID not specified'
 		return : VCombine newid unicode id id spacing
 
 	###############################################################################################
@@ -389,7 +389,7 @@ glyph-block Common-Derivatives : begin
 	define [link-gr Gr fromGid toGid] : begin
 		if [glyph-is-needed toGid] : begin
 			local fromGlyph : query-glyph fromGid
-			local toGlyph   : query-glyph toGid
+			local toGlyph : query-glyph toGid
 			if (fromGlyph && toGlyph) : Gr.set fromGlyph toGid
 
 	glyph-block-export HalfAdvance

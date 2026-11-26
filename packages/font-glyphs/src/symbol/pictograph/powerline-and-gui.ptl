@@ -78,7 +78,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 		include : KeyholeStroke (PictTop - O) PictBot (SB + OX) (RightSB - OX) GeometryStroke (PictTop - O - diameter)
 
 	do 'Progress Bar'
-		define frameLeft  : mix SB RightSB DesignParameters.bracketOutside
+		define frameLeft : mix SB RightSB DesignParameters.bracketOutside
 		define frameRight : mix RightSB SB DesignParameters.bracketOutside
 		define progressBarGap : Math.min ((TackTop - TackBot) / 6) (Width / 6) [AdviceStroke 5]
 
@@ -127,7 +127,7 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			define scaffold : object
 			set scaffold.top : mix uiFigBot uiFigTop 0.85
 			set scaffold.bot : mix uiFigBot uiFigTop 0.15
-			set scaffold.width   : (Middle - SB) * 2 * ((MosaicWidth / Width) ** 0.3)
+			set scaffold.width : (Middle - SB) * 2 * ((MosaicWidth / Width) ** 0.3)
 			set scaffold.xMiddle : MosaicWidth / 2
 			set scaffold.xLeft : scaffold.xMiddle - scaffold.width / 2
 			set scaffold.xRight : scaffold.xMiddle + scaffold.width / 2
@@ -164,10 +164,10 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			define [BoxN n] : new Box uiFigTop uiFigBot SB (MosaicWidth * n - SB)
 
 			define [MosaicWidthMask] : spiro-outline
-				corner 0           [mix ParenBot ParenTop (-1)]
+				corner 0 [mix ParenBot ParenTop (-1)]
 				corner MosaicWidth [mix ParenBot ParenTop (-1)]
 				corner MosaicWidth [mix ParenBot ParenTop (+2)]
-				corner 0           [mix ParenBot ParenTop (+2)]
+				corner 0 [mix ParenBot ParenTop (+2)]
 
 			define [RunningManBody xOffset] : begin
 				local Kit : StickFigureKit [BoxN 2] [Translate xOffset 0] [AdviceStroke 4]
@@ -258,8 +258,8 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			set scaffold.top : mix uiFigBot uiFigTop 0.85
 			set scaffold.bot : mix uiFigBot uiFigTop 0.15
 			set scaffold.slope 0.6
-			set scaffold.width   : (Middle - SB) * 2 * ((MosaicWidth / Width) ** 0.5)
-			set scaffold.stroke  : AdviceStroke 3.5
+			set scaffold.width : (Middle - SB) * 2 * ((MosaicWidth / Width) ** 0.5)
+			set scaffold.stroke : AdviceStroke 3.5
 			set scaffold.xMiddle : MosaicWidth / 2
 			set scaffold.xLeft : scaffold.xMiddle - scaffold.width / 2
 			set scaffold.xRight : scaffold.xMiddle + scaffold.width / 2
@@ -270,38 +270,38 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			define [ChevronUpperHalf flat] : intersection
 				spiro-outline
 					corner scaffold.xMiddle scaffold.top
-					corner scaffold.xLeft   (scaffold.top - scaffold.slopeRise)
-					corner scaffold.xLeft   (scaffold.bot + scaffold.stroke)
+					corner scaffold.xLeft (scaffold.top - scaffold.slopeRise)
+					corner scaffold.xLeft (scaffold.bot + scaffold.stroke)
 					if flat {} : list
 						corner scaffold.xMiddle (scaffold.bot + scaffold.stroke + scaffold.slopeRise)
-					corner scaffold.xRight  (scaffold.bot + scaffold.stroke)
-					corner scaffold.xRight  (scaffold.top - scaffold.slopeRise)
+					corner scaffold.xRight (scaffold.bot + scaffold.stroke)
+					corner scaffold.xRight (scaffold.top - scaffold.slopeRise)
 				union
 					VBar.l scaffold.xLeft scaffold.bot scaffold.top scaffold.stroke
 					VBar.r scaffold.xRight scaffold.bot scaffold.top scaffold.stroke
 					dispiro
 						widths.lhs scaffold.stroke
 						corner scaffold.xMiddle scaffold.top
-						corner scaffold.xLeft   (scaffold.top - scaffold.slopeRise)
+						corner scaffold.xLeft (scaffold.top - scaffold.slopeRise)
 					dispiro
 						widths.rhs scaffold.stroke
 						corner scaffold.xMiddle scaffold.top
-						corner scaffold.xRight  (scaffold.top - scaffold.slopeRise)
+						corner scaffold.xRight (scaffold.top - scaffold.slopeRise)
 
 			create-glyph [MangleName 'upPointingChevron'] [MangleUnicode 0x1FBCA] : glyph-proc
 				set-width MosaicWidth
 				include : ChevronUpperHalf false
 				include : intersection
 					spiro-outline
-						corner scaffold.xLeft   scaffold.top
-						corner scaffold.xLeft   (scaffold.bot - scaffold.stroke)
-						corner scaffold.xRight  (scaffold.bot - scaffold.stroke)
-						corner scaffold.xRight  scaffold.top
+						corner scaffold.xLeft scaffold.top
+						corner scaffold.xLeft (scaffold.bot - scaffold.stroke)
+						corner scaffold.xRight (scaffold.bot - scaffold.stroke)
+						corner scaffold.xRight scaffold.top
 					union
 						dispiro
 							widths.lhs scaffold.stroke
 							corner scaffold.xMiddle (scaffold.bot + scaffold.slopeRise + scaffold.stroke)
-							corner scaffold.xLeft2  (scaffold.bot - scaffold.slopeRise + scaffold.stroke)
+							corner scaffold.xLeft2 (scaffold.bot - scaffold.slopeRise + scaffold.stroke)
 						dispiro
 							widths.rhs scaffold.stroke
 							corner scaffold.xMiddle (scaffold.bot + scaffold.slopeRise + scaffold.stroke)
@@ -316,11 +316,11 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 			define scaffold : object
 			set scaffold.gap : Width / 16
 			set scaffold.stroke : [AdviceStroke 2] / 2
-			set scaffold.top   : [mix uiFigBot uiFigTop 0.9] - scaffold.stroke
-			set scaffold.mid   : mix uiFigBot uiFigTop 0.5
-			set scaffold.bot   : [mix uiFigBot uiFigTop 0.1] + scaffold.stroke
+			set scaffold.top : [mix uiFigBot uiFigTop 0.9] - scaffold.stroke
+			set scaffold.mid : mix uiFigBot uiFigTop 0.5
+			set scaffold.bot : [mix uiFigBot uiFigTop 0.1] + scaffold.stroke
 			set scaffold.width : (Middle - SB) * 2 * ((MosaicWidth / Width) ** 0.5)
-			set scaffold.left  : (MosaicWidth / 2) - scaffold.width / 2 + scaffold.stroke / 2
+			set scaffold.left : (MosaicWidth / 2) - scaffold.width / 2 + scaffold.stroke / 2
 			set scaffold.right : (MosaicWidth / 2) + scaffold.width / 2 - scaffold.stroke / 2
 
 			define [StrokeV x yt yb] : spiro-outline
@@ -367,11 +367,11 @@ glyph-block Symbol-Pictograph-Powerline-And-GUI : begin
 				local mid : MosaicWidth / 2
 				local size : [Math.min (MosaicWidth - SB * 2) (uiFigTop - uiFigBot)] / 2
 				include : union
-					VBar.r  (mid - gap) (SymbolMid + gap) (SymbolMid + size) sw
-					VBar.r  (mid - gap) (SymbolMid - gap) (SymbolMid - size) sw
-					VBar.l   (mid + gap) (SymbolMid + gap) (SymbolMid + size) sw
-					VBar.l   (mid + gap) (SymbolMid - gap) (SymbolMid - size) sw
+					VBar.r (mid - gap) (SymbolMid + gap) (SymbolMid + size) sw
+					VBar.r (mid - gap) (SymbolMid - gap) (SymbolMid - size) sw
+					VBar.l (mid + gap) (SymbolMid + gap) (SymbolMid + size) sw
+					VBar.l (mid + gap) (SymbolMid - gap) (SymbolMid - size) sw
 					HBar.b (mid - size) (mid - gap) (SymbolMid + gap) sw
 					HBar.b (mid + size) (mid + gap) (SymbolMid + gap) sw
-					HBar.t    (mid - size) (mid - gap) (SymbolMid - gap) sw
-					HBar.t    (mid + size) (mid + gap) (SymbolMid - gap) sw
+					HBar.t (mid - size) (mid - gap) (SymbolMid - gap) sw
+					HBar.t (mid + size) (mid + gap) (SymbolMid - gap) sw

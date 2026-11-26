@@ -22,13 +22,13 @@ glyph-block Letter-Greek-Upper-Omega : begin
 		local x2 : Width - x1
 		local yattach : if _serifed [Math.min (top * 0.7) (top * 0.32 + Stroke)] (top * extend + Stroke)
 		include : dispiro
-			g4   x1 (yattach - fine) [widths.rhs.heading fine Leftward]
+			g4 x1 (yattach - fine) [widths.rhs.heading fine Leftward]
 			archv
-			flatside.lu SB      (yattach - Stroke) top ada adb 0 [widths.rhs bowlStroke]
+			flatside.lu SB (yattach - Stroke) top ada adb 0 [widths.rhs bowlStroke]
 			Arch.rhs top (sw -- bowlStroke)
 			flatside.rd RightSB (yattach - Stroke) top ada adb 0 [widths.rhs bowlStroke]
 			arcvh
-			g4   x2 (yattach - fine) [widths.heading 0 fine Leftward]
+			g4 x2 (yattach - fine) [widths.heading 0 fine Leftward]
 		include : VBar.r x1 0 yattach fine
 		include : HBar.m SB x1 HalfStroke
 		include : VBar.l x2 0 yattach fine
@@ -56,10 +56,10 @@ glyph-block Letter-Greek-Upper-Omega : begin
 		if (top < CAP) : include : ScaleAround Middle 0 (top / CAP) (top / CAP)
 
 	define OmegaConfig : object
-		serifless       {0  false}
-		disjoint        {1  false}
-		disjointSerifed {1  true }
-		serifed         {0  true }
+		serifless {0 false}
+		disjoint {1 false}
+		disjointSerifed {1 true }
+		serifed {0 true }
 
 	foreach {suffix {fDisjoint doSerifs}} [Object.entries OmegaConfig] : do
 		create-glyph "grek/Omega.\(suffix)" : glyph-proc
@@ -78,7 +78,7 @@ glyph-block Letter-Greek-Upper-Omega : begin
 					include : UpperOmegaShape CAP 0.08 ArchDepthA ArchDepthB doSerifs
 				include : ScaleAround Middle 0 1 (XH / CAP)
 
-		if [not fDisjoint] : begin
+		if (!fDisjoint) : begin
 			create-glyph "latn/Upsilon.\(suffix)" : glyph-proc
 				local df : include : DivFrame [if doSerifs para.advanceScaleT 1]
 				include : df.markSet.capital

@@ -24,12 +24,12 @@ export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 	define validMarkClasses : new Set MarkClasses
 
 	define mark : object
-		feature      : gpos.addCommonFeature : gpos.createFeature 'mark'
-		lookupMap    : new Map
+		feature : gpos.addCommonFeature : gpos.createFeature 'mark'
+		lookupMap : new Map
 		createLookup : function [] {.type 'gpos_mark_to_base' .marks {.} .bases {.}}
 	define mkmk : object
-		feature      : gpos.addCommonFeature : gpos.createFeature 'mkmk'
-		lookupMap    : new Map
+		feature : gpos.addCommonFeature : gpos.createFeature 'mkmk'
+		lookupMap : new Map
 		createLookup : function [] {.type 'gpos_mark_to_mark' .marks {.} .bases {.}}
 
 	# Populate the marks
@@ -51,7 +51,7 @@ export : define [buildMarkMkmk gpos glyphStore markGlyphs] : begin
 
 		foreach {gn glyph} [glyphStore.namedEntries] : begin
 			local anchor glyph.baseAnchors.(cls)
-			if ([not anchor] && (cls === 'overlayBraceL' || cls === 'overlayBraceR'))
+			if ((!anchor) && (cls === 'overlayBraceL' || cls === 'overlayBraceR'))
 				set anchor : SynthesizeOverlayBrace glyph [if (cls === 'overlayBraceL') 'L' 'R']
 			if anchor : begin
 				if [markGlyphs.all.has gn]
@@ -86,23 +86,23 @@ define [ensureLookup gpos feat cls] : begin
 define [addMarkAnchor lookup gn cls anchor] : begin
 	local a : object
 		class cls
-		x     anchor.x
-		y     anchor.y
+		x anchor.x
+		y anchor.y
 	set lookup.marks.(gn) a
 
 define [addBaseAnchor lookup gn cls anchor] : begin
 	local a : object
-		x     anchor.x
-		y     anchor.y
-	if [not lookup.bases.(gn)] : set lookup.bases.(gn) {.}
+		x anchor.x
+		y anchor.y
+	if (!lookup.bases.(gn)) : set lookup.bases.(gn) {.}
 	set lookup.bases.(gn).(cls) a
 
 define [SynthesizeOverlayBrace glyph side] : begin
 	if (glyph.advanceWidth <= 0) : return null
 	local ov glyph.baseAnchors.overlay
-	if [not ov] : set ov glyph.baseAnchors.strike
-	if [not ov] : set ov glyph.baseAnchors.slash
-	if [not ov] : return null
+	if (!ov) : set ov glyph.baseAnchors.strike
+	if (!ov) : set ov glyph.baseAnchors.slash
+	if (!ov) : return null
 	local nt : glyph.gizmo.unapply ov
 	local ny : 0 + nt.y
 	local nx : if (side === 'L') 0 glyph.advanceWidth

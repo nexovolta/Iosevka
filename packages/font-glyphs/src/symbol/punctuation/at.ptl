@@ -11,11 +11,11 @@ glyph-block Symbol-Punctuation-At : begin
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart InwardSlabArcStart ArcStartSerif
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 
-	define TOP-SERIFLESS       0
-	define TOP-SERIFED         1
-	define TOP-INWARD-SERIFED  2
-	define TOP-VERTICAL-CUT    3
-	define TOP-DIAGONAL-CUT    4
+	define TOP-SERIFLESS 0
+	define TOP-SERIFED 1
+	define TOP-INWARD-SERIFED 2
+	define TOP-VERTICAL-CUT 3
+	define TOP-DIAGONAL-CUT 4
 
 	define [ThreeFoldShape height fSolidInner] : glyph-proc
 		local top : SymbolMid + height / 2
@@ -60,12 +60,12 @@ glyph-block Symbol-Punctuation-At : begin
 		local otop : mix bot top 0.75
 		local obot : mix top bot 0.8
 
-		local sw  : AdviceStroke [if fSolidInner 3.25 4]    df.adws
+		local sw : AdviceStroke [if fSolidInner 3.25 4] df.adws
 		local swh : AdviceStroke [if fSolidInner 3.25 3.75] df.adws
 
-		local kM12   : if fSolidInner 0.40 (1 / 3)
+		local kM12 : if fSolidInner 0.40 (1 / 3)
 		local kM12Sw : if fSolidInner 0.25 0.5
-		local m1 : [mix (df.leftSB + [HSwToV (sw / 2)]) (df.rightSB - [HSwToV (sw / 2)]) kM12      ] - [HSwToV (sw * kM12Sw)]
+		local m1 : [mix (df.leftSB + [HSwToV (sw / 2)]) (df.rightSB - [HSwToV (sw / 2)]) kM12 ] - [HSwToV (sw * kM12Sw)]
 		local m2 : [mix (df.leftSB + [HSwToV (sw / 2)]) (df.rightSB - [HSwToV (sw / 2)]) (1 - kM12)] + [HSwToV (sw * kM12Sw)]
 
 		local ad : ArchDepth * [Math.sqrt df.adws]
@@ -103,16 +103,16 @@ glyph-block Symbol-Punctuation-At : begin
 			if fSolidInner
 				spiro-outline
 					corner m2 obot
-					curl   m2 (otop - adbInner)
+					curl m2 (otop - adbInner)
 					Arch.lhs otop (sw -- sw)
-					flat   m1 (otop - adaInner)
-					curl   m1 (obot + adbInner)
+					flat m1 (otop - adaInner)
+					curl m1 (obot + adbInner)
 					arcvh
-					flat   df.middle obot
+					flat df.middle obot
 				glyph-proc
 
 	define [CompactShape _height fFlatHook fCornerHook topSerif] : glyph-proc
-		local top  CAP
+		local top CAP
 		local obot 0
 		local otop [mix obot top 0.675]
 
@@ -170,26 +170,26 @@ glyph-block Symbol-Punctuation-At : begin
 		if (topSerif === TOP-INWARD-SERIFED) : include : ArcStartSerif.InwardL SB top sw Hook
 
 	define NormalHeight : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.600
-	define TallHeight   : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.875
+	define TallHeight : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.875
 
 	define AtConfig : object
-		threefold                {ThreeFoldShape  NormalHeight  false}
-		threefoldTall            {ThreeFoldShape  TallHeight    false}
-		threefoldSolidInner      {ThreeFoldShape  NormalHeight  true}
-		threefoldSolidInnerTall  {ThreeFoldShape  TallHeight    true}
+		threefold {ThreeFoldShape NormalHeight false}
+		threefoldTall {ThreeFoldShape TallHeight false}
+		threefoldSolidInner {ThreeFoldShape NormalHeight true}
+		threefoldSolidInnerTall {ThreeFoldShape TallHeight true}
 
-		fourfold                 {FourFoldShape   NormalHeight  false}
-		fourfoldTall             {FourFoldShape   TallHeight    false}
-		fourfoldSolidInner       {FourFoldShape   NormalHeight  true}
-		fourfoldSolidInnerTall   {FourFoldShape   TallHeight    true}
+		fourfold {FourFoldShape NormalHeight false}
+		fourfoldTall {FourFoldShape TallHeight false}
+		fourfoldSolidInner {FourFoldShape NormalHeight true}
+		fourfoldSolidInnerTall {FourFoldShape TallHeight true}
 
-		compact               {CompactShape  CAP  false  false  TOP-SERIFLESS}
-		compactFlatHook       {CompactShape  CAP  true   false  TOP-SERIFLESS}
-		compactCornerHook     {CompactShape  CAP  false  true   TOP-SERIFLESS}
-		compactSerifed        {CompactShape  CAP  false  false  TOP-SERIFED}
-		compactInwardSerifed  {CompactShape  CAP  false  false  TOP-INWARD-SERIFED}
-		compactVerticalCut    {CompactShape  CAP  false  false  TOP-VERTICAL-CUT}
-		compactDiagonalCut    {CompactShape  CAP  false  false  TOP-DIAGONAL-CUT}
+		compact {CompactShape CAP false false TOP-SERIFLESS}
+		compactFlatHook {CompactShape CAP true false TOP-SERIFLESS}
+		compactCornerHook {CompactShape CAP false true TOP-SERIFLESS}
+		compactSerifed {CompactShape CAP false false TOP-SERIFED}
+		compactInwardSerifed {CompactShape CAP false false TOP-INWARD-SERIFED}
+		compactVerticalCut {CompactShape CAP false false TOP-VERTICAL-CUT}
+		compactDiagonalCut {CompactShape CAP false false TOP-DIAGONAL-CUT}
 
 	foreach {suffix {body height fSolidInner fCornerHook topSerif}} [Object.entries AtConfig] : do
 		create-glyph "at.\(suffix)" : body height fSolidInner fCornerHook topSerif

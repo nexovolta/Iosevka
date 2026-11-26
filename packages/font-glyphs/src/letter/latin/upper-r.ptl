@@ -14,8 +14,8 @@ glyph-block Letter-Latin-Upper-R : begin
 	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar RetroflexHook PalatalHook
 	glyph-block-import Letter-Latin-Upper-P : PShape RevPShape PBarPosY PRotundaShape BBPShape PShapeOutline
 
-	define [RLegTerminalX    fStraightLeg right sw] : right - [if fStraightLeg 2 0] * OX
-	define [RevRLegTerminalX fStraightLeg left  sw] : left  + [if fStraightLeg 2 0] * OX
+	define [RLegTerminalX fStraightLeg right sw] : right - [if fStraightLeg 2 0] * OX
+	define [RevRLegTerminalX fStraightLeg left sw] : left + [if fStraightLeg 2 0] * OX
 
 	define [RSlabExtraShift slab sw] : if slab ([HSwToV : 0.5 * sw] - Jut / 2) 0
 	define [RLegTop charTop sw bp] : [PBarPosY charTop sw bp] + sw / 2
@@ -69,12 +69,12 @@ glyph-block Letter-Latin-Upper-R : begin
 			local xOverflow : RStandingBottomOverflow slab
 			include : dispiro
 				widths.rhs fine
-				flat left           (top - (sw / 2 - fine)) [heading Rightward]
+				flat left (top - (sw / 2 - fine)) [heading Rightward]
 				curl (right - bend) (top - (sw / 2 - fine)) [heading Rightward]
 				archv
 				flat (right + O) [Math.max (yOffset + 1) (top - bend * charTop / CAP)] [widths.rhs.heading sw Downward]
-				curl (right + O)             yOffset [heading Downward]
-				curl (right + O - xOverflow) bottom  [heading Downward]
+				curl (right + O) yOffset [heading Downward]
+				curl (right + O - xOverflow) bottom [heading Downward]
 			if slab : include : tagged 'serifRB' : HSerif.rb right bottom SideJut sw
 
 	define RevRLegShape : namespace
@@ -124,24 +124,24 @@ glyph-block Letter-Latin-Upper-R : begin
 			local xOverflow : RStandingBottomOverflow slab
 			include : dispiro
 				widths.lhs fine
-				flat right         (top - (sw / 2 - fine)) [heading Leftward]
+				flat right (top - (sw / 2 - fine)) [heading Leftward]
 				curl (left + bend) (top - (sw / 2 - fine)) [heading Leftward]
 				archv
 				flat (left - O) [Math.max (yOffset + 1) (top - bend * charTop / CAP)] [widths.lhs.heading sw Downward]
-				curl (left - O)             yOffset [heading Downward]
-				curl (left - O + xOverflow) bottom  [heading Downward]
+				curl (left - O) yOffset [heading Downward]
+				curl (left - O + xOverflow) bottom [heading Downward]
 			if slab : include : tagged 'serifLB' : HSerif.lb left bottom SideJut sw
 
 	define flex-params [RShape] : glyph-proc
 		local-parameter : legShape
 		local-parameter : top
-		local-parameter : bp        -- PShape.BarPos
-		local-parameter : df        -- [DivFrame 1]
-		local-parameter : mul       -- 1.0
-		local-parameter : slab      -- null
-		local-parameter : legSlab   -- false
-		local-parameter : open      -- false
-		local-parameter : sw        -- Stroke
+		local-parameter : bp -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- 1.0
+		local-parameter : slab -- null
+		local-parameter : legSlab -- false
+		local-parameter : open -- false
+		local-parameter : sw -- Stroke
 		local-parameter : legBottom -- 0
 
 		local fSlabBot : slab && slab !== PShape.SlabMotion
@@ -181,14 +181,14 @@ glyph-block Letter-Latin-Upper-R : begin
 	define flex-params [RRotundaShape] : glyph-proc
 		local-parameter : legShape
 		local-parameter : top
-		local-parameter : bp      -- PShape.BarPos
-		local-parameter : df      -- [DivFrame 1]
-		local-parameter : mul     -- 1.0
-		local-parameter : slab    -- null
+		local-parameter : bp -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- 1.0
+		local-parameter : slab -- null
 		local-parameter : legSlab -- false
-		local-parameter : open    -- false
-		local-parameter : sw      -- Stroke
-		local-parameter : hook    -- Hook
+		local-parameter : open -- false
+		local-parameter : sw -- Stroke
+		local-parameter : hook -- Hook
 		local-parameter : hookStyle -- 'serifless'
 
 		local fStraightLeg : legShape !== RLegShape.Curly
@@ -213,14 +213,14 @@ glyph-block Letter-Latin-Upper-R : begin
 	define flex-params [RevRShape] : glyph-proc
 		local-parameter : legShape
 		local-parameter : top
-		local-parameter : bp      -- PShape.BarPos
-		local-parameter : df      -- [DivFrame 1]
-		local-parameter : mul     -- 1.0
-		local-parameter : slab    -- null
+		local-parameter : bp -- PShape.BarPos
+		local-parameter : df -- [DivFrame 1]
+		local-parameter : mul -- 1.0
+		local-parameter : slab -- null
 		local-parameter : legSlab -- false
-		local-parameter : open    -- false
-		local-parameter : sw      -- Stroke
-		local-parameter : tailed  -- false
+		local-parameter : open -- false
+		local-parameter : sw -- Stroke
+		local-parameter : tailed -- false
 
 		local fSlabBot : slab && slab !== RevPShape.SlabMotion
 		local fBroken : legShape === RevRLegShape.StraightBroken
@@ -256,25 +256,25 @@ glyph-block Letter-Latin-Upper-R : begin
 
 	define RConfig : SuffixCfg.weave
 		object # leg shape
-			straight                       RLegShape.Straight
-			straightBroken                 RLegShape.StraightBroken
-			curly                          RLegShape.Curly
-			standing                       RLegShape.Standing
+			straight RLegShape.Straight
+			straightBroken RLegShape.StraightBroken
+			curly RLegShape.Curly
+			standing RLegShape.Standing
 		object # openness
-			''                             false
-			open                           true
+			'' false
+			open true
 		object # serifs
-			serifless                    {null                  false}
-			topLeftSerifed               {PShape.SlabMotion     false}
-			bottomRightSerifed           {null                  true }
-			topLeftAndBottomRightSerifed {PShape.SlabMotion     true }
-			serifed                      {PShape.SlabSymmetric  true }
+			serifless {null false}
+			topLeftSerifed {PShape.SlabMotion false}
+			bottomRightSerifed {null true }
+			topLeftAndBottomRightSerifed {PShape.SlabMotion true }
+			serifed {PShape.SlabSymmetric true }
 
 	foreach {suffix {legShape fGap {slabs doLegSlab}}} [Object.entries RConfig] : do
 		define fStraightLeg : (legShape === RLegShape.Straight) || (legShape === RLegShape.StraightBroken)
 		define fSlabBot : slabs && slabs !== PShape.SlabMotion
 		define swCap : AdviceStroke2 2 3 CAP
-		define swXH  : AdviceStroke2 2 3 XH
+		define swXH : AdviceStroke2 2 3 XH
 
 		create-glyph "R.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -287,7 +287,7 @@ glyph-block Letter-Latin-Upper-R : begin
 			include : dispiro
 				widths.lhs swCap
 				flat [mix 0 SB 0.3] y
-				curl (SB - O)       y [heading Rightward]
+				curl (SB - O) y [heading Rightward]
 
 		if (!fSlabBot) : create-glyph "RRTail.\(suffix)" : glyph-proc
 			include [refer-glyph "R.\(suffix)"] AS_BASE ALSO_METRICS
@@ -314,17 +314,17 @@ glyph-block Letter-Latin-Upper-R : begin
 			local xRightBottom : [RLegTerminalX fStraightLeg right swXH] + shift
 			local xRightBottomSerifStart : if fStraightLeg (xRightBottom - [HSwToV : 0.25 * swXH]) right
 			include : PalatalHook.rSideJut
-				x     -- xRightBottomSerifStart
-				y     -- 0
+				x -- xRightBottomSerifStart
+				y -- 0
 				refSw -- swXH
-				jut   -- ([HSwToV : 0.5 * swXH] + SideJut + [if (legShape !== RLegShape.Standing) 0.125 0] * Jut)
+				jut -- ([HSwToV : 0.5 * swXH] + SideJut + [if (legShape !== RLegShape.Standing) 0.125 0] * Jut)
 
 		create-glyph "Yr.\(suffix)" : glyph-proc
 			include : MarkSet.capDesc
 			local top : [mix 0 CAP 0.825] + [if fSlabBot (-0.2125) (+0.2500)] * Stroke
 			local bp : ([mix 0 CAP 0.250] + [if fSlabBot (+0.8375) (+0.7125)] * Stroke) / top
 			local sw : AdviceStroke2 2 3 top
-			include : LeaningAnchor.Above.VBar.l SB      sw
+			include : LeaningAnchor.Above.VBar.l SB sw
 			include : LeaningAnchor.Below.VBar.r RightSB sw
 			include : StrikeAnchor top sw bp
 
@@ -332,8 +332,8 @@ glyph-block Letter-Latin-Upper-R : begin
 			include : RShape legShape top bp (sw -- sw) (legSlab -- doLegSlab) (open -- fGap) (legBottom -- Descender)
 			include : match slabs
 				[Just PShape.SlabSymmetric] : PShape.SlabFullSymmetric CAP [DivFrame 1] sw 1
-				[Just PShape.SlabMotion]    : PShape.SlabMotion        CAP [DivFrame 1] sw 1
-				__                          : glyph-proc
+				[Just PShape.SlabMotion] : PShape.SlabMotion CAP [DivFrame 1] sw 1
+				__ : glyph-proc
 
 		create-glyph "smcpRLongLeg.\(suffix)" : glyph-proc
 			include : MarkSet.p
@@ -364,34 +364,34 @@ glyph-block Letter-Latin-Upper-R : begin
 				include : rupeeLeg [RLegTop CAP swCap PShape.BarPos] 0 (Middle + shift) right CAP (SB + shift) doLegSlab swCap
 
 				define sw : AdviceStroke2 2 4 CAP
-				include : HBar.t SB RightSB      CAP                                         sw
+				include : HBar.t SB RightSB CAP sw
 				include : HBar.m SB RightSB [mix CAP [PBarPosY CAP swCap PShape.BarPos] 0.5] sw
 
 	glyph-block-export RevRConfig
 	define RevRConfig : SuffixCfg.weave
 		object # leg shape
-			straight                          RevRLegShape.Straight
-			straightBroken                    RevRLegShape.StraightBroken
-			curly                             RevRLegShape.Curly
-			standing                          RevRLegShape.Standing
+			straight RevRLegShape.Straight
+			straightBroken RevRLegShape.StraightBroken
+			curly RevRLegShape.Curly
+			standing RevRLegShape.Standing
 		object # openness
-			''                                false
-			open                              true
+			'' false
+			open true
 		object # serifs/tail
-			serifless                       {null                        false  false}
-			topRightSerifed                 {RevPShape.SlabMotion        false  false}
-			bottomLeftSerifed               {null                        true   false}
-			topRightAndBottomLeftSerifed    {RevPShape.SlabMotion        true   false}
-			bottomLeftAndBottomRightSerifed {RevPShape.SlabMotionBottom  true   false}
-			serifed                         {RevPShape.SlabSymmetric     true   false}
+			serifless {null false false}
+			topRightSerifed {RevPShape.SlabMotion false false}
+			bottomLeftSerifed {null true false}
+			topRightAndBottomLeftSerifed {RevPShape.SlabMotion true false}
+			bottomLeftAndBottomRightSerifed {RevPShape.SlabMotionBottom true false}
+			serifed {RevPShape.SlabSymmetric true false}
 			# Tailed variants (Cyrillic lower ya)
-			tailedSerifless                 {null                        false  true }
-			tailedBottomLeftSerifed         {null                        true   true }
-			tailedSerifed                   {RevPShape.SlabMotion        true   true }
+			tailedSerifless {null false true }
+			tailedBottomLeftSerifed {null true true }
+			tailedSerifed {RevPShape.SlabMotion true true }
 
 	foreach {suffix {legShape fGap {slabs doLegSlab doTail}}} [Object.entries RevRConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP
-		define swXH  : AdviceStroke2 2 3 XH
+		define swXH : AdviceStroke2 2 3 XH
 
 		if (!doTail) : create-glyph "revR.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -405,13 +405,13 @@ glyph-block Letter-Latin-Upper-R : begin
 
 	select-variant 'R' 'R'
 	link-reduced-variant 'R/sansSerif' 'R' MathSansSerif
-	select-variant 'smcpR'    0x280  (follow -- 'R')
+	select-variant 'smcpR' 0x280 (follow -- 'R')
 	select-variant 'smcpR/pack75' (follow -- 'R')
 	select-variant 'smcpRevR' 0x1D19 (follow -- 'revR')
-	select-variant 'RBar'     0x24C
-	select-variant 'RRTail'   0x2C64
+	select-variant 'RBar' 0x24C
+	select-variant 'RRTail' 0x2C64
 
-	select-variant 'Yr'           0x1A6  (follow -- 'R')
+	select-variant 'Yr' 0x1A6 (follow -- 'R')
 	select-variant 'smcpRLongLeg' 0xAB46 (follow -- 'R')
 
 	select-multi-dimensional-variant 'RRotunda' 0xA75A (follows -- {'RRotunda' 'cyrl/Ze/topSerif'})
@@ -419,8 +419,8 @@ glyph-block Letter-Latin-Upper-R : begin
 
 	select-variant 'currency/indianRupeeSign' 0x20B9 (follow -- 'RRotunda')
 
-	CreateTurnedLetter 'smcpTurnR' 0x1D1A 'smcpR'    HalfAdvance (XH / 2)
-	CreateTurnedLetter 'smcpInvR'  0x281  'smcpRevR' HalfAdvance (XH / 2)
+	CreateTurnedLetter 'smcpTurnR' 0x1D1A 'smcpR' HalfAdvance (XH / 2)
+	CreateTurnedLetter 'smcpInvR' 0x281 'smcpRevR' HalfAdvance (XH / 2)
 
 	select-variant 'smcpRPalatalHook' 0x1DF35 (follow -- 'R/descBase')
 	derive-glyphs 'smcpInvRPalatalHook' 0x1DF36 'smcpInvR' : function [src gr] : glyph-proc

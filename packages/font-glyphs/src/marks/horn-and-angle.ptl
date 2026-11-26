@@ -17,7 +17,7 @@ glyph-block Mark-Horn-And-Angle : begin
 	define [Horn attX attY overflowX overflowY krX krY] : namespace
 		export : define [dim] : begin
 			local radius commaRadius
-			local fine   : Math.min (radius * 0.75) (markFine * 1.75)
+			local fine : Math.min (radius * 0.75) (markFine * 1.75)
 			local stroke : Math.min (radius * 1.00) (markFine * 1.75)
 			local startX : attX + krX * radius
 			local startY : attY + krY * radius + [Math.sign krY] * (aboveMarkTop - aboveMarkBot) / 2
@@ -153,13 +153,13 @@ glyph-block Mark-Horn-And-Angle : begin
 		set-width 0
 		local horn : Horn 0 XH 0 0 (+2.0) (+0.5)
 		include : horn.anchor.mark
-		create-forked-glyph "horn.round"  : horn.shape.round
+		create-forked-glyph "horn.round" : horn.shape.round
 		create-forked-glyph "horn.square" : horn.shape.square
 
 	create-glyph 'horn.diamond' : glyph-proc
 		set-width 0
 		include : DiamondHornShape 0 XH 0 0 0.5
-		include : HornMarkAnchor  0 XH 0 0 0.5
+		include : HornMarkAnchor 0 XH 0 0 0.5
 
 	create-glyph 'horn.prime' : glyph-proc
 		set-width 0
@@ -169,7 +169,7 @@ glyph-block Mark-Horn-And-Angle : begin
 	foreach suffix {'tick' 'bottomCut'} : do
 		create-glyph "horn.\(suffix)" : glyph-proc
 			set-width 0
-			include : ArcHornShape   0 XH 0 0 0.5 true
+			include : ArcHornShape 0 XH 0 0 0.5 true
 			include : HornMarkAnchor 0 XH 0 0 0.5
 
 	create-glyph 'horn.hexagon' : glyph-proc
@@ -188,13 +188,13 @@ glyph-block Mark-Horn-And-Angle : begin
 		set-width 0
 		local horn : Horn 0 XH Middle ArchDepthB (+2.0) (+0.5)
 		include : horn.anchor.mark
-		create-forked-glyph "longHorn.round"  : horn.shape.round
+		create-forked-glyph "longHorn.round" : horn.shape.round
 		create-forked-glyph "longHorn.square" : horn.shape.square
 
 	create-glyph 'longHorn.diamond' : glyph-proc
 		set-width 0
 		include : DiamondHornShape 0 XH (Width / 2) (ArchDepthB) 0.5
-		include : HornMarkAnchor  0 XH (Width / 2) (ArchDepthB) 0.5
+		include : HornMarkAnchor 0 XH (Width / 2) (ArchDepthB) 0.5
 
 	create-glyph 'longHorn.prime' : glyph-proc
 		set-width 0
@@ -204,7 +204,7 @@ glyph-block Mark-Horn-And-Angle : begin
 	foreach suffix {'tick' 'bottomCut'} : do
 		create-glyph "longHorn.\(suffix)" : glyph-proc
 			set-width 0
-			include : ArcHornShape   0 XH (Width / 2) (ArchDepthB) 0.5 true
+			include : ArcHornShape 0 XH (Width / 2) (ArchDepthB) 0.5 true
 			include : HornMarkAnchor 0 XH (Width / 2) (ArchDepthB) 0.5
 
 	create-glyph 'longHorn.hexagon' : glyph-proc
@@ -290,9 +290,9 @@ glyph-block Mark-Horn-And-Angle : begin
 			set-base-anchor 'belowBraceR' (startX + r) belowMarkMid
 			include : DrawAt (startX + r) belowMarkMid (r * kdr)
 
-	select-variant 'dotTR' 0x358  (follow -- 'diacriticDot')
+	select-variant 'dotTR' 0x358 (follow -- 'diacriticDot')
 	select-variant 'dotTL' 0x1DF8 (follow -- 'diacriticDot')
-	select-variant 'dotBR'        (follow -- 'diacriticDot')
+	select-variant 'dotBR' (follow -- 'diacriticDot')
 	select-variant 'dotBL' 0x1DFA (follow -- 'diacriticDot')
 
 	derive-glyphs 'commaTR' 0x315 'commaAbove' : function [src gr] : glyph-proc
@@ -332,10 +332,10 @@ glyph-block Mark-Horn-And-Angle : begin
 		set-width 0
 		include : CyrKavykaShape
 			xMiddle -- 0
-			width   -- (2 * (markExtend * 1.5 - [HSwToV markHalfStroke]))
-			top     -- aboveMarkTop
-			bottom  -- aboveMarkBot
-			hs      -- markHalfStroke
+			width -- (2 * (markExtend * 1.5 - [HSwToV markHalfStroke]))
+			top -- aboveMarkTop
+			bottom -- aboveMarkBot
+			hs -- markHalfStroke
 		set-mark-anchor 'topRight' 0 XH 0 aboveMarkTop
 		set-base-anchor 'aboveBraceL' ((-0.75) * markExtend) aboveMarkMid
 		set-base-anchor 'aboveBraceR' ((+0.75) * markExtend) aboveMarkMid
@@ -344,10 +344,10 @@ glyph-block Mark-Horn-And-Angle : begin
 		set-width 0
 		include : CyrKavykaShape
 			xMiddle -- 0
-			width   -- (2 * (markExtend * 1.5 - [HSwToV markHalfStroke]))
-			top     -- aboveMarkTop
-			bottom  -- aboveMarkBot
-			hs      -- markHalfStroke
+			width -- (2 * (markExtend * 1.5 - [HSwToV markHalfStroke]))
+			top -- aboveMarkTop
+			bottom -- aboveMarkBot
+			hs -- markHalfStroke
 		set-mark-anchor 'topLeft' 0 XH 0 aboveMarkTop
 		set-base-anchor 'aboveBraceL' ((-0.75) * markExtend) aboveMarkMid
 		set-base-anchor 'aboveBraceR' ((+0.75) * markExtend) aboveMarkMid
@@ -364,8 +364,8 @@ glyph-block Mark-Horn-And-Angle : begin
 		set-base-anchor 'aboveBraceR' markMiddle aboveMarkMid
 
 	define ogonekTrConfig : object
-		'ogonekTR'   {(7/16)  (1/8)  1  0  }
-		'ogonekTR_Y' {(3/16)  1      6  0.5}
+		'ogonekTR' {(7/16) (1/8) 1 0 }
+		'ogonekTR_Y' {(3/16) 1 6 0.5}
 
 	foreach {glyphName {pExtL pExtR cwMidStrokeWidth paren}} [Object.entries ogonekTrConfig] : do
 		local depth : 0 - Descender - markStroke

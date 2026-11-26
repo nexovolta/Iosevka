@@ -15,10 +15,10 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 	glyph-block-import Letter-Latin-Lower-H : HConfig
 	glyph-block-import Letter-Shared : CreateSelectorVariants DefineSelectorGlyph
 
-	define SLAB-NONE                   0
-	define SLAB-TOP-LEFT               1
-	define SLAB-TOP-LEFT-BOTTOM-RIGHT  2
-	define SLAB-ALL                    4
+	define SLAB-NONE 0
+	define SLAB-TOP-LEFT 1
+	define SLAB-TOP-LEFT-BOTTOM-RIGHT 2
+	define SLAB-ALL 4
 
 	define [CyrShhaShape slabType _stroke _flatHump] : glyph-proc
 		local stroke : fallback _stroke Stroke
@@ -26,42 +26,42 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 
 		include : tagged 'strokeL' : VBar.l SB 0 CAP stroke
 		if (_flatHump === null || _flatHump) : then : include : nShoulder.earlessCorner
-			left   -- SB
-			right  -- RightSB
-			top    -- yBarTop
+			left -- SB
+			right -- RightSB
+			top -- yBarTop
 			bottom -- 0
 			stroke -- stroke
-			ada    -- [ArchDepthAClamped yBarTop 0]
-			adb    -- [ArchDepthBClamped yBarTop 0]
-			rise   -- [if _flatHump 0 DToothlessRise]
+			ada -- [ArchDepthAClamped yBarTop 0]
+			adb -- [ArchDepthBClamped yBarTop 0]
+			rise -- [if _flatHump 0 DToothlessRise]
 		: else : include : nShoulder.shape
-			left   -- (SB + [HSwToV stroke])
-			right  -- RightSB
-			top    -- yBarTop
+			left -- (SB + [HSwToV stroke])
+			right -- RightSB
+			top -- yBarTop
 			bottom -- 0
 			stroke -- stroke
-			ada    -- [ArchDepthAClamped yBarTop 0]
-			adb    -- [ArchDepthBClamped yBarTop 0]
+			ada -- [ArchDepthAClamped yBarTop 0]
+			adb -- [ArchDepthBClamped yBarTop 0]
 
 		local sf : SerifFrame.fromDf [DivFrame 1] CAP 0 (swRef -- stroke)
 		include : tagged 'SerifLT' : match slabType
-			[Just SLAB-ALL]                   sf.lt.full
+			[Just SLAB-ALL] sf.lt.full
 			[Just SLAB-TOP-LEFT-BOTTOM-RIGHT] sf.lt.outer
-			[Just SLAB-TOP-LEFT]              sf.lt.outer
-			__                              : glyph-proc
+			[Just SLAB-TOP-LEFT] sf.lt.outer
+			__ : glyph-proc
 		include : tagged 'SerifLB' : match slabType
-			[Just SLAB-ALL]                   sf.lb.full
-			__                              : glyph-proc
+			[Just SLAB-ALL] sf.lb.full
+			__ : glyph-proc
 		include : tagged 'serifRB' : match slabType
-			[Just SLAB-ALL]                   sf.rb.full
+			[Just SLAB-ALL] sf.rb.full
 			[Just SLAB-TOP-LEFT-BOTTOM-RIGHT] sf.rb.outer
-			__                              : glyph-proc
+			__ : glyph-proc
 
 	define ShhaConfig : object
-		serifless                 SLAB-NONE
-		topLeftSerifed            SLAB-TOP-LEFT
+		serifless SLAB-NONE
+		topLeftSerifed SLAB-TOP-LEFT
 		topLeftBottomRightSerifed SLAB-TOP-LEFT-BOTTOM-RIGHT
-		serifed                   SLAB-ALL
+		serifed SLAB-ALL
 
 	foreach {hSuffix {fFlatHump fTailed hSerifs}} [pairs-of HConfig] : do
 		DefineSelectorGlyph 'cyrl/Hwe' hSuffix [DivFrame 1] 'capital'
@@ -84,8 +84,8 @@ glyph-block Letter-Cyrillic-Upper-Shha : begin
 					CyrCheShape [DivFrame 1] CAP 0.45 BODY.STRAIGHT SERIFS.NONE (fFlatHump -- fFlatHump)
 				local sf : SerifFrame.fromDf [DivFrame 1] CAP 0
 				include : match slabType
-					[Just SERIFS.TL]        sf.lt.outer
-					[Just SERIFS.RT]        sf.lt.inner
+					[Just SERIFS.TL] sf.lt.outer
+					[Just SERIFS.RT] sf.lt.inner
 					[Just SERIFS.BILATERAL] sf.lt.full
 			: else : include : with-transform [Italify para.slopeAngle] : with-transform [ScaleAround Middle (CAP / 2) (-1) (-1)] : with-transform [Italify (-para.slopeAngle)] : refer-glyph "cyrl/Che.\(suffix)"
 

@@ -33,7 +33,7 @@ glyph-block LetterLike-Fraktur-DOQ : begin
 				corner (@xS = [frame.first 2].x) [frame.first 2].y
 				~~~ [Wave.vc (0.75 * Wave.DepthX)]
 				corner @xS (box.top - 0.25 * SHook)
-				corner @xS  box.top
+				corner @xS box.top
 
 	define [FrakOShape box] : lift-@ : fraktur-stroke S
 		cg2.ru.start (@xLB = box.left - 0.25 * DecoSizeX) (@yB = box.bottom)
@@ -62,6 +62,6 @@ glyph-block LetterLike-Fraktur-DOQ : begin
 		local frame : include : FrakOShape box
 
 		include : with-knockout [frame.withPen CutMaskUp] : lift-@ : fraktur-stroke S
-			corner (@xR + DecoSizeX)           (@yR + DecoSizeY)
-			corner (@xR = box.right + O)       (@yR = box.bottom + O)
+			corner (@xR + DecoSizeX) (@yR + DecoSizeY)
+			corner (@xR = box.right + O) (@yR = box.bottom + O)
 			corner (@xL = @xR - 2 * DecoSizeX) [slY @xR @yR @xL SlopeB]

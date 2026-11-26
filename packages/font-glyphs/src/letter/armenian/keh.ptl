@@ -24,14 +24,14 @@ glyph-block Letter-Armenian-Keh : begin
 				local barSw : OverlayStroke * (df.mvs / Stroke)
 				local oBot : CAP * HBarPos - df.mvs / 2
 				include : OBarLeft.earlessRounded
-					top   -- CAP
-					bot   -- oBot
-					left  -- df.leftSB
+					top -- CAP
+					bot -- oBot
+					left -- df.leftSB
 					right -- df.rightSB
-					sw    -- df.mvs
-					fine  -- df.shoulderFine
-					ada   -- ArchDepthA
-					adb   -- ArchDepthB
+					sw -- df.mvs
+					fine -- df.shoulderFine
+					ada -- ArchDepthA
+					adb -- ArchDepthB
 					yTerminal -- 0
 				include : HBar.m (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB
 					mix [if fSerif df.mvs 0] oBot 0.5
@@ -59,20 +59,20 @@ glyph-block Letter-Armenian-Keh : begin
 				local barSw : OverlayStroke * (df.mvs / Stroke)
 				local oBot : Math.max (0.1 * (XH - Descender)) (barSw + 0.5 * df.mvs)
 				include : OBarLeft.shape
-					top   -- XH
-					bot   -- oBot
-					left  -- df.leftSB
+					top -- XH
+					bot -- oBot
+					left -- df.leftSB
 					right -- df.rightSB
-					sw    -- df.mvs
-					fine  -- df.shoulderFine
-					ada   -- SmallArchDepthA
-					adb   -- SmallArchDepthB
+					sw -- df.mvs
+					fine -- df.shoulderFine
+					ada -- SmallArchDepthA
+					adb -- SmallArchDepthB
 				include : VBar.l df.leftSB Descender XH df.mvs
 				include : HBar.b (df.leftSB + [HSwToV : 0.5 * df.mvs] - jut) df.rightSB 0 barSw
 				if fSerif : begin
 					local sf : SerifFrame.fromDf df XH Descender
 					include sf.lt.outer
-					if [not para.isItalic] : include sf.lb.fullSide
+					if (!para.isItalic) : include sf.lb.fullSide
 		local kehPositionedSerifs : SuffixCfg.weave
 			object
 				'' 0

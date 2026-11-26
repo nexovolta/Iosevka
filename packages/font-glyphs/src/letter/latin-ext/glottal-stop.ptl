@@ -278,7 +278,7 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 						if fReverse
 							straight.down.end (xMid + [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.rhs.heading (Stroke * strokeEndCor) Downward]
 							straight.down.end (xMid - [HSwToV HalfStroke] * strokeEndCor) stemBot [widths.lhs.heading (Stroke * strokeEndCor) Downward]
-		include : if fDiagonal shape : CutArcTerminal shape terminalX top stemBot Stroke [not fReverse] true
+		include : if fDiagonal shape : CutArcTerminal shape terminalX top stemBot Stroke (!fReverse) true
 		if fCorner : include : VBar.m xMid stemBot yConnect
 
 	define [QuestionSmoothVerticalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false false false false
@@ -295,8 +295,8 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 	define [RevSmoothLetterDiagonalCutShape top bot left right hook] : CutQuestionShape top bot left right hook false true true true
 
 	define ForwardBodies : object
-		smooth           SmoothLetterShape
-		corner           QuestionCornerShape
+		smooth SmoothLetterShape
+		corner QuestionCornerShape
 		cornerFlatHooked QuestionCornerFlatShape
 		smoothFlatHooked QuestionSmoothFlatHookedShape
 		cornerCornerHooked QuestionCornerCornerHookedShape
@@ -310,8 +310,8 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothDiagonalCut SmoothLetterDiagonalCutShape
 		cornerDiagonalCut QuestionCornerDiagonalCutShape
 	define ReverseBodies : object
-		smooth           RevSmoothLetterShape
-		corner           QuestionRevCornerShape
+		smooth RevSmoothLetterShape
+		corner QuestionRevCornerShape
 		cornerFlatHooked QuestionRevCornerFlatShape
 		smoothFlatHooked QuestionRevSmoothFlatHookedShape
 		cornerCornerHooked QuestionRevCornerCornerHookedShape
@@ -332,24 +332,24 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 				include : Impl top 0 SB RightSB hook
 				if SLAB : include : HSerif.mb Middle 0 MidJutCenter
 
-	CreateGlottalFamily 'glottalStop'            MarkSet.b        Ascender Hook  ForwardBodies
-	CreateGlottalFamily 'revGlottalStop'         MarkSet.b        Ascender Hook  ReverseBodies
-	CreateGlottalFamily 'capGlottalStop'         MarkSet.capital  CAP      Hook  ForwardBodies
-	CreateGlottalFamily 'revCapGlottalStop'      MarkSet.capital  CAP      Hook  ReverseBodies
-	CreateGlottalFamily 'smallGlottalStop'       MarkSet.e        XH       SHook ForwardBodies
-	CreateGlottalFamily 'revSmallGlottalStop'    MarkSet.e        XH       SHook ReverseBodies
-	CreateGlottalFamily 'mdfGlottalStop/base'    MarkSet.capital  CAP      Hook  ForwardBodies
-	CreateGlottalFamily 'mdfRevGlottalStop/base' MarkSet.capital  CAP      Hook  ReverseBodies
+	CreateGlottalFamily 'glottalStop' MarkSet.b Ascender Hook ForwardBodies
+	CreateGlottalFamily 'revGlottalStop' MarkSet.b Ascender Hook ReverseBodies
+	CreateGlottalFamily 'capGlottalStop' MarkSet.capital CAP Hook ForwardBodies
+	CreateGlottalFamily 'revCapGlottalStop' MarkSet.capital CAP Hook ReverseBodies
+	CreateGlottalFamily 'smallGlottalStop' MarkSet.e XH SHook ForwardBodies
+	CreateGlottalFamily 'revSmallGlottalStop' MarkSet.e XH SHook ReverseBodies
+	CreateGlottalFamily 'mdfGlottalStop/base' MarkSet.capital CAP Hook ForwardBodies
+	CreateGlottalFamily 'mdfRevGlottalStop/base' MarkSet.capital CAP Hook ReverseBodies
 
-	select-variant 'glottalStop'            0x294
-	select-variant 'revGlottalStop'         0x295  (follow -- 'glottalStop')
+	select-variant 'glottalStop' 0x294
+	select-variant 'revGlottalStop' 0x295 (follow -- 'glottalStop')
 	select-variant 'revGlottalStop/palatalBase' (shapeFrom -- 'revGlottalStop')
-	select-variant 'capGlottalStop'         0x241  (follow -- 'glottalStop')
-	select-variant 'revCapGlottalStop'      0xA7CE (follow -- 'glottalStop')
-	select-variant 'smallGlottalStop'       0x242  (follow -- 'glottalStop')
-	select-variant 'revSmallGlottalStop'    0xA7CF (follow -- 'glottalStop')
-	select-variant 'mdfGlottalStop/base'    null   (follow -- 'glottalStop')
-	select-variant 'mdfRevGlottalStop/base' null   (follow -- 'glottalStop')
+	select-variant 'capGlottalStop' 0x241 (follow -- 'glottalStop')
+	select-variant 'revCapGlottalStop' 0xA7CE (follow -- 'glottalStop')
+	select-variant 'smallGlottalStop' 0x242 (follow -- 'glottalStop')
+	select-variant 'revSmallGlottalStop' 0xA7CF (follow -- 'glottalStop')
+	select-variant 'mdfGlottalStop/base' null (follow -- 'glottalStop')
+	select-variant 'mdfRevGlottalStop/base' null (follow -- 'glottalStop')
 
 	CreateTurnedLetter 'invGlottalStop' 0x296 'revGlottalStop' HalfAdvance (Ascender / 2)
 

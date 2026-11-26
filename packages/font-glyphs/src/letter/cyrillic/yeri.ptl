@@ -24,16 +24,16 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 		export : define flex-params [Shape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
-			local-parameter : fOpen  -- false
+			local-parameter : fSlab -- SLAB
+			local-parameter : fOpen -- false
 
 			local bowlTop : [mix 0 top pBar] + stroke / 2
 			local mockLeft : left - [HSwToV : stroke - swVBar]
@@ -63,16 +63,16 @@ glyph-block Letter-Cyrillic-Yeri : begin
 					widths.lhs stroke
 					if fBGR
 						list
-							g4   left (0 + DToothlessRise)
+							g4 left (0 + DToothlessRise)
 							Arch.lhs 0 (sw -- stroke) (blendPre -- {})
 						list
-							flat (left - O)  0 [heading Rightward]
+							flat (left - O) 0 [heading Rightward]
 							curl xTurnRightB 0 [if (xTurnRightB - [Math.abs : TanSlope * stroke] <= left + [HSwToV swVBar]) [heading Rightward] nothing]
 							archv 8
-					g4   (right - OX) yTurnBottomR
+					g4 (right - OX) yTurnBottomR
 					arcvh 8
 					flat xTurnRightT bowlTop [if (xTurnRightT - [Math.abs : TanSlope * stroke] <= left + [HSwToV swVBar]) [heading Leftward] nothing]
-					curl (left - O)  bowlTop [heading Leftward]
+					curl (left - O) bowlTop [heading Leftward]
 				if fOpen [YeriOpenGap left right bowlTop stroke swVBar false] [no-shape]
 
 			if fSlab : include : composite-proc
@@ -86,29 +86,29 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 		export : define flex-params [OpenShape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
+			local-parameter : fSlab -- SLAB
 			include : Shape top left right stroke fine swVBar jut pBar yStart fSlab true
 		set OpenShape.useFullSerifs useFullSerifs
 
 		export : define flex-params [RoundShape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
+			local-parameter : fSlab -- SLAB
 
 			local bowlTop : [mix 0 top pBar] + stroke / 2
 			local mockLeft : left - [HSwToV : stroke - swVBar]
@@ -138,10 +138,10 @@ glyph-block Letter-Cyrillic-Yeri : begin
 				flat left yStart [heading Downward]
 				curl left [Math.min (yStart - TINY - [HSwToV : Math.abs : TanSlope * swVBar]) (0 + adb) yTurnBottomL]
 				Arch.lhs 0 (sw -- stroke) (swBefore -- swVBar)
-				g4   (right - OX) yTurnBottomR
+				g4 (right - OX) yTurnBottomR
 				arcvh 8
 				flat xTurnRightT bowlTop [if (xTurnRightT - [Math.abs : TanSlope * stroke] <= left + [HSwToV swVBar]) [heading Leftward] nothing]
-				curl (left - O)  bowlTop [heading Leftward]
+				curl (left - O) bowlTop [heading Leftward]
 
 			if fSlab : include : tagged 'serifYeriLT' : if useFullSerifs
 				HSerif.mt (left + [HSwToV : 0.5 * swVBar]) top jut stroke
@@ -150,15 +150,15 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 		export : define flex-params [CursiveShape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
+			local-parameter : fSlab -- SLAB
 
 			local bowlTop : [mix 0 top pBar] + stroke / 2
 			local mockLeft : left - [HSwToV : stroke - swVBar]
@@ -188,7 +188,7 @@ glyph-block Letter-Cyrillic-Yeri : begin
 				flat left yStart [heading Downward]
 				curl left [Math.min (yStart - TINY - [HSwToV : Math.abs : TanSlope * swVBar]) (0 + adb) yTurnBottomL]
 				Arch.lhs 0 (sw -- stroke) (swBefore -- swVBar)
-				g4   (right - OX) yTurnBottomR
+				g4 (right - OX) yTurnBottomR
 				Arch.lhs bowlTop (sw -- stroke) (swAfter -- fine)
 				g4.down.end (left + [HSwToV : swVBar - fine]) [Math.max (bowlTop - ada) yTurnBottomL] [widths.lhs.heading fine Downward]
 
@@ -263,24 +263,24 @@ glyph-block Letter-Cyrillic-Yeri : begin
 			return variant
 
 	glyph-block-export YeriUpper YeriLower
-	define YeriUpper    : YeriShapeGroup true  false
-	define YeriLower    : YeriShapeGroup false false
+	define YeriUpper : YeriShapeGroup true false
+	define YeriLower : YeriShapeGroup false false
 	define YeriLowerBGR : YeriShapeGroup false true
 
 	glyph-block-export RevYeriUpper
 	define RevYeriUpper : namespace
 		export : define flex-params [Shape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
-			local-parameter : fOpen  -- false
+			local-parameter : fSlab -- SLAB
+			local-parameter : fOpen -- false
 
 			local bowlTop : [mix 0 top pBar] + stroke / 2
 			local mockRight : right + [HSwToV : stroke - swVBar]
@@ -312,9 +312,9 @@ glyph-block Letter-Cyrillic-Yeri : begin
 				union [VBar.r right 0 yStart swVBar] : dispiro
 					widths.rhs stroke
 					flat (right + O) 0 [heading Leftward]
-					curl xTurnLeftB  0 [if (xTurnLeftB + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Leftward] nothing]
+					curl xTurnLeftB 0 [if (xTurnLeftB + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Leftward] nothing]
 					archv 8
-					g4   (left + OX) yTurnBottomL
+					g4 (left + OX) yTurnBottomL
 					arcvh 8
 					flat [if diag [Math.min xTurnLeftT (right - join.minTurn)] xTurnLeftT] bowlTop [if (xTurnLeftT + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Rightward] nothing]
 					curl [if diag (right - join.xCut) (right + O)] bowlTop [heading Rightward]
@@ -327,15 +327,15 @@ glyph-block Letter-Cyrillic-Yeri : begin
 
 		export : define flex-params [RoundShape] : glyph-proc
 			local-parameter : top
-			local-parameter : left   -- SB
-			local-parameter : right  -- RightSB
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
 			local-parameter : stroke -- Stroke
-			local-parameter : fine   -- (ShoulderFine * (stroke / Stroke))
+			local-parameter : fine -- (ShoulderFine * (stroke / Stroke))
 			local-parameter : swVBar -- stroke
-			local-parameter : jut    -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
-			local-parameter : pBar   -- YeriBarPos
+			local-parameter : jut -- (Jut - [HSwToV : 0.5 * (Stroke - swVBar)])
+			local-parameter : pBar -- YeriBarPos
 			local-parameter : yStart -- top
-			local-parameter : fSlab  -- SLAB
+			local-parameter : fSlab -- SLAB
 
 			local bowlTop : [mix 0 top pBar] + stroke / 2
 			local mockRight : right + [HSwToV : stroke - swVBar]
@@ -365,34 +365,34 @@ glyph-block Letter-Cyrillic-Yeri : begin
 				flat right yStart [heading Downward]
 				curl right [Math.min (yStart - TINY - [HSwToV : Math.abs : TanSlope * swVBar]) (0 + ada) yTurnBottomR]
 				Arch.rhs 0 (sw -- stroke) (swBefore -- swVBar)
-				g4   (left + OX) yTurnBottomL
+				g4 (left + OX) yTurnBottomL
 				arcvh 8
-				flat xTurnLeftT  bowlTop [if (xTurnLeftT + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Rightward] nothing]
+				flat xTurnLeftT bowlTop [if (xTurnLeftT + [Math.abs : TanSlope * stroke] >= right - [HSwToV swVBar]) [heading Rightward] nothing]
 				curl (right + O) bowlTop [heading Rightward]
 
 			if fSlab : include : tagged 'serifYeriRT' : HSerif.mt (right - [HSwToV : 0.5 * swVBar]) top jut stroke
 
 	define LegacyYeriConfig : object
-		corner  {YeriUpper.Shape         YeriLower.Shape         YeriLowerBGR.Shape       }
-		open    {YeriUpper.OpenShape     YeriLower.OpenShape     YeriLowerBGR.OpenShape   }
-		round   {YeriUpper.RoundShape    YeriLower.RoundShape    YeriLowerBGR.RoundShape  }
-		cursive {YeriUpper.CursiveShape  YeriLower.CursiveShape  YeriLowerBGR.CursiveShape}
+		corner {YeriUpper.Shape YeriLower.Shape YeriLowerBGR.Shape }
+		open {YeriUpper.OpenShape YeriLower.OpenShape YeriLowerBGR.OpenShape }
+		round {YeriUpper.RoundShape YeriLower.RoundShape YeriLowerBGR.RoundShape }
+		cursive {YeriUpper.CursiveShape YeriLower.CursiveShape YeriLowerBGR.CursiveShape}
 
 	define StagedYeriInput : SuffixCfg.weave
 		object
-			flat          'flat'
-			rounded       'rounded'
-			open          'open'
-			brokenRising  'brokenRising'
+			flat 'flat'
+			rounded 'rounded'
+			open 'open'
+			brokenRising 'brokenRising'
 			brokenFalling 'brokenFalling'
 		object
-			flatBottom       'flatBottom'
-			flat             'flat'
-			toothlessCorner  'corner'
+			flatBottom 'flatBottom'
+			flat 'flat'
+			toothlessCorner 'corner'
 			toothlessRounded 'rounded'
 		object
 			serifless false
-			serifed   true
+			serifed true
 
 	define StagedYeriConfig : Object.fromEntries : [Object.entries StagedYeriInput].map : lambda [entry] : begin
 		local {bowl tooth topSerif} entry.1
@@ -407,7 +407,7 @@ glyph-block Letter-Cyrillic-Yeri : begin
 			local stroke : AdviceStroke2 2 3 CAP
 			include : Uc CAP SB RightSB stroke
 			create-forked-glyph "cyrl/YeriBar.\(suffix)" : LetterBarOverlay.l.in
-				x   -- SB
+				x -- SB
 				bot -- ([mix 0 CAP YeriBarPos] + stroke / 2)
 				top -- (CAP - [if SLAB stroke 0])
 		create-glyph "cyrl/yeri.\(suffix)" : glyph-proc
@@ -415,7 +415,7 @@ glyph-block Letter-Cyrillic-Yeri : begin
 			local stroke : AdviceStroke2 2 3 XH
 			include : Lc XH SB RightSB stroke
 			create-forked-glyph "cyrl/yeriBar.\(suffix)" : LetterBarOverlay.l.in
-				x   -- SB
+				x -- SB
 				bot -- ([mix 0 XH YeriBarPos] + stroke / 2)
 				top -- (XH - [if SLAB stroke 0])
 		create-glyph "cyrl/yeri.BGR.\(suffix)" : glyph-proc

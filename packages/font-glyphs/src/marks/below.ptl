@@ -14,9 +14,9 @@ glyph-block Mark-Below : begin
 	glyph-block-import Mark-Above : WigglyLineShape SnakeBelowShape MeasureGlyphBounds CenterMarkHorizontally TildeShape IsBelowShape
 
 	glyph-block-export belowMarkBot belowMarkTop belowMarkMid belowMarkStack
-	define belowMarkBot   (0 - AccentClearance - AccentHeight)
-	define belowMarkTop   (0 - AccentClearance)
-	define belowMarkMid   [mix belowMarkBot belowMarkTop 0.5]
+	define belowMarkBot (0 - AccentClearance - AccentHeight)
+	define belowMarkTop (0 - AccentClearance)
+	define belowMarkMid [mix belowMarkBot belowMarkTop 0.5]
 	define belowMarkStack (0 - AccentStackOffset)
 	define toneBelowBaseline belowMarkTop
 
@@ -24,7 +24,7 @@ glyph-block Mark-Below : begin
 	define [AlignToneMarkBelow] : glyph-proc
 		include : CenterMarkHorizontally
 		local b : include : MeasureGlyphBounds
-		if [not b] : return nothing
+		if (!b) : return nothing
 		local yShift : toneBelowBaseline - b.yMax
 		if ([Math.abs yShift] > 1e-6) : currentGlyph.applyTransform [ApparentTranslate 0 yShift]
 
@@ -35,11 +35,11 @@ glyph-block Mark-Below : begin
 			set-base-anchor 'belowBraceR' (markMiddle + k * markExtend) belowMarkMid
 			if fLeaning : ScheduleLeaningMark.set currentGlyph
 
-		export : define [narrow]       : impl 0 0    true
+		export : define [narrow] : impl 0 0 true
 		export : define [mediumNarrow] : impl 0 0.25 true
-		export : define [medium]       : impl 0 0.5  true
-		export : define [mediumWide]   : impl 0 0.75
-		export : define [wide]         : impl 0 1
+		export : define [medium] : impl 0 0.5 true
+		export : define [mediumWide] : impl 0 0.75
+		export : define [wide] : impl 0 1
 
 	### Below marks
 	create-glyph 'blankBelow' : glyph-proc
@@ -55,14 +55,14 @@ glyph-block Mark-Below : begin
 	define [CedillaShape ext] : begin
 		local fine : Math.min (0.75 * (belowMarkTop - belowMarkBot - markStroke)) : AdviceStroke 6
 		local cedillaTop : belowMarkTop + 0.875 * fine
-		local cedillaBot   belowMarkBot
+		local cedillaBot belowMarkBot
 		return : union
 			VBar.m markMiddle ext (cedillaTop - fine) markStroke
 			dispiro
 				flat (markMiddle - [HSwToV : 0.5 * markStroke]) cedillaTop [widths.rhs.heading fine Rightward]
 				curl markMiddle cedillaTop [heading Rightward]
 				archv
-				g4   (markMiddle + markExtend - O) [mix cedillaTop cedillaBot 0.5] [widths.rhs.heading [mix fine markStroke 0.5] {.x HVContrast .y ((-0.5) * (markStroke - fine) / markStroke)}]
+				g4 (markMiddle + markExtend - O) [mix cedillaTop cedillaBot 0.5] [widths.rhs.heading [mix fine markStroke 0.5] {.x HVContrast .y ((-0.5) * (markStroke - fine) / markStroke)}]
 				arcvh
 				flat markMiddle cedillaBot [widths.rhs.heading markStroke Leftward]
 				curl (markMiddle - markExtend) cedillaBot [heading Leftward]
@@ -106,7 +106,7 @@ glyph-block Mark-Below : begin
 		set-width 0
 		include : StdAnchors.impl 0 1.5
 
-		include : VBar.l (SB      - Width) belowMarkBot belowMarkTop (markFine * 2)
+		include : VBar.l (SB - Width) belowMarkBot belowMarkTop (markFine * 2)
 		include : VBar.r (RightSB - Width) belowMarkBot belowMarkTop (markFine * 2)
 		include : HBar.b (SB - Width) (RightSB - Width) belowMarkBot (markFine * 2)
 
@@ -138,62 +138,62 @@ glyph-block Mark-Below : begin
 				mirrorAnchor aboveGlyph currentGlyph 'aboveBraceR' 'belowBraceL'
 			if [ScheduleLeaningMark.get aboveGlyph] : ScheduleLeaningMark.set currentGlyph
 
-	TurnAboveMarkToBelow 'graveBelow'              0x316  'graveAbove'
-	TurnAboveMarkToBelow 'acuteBelow'              0x317  'acuteAbove'
-	TurnAboveMarkToBelow 'leftTackBelow'           0x318  'rightTackAbove'
-	TurnAboveMarkToBelow 'rightTackBelow'          0x319  'leftTackAbove'
-	TurnAboveMarkToBelow 'leftHalfRingBelow'       0x31C  'rightHalfRingAbove'
-	TurnAboveMarkToBelow 'upTackBelow'             0x31D  'downTackAbove'
-	TurnAboveMarkToBelow 'downTackBelow'           0x31E  'upTackAbove'
-	TurnAboveMarkToBelow 'plusBelow'               0x31F  'plusAbove'
-	TurnAboveMarkToBelow 'minusBelow'              0x320  'minusAbove'
-	TurnAboveMarkToBelow 'dotBelow'                0x323  'dotAbove'
-	TurnAboveMarkToBelow 'dieresisBelow'           0x324  'dieresisAbove'
-	TurnAboveMarkToBelow 'ringBelow'               0x325  'ringAbove'
-	TurnAboveMarkToBelow 'commaBelow'              0x326  'turnCommaAbove'
-	TurnAboveMarkToBelow 'ogonekBelow'             0x328  'ogonekAbove'
-	TurnAboveMarkToBelow 'barBelow'                0x329  'barAbove'
-	TurnAboveMarkToBelow 'bridgeBelow'             0x32A  'invBridgeAbove'
-	TurnAboveMarkToBelow 'caronBelow'              0x32C  'circumflexAbove'
-	TurnAboveMarkToBelow 'circumflexBelow'         0x32D  'caronAbove'
-	TurnAboveMarkToBelow 'breveBelow'              0x32E  'invBreveAbove'
-	TurnAboveMarkToBelow 'invBreveBelow'           0x32F  'breveAbove'
-	TurnAboveMarkToBelow 'tildeBelow'              0x330  'tildeAbove'
-	TurnAboveMarkToBelow 'macronBelow'             0x331  'macronAbove'
-	TurnAboveMarkToBelow 'underlineBelow'          0x332  'overlineAbove'
-	TurnAboveMarkToBelow 'dblUnderlineBelow'       0x333  'dblOverlineAbove'
-	TurnAboveMarkToBelow 'rightHalfRingBelow'      0x339  'leftHalfRingAbove'
-	TurnAboveMarkToBelow 'invBridgeBelow'          0x33A  'bridgeAbove'
-	TurnAboveMarkToBelow 'boxBelow'                0x33B  'boxAbove'
-	TurnAboveMarkToBelow 'seagullBelow'            0x33C  'turnSeagullAbove'
-	TurnAboveMarkToBelow 'equalBelow'              0x347  'equalAbove'
-	TurnAboveMarkToBelow 'dblBarBelow'             0x348  'dblBarAbove'
-	TurnAboveMarkToBelow 'leftAngleBelow'          0x349  'turnLeftAngleAbove'
-	TurnAboveMarkToBelow 'lrArrowBelow'            0x34D  'lrArrowAbove'
-	TurnAboveMarkToBelow 'upArrowBelow'            0x34E  'downArrowAbove'
-	TurnAboveMarkToBelow 'crossBelow'              0x353  'crossAbove'
-	TurnAboveMarkToBelow 'leftArrowHeadBelow'      0x354  'rightArrowHeadAbove'
-	TurnAboveMarkToBelow 'rightArrowHeadBelow'     0x355  'leftArrowHeadAbove'
-	TurnAboveMarkToBelow 'dblRingBelow'            0x35A  'dblRingAbove'
-	TurnAboveMarkToBelow 'turnCommaBelow'          0x1AB7 'commaAbove'
-	TurnAboveMarkToBelow 'dblTurnCommaBelow'       0x1AB8 'dblCommaAbove'
-	TurnAboveMarkToBelow 'dblPlusBelow'            0x1ACA 'dblPlusAbove'
-	TurnAboveMarkToBelow 'dotRingBelow'            0x1ADD 'ringDotAbove'
-	TurnAboveMarkToBelow 'doubleGraveBelow'        0x1AEE 'doubleGraveAbove'
-	TurnAboveMarkToBelow 'doubleAcuteBelow'        0x1AEF 'doubleAcuteAbove'
-	TurnAboveMarkToBelow 'zigzagBelow'             0x1DCF 'zigzagAbove'
-	TurnAboveMarkToBelow 'wideInvBridgeBelow'      0x1DF9 'wideBridgeAbove'
-	TurnAboveMarkToBelow 'dblTildeBelow'           0x1DFD 'dblTildeAbove'
-	TurnAboveMarkToBelow 'ellipsisBelow'           0x20E8 'ellipsisAbove'
-	TurnAboveMarkToBelow 'rightHLArrowBelow'       0x20EC 'leftHRArrowAbove'
-	TurnAboveMarkToBelow 'leftHRArrowBelow'        0x20ED 'rightHLArrowAbove'
-	TurnAboveMarkToBelow 'leftArrowBelow'          0x20EE 'rightArrowAbove'
-	TurnAboveMarkToBelow 'rightArrowBelow'         0x20EF 'leftArrowAbove'
-	TurnAboveMarkToBelow 'upArrowHeadBelow'        null   'downArrowHeadAbove'
-	TurnAboveMarkToBelow 'downArrowHeadBelow'      null   'upArrowHeadAbove'
-	TurnAboveMarkToBelow 'invCommaBelow'           null   'revCommaAbove'
-	TurnAboveMarkToBelow 'sbRsbUnderlineBelow'     null   'sbRsbOverlineAbove'
-	TurnAboveMarkToBelow 'largeCandrabinduBelow'   null   'largeFermataAbove'
+	TurnAboveMarkToBelow 'graveBelow' 0x316 'graveAbove'
+	TurnAboveMarkToBelow 'acuteBelow' 0x317 'acuteAbove'
+	TurnAboveMarkToBelow 'leftTackBelow' 0x318 'rightTackAbove'
+	TurnAboveMarkToBelow 'rightTackBelow' 0x319 'leftTackAbove'
+	TurnAboveMarkToBelow 'leftHalfRingBelow' 0x31C 'rightHalfRingAbove'
+	TurnAboveMarkToBelow 'upTackBelow' 0x31D 'downTackAbove'
+	TurnAboveMarkToBelow 'downTackBelow' 0x31E 'upTackAbove'
+	TurnAboveMarkToBelow 'plusBelow' 0x31F 'plusAbove'
+	TurnAboveMarkToBelow 'minusBelow' 0x320 'minusAbove'
+	TurnAboveMarkToBelow 'dotBelow' 0x323 'dotAbove'
+	TurnAboveMarkToBelow 'dieresisBelow' 0x324 'dieresisAbove'
+	TurnAboveMarkToBelow 'ringBelow' 0x325 'ringAbove'
+	TurnAboveMarkToBelow 'commaBelow' 0x326 'turnCommaAbove'
+	TurnAboveMarkToBelow 'ogonekBelow' 0x328 'ogonekAbove'
+	TurnAboveMarkToBelow 'barBelow' 0x329 'barAbove'
+	TurnAboveMarkToBelow 'bridgeBelow' 0x32A 'invBridgeAbove'
+	TurnAboveMarkToBelow 'caronBelow' 0x32C 'circumflexAbove'
+	TurnAboveMarkToBelow 'circumflexBelow' 0x32D 'caronAbove'
+	TurnAboveMarkToBelow 'breveBelow' 0x32E 'invBreveAbove'
+	TurnAboveMarkToBelow 'invBreveBelow' 0x32F 'breveAbove'
+	TurnAboveMarkToBelow 'tildeBelow' 0x330 'tildeAbove'
+	TurnAboveMarkToBelow 'macronBelow' 0x331 'macronAbove'
+	TurnAboveMarkToBelow 'underlineBelow' 0x332 'overlineAbove'
+	TurnAboveMarkToBelow 'dblUnderlineBelow' 0x333 'dblOverlineAbove'
+	TurnAboveMarkToBelow 'rightHalfRingBelow' 0x339 'leftHalfRingAbove'
+	TurnAboveMarkToBelow 'invBridgeBelow' 0x33A 'bridgeAbove'
+	TurnAboveMarkToBelow 'boxBelow' 0x33B 'boxAbove'
+	TurnAboveMarkToBelow 'seagullBelow' 0x33C 'turnSeagullAbove'
+	TurnAboveMarkToBelow 'equalBelow' 0x347 'equalAbove'
+	TurnAboveMarkToBelow 'dblBarBelow' 0x348 'dblBarAbove'
+	TurnAboveMarkToBelow 'leftAngleBelow' 0x349 'turnLeftAngleAbove'
+	TurnAboveMarkToBelow 'lrArrowBelow' 0x34D 'lrArrowAbove'
+	TurnAboveMarkToBelow 'upArrowBelow' 0x34E 'downArrowAbove'
+	TurnAboveMarkToBelow 'crossBelow' 0x353 'crossAbove'
+	TurnAboveMarkToBelow 'leftArrowHeadBelow' 0x354 'rightArrowHeadAbove'
+	TurnAboveMarkToBelow 'rightArrowHeadBelow' 0x355 'leftArrowHeadAbove'
+	TurnAboveMarkToBelow 'dblRingBelow' 0x35A 'dblRingAbove'
+	TurnAboveMarkToBelow 'turnCommaBelow' 0x1AB7 'commaAbove'
+	TurnAboveMarkToBelow 'dblTurnCommaBelow' 0x1AB8 'dblCommaAbove'
+	TurnAboveMarkToBelow 'dblPlusBelow' 0x1ACA 'dblPlusAbove'
+	TurnAboveMarkToBelow 'dotRingBelow' 0x1ADD 'ringDotAbove'
+	TurnAboveMarkToBelow 'doubleGraveBelow' 0x1AEE 'doubleGraveAbove'
+	TurnAboveMarkToBelow 'doubleAcuteBelow' 0x1AEF 'doubleAcuteAbove'
+	TurnAboveMarkToBelow 'zigzagBelow' 0x1DCF 'zigzagAbove'
+	TurnAboveMarkToBelow 'wideInvBridgeBelow' 0x1DF9 'wideBridgeAbove'
+	TurnAboveMarkToBelow 'dblTildeBelow' 0x1DFD 'dblTildeAbove'
+	TurnAboveMarkToBelow 'ellipsisBelow' 0x20E8 'ellipsisAbove'
+	TurnAboveMarkToBelow 'rightHLArrowBelow' 0x20EC 'leftHRArrowAbove'
+	TurnAboveMarkToBelow 'leftHRArrowBelow' 0x20ED 'rightHLArrowAbove'
+	TurnAboveMarkToBelow 'leftArrowBelow' 0x20EE 'rightArrowAbove'
+	TurnAboveMarkToBelow 'rightArrowBelow' 0x20EF 'leftArrowAbove'
+	TurnAboveMarkToBelow 'upArrowHeadBelow' null 'downArrowHeadAbove'
+	TurnAboveMarkToBelow 'downArrowHeadBelow' null 'upArrowHeadAbove'
+	TurnAboveMarkToBelow 'invCommaBelow' null 'revCommaAbove'
+	TurnAboveMarkToBelow 'sbRsbUnderlineBelow' null 'sbRsbOverlineAbove'
+	TurnAboveMarkToBelow 'largeCandrabinduBelow' null 'largeFermataAbove'
 
 	create-glyph 'rightAndUpArrowheadBelow' 0x0356 : glyph-proc
 		set-width 0
@@ -217,22 +217,22 @@ glyph-block Mark-Below : begin
 		set-width 0
 		include : StdAnchors.impl 0 1.5
 		include : WigglyLineShape
-			ttop  -- belowMarkTop
-			tbot  -- (belowMarkBot + markFine / 2)
+			ttop -- belowMarkTop
+			tbot -- (belowMarkBot + markFine / 2)
 			width -- (markExtend * 3)
-			hs    -- markHalfStroke
+			hs -- markHalfStroke
 		include : AlignToneMarkBelow
 
 	create-glyph 'snakeBelow' 0x1DC2 : glyph-proc
 		set-width 0
 		include : StdAnchors.impl 0 1.75
 		include : SnakeBelowShape
-			ttop   -- belowMarkTop
-			tbot   -- (belowMarkBot - 0.55 * AccentHeight)
+			ttop -- belowMarkTop
+			tbot -- (belowMarkBot - 0.55 * AccentHeight)
 			topAmp -- (markExtend * 0.85)
 			botAmp -- (markExtend * 0.32)
-			hsTop  -- markFine
-			hsBot  -- (0.4 * markFine)
+			hsTop -- markFine
+			hsBot -- (0.4 * markFine)
 		include : AlignToneMarkBelow
 
 	# Combining IS below: a / into the tilde from the top; the slash stops at the join.
@@ -253,14 +253,14 @@ glyph-block Mark-Below : begin
 		local tildeRight : markMiddle + markExtend * 1.7
 
 		include : IsBelowShape
-			xTop     -- xTop
-			yTop     -- yTop
-			ttop     -- tTildeTop
-			tbot     -- tTildeBot
-			leftEnd  -- xJoin
+			xTop -- xTop
+			yTop -- yTop
+			ttop -- tTildeTop
+			tbot -- tTildeBot
+			leftEnd -- xJoin
 			rightEnd -- tildeRight
-			hs       -- markHalfStroke
-			hsJoin   -- markFine
+			hs -- markHalfStroke
+			hsJoin -- markFine
 
 	define centralizationFine : AdviceStroke 6
 	define slashDx : (RightSB - SB) / 2 + O * 3 - 0.5 * centralizationFine
@@ -297,7 +297,7 @@ glyph-block Mark-Below : begin
 		include : dispiro
 			widths.lhs markFine
 			g4 (left + braceDepth) (belowMarkTop + markFine)
-			g4 (left + OX)         belowMarkMid
+			g4 (left + OX) belowMarkMid
 			g4 (left + braceDepth) (belowMarkBot - markFine)
 
 	create-glyph 'rightParenBelow' 0x1AC4 : glyph-proc
@@ -308,7 +308,7 @@ glyph-block Mark-Below : begin
 		include : dispiro
 			widths.rhs markFine
 			g4 (right - braceDepth) (belowMarkTop + markFine)
-			g4 (right - OX)         belowMarkMid
+			g4 (right - OX) belowMarkMid
 			g4 (right - braceDepth) (belowMarkBot - markFine)
 
 	create-glyph 'parenBelow' 0x1ABD : glyph-proc

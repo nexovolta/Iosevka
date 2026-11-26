@@ -63,21 +63,21 @@ glyph-block Letter-Latin-Upper-D : begin
 		local p2 : 0.15 + 0.5 * (fine / (yTop - yBot))
 		local p3 : 0.35 + 0.8 * (body / (yTop - yBot))
 		local p4 : 0.15 + 0.0 * (body / (xRight - xLeft))
-		local pcx  0.5
-		local pcy  0.1
+		local pcx 0.5
+		local pcy 0.1
 
 		include : sink
 			widths.rhs body
 			[if offset corner flat] (xLeft - O) yTop [heading Rightward]
-			curl               mxt                       yTop
-			alsoThru.g2        pcx                       pcy
-			flat               [mix mxt xRight p1]       [mix yTop myr p2]
-			curl               [mix mxt xRight (1 - p4)] [mix yTop myr (1 - p3)]
-			g2.down.mid        (xRight - OX - offset)    myr
-			flat               [mix xRight mxb p4]       [mix myr yBot p3]
-			curl               [mix xRight mxb (1 - p1)] [mix myr yBot (1 - p2)]
-			alsoThru.g2        (1 - pcx)                 (1 - pcy)
-			flat               mxb                       yBot
+			curl mxt yTop
+			alsoThru.g2 pcx pcy
+			flat [mix mxt xRight p1] [mix yTop myr p2]
+			curl [mix mxt xRight (1 - p4)] [mix yTop myr (1 - p3)]
+			g2.down.mid (xRight - OX - offset) myr
+			flat [mix xRight mxb p4] [mix myr yBot p3]
+			curl [mix xRight mxb (1 - p1)] [mix myr yBot (1 - p2)]
+			alsoThru.g2 (1 - pcx) (1 - pcy)
+			flat mxb yBot
 			if fToothed
 				then : list
 					archv
@@ -98,13 +98,13 @@ glyph-block Letter-Latin-Upper-D : begin
 
 	define DConfig : SuffixCfg.weave
 		object # body
-			standard    BODY-STANDARD
+			standard BODY-STANDARD
 			moreRounded BODY-MORE-ROUNDED
-			diamond     BODY-DIAMOND
+			diamond BODY-DIAMOND
 		object # serifs
-			serifless         {false  false}
-			unilateralSerifed {true   false}
-			bilateralSerifed  {true   true }
+			serifless {false false}
+			unilateralSerifed {true false}
+			bilateralSerifed {true true }
 
 	foreach {suffix {bodyKind {fSlabTop fSlabBot}}} [Object.entries DConfig] : do
 		local fMotion : fSlabTop && !fSlabBot
@@ -174,7 +174,7 @@ glyph-block Letter-Latin-Upper-D : begin
 		include [refer-glyph src] AS_BASE ALSO_METRICS
 		include : LetterBarOverlay.l.in SB Stroke (CAP - Stroke)
 			space -- {0 (RightSB - [HSwToV Stroke])}
-	alias 'DStroke'  0x110 'Eth'
+	alias 'DStroke' 0x110 'Eth'
 	alias 'africanD' 0x189 'Eth'
 	select-variant 'Dhookleft' 0x18A
 

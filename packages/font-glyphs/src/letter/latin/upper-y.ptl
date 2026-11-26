@@ -14,19 +14,19 @@ glyph-block Letter-Latin-Upper-Y : begin
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
 	glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 
-	define BODY-CURLY    0
+	define BODY-CURLY 0
 	define BODY-STRAIGHT 1
-	define BODY-ROUNDED  2
+	define BODY-ROUNDED 2
 
-	define SLAB-NONE                    0
-	define SLAB-ALL                     1
-	define SLAB-BASE                    2
-	define SLAB-MOTION                  3
-	define SLAB-TOP-RIGHT-MOTION        4
-	define SLAB-BILATERAL-MOTION        5
-	define SLAB-BASE-MOTION             6
-	define SLAB-BASE-TOP-RIGHT-MOTION   7
-	define SLAB-BASE-BILATERAL-MOTION   8
+	define SLAB-NONE 0
+	define SLAB-ALL 1
+	define SLAB-BASE 2
+	define SLAB-MOTION 3
+	define SLAB-TOP-RIGHT-MOTION 4
+	define SLAB-BILATERAL-MOTION 5
+	define SLAB-BASE-MOTION 6
+	define SLAB-BASE-TOP-RIGHT-MOTION 7
+	define SLAB-BASE-BILATERAL-MOTION 8
 
 	define [YHasTopLeftSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-MOTION || slabType == SLAB-BILATERAL-MOTION || slabType == SLAB-BASE-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
 	define [YHasTopRightSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-TOP-RIGHT-MOTION || slabType == SLAB-BILATERAL-MOTION || slabType == SLAB-BASE-TOP-RIGHT-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
@@ -91,14 +91,14 @@ glyph-block Letter-Latin-Upper-Y : begin
 
 	define [YenOverlayShape slabType] : glyph-proc
 		define {ks bot} : match slabType
-			[Just SLAB-ALL]                   {0.25  Stroke}
-			[Just SLAB-BASE]                  {0.25  Stroke}
-			[Just SLAB-BASE-MOTION]           {0.25  Stroke}
-			[Just SLAB-BASE-TOP-RIGHT-MOTION] {0.25  Stroke}
-			[Just SLAB-BASE-BILATERAL-MOTION] {0.25  Stroke}
-			otherwise                         {0     0     }
+			[Just SLAB-ALL] {0.25 Stroke}
+			[Just SLAB-BASE] {0.25 Stroke}
+			[Just SLAB-BASE-MOTION] {0.25 Stroke}
+			[Just SLAB-BASE-TOP-RIGHT-MOTION] {0.25 Stroke}
+			[Just SLAB-BASE-BILATERAL-MOTION] {0.25 Stroke}
+			otherwise {0 0 }
 		include : HOverlayBar SB RightSB ([mix bot [YCrossPos CAP 0] 0.5] - OverlayStroke * ks)
-		include : HOverlayBar SB RightSB  [mix bot [YCrossPos CAP 0] 1.0]
+		include : HOverlayBar SB RightSB [mix bot [YCrossPos CAP 0] 1.0]
 
 	define [YHookLeftHookedStroke top bot cross] : dispiro
 		widths.lhs
@@ -134,43 +134,43 @@ glyph-block Letter-Latin-Upper-Y : begin
 
 	define [YHookLeftRightShape] : with-params [bodyType slabType top bot [cross [YCrossPos top bot]]] : glyph-proc
 		include : VBar.m Middle bot (cross + HalfStroke)
-		include : YHookLeftHookedStroke  top bot cross
+		include : YHookLeftHookedStroke top bot cross
 		include : YHookRightHookedStroke top bot cross
 
 	define YConfig : object
-		straightSerifless                  {BODY-STRAIGHT  SLAB-NONE                 }
-		curlySerifless                     {BODY-CURLY     SLAB-NONE                 }
-		straightBaseSerifed                {BODY-STRAIGHT  SLAB-BASE                 }
-		curlyBaseSerifed                   {BODY-CURLY     SLAB-BASE                 }
-		straightMotionSerifed              {BODY-STRAIGHT  SLAB-MOTION               }
-		curlyMotionSerifed                 {BODY-CURLY     SLAB-MOTION               }
-		straightTopRightMotionSerifed      {BODY-STRAIGHT  SLAB-TOP-RIGHT-MOTION     }
-		curlyTopRightMotionSerifed         {BODY-CURLY     SLAB-TOP-RIGHT-MOTION     }
-		straightBilateralMotionSerifed     {BODY-STRAIGHT  SLAB-BILATERAL-MOTION     }
-		curlyBilateralMotionSerifed        {BODY-CURLY     SLAB-BILATERAL-MOTION     }
-		straightBaseMotionSerifed          {BODY-STRAIGHT  SLAB-BASE-MOTION          }
-		curlyBaseMotionSerifed             {BODY-CURLY     SLAB-BASE-MOTION          }
-		straightBaseTopRightMotionSerifed  {BODY-STRAIGHT  SLAB-BASE-TOP-RIGHT-MOTION}
-		curlyBaseTopRightMotionSerifed     {BODY-CURLY     SLAB-BASE-TOP-RIGHT-MOTION}
-		straightBaseBilateralMotionSerifed {BODY-STRAIGHT  SLAB-BASE-BILATERAL-MOTION}
-		curlyBaseBilateralMotionSerifed    {BODY-CURLY     SLAB-BASE-BILATERAL-MOTION}
-		straightSerifed                    {BODY-STRAIGHT  SLAB-ALL                  }
-		curlySerifed                       {BODY-CURLY     SLAB-ALL                  }
-		roundedSerifless                   {BODY-ROUNDED   SLAB-NONE                 }
-		roundedBaseSerifed                 {BODY-ROUNDED   SLAB-BASE                 }
-		roundedMotionSerifed               {BODY-ROUNDED   SLAB-MOTION               }
-		roundedTopRightMotionSerifed       {BODY-ROUNDED   SLAB-TOP-RIGHT-MOTION     }
-		roundedBilateralMotionSerifed      {BODY-ROUNDED   SLAB-BILATERAL-MOTION     }
-		roundedBaseMotionSerifed           {BODY-ROUNDED   SLAB-BASE-MOTION          }
-		roundedBaseTopRightMotionSerifed   {BODY-ROUNDED   SLAB-BASE-TOP-RIGHT-MOTION}
-		roundedBaseBilateralMotionSerifed  {BODY-ROUNDED   SLAB-BASE-BILATERAL-MOTION}
-		roundedSerifed                     {BODY-ROUNDED   SLAB-ALL                  }
+		straightSerifless {BODY-STRAIGHT SLAB-NONE }
+		curlySerifless {BODY-CURLY SLAB-NONE }
+		straightBaseSerifed {BODY-STRAIGHT SLAB-BASE }
+		curlyBaseSerifed {BODY-CURLY SLAB-BASE }
+		straightMotionSerifed {BODY-STRAIGHT SLAB-MOTION }
+		curlyMotionSerifed {BODY-CURLY SLAB-MOTION }
+		straightTopRightMotionSerifed {BODY-STRAIGHT SLAB-TOP-RIGHT-MOTION }
+		curlyTopRightMotionSerifed {BODY-CURLY SLAB-TOP-RIGHT-MOTION }
+		straightBilateralMotionSerifed {BODY-STRAIGHT SLAB-BILATERAL-MOTION }
+		curlyBilateralMotionSerifed {BODY-CURLY SLAB-BILATERAL-MOTION }
+		straightBaseMotionSerifed {BODY-STRAIGHT SLAB-BASE-MOTION }
+		curlyBaseMotionSerifed {BODY-CURLY SLAB-BASE-MOTION }
+		straightBaseTopRightMotionSerifed {BODY-STRAIGHT SLAB-BASE-TOP-RIGHT-MOTION}
+		curlyBaseTopRightMotionSerifed {BODY-CURLY SLAB-BASE-TOP-RIGHT-MOTION}
+		straightBaseBilateralMotionSerifed {BODY-STRAIGHT SLAB-BASE-BILATERAL-MOTION}
+		curlyBaseBilateralMotionSerifed {BODY-CURLY SLAB-BASE-BILATERAL-MOTION}
+		straightSerifed {BODY-STRAIGHT SLAB-ALL }
+		curlySerifed {BODY-CURLY SLAB-ALL }
+		roundedSerifless {BODY-ROUNDED SLAB-NONE }
+		roundedBaseSerifed {BODY-ROUNDED SLAB-BASE }
+		roundedMotionSerifed {BODY-ROUNDED SLAB-MOTION }
+		roundedTopRightMotionSerifed {BODY-ROUNDED SLAB-TOP-RIGHT-MOTION }
+		roundedBilateralMotionSerifed {BODY-ROUNDED SLAB-BILATERAL-MOTION }
+		roundedBaseMotionSerifed {BODY-ROUNDED SLAB-BASE-MOTION }
+		roundedBaseTopRightMotionSerifed {BODY-ROUNDED SLAB-BASE-TOP-RIGHT-MOTION}
+		roundedBaseBilateralMotionSerifed {BODY-ROUNDED SLAB-BASE-BILATERAL-MOTION}
+		roundedSerifed {BODY-ROUNDED SLAB-ALL }
 
 	foreach {suffix {bodyType slabType}} [Object.entries YConfig] : do
 		create-glyph "Y.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : YShape bodyType slabType CAP 0
-			include : YSlabs          slabType CAP 0 bodyType
+			include : YSlabs slabType CAP 0 bodyType
 
 		create-glyph "grek/Upsilon.\(suffix)" : glyph-proc
 			include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
@@ -179,24 +179,24 @@ glyph-block Letter-Latin-Upper-Y : begin
 		create-glyph "smcpY.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : YShape bodyType slabType XH 0
-			include : YSlabs          slabType XH 0 bodyType
+			include : YSlabs slabType XH 0 bodyType
 
 		create-glyph "YHookRight.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : YHookRightShape bodyType slabType CAP 0
-			include : YSlabs                   slabType CAP 0 bodyType
+			include : YSlabs slabType CAP 0 bodyType
 			eject-contour 'serifRT'
 
 		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
 			include : MarkSet.p
 			include : YShape bodyType slabType XH Descender (cross -- [if (bodyType === BODY-ROUNDED) 0 [YCrossPos XH Descender]])
-			include : YSlabs          slabType XH Descender bodyType
+			include : YSlabs slabType XH Descender bodyType
 
 		if ((slabType === SLAB-NONE || slabType === SLAB-BASE) && bodyType === BODY-STRAIGHT) : begin
 			create-glyph "grek/UpsilonHookSymbol.\(suffix)" : glyph-proc
 				include : MarkSet.capital
 				include : YHookLeftRightShape bodyType slabType CAP 0
-				include : YSlabs                       slabType CAP 0 bodyType
+				include : YSlabs slabType CAP 0 bodyType
 				eject-contour 'serifLT'
 				eject-contour 'serifRT'
 				include : SetGrekUpperTonos (OX - TailX / 3)
@@ -223,9 +223,9 @@ glyph-block Letter-Latin-Upper-Y : begin
 	create-glyph 'YStroke/overlay' : HOverlayBar [mix 0 SB 0.5] [mix Width RightSB 0.5] [mix 0 CAP 0.75]
 	derive-composites 'YStroke' 0x24E 'Y' 'YStroke/overlay'
 
-	CreateTurnedLetter 'latn/Lambda'       0xA7DA 'Y'             HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'latn/Lambda' 0xA7DA 'Y' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'latn/LambdaStroke' 0xA7DC 'YStrokeBottom' HalfAdvance (CAP / 2)
-	CreateTurnedLetter 'turnY/sansSerif'   0x2144 'Y/sansSerif'   HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'turnY/sansSerif' 0x2144 'Y/sansSerif' HalfAdvance (CAP / 2)
 
 	select-variant 'currency/yenSign' 0xA5 (follow -- 'Y')
 
@@ -240,7 +240,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 			Rect CAP 0 (-Width) (2 * Width)
 			union
 				difference
-					ExtLineCenter (SB - 0)   CAP (Middle - BBD / 2) yCross BBS 1
+					ExtLineCenter (SB - 0) CAP (Middle - BBD / 2) yCross BBS 1
 					Rect CAP 0 (Middle - BBD / 2 + [HSwToV : 0.5 * BBS]) (Width * 2)
 				difference
 					ExtLineCenter (SB + BBD) CAP (Middle + BBD / 2) yCross BBS 1

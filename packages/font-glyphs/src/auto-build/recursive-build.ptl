@@ -28,14 +28,14 @@ glyph-block Recursive-Build : begin
 		forkedPara.periodSize = pp.periodSize * forkedPara.stroke / pp.stroke
 		forkedPara.sb = SB * sbscale
 		if forceUpright : begin
-			forkedPara.slopeAngle  = 0
+			forkedPara.slopeAngle = 0
 		if mono : begin
 			forkedPara.advanceScaleMM = 1
-			forkedPara.advanceScaleM  = 1
-			forkedPara.advanceScaleT  = 1
+			forkedPara.advanceScaleM = 1
+			forkedPara.advanceScaleT = 1
 		if mono2 : begin
-			forkedPara.advanceScaleF  = 1
-			forkedPara.advanceScaleI  = 1
+			forkedPara.advanceScaleF = 1
+			forkedPara.advanceScaleI = 1
 			forkedPara.advanceScaleII = 1
 			forkedPara.advanceScaleSp = 1
 
@@ -58,11 +58,11 @@ glyph-block Recursive-Build : begin
 		forkedPara.jut = Jut * p
 		forkedPara.longjut = LongJut * p
 		forkedPara.advanceScaleMM = 1
-		forkedPara.advanceScaleM  = 1
-		forkedPara.advanceScaleT  = 1
+		forkedPara.advanceScaleM = 1
+		forkedPara.advanceScaleT = 1
 		if fMono : begin
-			forkedPara.advanceScaleF  = 1
-			forkedPara.advanceScaleI  = 1
+			forkedPara.advanceScaleF = 1
+			forkedPara.advanceScaleI = 1
 			forkedPara.advanceScaleII = 1
 			forkedPara.advanceScaleSp = 1
 		#forkedPara.hookx = HookX * p
@@ -88,15 +88,15 @@ glyph-block Recursive-Build-ParaTfm : begin
 			local pGrade : (900 - g) / 100
 			return : 900 - 100 * (2 / 25) * (pGrade ** 2)
 
-		export : define [Bold   a]     : begin [set a.shape.weight : boldGrade a.shape.weight]
-		export : define [Italic a]     : begin
+		export : define [Bold a] : begin [set a.shape.weight : boldGrade a.shape.weight]
+		export : define [Italic a] : begin
 			set a.shape.slope 'italic'
 			set a.shape.slopeAngle : mix (para.slopeAngle || 0) 15 (94 / 150)
-		export : define [Sans   a]     : begin [set a.shape.serifs 'sans']
+		export : define [Sans a] : begin [set a.shape.serifs 'sans']
 
 		export : define [BoldItalic a] : begin [Bold a] [Italic a]
-		export : define [SansBold   a]     : begin [Sans a] [Bold a]
-		export : define [SansItalic a]     : begin [Sans a] [Italic a]
+		export : define [SansBold a] : begin [Sans a] [Bold a]
+		export : define [SansItalic a] : begin [Sans a] [Italic a]
 		export : define [SansBoldItalic a] : begin [Sans a] [Bold a] [Italic a]
 
 		export : define [TypeWriter a] : begin

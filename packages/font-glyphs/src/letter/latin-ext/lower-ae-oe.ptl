@@ -85,13 +85,13 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			local adb : subDf.archDepthBOf ad sw
 			return : with-transform [ApparentTranslate shift 0] : if fine
 				[if pShift OBarLeft OBarRight].shape
-					top   -- top
-					left  -- subDf.leftSB
+					top -- top
+					left -- subDf.leftSB
 					right -- subDf.rightSB
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 				OShape top 0 subDf.leftSB subDf.rightSB sw ada adb
 
 		create-glyph 'oe/o' : glyph-proc
@@ -115,15 +115,15 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			set-mark-anchor 'cvDecompose' 0 0
 			local subDf : df.slice 3 2 OX
 			include : OBarLeft.earlessRounded
-				top       -- XH
-				left      -- (df.middle - [HSwToV : 0.5 * df.mvs])
-				right     -- df.rightSB
+				top -- XH
+				left -- (df.middle - [HSwToV : 0.5 * df.mvs])
+				right -- df.rightSB
 				yTerminal -- (XH / 2)
-				sw        -- df.mvs
-				fine      -- (df.mvs * CThin)
-				ada       -- subDf.smallArchDepthA
-				adb       -- subDf.smallArchDepthB
-				yend      -- (XH - [ArchDepthAClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB] + O)
+				sw -- df.mvs
+				fine -- (df.mvs * CThin)
+				ada -- subDf.smallArchDepthA
+				adb -- subDf.smallArchDepthB
+				yend -- (XH - [ArchDepthAClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB] + O)
 
 	do 'e subglyphs'
 		glyph-block-import Letter-Latin-Lower-E : SchwaConfig
@@ -138,11 +138,11 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : with-transform [ApparentTranslate shift 0]
 					body subDf XH
 						stroke -- df.mvs
-						hook   -- AHook
-						ada    -- subDf.smallArchDepthA
-						adb    -- subDf.smallArchDepthB
+						hook -- AHook
+						ada -- subDf.smallArchDepthA
+						adb -- subDf.smallArchDepthB
 						styBot -- tailSlab
-						diag   -- diag
+						diag -- diag
 
 			create-glyph "aInve/inve.\(suffix)" : glyph-proc
 				set-width 0
@@ -150,12 +150,12 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : with-transform [ApparentTranslate shift 0]
 					revbody subDf XH
 						stroke -- df.mvs
-						hook   -- AHook
-						ada    -- subDf.smallArchDepthA
-						adb    -- subDf.smallArchDepthB
+						hook -- AHook
+						ada -- subDf.smallArchDepthA
+						adb -- subDf.smallArchDepthB
 						styBot -- tailSlab
 						turned -- true
-						diag   -- diag
+						diag -- diag
 
 	do 'u subglyphs'
 		glyph-block-import Letter-Shared-Shapes : uBowl
@@ -165,8 +165,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 		define {subDf shift} : SubDfAndShift 1 df 0
 
 		define SmallULeftConfig : object
-			'ue'  CThinB
-			'uo'  CThin
+			'ue' CThinB
+			'uo' CThin
 
 		foreach {prefix cThin} [Object.entries SmallULeftConfig] : do
 			create-glyph "\(prefix)/u.toothlessRoundedSerifless" : glyph-proc
@@ -174,14 +174,14 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				include : df.markSet.e
 				set-base-anchor 'cvDecompose' 0 0
 				include : uBowl.shape
-					top     -- XH
-					bottom  -- 0
-					left    -- subDf.leftSB
-					right   -- (subDf.rightSB - [HSwToV df.mvs])
-					stroke  -- df.mvs
-					fine    -- (df.mvs * cThin)
-					ada     -- subDf.smallArchDepthA
-					adb     -- subDf.smallArchDepthB
+					top -- XH
+					bottom -- 0
+					left -- subDf.leftSB
+					right -- (subDf.rightSB - [HSwToV df.mvs])
+					stroke -- df.mvs
+					fine -- (df.mvs * cThin)
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 					rightY0 -- (XH - [ArchDepthAClamped XH 0 subDf.smallArchDepthA subDf.smallArchDepthB] + O)
 				create-forked-glyph "\(prefix)/u.toothlessRoundedMotionSerifed" : USerifs.MotionToothless subDf XH df.mvs
 
@@ -212,17 +212,17 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 
 		define avVConfig : SuffixCfg.weave
 			object # body
-				straight  {true   0}
-				curly     {false  0}
-				squareTop {true   1}
-				cursive   {true   0}
+				straight {true 0}
+				curly {false 0}
+				squareTop {true 1}
+				cursive {true 0}
 			object # serifs
-				''                    AvVAutoSerifs
-				serifless             no-shape
-				motionSerifed         VMotionSerifs
+				'' AvVAutoSerifs
+				serifless no-shape
+				motionSerifed VMotionSerifs
 				topRightMotionSerifed VTopRightMotionSerifs
 				bilateralMotionSerifed VBilateralMotionSerifs
-				serifed               VSerifs
+				serifed VSerifs
 
 		foreach {suffix {{fStraightBar fSquareTop} Serifs}} [Object.entries avVConfig] : do
 			local fSerifStraight : if fSquareTop 0 fStraightBar
@@ -232,7 +232,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					if fSquareTop : include : union
 						VSquareTopShape subDfVY XH dfVY.mvs
 						Rect (dfVY.mvs / 8) 0 (subDfVY.middle - [HSwToV : dfVY.mvs / 4]) (subDfVY.middle + [HSwToV : dfVY.mvs / 4])
-					if [not fSquareTop] : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
+					if (!fSquareTop) : include : VShape subDfVY fStraightBar XH (sw -- dfVY.mvs)
 					include : SerifShape subDfVY fSerifStraight XH dfVY.mvs
 					eject-contour 'serifLT'
 			create-glyph "av/vRight.\(suffix)" : glyph-proc
@@ -243,7 +243,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					if fSquareTop [VSquareTopOutline subDfVY XH dfVY.mvs] [VShapeOutline subDfVY fStraightBar XH (sw -- dfVY.mvs)]
 
 		foreach {suffix {{straightBar fSquareTop} bottomShape slabKind}} [Object.entries NonCursiveYConfig] : do
-			if [not fSquareTop] : begin
+			if (!fSquareTop) : begin
 				local {doSlabBottom doSlabMotion} slabKind
 				local ySlabKind {false doSlabBottom doSlabMotion false}
 				create-glyph "ay/y.\(suffix)" : glyph-proc
@@ -271,7 +271,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			local lf : CLetterForm subDf styTop styBot XH 0
 				ada -- subDf.smallArchDepthA
 				adb -- subDf.smallArchDepthB
-				sw  -- df.mvs
+				sw -- df.mvs
 			include : lf.full
 			include : FlipAround subDf.middle (XH / 2)
 
@@ -279,7 +279,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			local lf : CLetterForm subDf FLAT-CONNECTION styBot XH 0
 				ada -- subDf.smallArchDepthA
 				adb -- subDf.smallArchDepthB
-				sw  -- subDf.mvs
+				sw -- subDf.mvs
 			include : lf.full
 
 		foreach {suffix {styTop styBot}} [Object.entries CConfig] : do
@@ -355,10 +355,10 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 					local subDf : df.slice 3 2
 
 					include : RevRShape legShape XH
-						df      -- subDf
+						df -- subDf
 						legSlab -- doLegSlab
-						open    -- fGap
-						sw      -- df.mvs
+						open -- fGap
+						sw -- df.mvs
 
 					eject-contour 'strokeR'
 					eject-contour 'serifRB'
@@ -376,13 +376,13 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				local subDf : df.slice 3 2
 
 				include : Body
-					left  -- subDf.leftSB
+					left -- subDf.leftSB
 					right -- (subDf.rightSB + OX)
-					sw    -- df.mvs
-					ada   -- subDf.smallArchDepthA
-					adb   -- subDf.smallArchDepthB
+					sw -- df.mvs
+					ada -- subDf.smallArchDepthA
+					adb -- subDf.smallArchDepthB
 					fFlat -- fFlat
-					cut   -- cut
+					cut -- cut
 				include : Serifs subDf XH df.mvs
 				include : LeaningAnchor.Below.VBar.l SB
 
@@ -397,26 +397,26 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 				if serifShape : begin
 					local sf : SerifFrame.fromDf df top bot
 					include : match serifShape
-						[Just XSerifs.Full]            : composite-proc sf.rt.full sf.rb.full
-						[Just XSerifs.SemiChancery]    : composite-proc sf.rt.full
+						[Just XSerifs.Full] : composite-proc sf.rt.full sf.rb.full
+						[Just XSerifs.SemiChancery] : composite-proc sf.rt.full
 						[Just XSerifs.BilateralMotion] : composite-proc sf.rb.outer
-						__                             : glyph-proc
+						__ : glyph-proc
 
 			define [LhaRightShape df top bot turn tension] : glyph-proc
 				local stroke1f : if (stroke1 == 3) 4 stroke1
 				local lf : XLetterForm [df.bodyBox top bot] stroke1f stroke2 turn tension (sw -- df.mvs)
-					sw             -- df.mvs
-					swCursiveEnd   -- [df.adviceStroke 3]
+					sw -- df.mvs
+					swCursiveEnd -- [df.adviceStroke 3]
 					swCursiveCoEnd -- df.mvs
-					swCursiveMid   -- df.mvs
+					swCursiveMid -- df.mvs
 				include : WithSerifOverflowMask fMaskBase [df.bodyBox top bot] : lf.base fMaskBase
 				if serifShape : begin
 					local sf : SerifFrame.fromDf df top bot
 					include : match serifShape
-						[Just XSerifs.Full]            : composite-proc sf.rt.full sf.lb.full sf.rb.full
-						[Just XSerifs.SemiChancery]    : composite-proc sf.rt.full sf.lb.full
+						[Just XSerifs.Full] : composite-proc sf.rt.full sf.lb.full sf.rb.full
+						[Just XSerifs.SemiChancery] : composite-proc sf.rt.full sf.lb.full
 						[Just XSerifs.BilateralMotion] : composite-proc sf.rb.outer
-						__                             : glyph-proc
+						__ : glyph-proc
 
 			if (!desc) : begin
 				create-glyph "cyrl/rha/kha.\(suffix)" : glyph-proc
@@ -450,7 +450,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 			local fine : 0.375 * OverlayStroke
 			include : dispiro
 				widths.center (2 * fine)
-				flat (shift + subDf.leftSB  + OX + fine) [mix XH 0 1.05]
+				flat (shift + subDf.leftSB + OX + fine) [mix XH 0 1.05]
 				curl (shift + subDf.rightSB - OX - fine) [mix 0 XH 1.05]
 
 		create-glyph 'turnoeBar/oBar/overlay' : glyph-proc
@@ -471,8 +471,8 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	select-variant 'ue/u'
 	select-variant 'uo/u' (follow -- 'ue/u')
 
-	derive-composites 'ae' 0xE6   'ae/a' 'ae/e'
-	derive-composites 'oe' 0x153  'oe/o' 'ae/e'
+	derive-composites 'ae' 0xE6 'ae/a' 'ae/e'
+	derive-composites 'oe' 0x153 'oe/o' 'ae/e'
 	derive-composites 'ue' 0x1D6B 'ue/u' 'ae/e'
 	derive-composites 'ao' 0xA735 'ao/a' 'ao/o'
 	derive-composites 'au' 0xA737 'au/a' 'au/u'
@@ -538,7 +538,7 @@ glyph-block Letter-Latin-Lower-AE-OE : begin
 	derive-composites 'oInve' 0xAB40 'oe/o' 'aInve/inve'
 
 	derive-composites 'turnoeSlash' 0xAB41 'turnoe' 'turnoeSlash/oSlash/overlay'
-	derive-composites 'turnoeBar'   0xAB42 'turnoe' 'turnoeBar/oBar/overlay'
+	derive-composites 'turnoeBar' 0xAB42 'turnoe' 'turnoeBar/oBar/overlay'
 
 	select-variant 'oeOpen/oOpen' (follow -- 'oOpen')
 	select-variant 'oeOpen/e' (shapeFrom -- 'ae/e') (follow -- 'e')

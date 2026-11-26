@@ -25,7 +25,7 @@ glyph-block LetterLike-Fraktur-Lower-F : begin
 			curl box.xMid box.bottom
 
 		include : fraktur-stroke F
-			corner box.left  (XH * DesignParameters.fBarPosToXH)
+			corner box.left (XH * DesignParameters.fBarPosToXH)
 			corner box.right (XH * DesignParameters.fBarPosToXH)
 
 	create-glyph 'frak/k' 0x1D528 : glyph-proc
@@ -36,26 +36,26 @@ glyph-block LetterLike-Fraktur-Lower-F : begin
 		local xBox : T.box XH 0 df.leftSB df.rightSB
 
 		local centerStroke : include : lift-@ : fraktur-stroke S
-			corner (@xC - DecoSizeX)                  (@yT - DecoSizeY)
+			corner (@xC - DecoSizeX) (@yT - DecoSizeY)
 			corner (@xC = box.xMid - 0.75 * TBalance) (@yT = box.top)
-			corner  @xC                               [slY @xB @yB @xC SlopeB]
-			corner (@xB = [mix @xC @xR PHexBot])      (@yB = box.bottom)
-			corner (@xR = [box.xp 0.875])             [slY @xB @yB @xR SlopeA]
+			corner @xC [slY @xB @yB @xC SlopeB]
+			corner (@xB = [mix @xC @xR PHexBot]) (@yB = box.bottom)
+			corner (@xR = [box.xp 0.875]) [slY @xB @yB @xR SlopeA]
 
 		include : fraktur-stroke F
-			corner box.left  xBox.top
+			corner box.left xBox.top
 			corner box.right xBox.top
 
 		include : lift-@ : fraktur-stroke F
-			g2.up.start (@xL = [centerStroke.first 1].x)  xBox.top
-			Arch.rhs (sw -- F.thick) (blendPost -- {})   (@yM = [mix xBox.top box.top 0.75]) 0.7
-			g2 (@xR = box.right)                         [mix @yM @yT 0.5]
-			g2 [mix @xR @xL 0.25]                        (@yT = xBox.top)
+			g2.up.start (@xL = [centerStroke.first 1].x) xBox.top
+			Arch.rhs (sw -- F.thick) (blendPost -- {}) (@yM = [mix xBox.top box.top 0.75]) 0.7
+			g2 (@xR = box.right) [mix @yM @yT 0.5]
+			g2 [mix @xR @xL 0.25] (@yT = xBox.top)
 
 	define [RTBottom xS box p] : lift-@ : list
-		corner xS                           [slY @xB @yB xS SlopeB]
+		corner xS [slY @xB @yB xS SlopeB]
 		corner (@xB = [mix xS @xE PHexBot]) (@yB = box.bottom)
-		corner (@xE = [box.xp p])           [slY @xB @yB @xE SlopeA]
+		corner (@xE = [box.xp p]) [slY @xB @yB @xE SlopeA]
 
 	create-glyph 'frak/r' 0x1D52F : glyph-proc
 		local df : include : LowerDf 1
@@ -64,13 +64,13 @@ glyph-block LetterLike-Fraktur-Lower-F : begin
 		local box : S.box XH 0 df.leftSB df.rightSB
 		local rightHalfBox : box.withLeft [box.xp 0.375]
 		local rightStroke : include : lift-@ : fraktur-stroke S
-			corner (@xR = rightHalfBox.right)           [slY @xT @yT @xR SlopeB]
-			corner (@xT = [rightHalfBox.xp PHexTop])    (@yT = rightHalfBox.top)
+			corner (@xR = rightHalfBox.right) [slY @xT @yT @xR SlopeB]
+			corner (@xT = [rightHalfBox.xp PHexTop]) (@yT = rightHalfBox.top)
 			straight.down.end (@xL = rightHalfBox.left) [slY @xT @yT @xL : 2 * SlopeA]
 		local leftStroke : include : lift-@ : fraktur-stroke S
-			corner                  (@xT - DecoSizeX)              (@yT - DecoSizeY)
-			[ccurl.sr SlopeB].start (@xT = @xC - 0.5 * DecoSizeX)  (@yT = box.top)
-			flat                    (@xC = rightHalfBox.left)      (@yC = [rightStroke.last].y)
+			corner (@xT - DecoSizeX) (@yT - DecoSizeY)
+			[ccurl.sr SlopeB].start (@xT = @xC - 0.5 * DecoSizeX) (@yT = box.top)
+			flat (@xC = rightHalfBox.left) (@yC = [rightStroke.last].y)
 			RTBottom @xC box (13/16)
 
 	create-glyph 'frak/t' 0x1D531 : glyph-proc
@@ -81,10 +81,10 @@ glyph-block LetterLike-Fraktur-Lower-F : begin
 		local xBox : T.box XH 0 df.leftSB df.rightSB
 
 		include : lift-@ : fraktur-stroke S
-			corner (@xC + DecoSizeX)                 (@yT = box.top)
+			corner (@xC + DecoSizeX) (@yT = box.top)
 			corner (@xC = box.xMid - 0.5 * TBalance) (@yT - DecoSizeY)
 			RTBottom @xC box 0.875
 
 		include : fraktur-stroke F
-			corner box.left  xBox.top
+			corner box.left xBox.top
 			corner box.right xBox.top

@@ -14,7 +14,7 @@ glyph-block Letter-Latin-Upper-E : begin
 	glyph-block-import Letter-Latin-C : CConfig CLetterForm
 
 	define kSB 1.0
-	define xEBarLeft     : [mix 0     SB      kSB] - O
+	define xEBarLeft : [mix 0 SB kSB] - O
 	define xRevEBarRight : [mix Width RightSB kSB] + O
 
 	glyph-block-export EShape
@@ -24,19 +24,19 @@ glyph-block Letter-Latin-Upper-E : begin
 		local barPos : EFMidBarPosY top 0
 
 		include : tagged 'strokeL' : VBar.l xEBarLeft 0 top stroke
-		include : tagged 'strokeT' : HBar.t (xEBarLeft - O) RightSB      top    stroke
+		include : tagged 'strokeT' : HBar.t (xEBarLeft - O) RightSB top stroke
 		include : tagged 'strokeM' : if _diag
 			DiagonalHBar (xEBarLeft - O) xMidBarRight barPos (_diag * 0.16 * top) stroke
 			HBar.m (xEBarLeft - O) xMidBarRight barPos stroke
-		include : tagged 'strokeB' : HBar.b (xEBarLeft - O) RightSB      0      stroke
+		include : tagged 'strokeB' : HBar.b (xEBarLeft - O) RightSB 0 stroke
 
 		if serifLT : include : tagged 'serifLT' : HSerif.lt xEBarLeft top SideJut stroke
-		if serifLB : include : tagged 'serifLB' : HSerif.lb xEBarLeft 0   SideJut stroke
+		if serifLB : include : tagged 'serifLB' : HSerif.lb xEBarLeft 0 SideJut stroke
 
 		local {jutTop jutBot jutMid} : EFVJutLength top 0 nothing stroke _jutTop _jutBot
 		local swVJut : VJutStroke * (stroke / Stroke)
-		if serifRT : include : tagged 'serifRT' : VSerif.dr RightSB      top    jutTop swVJut
-		if serifRB : include : tagged 'serifRB' : VSerif.ur RightSB      0      jutBot swVJut
+		if serifRT : include : tagged 'serifRT' : VSerif.dr RightSB top jutTop swVJut
+		if serifRB : include : tagged 'serifRB' : VSerif.ur RightSB 0 jutBot swVJut
 		local midJut : DiagonalMiddleSerifLength (_diag * 0.16 * top) (xMidBarRight - (xEBarLeft - O)) stroke jutMid [HSwToV swVJut]
 		local yMidEnd : barPos + [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) (xMidBarRight - (xEBarLeft - O)) stroke midJut 1]
 		if serifRM : include : tagged 'serifRM' : VSerif.mr xMidBarRight yMidEnd midJut swVJut
@@ -47,46 +47,46 @@ glyph-block Letter-Latin-Upper-E : begin
 		local barPos : EFMidBarPosY top 0
 
 		include : tagged 'strokeR' : VBar.r xRevEBarRight 0 top stroke
-		include : tagged 'strokeT' : HBar.t SB          (xRevEBarRight + O) top    stroke
+		include : tagged 'strokeT' : HBar.t SB (xRevEBarRight + O) top stroke
 		include : tagged 'strokeM' : if _diag
 			DiagonalHBar xMidBarLeft (xRevEBarRight + O) barPos (_diag * 0.16 * top) stroke
 			HBar.m xMidBarLeft (xRevEBarRight + O) barPos stroke
-		include : tagged 'strokeB' : HBar.b SB          (xRevEBarRight + O) 0      stroke
+		include : tagged 'strokeB' : HBar.b SB (xRevEBarRight + O) 0 stroke
 
 		if serifRT : include : tagged 'serifRT' : HSerif.rt xRevEBarRight top SideJut stroke
-		if serifRB : include : tagged 'serifRB' : HSerif.rb xRevEBarRight 0   SideJut stroke
+		if serifRB : include : tagged 'serifRB' : HSerif.rb xRevEBarRight 0 SideJut stroke
 
 		local {jutTop jutBot jutMid} : EFVJutLength top 0 nothing stroke _jutTop _jutBot
 		local swVJut : VJutStroke * (stroke / Stroke)
-		if serifLT : include : tagged 'serifLT' : VSerif.dl SB          top    jutTop swVJut
-		if serifLB : include : tagged 'serifLB' : VSerif.ul SB          0      jutBot swVJut
+		if serifLT : include : tagged 'serifLT' : VSerif.dl SB top jutTop swVJut
+		if serifLB : include : tagged 'serifLB' : VSerif.ul SB 0 jutBot swVJut
 		local midJut : DiagonalMiddleSerifLength (_diag * 0.16 * top) ((xRevEBarRight + O) - xMidBarLeft) stroke jutMid [HSwToV swVJut]
 		local yMidEnd : barPos - [if _diag (_diag * 0.08 * top) 0] + [DiagonalMiddleSerifShift (_diag * 0.16 * top) ((xRevEBarRight + O) - xMidBarLeft) stroke midJut (-1)]
 		if serifLM : include : tagged 'serifLM' : VSerif.ml xMidBarLeft yMidEnd midJut swVJut
 
 	define EConfig : object
-		serifless             {false  false  false  false  false}
-		topLeftSerifed        {true   false  false  false  false}
-		serifed               {true   true   true   true   false}
-		serifedCapped         {true   true   true   true   true}
-		capped                {false  false  false  false  true}
-		topLeftSerifedCapped  {true   false  false  false  true}
-		diagonalCrossbar                             {false  false  false  false  false  1}
-		diagonalCrossbarTopLeftSerifed               {true   false  false  false  false  1}
-		diagonalCrossbarSerifed                      {true   true   true   true   false  1}
-		diagonalCrossbarSerifedCapped                {true   true   true   true   true   1}
-		diagonalCrossbarCapped                       {false  false  false  false  true   1}
-		diagonalCrossbarTopLeftSerifedCapped         {true   false  false  false  true   1}
-		diagonalCrossbarFalling                      {false  false  false  false  false  (-1)}
-		diagonalCrossbarFallingTopLeftSerifed        {true   false  false  false  false  (-1)}
-		diagonalCrossbarFallingSerifed               {true   true   true   true   false  (-1)}
-		diagonalCrossbarFallingSerifedCapped         {true   true   true   true   true   (-1)}
-		diagonalCrossbarFallingCapped                {false  false  false  false  true   (-1)}
-		diagonalCrossbarFallingTopLeftSerifedCapped  {true   false  false  false  true   (-1)}
+		serifless {false false false false false}
+		topLeftSerifed {true false false false false}
+		serifed {true true true true false}
+		serifedCapped {true true true true true}
+		capped {false false false false true}
+		topLeftSerifedCapped {true false false false true}
+		diagonalCrossbar {false false false false false 1}
+		diagonalCrossbarTopLeftSerifed {true false false false false 1}
+		diagonalCrossbarSerifed {true true true true false 1}
+		diagonalCrossbarSerifedCapped {true true true true true 1}
+		diagonalCrossbarCapped {false false false false true 1}
+		diagonalCrossbarTopLeftSerifedCapped {true false false false true 1}
+		diagonalCrossbarFalling {false false false false false (-1)}
+		diagonalCrossbarFallingTopLeftSerifed {true false false false false (-1)}
+		diagonalCrossbarFallingSerifed {true true true true false (-1)}
+		diagonalCrossbarFallingSerifedCapped {true true true true true (-1)}
+		diagonalCrossbarFallingCapped {false false false false true (-1)}
+		diagonalCrossbarFallingTopLeftSerifedCapped {true false false false true (-1)}
 
 	foreach {suffix {lt lb rt rb rm diag}} [Object.entries EConfig] : do
 		define swCap : AdviceStroke2 2 3 CAP
-		define swXH  : AdviceStroke2 2 3 XH
+		define swXH : AdviceStroke2 2 3 XH
 
 		create-glyph "E.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -114,12 +114,12 @@ glyph-block Letter-Latin-Upper-E : begin
 			local swVJut : VJutStroke * (swXH / Stroke)
 			local xRight : piecewise
 				rm : [mix Width RightSB : EFMidBarShrinkK [DivFrame 1] rt] - [HSwToV swVJut]
-				rb :            RightSB                                    - [HSwToV swVJut]
-				true      Width
+				rb : RightSB - [HSwToV swVJut]
+				true Width
 			include : LetterBarOverlay.l.in
-				x     -- xEBarLeft
-				top   -- (barPos - swXH / 2)
-				bot   -- (0 + swXH)
+				x -- xEBarLeft
+				top -- (barPos - swXH / 2)
+				bot -- (0 + swXH)
 				space -- {0 xRight}
 
 		create-glyph "EHookRight.\(suffix)" : glyph-proc
@@ -168,11 +168,11 @@ glyph-block Letter-Latin-Upper-E : begin
 	select-variant 'exists' 0x2203 (follow -- 'E/sansSerif') (shapeFrom -- 'revE')
 	CreateAccentedComposition 'notExists' 0x2204 'exists' 'longSlash'
 
-	select-variant 'smcpE'    0x1D07  (follow -- 'E')
+	select-variant 'smcpE' 0x1D07 (follow -- 'E')
 	select-variant 'smcpEBar' 0x1DF43 (follow -- 'E')
 
-	CreateTurnedLetter 'turnE.UPPH' null   'E'     HalfAdvance (CAP / 2)
-	CreateTurnedLetter 'smcpTurnE'  0x2C7B 'smcpE' HalfAdvance (XH  / 2)
+	CreateTurnedLetter 'turnE.UPPH' null 'E' HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'smcpTurnE' 0x2C7B 'smcpE' HalfAdvance (XH / 2)
 
 	select-variant 'EHookRight' 0x1DF81 (follow -- 'E')
 	select-multi-dimensional-variant 'EHookRight.phonotypic' (follows -- {'E' 'C/bottomSerif'})

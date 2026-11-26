@@ -27,10 +27,10 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
 			local left : subDf.leftSB + [if (serifType !== SERIF-NONE) 0.5 0] * SideJut
 			include : match bodyType
-				[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true  false top serifType subDf sw nothing fLegs
-				[Just BODY-CURLY]      : CyrDeDeltaLikeShape false false top serifType subDf sw nothing fLegs
-				[Just BODY-SQUARE]     : CyrDeDeltaLikeShape true  true  top serifType subDf sw nothing fLegs
-				__                     : CyrDeShape fCapital top left subDf.rightSB sw nothing serifType fLegs
+				[Just BODY-TRIANGULAR] : CyrDeDeltaLikeShape true false top serifType subDf sw nothing fLegs
+				[Just BODY-CURLY] : CyrDeDeltaLikeShape false false top serifType subDf sw nothing fLegs
+				[Just BODY-SQUARE] : CyrDeDeltaLikeShape true true top serifType subDf sw nothing fLegs
+				__ : CyrDeShape fCapital top left subDf.rightSB sw nothing serifType fLegs
 
 		define [CyrDzzheDeItalicShape df] : glyph-proc
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
@@ -62,13 +62,13 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 		define [CyrZhweZeShape slabTop slabBot df top bot hook ada adb] : glyph-proc
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
 			local ze : CyrZe slabTop slabBot top bot
-				left   -- subDf.leftSB
-				right  -- subDf.rightSB
-				hook   -- hook
+				left -- subDf.leftSB
+				right -- subDf.rightSB
+				hook -- hook
 				stroke -- sw
-				xo     -- (0.33 * OX)
-				ada    -- ada
-				adb    -- adb
+				xo -- (0.33 * OX)
+				ada -- ada
+				adb -- adb
 			include : union [ze.Shape] [ze.AutoStartSerifL] [ze.AutoEndSerifL]
 
 		foreach {suffix {{desc} {slabTop slabBot}}} [Object.entries ZeConfig] : do
@@ -102,14 +102,14 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 		define [ZhweZheShape legShape fSlab fMidSlab df top bot hook ada adb] : glyph-proc
 			local [object subDf sw] : SubDfDimBy4 0 2 df OX
 			local zeNoO : CyrZe 0 0 top bot
-				left   -- subDf.leftSB
-				right  -- subDf.rightSB
-				hook   -- hook
+				left -- subDf.leftSB
+				right -- subDf.rightSB
+				hook -- hook
 				stroke -- (0.5 * sw)
-				xo     -- 0
-				yo     -- 0
-				ada    -- ada
-				adb    -- adb
+				xo -- 0
+				yo -- 0
+				ada -- ada
+				adb -- adb
 			include : difference [CyrRightZheShape legShape fSlab fMidSlab df top subDf.middle] [zeNoO.ShapeMask]
 
 		define [DzzheZheItalicShape legShape fSlab fMidSlab df top] : glyph-proc
@@ -119,13 +119,13 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 				CyrDeItalicMask subDf sw
 
 		define ZheConfig : object
-			straight           {Zhe.StraightLegs         SLAB   SLAB}
-			curly              {Zhe.CurlyLegs            SLAB   SLAB}
-			symmetricTouching  {Zhe.TouchingLegs         SLAB   SLAB}
-			symmetricConnected {Zhe.ConnectingLegs       SLAB   SLAB}
-			inverseConnected   {Zhe.InverseStraightLegs  SLAB   SLAB}
-			roundedConnected   {Zhe.RoundedLegs          SLAB   SLAB}
-			cursive            {Zhe.CursiveLegs          false  SLAB}
+			straight {Zhe.StraightLegs SLAB SLAB}
+			curly {Zhe.CurlyLegs SLAB SLAB}
+			symmetricTouching {Zhe.TouchingLegs SLAB SLAB}
+			symmetricConnected {Zhe.ConnectingLegs SLAB SLAB}
+			inverseConnected {Zhe.InverseStraightLegs SLAB SLAB}
+			roundedConnected {Zhe.RoundedLegs SLAB SLAB}
+			cursive {Zhe.CursiveLegs false SLAB}
 
 		foreach {suffix {legShape fSlab fMidSlab}} [Object.entries ZheConfig] : do
 			create-glyph "cyrl/Dzzhe/right.\(suffix)" : glyph-proc
@@ -157,16 +157,16 @@ glyph-block Letter-Cyrillic-Dzzhe-Zhwe : begin
 
 	select-variant 'cyrl/Dzzhe/right' (follow -- 'cyrl/Zhe')
 	select-variant 'cyrl/dzzhe.upright/right' (follow -- 'cyrl/zhe')
-	select-variant 'cyrl/dzzhe.italic/right'  (follow -- 'cyrl/zhe')
+	select-variant 'cyrl/dzzhe.italic/right' (follow -- 'cyrl/zhe')
 	select-variant 'cyrl/Zhwe/right' (follow -- 'cyrl/Zhe')
 	select-variant 'cyrl/zhwe/right' (follow -- 'cyrl/zhe')
-	select-variant 'cyrl/Zhwe/left'  (follow -- 'cyrl/Zhwe/Ze')
-	select-variant 'cyrl/zhwe/left'  (follow -- 'cyrl/zhwe/ze')
+	select-variant 'cyrl/Zhwe/left' (follow -- 'cyrl/Zhwe/Ze')
+	select-variant 'cyrl/zhwe/left' (follow -- 'cyrl/zhwe/ze')
 	select-variant 'cyrl/Dzzhe/left' (follow -- 'cyrl/De')
 	select-variant 'cyrl/dzzhe.upright/left'
 
 	derive-composites 'cyrl/Dzzhe' 0x52A 'cyrl/Dzzhe/left' 'cyrl/Dzzhe/right'
 	derive-composites 'cyrl/dzzhe.upright' null 'cyrl/dzzhe.upright/left' 'cyrl/dzzhe.upright/right'
-	derive-composites 'cyrl/dzzhe.italic'  null 'cyrl/dzzhe.italic/left'  'cyrl/dzzhe.italic/right'
+	derive-composites 'cyrl/dzzhe.italic' null 'cyrl/dzzhe.italic/left' 'cyrl/dzzhe.italic/right'
 	derive-composites 'cyrl/Zhwe' 0xA684 'cyrl/Zhwe/left' 'cyrl/Zhwe/right'
 	derive-composites 'cyrl/zhwe' 0xA685 'cyrl/zhwe/left' 'cyrl/zhwe/right'

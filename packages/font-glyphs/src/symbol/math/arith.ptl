@@ -35,10 +35,10 @@ glyph-block Symbol-Math-Arith : begin
 
 		create-glyph 'hebr/plus' 0xFB29 : HebrPlusShape SB RightSB
 
-		create-glyph 'innerPlus'        : PlusShape SB RightSB 0 MathEnclosureSw
-		create-glyph 'innerMinus'       : HBar.m SB RightSB SymbolMid MathEnclosureSw
+		create-glyph 'innerPlus' : PlusShape SB RightSB 0 MathEnclosureSw
+		create-glyph 'innerMinus' : HBar.m SB RightSB SymbolMid MathEnclosureSw
 		create-glyph 'innerVerticalBar' : VBar.m Middle PlusTop PlusBot MathEnclosureSw
-		create-glyph 'hebr/innerPlus'   : HebrPlusShape SB RightSB 0 MathEnclosureSw
+		create-glyph 'hebr/innerPlus' : HebrPlusShape SB RightSB 0 MathEnclosureSw
 
 		create-glyph 'hermetianConjugateMatrixPlus' 0x22B9 : difference
 			PlusShape SB RightSB
@@ -244,7 +244,7 @@ glyph-block Symbol-Math-Arith : begin
 		define [JoinRightMask] : union
 			MaskAboveLine Middle (SymbolMid + Size) Width (SymbolMid + Size)
 			MaskBelowLine Middle (SymbolMid - Size) Width (SymbolMid - Size)
-		create-glyph 'joinLeft'  0x27D5 : glyph-proc
+		create-glyph 'joinLeft' 0x27D5 : glyph-proc
 			include : difference
 				union
 					refer-glyph 'bowtie'
@@ -256,7 +256,7 @@ glyph-block Symbol-Math-Arith : begin
 					refer-glyph 'bowtie'
 					JoinRight
 				JoinRightMask
-		create-glyph 'joinFull'  0x27D7 : glyph-proc
+		create-glyph 'joinFull' 0x27D7 : glyph-proc
 			include : difference
 				union
 					refer-glyph 'bowtie'
@@ -320,13 +320,13 @@ glyph-block Symbol-Math-Arith : begin
 			create-glyph "dotslash.\(suffix)" : composite-proc
 				dispiro
 					widths.center OperatorStroke
-					flat [mix Middle SB      Math.SQRT1_2] [mix SymbolMid PlusBot Math.SQRT1_2]
+					flat [mix Middle SB Math.SQRT1_2] [mix SymbolMid PlusBot Math.SQRT1_2]
 					curl [mix Middle RightSB Math.SQRT1_2] [mix SymbolMid PlusTop Math.SQRT1_2]
 				DrawAt [mix Middle SB Math.SQRT1_2] [mix SymbolMid PlusTop Math.SQRT1_2] (dr - overshoot)
 
 			create-glyph "dotvbar.\(suffix)" : composite-proc
 				VBar.m [mix Middle RightSB 0.5] PlusTop PlusBot OperatorStroke
-				DrawAt [mix Middle SB      0.5] SymbolMid (dr - overshoot)
+				DrawAt [mix Middle SB 0.5] SymbolMid (dr - overshoot)
 
 			create-glyph "dottimes.\(suffix)" : glyph-proc
 				include : refer-glyph 'multiply'
@@ -336,8 +336,8 @@ glyph-block Symbol-Math-Arith : begin
 
 			create-glyph "geometricProportion.\(suffix)" : composite-proc
 				refer-glyph 'minus'
-				DrawAt (SB      + dr) PlusTop (dr - overshoot)
-				DrawAt (SB      + dr) PlusBot (dr - overshoot)
+				DrawAt (SB + dr) PlusTop (dr - overshoot)
+				DrawAt (SB + dr) PlusBot (dr - overshoot)
 				DrawAt (RightSB - dr) PlusTop (dr - overshoot)
 				DrawAt (RightSB - dr) PlusBot (dr - overshoot)
 
@@ -431,9 +431,9 @@ glyph-block Symbol-Math-Arith : begin
 		create-glyph : glyph-proc
 			local bar : HBar.m (SB + dotCenterOffset) (RightSB - dotCenterOffset) SymbolMid OperatorStroke
 
-			local leftFilled  : RingAt (SB + dotCenterOffset) SymbolMid radius
+			local leftFilled : RingAt (SB + dotCenterOffset) SymbolMid radius
 			local rightFilled : RingAt (RightSB - dotCenterOffset) SymbolMid radius
-			local leftHollow  : RingStrokeAt (SB + dotCenterOffset) SymbolMid radius fine
+			local leftHollow : RingStrokeAt (SB + dotCenterOffset) SymbolMid radius fine
 			local rightHollow : RingStrokeAt (RightSB - dotCenterOffset) SymbolMid radius fine
 
 			create-forked-glyph 'originalOf' 0x22B6 : union [difference bar leftFilled] leftHollow rightFilled

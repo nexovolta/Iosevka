@@ -16,25 +16,25 @@ glyph-block Letter-Latin-Upper-G : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHookBase CornerHookDepth CutArcTerminal DeltaCutStart VerticalCutExtension
 	glyph-block-import Letter-Latin-Z : ZemlyaBottomStrokeCursive
 
-	define BODY-TOOTHED            0
-	define BODY-TOOTHLESS-CORNER   1
-	define BODY-TOOTHLESS-ROUNDED  2
+	define BODY-TOOTHED 0
+	define BODY-TOOTHLESS-CORNER 1
+	define BODY-TOOTHLESS-ROUNDED 2
 
-	define CROSSBAR-NONE           0
-	define CROSSBAR-HOOKED         1
-	define CROSSBAR-CAPPED         2
-	define CROSSBAR-DIAG-HOOKED    3
-	define CROSSBAR-DIAG-HOOKED-F  4
-	define CROSSBAR-DIAG-CAPPED    5
-	define CROSSBAR-DIAG-CAPPED-F  6
+	define CROSSBAR-NONE 0
+	define CROSSBAR-HOOKED 1
+	define CROSSBAR-CAPPED 2
+	define CROSSBAR-DIAG-HOOKED 3
+	define CROSSBAR-DIAG-HOOKED-F 4
+	define CROSSBAR-DIAG-CAPPED 5
+	define CROSSBAR-DIAG-CAPPED-F 6
 
-	define SLAB-NONE               0
-	define SLAB-CLASSICAL          1
-	define SLAB-INWARD             2
-	define SLAB-FLAT-HOOK          4
-	define SLAB-CORNER-HOOK        5
-	define SLAB-VERTICAL-CUT       6
-	define SLAB-DIAGONAL-CUT       7
+	define SLAB-NONE 0
+	define SLAB-CLASSICAL 1
+	define SLAB-INWARD 2
+	define SLAB-FLAT-HOOK 4
+	define SLAB-CORNER-HOOK 5
+	define SLAB-VERTICAL-CUT 6
+	define SLAB-DIAGONAL-CUT 7
 
 	define GBarPos : DesignParameters.upperGBarPos - QuarterStroke / CAP
 
@@ -53,9 +53,9 @@ glyph-block Letter-Latin-Upper-G : begin
 		local-parameter : crossbarType
 		local-parameter : slabType
 		local-parameter : rise
-		local-parameter : ada      -- ArchDepthA
-		local-parameter : adb      -- ArchDepthB
-		local-parameter : pyBar    -- GBarPos
+		local-parameter : ada -- ArchDepthA
+		local-parameter : adb -- ArchDepthB
+		local-parameter : pyBar -- GBarPos
 		local-parameter : fHookTop -- false
 		local-parameter : fHookBot -- false
 
@@ -88,7 +88,7 @@ glyph-block Letter-Latin-Upper-G : begin
 			[Just SLAB-DIAGONAL-CUT] : list [widths.lhs] [DeltaCutStart Middle RightSB (top - O) (top - 0.2 * hook) Stroke]
 			__ : list
 				widths.lhs
-				g4   RightSB (top - hook)
+				g4 RightSB (top - hook)
 				HookStart top
 
 		knots.push [flatside.ld SB 0 top ada adb]
@@ -100,11 +100,11 @@ glyph-block Letter-Latin-Upper-G : begin
 			[Just BODY-TOOTHLESS-CORNER] : if rise
 				then : knots.push
 					Arch.lhs 0 (blendPost -- {})
-					g4   RightSB rise
+					g4 RightSB rise
 				else : knots.push
 					arcvh
 					flat [Arch.adjust-x.bot [mix (SB + OX) RightSB 0.5]] 0
-					curl (RightSB - TINY)                                0 [heading Rightward]
+					curl (RightSB - TINY) 0 [heading Rightward]
 			__ : knots.push
 				Arch.lhs 0
 				flat RightSB [Math.min rise : yBarTop - TINY - [HSwToV : Math.abs : TanSlope * Stroke]]
@@ -114,16 +114,16 @@ glyph-block Letter-Latin-Upper-G : begin
 		local body : union
 			if (slabType === SLAB-VERTICAL-CUT) [CutArcTerminal arc RightSB top 0 Stroke false true] arc
 			match slabType
-				[Just SLAB-CLASSICAL] : ArcStartSerif.R       RightSB top Stroke hook
-				[Just SLAB-INWARD]    : ArcStartSerif.InwardR RightSB top Stroke hook
+				[Just SLAB-CLASSICAL] : ArcStartSerif.R RightSB top Stroke hook
+				[Just SLAB-INWARD] : ArcStartSerif.InwardR RightSB top Stroke hook
 				[Just SLAB-CORNER-HOOK] : VBar.r [MakeCornerHookBase SB RightSB top 0].xRHook (top - [CornerHookDepth hook Stroke]) top Stroke
 				__ : no-shape
 			match crossbarType
-				[Just CROSSBAR-HOOKED] : HBar.t Middle      RightSB              yBarTop
+				[Just CROSSBAR-HOOKED] : HBar.t Middle RightSB yBarTop
 				[Just CROSSBAR-CAPPED] : HBar.t Middle [mix RightSB Width 0.625] yBarTop
-				[Just CROSSBAR-DIAG-HOOKED]   : DiagBar RightSB 1
+				[Just CROSSBAR-DIAG-HOOKED] : DiagBar RightSB 1
 				[Just CROSSBAR-DIAG-HOOKED-F] : DiagBar RightSB (-1)
-				[Just CROSSBAR-DIAG-CAPPED]   : DiagBar [mix RightSB Width 0.625] 1
+				[Just CROSSBAR-DIAG-CAPPED] : DiagBar [mix RightSB Width 0.625] 1
 				[Just CROSSBAR-DIAG-CAPPED-F] : DiagBar [mix RightSB Width 0.625] (-1)
 				__ : no-shape
 			match bodyType
@@ -143,29 +143,29 @@ glyph-block Letter-Latin-Upper-G : begin
 		if fHookBot : begin
 			include : PalatalHook.rExt RightSB 0
 				yAttach -- rise
-				sw      -- coFine
+				sw -- coFine
 
 	define GConfig : SuffixCfg.weave
 		object # body
-			toothed          {BODY-TOOTHED            0             }
-			flatBottom       {BODY-TOOTHLESS-CORNER   0             }
-			toothlessCorner  {BODY-TOOTHLESS-CORNER   DToothlessRise}
-			toothlessRounded {BODY-TOOTHLESS-ROUNDED  ArchDepthA    }
+			toothed {BODY-TOOTHED 0 }
+			flatBottom {BODY-TOOTHLESS-CORNER 0 }
+			toothlessCorner {BODY-TOOTHLESS-CORNER DToothlessRise}
+			toothlessRounded {BODY-TOOTHLESS-ROUNDED ArchDepthA }
 		object # slab
-			serifless        SLAB-NONE
-			flatHook         SLAB-FLAT-HOOK
-			cornerHook       SLAB-CORNER-HOOK
-			verticalCut      SLAB-VERTICAL-CUT
-			diagonalCut      SLAB-DIAGONAL-CUT
-			serifed          SLAB-CLASSICAL
-			inwardSerifed    SLAB-INWARD
+			serifless SLAB-NONE
+			flatHook SLAB-FLAT-HOOK
+			cornerHook SLAB-CORNER-HOOK
+			verticalCut SLAB-VERTICAL-CUT
+			diagonalCut SLAB-DIAGONAL-CUT
+			serifed SLAB-CLASSICAL
+			inwardSerifed SLAB-INWARD
 		object # crossbar
-			hookless         CROSSBAR-NONE
-			hooked           CROSSBAR-HOOKED
-			capped           CROSSBAR-CAPPED
-			diagonalCrossbar              CROSSBAR-DIAG-HOOKED
-			diagonalCrossbarFalling       CROSSBAR-DIAG-HOOKED-F
-			diagonalCrossbarCapped        CROSSBAR-DIAG-CAPPED
+			hookless CROSSBAR-NONE
+			hooked CROSSBAR-HOOKED
+			capped CROSSBAR-CAPPED
+			diagonalCrossbar CROSSBAR-DIAG-HOOKED
+			diagonalCrossbarFalling CROSSBAR-DIAG-HOOKED-F
+			diagonalCrossbarCapped CROSSBAR-DIAG-CAPPED
 			diagonalCrossbarFallingCapped CROSSBAR-DIAG-CAPPED-F
 
 	foreach {suffix {{bodyType rise} slabType crossbarType}} [Object.entries GConfig] : begin
@@ -197,9 +197,9 @@ glyph-block Letter-Latin-Upper-G : begin
 		create-glyph "GStroke.\(suffix)" : glyph-proc
 			include [refer-glyph "G.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.r.in
-				x     -- RightSB
-				bot   -- Stroke
-				top   -- ([mix 0 CAP GBarPos] - [boolePn crossbarType] * HalfStroke)
+				x -- RightSB
+				bot -- Stroke
+				top -- ([mix 0 CAP GBarPos] - [boolePn crossbarType] * HalfStroke)
 				space -- {(SB + [HSwToV Stroke]) Width}
 
 	select-variant 'G' 'G'
@@ -218,20 +218,20 @@ glyph-block Letter-Latin-Upper-G : begin
 		glyph-block-import Letter-Shared-Shapes : SerifFrame KomiHookSerifs KomiHookSerif
 
 		define Config : object
-			serifless               {SLAB-NONE       }
-			topFlatHook             {SLAB-FLAT-HOOK  }
-			topCornerHook           {SLAB-CORNER-HOOK}
-			topVerticalCut          {SLAB-VERTICAL-CUT}
-			topDiagonalCut          {SLAB-DIAGONAL-CUT}
-			unilateralSerifed       {SLAB-CLASSICAL  }
-			unilateralInwardSerifed {SLAB-INWARD     }
+			serifless {SLAB-NONE }
+			topFlatHook {SLAB-FLAT-HOOK }
+			topCornerHook {SLAB-CORNER-HOOK}
+			topVerticalCut {SLAB-VERTICAL-CUT}
+			topDiagonalCut {SLAB-DIAGONAL-CUT}
+			unilateralSerifed {SLAB-CLASSICAL }
+			unilateralInwardSerifed {SLAB-INWARD }
 
 		foreach {suffix {slabType}} [Object.entries Config] : begin
 			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/SjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				include : MarkSet.capital
 				include : GShape CAP BODY-TOOTHLESS-ROUNDED CROSSBAR-NONE slabType ArchDepthA
-					ada   -- ArchDepthA
-					adb   -- ArchDepthB
+					ada -- ArchDepthA
+					adb -- ArchDepthB
 					pyBar -- 0.5
 				local sf2 : SerifFrame.fromDf [DivFrame 1] (CAP / 2 + HalfStroke) 0
 				include : KomiHookSerif sf2 hookSerifs
@@ -239,8 +239,8 @@ glyph-block Letter-Latin-Upper-G : begin
 			foreach {hookSuffix hookSerifs} [Object.entries KomiHookSerifs] : create-glyph "cyrl/sjeKomi.\(suffix).\(hookSuffix)" : glyph-proc
 				include : MarkSet.e
 				include : GShape XH BODY-TOOTHLESS-ROUNDED CROSSBAR-NONE slabType ArchDepthA
-					ada   -- SmallArchDepthA
-					adb   -- SmallArchDepthB
+					ada -- SmallArchDepthA
+					adb -- SmallArchDepthB
 					pyBar -- 0.5
 				local sf2 : SerifFrame.fromDf [DivFrame 1] (XH / 2 + HalfStroke) 0
 				include : KomiHookSerif sf2 hookSerifs
@@ -251,7 +251,7 @@ glyph-block Letter-Latin-Upper-G : begin
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarRight
 	define [BBGArcT sink offset top ada adb xTerm yTerm] : sink
 		widths.lhs BBS
-		g4   (RightSB - offset) (top - Hook)
+		g4 (RightSB - offset) (top - Hook)
 		HookStart (top - offset) (sw -- BBS)
 		flatside.ld (SB + offset) 0 top ada adb
 		Arch.lhs offset (sw -- BBS) (swAfter -- ShoulderFine)

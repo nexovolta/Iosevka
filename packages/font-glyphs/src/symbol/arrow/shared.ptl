@@ -11,15 +11,15 @@ glyph-block Symbol-Arrow-Shared : begin
 	define o : O * 2
 
 	define flex-params [ArrowDims] : begin
-		local-parameter : advance     -- Width
+		local-parameter : advance -- Width
 		local-parameter : arrowHeight -- para.arrowHeight * (Width - SB / 2) * [Math.cbrt : advance / Width]
-		local-parameter : arrowWidth  -- [Math.min (advance - SB / 2) arrowHeight]
-		local-parameter : arrowSw     -- OperatorStroke      # Arrow Bar Stroke width
-		local-parameter : fine        -- [AdviceStroke 3.5]  # Arrowhead Tip Stroke width
-		local-parameter : terminal    -- [AdviceStroke 5]    # Arrowhead Barb Stroke width
-		local-parameter : overlaySw   -- [AdviceStroke 6]    # Arrow Overlay strokes width
-		local-parameter : arrowMidX   -- advance / 2
-		local-parameter : arrowMidY   -- SymbolMid
+		local-parameter : arrowWidth -- [Math.min (advance - SB / 2) arrowHeight]
+		local-parameter : arrowSw -- OperatorStroke      # Arrow Bar Stroke width
+		local-parameter : fine -- [AdviceStroke 3.5]  # Arrowhead Tip Stroke width
+		local-parameter : terminal -- [AdviceStroke 5]    # Arrowhead Barb Stroke width
+		local-parameter : overlaySw -- [AdviceStroke 6]    # Arrow Overlay strokes width
+		local-parameter : arrowMidX -- advance / 2
+		local-parameter : arrowMidY -- SymbolMid
 
 		# Diagonal arrow constants
 		define diagPropX : 2 ** (-0.25)
@@ -28,18 +28,18 @@ glyph-block Symbol-Arrow-Shared : begin
 		# Coordinates
 		define arrowTop : arrowMidY + arrowHeight / 2
 		define arrowBot : arrowMidY - arrowHeight / 2
-		define arrowSB  : arrowMidX - arrowWidth / 2
+		define arrowSB : arrowMidX - arrowWidth / 2
 		define arrowRSB : arrowMidX + arrowWidth / 2
 
 		define arrowDiagRSB : mix arrowMidX arrowRSB diagPropX
-		define arrowDiagSB  : mix arrowMidX arrowSB  diagPropX
+		define arrowDiagSB : mix arrowMidX arrowSB diagPropX
 		define arrowDiagBot : mix arrowMidX arrowBot diagPropY
 		define arrowDiagTop : mix arrowMidX arrowTop diagPropY
 
 		# Derived parameters
 		define advanceScale : advance / Width
 		define arrowHeadSize : (Width - SB) * DesignParameters.arrow_size * [Math.sqrt : arrowWidth / Width] - [AdviceStroke 5] / 4
-		define halfArrowSw  : arrowSw / 2
+		define halfArrowSw : arrowSw / 2
 		define halfTerminal : terminal / 2
 
 		# Special arrow params
@@ -53,7 +53,7 @@ glyph-block Symbol-Arrow-Shared : begin
 		# Overlay spacing
 		define strokeSpan1 : mix halfArrowSw arrowHeadSize 0.6
 		define strokeSpan2 : mix (0.5 * doubleBarSpan) arrowHeadSize 0.75
-		define strokeSpan  : mix strokeSpan1 strokeSpan2 : clamp 0 1 : advanceScale - 1
+		define strokeSpan : mix strokeSpan1 strokeSpan2 : clamp 0 1 : advanceScale - 1
 		define dblArrSpace : arrowWidth - 2 * strokeSpan - 2 * terminal
 		define dhtArrSpace : Math.max (Width * 0.1) : arrowWidth - strokeSpan - doubleHeadGap - arrowHeadSize - 0.5 * fine
 		define dblArrSw : Math.min overlaySw : AdviceStrokeInSpace dblArrSpace 2
@@ -92,7 +92,7 @@ glyph-block Symbol-Arrow-Shared : begin
 				local coFine : w / 2 - fine / 2
 				return : union
 					dispiro [widths.center fine] [flat 0 (+coFine)] [curl mag (+coFine)]
-					dispiro [widths.center fine] [flat 0 0]         [curl mag 0]
+					dispiro [widths.center fine] [flat 0 0] [curl mag 0]
 					dispiro [widths.center fine] [flat 0 (-coFine)] [curl mag (-coFine)]
 
 		export : define [quadrupleShape w] : lambda [x1 y1 x2 y2] : begin
@@ -191,7 +191,7 @@ glyph-block Symbol-Arrow-Shared : begin
 				dispiro
 					widths.rhs sw
 					flat 0 (-size)
-					curl 0   size
+					curl 0 size
 
 		export : define [diamondShape x1 y1 x2 y2 size] : begin
 			return : PointingTo x1 y1 x2 y2 : lambda [mag] : begin
@@ -218,7 +218,7 @@ glyph-block Symbol-Arrow-Shared : begin
 		} dims
 
 		export : define Head : ArrowHeadT dims
-		export : define Bar  : ArrowBarT  dims
+		export : define Bar : ArrowBarT dims
 
 		export : define [shape x1 y1 x2 y2 size _halfSw] : glyph-proc
 			local halfSw : fallback _halfSw halfArrowSw
@@ -374,10 +374,10 @@ glyph-block Symbol-Arrow-Shared : begin
 		define dims : ArrowDims
 		define arrow : ArrowT dims
 
-		define ArrowShape        arrow.shape
-		define ArrowHead         arrow.Head.shape
-		define ArrowBar          arrow.Bar.shape
-		define TrigArrowShape    arrow.trigShape
+		define ArrowShape arrow.shape
+		define ArrowHead arrow.Head.shape
+		define ArrowBar arrow.Bar.shape
+		define TrigArrowShape arrow.trigShape
 		define TriangleArrowHead arrow.Head.trigShape
 
 		glyph-block-export ArrowShape ArrowHead ArrowBar TrigArrowShape TriangleArrowHead

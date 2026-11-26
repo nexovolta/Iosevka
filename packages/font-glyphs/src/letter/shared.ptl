@@ -124,7 +124,7 @@ glyph-block Letter-Blackboard : begin
 
 	glyph-block-export BBBarLeft
 	define [BBBarLeft] : with-params [x yBot yTop [bbs BBS] [bbd BBD]] : union
-		VBar.l x         yBot yTop bbs
+		VBar.l x yBot yTop bbs
 		VBar.l (x + bbd) yBot yTop bbs
 		HBar.t x (x + bbd) yTop bbs
 		HBar.b x (x + bbd) yBot bbs
@@ -138,7 +138,7 @@ glyph-block Letter-Blackboard : begin
 
 	glyph-block-export BBBarRight
 	define [BBBarRight] : with-params [x yBot yTop [bbs BBS] [bbd BBD]] : union
-		VBar.r x         yBot yTop bbs
+		VBar.r x yBot yTop bbs
 		VBar.r (x - bbd) yBot yTop bbs
 		HBar.t x (x - bbd) yTop bbs
 		HBar.b x (x - bbd) yBot bbs
@@ -171,10 +171,10 @@ glyph-block Letter-Shared-Metrics : begin
 		local barPos : EFMidBarPosY height 0 _pyBar
 		local stroke : fallback _stroke Stroke
 		local jutTop : fallback _jutTop : Math.min VJut : mix stroke (height - (barPos + stroke / 2)) 0.5
-		local jutBot : fallback _jutBot : Math.min VJut : mix stroke (0      + (barPos - stroke / 2)) 0.5
+		local jutBot : fallback _jutBot : Math.min VJut : mix stroke (0 + (barPos - stroke / 2)) 0.5
 		# Remaining space
 		local coJutTop : (height - (barPos - stroke / 2)) - jutTop
-		local coJutBot : (0      + (barPos + stroke / 2)) - jutBot
+		local coJutBot : (0 + (barPos + stroke / 2)) - jutBot
 		local jutMid : mix (stroke / 2) ([Math.min VJut coJutTop coJutBot] - stroke / 2) 0.5
 		return {jutTop jutBot jutMid}
 
@@ -189,7 +189,7 @@ glyph-block Letter-Shared-Shapes : begin
 			AdviceStroke 8
 			0.625 * (SB - 0)
 		local hookTurn : Math.max
-			0         + [AdviceStroke 16]
+			0 + [AdviceStroke 16]
 			hookDepth - [AdviceStroke 16]
 		return : dispiro
 			widths.lhs sw
@@ -205,7 +205,7 @@ glyph-block Letter-Shared-Shapes : begin
 			AdviceStroke 8
 			0.625 * (SB - 0)
 		local hookTurn : Math.max
-			0         + [AdviceStroke 16]
+			0 + [AdviceStroke 16]
 			hookDepth - [AdviceStroke 16]
 		return : dispiro
 			widths.rhs sw
@@ -218,13 +218,13 @@ glyph-block Letter-Shared-Shapes : begin
 	glyph-block-export RightwardDiagTailedBar
 	define [RightwardDiagTailedBar] : with-params [x low high [sw Stroke]] : dispiro
 		widths.center sw
-		flat       (x - [HSwToV : 0.5 * sw]) high [heading Downward]
+		flat (x - [HSwToV : 0.5 * sw]) high [heading Downward]
 		DiagTail.R (x - [HSwToV : 0.5 * sw]) low (0.875 * Hook - 0.375 * sw) sw
 
 	glyph-block-export LeftwardDiagTailedBar
 	define [LeftwardDiagTailedBar] : with-params [x low high [sw Stroke]] : dispiro
 		widths.center sw
-		flat       (x + [HSwToV : 0.5 * sw]) high [heading Downward]
+		flat (x + [HSwToV : 0.5 * sw]) high [heading Downward]
 		DiagTail.L (x + [HSwToV : 0.5 * sw]) low (0.875 * Hook - 0.375 * sw) sw
 
 	# Outer side of the stem keeps yEnd; inner side is shortened by `cut`.
@@ -233,8 +233,8 @@ glyph-block Letter-Shared-Shapes : begin
 		local xInner : if (side === 'l') (x + [HSwToV sw]) (x - [HSwToV sw])
 		local yCut : if (end === 'bot') (yEnd + cut) (yEnd - cut)
 		return : spiro-outline
-			corner x      yEnd
-			corner x      yCut
+			corner x yEnd
+			corner x yCut
 			corner xInner yCut
 
 	glyph-block-export StemCutY
@@ -282,7 +282,7 @@ glyph-block Letter-Shared-Shapes : begin
 					local terminalDeltaX : terminalDeltaY * args.terminalSlopeAdj * ([mix before.x args.xOuter 0.5] - args.x2) / (top - args.y2)
 					list
 						Arch.[if ltr 'lhs' 'rhs'] top (sw -- args.fine)
-							mockPost  -- {.x [mix args.x2 args.xOuter 0.33] .y args.bottom}
+							mockPost -- {.x [mix args.x2 args.xOuter 0.33] .y args.bottom}
 							blendPost -- {}
 						g2 (args.x2 + terminalDeltaX) (args.y2 + terminalDeltaY)
 						g2 args.x2 args.y2
@@ -294,8 +294,8 @@ glyph-block Letter-Shared-Shapes : begin
 			local-parameter : x2
 			local-parameter : y2
 			local-parameter : yLoopTop
-			local-parameter : swBefore             -- Stroke
-			local-parameter : terminalSlopeAdj     -- 0.5
+			local-parameter : swBefore -- Stroke
+			local-parameter : terminalSlopeAdj -- 0.5
 
 			return : new FunctionInterpolator normalBlender
 				object [flat false] fine bottom xOuter x2 y2 yLoopTop swBefore terminalSlopeAdj
@@ -306,8 +306,8 @@ glyph-block Letter-Shared-Shapes : begin
 			local-parameter : xOuter
 			local-parameter : x2
 			local-parameter : yLoopTop
-			local-parameter : swBefore             -- Stroke
-			local-parameter : terminalSlopeAdj     -- 0.5
+			local-parameter : swBefore -- Stroke
+			local-parameter : terminalSlopeAdj -- 0.5
 
 			return : new FunctionInterpolator normalBlender
 				object [flat true] fine bottom xOuter x2 yLoopTop swBefore terminalSlopeAdj
@@ -330,27 +330,27 @@ glyph-block Letter-Shared-Shapes : begin
 		include : dispiro
 			widths.rhs wide
 			flat left wide [heading Rightward]
-			curl m1   wide [heading Rightward]
+			curl m1 wide [heading Rightward]
 			archv 8
-			g4   right (wide + rinner - O / 2) [widths.heading 0 fine {.x (-HVContrast) .y ((wide - fine) / (wide + rinner * 2 - O))}]
+			g4 right (wide + rinner - O / 2) [widths.heading 0 fine {.x (-HVContrast) .y ((wide - fine) / (wide + rinner * 2 - O))}]
 			arcvh 8
-			g4.left.mid   mid (wide + rinner * 2 - O) [heading Leftward]
+			g4.left.mid mid (wide + rinner * 2 - O) [heading Leftward]
 			quadControls ((x1 - mid) / (x2 - mid)) 0 8
-			g4   x2 y2
+			g4 x2 y2
 
 	glyph-block-export nShoulder
 	define nShoulder : namespace
 		export : define flex-params [knots] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : fMask             -- false
-			local-parameter : leftY0            -- ((top - ada) - TINY)
+			local-parameter : fine -- ShoulderFine
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : fMask -- false
+			local-parameter : leftY0 -- ((top - ada) - TINY)
 
 			return : list
 				flat (left - [HSwToV fine]) leftY0 [widths.rhs fine]
@@ -358,7 +358,7 @@ glyph-block Letter-Shared-Shapes : begin
 				Arch.rhs top (sw -- stroke) (swBefore -- fine)
 				flat right [Math.max (top - adb) (bottom + TINY)] [widths.rhs stroke]
 				[if fMask corner curl] right bottom [widths.rhs.heading stroke Downward]
-				if [not fMask] {} {[corner left bottom]}
+				if (!fMask) {} {[corner left bottom]}
 
 		export : define [shape] : begin
 			local a : Array.prototype.slice.call arguments 0
@@ -373,18 +373,18 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define flex-params [earlessCorner] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : rise              -- DToothlessRise
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : rise -- DToothlessRise
 
 			return : dispiro
 				widths.rhs stroke
 				if rise
 					list
-						g4   left  (top - rise)
+						g4 left (top - rise)
 						Arch.rhs top (sw -- stroke) (blendPre -- {})
 					list
 						flat (left + TINY) top [heading Rightward]
@@ -396,16 +396,16 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define flex-params [earlessRounded] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : leftY0            -- bottom
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : leftY0 -- bottom
 
 			return : dispiro
-				flat left  leftY0 [widths.rhs.heading stroke Upward]
-				curl left  [Math.max (top - ada) (leftY0 + TINY)]
+				flat left leftY0 [widths.rhs.heading stroke Upward]
+				curl left [Math.max (top - ada) (leftY0 + TINY)]
 				Arch.rhs top (sw -- stroke)
 				flat right [Math.max (top - adb) (bottom + TINY)]
 				curl right bottom [heading Downward]
@@ -415,14 +415,14 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define flex-params [knots] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : fMask             -- false
-			local-parameter : rightY0           -- ((bottom + ada) + TINY)
+			local-parameter : fine -- ShoulderFine
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : fMask -- false
+			local-parameter : rightY0 -- ((bottom + ada) + TINY)
 
 			return : list
 				flat (right + [HSwToV fine]) rightY0 [widths.rhs fine]
@@ -443,20 +443,20 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define flex-params [toothlessCorner] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : rise              -- DToothlessRise
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : rise -- DToothlessRise
 
 			return : dispiro
-				flat left  top [widths.lhs.heading stroke Downward]
-				curl left  [Math.min (bottom + adb) (top - TINY)]
+				flat left top [widths.lhs.heading stroke Downward]
+				curl left [Math.min (bottom + adb) (top - TINY)]
 				if rise
 					list
 						Arch.lhs bottom (sw -- stroke) (blendPost -- {})
-						g4   right (bottom + rise) [widths.lhs stroke]
+						g4 right (bottom + rise) [widths.lhs stroke]
 					list
 						arcvh
 						flat [Arch.adjust-x.bot [mix left right 0.5] (sw -- stroke)] bottom
@@ -465,16 +465,16 @@ glyph-block Letter-Shared-Shapes : begin
 		export : define flex-params [toothlessRounded] : begin
 			local-parameter : left
 			local-parameter : right
-			local-parameter : top               -- XH
-			local-parameter : bottom            -- 0
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : stroke            -- Stroke
-			local-parameter : rightY0           -- top
+			local-parameter : top -- XH
+			local-parameter : bottom -- 0
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : stroke -- Stroke
+			local-parameter : rightY0 -- top
 
 			return : dispiro
-				flat left  top [widths.lhs.heading stroke Downward]
-				curl left  [Math.min (bottom + adb) (top     - TINY)]
+				flat left top [widths.lhs.heading stroke Downward]
+				curl left [Math.min (bottom + adb) (top - TINY)]
 				Arch.lhs bottom (sw -- stroke)
 				flat right [Math.min (bottom + ada) (rightY0 - TINY)]
 				curl right rightY0 [heading Upward]
@@ -483,14 +483,14 @@ glyph-block Letter-Shared-Shapes : begin
 	define OBarLeft : namespace
 		define kSkewShift 0.5
 		export : define flex-params [arcStart] : begin
-			local-parameter : top               -- XH
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - ada) - TINY)
+			local-parameter : top -- XH
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - ada) - TINY)
 
 			local xstart : left + [HSwToV : sw - fine]
 			return : list
@@ -499,14 +499,14 @@ glyph-block Letter-Shared-Shapes : begin
 				Arch.rhs top (sw -- sw) (swBefore -- fine)
 
 		export : define flex-params [arcEnd] : begin
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + adb) + TINY)
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + adb) + TINY)
 
 			local xend : left + [HSwToV : sw - fine]
 			return : list
@@ -515,14 +515,14 @@ glyph-block Letter-Shared-Shapes : begin
 				curl xend yend
 
 		export : define flex-params [shape] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				widths.lhs fine
@@ -533,22 +533,22 @@ glyph-block Letter-Shared-Shapes : begin
 				flatside.ld (left + [HSwToV : sw - fine]) bot top ada adb 0 [widths.lhs fine]
 
 		export : define flex-params [toothlessCorner] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - ada) - TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - ada) - TINY)
 
 			return : dispiro
 				widths.lhs sw
 				if rise
 					list
-						g4   left (bot + rise)
+						g4 left (bot + rise)
 						Arch.lhs bot (sw -- sw) (blendPre -- {})
 					list
 						flat (left + TINY) bot [heading Rightward]
@@ -560,16 +560,16 @@ glyph-block Letter-Shared-Shapes : begin
 				curl (left + [HSwToV : sw - fine]) ystart [widths.lhs fine]
 
 		export : define flex-params [toothlessRounded] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- top
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - ada) - TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- top
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - ada) - TINY)
 
 			return : dispiro
 				flat left yTerminal [widths.lhs.heading sw Downward]
@@ -581,16 +581,16 @@ glyph-block Letter-Shared-Shapes : begin
 				curl (left + [HSwToV : sw - fine]) ystart [widths.lhs fine]
 
 		export : define flex-params [earlessCorner] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + adb) + TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + adb) + TINY)
 
 			return : dispiro
 				flat (left + [HSwToV : sw - fine]) yend [widths.lhs fine]
@@ -600,23 +600,23 @@ glyph-block Letter-Shared-Shapes : begin
 				if rise
 					list
 						Arch.lhs top (sw -- sw) (blendPost -- {})
-						g4   left (top - rise) [widths.lhs sw]
+						g4 left (top - rise) [widths.lhs sw]
 					list
 						arcvh
 						flat [Arch.adjust-x.top [mix left (right - OX) 0.5] (sw -- sw)] top
 						curl (left + TINY) top [heading Leftward]
 
 		export : define flex-params [earlessRounded] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- bot
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + adb) + TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- bot
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + adb) + TINY)
 
 			return : dispiro
 				flat (left + [HSwToV : sw - fine]) yend [widths.lhs fine]
@@ -628,14 +628,14 @@ glyph-block Letter-Shared-Shapes : begin
 				curl left yTerminal [widths.lhs.heading sw Downward]
 
 		export : define flex-params [flatTopAndBottom] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				widths.lhs sw
@@ -648,15 +648,15 @@ glyph-block Letter-Shared-Shapes : begin
 				curl (left + TINY) top [heading Leftward]
 
 		export : define flex-params [earlessCornerFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				widths.lhs sw
@@ -667,22 +667,22 @@ glyph-block Letter-Shared-Shapes : begin
 				if rise
 					list
 						Arch.lhs top (sw -- sw) (blendPost -- {})
-						g4   left (top - rise) [widths.lhs sw]
+						g4 left (top - rise) [widths.lhs sw]
 					list
 						arcvh
 						flat [Arch.adjust-x.top [mix left (right - OX) 0.5] (sw -- sw)] top
 						curl (left + TINY) top [heading Leftward]
 
 		export : define flex-params [earlessRoundedFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- bot
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- bot
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				widths.lhs sw
@@ -695,21 +695,21 @@ glyph-block Letter-Shared-Shapes : begin
 				curl left yTerminal [widths.lhs.heading sw Downward]
 
 		export : define flex-params [toothlessCornerFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				widths.lhs sw
 				if rise
 					list
-						g4   left (bot + rise)
+						g4 left (bot + rise)
 						Arch.lhs bot (sw -- sw) (blendPre -- {})
 					list
 						flat (left + TINY) bot [heading Rightward]
@@ -721,15 +721,15 @@ glyph-block Letter-Shared-Shapes : begin
 				curl (left + TINY) top [heading Leftward]
 
 		export : define flex-params [toothlessRoundedFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- top
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- top
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : dispiro
 				flat left yTerminal [widths.lhs.heading sw Downward]
@@ -744,14 +744,14 @@ glyph-block Letter-Shared-Shapes : begin
 	define OBarRight : namespace
 		define kSkewShift 0.5
 		export : define flex-params [arcStart] : begin
-			local-parameter : top               -- XH
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - adb) - TINY)
+			local-parameter : top -- XH
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - adb) - TINY)
 
 			local xstart : right - [HSwToV : sw - fine]
 			return : list
@@ -760,14 +760,14 @@ glyph-block Letter-Shared-Shapes : begin
 				Arch.lhs top (sw -- sw) (swBefore -- fine)
 
 		export : define flex-params [arcEnd] : begin
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + ada) + TINY)
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + ada) + TINY)
 
 			local xend : right - [HSwToV : sw - fine]
 			return : list
@@ -776,253 +776,253 @@ glyph-block Letter-Shared-Shapes : begin
 				curl xend yend
 
 		export : define flex-params [shape] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.shape
-					top   -- top
-					bot   -- bot
-					left  -- left
+					top -- top
+					bot -- bot
+					left -- left
 					right -- right
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [toothlessCorner] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - adb) - TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - adb) - TINY)
 
 			return : new-glyph : composite-proc
 				OBarLeft.earlessCorner
-					top    -- top
-					bot    -- bot
-					left   -- left
-					right  -- right
-					rise   -- rise
-					sw     -- sw
-					fine   -- fine
-					ada    -- ada
-					adb    -- adb
-					yend   -- (top - ystart)
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					rise -- rise
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
+					yend -- (top - ystart)
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [toothlessRounded] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- top
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : ystart            -- ((top - adb) - TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- top
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : ystart -- ((top - adb) - TINY)
 
 			return : new-glyph : composite-proc
 				OBarLeft.earlessRounded
-					top       -- top
-					bot       -- bot
-					left      -- left
-					right     -- right
-					sw        -- sw
-					fine      -- fine
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					sw -- sw
+					fine -- fine
 					yTerminal -- (top - yTerminal)
-					ada       -- ada
-					adb       -- adb
-					yend      -- (top - ystart)
+					ada -- ada
+					adb -- adb
+					yend -- (top - ystart)
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [earlessCorner] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + ada) + TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + ada) + TINY)
 
 			return : new-glyph : composite-proc
 				OBarLeft.toothlessCorner
-					top    -- top
-					bot    -- bot
-					left   -- left
-					right  -- right
-					rise   -- rise
-					sw     -- sw
-					fine   -- fine
-					ada    -- ada
-					adb    -- adb
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					rise -- rise
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 					ystart -- (top - yend)
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [earlessRounded] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- bot
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
-			local-parameter : yend              -- ((bot + ada) + TINY)
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- bot
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
+			local-parameter : yend -- ((bot + ada) + TINY)
 
 			return : new-glyph : composite-proc
 				OBarLeft.toothlessRounded
-					top       -- top
-					bot       -- bot
-					left      -- left
-					right     -- right
-					sw        -- sw
-					fine      -- fine
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					sw -- sw
+					fine -- fine
 					yTerminal -- (top - yTerminal)
-					ada       -- ada
-					adb       -- adb
-					ystart    -- (top - yend)
+					ada -- ada
+					adb -- adb
+					ystart -- (top - yend)
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [flatTopAndBottom] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.flatTopAndBottom
-					top   -- top
-					bot   -- bot
-					left  -- left
+					top -- top
+					bot -- bot
+					left -- left
 					right -- right
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [toothlessCornerFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.earlessCornerFlat
-					top   -- top
-					bot   -- bot
-					left  -- left
+					top -- top
+					bot -- bot
+					left -- left
 					right -- right
-					rise  -- rise
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
+					rise -- rise
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [toothlessRoundedFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- top
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- top
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.earlessRoundedFlat
-					top       -- top
-					bot       -- bot
-					left      -- left
-					right     -- right
-					sw        -- sw
-					fine      -- fine
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					sw -- sw
+					fine -- fine
 					yTerminal -- (top - yTerminal)
-					ada       -- ada
-					adb       -- adb
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [earlessCornerFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : rise              -- DToothlessRise
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : rise -- DToothlessRise
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.toothlessCornerFlat
-					top   -- top
-					bot   -- bot
-					left  -- left
+					top -- top
+					bot -- bot
+					left -- left
 					right -- right
-					rise  -- rise
-					sw    -- sw
-					fine  -- fine
-					ada   -- ada
-					adb   -- adb
+					rise -- rise
+					sw -- sw
+					fine -- fine
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 		export : define flex-params [earlessRoundedFlat] : begin
-			local-parameter : top               -- XH
-			local-parameter : bot               -- 0
-			local-parameter : left              -- SB
-			local-parameter : right             -- RightSB
-			local-parameter : yTerminal         -- bot
-			local-parameter : sw                -- Stroke
-			local-parameter : fine              -- ShoulderFine
-			local-parameter : ada               -- SmallArchDepthA
-			local-parameter : adb               -- SmallArchDepthB
+			local-parameter : top -- XH
+			local-parameter : bot -- 0
+			local-parameter : left -- SB
+			local-parameter : right -- RightSB
+			local-parameter : yTerminal -- bot
+			local-parameter : sw -- Stroke
+			local-parameter : fine -- ShoulderFine
+			local-parameter : ada -- SmallArchDepthA
+			local-parameter : adb -- SmallArchDepthB
 
 			return : new-glyph : composite-proc
 				OBarLeft.toothlessRoundedFlat
-					top       -- top
-					bot       -- bot
-					left      -- left
-					right     -- right
-					sw        -- sw
-					fine      -- fine
+					top -- top
+					bot -- bot
+					left -- left
+					right -- right
+					sw -- sw
+					fine -- fine
 					yTerminal -- (top - yTerminal)
-					ada       -- ada
-					adb       -- adb
+					ada -- ada
+					adb -- adb
 				FlipAround [mix left right 0.5] [mix bot top 0.5]
 
 	glyph-block-export FlatHookDepth
 	define [FlatHookDepth df s] : object
 		x : [fallback s 1] * [FlatHookDepthImpl [Math.min 1 : Math.sqrt df.adws] HVContrast]
-		y : [fallback s 1] * [FlatHookDepthImpl [Math.min 1 : Math.sqrt df.adws]          1]
+		y : [fallback s 1] * [FlatHookDepthImpl [Math.min 1 : Math.sqrt df.adws] 1]
 	define [FlatHookDepthImpl sHook sStroke] : begin
 		define kFlathook : 15 / 16
 		return : Math.max
@@ -1189,7 +1189,7 @@ glyph-block Letter-Shared-Shapes : begin
 					cy + O + fine
 					[if (sign > 0) widths.rhs widths.lhs] fine
 				alsoThruThem : FArc tailAngle 4
-				flat (cx + sign *  dxTailStart)            (cy + O + dyTailStart)
+				flat (cx + sign * dxTailStart) (cy + O + dyTailStart)
 				curl (cx + sign * (dxTailStart + dxDepth)) (cy + O + dyTailStart + dyDepth)
 
 		export : define [R cx cy depth sw] : begin
@@ -1215,84 +1215,84 @@ glyph-block Letter-Shared-Shapes : begin
 
 	class CSerifFrame
 		public [new top bot left right swRef swSerif adws hSplit fForceSymmetric] : begin
-			set this.top             top
-			set this.bot             bot
-			set this.left            left
-			set this.right           right
-			set this.swRef           swRef
-			set this.swSerif         swSerif
-			set this.adws            adws
-			set this.hSplit          hSplit
+			set this.top top
+			set this.bot bot
+			set this.left left
+			set this.right right
+			set this.swRef swRef
+			set this.swSerif swSerif
+			set this.adws adws
+			set this.hSplit hSplit
 			set this.fForceSymmetric fForceSymmetric
 
 			local ink : HSwToV swRef
 			local coInk : HSwToV : Stroke - swRef
 			local gap : (right - left - hSplit * ink) / (hSplit - 1)
 
-			local jutFS   : MidJutSide   - 0.5 * coInk
-			local jutFC   : MidJutCenter - 0.5 * coInk
-			local jut     : Math.min (Jut - 0.5 * coInk) : mix (0.5 * ink) Jut : Math.min 1 : adws * 2.25 / hSplit
+			local jutFS : MidJutSide - 0.5 * coInk
+			local jutFC : MidJutCenter - 0.5 * coInk
+			local jut : Math.min (Jut - 0.5 * coInk) : mix (0.5 * ink) Jut : Math.min 1 : adws * 2.25 / hSplit
 			local sideJut : jut - 0.5 * ink
 
-			local jutIn     : if fForceSymmetric jut : JutIn left right jut swRef hSplit
+			local jutIn : if fForceSymmetric jut : JutIn left right jut swRef hSplit
 			local sideJutIn : jutIn - 0.5 * ink
 
-			local lBarCenter : left  + 0.5 * ink
-			local lBarInner  : left  + 1.0 * ink
+			local lBarCenter : left + 0.5 * ink
+			local lBarInner : left + 1.0 * ink
 			local rBarCenter : right - 0.5 * ink
-			local rBarInner  : right - 1.0 * ink
+			local rBarInner : right - 1.0 * ink
 
-			set this.jut   jut
+			set this.jut jut
 			set this.jutIn jutIn
 
-			set this.sideJut   sideJut
+			set this.sideJut sideJut
 			set this.sideJutIn sideJutIn
 
 			set this.enoughSpaceForFullSerifs : 0.5 * ink + 0.375 * gap > para.refJut
 
 			set this.lt : object
-				full        : tagged 'serifLT' : HSerif.mtAsymmetric lBarCenter top jut jutIn                          swSerif
+				full : tagged 'serifLT' : HSerif.mtAsymmetric lBarCenter top jut jutIn swSerif
 				[fullExt s] : tagged 'serifLT' : HSerif.mtAsymmetric lBarCenter top jut [JutIn left right jut swRef s] swSerif
-				fullSide    : tagged 'serifLT' : HSerif.mtAsymmetric lBarCenter top jut jutFS                          swSerif
-				outer       : tagged 'serifLT' : HSerif.lt left      top sideJut   swSerif
-				inner       : tagged 'serifLT' : HSerif.rt lBarInner top sideJutIn swSerif
+				fullSide : tagged 'serifLT' : HSerif.mtAsymmetric lBarCenter top jut jutFS swSerif
+				outer : tagged 'serifLT' : HSerif.lt left top sideJut swSerif
+				inner : tagged 'serifLT' : HSerif.rt lBarInner top sideJutIn swSerif
 			set this.rt : object
-				full        : tagged 'serifRT' : HSerif.mtAsymmetric rBarCenter top jutIn                          jut swSerif
+				full : tagged 'serifRT' : HSerif.mtAsymmetric rBarCenter top jutIn jut swSerif
 				[fullExt s] : tagged 'serifRT' : HSerif.mtAsymmetric rBarCenter top [JutIn left right jut swRef s] jut swSerif
-				fullSide    : tagged 'serifRT' : HSerif.mtAsymmetric rBarCenter top jutFS                          jut swSerif
-				outer       : tagged 'serifRT' : HSerif.rt right     top sideJut   swSerif
-				inner       : tagged 'serifRT' : HSerif.lt rBarInner top sideJutIn swSerif
+				fullSide : tagged 'serifRT' : HSerif.mtAsymmetric rBarCenter top jutFS jut swSerif
+				outer : tagged 'serifRT' : HSerif.rt right top sideJut swSerif
+				inner : tagged 'serifRT' : HSerif.lt rBarInner top sideJutIn swSerif
 			set this.lb : object
-				full        : tagged 'serifLB' : HSerif.mbAsymmetric lBarCenter bot jut jutIn                          swSerif
+				full : tagged 'serifLB' : HSerif.mbAsymmetric lBarCenter bot jut jutIn swSerif
 				[fullExt s] : tagged 'serifLB' : HSerif.mbAsymmetric lBarCenter bot jut [JutIn left right jut swRef s] swSerif
-				fullSide    : tagged 'serifLB' : HSerif.mbAsymmetric lBarCenter bot jut jutFS                          swSerif
-				outer       : tagged 'serifLB' : HSerif.lb left      bot sideJut   swSerif
-				inner       : tagged 'serifLB' : HSerif.rb lBarInner bot sideJutIn swSerif
+				fullSide : tagged 'serifLB' : HSerif.mbAsymmetric lBarCenter bot jut jutFS swSerif
+				outer : tagged 'serifLB' : HSerif.lb left bot sideJut swSerif
+				inner : tagged 'serifLB' : HSerif.rb lBarInner bot sideJutIn swSerif
 			set this.rb : object
-				full        : tagged 'serifRB' : HSerif.mbAsymmetric rBarCenter bot jutIn                          jut swSerif
+				full : tagged 'serifRB' : HSerif.mbAsymmetric rBarCenter bot jutIn jut swSerif
 				[fullExt s] : tagged 'serifRB' : HSerif.mbAsymmetric rBarCenter bot [JutIn left right jut swRef s] jut swSerif
-				fullSide    : tagged 'serifRB' : HSerif.mbAsymmetric rBarCenter bot jutFS                          jut swSerif
-				outer       : tagged 'serifRB' : HSerif.rb right     bot sideJut   swSerif
-				inner       : tagged 'serifRB' : HSerif.lb rBarInner bot sideJutIn swSerif
+				fullSide : tagged 'serifRB' : HSerif.mbAsymmetric rBarCenter bot jutFS jut swSerif
+				outer : tagged 'serifRB' : HSerif.rb right bot sideJut swSerif
+				inner : tagged 'serifRB' : HSerif.lb rBarInner bot sideJutIn swSerif
 
 			set this.mb : object
-				full             : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutIn jutIn swSerif
-				[fullAt x]       : tagged 'serifMB' : HSerif.mbAsymmetric x                               bot jutIn jutIn swSerif
-				fullCenter       : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutFC jutFC swSerif
-				[fullCenterAt x] : tagged 'serifMB' : HSerif.mbAsymmetric x                               bot jutFC jutFC swSerif
-				left             : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutIn 0     swSerif
-				[leftAt x]       : tagged 'serifMB' : HSerif.mbAsymmetric x                               bot jutIn 0     swSerif
-				right            : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot 0     jutIn swSerif
-				[rightAt x]      : tagged 'serifMB' : HSerif.mbAsymmetric x                               bot 0     jutIn swSerif
+				full : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutIn jutIn swSerif
+				[fullAt x] : tagged 'serifMB' : HSerif.mbAsymmetric x bot jutIn jutIn swSerif
+				fullCenter : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutFC jutFC swSerif
+				[fullCenterAt x] : tagged 'serifMB' : HSerif.mbAsymmetric x bot jutFC jutFC swSerif
+				left : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot jutIn 0 swSerif
+				[leftAt x] : tagged 'serifMB' : HSerif.mbAsymmetric x bot jutIn 0 swSerif
+				right : tagged 'serifMB' : HSerif.mbAsymmetric [mix lBarCenter rBarCenter 0.5] bot 0 jutIn swSerif
+				[rightAt x] : tagged 'serifMB' : HSerif.mbAsymmetric x bot 0 jutIn swSerif
 			set this.mt : object
-				full             : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutIn jutIn swSerif
-				[fullAt x]       : tagged 'serifMT' : HSerif.mtAsymmetric x                               top jutIn jutIn swSerif
-				fullCenter       : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutFC jutFC swSerif
-				[fullCenterAt x] : tagged 'serifMT' : HSerif.mtAsymmetric x                               top jutFC jutFC swSerif
-				left             : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutIn 0     swSerif
-				[leftAt x]       : tagged 'serifMT' : HSerif.mtAsymmetric x                               top jutIn 0     swSerif
-				right            : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top 0     jutIn swSerif
-				[rightAt x]      : tagged 'serifMT' : HSerif.mtAsymmetric x                               top 0     jutIn swSerif
+				full : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutIn jutIn swSerif
+				[fullAt x] : tagged 'serifMT' : HSerif.mtAsymmetric x top jutIn jutIn swSerif
+				fullCenter : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutFC jutFC swSerif
+				[fullCenterAt x] : tagged 'serifMT' : HSerif.mtAsymmetric x top jutFC jutFC swSerif
+				left : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top jutIn 0 swSerif
+				[leftAt x] : tagged 'serifMT' : HSerif.mtAsymmetric x top jutIn 0 swSerif
+				right : tagged 'serifMT' : HSerif.mtAsymmetric [mix lBarCenter rBarCenter 0.5] top 0 jutIn swSerif
+				[rightAt x] : tagged 'serifMT' : HSerif.mtAsymmetric x top 0 jutIn swSerif
 
 		public [slice l r] : begin
 			local ink : HSwToV this.swRef
@@ -1307,36 +1307,36 @@ glyph-block Letter-Shared-Shapes : begin
 		local-parameter : bot
 		local-parameter : left
 		local-parameter : right
-		local-parameter : swRef   -- Stroke
+		local-parameter : swRef -- Stroke
 		local-parameter : swSerif -- swRef
-		local-parameter : adws    -- 1
-		local-parameter : hSplit  -- 2
+		local-parameter : adws -- 1
+		local-parameter : hSplit -- 2
 		local-parameter : fForceSymmetric -- false
 		return : new CSerifFrame top bot left right swRef swSerif adws hSplit fForceSymmetric
 
 	define SerifFrame.fromDf : function [] : with-params [df top bot [swRef df.mvs] [swSerif swRef] [fForceSymmetric false]] : begin
 		return : SerifFrame top bot df.leftSB df.rightSB
-			swRef   -- swRef
-			adws    -- df.adws
-			hSplit  -- [Math.max 2 df.hPack]
+			swRef -- swRef
+			adws -- df.adws
+			hSplit -- [Math.max 2 df.hPack]
 			swSerif -- swSerif
 			fForceSymmetric -- fForceSymmetric
 
 	glyph-block-export KomiHookSerifs KomiHookSerif
 	define KomiHookSerifs : object
-		serifless     0
+		serifless 0
 		motionSerifed 1
-		serifed       2
+		serifed 2
 	define [KomiHookSerif sf style] : match style
 		[Just 1] sf.rt.inner
 		[Just 2] sf.rt.full
-		__       : no-shape
+		__ : no-shape
 
 	glyph-block-export WithSerifOverflowMask
 	define [WithSerifOverflowMask fEnable box s] : begin
-		if [not fEnable] : return s
+		if (!fEnable) : return s
 
-		local leftCenter  : box.l + [HSwToV HalfStroke]
+		local leftCenter : box.l + [HSwToV HalfStroke]
 		local rightCenter : box.r - [HSwToV HalfStroke]
 		return : intersection s : union
 			Rect box.t [mix box.t box.b 0.5] (leftCenter - Jut) (rightCenter + Jut - SerifShiftS)
@@ -1367,7 +1367,7 @@ glyph-block Letter-Shared-Shapes : begin
 		include : dispiro
 			widths.rhs sw
 			g2 (left - [HSwToV : 0.5 * sw]) (y + 0)
-			g2 (mid  - [HSwToV : 0.5 * sw]) (y + rise)
+			g2 (mid - [HSwToV : 0.5 * sw]) (y + rise)
 		include : dispiro
 			widths.center sw
 			flat mid (y + rise) [heading Downward]
@@ -1394,27 +1394,27 @@ glyph-block Letter-Shared-Shapes : begin
 			return : dispiro
 				widths.center sw
 				flat x (y + yExtension) [heading [if (yDepth > 0) Downward Upward]]
-				curl x  y2              [heading [if (yDepth > 0) Downward Upward]]
+				curl x y2 [heading [if (yDepth > 0) Downward Upward]]
 				arcvh
-				flat x3           (y - yDepth)
+				flat x3 (y - yDepth)
 				curl (x + xDepth) (y - yDepth)
 
 		export : define [l] : with-params [x y xDepth yDepth [sw Stroke] [yExtension 0]] : begin
 			return : m
-				x      -- (x + [HSwToV : 0.5 * sw])
-				y      -- y
+				x -- (x + [HSwToV : 0.5 * sw])
+				y -- y
 				xDepth -- xDepth
 				yDepth -- yDepth
-				sw     -- sw
+				sw -- sw
 				yExtension -- yExtension
 
 		export : define [r] : with-params [x y xDepth yDepth [sw Stroke] [yExtension 0]] : begin
 			return : m
-				x      -- (x - [HSwToV : 0.5 * sw])
-				y      -- y
+				x -- (x - [HSwToV : 0.5 * sw])
+				y -- y
 				xDepth -- xDepth
 				yDepth -- yDepth
-				sw     -- sw
+				sw -- sw
 				yExtension -- yExtension
 
 	do 'Descender shapes'
@@ -1449,13 +1449,13 @@ glyph-block Letter-Shared-Shapes : begin
 			export : define [lSideJut] : with-params [x y [yOverflow 0] [refSw Stroke] [jut Jut] [sideJut (jut - [HSwToV : 0.5 * refSw])]] : begin
 				local sw : Sw refSw
 				local xLink : x + [HSwToV : 0.5 * refSw] - [Math.max 0 : TanSlope * sw]
-				local xPos  : x + [HSwToV : 0.5 * sw] - sideJut + sw * (SerifShiftX - TanSlope)
+				local xPos : x + [HSwToV : 0.5 * sw] - sideJut + sw * (SerifShiftX - TanSlope)
 				return : Impl xPos y xLink y yOverflow sw refSw
 
 			export : define [rSideJut] : with-params [x y [yOverflow 0] [refSw Stroke] [jut Jut] [sideJut (jut - [HSwToV : 0.5 * refSw])]] : begin
 				local sw : Sw refSw
 				local xLink : x - [HSwToV : 0.5 * refSw] - [Math.min 0 : TanSlope * sw]
-				local xPos  : x - [HSwToV : 0.5 * sw] + sideJut + sw * (SerifShiftX + TanSlope)
+				local xPos : x - [HSwToV : 0.5 * sw] + sideJut + sw * (SerifShiftX + TanSlope)
 				return : Impl xPos y xLink y yOverflow sw refSw
 
 		# Diacritical descender of cyrillics
@@ -1483,7 +1483,7 @@ glyph-block Letter-Shared-Shapes : begin
 		glyph-block-export RoundedBendTailBot RoundedTailStraightKnots RoundedTailDiagonalKnots RoundedTailReverseKnots
 		define [RoundedBendTailBot] : (-LongVJut) + QuarterStroke
 		define [RoundedTailBendX] : [Math.max [HSwToV Stroke] (0.5 * Hook)] + [Math.max TightBendInnerRadius [HSwToV : 0.25 * Stroke]]
-		define [RoundedTailBendY] : [Math.max         Stroke  (0.5 * Hook)] + [Math.max TightBendInnerRadius         (0.25 * Stroke)]
+		define [RoundedTailBendY] : [Math.max Stroke (0.5 * Hook)] + [Math.max TightBendInnerRadius (0.25 * Stroke)]
 
 		define [RoundedTailStraightKnots yHoriz xDown wHoriz] : begin
 			local xArch : Arch.adjust-x.bot ([mix SB RightSB 0.5] - (RightSB - SB) * (-0.05)) Stroke
@@ -1550,15 +1550,15 @@ glyph-block Letter-Shared-Shapes : begin
 				dispiro
 					widths.rhs thinStroke
 					straight.down.start xr (y - 0) [heading Downward]
-					straight.down.mid   xr (y - r) [heading Downward]
+					straight.down.mid xr (y - r) [heading Downward]
 					arcvh
-					flat (xr - r)  (y - 2 * r) [heading Leftward]
+					flat (xr - r) (y - 2 * r) [heading Leftward]
 					curl (xl + sr) (y - 2 * r) [heading Leftward]
 					archv
 					g2.up.mid xl (y - 2 * r + sr) [heading Upward]
 					arcvh
 					flat (xl + sr) (y - 2 * r + 2 * sr) [heading Rightward]
-					curl (xr - r)  (y - 2 * r + 2 * sr) [heading Rightward]
+					curl (xr - r) (y - 2 * r + 2 * sr) [heading Rightward]
 
 		# Palatal hooks
 		glyph-block-export PalatalHook
@@ -1569,11 +1569,11 @@ glyph-block Letter-Shared-Shapes : begin
 				union
 					xLinkStroke xLink x yAttach sw refSw
 					VerticalHook.m
-						x      -- x
-						y      -- (y - (fullDepth - TailY))
+						x -- x
+						y -- (y - (fullDepth - TailY))
 						xDepth -- (0 - [fallback hookExtent TailX])
 						yDepth -- TailY
-						sw     -- sw
+						sw -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
 						radiusScale -- radiusScale
 				if maskOut maskOut [no-shape]
@@ -1587,11 +1587,11 @@ glyph-block Letter-Shared-Shapes : begin
 				union
 					xLinkStroke xLink x yAttach sw refSw
 					VerticalHook.m
-						x      -- x
-						y      -- (y - (fullDepth - TailY))
+						x -- x
+						y -- (y - (fullDepth - TailY))
 						xDepth -- [fallback hookExtent TailX]
 						yDepth -- TailY
-						sw     -- sw
+						sw -- sw
 						yExtension -- [Math.max 0 : yAttach + yOverflow - y + (fullDepth - TailY)]
 						radiusScale -- radiusScale
 				if maskOut maskOut [no-shape]
@@ -1618,24 +1618,24 @@ glyph-block Letter-Shared-Shapes : begin
 		define MidHook : namespace
 			export : define [general] : with-params [left right top [bottom 0] [ada ArchDepthA] [adb ArchDepthB] [sw Stroke] [xDepth (-HookX)]] : composite-proc
 				nShoulder.shape
-					left   -- left
-					right  -- right
-					top    -- top
+					left -- left
+					right -- right
+					top -- top
 					bottom -- bottom
-					ada    -- ada
-					adb    -- adb
+					ada -- ada
+					adb -- adb
 					stroke -- sw
 				VerticalHook.r right bottom xDepth Hook sw
 
 			# "Standard" version for El, Pe, En with MidHook
 			export : define [m df top] : begin
 				return : general
-					left   -- (df.middle + [HSwToV : 0.5 * df.mvs])
-					right  -- df.rightSB
-					top    -- (top * 0.625 + df.mvs / 4)
-					ada    -- ArchDepthA
-					adb    -- ArchDepthB
-					sw     -- df.mvs
+					left -- (df.middle + [HSwToV : 0.5 * df.mvs])
+					right -- df.rightSB
+					top -- (top * 0.625 + df.mvs / 4)
+					ada -- ArchDepthA
+					adb -- ArchDepthB
+					sw -- df.mvs
 					xDepth -- (0 - [Math.max [HSwToV df.mvs] : Math.min HookX : 0.5 * ((df.rightSB - df.leftSB) - [HSwToV : 2 * df.mvs])])
 
 		# Hook for Eng shape
@@ -1688,7 +1688,7 @@ glyph-block Letter-Shared-Shapes : begin
 						VBar.r cx (cy - hookY + O * 2) yHookStart sw
 						VerticalHook.r cx yHookStart (sign * TailX) (-TailY) sw
 
-			export : define toLeft  : ward (-1)
+			export : define toLeft : ward (-1)
 			export : define toRight : ward (+1)
 
 		# Leftward hook
@@ -1725,13 +1725,13 @@ glyph-block Letter-Shared-Shapes : begin
 		glyph-block-export LetterBarOverlay LetterObliqueBarOverlay
 		define [BarOverlayImpl] : with-params [barFunc x y space refSw pXInSw sw] : begin
 			local {xLeftSpace xRightSpace} space
-			local xLeftEdge  : x - (0 + pXInSw) * [HSwToV refSw]
+			local xLeftEdge : x - (0 + pXInSw) * [HSwToV refSw]
 			local xRightEdge : x + (1 - pXInSw) * [HSwToV refSw]
 			local p : (xLeftEdge - xLeftSpace) / ((xRightSpace - xRightEdge) + (xLeftEdge - xLeftSpace))
 			local xC : mix xLeftEdge xRightEdge : mix 0.5 (1 - p) 0.5
 			local jut : 0.75 * LongJut
 			return : barFunc
-				Math.min (xLeftEdge  - SideJut) : Math.max (xC - jut) : mix xLeftSpace  xLeftEdge  0.3
+				Math.min (xLeftEdge - SideJut) : Math.max (xC - jut) : mix xLeftSpace xLeftEdge 0.3
 				Math.max (xRightEdge + SideJut) : Math.min (xC + jut) : mix xRightSpace xRightEdge 0.3
 				begin y
 				begin sw

@@ -20,7 +20,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define SwAmpersand : AdviceStroke2 2.5 3 CAP
 	define fineAmp : AdviceStroke 3.5
 	define pxUpperLoopRight : 0.75 + HalfStroke / (RightSB - SB)
-	define pxUpperLoopLeft  0.05
+	define pxUpperLoopLeft 0.05
 	define pXTerminal 1.1
 	define pStraightBar 0.4
 
@@ -35,7 +35,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define xUpperLoopTop : mix xUpperLoopLeft xUpperLoopRight 0.5
 	define yMockUpperLoopLeftBottom : CAP - adaUpperLoop - adbUpperLoop * 0.3
 
-	define ClosedTipSw     : AdviceStroke 3
+	define ClosedTipSw : AdviceStroke 3
 	define ClosedIncisedSw : AdviceStroke 5
 	define ClosedBottomSlopeVal : (-0.5) * (SwAmpersand - ClosedIncisedSw) / SwAmpersand
 	define ClosedBottomSlope {.x ClosedBottomSlopeVal .y (-1)}
@@ -43,21 +43,21 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define [ClosedAmpersandLeadDim sw swTip offset] : begin
 		define x1 : [mix SB RightSB 0.80] - offset
 		define x2 : [mix SB RightSB pXTerminal] + [HSwToV : 0.1 * sw] - offset
-		define y1   0
+		define y1 0
 		define y2 : [mix 0 CAP 0.375] + sw / 2
-		define k1   0.5
+		define k1 0.5
 		return : object x1 x2 y1 y2 k1
 	define [ClosedAmpersandLead sw swTip] : begin
 		define [object x1 x2 y1 y2 k1] : ClosedAmpersandLeadDim sw swTip 0
 		return : intersection [MaskBelow y2] : dispiro
-			flat [mix x1 x2 4]  [mix y1 y2 4]  [widths.rhs swTip]
+			flat [mix x1 x2 4] [mix y1 y2 4] [widths.rhs swTip]
 			curl [mix x1 x2 k1] [mix y1 y2 k1]
 			g4.left.mid xClosedAmpersandBottom O [widths.rhs.heading sw ClosedBottomSlope]
 
 	define [ClosedAmpersandLeadMask2 sw swTip] : begin
 		define [object x1 x2 y1 y2 k1] : ClosedAmpersandLeadDim sw swTip [HSwToV : sw - swTip]
 		return : intersection [MaskBelow y2] : spiro-outline
-			flat [mix x1 x2 4]  [mix y1 y2 4]  [widths.rhs swTip]
+			flat [mix x1 x2 4] [mix y1 y2 4] [widths.rhs swTip]
 			curl [mix x1 x2 k1] [mix y1 y2 k1]
 			g4.left.mid xClosedAmpersandBottom O [widths.rhs sw]
 			corner 0 O
@@ -69,9 +69,9 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			MaskRight xClosedAmpersandBottom
 		spiro-outline
 			corner [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
-			corner [mix xUpperLoopLeft xTerminal 2]            (-yMockUpperLoopLeftBottom)
-			corner [mix xUpperLoopLeft xTerminal 4]            (-yMockUpperLoopLeftBottom)
-			corner [mix xUpperLoopLeft xTerminal 4]            [mix yMockUpperLoopLeftBottom 0 pStraightBar]
+			corner [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
+			corner [mix xUpperLoopLeft xTerminal 4] (-yMockUpperLoopLeftBottom)
+			corner [mix xUpperLoopLeft xTerminal 4] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 
 	define [ClosedAmpersandBowlLead] : union
 		intersection
@@ -86,11 +86,11 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define [ClosedAmpersandBodyKnots] : list
 		g4.left.mid xClosedAmpersandBottom O [widths.rhs.heading SwAmpersand ClosedBottomSlope]
 		archv
-		g4   (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
+		g4 (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
 		alsoThru 0.5 0.5 [widths.center SwAmpersand]
-		g4   xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
+		g4 xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
 		Arch.lhs CAP (sw -- SwAmpersand)
-		g4   xUpperLoopLeft yUpperLoopLeft
+		g4 xUpperLoopLeft yUpperLoopLeft
 
 	glyph-block-export ClosedRest ClosedRotunda
 	define [ClosedRest] : union
@@ -221,7 +221,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			local probe : new-glyph : glyph-proc
 				include : RawOuterArc arcTop
 				local bounds : include : MeasureGlyphBounds
-				if [not bounds] : throw : new Error 'Cannot measure rotunda outer arc'
+				if (!bounds) : throw : new Error 'Cannot measure rotunda outer arc'
 				set measuredTop bounds.yMax
 			set arcTop : arcTop + Ascender - measuredTop
 		local arcJoinY : mix yCross yFlat 0.4
@@ -266,14 +266,14 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 
 	create-glyph 'ampersand.closed' : ClosedRest
 
-	define HOOK-ROUND  0
-	define HOOK-FLAT   1
+	define HOOK-ROUND 0
+	define HOOK-FLAT 1
 	define HOOK-CORNER 2
 	define HOOK-VERTICAL-CUT 3
 	define HOOK-DIAGONAL-CUT 4
-	define TOP-SERIFLESS       0
-	define TOP-SERIFED         1
-	define TOP-INWARD-SERIFED  2
+	define TOP-SERIFLESS 0
+	define TOP-SERIFED 1
+	define TOP-INWARD-SERIFED 2
 
 	define [UpperOpenRest hookType topSerif] : begin
 		local xCornerRight : xUpperLoopRight + [if para.isItalic [HSwToV : SwAmpersand * 0.2] 0]
@@ -293,7 +293,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 						arcvh
 						Arch.lhs.centerAt.rtl.t xUpperLoopTop CAP (sw -- SwAmpersand)
 						archv
-			g4  xUpperLoopLeft yUpperLoopLeft
+			g4 xUpperLoopLeft yUpperLoopLeft
 			flat [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 			curl [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 		return : union
@@ -309,9 +309,9 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				dispiro
 					g4.left.mid xClosedAmpersandBottom O [widths.rhs.heading SwAmpersand ClosedBottomSlope]
 					archv
-					g4   (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
+					g4 (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
 					alsoThru 0.5 0.5 [widths.center SwAmpersand]
-					g4   xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
+					g4 xUpperLoopRight yUpperLoopRight [widths.lhs SwAmpersand]
 				Rect (CAP * 2) yUpperLoopRight 0 Width
 				Rect (CAP * 2) (0.5 * CAP) Middle Width
 				intersection
@@ -319,7 +319,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 					with-transform [Translate (-O) 0] : spiro-outline
 						Arch.lhs.centerAt.rtl.t xUpperLoopTop CAP (sw -- SwAmpersand)
 						archv
-						g4   xUpperLoopLeft yUpperLoopLeft
+						g4 xUpperLoopLeft yUpperLoopLeft
 						flat [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 						corner [mix xUpperLoopLeft xTerminal 2] (-yMockUpperLoopLeftBottom)
 						corner ([mix xUpperLoopLeft xTerminal 2] + Width * 2) (-yMockUpperLoopLeftBottom)
@@ -352,15 +352,15 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		mix Middle xLowerOpenRight 0.5
 	define [LowerOpenCrossbar y] : dispiro
 		widths.rhs fineAmp
-		corner (xLowerOpenBarLeft  + TanSlope * fineAmp / 2) y
+		corner (xLowerOpenBarLeft + TanSlope * fineAmp / 2) y
 		corner (xLowerOpenBarRight + TanSlope * fineAmp / 2) y
 
-	define FORM-TOOTHED           0
-	define FORM-FLAT-BOTTOM       1
-	define FORM-TOOTHLESS-CORNER  2
+	define FORM-TOOTHED 0
+	define FORM-FLAT-BOTTOM 1
+	define FORM-TOOTHLESS-CORNER 2
 	define FORM-TOOTHLESS-ROUNDED 3
-	define FORM-BOTTOM-CUT        4
-	define FORM-TOOTHED-TAILED    5
+	define FORM-BOTTOM-CUT 4
+	define FORM-TOOTHED-TAILED 5
 	define FORM-FLAT-BOTTOM-SERIFED 6
 
 	define [BaseToothForm form] : begin
@@ -422,15 +422,15 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 			dispiro
 				Arch.lhs.centerAt.rtl.t xUpperLoopTop CAP (sw -- SwAmpersand)
 				archv
-				g4   xUpperLoopLeft yUpperLoopLeft
+				g4 xUpperLoopLeft yUpperLoopLeft
 				flat [mix xUpperLoopLeft xTerminal pStraightBar] [mix yMockUpperLoopLeftBottom 0 pStraightBar]
 				curl xTerminal 0
 			spiro-outline
 				Arch.rhs.centerAt.rtl.b xLowerOpenBottom 0 (sw -- SwAmpersand)
 				archv
-				g4   (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
+				g4 (SB + OX) [YSmoothMidL (0.66 * yUpperLoopRight + HalfStroke) O ArchDepthA ArchDepthB]
 				alsoThru 0.5 0.5 [widths.center SwAmpersand]
-				g4   xUpperLoopRight yUpperLoopRight
+				g4 xUpperLoopRight yUpperLoopRight
 				arcvh
 				Arch.lhs.centerAt.rtl.t (knot-ty -- corner) xUpperLoopTop CAP (sw -- SwAmpersand)
 				Arch.lhs.centerAt.rtl.t (knot-ty -- corner) xUpperLoopTop (CAP * 2) (sw -- SwAmpersand)
@@ -506,7 +506,7 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				curl (xEtRight - TINY) 0 [heading Rightward]
 			[Just FORM-TOOTHLESS-CORNER] : list
 				Arch.lhs 0 (blendPost -- {})
-				g4   xEtRight DToothlessRise
+				g4 xEtRight DToothlessRise
 			[Just FORM-TOOTHLESS-ROUNDED] : list
 				Arch.lhs 0
 				flat xEtRight adaEt
@@ -593,45 +593,45 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 
 	define EtFlatTopConfig : object
 		'flatTopSerifless' false
-		'flatTopSerifed'   true
+		'flatTopSerifed' true
 
 	foreach {suffix fSerifed} [pairs-of EtFlatTopConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
-				fSerifed   -- fSerifed
-				terminal   -- 0
-				stroke     -- SwAmpersand
-				ada        -- adaEt
-				adb        -- adbEt
+				fSerifed -- fSerifed
+				terminal -- 0
+				stroke -- SwAmpersand
+				ada -- adaEt
+				adb -- adbEt
 				pyMidRight -- pyEtFlatTopBarPos
-				lowerEnd   -- [lambda [xArcMid] : EtBowlEnd FORM-TOOTHLESS-ROUNDED (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
+				lowerEnd -- [lambda [xArcMid] : EtBowlEnd FORM-TOOTHLESS-ROUNDED (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
 			include : union
 				LowerOpenCrossbar yEtFlatTopEnd
 				et.Shape
 
 	define FlatTopToothForms : object
-		'FlatBottom'       FORM-FLAT-BOTTOM
-		'Toothed'          FORM-TOOTHED
-		'ToothlessCorner'  FORM-TOOTHLESS-CORNER
+		'FlatBottom' FORM-FLAT-BOTTOM
+		'Toothed' FORM-TOOTHED
+		'ToothlessCorner' FORM-TOOTHLESS-CORNER
 		'ToothlessRounded' FORM-TOOTHLESS-ROUNDED
 		'BottomCut' FORM-BOTTOM-CUT
 		'ToothedTailed' FORM-TOOTHED-TAILED
 		'FlatBottomSerifed' FORM-FLAT-BOTTOM-SERIFED
 	define FlatTopSerifs : object
 		'Serifless' false
-		'Serifed'   true
+		'Serifed' true
 
 	foreach {formSuffix form} [pairs-of FlatTopToothForms] : do
 		foreach {serifSuffix fSerifed} [pairs-of FlatTopSerifs] : do
 			create-glyph "ampersand.flatTop\(formSuffix)\(serifSuffix)" : glyph-proc
 				define et : RevEzh CAP 0
-					fSerifed   -- fSerifed
-					terminal   -- 0
-					stroke     -- SwAmpersand
-					ada        -- adaEt
-					adb        -- adbEt
+					fSerifed -- fSerifed
+					terminal -- 0
+					stroke -- SwAmpersand
+					ada -- adaEt
+					adb -- adbEt
 					pyMidRight -- pyEtFlatTopBarPos
-					lowerEnd   -- [lambda [xArcMid] : EtBowlEnd form (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
+					lowerEnd -- [lambda [xArcMid] : EtBowlEnd form (xLowerOpenRight - OX) [mix xArcMid (xLowerOpenRight - OX) 0.5] adaEt yEtFlatTopEnd SwAmpersand]
 				include : union
 					LowerOpenCrossbar yEtFlatTopEnd
 					et.Shape
@@ -644,20 +644,20 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 						__ : ExtraToothStem form (xLowerOpenRight - OX) adaEt yEtFlatTopEnd SwAmpersand
 
 	define FlatTopEtConfig : object
-		'flatTopEtSerifless'                  {FORM-FLAT-BOTTOM         false }
-		'flatTopEtSerifed'                    {FORM-FLAT-BOTTOM         true  }
-		'flatTopEtToothedSerifless'           {FORM-TOOTHED             false }
-		'flatTopEtToothedSerifed'             {FORM-TOOTHED             true  }
-		'flatTopEtToothlessCornerSerifless'   {FORM-TOOTHLESS-CORNER    false }
-		'flatTopEtToothlessCornerSerifed'     {FORM-TOOTHLESS-CORNER    true  }
-		'flatTopEtToothlessRoundedSerifless'  {FORM-TOOTHLESS-ROUNDED   false }
-		'flatTopEtToothlessRoundedSerifed'    {FORM-TOOTHLESS-ROUNDED   true  }
-		'flatTopEtBottomCutSerifless'         {FORM-BOTTOM-CUT          false }
-		'flatTopEtBottomCutSerifed'           {FORM-BOTTOM-CUT          true  }
-		'flatTopEtToothedTailedSerifless'     {FORM-TOOTHED-TAILED      false }
-		'flatTopEtToothedTailedSerifed'       {FORM-TOOTHED-TAILED      true  }
+		'flatTopEtSerifless' {FORM-FLAT-BOTTOM false }
+		'flatTopEtSerifed' {FORM-FLAT-BOTTOM true }
+		'flatTopEtToothedSerifless' {FORM-TOOTHED false }
+		'flatTopEtToothedSerifed' {FORM-TOOTHED true }
+		'flatTopEtToothlessCornerSerifless' {FORM-TOOTHLESS-CORNER false }
+		'flatTopEtToothlessCornerSerifed' {FORM-TOOTHLESS-CORNER true }
+		'flatTopEtToothlessRoundedSerifless' {FORM-TOOTHLESS-ROUNDED false }
+		'flatTopEtToothlessRoundedSerifed' {FORM-TOOTHLESS-ROUNDED true }
+		'flatTopEtBottomCutSerifless' {FORM-BOTTOM-CUT false }
+		'flatTopEtBottomCutSerifed' {FORM-BOTTOM-CUT true }
+		'flatTopEtToothedTailedSerifless' {FORM-TOOTHED-TAILED false }
+		'flatTopEtToothedTailedSerifed' {FORM-TOOTHED-TAILED true }
 		'flatTopEtFlatBottomSerifedSerifless' {FORM-FLAT-BOTTOM-SERIFED false }
-		'flatTopEtFlatBottomSerifedSerifed'   {FORM-FLAT-BOTTOM-SERIFED true  }
+		'flatTopEtFlatBottomSerifedSerifed' {FORM-FLAT-BOTTOM-SERIFED true }
 
 	define yFlatTopEtRightBarTop : yEtRightBarTop + 0.125 * SwAmpersand
 
@@ -668,13 +668,13 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	foreach {suffix {form fSerifed}} [pairs-of FlatTopEtConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
-				fSerifed   -- fSerifed
-				terminal   -- 0
-				stroke     -- SwAmpersand
-				ada        -- adaEt
-				adb        -- adbEt
+				fSerifed -- fSerifed
+				terminal -- 0
+				stroke -- SwAmpersand
+				ada -- adaEt
+				adb -- adbEt
 				pyMidRight -- 0.5
-				lowerEnd   -- [lambda [xArcMid] : FlatTopEtBowlEnd form [mix xArcMid xEtRight 0.5]]
+				lowerEnd -- [lambda [xArcMid] : FlatTopEtBowlEnd form [mix xArcMid xEtRight 0.5]]
 			include : et.Shape
 			include : HBar.m (xEtRight - SwAmpersand) xEtCenterBarRight (CAP / 2) SwAmpersand
 			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yFlatTopEtRightBarTop SwAmpersand
@@ -691,12 +691,12 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	define [UpperOpenRoundSerifed] : UpperOpenRest HOOK-ROUND TOP-SERIFED
 	define [UpperOpenRoundInwardSerifed] : UpperOpenRest HOOK-ROUND TOP-INWARD-SERIFED
 
-	define HYBRID-TOOTHED          0
-	define HYBRID-TAILED           1
-	define HYBRID-FLAT-BOTTOM      2
+	define HYBRID-TOOTHED 0
+	define HYBRID-TAILED 1
+	define HYBRID-FLAT-BOTTOM 2
 	define HYBRID-TOOTHLESS-CORNER 3
-	define HYBRID-TOOTHLESS-ROUND  4
-	define HYBRID-BOTTOM-CUT       5
+	define HYBRID-TOOTHLESS-ROUND 4
+	define HYBRID-BOTTOM-CUT 5
 	define HYBRID-FLAT-BOTTOM-SERIFED 6
 
 	define [ExtraEtLower kind] : match kind
@@ -758,17 +758,17 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				include : EtLowerHalf FORM-TOOTHLESS-ROUNDED
 
 	define [EtTopVariants hookSuffix hookType topSuffix topSerif] : begin
-		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)Toothed"           : EtGlyph hookType topSerif HYBRID-TOOTHED
-		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)Tailed"            : EtGlyph hookType topSerif HYBRID-TAILED
-		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)FlatBottom"        : EtGlyph hookType topSerif HYBRID-FLAT-BOTTOM
-		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)ToothlessCorner"   : EtGlyph hookType topSerif HYBRID-TOOTHLESS-CORNER
-		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)ToothlessRounded"  : EtGlyph hookType topSerif HYBRID-TOOTHLESS-ROUND
+		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)Toothed" : EtGlyph hookType topSerif HYBRID-TOOTHED
+		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)Tailed" : EtGlyph hookType topSerif HYBRID-TAILED
+		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)FlatBottom" : EtGlyph hookType topSerif HYBRID-FLAT-BOTTOM
+		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)ToothlessCorner" : EtGlyph hookType topSerif HYBRID-TOOTHLESS-CORNER
+		create-glyph "ampersand.et\(hookSuffix)\(topSuffix)ToothlessRounded" : EtGlyph hookType topSerif HYBRID-TOOTHLESS-ROUND
 
 	define [UpperOpenEtTopVariants hookSuffix topShape topSuffix] : begin
-		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Toothed"          : HybridEtGlyph topShape HYBRID-TOOTHED
-		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Tailed"           : HybridEtGlyph topShape HYBRID-TAILED
-		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)FlatBottom"       : HybridEtGlyph topShape HYBRID-FLAT-BOTTOM
-		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessCorner"  : HybridEtGlyph topShape HYBRID-TOOTHLESS-CORNER
+		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Toothed" : HybridEtGlyph topShape HYBRID-TOOTHED
+		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)Tailed" : HybridEtGlyph topShape HYBRID-TAILED
+		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)FlatBottom" : HybridEtGlyph topShape HYBRID-FLAT-BOTTOM
+		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessCorner" : HybridEtGlyph topShape HYBRID-TOOTHLESS-CORNER
 		create-glyph "ampersand.upperOpenEt\(hookSuffix)\(topSuffix)ToothlessRounded" : HybridEtGlyph topShape HYBRID-TOOTHLESS-ROUND
 
 	define [ExtraEtVariants prefix topShape hookType topSerif] : begin
@@ -805,25 +805,25 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 	UpperOpenEtTopVariants 'VerticalCut' UpperOpenVerticalCutRest ''
 	UpperOpenEtTopVariants 'DiagonalCut' UpperOpenDiagonalCutRest ''
 
-	create-glyph 'ampersand.closedEtToothed'          : HybridEtGlyph ClosedRest HYBRID-TOOTHED
-	create-glyph 'ampersand.closedEtTailed'           : HybridEtGlyph ClosedRest HYBRID-TAILED
-	create-glyph 'ampersand.closedEtFlatBottom'       : HybridEtGlyph ClosedRest HYBRID-FLAT-BOTTOM
-	create-glyph 'ampersand.closedEtToothlessCorner'  : HybridEtGlyph ClosedRest HYBRID-TOOTHLESS-CORNER
+	create-glyph 'ampersand.closedEtToothed' : HybridEtGlyph ClosedRest HYBRID-TOOTHED
+	create-glyph 'ampersand.closedEtTailed' : HybridEtGlyph ClosedRest HYBRID-TAILED
+	create-glyph 'ampersand.closedEtFlatBottom' : HybridEtGlyph ClosedRest HYBRID-FLAT-BOTTOM
+	create-glyph 'ampersand.closedEtToothlessCorner' : HybridEtGlyph ClosedRest HYBRID-TOOTHLESS-CORNER
 	create-glyph 'ampersand.closedEtToothlessRounded' : HybridEtGlyph ClosedRest HYBRID-TOOTHLESS-ROUND
-	create-glyph 'ampersand.upperOpenEtToothed'          : HybridEtGlyph UpperOpenRoundRest HYBRID-TOOTHED
-	create-glyph 'ampersand.upperOpenEtTailed'           : HybridEtGlyph UpperOpenRoundRest HYBRID-TAILED
-	create-glyph 'ampersand.upperOpenEtFlatBottom'       : HybridEtGlyph UpperOpenRoundRest HYBRID-FLAT-BOTTOM
-	create-glyph 'ampersand.upperOpenEtToothlessCorner'  : HybridEtGlyph UpperOpenRoundRest HYBRID-TOOTHLESS-CORNER
+	create-glyph 'ampersand.upperOpenEtToothed' : HybridEtGlyph UpperOpenRoundRest HYBRID-TOOTHED
+	create-glyph 'ampersand.upperOpenEtTailed' : HybridEtGlyph UpperOpenRoundRest HYBRID-TAILED
+	create-glyph 'ampersand.upperOpenEtFlatBottom' : HybridEtGlyph UpperOpenRoundRest HYBRID-FLAT-BOTTOM
+	create-glyph 'ampersand.upperOpenEtToothlessCorner' : HybridEtGlyph UpperOpenRoundRest HYBRID-TOOTHLESS-CORNER
 	create-glyph 'ampersand.upperOpenEtToothlessRounded' : HybridEtGlyph UpperOpenRoundRest HYBRID-TOOTHLESS-ROUND
-	create-glyph 'ampersand.upperOpenEtFlatHookToothed'          : HybridEtGlyph UpperOpenFlatRest HYBRID-TOOTHED
-	create-glyph 'ampersand.upperOpenEtFlatHookTailed'           : HybridEtGlyph UpperOpenFlatRest HYBRID-TAILED
-	create-glyph 'ampersand.upperOpenEtFlatHookFlatBottom'       : HybridEtGlyph UpperOpenFlatRest HYBRID-FLAT-BOTTOM
-	create-glyph 'ampersand.upperOpenEtFlatHookToothlessCorner'  : HybridEtGlyph UpperOpenFlatRest HYBRID-TOOTHLESS-CORNER
+	create-glyph 'ampersand.upperOpenEtFlatHookToothed' : HybridEtGlyph UpperOpenFlatRest HYBRID-TOOTHED
+	create-glyph 'ampersand.upperOpenEtFlatHookTailed' : HybridEtGlyph UpperOpenFlatRest HYBRID-TAILED
+	create-glyph 'ampersand.upperOpenEtFlatHookFlatBottom' : HybridEtGlyph UpperOpenFlatRest HYBRID-FLAT-BOTTOM
+	create-glyph 'ampersand.upperOpenEtFlatHookToothlessCorner' : HybridEtGlyph UpperOpenFlatRest HYBRID-TOOTHLESS-CORNER
 	create-glyph 'ampersand.upperOpenEtFlatHookToothlessRounded' : HybridEtGlyph UpperOpenFlatRest HYBRID-TOOTHLESS-ROUND
-	create-glyph 'ampersand.upperOpenEtCornerHookToothed'          : HybridEtGlyph UpperOpenCornerRest HYBRID-TOOTHED
-	create-glyph 'ampersand.upperOpenEtCornerHookTailed'           : HybridEtGlyph UpperOpenCornerRest HYBRID-TAILED
-	create-glyph 'ampersand.upperOpenEtCornerHookFlatBottom'       : HybridEtGlyph UpperOpenCornerRest HYBRID-FLAT-BOTTOM
-	create-glyph 'ampersand.upperOpenEtCornerHookToothlessCorner'  : HybridEtGlyph UpperOpenCornerRest HYBRID-TOOTHLESS-CORNER
+	create-glyph 'ampersand.upperOpenEtCornerHookToothed' : HybridEtGlyph UpperOpenCornerRest HYBRID-TOOTHED
+	create-glyph 'ampersand.upperOpenEtCornerHookTailed' : HybridEtGlyph UpperOpenCornerRest HYBRID-TAILED
+	create-glyph 'ampersand.upperOpenEtCornerHookFlatBottom' : HybridEtGlyph UpperOpenCornerRest HYBRID-FLAT-BOTTOM
+	create-glyph 'ampersand.upperOpenEtCornerHookToothlessCorner' : HybridEtGlyph UpperOpenCornerRest HYBRID-TOOTHLESS-CORNER
 	create-glyph 'ampersand.upperOpenEtCornerHookToothlessRounded' : HybridEtGlyph UpperOpenCornerRest HYBRID-TOOTHLESS-ROUND
 
 	select-variant 'ampersand' '&'

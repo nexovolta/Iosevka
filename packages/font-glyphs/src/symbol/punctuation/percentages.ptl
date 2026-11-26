@@ -11,7 +11,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 	glyph-block-import Mark-Above : RingDims
 
 	define NarrowUnicode : NarrowUnicodeT WideWidth1
-	define WideUnicode   : WideUnicodeT   WideWidth1
+	define WideUnicode : WideUnicodeT WideWidth1
 
 	define [PercentBarCor df sw] : begin
 		local a : Waveform.sawtooth : (df.rightSB - df.leftSB - sw) / (CAP - 0)
@@ -22,8 +22,8 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		return : spiro-outline
 			corner df.leftSB 0
 			corner (df.rightSB - [HSwToV : cor * sw]) CAP
-			corner  df.rightSB                        CAP
-			corner (df.leftSB  + [HSwToV : cor * sw]) 0
+			corner df.rightSB CAP
+			corner (df.leftSB + [HSwToV : cor * sw]) 0
 
 	define [DotsPercentGlyph nLower] : glyph-proc
 		set-width Width
@@ -70,24 +70,24 @@ glyph-block Symbol-Punctuation-Percentages : begin
 	WithDotVariants 'commercialMinusSign' 0x2052 : function [DrawAt kdr overshoot] : glyph-proc
 		include : PercentBarShape [DivFrame 1] [AdviceStroke 4]
 		local r : PeriodRadius * kdr
-		include : DrawAt (SB      + r) (CAP - r) (r - overshoot)
-		include : DrawAt (RightSB - r) (0   + r) (r - overshoot)
+		include : DrawAt (SB + r) (CAP - r) (r - overshoot)
+		include : DrawAt (RightSB - r) (0 + r) (r - overshoot)
 
 	create-glyph 'percent.ringsContinuousSlash' : glyph-proc
 		set-width Width
-		local l   : SB / 2
-		local r   : Width - l
-		local m   : mix l r 0.5
-		local ada  : ArchDepthA * 0.5
-		local adb  : ArchDepthB * 0.5
+		local l : SB / 2
+		local r : Width - l
+		local m : mix l r 0.5
+		local ada : ArchDepthA * 0.5
+		local adb : ArchDepthB * 0.5
 		local swRing : AdviceStroke 3.75
-		local swBar  : AdviceStroke 3.75
+		local swBar : AdviceStroke 3.75
 		local fineBar : AdviceStroke 4.5
 		local halfGapRing : [AdviceStroke 6] / 2
 		local cor : DiagCorDs CAP (r - l) swBar
 
 		include : OShape CAP (CAP / 2 + halfGapRing) l (m - halfGapRing) swRing ada adb
-		include : OShape (CAP / 2 - halfGapRing)  0  (m + halfGapRing) r swRing ada adb
+		include : OShape (CAP / 2 - halfGapRing) 0 (m + halfGapRing) r swRing ada adb
 		include : dispiro
 			corner r CAP [widths.rhs.heading (swBar * cor) Downward]
 			corner [mix r l 0.5] [mix CAP 0 0.5] [widths.center.heading (fineBar * cor) Downward]
@@ -119,11 +119,11 @@ glyph-block Symbol-Punctuation-Percentages : begin
 
 	create-glyph 'percent.ringsSegmentedSlash' : glyph-proc
 		set-width Width
-		local l   : SB / 2
-		local r   : Width - l
-		local m   : mix l r 0.5
-		local ada  : ArchDepthA * 0.5
-		local adb  : ArchDepthB * 0.5
+		local l : SB / 2
+		local r : Width - l
+		local m : mix l r 0.5
+		local ada : ArchDepthA * 0.5
+		local adb : ArchDepthB * 0.5
 		local swRing : AdviceStroke 3.5
 		local swBar : AdviceStroke 3
 		local fine : AdviceStroke 4
@@ -131,7 +131,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		local pFine : 0.5 - [Math.max (CAP / 10) HalfStroke] / [Math.hypot CAP (r - l)]
 
 		include : OShape CAP (CAP / 2) l m swRing ada adb
-		include : OShape (CAP / 2)  0  m r swRing ada adb
+		include : OShape (CAP / 2) 0 m r swRing ada adb
 		include : dispiro
 			widths.rhs (swBar * cor)
 			flat r CAP [heading Downward]
@@ -198,7 +198,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 	create-glyph 'basepoint.NWID.ringsContinuousSlash' : glyph-proc
 		include : RingsCompactSlashForm (Width * para.advanceScaleM) 3 false
 
-	if [not para.isQuasiProportional] : begin
+	if (!para.isQuasiProportional) : begin
 		create-glyph 'permille.WWID.ringsContinuousSlash' : glyph-proc
 			include : RingsCompactSlashForm Width 2 false
 		create-glyph 'basepoint.WWID.ringsContinuousSlash' : glyph-proc
@@ -255,10 +255,10 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		local cor : 1 / [Math.sqrt : 1 - a * a]
 		local hw : HSwToV : cor * sw
 		return : spiro-outline
-			corner (xShift + [mix l        (r - hw) (y0 / CAP)]) y0
-			corner (xShift + [mix l        (r - hw) (y1 / CAP)]) y1
-			corner (xShift + [mix (l + hw) r        (y1 / CAP)]) y1
-			corner (xShift + [mix (l + hw) r        (y0 / CAP)]) y0
+			corner (xShift + [mix l (r - hw) (y0 / CAP)]) y0
+			corner (xShift + [mix l (r - hw) (y1 / CAP)]) y1
+			corner (xShift + [mix (l + hw) r (y1 / CAP)]) y1
+			corner (xShift + [mix (l + hw) r (y0 / CAP)]) y0
 
 	define [CircleAlsoConnectedBar l r radius] : begin
 		local swBar : AdviceStroke 3.75
@@ -370,12 +370,12 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		local mW : Width * para.advanceScaleM
 		local destNarrow mW
 		local destWide WideWidth0
-		if [not fHori] : begin
+		if (!fHori) : begin
 			if fMyriad : set destWide Width
 		local destW destWide
 		if fNarrow : set destW destNarrow
 
-		if ([not fHori] && fMyriad) : begin
+		if ((!fHori) && fMyriad) : begin
 			include : CircleCompactMyriadGlyph destW fSegmented fConnected
 		: else : begin
 			local l : SB / 2
@@ -403,7 +403,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 
 			local contentRight rW
 			if fHori : set contentRight : rW + extra * dist
-			if [not fHori] : begin
+			if (!fHori) : begin
 				if fMyriad : set contentRight : rW + dist
 			local contentW : contentRight + l
 			local kFit : destW / [Math.max TINY contentW]
@@ -411,7 +411,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 
 			local clusterLeft xLow
 			if fHori : set clusterLeft : xHori0 - sR
-			if [not fHori] : begin
+			if (!fHori) : begin
 				if fMyriad : set clusterLeft : xHook - sR
 			local cl : l + k * (clusterLeft - l)
 
@@ -428,10 +428,10 @@ glyph-block Symbol-Punctuation-Percentages : begin
 			include : with-transform [ScaleAround l 0 k k] : glyph-proc
 				if fHori : begin
 					if fMyriad : include : CircleClusterTriple xHori0 yHori xHori1 yHori xHori2 yHori sR
-					if [not fMyriad] : include : CircleClusterPair xHori0 yHori xHori1 yHori sR
-				if [not fHori] : begin
+					if (!fMyriad) : include : CircleClusterPair xHori0 yHori xHori1 yHori sR
+				if (!fHori) : begin
 					if fMyriad : include : CircleClusterTriple xHook yHook xStem yBot xStem yTop sR
-					if [not fMyriad] : include : CircleClusterPair xLow yLow xUp yUp sR
+					if (!fMyriad) : include : CircleClusterPair xLow yLow xUp yUp sR
 			include : if fSegmented [CircleSlashSegmentedShifted l rW xShift] [CircleSlashContinuous l rW]
 			if fConnected : include : CircleAlsoConnectedBar l rW largeR
 			include : Translate ((destW - k * contentW) / 2) 0
@@ -466,7 +466,7 @@ glyph-block Symbol-Punctuation-Percentages : begin
 		include : CirclePermilleGlyph 2 true false true
 
 	select-variant 'percent' '%'
-	select-variant 'permille.NWID'  [NarrowUnicode 0x2030] (follow -- 'permille.NWID')
-	select-variant 'permille.WWID'  [WideUnicode   0x2030] (follow -- 'permille.WWID')
+	select-variant 'permille.NWID' [NarrowUnicode 0x2030] (follow -- 'permille.NWID')
+	select-variant 'permille.WWID' [WideUnicode 0x2030] (follow -- 'permille.WWID')
 	select-variant 'basepoint.NWID' [NarrowUnicode 0x2031] (follow -- 'permille.NWID')
-	select-variant 'basepoint.WWID' [WideUnicode   0x2031] (follow -- 'permille.WWID')
+	select-variant 'basepoint.WWID' [WideUnicode 0x2031] (follow -- 'permille.WWID')

@@ -28,11 +28,11 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 		.halfArrowSw halfArrowSw
 	} dims
 
-	MkArrow.single Arrow.shape [MangleName 'arrowRightCompact']  null arrowSB SymbolMid arrowRSB SymbolMid nothing compactHeadSize
-	MkArrow.single Arrow.shape [MangleName 'arrowLeftCompact']   null arrowRSB SymbolMid arrowSB SymbolMid nothing compactHeadSize
+	MkArrow.single Arrow.shape [MangleName 'arrowRightCompact'] null arrowSB SymbolMid arrowRSB SymbolMid nothing compactHeadSize
+	MkArrow.single Arrow.shape [MangleName 'arrowLeftCompact'] null arrowRSB SymbolMid arrowSB SymbolMid nothing compactHeadSize
 
 	define hcDist : Math.max (halfArrowSw * 5) (arrowWidth / 2)
-	define vcDist2  arrowHeadSize
+	define vcDist2 arrowHeadSize
 	define vcDist : arrowHeadSize * 1.75
 
 	VCombine [MangleName 'uni21C4'] [MangleUnicode 0x21C4] [MangleName 'arrowRight'] [MangleName 'arrowLeft'] vcDist
@@ -267,7 +267,7 @@ glyph-block Symbol-Arrow-Stacked : for-width-kinds WideWidth1
 	HCombine [MangleName 'uni2B7F'] [MangleUnicode 0x2B7F] [MangleName 'trigArrowBarDown'] [MangleName 'trigArrowBarUp'] hcDist
 
 	define [VStackCentered newid unicode ids heights widths] : begin
-		local bWidths  : if [Array.isArray widths]  widths  : [Array ids.length].fill widths
+		local bWidths : if [Array.isArray widths] widths : [Array ids.length].fill widths
 		local bHeights : if [Array.isArray heights] heights : [Array ids.length].fill heights
 
 		local maxWidth : Math.max.apply null bWidths

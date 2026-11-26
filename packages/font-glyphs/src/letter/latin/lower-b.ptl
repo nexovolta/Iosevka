@@ -15,7 +15,7 @@ glyph-block Letter-Latin-Lower-B : begin
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 	glyph-block-import Letter-Latin-C : CLetterForm
 
-	define SLAB-NONE      0
+	define SLAB-NONE 0
 	define SLAB-FLAT-HOOK 4
 
 	define [FlourishFlatTopKnots left right top sw] : list
@@ -27,15 +27,15 @@ glyph-block Letter-Latin-Lower-B : begin
 		local fine : ShoulderFine * (sw / Stroke)
 		if (Body === ToothedBody) : begin
 			return : OBarLeft.earlessCorner
-				rise  -- 0
-				top   -- top
-				bot   -- bot
-				left  -- left
+				rise -- 0
+				top -- top
+				bot -- bot
+				left -- left
 				right -- right
-				sw    -- sw
-				fine  -- fine
-				ada   -- ada
-				adb   -- adb
+				sw -- sw
+				fine -- fine
+				ada -- ada
+				adb -- adb
 		if (Body === ToothlessCornerBody) : begin
 			return : dispiro
 				widths.lhs sw
@@ -131,24 +131,24 @@ glyph-block Letter-Latin-Lower-B : begin
 
 	define BConfig : SuffixCfg.weave
 		object # tooth
-			''                ToothedBody
-			flatBottom        FlatBottomBody
-			toothlessCorner   ToothlessCornerBody
-			toothlessRounded  ToothlessRoundedBody
+			'' ToothedBody
+			flatBottom FlatBottomBody
+			toothlessCorner ToothlessCornerBody
+			toothlessRounded ToothlessRoundedBody
 		function [tooth] : begin
 			if (tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
-				''      ''
+				'' ''
 			return : object
-				''         ''
-				bottomCut  'bottomCut'
+				'' ''
+				bottomCut 'bottomCut'
 		function [tooth cut] : object # bowl
-			''        false
-			flatBowl  true
+			'' false
+			flatBowl true
 		object # serifs
-			serifless     {no-shape    false}
-			motionSerifed {LTSerifs    true }
-			bottomSerifed {LBSerifs    false}
-			serifed       {FullSerifs  true }
+			serifless {no-shape false}
+			motionSerifed {LTSerifs true }
+			bottomSerifed {LBSerifs false}
+			serifed {FullSerifs true }
 
 	define [BBowlKind Body] : begin
 		if (Body === FlatBottomBody) : return 'flatBottom'
@@ -172,7 +172,7 @@ glyph-block Letter-Latin-Lower-B : begin
 			include : LeaningAnchor.Above.VBar.l SB
 			set-base-anchor 'overlayOnExtension' (SB + [HSwToV HalfStroke]) yOverlay
 			set-base-anchor 'overlay' Middle (XH / 2)
-			set-base-anchor 'strike'  Middle (XH / 2)
+			set-base-anchor 'strike' Middle (XH / 2)
 
 		create-glyph "bStroke.\(suffix)" : glyph-proc
 			include [refer-glyph "b.\(suffix)"] AS_BASE ALSO_METRICS
@@ -182,7 +182,7 @@ glyph-block Letter-Latin-Lower-B : begin
 			include [refer-glyph "b.\(suffix)"] AS_BASE ALSO_METRICS
 			include : dispiro
 				widths.center OverlayStroke
-				flat [mix SB 0       0.700] (yOverlay - 0.10 * (Ascender - 0))
+				flat [mix SB 0 0.700] (yOverlay - 0.10 * (Ascender - 0))
 				curl [mix SB RightSB 0.625] (yOverlay + 0.05 * (Ascender - 0))
 
 		create-glyph "latn/be.\(suffix)" : glyph-proc
@@ -194,7 +194,7 @@ glyph-block Letter-Latin-Lower-B : begin
 			if doST : include : VSerif.dr xTopRight Ascender [Math.min VJut : mix Stroke (Ascender - XH) 0.5]
 			include : LeaningAnchor.Above.At [mix SB xTopRight 0.5]
 
-		if [not doST] : create-glyph "bHookTop.\(suffix)" : glyph-proc
+		if (!doST) : create-glyph "bHookTop.\(suffix)" : glyph-proc
 			include : MarkSet.b
 			include : Body XH fFlat [if (cut === 'topCut') '' cut]
 			include : Serifs
@@ -230,9 +230,9 @@ glyph-block Letter-Latin-Lower-B : begin
 					VBar.l xLeft yStemBot Ascender sw
 					if (cut === 'bottomCut')
 						spiro-outline
-							corner xLeft                    0
-							corner xLeft                    yStemBot
-							corner (xLeft + [HSwToV sw])    yStemBot
+							corner xLeft 0
+							corner xLeft yStemBot
+							corner (xLeft + [HSwToV sw]) yStemBot
 						no-shape
 				if (Serifs === LTSerifs || Serifs === FullSerifs) : include : tagged 'serifLT' : HSerif.lt xLeft Ascender SideJut sw
 				if (Serifs === LBSerifs || Serifs === FullSerifs) : include : tagged 'serifLB' : HSerif.lb xLeft 0 SideJut sw
@@ -242,7 +242,7 @@ glyph-block Letter-Latin-Lower-B : begin
 			local lf : CLetterForm cDf SLAB-NONE SLAB-FLAT-HOOK XH Descender
 				ada -- [cDf.archDepthAOf SmallArchDepth sw]
 				adb -- [cDf.archDepthBOf SmallArchDepth sw]
-				sw  -- sw
+				sw -- sw
 			include : intersection [MaskLeft (xStem + 0.5 * ink)] [lf.full]
 
 	select-variant 'b' 'b'
@@ -293,4 +293,4 @@ glyph-block Letter-Latin-Lower-B : begin
 			VBar.r (RightSB - BBD - OX) 0 XH BBS
 		include : OBarLeft.shape
 			left -- (SB + BBD)
-			sw   -- BBS
+			sw -- BBS

@@ -27,11 +27,11 @@ glyph-block Symbol-Punctuation-Small : begin
 			local df : include : DivFrame para.advanceScaleI
 			include : DrawAt df.middle (CAP - PeriodRadius * kDotRadius) (PeriodRadius * kDotRadius - overshoot)
 
-		create-glyph "smallPeriod.\(suffix)"        : DrawAt Middle (0   + DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
-		create-glyph "halfXhSmallPeriod.\(suffix)"  : DrawAt Middle (XH  / 2)                      (DotRadius * kDotRadius - overshoot)
-		create-glyph "halfCapSmallPeriod.\(suffix)" : DrawAt Middle (CAP / 2)                      (DotRadius * kDotRadius - overshoot)
-		create-glyph "xhSmallPeriod.\(suffix)"      : DrawAt Middle (XH  - DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
-		create-glyph "capSmallPeriod.\(suffix)"     : DrawAt Middle (CAP - DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
+		create-glyph "smallPeriod.\(suffix)" : DrawAt Middle (0 + DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
+		create-glyph "halfXhSmallPeriod.\(suffix)" : DrawAt Middle (XH / 2) (DotRadius * kDotRadius - overshoot)
+		create-glyph "halfCapSmallPeriod.\(suffix)" : DrawAt Middle (CAP / 2) (DotRadius * kDotRadius - overshoot)
+		create-glyph "xhSmallPeriod.\(suffix)" : DrawAt Middle (XH - DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
+		create-glyph "capSmallPeriod.\(suffix)" : DrawAt Middle (CAP - DotRadius * kDotRadius) (DotRadius * kDotRadius - overshoot)
 
 	select-variant 'period' '.' (follow -- 'punctuationDot')
 	select-variant 'sinologicalDot' 0xA78F (follow -- 'diacriticDot')
@@ -51,7 +51,7 @@ glyph-block Symbol-Punctuation-Small : begin
 		define r : PeriodRadius * kdr
 		define tailY : fallback _tailY Descender
 		define ro : r - o
-		define sw    : Math.min [AdviceStroke 4] (r * 0.8)
+		define sw : Math.min [AdviceStroke 4] (r * 0.8)
 		define swEnd : Math.min [AdviceStroke 2] (r * 1.0)
 		define commaOverflow : r - swEnd / 2
 		define rFill : ro - sw / 4
@@ -131,7 +131,7 @@ glyph-block Symbol-Punctuation-Small : begin
 	define [RevCommaShape kdr o] : namespace
 		define r : PeriodRadius * kdr
 		define ro : r - o
-		define sw    : Math.min [AdviceStroke 4] (r * 0.8)
+		define sw : Math.min [AdviceStroke 4] (r * 0.8)
 		define swEnd : Math.min [AdviceStroke 2] (r * 1.0)
 		define commaOverflow : r - swEnd / 2
 		define rFill : ro - sw / 4
@@ -251,28 +251,28 @@ glyph-block Symbol-Punctuation-Small : begin
 	select-variant 'comma/asDiacritic' (follow -- 'diacriticComma')
 	select-variant 'revComma/asDiacritic' (follow -- 'diacriticComma')
 
-	turned 'turnComma.round'  null 'comma.round'  [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.round' null 'comma.round' [DivFrame para.advanceScaleI].middle PeriodRadius
 	turned 'turnComma.square' null 'comma.square' [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
 	turned 'turnComma.diamond' null 'comma.diamond' [DivFrame para.advanceScaleI].middle (PeriodRadius * SquareDotScalar)
-	turned 'turnComma.prime'  null 'comma.prime'  [DivFrame para.advanceScaleI].middle PeriodRadius
-	turned 'turnComma.tick'   null 'comma.tick'   [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.prime' null 'comma.prime' [DivFrame para.advanceScaleI].middle PeriodRadius
+	turned 'turnComma.tick' null 'comma.tick' [DivFrame para.advanceScaleI].middle PeriodRadius
 	foreach suffix {'hexagon' 'corner' 'bottomCut'} : do
 		turned "turnComma.\(suffix)" null "comma.\(suffix)" [DivFrame para.advanceScaleI].middle (PeriodRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar])
 	select-variant 'turnComma' 0x2E32 (follow -- 'punctuationComma')
 
-	derive-composites 'raisedPeriod.round'  null 'period.round'  [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
+	derive-composites 'raisedPeriod.round' null 'period.round' [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	derive-composites 'raisedPeriod.square' null 'period.square' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedPeriod.diamond' null 'period.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedPeriod.hexagon' null 'period.hexagon' [ApparentTranslate 0 (XH / 2 - PeriodRadius * HexagonDotScalar)]
-	derive-composites 'raisedComma.round'   null 'comma.round'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
-	derive-composites 'raisedComma.square'  null 'comma.square'  [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
+	derive-composites 'raisedComma.round' null 'comma.round' [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
+	derive-composites 'raisedComma.square' null 'comma.square' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
 	derive-composites 'raisedComma.diamond' null 'comma.diamond' [ApparentTranslate 0 (XH / 2 - PeriodRadius * SquareDotScalar)]
-	derive-composites 'raisedComma.prime'   null 'comma.prime'   [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
-	derive-composites 'raisedComma.tick'    null 'comma.tick'    [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
+	derive-composites 'raisedComma.prime' null 'comma.prime' [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
+	derive-composites 'raisedComma.tick' null 'comma.tick' [ApparentTranslate 0 (XH / 2 - PeriodRadius)]
 	foreach suffix {'hexagon' 'corner' 'bottomCut'} : do
 		derive-composites "raisedComma.\(suffix)" null "comma.\(suffix)" [ApparentTranslate 0 (XH / 2 - PeriodRadius * [if (suffix === 'hexagon') HexagonDotScalar SquareDotScalar])]
 	select-variant 'raisedPeriod' 0x2E33 (follow -- 'punctuationDot')
-	select-variant 'raisedComma'  0x2E34 (follow -- 'punctuationComma')
+	select-variant 'raisedComma' 0x2E34 (follow -- 'punctuationComma')
 
 	foreach {suffix {DrawAt kDotRadius overshoot}} [Object.entries DotVariants] : do
 		create-glyph "colon.\(suffix)" : glyph-proc
@@ -375,9 +375,9 @@ glyph-block Symbol-Punctuation-Small : begin
 			local l : mix SB 0 0.5
 			local r : mix RightSB Width 0.5
 			local radius : EllipsisDotRadius 3 [Math.min XH (r - l)]
-			include : DrawAt  Middle  radius       (kDotRadius * radius - overshoot)
-			include : DrawAt  Middle (XH / 2)      (kDotRadius * radius - overshoot)
-			include : DrawAt  Middle (XH - radius) (kDotRadius * radius - overshoot)
+			include : DrawAt Middle radius (kDotRadius * radius - overshoot)
+			include : DrawAt Middle (XH / 2) (kDotRadius * radius - overshoot)
+			include : DrawAt Middle (XH - radius) (kDotRadius * radius - overshoot)
 
 			include : DrawAt (l + radius) (XH / 2) (kDotRadius * radius - overshoot)
 			include : DrawAt (r - radius) (XH / 2) (kDotRadius * radius - overshoot)
@@ -386,8 +386,8 @@ glyph-block Symbol-Punctuation-Small : begin
 			include : HBar.m [mix 0 SB 0.5] [mix Width RightSB 0.5] (XH / 2) OperatorStroke
 			include : VBar.m Middle 0 XH OperatorStroke
 			local radius : HSwToV : 0.5 * [AdviceStroke 3]
-			include : DrawAt (SB + radius)      (XH * 0.75) (kDotRadius * radius - overshoot)
-			include : DrawAt (SB + radius)      (XH * 0.25) (kDotRadius * radius - overshoot)
+			include : DrawAt (SB + radius) (XH * 0.75) (kDotRadius * radius - overshoot)
+			include : DrawAt (SB + radius) (XH * 0.25) (kDotRadius * radius - overshoot)
 			include : DrawAt (RightSB - radius) (XH * 0.75) (kDotRadius * radius - overshoot)
 			include : DrawAt (RightSB - radius) (XH * 0.25) (kDotRadius * radius - overshoot)
 

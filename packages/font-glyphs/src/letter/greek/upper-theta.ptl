@@ -10,12 +10,12 @@ glyph-block Letter-Greek-Upper-Theta : begin
 	glyph-block-import Common-Derivatives
 
 	define ThetaConfig : object
-		serifless                             {false  0   }
-		serifed                               {true   0   }
-		diagonalCrossbar                      {false  1   }
-		diagonalCrossbarMiddleSerifed         {true   1   }
-		diagonalCrossbarFalling               {false  (-1)}
-		diagonalCrossbarFallingMiddleSerifed  {true   (-1)}
+		serifless {false 0 }
+		serifed {true 0 }
+		diagonalCrossbar {false 1 }
+		diagonalCrossbarMiddleSerifed {true 1 }
+		diagonalCrossbarFalling {false (-1)}
+		diagonalCrossbarFallingMiddleSerifed {true (-1)}
 
 	define [ThetaBar xMidLeft xMidRight diag] : glyph-proc
 		local yBar : 0.5 * CAP
@@ -32,7 +32,7 @@ glyph-block Letter-Greek-Upper-Theta : begin
 		local barWidth : xMidRight - xMidLeft
 		local midJut : DiagonalMiddleSerifLength rise barWidth Stroke (jut / 2) [HSwToV jutSw]
 		local serifShift : DiagonalMiddleSerifShift rise barWidth Stroke midJut 1
-		include : VSerif.ml xMidLeft  (yBar - yRise - serifShift) midJut jutSw
+		include : VSerif.ml xMidLeft (yBar - yRise - serifShift) midJut jutSw
 		include : VSerif.mr xMidRight (yBar + yRise + serifShift) midJut jutSw
 
 	foreach {suffix {fSerif diag}} [Object.entries ThetaConfig] : begin
@@ -41,13 +41,13 @@ glyph-block Letter-Greek-Upper-Theta : begin
 				local df : include : DivFrame para.advanceScaleT 3
 				include : df.markSet.capital
 				include : OShape CAP 0 df.leftSB df.rightSB Stroke ArchDepthA ArchDepthB
-				local xMidLeft  : df.leftSB + [HSwToV Stroke] - O * 3
+				local xMidLeft : df.leftSB + [HSwToV Stroke] - O * 3
 				local xMidRight : df.rightSB - [HSwToV Stroke] + O * 3
 				include : ThetaBar xMidLeft xMidRight diag
 				include : ThetaMiddleSerifs xMidLeft xMidRight diag
 			: else : begin
 				include : MarkSet.capital
-				local xMidLeft  : SB + [HSwToV Stroke] - O * 3
+				local xMidLeft : SB + [HSwToV Stroke] - O * 3
 				local xMidRight : RightSB - [HSwToV Stroke] + O * 3
 				include [refer-glyph 'O'] AS_BASE
 				include : ThetaBar xMidLeft xMidRight diag

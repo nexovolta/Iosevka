@@ -28,28 +28,28 @@ glyph-block Symbol-Arrow-Rounded : for-width-kinds WideWidth1
 
 		define [Bar x1 y1 x2 y2 sw] : begin
 			return : PointingTo x1 y1 x2 y2 : lambda [mag] : union
-				Blob 0   0 sw
+				Blob 0 0 sw
 				Blob mag 0 sw
 				dispiro
-					widths.center  sw
-					flat 0   0
+					widths.center sw
+					flat 0 0
 					curl mag 0
 
 		define [Head x1 y1 x2 y2 sw headLen headWidth] : begin
 			return : PointingTo x1 y1 x2 y2 : lambda [mag] : union
-				Blob headLen headWidth    sw
+				Blob headLen headWidth sw
 				Blob headLen (-headWidth) sw
 				dispiro
-					widths.center  sw
-					flat 0       0
+					widths.center sw
+					flat 0 0
 					curl headLen headWidth
 				dispiro
-					widths.center  sw
-					flat 0       0
+					widths.center sw
+					flat 0 0
 					curl headLen (-headWidth)
 
 		export : define [Shape sw] : function [x1 y1 x2 y2] : begin
-			define headLen   : MosaicUnitWidth * [Math.sqrt MosaicWidthScalar] * 0.5
+			define headLen : MosaicUnitWidth * [Math.sqrt MosaicWidthScalar] * 0.5
 			define headWidth : headLen * 1.00
 
 			define mag : Math.hypot (x2 - x1) (y2 - y1)
@@ -63,8 +63,8 @@ glyph-block Symbol-Arrow-Rounded : for-width-kinds WideWidth1
 			define y2a : mix [mix y1 y2 0.5] y2 p
 
 			return : union
-				Bar  x1a y1a x2a y2a  sw
-				Head x1a y1a x2a y2a  sw (pHalf * headLen) (pHalf * headWidth)
+				Bar x1a y1a x2a y2a sw
+				Head x1a y1a x2a y2a sw (pHalf * headLen) (pHalf * headWidth)
 
 	# Glyphs
 	define sw : UnicodeWeightGrade 900 MosaicWidthScalar GeometryStroke

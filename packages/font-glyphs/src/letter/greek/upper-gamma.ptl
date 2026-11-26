@@ -16,10 +16,10 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook
 	glyph-block-import Letter-Latin-Lower-R : RDim RMode
 
-	define SLAB-NONE             0
-	define SLAB-TR               1
-	define SLAB-BOTTOM           2
-	define SLAB-ALL              3
+	define SLAB-NONE 0
+	define SLAB-TR 1
+	define SLAB-BOTTOM 2
+	define SLAB-ALL 3
 	define SLAB-BILATERAL-MOTION 4
 
 	define kSB 1.5
@@ -31,13 +31,13 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 		include : tagged 'strokeH' : HBar.t (xGammaBarLeft - O) xGammaTopRight top
 		match slabType
 			[Just SLAB-ALL] : begin
-				include : tagged 'serifLT' : HSerif.lt xGammaBarLeft  top SideJut
+				include : tagged 'serifLT' : HSerif.lt xGammaBarLeft top SideJut
 				include : tagged 'serifRT' : VSerif.dr xGammaTopRight top VJut
 				include : tagged 'serifLB' : union
 					HSerif.lb (xGammaBarLeft + [HSwToV HalfStroke]) bot Jut
 					HSerif.rb (xGammaBarLeft + [HSwToV HalfStroke]) bot MidJutSide
 			[Just SLAB-BILATERAL-MOTION] : begin
-				include : tagged 'serifLT' : HSerif.lt xGammaBarLeft  top SideJut
+				include : tagged 'serifLT' : HSerif.lt xGammaBarLeft top SideJut
 				include : tagged 'serifRT' : VSerif.dr xGammaTopRight top VJut
 			[Just SLAB-BOTTOM] : begin
 				include : tagged 'serifLB' : union
@@ -47,24 +47,24 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 				include : tagged 'serifRT' : VSerif.dr xGammaTopRight top VJut
 
 	define GammaConfig : object
-		serifless               {SLAB-NONE              false  false}
-		topRightSerifed         {SLAB-TR                true   true}
-		bottomSerifed           {SLAB-BOTTOM            false  false}
-		serifed                 {SLAB-ALL               true   true}
-		bilateralMotionSerifed  {SLAB-BILATERAL-MOTION  false  true}
-		capped                  {SLAB-NONE              true   true}
-		diagonalCrossbar                               {SLAB-NONE              false  false  1}
-		diagonalCrossbarTopRightSerifed                {SLAB-TR                true   true   1}
-		diagonalCrossbarBottomSerifed                  {SLAB-BOTTOM            false  false  1}
-		diagonalCrossbarSerifed                        {SLAB-ALL               true   true   1}
-		diagonalCrossbarBilateralMotionSerifed         {SLAB-BILATERAL-MOTION  false  true   1}
-		diagonalCrossbarCapped                         {SLAB-NONE              true   true   1}
-		diagonalCrossbarFalling                        {SLAB-NONE              false  false  (-1)}
-		diagonalCrossbarFallingTopRightSerifed         {SLAB-TR                true   true   (-1)}
-		diagonalCrossbarFallingBottomSerifed           {SLAB-BOTTOM            false  false  (-1)}
-		diagonalCrossbarFallingSerifed                 {SLAB-ALL               true   true   (-1)}
-		diagonalCrossbarFallingBilateralMotionSerifed  {SLAB-BILATERAL-MOTION  false  true   (-1)}
-		diagonalCrossbarFallingCapped                  {SLAB-NONE              true   true   (-1)}
+		serifless {SLAB-NONE false false}
+		topRightSerifed {SLAB-TR true true}
+		bottomSerifed {SLAB-BOTTOM false false}
+		serifed {SLAB-ALL true true}
+		bilateralMotionSerifed {SLAB-BILATERAL-MOTION false true}
+		capped {SLAB-NONE true true}
+		diagonalCrossbar {SLAB-NONE false false 1}
+		diagonalCrossbarTopRightSerifed {SLAB-TR true true 1}
+		diagonalCrossbarBottomSerifed {SLAB-BOTTOM false false 1}
+		diagonalCrossbarSerifed {SLAB-ALL true true 1}
+		diagonalCrossbarBilateralMotionSerifed {SLAB-BILATERAL-MOTION false true 1}
+		diagonalCrossbarCapped {SLAB-NONE true true 1}
+		diagonalCrossbarFalling {SLAB-NONE false false (-1)}
+		diagonalCrossbarFallingTopRightSerifed {SLAB-TR true true (-1)}
+		diagonalCrossbarFallingBottomSerifed {SLAB-BOTTOM false false (-1)}
+		diagonalCrossbarFallingSerifed {SLAB-ALL true true (-1)}
+		diagonalCrossbarFallingBilateralMotionSerifed {SLAB-BILATERAL-MOTION false true (-1)}
+		diagonalCrossbarFallingCapped {SLAB-NONE true true (-1)}
 
 	foreach {suffix {slabType doST doRM diag}} [Object.entries GammaConfig] : do
 		create-glyph "grek/Gamma.\(suffix)" : glyph-proc
@@ -103,15 +103,15 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 		create-glyph "cyrl/GheDescender.\(suffix)" : glyph-proc
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS
 			include : CyrDescender.rSideJut
-				x   -- (xGammaBarLeft + [HSwToV Stroke])
-				y   -- 0
+				x -- (xGammaBarLeft + [HSwToV Stroke])
+				y -- 0
 				jut -- MidJutSide
 
 		create-glyph "cyrl/GheHook.\(suffix)" : glyph-proc
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS
 			include : PalatalHook.rSideJut
-				x   -- (xGammaBarLeft + [HSwToV Stroke])
-				y   -- 0
+				x -- (xGammaBarLeft + [HSwToV Stroke])
+				y -- 0
 				jut -- MidJutSide
 
 		create-glyph "cyrl/ghe.upright.\(suffix)" : glyph-proc
@@ -121,15 +121,15 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 		create-glyph "cyrl/gheDescender.upright.\(suffix)" : glyph-proc
 			include [refer-glyph "cyrl/ghe.upright.\(suffix)"] AS_BASE ALSO_METRICS
 			include : CyrDescender.rSideJut
-				x   -- (xGammaBarLeft + [HSwToV Stroke])
-				y   -- 0
+				x -- (xGammaBarLeft + [HSwToV Stroke])
+				y -- 0
 				jut -- MidJutSide
 
 		create-glyph "cyrl/gheHook.upright.\(suffix)" : glyph-proc
 			include [refer-glyph "cyrl/ghe.upright.\(suffix)"] AS_BASE ALSO_METRICS
 			include : PalatalHook.rSideJut
-				x   -- (xGammaBarLeft + [HSwToV Stroke])
-				y   -- 0
+				x -- (xGammaBarLeft + [HSwToV Stroke])
+				y -- 0
 				jut -- MidJutSide
 
 		create-glyph "cyrl/Ge.\(suffix)" : glyph-proc
@@ -159,21 +159,21 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 			include [refer-glyph "grek/Gamma.\(suffix)"] AS_BASE ALSO_METRICS
 			include : MarkSet.capDesc
 			include : MidHook.general
-				left   -- (xGammaBarLeft + [HSwToV Stroke])
-				right  -- RightSB
-				top    -- (CAP * HBarPos + QuarterStroke)
-				ada    -- ArchDepthA
-				adb    -- ArchDepthB
+				left -- (xGammaBarLeft + [HSwToV Stroke])
+				right -- RightSB
+				top -- (CAP * HBarPos + QuarterStroke)
+				ada -- ArchDepthA
+				adb -- ArchDepthB
 
 		create-glyph "cyrl/gheMidHook.\(suffix)" : glyph-proc
 			include [refer-glyph "cyrl/ghe.upright.\(suffix)"] AS_BASE ALSO_METRICS
 			include : MarkSet.p
 			include : MidHook.general
-				left   -- (xGammaBarLeft + [HSwToV Stroke])
-				right  -- RightSB
-				top    -- (XH * HBarPos + QuarterStroke)
-				ada    -- (ArchDepthA * (HBarPos ** 0.3))
-				adb    -- (ArchDepthB * (HBarPos ** 0.3))
+				left -- (xGammaBarLeft + [HSwToV Stroke])
+				right -- RightSB
+				top -- (XH * HBarPos + QuarterStroke)
+				ada -- (ArchDepthA * (HBarPos ** 0.3))
+				adb -- (ArchDepthB * (HBarPos ** 0.3))
 			if para.isItalic : eject-contour 'serifLB'
 
 		create-glyph "paragraphus.\(suffix)" : glyph-proc
@@ -199,7 +199,7 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 	select-variant 'paragraphus' 0x2E4D (follow -- 'grek/Gamma')
 	select-variant 'grek/Gamma' 0x393
 	link-reduced-variant 'grek/Gamma/sansSerif' 'grek/Gamma' MathSansSerif
-	select-variant 'grek/smcpGamma'  0x1D26 (shapeFrom -- 'cyrl/ghe.upright') (follow -- 'grek/Gamma')
+	select-variant 'grek/smcpGamma' 0x1D26 (shapeFrom -- 'cyrl/ghe.upright') (follow -- 'grek/Gamma')
 
 	select-variant 'RLongLeg' 0xA7E2 (shapeFrom -- 'rCap') (follow -- 'cyrl/Ge')
 
@@ -256,11 +256,11 @@ glyph-block Letter-Greek-Upper-Gamma: begin
 	select-variant 'grek/digamma' 0x3DD
 	define [GhaynOverlayBar top] : LetterBarOverlay.l xGammaBarLeft (top * (1 - OverlayPos))
 
-	derive-composites 'cyrl/Ghayn'         0x492 'cyrl/Ghe'         [GhaynOverlayBar CAP]
-	derive-composites 'cyrl/ghayn.upright' null  'cyrl/ghe.upright' [GhaynOverlayBar XH]
+	derive-composites 'cyrl/Ghayn' 0x492 'cyrl/Ghe' [GhaynOverlayBar CAP]
+	derive-composites 'cyrl/ghayn.upright' null 'cyrl/ghe.upright' [GhaynOverlayBar XH]
 
-	derive-composites 'cyrl/GheStrokeHook'         0x4FA 'cyrl/GheHook'         [GhaynOverlayBar CAP]
-	derive-composites 'cyrl/gheStrokeHook.upright' null  'cyrl/gheHook.upright' [GhaynOverlayBar XH]
+	derive-composites 'cyrl/GheStrokeHook' 0x4FA 'cyrl/GheHook' [GhaynOverlayBar CAP]
+	derive-composites 'cyrl/gheStrokeHook.upright' null 'cyrl/gheHook.upright' [GhaynOverlayBar XH]
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarLeft
 	create-glyph 'mathbb/grek/Gamma' 0x213E : glyph-proc

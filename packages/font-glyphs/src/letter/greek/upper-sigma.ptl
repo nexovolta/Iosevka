@@ -19,26 +19,26 @@ glyph-block Letter-Greek-Upper-Sigma : begin
 		local fBot : if (doSerif !== nothing) doSerif doSerifBot
 
 		include : union
-			HBar.t (offsetLeft + df.leftSB) df.rightSB top    fine
+			HBar.t (offsetLeft + df.leftSB) df.rightSB top fine
 			HBar.b (offsetLeft + df.leftSB) df.rightSB bottom fine
 			spiro-outline
-				corner (df.leftSB + offsetLeft)              (bottom + fine)
+				corner (df.leftSB + offsetLeft) (bottom + fine)
 				corner (df.leftSB + offsetLeft + fine * cor) (bottom + fine)
-				corner (xMid      + offsetLeft + fine * cor) yMid
+				corner (xMid + offsetLeft + fine * cor) yMid
 				corner (df.leftSB + offsetLeft + fine * cor) (top - fine)
-				corner (df.leftSB + offsetLeft)              (top - fine)
-				corner (xMid      + offsetLeft)              yMid
+				corner (df.leftSB + offsetLeft) (top - fine)
+				corner (xMid + offsetLeft) yMid
 
 		if (fTop || fBot) : begin
 			local {jutTop jutBot jutMid} : EFVJutLength top bottom pyMid fine
-			if fTop : include : tagged 'serifRT' : VSerif.dr df.rightSB top    jutTop
+			if fTop : include : tagged 'serifRT' : VSerif.dr df.rightSB top jutTop
 			if fBot : include : tagged 'serifRB' : VSerif.ur df.rightSB bottom jutBot
 
 	define SigmaConfig : object
-		serifless     {false  false}
-		topSerifed    {true   false}
-		bottomSerifed {false  true }
-		fullSerifed   {true   true }
+		serifless {false false}
+		topSerifed {true false}
+		bottomSerifed {false true }
+		fullSerifed {true true }
 
 	foreach {suffix {fTop fBot}} [Object.entries SigmaConfig] : do
 		create-glyph "grek/Sigma.\(suffix)" : glyph-proc

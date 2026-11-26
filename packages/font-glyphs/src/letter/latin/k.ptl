@@ -38,41 +38,41 @@ glyph-block Letter-Latin-K : begin
 	# bit 1: Top right serif inner
 	# bit 2: Top right serif outer
 	# bit 3: Bottom right serif
-	define SLAB-TL   1
+	define SLAB-TL 1
 	define SLAB-TR-L 2
 	define SLAB-TR-R 4
-	define SLAB-BR   8
+	define SLAB-BR 8
 
-	define [HasTlSerif  mode] : maskBits mode SLAB-TL
-	define [HasRtInner  mode] : maskBits mode SLAB-TR-L
-	define [HasRtOuter  mode] : maskBits mode SLAB-TR-R
-	define [HasRbSerif  mode] : maskBits mode SLAB-BR
-	define [HasRtSerif  mode] : HasRtOuter mode
+	define [HasTlSerif mode] : maskBits mode SLAB-TL
+	define [HasRtInner mode] : maskBits mode SLAB-TR-L
+	define [HasRtOuter mode] : maskBits mode SLAB-TR-R
+	define [HasRbSerif mode] : maskBits mode SLAB-BR
+	define [HasRtSerif mode] : HasRtOuter mode
 	define [HasLegSerif mode] : maskBits mode [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]
 	define [HasFullRtSerif mode] : [HasRtInner mode] && [HasRtOuter mode]
 
-	define [KBalance      slabLT   fStraightBar] : if fStraightBar (Width / 32) 0
+	define [KBalance slabLT fStraightBar] : if fStraightBar (Width / 32) 0
 	define [KBalanceRight slabLegs fStraightBar] : if [HasLegSerif slabLegs] 0 : if fStraightBar (Width / 32) 0
 	define [KOvershootX slabLegs fStraightBar top swRef] : if fStraightBar (([if [HasLegSerif slabLegs] 0 (-4)] * OX - swRef / 3) * (XH / top)) 0
 
 	define flex-params [KLegSlabs] : glyph-proc
-		local-parameter : mode          -- 0
-		local-parameter : fStraightBar  -- false
-		local-parameter : top           -- XH
-		local-parameter : left          -- SB
-		local-parameter : right         -- RightSB
-		local-parameter : swRef         -- Stroke
-		local-parameter : swSerif       -- swRef
-		local-parameter : attachment    -- null
-		local-parameter : maskRT        -- no-shape
-		local-parameter : maskRB        -- no-shape
+		local-parameter : mode -- 0
+		local-parameter : fStraightBar -- false
+		local-parameter : top -- XH
+		local-parameter : left -- SB
+		local-parameter : right -- RightSB
+		local-parameter : swRef -- Stroke
+		local-parameter : swSerif -- swRef
+		local-parameter : attachment -- null
+		local-parameter : maskRT -- no-shape
+		local-parameter : maskRB -- no-shape
 
-		local ox             : KOvershootX mode true top swRef
-		local kshRight       : right + [KBalanceRight SLAB-BR fStraightBar]
-		local stemInk        : HSwToV swRef
-		local sideJutAdj     : ox + stemInk
-		local xSerif         : kshRight - sideJutAdj
-		local xOuter         : kshRight - ox
+		local ox : KOvershootX mode true top swRef
+		local kshRight : right + [KBalanceRight SLAB-BR fStraightBar]
+		local stemInk : HSwToV swRef
+		local sideJutAdj : ox + stemInk
+		local xSerif : kshRight - sideJutAdj
+		local xOuter : kshRight - ox
 		local yJoinArm : [mix 0 top 0.42] - swRef
 		local fallArm : Math.max TINY (top - yJoinArm)
 		local runArm : Math.max TINY (xOuter - (left + stemInk))
@@ -96,8 +96,8 @@ glyph-block Letter-Latin-K : begin
 
 		if attachment : include : difference
 			attachment.rSideJut
-				x   -- (kshRight - sideJutAdj)
-				y   -- 0
+				x -- (kshRight - sideJutAdj)
+				y -- 0
 				jut -- (Jut + sideJutAdj)
 			maskRB
 
@@ -112,7 +112,7 @@ glyph-block Letter-Latin-K : begin
 			set-base-anchor 'overlay' [mix left right 0.5] mid
 			set-base-anchor 'strike' [mix left right 0.5] mid
 			set-base-anchor 'trailing' right 0
-			if [not fHookRight] : set-base-anchor 'armOverlay' [mix bend outer 0.94] [mix mid top 0.58]
+			if (!fHookRight) : set-base-anchor 'armOverlay' [mix bend outer 0.94] [mix mid top 0.58]
 			set-base-anchor 'legOverlay' [mix bend outer 0.94] [mix mid 0 0.58]
 			include : union
 				dispiro
@@ -136,7 +136,7 @@ glyph-block Letter-Latin-K : begin
 						arcvh
 						curl (outer + HookX / 2) top [heading Rightward]
 					no-shape
-			if [not fHookRight] : begin
+			if (!fHookRight) : begin
 				if [HasFullRtSerif slabLegs]
 				: then : include : HSerif.mt outer top Jut stroke
 				: else : begin
@@ -162,7 +162,7 @@ glyph-block Letter-Latin-K : begin
 			local yAttach2 : [mix 0 top 0.72] + stroke
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' (kshRightBot - ox) 0
 
 			local kshRightSerifs : right + [KBalanceRight SLAB-BR true]
@@ -180,7 +180,7 @@ glyph-block Letter-Latin-K : begin
 				forSerifs : function []
 					HalfRectTriangle (kshRightBot - ox - TINY) 0 (kshLeft + stroke - TINY) yAttach2
 
-			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
+			if (!fHookRight) : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yAttach2 0 : StrokeWidthBlend 0.5 0.7]
 
 			include : union
@@ -214,15 +214,15 @@ glyph-block Letter-Latin-K : begin
 				: then : no-shape
 				: else : new-glyph : glyph-proc
 					include : KLegSlabs
-						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- true
-						attachment   -- attachment
-						maskRT	     -- TopMask.forSerifs
-						maskRB	     -- BottomMask.forSerifs
+						attachment -- attachment
+						maskRT	 -- TopMask.forSerifs
+						maskRB	 -- BottomMask.forSerifs
 
 		export : define [Symmetric leadGap hookDepth] : function [fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke : if leadGap 3.5 3] * (stroke / Stroke)
@@ -237,13 +237,13 @@ glyph-block Letter-Latin-K : begin
 			local coYAttach : top - yAttach
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
-			if [not hookDepth] : set-base-anchor 'trailing' (kshRight - ox) 0
+			set-base-anchor 'strike' [mix left right 0.5] (top / 2)
+			if (!hookDepth) : set-base-anchor 'trailing' (kshRight - ox) 0
 
 			define [StrokeMask fTop t b offset] : Rect t b kshLeft
 				if [if fTop [HasRtSerif slabLegs] [HasRbSerif slabLegs]] (kshRight + offset) VERY-FAR
 
-			if [not fHookRight] : begin
+			if (!fHookRight) : begin
 				local xRef : linreg yAttach xAttach top kshRight [mix 0 top 0.75]
 				set-base-anchor 'armOverlay' (xRef - [HSwToV HalfStroke]) [mix 0 top 0.75]
 			if hookDepth
@@ -258,7 +258,7 @@ glyph-block Letter-Latin-K : begin
 
 			define [BotSerifMask] : intersection
 				StrokeMask false (0.5 * top) 0 (-0.1)
-				HalfRectTriangle (kshRight - ox - TINY) 0   ([mix (kshRight - ox) xAttach 2] - TINY) [mix 0 coYAttach 2]
+				HalfRectTriangle (kshRight - ox - TINY) 0 ([mix (kshRight - ox) xAttach 2] - TINY) [mix 0 coYAttach 2]
 
 			include : union
 				new-glyph : glyph-proc
@@ -307,15 +307,15 @@ glyph-block Letter-Latin-K : begin
 									corner (xAttach - 1) 0
 				new-glyph : glyph-proc
 					include : KLegSlabs
-						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- true
-						attachment   -- attachment
-						maskRT	     -- TopSerifMask
-						maskRB	     -- BotSerifMask
+						attachment -- attachment
+						maskRT	 -- TopSerifMask
+						maskRB	 -- BotSerifMask
 
 		export : define [InverseConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			local fine : [AdviceStroke 3.5] * (stroke / Stroke)
@@ -345,17 +345,17 @@ glyph-block Letter-Latin-K : begin
 				: else : no-shape
 				new-glyph : glyph-proc
 					include : KLegSlabs
-						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- true
-						attachment   -- attachment
+						attachment -- attachment
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' (kshRightBot - ox) 0
-			if [not fHookRight] : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
+			if (!fHookRight) : set-base-anchor 'armOverlay' [mix kshLeft kshRightTop : StrokeWidthBlend 0.5 0.65] [mix yAttach1 top : StrokeWidthBlend 0.5 0.7]
 			set-base-anchor 'legOverlay' [mix kshLeft kshRightBot : StrokeWidthBlend 0.5 0.65] [mix yAttach2 0 : StrokeWidthBlend 0.5 0.7]
 
 		export : define [RoundedConnected fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
@@ -373,7 +373,7 @@ glyph-block Letter-Latin-K : begin
 			local xArcStart : xLeftTop + TINY
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' xRightBottom 0
 
 			local kshRightSerifs : right + [KBalanceRight SLAB-BR true]
@@ -391,7 +391,7 @@ glyph-block Letter-Latin-K : begin
 				forSerifs : function []
 					HalfRectTriangle (xRightBottom - TINY) 0 (xLeftTop - TINY) yJoin
 
-			if [not fHookRight] : begin
+			if (!fHookRight) : begin
 				local rise : top - yJoin
 				local phi : (Math.PI / 2) * [StrokeWidthBlend 0.5 0.6]
 				local sinPhi : Math.sin phi
@@ -424,17 +424,17 @@ glyph-block Letter-Latin-K : begin
 						Rect yJoin 0 (-VERY-FAR) VERY-FAR
 						ExtLineLhsToRhs xLeftTop yJoin xRightBottom 0 stroke 0.2
 				new-glyph : glyph-proc
-					local roundedTr : [not fHookRight] && [HasRtOuter slabLegs]
+					local roundedTr : (!fHookRight) && [HasRtOuter slabLegs]
 					include : KLegSlabs
-						mode         -- [maskOffBits slabLegs : if (fHookRight || roundedTr) [bitOr SLAB-TR-L SLAB-TR-R] 0]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [maskOffBits slabLegs : if (fHookRight || roundedTr) [bitOr SLAB-TR-L SLAB-TR-R] 0]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- true
-						attachment   -- attachment
-						maskRT	     -- TopMask.forSerifs
-						maskRB	     -- BottomMask.forSerifs
+						attachment -- attachment
+						maskRT	 -- TopMask.forSerifs
+						maskRB	 -- BottomMask.forSerifs
 					if roundedTr : begin
 						local stemInk : HSwToV stroke
 						if [HasFullRtSerif slabLegs]
@@ -447,10 +447,10 @@ glyph-block Letter-Latin-K : begin
 			local kshRight : right + [KBalanceRight slabLegs false]
 
 			set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 			set-base-anchor 'trailing' (kshRight - O) 0
 
-			define [upperCurvature]   : bezControls 0.0 0.3 0.5 0.65 8
+			define [upperCurvature] : bezControls 0.0 0.3 0.5 0.65 8
 			define [upperCurvatureHT] : bezControls 0.5 0.0 0.5 0.65 8 : object
 				blend : function [t] : widths.rhs [mix stroke fine t]
 			define [lowerCurvature] : quadControls 0 0.3 8
@@ -500,44 +500,44 @@ glyph-block Letter-Latin-K : begin
 								corner kshLeft top
 				new-glyph : glyph-proc
 					include : KLegSlabs
-						mode         -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [if fHookRight [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]] slabLegs]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- false
-						attachment   -- attachment
-						maskRT	     -- TopSerifMask
-						maskRB	     -- BotSerifMask
+						attachment -- attachment
+						maskRT	 -- TopSerifMask
+						maskRB	 -- BotSerifMask
 
 		define [CursiveDimen left right top stroke slabLT slabLegs] : begin
-			define kshLeft  : left + [KBalance slabLegs true]
+			define kshLeft : left + [KBalance slabLegs true]
 			define kshRight : right + [KBalanceRight slabLegs true]
-			define ox       : KOvershootX slabLegs true top stroke
+			define ox : KOvershootX slabLegs true top stroke
 
 			define arcFine : ShoulderFine * (stroke / Stroke)
 			define arcStroke : [AdviceStroke2 2 3 top] * (stroke / Stroke)
 			define arcTerminalFine : [AdviceStroke2 3 4 top] * (stroke / Stroke)
 			define expansion : Width / HalfUPM - 1
 
-			define pArcStartY    : 0.460 + 0.100 * (arcStroke / Width)
-			define pArcTopX      : 0.625 - 0.050 * (arcStroke / Width)
-			define pArcRightX    : (0.91 - TanSlope * 0.25) + ([if SLAB 0 0.05] + 0.75 * TanSlope) * (arcStroke / Width)
-			define pArcRightY    : 0.575 - 0.625 * (arcStroke / Width) - 0.25 * expansion * (arcStroke / HalfUPM)
+			define pArcStartY : 0.460 + 0.100 * (arcStroke / Width)
+			define pArcTopX : 0.625 - 0.050 * (arcStroke / Width)
+			define pArcRightX : (0.91 - TanSlope * 0.25) + ([if SLAB 0 0.05] + 0.75 * TanSlope) * (arcStroke / Width)
+			define pArcRightY : 0.575 - 0.625 * (arcStroke / Width) - 0.25 * expansion * (arcStroke / HalfUPM)
 			define pArcTerminalX : 0.200 - 2.250 * (arcStroke / Width)
-			define pArcBottomX   : 0.150 + 0.000 * (arcStroke / Width)
-			define pArcBottomY   : 0.450 + 0.500 * (arcStroke / Width)
+			define pArcBottomX : 0.150 + 0.000 * (arcStroke / Width)
+			define pArcBottomY : 0.450 + 0.500 * (arcStroke / Width)
 
 			define arcRightSlope : 0.05 + 0.2 * (arcStroke / Width) + 0.5 * expansion * (arcStroke / HalfUPM)
 
-			define arcStartX    : kshLeft + [HSwToV : stroke - arcFine]
-			define arcStartY    : mix 0 top pArcStartY
+			define arcStartX : kshLeft + [HSwToV : stroke - arcFine]
+			define arcStartY : mix 0 top pArcStartY
 			define arcTerminalX : mix arcStartX kshRight pArcTerminalX
-			define arcBottomX   : mix arcStartX kshRight pArcBottomX
-			define arcBottomY   : mix 0 top pArcBottomY
+			define arcBottomX : mix arcStartX kshRight pArcBottomX
+			define arcBottomY : mix 0 top pArcBottomY
 			define arcTerminalY : arcBottomY - O + arcStroke * 0.125
-			define arcRightX    : kshRight * pArcRightX + [HSwToV : 0.2 * stroke]
-			define arcRightY    : mix arcBottomY top pArcRightY
+			define arcRightX : kshRight * pArcRightX + [HSwToV : 0.2 * stroke]
+			define arcRightY : mix arcBottomY top pArcRightY
 
 			return : object ox arcStartX arcStartY arcFine arcRightX arcRightY arcRightSlope arcStroke arcBottomX arcBottomY arcTerminalX arcTerminalY arcTerminalFine kshLeft kshRight pArcTopX
 
@@ -546,16 +546,16 @@ glyph-block Letter-Latin-K : begin
 			return : sink
 				g4.up.start (dim.arcStartX + offset) dim.arcStartY [widths.rhs.heading dim.arcFine Upward]
 				Arch.rhs (top - offset)
-					sw       -- dim.arcStroke
+					sw -- dim.arcStroke
 					swBefore -- dim.arcFine
-					swAfter  -- dim.arcStroke
-					p        -- dim.pArcTopX
+					swAfter -- dim.arcStroke
+					p -- dim.pArcTopX
 
 				g4.down.mid (dim.arcRightX - offset) (dim.arcRightY - [HSwToV : dim.arcRightSlope * 0.5 * dim.arcStroke])
 					heading {.y dim.arcRightSlope .x HVContrast}
 				arcvh
-				g4 dim.arcBottomX (dim.arcBottomY   - dim.arcStroke + offset) [widths.rhs.heading dim.arcTerminalFine Leftward]
-				g4 dim.arcStartX  (dim.arcTerminalY - dim.arcStroke + offset) [widths.rhs.heading dim.arcStroke       Leftward]
+				g4 dim.arcBottomX (dim.arcBottomY - dim.arcStroke + offset) [widths.rhs.heading dim.arcTerminalFine Leftward]
+				g4 dim.arcStartX (dim.arcTerminalY - dim.arcStroke + offset) [widths.rhs.heading dim.arcStroke Leftward]
 
 		export : define [Cursive fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			define dim : CursiveDimen left right top stroke slabLT slabLegs
@@ -563,7 +563,7 @@ glyph-block Letter-Latin-K : begin
 			define [BottomStrokeMask] : Rect XH 0 0 [if [HasRbSerif slabLegs] (dim.kshRight + SideJut - dim.ox + TanSlope * Stroke) VERY-FAR]
 
 			set-base-anchor 'overlay' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
 			set-base-anchor 'legOverlay' [mix dim.arcTerminalX dim.kshRight : StrokeWidthBlend 0.5 0.6] [mix dim.arcTerminalY 0 : StrokeWidthBlend 0.6 0.65]
 
 			define [BotSerifMask] : HalfRectTriangle (dim.kshRight - dim.ox - TINY) 0 (dim.arcTerminalX - TINY) dim.arcTerminalY
@@ -578,15 +578,15 @@ glyph-block Letter-Latin-K : begin
 						CursiveLoopT spiro-outline (-O) left right stroke top slabLT slabLegs
 				new-glyph : glyph-proc
 					include : KLegSlabs
-						mode         -- [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]]
-						top          -- top
-						left         -- left
-						right        -- right
-						swRef        -- stroke
+						mode -- [maskOffBits slabLegs [bitOr SLAB-TR-L SLAB-TR-R]]
+						top -- top
+						left -- left
+						right -- right
+						swRef -- stroke
 						fStraightBar -- true
-						attachment   -- attachment
-						maskRT	     -- no-shape
-						maskRB	     -- BotSerifMask
+						attachment -- attachment
+						maskRT	 -- no-shape
+						maskRB	 -- BotSerifMask
 
 		export : define [CursiveTailed fHookRight left right stroke top slabLT slabLegs attachment] : glyph-proc
 			define dim : CursiveDimen left right top stroke slabLT slabLegs
@@ -602,7 +602,7 @@ glyph-block Letter-Latin-K : begin
 			define dtInnerRadius : [clamp 0.125 1 : mix 1 (Width / HalfUPM) 3] * TightBendInnerRadius
 
 			set-base-anchor 'overlay' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
-			set-base-anchor 'strike'  [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
+			set-base-anchor 'strike' [mix left right 0.5] (dim.arcBottomY - dim.arcStroke + dim.arcTerminalFine / 2)
 			set-base-anchor 'legOverlay' [mix xDTStart xDTEnd : StrokeWidthBlend 0.65 0.75] [mix dim.arcTerminalY 0 : StrokeWidthBlend 0.6 0.65]
 			define innerX : xDTEnd + 0.5 * swDiagTailAdj
 			include : difference
@@ -618,39 +618,39 @@ glyph-block Letter-Latin-K : begin
 
 	define UpperKConfig : SuffixCfg.weave
 		object # body
-			straight              KLegs.Straight
-			curly                 KLegs.Curly
-			symmetricTouching    [KLegs.Symmetric 0]
-			symmetricConnected   [KLegs.Symmetric [AdviceStroke 6]]
-			inverseConnected     KLegs.InverseConnected
-			roundedConnected     KLegs.RoundedConnected
-			rounded              KLegs.Rounded
+			straight KLegs.Straight
+			curly KLegs.Curly
+			symmetricTouching [KLegs.Symmetric 0]
+			symmetricConnected [KLegs.Symmetric [AdviceStroke 6]]
+			inverseConnected KLegs.InverseConnected
+			roundedConnected KLegs.RoundedConnected
+			rounded KLegs.Rounded
 			symmetricConnectedKH [KLegs.Symmetric [AdviceStroke 6] Descender]
 			symmetricConnectedVB [KLegs.Symmetric CyrlVbGap]
 		function [body] : object # serifs
-			serifless                                     {0  0  0                                                          }
-			topLeftSerifed                                {2  0  SLAB-TL                                                    }
-			bottomRightSerifed                            {0  0  SLAB-BR                                                    }
-			topLeftAndBottomRightSerifed                  {2  0  [bitOr SLAB-TL SLAB-BR]                                    }
-			topRightInnerSerifed                          {0  0  SLAB-TR-L                                                  }
-			topLeftAndTopRightInnerSerifed                {2  0  [bitOr SLAB-TL SLAB-TR-L]                                  }
-			topRightSerifed                               {0  0  SLAB-TR-R                                                  }
-			topLeftAndTopRightSerifed                     {2  0  [bitOr SLAB-TL SLAB-TR-R]                                  }
-			topRightMiddleSerifed                         {0  0  [bitOr SLAB-TR-L SLAB-TR-R]                                }
-			topLeftAndTopRightMiddleSerifed               {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]                }
-			topRightInnerAndBottomRightSerifed            {0  0  [bitOr SLAB-TR-L SLAB-BR]                                  }
-			topLeftAndTopRightInnerAndBottomRightSerifed  {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]                  }
-			topRightAndBottomRightSerifed                 {0  0  [bitOr SLAB-TR-R SLAB-BR]                                  }
-			triSerifed                                    {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
-			topRightMiddleAndBottomRightSerifed           {0  0  [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]                }
-			topLeftAndTopRightMiddleAndBottomRightSerifed {2  0  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
-			serifedKappa                                  {2  1  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
+			serifless {0 0 0 }
+			topLeftSerifed {2 0 SLAB-TL }
+			bottomRightSerifed {0 0 SLAB-BR }
+			topLeftAndBottomRightSerifed {2 0 [bitOr SLAB-TL SLAB-BR] }
+			topRightInnerSerifed {0 0 SLAB-TR-L }
+			topLeftAndTopRightInnerSerifed {2 0 [bitOr SLAB-TL SLAB-TR-L] }
+			topRightSerifed {0 0 SLAB-TR-R }
+			topLeftAndTopRightSerifed {2 0 [bitOr SLAB-TL SLAB-TR-R] }
+			topRightMiddleSerifed {0 0 [bitOr SLAB-TR-L SLAB-TR-R] }
+			topLeftAndTopRightMiddleSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+			topRightInnerAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L SLAB-BR] }
+			topLeftAndTopRightInnerAndBottomRightSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]] }
+			topRightAndBottomRightSerifed {0 0 [bitOr SLAB-TR-R SLAB-BR] }
+			triSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			topRightMiddleAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]] }
+			topLeftAndTopRightMiddleAndBottomRightSerifed {2 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+			serifedKappa {2 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
 			serifed : match body
-				[Just 'symmetricConnectedKH'] {1  1  [bitOr SLAB-TL SLAB-TR-R]                }
-				__                            {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]}
+				[Just 'symmetricConnectedKH'] {1 1 [bitOr SLAB-TL SLAB-TR-R] }
+				__ {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]}
 			fullSerifed : match body
-				[Just 'symmetricConnectedKH'] {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]                }
-				__                            {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+				[Just 'symmetricConnectedKH'] {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+				__ {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
 
 	define [UpperKLTSerif top swRef xBarLeft slabType _swSerif] : begin
 		local swSerif : fallback _swSerif swRef
@@ -717,13 +717,13 @@ glyph-block Letter-Latin-K : begin
 		include : PointingTo 0 0 shapeDepth shapeDepth : function [mag] : union
 			dispiro
 				widths.lhs (Stroke * kSw)
-				flat 0   0
+				flat 0 0
 				curl mag 0
 			if SLAB
 				dispiro
 					widths.center (Stroke / kSw)
 					flat 0 (Stroke * kSw + SideJut)
-					curl 0 (0            - SideJut)
+					curl 0 (0 - SideJut)
 				no-shape
 
 	# Main building
@@ -749,9 +749,9 @@ glyph-block Letter-Latin-K : begin
 		create-glyph "KStroke.\(suffix)" : glyph-proc
 			include [refer-glyph "K.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
-				x     -- (SB + [KBalance slabLT fStraightBar])
-				bot   -- XH
-				top   -- (CAP - [if slabLT Stroke 0])
+				x -- (SB + [KBalance slabLT fStraightBar])
+				bot -- XH
+				top -- (CAP - [if slabLT Stroke 0])
 				space -- {0 [mix SB RightSB 0.75]}
 
 		create-glyph "KBar.\(suffix)" : glyph-proc
@@ -819,34 +819,34 @@ glyph-block Letter-Latin-K : begin
 
 	define LowerKConfig : SuffixCfg.weave
 		object # body
-			straight             KLegs.Straight
-			curly                KLegs.Curly
-			cursive              KLegs.Cursive
-			cursiveTailed        KLegs.CursiveTailed
-			symmetricTouching   [KLegs.Symmetric 0]
-			symmetricConnected  [KLegs.Symmetric [AdviceStroke 6]]
-			inverseConnected    KLegs.InverseConnected
-			roundedConnected    KLegs.RoundedConnected
-			rounded             KLegs.Rounded
+			straight KLegs.Straight
+			curly KLegs.Curly
+			cursive KLegs.Cursive
+			cursiveTailed KLegs.CursiveTailed
+			symmetricTouching [KLegs.Symmetric 0]
+			symmetricConnected [KLegs.Symmetric [AdviceStroke 6]]
+			inverseConnected KLegs.InverseConnected
+			roundedConnected KLegs.RoundedConnected
+			rounded KLegs.Rounded
 		object # serifs
-			serifless                                     {0  0  0                                                          }
-			topLeftSerifed                                {1  0  SLAB-TL                                                    }
-			bottomRightSerifed                            {0  0  SLAB-BR                                                    }
-			topLeftAndBottomRightSerifed                  {1  0  [bitOr SLAB-TL SLAB-BR]                                    }
-			topRightInnerSerifed                          {0  0  SLAB-TR-L                                                  }
-			topLeftAndTopRightInnerSerifed                {1  0  [bitOr SLAB-TL SLAB-TR-L]                                  }
-			topRightSerifed                               {0  0  SLAB-TR-R                                                  }
-			topLeftAndTopRightSerifed                     {1  0  [bitOr SLAB-TL SLAB-TR-R]                                  }
-			topRightMiddleSerifed                         {0  0  [bitOr SLAB-TR-L SLAB-TR-R]                                }
-			topLeftAndTopRightMiddleSerifed               {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]]                }
-			topRightInnerAndBottomRightSerifed            {0  0  [bitOr SLAB-TR-L SLAB-BR]                                  }
-			topLeftAndTopRightInnerAndBottomRightSerifed  {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]]                  }
-			topRightAndBottomRightSerifed                 {0  0  [bitOr SLAB-TR-R SLAB-BR]                                  }
-			triSerifed                                    {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
-			topRightMiddleAndBottomRightSerifed           {0  0  [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]                }
-			topLeftAndTopRightMiddleAndBottomRightSerifed {1  0  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
-			serifed                                       {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]]                  }
-			fullSerifed                                   {1  1  [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+			serifless {0 0 0 }
+			topLeftSerifed {1 0 SLAB-TL }
+			bottomRightSerifed {0 0 SLAB-BR }
+			topLeftAndBottomRightSerifed {1 0 [bitOr SLAB-TL SLAB-BR] }
+			topRightInnerSerifed {0 0 SLAB-TR-L }
+			topLeftAndTopRightInnerSerifed {1 0 [bitOr SLAB-TL SLAB-TR-L] }
+			topRightSerifed {0 0 SLAB-TR-R }
+			topLeftAndTopRightSerifed {1 0 [bitOr SLAB-TL SLAB-TR-R] }
+			topRightMiddleSerifed {0 0 [bitOr SLAB-TR-L SLAB-TR-R] }
+			topLeftAndTopRightMiddleSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-TR-R]] }
+			topRightInnerAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L SLAB-BR] }
+			topLeftAndTopRightInnerAndBottomRightSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L SLAB-BR]] }
+			topRightAndBottomRightSerifed {0 0 [bitOr SLAB-TR-R SLAB-BR] }
+			triSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			topRightMiddleAndBottomRightSerifed {0 0 [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]] }
+			topLeftAndTopRightMiddleAndBottomRightSerifed {1 0 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
+			serifed {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-R SLAB-BR]] }
+			fullSerifed {1 1 [bitOr SLAB-TL [bitOr SLAB-TR-L [bitOr SLAB-TR-R SLAB-BR]]]}
 
 	foreach {suffix {LegsImpl {slabLT slabLB slabLegs}}} [pairs-of LowerKConfig] : do
 		define fStraightBar : LegsImpl !== KLegs.Curly
@@ -877,9 +877,9 @@ glyph-block Letter-Latin-K : begin
 		create-glyph "kStroke.\(suffix)" : glyph-proc
 			include [refer-glyph "k.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.l.in
-				x     -- (SB + [KBalance slabLT fStraightBar])
-				bot   -- XH
-				top   -- (Ascender - [if slabLT Stroke 0])
+				x -- (SB + [KBalance slabLT fStraightBar])
+				bot -- XH
+				top -- (Ascender - [if slabLT Stroke 0])
 
 		create-glyph "kBar.\(suffix)" : glyph-proc
 			include [refer-glyph "k.\(suffix)"] AS_BASE ALSO_METRICS
@@ -889,7 +889,7 @@ glyph-block Letter-Latin-K : begin
 			include : MarkSet.b
 			local xBarLeft : SB + [KBalance slabLT fStraightBar]
 			include : TopHook.toRight.lBarInner
-				x    -- xBarLeft
+				x -- xBarLeft
 				yBot -- 0
 				yTop -- Ascender
 			include : LegsImpl false SB RightSB Stroke XH slabLT slabLegs
@@ -964,7 +964,7 @@ glyph-block Letter-Latin-K : begin
 	derive-composites 'cyrl/KaAleut' 0x51E 'cyrl/Ka' 'aleutSlashOver'
 	derive-composites 'cyrl/kaAleut' 0x51F 'cyrl/ka' 'aleutSlashOver'
 
-	CreateTurnedLetter 'turnK'     0xA7B0  'K'     HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'turnK' 0xA7B0 'K' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'smcpTurnK' 0x1DF10 'smcpK' HalfAdvance (XH / 2)
 
 	select-variant 'turnk' 0x29E (follow -- 'k')

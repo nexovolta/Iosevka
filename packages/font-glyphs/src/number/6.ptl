@@ -126,7 +126,7 @@ glyph-block Digits-Six : begin
 				curl SB [mix oTop charTop 0.15] [heading Upward]
 				quadControls 0 0.85
 				g4 ([mix SB RightSB 0.85] - [HSwToV QuarterStroke]) (charTop - O)
-		if [not flatBowl] : include : dispiro
+		if (!flatBowl) : include : dispiro
 			widths.rhs (ShoulderFine - TINY)
 			g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
 			Arch.rhs oTop (swBefore -- (ShoulderFine - TINY))
@@ -142,7 +142,7 @@ glyph-block Digits-Six : begin
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop
 			SixClosedStemFromBowl top oTop (vertical -- vertical) (inward -- inward) (cut -- cut)
-		if [not flatBowl] : begin
+		if (!flatBowl) : begin
 			local shape : dispiro
 				widths.rhs ShoulderFine
 				g4 (SB + OX + [HSwToV (Stroke - ShoulderFine)]) arches.yMiddleA
@@ -157,15 +157,15 @@ glyph-block Digits-Six : begin
 						curl (SB + OX) (top - SmallArchDepthA)
 						SixHookTerminal top inward cut
 			include : if (cut === 1) [CutArcTerminal shape (RightSB - OX) top (2 * [Math.max (oTop + TINY) (top - Hook - Stroke)] - top) Stroke false true] shape
-		if (inward && [not flatBowl]) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
+		if (inward && (!flatBowl)) : include : ArcStartSerif.InwardR (RightSB - OX) top Stroke Hook
 
 	define [SixStraightBarParallelogram xBotL yBot xTopL yTop sw] : begin
 		local swH : HSwToV sw
 		return : spiro-outline
-			corner xBotL         yBot
+			corner xBotL yBot
 			corner (xBotL + swH) yBot
 			corner (xTopL + swH) yTop
-			corner xTopL         yTop
+			corner xTopL yTop
 
 	glyph-block-export StraightBarSixShape
 	define [StraightBarSixShape] : with-params [charTop [sw Stroke] [bbd 0] [xTerminalMix 0.6] [flatBowl false] [oTop [SixBowlOTop charTop]]] : glyph-proc
@@ -173,7 +173,7 @@ glyph-block Digits-Six : begin
 		local ymiddlea arches.yMiddleA
 		local ymiddleb arches.yMiddleB
 
-		local xMockBarStart   0
+		local xMockBarStart 0
 		local yMockBarStart : ymiddlea + sw * 0.3
 		local xVertical : SB + bbd + OX
 		local xDiagonal : [mix SB RightSB 0.6] - [HSwToV : 0.5 * sw]
@@ -184,7 +184,7 @@ glyph-block Digits-Six : begin
 		if flatBowl : include : union
 			SixFlatBowlOBar oTop (left -- (SB + bbd)) (right -- RightSB) (sw -- sw)
 			SixStraightBarParallelogram (SB + bbd) oTop xTerminal charTop sw
-		if [not flatBowl] : include : intersection
+		if (!flatBowl) : include : intersection
 			Rect charTop (-charTop) (-Width) (2 * Width)
 			dispiro
 				widths.rhs (ShoulderFine - TINY)
@@ -194,7 +194,7 @@ glyph-block Digits-Six : begin
 				Arch.rhs 0 (sw -- sw)
 				g4.up.mid (SB + bbd + OX) ymiddlea
 				flat [mix (xMockBarStart + bbd) xTerminal pStraightBarStart] [mix yMockBarStart charTop pStraightBarStart] [widths.rhs sw]
-				curl [mix (xMockBarStart + bbd) xTerminal 2]                 [mix yMockBarStart charTop 2]
+				curl [mix (xMockBarStart + bbd) xTerminal 2] [mix yMockBarStart charTop 2]
 
 		if bbd : include : HBar.t (xTerminal - kDiagBbd * bbd) xTerminal charTop sw
 		if bbd : include : intersection
@@ -204,7 +204,7 @@ glyph-block Digits-Six : begin
 				archv
 				g4.up.mid (SB + OX) ymiddlea
 				flat [mix xMockBarStart (xTerminal - kDiagBbd * bbd) pStraightBarStart] [mix yMockBarStart charTop pStraightBarStart]
-				curl [mix xMockBarStart (xTerminal - kDiagBbd * bbd) 2]                 [mix yMockBarStart charTop 2]
+				curl [mix xMockBarStart (xTerminal - kDiagBbd * bbd) 2] [mix yMockBarStart charTop 2]
 
 	define [SixBodyClosed fFlatBowl _top _oTop] : glyph-proc
 		local top : fallback _top CAP
@@ -221,7 +221,7 @@ glyph-block Digits-Six : begin
 		if fFlatBowl : include : union
 			SixFlatBowlOBar oTop
 			SixFlatHookFromBowl top oTop (xStem -- SB) (fCorner -- fCorner)
-		if [not fFlatBowl] : include : union
+		if (!fFlatBowl) : include : union
 			SixRoundBowl oTop
 			SixFlatHookFromBowl top oTop (fCorner -- fCorner)
 	define [SixBodyClosedFlatHook fFlatBowl _top _oTop] : SixBodyClosedHooked fFlatBowl false _top _oTop
@@ -250,20 +250,20 @@ glyph-block Digits-Six : begin
 	glyph-block-export SixConfig
 	define SixConfig : SuffixCfg.weave
 		object # body
-			closedContour      SixBodyClosed
-			openContour        SixBodyOpen
-			straightBar        SixBodyStraightBar
-			closedFlatHook     SixBodyClosedFlatHook
-			closedCornerHook   SixBodyClosedCornerHook
-			closedVerticalCut  SixBodyClosedVerticalCut
-			closedDiagonalCut  SixBodyClosedDiagonalCut
+			closedContour SixBodyClosed
+			openContour SixBodyOpen
+			straightBar SixBodyStraightBar
+			closedFlatHook SixBodyClosedFlatHook
+			closedCornerHook SixBodyClosedCornerHook
+			closedVerticalCut SixBodyClosedVerticalCut
+			closedDiagonalCut SixBodyClosedDiagonalCut
 			closedInwardSerifed SixBodyClosedInwardSerifed
-			closedSerifedHook  SixBodyClosedSerifedHook
-			steepBar           SixBodySteepBar
-			verticalBar        SixBodyVerticalBar
+			closedSerifedHook SixBodyClosedSerifedHook
+			steepBar SixBodySteepBar
+			verticalBar SixBodyVerticalBar
 		object # bowl
-			''        false
-			flatBowl  true
+			'' false
+			flatBowl true
 
 	foreach {suffix {Body fFlatBowl}} [Object.entries SixConfig] : do
 		create-glyph "six.lnum.\(suffix)" : glyph-proc
@@ -271,7 +271,7 @@ glyph-block Digits-Six : begin
 			include : Body fFlatBowl
 
 	select-variant 'six.lnum' [CodeLnum '6'] (follow -- 'six')
-	alias          'six.onum' [CodeOnum '6'] 'six.lnum'
+	alias 'six.onum' [CodeOnum '6'] 'six.lnum'
 
 	derive-glyphs 'revSix.lnum' [CodeLnum 0x218E] 'six.lnum' : lambda [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS

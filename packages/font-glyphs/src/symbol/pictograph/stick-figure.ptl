@@ -23,7 +23,7 @@ glyph-block Symbol-Pictograph-Stick-Figure : begin
 		set currentGlyph.gizmo : Transform.Id
 		include : shapeFunc
 		include : D4Transform midx rot refl
-		include   giz
+		include giz
 
 	glyph-block-export StickFigureKit
 	define [StickFigureKit box tfm sw] : namespace
@@ -64,8 +64,8 @@ glyph-block Symbol-Pictograph-Stick-Figure : begin
 				local c : [Math.cos theta] ** (2 / DesignParameters.superness)
 				local s : [Math.sin theta] ** (2 / DesignParameters.superness)
 
-				local mx : mix box.left   box.right [mix h1 h2 : if mode (1 - c) s      ]
-				local my : mix box.bottom box.top   [mix v1 v2 : if mode s       (1 - c)]
+				local mx : mix box.left box.right [mix h1 h2 : if mode (1 - c) s ]
+				local my : mix box.bottom box.top [mix v1 v2 : if mode s (1 - c)]
 				local zm : tfm.applyXY mx my
 
 				innerKnots.push : g4 zm.x zm.y unimportant
@@ -114,8 +114,8 @@ glyph-block Symbol-Pictograph-Stick-Figure : begin
 				local c : [Math.cos theta] ** (2 / DesignParameters.superness)
 				local s : [Math.sin theta] ** (2 / DesignParameters.superness)
 
-				local mx : mix box.left   box.right (ho + s * dh1 + c * dh2)
-				local my : mix box.bottom box.top   (vo + s * dv1 + c * dv2)
+				local mx : mix box.left box.right (ho + s * dh1 + c * dh2)
+				local my : mix box.bottom box.top (vo + s * dv1 + c * dv2)
 				local zm : tfm.applyXY mx my
 
 				innerKnots.push : g4 zm.x zm.y [if (fFlat && (j == [Math.floor : nKnots / 2])) nothing unimportant]
@@ -158,24 +158,24 @@ glyph-block Symbol-Pictograph-Stick-Figure : begin
 			Kit.RoundSeg (3 / 24) (7 / 8) (0 / 24) (8 / 8)
 			Kit.RoundSeg (3 / 24) (1 / 8) (0 / 24) (0 / 8)
 			Kit.RoundSeg (3 / 24) (7 / 8) (3 / 24) (1 / 8)
-			Kit.ArcVH    (3 / 24) (7 / 8) (6 / 24) (8 / 8)
-			Kit.ArcVH    (3 / 24) (1 / 8) (6 / 24) (0 / 8)
+			Kit.ArcVH (3 / 24) (7 / 8) (6 / 24) (8 / 8)
+			Kit.ArcVH (3 / 24) (1 / 8) (6 / 24) (0 / 8)
 			Kit.RoundSeg (6 / 24) (8 / 8) (22 / 24) (8 / 8)
-			Kit.ArcHV    (22 / 24) (8 / 8) (24 / 24) (7 / 8)
-			Kit.ArcVH    (24 / 24) (7 / 8) (22 / 24) (6 / 8)
+			Kit.ArcHV (22 / 24) (8 / 8) (24 / 24) (7 / 8)
+			Kit.ArcVH (24 / 24) (7 / 8) (22 / 24) (6 / 8)
 			Kit.RoundSeg (14 / 24) (6 / 8) (22 / 24) (6 / 8)
-			Kit.ArcHV    (11 / 24) (8 / 8) (14 / 24) (6 / 8)
-			Kit.ArcVH    (14 / 24) (6 / 8) (12 / 24) (5 / 8)
+			Kit.ArcHV (11 / 24) (8 / 8) (14 / 24) (6 / 8)
+			Kit.ArcVH (14 / 24) (6 / 8) (12 / 24) (5 / 8)
 			Kit.RoundSeg (9 / 24) (5 / 8) (12 / 24) (5 / 8) 1 0
-			Kit.ArcVH    (9 / 24) (5 / 8) (3 / 24) (2 / 8)
-			Kit.ArcHV    (15 / 24) (6 / 8) (17 / 24) (5 / 8)
-			Kit.ArcVH    (17 / 24) (5 / 8) (15 / 24) (4 / 8)
+			Kit.ArcVH (9 / 24) (5 / 8) (3 / 24) (2 / 8)
+			Kit.ArcHV (15 / 24) (6 / 8) (17 / 24) (5 / 8)
+			Kit.ArcVH (17 / 24) (5 / 8) (15 / 24) (4 / 8)
 			Kit.RoundSeg (11 / 24) (4 / 8) (15 / 24) (4 / 8) 1 0
-			Kit.ArcHV    (14 / 24) (4 / 8) (16 / 24) (3 / 8)
-			Kit.ArcVH    (16 / 24) (3 / 8) (14 / 24) (2 / 8)
+			Kit.ArcHV (14 / 24) (4 / 8) (16 / 24) (3 / 8)
+			Kit.ArcVH (16 / 24) (3 / 8) (14 / 24) (2 / 8)
 			Kit.RoundSeg (8 / 24) (2 / 8) (14 / 24) (2 / 8) 1 0
-			Kit.ArcHV    (13 / 24) (2 / 8) (15 / 24) (1 / 8)
-			Kit.ArcVH    (15 / 24) (1 / 8) (13 / 24) (0 / 8)
+			Kit.ArcHV (13 / 24) (2 / 8) (15 / 24) (1 / 8)
+			Kit.ArcVH (15 / 24) (1 / 8) (13 / 24) (0 / 8)
 			Kit.RoundSeg (6 / 24) (0 / 8) (13 / 24) (0 / 8)
 
 	for-width-kinds WideWidth1

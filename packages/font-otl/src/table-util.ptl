@@ -7,10 +7,10 @@ export : define [CreateEmptyTable] : new LayoutTable
 
 class LayoutTable
 	public [new] : begin
-		set this.languages   {.}
-		set this.features    {.}
-		set this.lookups     {.}
-		set this.lookupDep   {}
+		set this.languages {.}
+		set this.features {.}
+		set this.lookups {.}
+		set this.lookupDep {}
 		set this.lookupOrder {}
 
 	public [pickLanguage tag] : begin
@@ -29,7 +29,7 @@ class LayoutTable
 		local feature : new LayoutFeature tag
 		local n 0
 		while true : begin
-			if [not this.features.(tag + '_' + n)] : begin
+			if (!this.features.(tag + '_' + n)) : begin
 				set feature.name : tag + '_' + n
 				set this.features.(tag + '_' + n) feature
 				return feature
@@ -52,7 +52,7 @@ class LayoutTable
 		local prefix : _prefix || 'lookup/'
 		local n 0
 		while true : begin
-			if [not this.lookups.(prefix + n)] : begin
+			if (!this.lookups.(prefix + n)) : begin
 				return : this.addLookupNoCheck (prefix + n) data
 			set n : n + 1
 
@@ -67,8 +67,8 @@ class LayoutTable
 		return lookup
 
 	public [setDependency a b] : begin
-		if [not a.name] : throw : new Error 'Invalid lookup'
-		if [not b.name] : throw : new Error 'Invalid lookup'
+		if (!a.name) : throw : new Error 'Invalid lookup'
+		if (!b.name) : throw : new Error 'Invalid lookup'
 
 		this.lookupDep.push {a.name b.name}
 
@@ -107,11 +107,11 @@ class LayoutTable
 			return : table.createLookup {.type 'gsub_single' .substitutions subst} UtilityLookupPrefix
 
 		define [getSubLookup left right] : piecewise
-			[not right] null
+			(!right) null
 			([typeof right] === 'string') : throw : new Error 'Invalid substitution'
 			(right <@ Function) : getSubLookup left [right left]
 			true : begin
-				local found    null
+				local found null
 				local maxMatch 0
 
 				local lookupKeys : [Object.keys table.lookups].reverse
@@ -126,7 +126,7 @@ class LayoutTable
 						if (st.(left.(j)) === right.(j)) : inc matchCount
 
 					if (compatible && (!found || matchCount > maxMatch)) : begin
-						set found    lookup
+						set found lookup
 						set maxMatch matchCount
 
 				if found : begin
@@ -170,7 +170,7 @@ class LayoutTable
 					set rule.inputIndex j
 					local toGlyphs : piecewise
 						(term.right <@ Function) [term.right term.left]
-						true                     term.right
+						true term.right
 					foreach [k : range 0 term.left.length]
 						subst.set term.left.(k) (toGlyphs.(k) || term.left.(k))
 
@@ -184,23 +184,23 @@ class LayoutTable
 
 class LayoutFeature
 	public [new tag] : begin
-		set this.tag     tag
-		set this.name    tag
+		set this.tag tag
+		set this.name tag
 		set this.lookups {}
 
 	public [addLookup lookup] : begin
-		if [not lookup.name] : throw : new Error 'Invalid lookup'
+		if (!lookup.name) : throw : new Error 'Invalid lookup'
 		define index : this.lookups.indexOf lookup.name
 		if (index < 0) : this.lookups.push lookup.name
 		return lookup
 
 class LayoutLanguage
 	public [new tag] : begin
-		set this.tag       tag
-		set this.features  {}
+		set this.tag tag
+		set this.features {}
 
 	public [addFeature feature] : begin
-		if [not feature.name] : throw : new Error 'Invalid feature'
+		if (!feature.name) : throw : new Error 'Invalid feature'
 		define index : this.features.indexOf feature.name
 		if (index < 0) : this.features.push feature.name
 		return feature

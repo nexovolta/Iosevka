@@ -26,12 +26,12 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 			match mode
 				[Just 'P'] : list
 					flat (@xLB = body.left) [mix @yT @yB 0.375]
-					virt  @xLB              (@yB = body.bot)
-					curl  @xLB               Descender
+					virt @xLB (@yB = body.bot)
+					curl @xLB Descender
 				_ : list
-					straight.down.mid   @xLB                    [mix @yT @yLC 0.375]
-					corner  @xL                                 (@yLC = [slY @xE @yE @xL SlopeB])
-					virt   (@xE = [body.xp : pRight * PHexBot]) (@yE = body.bot)
+					straight.down.mid @xLB [mix @yT @yLC 0.375]
+					corner @xL (@yLC = [slY @xE @yE @xL SlopeB])
+					virt (@xE = [body.xp : pRight * PHexBot]) (@yE = body.bot)
 
 	create-glyph 'frak/B' 0x1D505 : glyph-proc
 		local df : include : UpperDf 1
@@ -52,7 +52,7 @@ glyph-block LetterLike-Fraktur-Upper-BVW : begin
 				corner (@xT = [body.xp PHexTop]) (@yT = body.top)
 				~~~ [g2.down.mid body.right [body.yp 0.775]]
 				corner (@xM = [body.xp 0.625]) (@yM = [body.yp 0.55])
-				corner  @xL [slY @xM @yM @xL : 0.5 * SlopeA]
+				corner @xL [slY @xM @yM @xL : 0.5 * SlopeA]
 
 	create-glyph 'frak/P' 0x1D513 : glyph-proc
 		local df : include : UpperDf 1

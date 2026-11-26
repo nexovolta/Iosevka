@@ -16,28 +16,28 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 
 	define [UpperHalfMask] : Rect (Geom.MidY + Geom.Size * 2) Geom.MidY 0 Geom.Width
 	define [LowerHalfMask] : Rect Geom.MidY (Geom.MidY - Geom.Size * 2) 0 Geom.Width
-	define [LeftHalfMask]  : Rect (Geom.MidY + Geom.Size * 2) (Geom.MidY - Geom.Size * 2) 0 Geom.MidX
+	define [LeftHalfMask] : Rect (Geom.MidY + Geom.Size * 2) (Geom.MidY - Geom.Size * 2) 0 Geom.MidX
 	define [RightHalfMask] : Rect (Geom.MidY + Geom.Size * 2) (Geom.MidY - Geom.Size * 2) Geom.MidX Geom.Width
-	define [UpperLeftQuarterMark]  : intersection [UpperHalfMask] [LeftHalfMask]
+	define [UpperLeftQuarterMark] : intersection [UpperHalfMask] [LeftHalfMask]
 	define [UpperRightQuarterMark] : intersection [UpperHalfMask] [RightHalfMask]
-	define [LowerLeftQuarterMark]  : intersection [LowerHalfMask] [LeftHalfMask]
+	define [LowerLeftQuarterMark] : intersection [LowerHalfMask] [LeftHalfMask]
 	define [LowerRightQuarterMark] : intersection [LowerHalfMask] [RightHalfMask]
-	define [UpperLeftHalfMark]  : spiro-outline
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+	define [UpperLeftHalfMark] : spiro-outline
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
 	define [LowerRightHalfMark] : spiro-outline
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
-	define [UpperRightHalfMark]  : spiro-outline
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+	define [UpperRightHalfMark] : spiro-outline
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
 	define [LowerLeftHalfMark] : spiro-outline
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
-		corner  (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
-		corner  (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
+		corner (Geom.MidX - Geom.Size * 2) (Geom.MidY + Geom.Size * 2)
+		corner (Geom.MidX + Geom.Size * 2) (Geom.MidY - Geom.Size * 2)
 
 	do 'Partial circles'
 		define partialCircleQuarters : list
@@ -66,12 +66,12 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 							if RB : include : LowerRightQuarterMark
 
 		define arcQuarters : list
-			list 0x25DC  1 0 0 0
-			list 0x25DD  0 0 1 0
-			list 0x25DE  0 0 0 1
-			list 0x25DF  0 1 0 0
-			list 0x25E0  1 0 1 0
-			list 0x25E1  0 1 0 1
+			list 0x25DC 1 0 0 0
+			list 0x25DD 0 0 1 0
+			list 0x25DE 0 0 0 1
+			list 0x25DF 0 1 0 0
+			list 0x25E0 1 0 1 0
+			list 0x25E1 0 1 0 1
 			list 0x1F907 1 1 0 0
 		foreach [{u LT LB RT RB} : items-of arcQuarters] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
@@ -88,12 +88,12 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			Geom.MidX + [Math.cos ((0.5 - pAngle * 2) * Math.PI)] * Geom.Width * 4
 			Geom.MidY + [Math.sin ((0.5 - pAngle * 2) * Math.PI)] * Geom.Width * 4
 		define progressCircleSections : list
-			list 0xEE06 (-1 / 12)         (1 / 12)
-			list 0xEE07  0                (1 / 3)
-			list 0xEE08 (1 / 6)           (1 / 2 + 1 / 24)
-			list 0xEE09 (1 / 4)           (3 / 4)
-			list 0xEE0A (1 / 2 - 1 / 24)  (5 / 6)
-			list 0xEE0B (2 / 3)            1
+			list 0xEE06 (-1 / 12) (1 / 12)
+			list 0xEE07 0 (1 / 3)
+			list 0xEE08 (1 / 6) (1 / 2 + 1 / 24)
+			list 0xEE09 (1 / 4) (3 / 4)
+			list 0xEE0A (1 / 2 - 1 / 24) (5 / 6)
+			list 0xEE0B (2 / 3) 1
 		foreach [{u pAngleStart pAngleEnd} : items-of progressCircleSections] : begin
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				set-width Geom.Width
@@ -198,7 +198,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				set-width Geom.Width
 				if bord : include [refer-glyph : MangleName 'whiteStar']
-				if lh : include : intersection [LeftHalfMask]  [refer-glyph : MangleName 'blackStar']
+				if lh : include : intersection [LeftHalfMask] [refer-glyph : MangleName 'blackStar']
 				if rh : include : intersection [RightHalfMask] [refer-glyph : MangleName 'blackStar']
 
 	do 'Quarter-line square and circle'
@@ -219,7 +219,7 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			create-glyph [MangleName : NameUni u] [MangleUnicode u] : glyph-proc
 				local hh : HSwToV : 0.5 * GeometryStroke
 				local hv : GeometryStroke / 2
-				local s    GeometryStroke
+				local s GeometryStroke
 				set-width Geom.Width
 				include : union
 					refer-glyph [MangleName frame]
@@ -254,10 +254,10 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 					curl (Geom.MidX - Geom.Size) (Geom.MidY + Geom.Size)
 
 	do 'Moon Phases'
-		alias [MangleName 'newMoon']          [MangleUnicode 0x1F311] [MangleName 'blackCircle']
+		alias [MangleName 'newMoon'] [MangleUnicode 0x1F311] [MangleName 'blackCircle']
 		alias [MangleName 'firstQuarterMoon'] [MangleUnicode 0x1F313] [MangleName : NameUni 0x25D0]
-		alias [MangleName 'fullMoon']         [MangleUnicode 0x1F315] [MangleName 'whiteCircle']
-		alias [MangleName 'lastQuarterMoon']  [MangleUnicode 0x1F317] [MangleName : NameUni 0x25D1]
+		alias [MangleName 'fullMoon'] [MangleUnicode 0x1F315] [MangleName 'whiteCircle']
+		alias [MangleName 'lastQuarterMoon'] [MangleUnicode 0x1F317] [MangleName : NameUni 0x25D1]
 
 		define [WaxingMoonMask] : union
 			MaskLeft Geom.MidX
@@ -323,16 +323,16 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 			set-width Geom.Width
 			include : with-transform [ApparentTranslate 0 yOffset] : intersection
 				spiro-outline
-					corner Geom.MidX  Geom.MidY
+					corner Geom.MidX Geom.MidY
 					corner Geom.Right Geom.Top
-					corner Geom.Left  Geom.Top
+					corner Geom.Left Geom.Top
 				union
 					refer-glyph [MangleName 'whiteCircle']
 					intersection
 						refer-glyph [MangleName 'blackCircle']
 						union
 							dispiro [widths.lhs GeometryStroke] [corner Geom.MidX Geom.MidY] [corner Geom.Right Geom.Top]
-							dispiro [widths.rhs GeometryStroke] [corner Geom.MidX Geom.MidY] [corner Geom.Left  Geom.Top]
+							dispiro [widths.rhs GeometryStroke] [corner Geom.MidX Geom.MidY] [corner Geom.Left Geom.Top]
 
 	do 'Miscellaneous'
 		glyph-block-import Symbol-Arrow-Shared : TrigArrowShape
@@ -369,9 +369,9 @@ glyph-block Symbol-Geometric-Masked : for-width-kinds WideWidth1
 		create-glyph [MangleName 'cylindricity'] [MangleUnicode 0x232D] : glyph-proc
 			set-width Geom.Width
 			local radius : Geom.Size * Size.Medium.size
-			local x1   Geom.Left
+			local x1 Geom.Left
 			local y1 : Geom.Bot + 0.15 * GeometryStroke
-			local y2   Geom.Top
+			local y2 Geom.Top
 			local dist : Math.hypot (Geom.MidX - x1) (Geom.MidY - y1)
 			local tan1 : radius / [Math.sqrt : dist ** 2 - radius ** 2]
 			local tan2 : (Geom.MidY - y1) / (Geom.MidX - x1)

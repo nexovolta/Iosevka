@@ -15,9 +15,9 @@ glyph-block Letter-Cyrillic-Dche : begin
 	foreach {suffix {bodyType fLegs serifType}} [Object.entries DeConfig] : do
 		local deSerifs : if (bodyType === BODY-CURSIVE) SERIF-NONE serifType
 		local cheSlabs : match deSerifs
-			[Just SERIF-ALL]    SERIFS.TOP
+			[Just SERIF-ALL] SERIFS.TOP
 			[Just SERIF-MOTION] SERIFS.TL
-			__                  SERIFS.NONE
+			__ SERIFS.NONE
 
 		create-glyph "cyrl/Dche.\(suffix)" : glyph-proc
 			include : MarkSet.capital

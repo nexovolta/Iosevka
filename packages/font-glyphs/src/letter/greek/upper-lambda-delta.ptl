@@ -15,22 +15,22 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 	glyph-block-import Letter-Latin-V : VShapeOutline VShape VHookRightShape VHookLeftShape
 	glyph-block-import Letter-Latin-V : VSquareTopShape VSquareTopOutline
 
-	define SLAB-NONE       0
-	define SLAB-TOP        1
-	define SLAB-LEFT       2
-	define SLAB-RIGHT      4
+	define SLAB-NONE 0
+	define SLAB-TOP 1
+	define SLAB-LEFT 2
+	define SLAB-RIGHT 4
 	define SLAB-SMALL-CYRL 8
 
 	define LambdaConfig : SuffixCfg.weave
 		object
-			straight     {true   false}
-			curly        {false  false}
-			squareBottom {true   true }
+			straight {true false}
+			curly {false false}
+			squareBottom {true true }
 		object
-			serifless    SLAB-NONE
-			topSerifed   SLAB-TOP
-			baseSerifed  [bitOr SLAB-LEFT SLAB-RIGHT]
-			triSerifed   [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
+			serifless SLAB-NONE
+			topSerifed SLAB-TOP
+			baseSerifed [bitOr SLAB-LEFT SLAB-RIGHT]
+			triSerifed [bitOr SLAB-TOP SLAB-LEFT SLAB-RIGHT]
 
 	glyph-block-export LambdaShape
 	define [LambdaShape] : with-params [df fBarStraight slabKind top sw fSquareBottom] : union
@@ -57,10 +57,10 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 		return : union
 			new-glyph : composite-proc
 				VHookRightShape
-					df             -- df
-					fBarStraight   -- fBarStraight
-					top            -- top
-					sw             -- sw
+					df -- df
+					fBarStraight -- fBarStraight
+					top -- top
+					sw -- sw
 					hookWidthOuter -- hookWidthOuter
 					hookWidthInner -- hookWidthInner
 				FlipAround df.middle (top / 2)
@@ -78,10 +78,10 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 		return : union
 			new-glyph : composite-proc
 				VHookLeftShape
-					df             -- df
-					fBarStraight   -- fBarStraight
-					top            -- top
-					sw             -- sw
+					df -- df
+					fBarStraight -- fBarStraight
+					top -- top
+					sw -- sw
 					hookWidthOuter -- hookWidthOuter
 					hookWidthInner -- hookWidthInner
 				FlipAround df.middle (top / 2)
@@ -92,21 +92,21 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 		create-glyph "grek/Lambda.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : LambdaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fStraightBar
-				slabKind      -- slabKind
-				top           -- CAP
-				sw            -- Stroke
+				df -- [DivFrame 1]
+				fBarStraight -- fStraightBar
+				slabKind -- slabKind
+				top -- CAP
+				sw -- Stroke
 				fSquareBottom -- fSquareBottom
 
 		create-glyph "grek/smcpLambda.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : LambdaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fStraightBar
-				slabKind      -- slabKind
-				top           -- XH
-				sw            -- Stroke
+				df -- [DivFrame 1]
+				fBarStraight -- fStraightBar
+				slabKind -- slabKind
+				top -- XH
+				sw -- Stroke
 				fSquareBottom -- fSquareBottom
 
 		DefineSelectorGlyph 'cyrl/el.BGR' suffix [DivFrame 1] 'e'
@@ -114,27 +114,27 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 			set-width 0
 			set-mark-anchor 'cvDecompose' 0 0
 			create-forked-glyph "cyrl/el.BGR.\(suffix).straight" : LambdaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fStraightBar
-				slabKind      -- [bitOr slabKind SLAB-SMALL-CYRL]
-				top           -- XH
-				sw            -- Stroke
+				df -- [DivFrame 1]
+				fBarStraight -- fStraightBar
+				slabKind -- [bitOr slabKind SLAB-SMALL-CYRL]
+				top -- XH
+				sw -- Stroke
 				fSquareBottom -- fSquareBottom
 			if fSquareBottom : begin
 				create-forked-glyph "cyrl/el.BGR.\(suffix).tailed" : LambdaShape
-					df            -- [DivFrame 1]
-					fBarStraight  -- fStraightBar
-					slabKind      -- [bitOr slabKind SLAB-SMALL-CYRL]
-					top           -- XH
-					sw            -- Stroke
+					df -- [DivFrame 1]
+					fBarStraight -- fStraightBar
+					slabKind -- [bitOr slabKind SLAB-SMALL-CYRL]
+					top -- XH
+					sw -- Stroke
 					fSquareBottom -- fSquareBottom
 			: else : begin
 				create-forked-glyph "cyrl/el.BGR.\(suffix).tailed" : LambdaHookRightShape
-					df           -- [DivFrame 1]
+					df -- [DivFrame 1]
 					fBarStraight -- fStraightBar
-					slabKind     -- [bitOr slabKind SLAB-SMALL-CYRL]
-					top          -- XH
-					sw           -- Stroke
+					slabKind -- [bitOr slabKind SLAB-SMALL-CYRL]
+					top -- XH
+					sw -- Stroke
 		select-variant "cyrl/el.BGR.\(suffix)" (follow -- 'cyrl/el.BGR/tail')
 
 		create-glyph "cyrl/Yn.\(suffix)" : glyph-proc
@@ -143,15 +143,15 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 			local vHeight : (CAP - 0) * 0.875
 
 			include : with-transform [ApparentTranslate 0 (CAP - vHeight)] : LambdaHookLeftShape
-				df             -- df
-				fBarStraight   -- fStraightBar
-				slabKind       -- slabKind
-				top            -- vHeight
-				sw             -- df.mvs
+				df -- df
+				fBarStraight -- fStraightBar
+				slabKind -- slabKind
+				top -- vHeight
+				sw -- df.mvs
 
 			include : dispiro
 				g4.down.start df.middle CAP [widths.center.heading [df.adviceThinnerStroke 6] Downward]
-				flat df.middle 0         [widths.center.heading df.mvs Downward]
+				flat df.middle 0 [widths.center.heading df.mvs Downward]
 				curl df.middle Descender [widths.center.heading df.mvs Downward]
 			if [maskBits slabKind SLAB-RIGHT] : begin
 				include : HSerif.mb df.middle Descender (MidJutCenter - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
@@ -161,17 +161,17 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 			local df : include : DivFrame para.advanceScaleT 3
 
 			include : LambdaHookLeftShape
-				df             -- df
-				fBarStraight   -- fStraightBar
-				slabKind       -- [bitOr slabKind SLAB-SMALL-CYRL]
-				top            -- XH
-				sw             -- df.mvs
+				df -- df
+				fBarStraight -- fStraightBar
+				slabKind -- [bitOr slabKind SLAB-SMALL-CYRL]
+				top -- XH
+				sw -- df.mvs
 
 			include : dispiro
 				g4.down.start df.middle XH [widths.center.heading [df.adviceThinnerStroke 6] Downward]
-				flat df.middle 0         [widths.center.heading df.mvs Downward]
+				flat df.middle 0 [widths.center.heading df.mvs Downward]
 				curl df.middle Descender [widths.center.heading df.mvs Downward]
-			if ([maskBits slabKind SLAB-RIGHT] && [not para.isItalic]) : begin
+			if ([maskBits slabKind SLAB-RIGHT] && (!para.isItalic)) : begin
 				include : HSerif.mb df.middle Descender (MidJutCenter - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
 
 	select-variant 'grek/Lambda' 0x39B
@@ -191,97 +191,97 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 		local shift : Math.min top bottom
 		return : with-transform [ApparentTranslate 0 shift] : union
 			LambdaShape
-				df            -- df
-				fBarStraight  -- fBarStraight
-				slabKind      -- 0
-				top           -- shapeHeight
-				sw            -- sw
+				df -- df
+				fBarStraight -- fBarStraight
+				slabKind -- 0
+				top -- shapeHeight
+				sw -- sw
 				fSquareBottom -- fSquareBottom
 			intersection
 				HBar.b 0 df.width 0 sw
 				LambdaMask df fBarStraight shapeHeight sw fSquareBottom
 
-	define SERIF-NONE   0
+	define SERIF-NONE 0
 	define SERIF-MOTION 1
-	define SERIF-ALL    2
-	define A-SLAB-TOP   1
-	define A-SLAB-LEFT  2
+	define SERIF-ALL 2
+	define A-SLAB-TOP 1
+	define A-SLAB-LEFT 2
 	define A-SLAB-RIGHT 4
 
 	define [DeltaSerifs df top bottom sw serifType fSquareBottom] : glyph-proc
 		local height : Math.abs : top - bottom
 		include : with-transform [ApparentTranslate 0 bottom] : match serifType
 			[Just SERIF-MOTION] : ASerifs df height sw A-SLAB-TOP fSquareBottom
-			[Just SERIF-ALL]    : ASerifs df height sw [bitOr A-SLAB-TOP [bitOr A-SLAB-LEFT A-SLAB-RIGHT]] fSquareBottom
-			__                  : no-shape
+			[Just SERIF-ALL] : ASerifs df height sw [bitOr A-SLAB-TOP [bitOr A-SLAB-LEFT A-SLAB-RIGHT]] fSquareBottom
+			__ : no-shape
 
 	define DeltaConfig : SuffixCfg.weave
 		object
-			straight {true   false}
-			curly    {false  false}
-			square   {true   true }
+			straight {true false}
+			curly {false false}
+			square {true true }
 		object
-			serifless     SERIF-NONE
+			serifless SERIF-NONE
 			motionSerifed SERIF-MOTION
-			serifed       SERIF-ALL
+			serifed SERIF-ALL
 
 	foreach {suffix {{fBarStraight fSquareBottom} serifType}} [Object.entries DeltaConfig] : do
 		create-glyph "grek/Delta.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fBarStraight
+				df -- [DivFrame 1]
+				fBarStraight -- fBarStraight
 				fSquareBottom -- fSquareBottom
-				top           -- CAP
-				bottom        -- 0
-				sw            -- Stroke
+				top -- CAP
+				bottom -- 0
+				sw -- Stroke
 			include : DeltaSerifs [DivFrame 1] CAP 0 Stroke serifType fSquareBottom
 
 		create-glyph "increment.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : DeltaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fBarStraight
+				df -- [DivFrame 1]
+				fBarStraight -- fBarStraight
 				fSquareBottom -- fSquareBottom
-				top           -- CAP
-				bottom        -- 0
-				sw            -- OperatorStroke
+				top -- CAP
+				bottom -- 0
+				sw -- OperatorStroke
 			include : DeltaSerifs [DivFrame 1] CAP 0 OperatorStroke serifType fSquareBottom
 
 		create-glyph "increment.aplForm.\(suffix)" : glyph-proc
 			include : MarkSet.oper
 			include : DeltaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fBarStraight
+				df -- [DivFrame 1]
+				fBarStraight -- fBarStraight
 				fSquareBottom -- fSquareBottom
-				top           -- OperTop
-				bottom        -- OperBot
-				sw            -- OperatorStroke
+				top -- OperTop
+				bottom -- OperBot
+				sw -- OperatorStroke
 			include : DeltaSerifs [DivFrame 1] OperTop OperBot OperatorStroke serifType fSquareBottom
 
 		create-glyph "increment.aplThin.\(suffix)" : glyph-proc
 			include : MarkSet.oper
 			local sw : AdviceStroke 3.75
 			include : DeltaShape
-				df            -- [DivFrame 1]
-				fBarStraight  -- fBarStraight
+				df -- [DivFrame 1]
+				fBarStraight -- fBarStraight
 				fSquareBottom -- fSquareBottom
-				top           -- OperTop
-				bottom        -- OperBot
-				sw            -- sw
+				top -- OperTop
+				bottom -- OperBot
+				sw -- sw
 			include : DeltaSerifs [DivFrame 1] OperTop OperBot sw serifType fSquareBottom
 
 	define [CodeNonApl u] : if (para.variantSelector.__enableAplForm === 'enable') null u
-	define [CodeApl    u] : if (para.variantSelector.__enableAplForm === 'enable') u null
+	define [CodeApl u] : if (para.variantSelector.__enableAplForm === 'enable') u null
 
 	select-variant 'grek/Delta' 0x394
-	select-variant 'increment'      [CodeNonApl 0x2206] (follow -- 'grek/Delta')
+	select-variant 'increment' [CodeNonApl 0x2206] (follow -- 'grek/Delta')
 	select-variant 'increment.aplForm' [CodeApl 0x2206] (follow -- 'grek/Delta')
-	select-variant 'increment.aplThin'                  (follow -- 'grek/Delta')
+	select-variant 'increment.aplThin' (follow -- 'grek/Delta')
 
-	CreateTurnedLetter 'nabla'      [CodeNonApl 0x2207] 'increment'         HalfAdvance (CAP / 2)
+	CreateTurnedLetter 'nabla' [CodeNonApl 0x2207] 'increment' HalfAdvance (CAP / 2)
 	CreateTurnedLetter 'nabla.aplForm' [CodeApl 0x2207] 'increment.aplForm' HalfAdvance SymbolMid
-	CreateTurnedLetter 'nabla.aplThin' null             'increment.aplThin' HalfAdvance SymbolMid
+	CreateTurnedLetter 'nabla.aplThin' null 'increment.aplThin' HalfAdvance SymbolMid
 
 	derive-glyphs 'cyrl/De.BGR' null 'grek/Delta' : function [src gr] : glyph-proc
 		include [refer-glyph src] AS_BASE ALSO_METRICS
@@ -289,6 +289,6 @@ glyph-block Letter-Latin-Upper-Lambda-Delta : begin
 		local bottomExtension : (-LongVJut) + QuarterStroke
 		include : ExtendBelowBaseAnchors bottomExtension
 		include : HBar.b (SB - descenderOverflow) (RightSB + descenderOverflow) 0
-		include : VBar.l (SB      - descenderOverflow) bottomExtension TINY VJutStroke
+		include : VBar.l (SB - descenderOverflow) bottomExtension TINY VJutStroke
 		include : VBar.r (RightSB + descenderOverflow) bottomExtension TINY VJutStroke
 

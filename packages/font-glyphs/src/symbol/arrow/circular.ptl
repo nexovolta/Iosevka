@@ -29,7 +29,7 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 	local arcSW : Math.min arrowSw [AdviceStroke 5 MosaicWidthScalar]
 	local headSize : mix arcSW arrowHeadSize 0.5
 	local headLength : (headSize + fine) * Math.SQRT1_2
-	local l : arrowSB  + 0.5 * headSize
+	local l : arrowSB + 0.5 * headSize
 	local r : arrowRSB - 0.5 * headSize
 	local t : arrowTop - 0.5 * headSize
 	local b : arrowBot + 0.5 * headSize
@@ -68,10 +68,10 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 			difference
 				OShape.NoOvershoot CAP 0 l r Stroke ada adb
 				spiro-outline
-					corner arrowSB   gapTop
+					corner arrowSB gapTop
 					corner arrowMidX gapTop
 					corner arrowMidX gapBot
-					corner arrowSB   gapBot
+					corner arrowSB gapBot
 		include : headFunc arrowX gapTop arrowX (gapTop - headLength) headSize
 
 	define [OpenCircleArrow headFunc fCcw fClosed] : glyph-proc
@@ -98,25 +98,25 @@ glyph-block Symbol-Arrow-Circular : for-width-kinds WideWidth1
 
 	# Glyphs
 	create-glyph [MangleName 'ccwHalfCircleArrow'] [MangleUnicode 0x21B6] : glyph-proc
-		include : HalfCircleArrow Arrow.Head.shape true  false
+		include : HalfCircleArrow Arrow.Head.shape true false
 	create-glyph [MangleName 'cwHalfCircleArrow'] [MangleUnicode 0x21B7] : glyph-proc
 		include : HalfCircleArrow Arrow.Head.shape false false
 	create-glyph [MangleName 'ccwOpenCircleArrow'] [MangleUnicode 0x21BA] : glyph-proc
-		include : OpenCircleArrow Arrow.Head.shape true  false
+		include : OpenCircleArrow Arrow.Head.shape true false
 	create-glyph [MangleName 'cwOpenCircleArrow'] [MangleUnicode 0x21BB] : glyph-proc
 		include : OpenCircleArrow Arrow.Head.shape false false
 	create-glyph [MangleName 'ccwGappedCircleArrow'] [MangleUnicode 0x27F2] : glyph-proc
-		include : HalfCircleArrow Arrow.Head.shape true  true
+		include : HalfCircleArrow Arrow.Head.shape true true
 	create-glyph [MangleName 'cwGappedCircleArrow'] [MangleUnicode 0x27F3] : glyph-proc
 		include : HalfCircleArrow Arrow.Head.shape false true
 	create-glyph [MangleName 'ccwClosedCircleArrow'] [MangleUnicode 0x2940] : glyph-proc
-		include : OpenCircleArrow Arrow.Head.shape true  true
+		include : OpenCircleArrow Arrow.Head.shape true true
 	create-glyph [MangleName 'cwClosedCircleArrow'] [MangleUnicode 0x2941] : glyph-proc
 		include : OpenCircleArrow Arrow.Head.shape false true
 	create-glyph [MangleName 'cwOpenCircleArrowTriangle'] [MangleUnicode 0x2B6E] : glyph-proc
 		include : OpenCircleArrow Arrow.Head.trigShape false false
 	create-glyph [MangleName 'ccwOpenCircleArrowTriangle'] [MangleUnicode 0x2B6F] : glyph-proc
-		include : OpenCircleArrow Arrow.Head.trigShape true  false
+		include : OpenCircleArrow Arrow.Head.trigShape true false
 
 	do 'Curving and semicircular arrows'
 		local sw : AdviceStroke 4

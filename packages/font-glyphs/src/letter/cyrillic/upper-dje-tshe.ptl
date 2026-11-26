@@ -12,23 +12,23 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 	glyph-block-import Letter-Cyrillic-Yeri : YeriBarPos
 
 	define HConfig : object
-		serifless                 {false  false  false}
-		topLeftSerifed            {true   false  false}
-		topLeftBottomRightSerifed {true   false  true }
-		serifed                   {true   true   true }
+		serifless {false false false}
+		topLeftSerifed {true false false}
+		topLeftBottomRightSerifed {true false true }
+		serifed {true true true }
 
 	foreach {suffix {doSerifLT doSerifLB doSerifRB}} [pairs-of HConfig] : do
 		define fMotion : (doSerifLT || doSerifRB) && !doSerifLB
 		define df : DivFrame para.advanceScaleT 2
 		define sw : df.adviceThinnerStroke2 2.75 3 CAP
 
-		define xMidBarLeft : Math.max (df.rightSB  - (RightSB - SB)) : if doSerifLT
+		define xMidBarLeft : Math.max (df.rightSB - (RightSB - SB)) : if doSerifLT
 			[mix df.leftSB df.rightSB 0.35] - [HSwToV : 0.50 * sw]
 			[mix df.leftSB df.rightSB 0.20] - [HSwToV : 0.25 * sw]
-		define xBowlRight  : Math.min (xMidBarLeft + (RightSB - SB)) (df.rightSB - OX)
+		define xBowlRight : Math.min (xMidBarLeft + (RightSB - SB)) (df.rightSB - OX)
 
 		define mockWidth : (xBowlRight - xMidBarLeft) + SB * 2
-		define mockAdws  : mockWidth / Width
+		define mockAdws : mockWidth / Width
 		define archDepth : ArchDepth * mockAdws
 
 		define yBarTop : [mix 0 CAP YeriBarPos] + sw / 2
@@ -49,12 +49,12 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 
 			include : VBar.l xMidBarLeft 0 CAP sw
 			include : nShoulder.earlessCorner
-				left   -- xMidBarLeft
-				right  -- xBowlRight
-				top    -- yBarTop
+				left -- xMidBarLeft
+				right -- xBowlRight
+				top -- yBarTop
 				bottom -- 0
-				ada    -- ada
-				adb    -- adb
+				ada -- ada
+				adb -- adb
 				stroke -- sw
 
 			include : HBar.t xTopBarLeft xTopBarRight CAP sw
@@ -64,7 +64,7 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 					VJutStroke * (sw / Stroke)
 					VSwToH : 0.625 * (xMidBarLeft - xTopBarLeft)
 				include : composite-proc
-					tagged 'serifLT' : VSerif.dl xTopBarLeft  CAP jutTop swVJut
+					tagged 'serifLT' : VSerif.dl xTopBarLeft CAP jutTop swVJut
 					tagged 'serifRT' : VSerif.dr xTopBarRight CAP jutTop swVJut
 
 			if doSerifLB : include sf.lb.full
@@ -76,23 +76,23 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 
 			include : VBar.l xMidBarLeft 0 CAP sw
 			include : nShoulder.earlessCorner
-				left   -- xMidBarLeft
-				right  -- xBowlRight
-				top    -- yBarTop
+				left -- xMidBarLeft
+				right -- xBowlRight
+				top -- yBarTop
 				bottom -- (O + Hook + sw / 2)
-				ada    -- ada
-				adb    -- adb
+				ada -- ada
+				adb -- adb
 				stroke -- sw
 			local xHookDepth : Math.min (1.2 * HookX) : mix
 				(xBowlRight - [HSwToV : 0.5 * sw]) - [mix xMidBarLeft xBowlRight 0.5]
 				begin sf.jutIn
 				clamp 0 [boole doSerifLB] : StrokeWidthBlend 0 1
 			include : VerticalHook.r
-				x      -- xBowlRight
-				y      -- (O + Hook + sw / 2)
+				x -- xBowlRight
+				y -- (O + Hook + sw / 2)
 				xDepth -- (-xHookDepth)
 				yDepth -- Hook
-				sw     -- sw
+				sw -- sw
 
 			include : HBar.t xTopBarLeft xTopBarRight CAP sw
 			if doSerifLT : begin
@@ -101,10 +101,10 @@ glyph-block Letter-Cyrillic-Upper-Dje-Tshe : begin
 					VJutStroke * (sw / Stroke)
 					VSwToH : 0.625 * (xMidBarLeft - xTopBarLeft)
 				include : composite-proc
-					tagged 'serifLT' : VSerif.dl xTopBarLeft  CAP jutTop swVJut
+					tagged 'serifLT' : VSerif.dl xTopBarLeft CAP jutTop swVJut
 					tagged 'serifRT' : VSerif.dr xTopBarRight CAP jutTop swVJut
 
 			if doSerifLB : include sf.lb.full
 
 	select-variant 'cyrl/Tshe' 0x40B (follow -- 'hCap')
-	select-variant 'cyrl/Dje'  0x402 (follow -- 'hengCap')
+	select-variant 'cyrl/Dje' 0x402 (follow -- 'hengCap')

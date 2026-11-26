@@ -41,8 +41,8 @@ glyph-block Autobuild-Transformed-Shared : begin
 	glyph-block-export extendRelatedGlyphs
 	define [extendRelatedGlyphs groupID records] : begin
 		local relatedRecords {}
-		local relSets        {}
-		local targetNameMap  {.}
+		local relSets {}
+		local targetNameMap {.}
 
 		local TraverseGrList : list
 			* AnyLocalizedForm
@@ -58,7 +58,7 @@ glyph-block Autobuild-Transformed-Shared : begin
 			local tree : getGrTree srcName TraverseGrList query-glyph
 			foreach [{gr origSrcName relSrcName} : items-of tree] : if [query-glyph relSrcName] : begin
 				local origDstName : suggestMappedName targetNameMap origSrcName [wrapName groupID origSrcName]
-				local relDstName  : suggestMappedName targetNameMap relSrcName  [wrapName groupID relSrcName]
+				local relDstName : suggestMappedName targetNameMap relSrcName [wrapName groupID relSrcName]
 
 				local relatedRecord : record.slice 0
 				set relatedRecord.0 null
@@ -87,7 +87,7 @@ glyph-block Autobuild-Transformed-Shared : begin
 		include [Scale ToSuperscript.crowdAdjScale] true
 		include [Translate df.middle (CAP + AccentStackOffset / 2)] true
 		include [Regizmo] true
-	set ToSuperscript.crowd         3.5
+	set ToSuperscript.crowd 3.5
 	set ToSuperscript.crowdAdjScale 0.7
 
 	glyph-block-export ToSubscript
@@ -98,7 +98,7 @@ glyph-block Autobuild-Transformed-Shared : begin
 		include [Scale ToSubscript.crowdAdjScale] true
 		include [Translate df.middle (Descender / 2)] true
 		include [Regizmo] true
-	set ToSubscript.crowd         3.5
+	set ToSubscript.crowd 3.5
 	set ToSubscript.crowdAdjScale 0.7
 
 glyph-block Autobuild-Transformed : begin
@@ -114,12 +114,12 @@ glyph-block Autobuild-Transformed : begin
 
 	define [BuildTransformedSimple records relSets targetNameMap gr miniatureFont tfFn] : begin
 		foreach {unicode glyphid fRelated} [items-of records]
-			if [not : query-glyph targetNameMap.(glyphid)] : begin
-				if [not : miniatureFont.queryByName glyphid] : begin
+			if (![query-glyph targetNameMap.(glyphid)]) : begin
+				if (![miniatureFont.queryByName glyphid]) : begin
 					throw : new Error "Cannot find glyph \(glyphid)"
 				create-glyph (targetNameMap.(glyphid)) unicode
 					tfFn [miniatureFont.queryByName glyphid]
-				if ([not fRelated] && gr) : gr.set [query-glyph glyphid] (targetNameMap.(glyphid))
+				if ((!fRelated) && gr) : gr.set [query-glyph glyphid] (targetNameMap.(glyphid))
 		link-relations relSets
 		return {targetNameMap records}
 
@@ -128,8 +128,8 @@ glyph-block Autobuild-Transformed : begin
 		local {records relSets targetNameMap} : extendRelatedGlyphs prefix _records
 		local pendingGlyphs : records.map : [record] => record.1
 		local miniatureFont : Miniature pendingGlyphs
-			crowd  -- ToSuperscript.crowd
-			scale  -- ToSuperscript.crowdAdjScale
+			crowd -- ToSuperscript.crowd
+			scale -- ToSuperscript.crowdAdjScale
 			# mono   -- true
 			sbscale -- 0.75
 		return : BuildTransformedSimple records relSets targetNameMap gr miniatureFont
@@ -146,8 +146,8 @@ glyph-block Autobuild-Transformed : begin
 		local {records relSets targetNameMap} : extendRelatedGlyphs prefix _records
 		local pendingGlyphs : records.map : [record] => record.1
 		local forkedPara : MiniatureParaT [para.createFork ForkTfm.Italic]
-			crowd  -- ToSuperscript.crowd
-			scale  -- ToSuperscript.crowdAdjScale
+			crowd -- ToSuperscript.crowd
+			scale -- ToSuperscript.crowdAdjScale
 			# mono   -- true
 			sbscale -- 0.75
 		local miniatureFont : Fork pendingGlyphs forkedPara
@@ -165,8 +165,8 @@ glyph-block Autobuild-Transformed : begin
 		local {records relSets targetNameMap} : extendRelatedGlyphs prefix _records
 		local pendingGlyphs : records.map : [record] => record.1
 		local miniatureFont : Miniature pendingGlyphs
-			crowd  -- ToSubscript.crowd
-			scale  -- ToSubscript.crowdAdjScale
+			crowd -- ToSubscript.crowd
+			scale -- ToSubscript.crowdAdjScale
 			# mono   -- true
 			sbscale -- 0.75
 
@@ -184,9 +184,9 @@ glyph-block Autobuild-Transformed : begin
 		local {records relSets targetNameMap} : extendRelatedGlyphs 'medievalAbove' _records
 		local pendingGlyphs : records.map : [record] => record.1
 		local miniatureFont : Miniature pendingGlyphs
-			crowd  -- 7
-			scale  -- 0.4
-			mono   -- true
+			crowd -- 7
+			scale -- 0.4
+			mono -- true
 			sbscale -- 1
 
 		return : BuildTransformedSimple records relSets targetNameMap null miniatureFont
@@ -211,10 +211,10 @@ glyph-block Autobuild-Transformed : begin
 				set-base-anchor 'aboveBraceL' markMiddle (aboveMarkBot + 0.5 * markHeight)
 				set-base-anchor 'aboveBraceR' markMiddle (aboveMarkBot + 0.5 * markHeight)
 
-	createMedievalCombs 0         XH       JobsData.MedievalComb_e
-	createMedievalCombs 0         Ascender JobsData.MedievalComb_b
-	createMedievalCombs 0         CAP      JobsData.MedievalComb_CAP
-	createMedievalCombs Descender XH       JobsData.MedievalComb_p
+	createMedievalCombs 0 XH JobsData.MedievalComb_e
+	createMedievalCombs 0 Ascender JobsData.MedievalComb_b
+	createMedievalCombs 0 CAP JobsData.MedievalComb_CAP
+	createMedievalCombs Descender XH JobsData.MedievalComb_p
 	createMedievalCombs Descender Ascender JobsData.MedievalComb_bp
 
 	# Medieval below marks
@@ -222,9 +222,9 @@ glyph-block Autobuild-Transformed : begin
 		local {records relSets targetNameMap} : extendRelatedGlyphs 'medievalBelow' _records
 		local pendingGlyphs : records.map : [record] => record.1
 		local miniatureFont : Miniature pendingGlyphs
-			crowd  -- 7
-			scale  -- 0.4
-			mono   -- true
+			crowd -- 7
+			scale -- 0.4
+			mono -- true
 			sbscale -- 1
 
 		return : BuildTransformedSimple records relSets targetNameMap null miniatureFont
@@ -297,17 +297,17 @@ glyph-block Autobuild-Transformed-Texture : begin
 		if (extL + extR > 0)
 		: then : begin
 			forkedPara.advanceScaleMM = 1 + extL + extR
-			forkedPara.advanceScaleM  = 1 + extL + extR
-			forkedPara.advanceScaleT  = 1 + extL + extR
+			forkedPara.advanceScaleM = 1 + extL + extR
+			forkedPara.advanceScaleT = 1 + extL + extR
 		: else : begin
-			forkedPara.advanceScaleF  = 1 + extL + extR
-			forkedPara.advanceScaleI  = 1 + extL + extR
+			forkedPara.advanceScaleF = 1 + extL + extR
+			forkedPara.advanceScaleI = 1 + extL + extR
 			forkedPara.advanceScaleII = 1 + extL + extR
 			forkedPara.advanceScaleSp = 1 + extL + extR
 
 		local forked : Fork pendingGlyphs forkedPara
 		foreach {unicode glyphid} [items-of records] : begin
-			if [not : query-glyph targetNameMap.(glyphid)] : begin
+			if (![query-glyph targetNameMap.(glyphid)]) : begin
 				define glyphT : forked.queryByName glyphid
 				define glyphO : glyphStore.queryByName glyphid
 				if (glyphT && glyphO && glyphT.advanceWidth != glyphO.advanceWidth) : begin
@@ -332,14 +332,14 @@ glyph-block Autobuild-Transformed-Texture : begin
 				if source : results.push {null source}
 		return results
 
-	define EXTENSION :  1 / 12
-	define SHRINK    : -1 / 12
-	createTextureDerivatives Texture.ExtL  EXTENSION 0         [jobs 0xF000]
-	createTextureDerivatives Texture.ExtR  0         EXTENSION [jobs 0xF100]
+	define EXTENSION : 1 / 12
+	define SHRINK : -1 / 12
+	createTextureDerivatives Texture.ExtL EXTENSION 0 [jobs 0xF000]
+	createTextureDerivatives Texture.ExtR 0 EXTENSION [jobs 0xF100]
 	createTextureDerivatives Texture.ExtLR EXTENSION EXTENSION [jobs 0xF200]
-	createTextureDerivatives Texture.ShrL  SHRINK    0         [jobs 0xF300]
-	createTextureDerivatives Texture.ShrR  0         SHRINK    [jobs 0xF400]
-	createTextureDerivatives Texture.ShrLR SHRINK    SHRINK    [jobs 0xF500]
+	createTextureDerivatives Texture.ShrL SHRINK 0 [jobs 0xF300]
+	createTextureDerivatives Texture.ShrR 0 SHRINK [jobs 0xF400]
+	createTextureDerivatives Texture.ShrLR SHRINK SHRINK [jobs 0xF500]
 
 glyph-block Autobuild-Transformed-Mathematical : begin
 	glyph-block-import CommonShapes
@@ -353,23 +353,23 @@ glyph-block Autobuild-Transformed-Mathematical : begin
 		local pendingGlyphs : records.map : [record] => record.1
 		local forkedPara : para.createFork tfm
 		local forked : Fork pendingGlyphs forkedPara
-		foreach {unicode glyphid} [items-of records] : if [not : query-glyph targetNameMap.(glyphid)]
+		foreach {unicode glyphid} [items-of records] : if (![query-glyph targetNameMap.(glyphid)])
 			create-glyph targetNameMap.(glyphid) unicode : glyph-proc
 				define glyphT : forked.queryByName glyphid
-				if [not glyphT] : console.log glyphid
+				if (!glyphT) : console.log glyphid
 				include glyphT AS_BASE ALSO_METRICS
 				set currentGlyph.gizmo glyphT.gizmo
 				if postProcessing : include : postProcessing para forkedPara
 
 		link-relations relSets
 
-	define Digits      : Array.from '0123456789'
-	define UpperLatin  : Array.from 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	define LowerLatin  : Array.from 'abcdefghijklmnopqrstuvwxyz'
+	define Digits : Array.from '0123456789'
+	define UpperLatin : Array.from 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	define LowerLatin : Array.from 'abcdefghijklmnopqrstuvwxyz'
 	define LowerLatin2 : Array.from 'abcdefghijklmnopqrstuvwxyzħıȷ𝾕'
-	define UpperGreek  : Array.from 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϴΣΤΥΦΧΨΩ∇'
-	define LowerGreek  : Array.from 'αβγδεζηθικλμνξοπρςστυφχψω∂ϵϑϰϕϱϖ'
-	define Greek2      : Array.from 'Ϝϝ'
+	define UpperGreek : Array.from 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϴΣΤΥΦΧΨΩ∇'
+	define LowerGreek : Array.from 'αβγδεζηθικλμνξοπρςστυφχψω∂ϵϑϰϕϱϖ'
+	define Greek2 : Array.from 'Ϝϝ'
 	define ObliqueBlackboardBolds : Array.from '𝔻𝕕𝕖𝕚𝕛'
 
 	define [CreateMathDerivatives groupName tfm gr base letters overrides postProcessing] : begin
@@ -396,7 +396,7 @@ glyph-block Autobuild-Transformed-Mathematical : begin
 
 	define [CreateMathAliasable cond groupName altGroupName tfm gr base letters overrides] : begin
 		if cond
-			CreateMathDerivatives   groupName              tfm gr base letters overrides
+			CreateMathDerivatives groupName tfm gr base letters overrides
 			CreateMathAliasableImpl groupName altGroupName tfm gr base letters overrides
 
 	# Math bold
@@ -450,7 +450,7 @@ glyph-block Autobuild-Transformed-Mathematical : begin
 	CreateMathAliasable doTypewriter 'mathtt' null ForkTfm.TypeWriter null 0x1D7F6 Digits
 
 	# Italic blackboard bold
-	CreateMathDerivatives 'mathit' ForkTfm.Italic null 0x2145  ObliqueBlackboardBolds
+	CreateMathDerivatives 'mathit' ForkTfm.Italic null 0x2145 ObliqueBlackboardBolds
 
 	# Outlined letters and digits -- for Symbols for Legacy Computing Supplement
 	define [TfOutline para forkedPara] : glyph-proc
@@ -460,7 +460,7 @@ glyph-block Autobuild-Transformed-Mathematical : begin
 		set currentGlyph.geometry : new StrokeGeometry g gizmo sw HVContrast true
 
 	CreateMathDerivatives 'legacyComputingOutlined' ForkTfm.Bold null 0x1CCD6 UpperLatin null TfOutline
-	CreateMathDerivatives 'legacyComputingOutlined' ForkTfm.Bold null 0x1CCF0 Digits     null TfOutline
+	CreateMathDerivatives 'legacyComputingOutlined' ForkTfm.Bold null 0x1CCF0 Digits null TfOutline
 
 	# Math fraktur
 	define [CreateMathBoldFraktur base letters] : begin

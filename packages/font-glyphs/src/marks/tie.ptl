@@ -15,15 +15,15 @@ glyph-block Mark-Tie : begin
 	glyph-block-import Mark-Above : TildeShape CaretCaronMidSw CaretCaronTerminalSw
 	glyph-block-import Mark-Below : belowMarkBot belowMarkTop belowMarkMid
 
-	define aboveTieBase   : aboveMarkStack - AccentClearance
-	define aboveTieTop    : mix XH aboveMarkTop 2
+	define aboveTieBase : aboveMarkStack - AccentClearance
+	define aboveTieTop : mix XH aboveMarkTop 2
 	define aboveTieBottom : aboveTieTop - (aboveMarkTop - aboveMarkBot) * 0.875
-	define aboveTieMid    : mix aboveTieBottom aboveTieTop 0.5
+	define aboveTieMid : mix aboveTieBottom aboveTieTop 0.5
 
-	define belowTieBase     Descender
+	define belowTieBase Descender
 	define belowTieBottom : belowTieBase - (aboveTieTop - aboveTieBase)
-	define belowTieTop    : belowTieBase - (aboveTieBottom - aboveTieBase)
-	define belowTieMid    : mix belowTieBottom belowTieTop 0.5
+	define belowTieTop : belowTieBase - (aboveTieBottom - aboveTieBase)
+	define belowTieMid : mix belowTieBottom belowTieTop 0.5
 
 	local tieLeft [mix 0 markMiddle 1.5]
 	local tieRight (-tieLeft)
@@ -46,9 +46,9 @@ glyph-block Mark-Tie : begin
 		include : dispiro
 			widths.center markStroke
 			g4 tieLeft aboveTieBottom
-			quadControls  0.5 1
-			g4.right.mid  0 aboveTieTop [heading Rightward]
-			quadControls  0.5 0
+			quadControls 0.5 1
+			g4.right.mid 0 aboveTieTop [heading Rightward]
+			quadControls 0.5 0
 			g4 tieRight aboveTieBottom
 
 	create-glyph 'turnTieAbove' 0x35D : glyph-proc
@@ -59,9 +59,9 @@ glyph-block Mark-Tie : begin
 		include : dispiro
 			widths.center markStroke
 			g4 tieLeft aboveTieTop
-			quadControls  0.5 1
-			g4.right.mid  0 aboveTieBottom [heading Rightward]
-			quadControls  0.5 0
+			quadControls 0.5 1
+			g4.right.mid 0 aboveTieBottom [heading Rightward]
+			quadControls 0.5 0
 			g4 tieRight aboveTieTop
 
 	create-glyph 'tieBelow' 0x35C : glyph-proc

@@ -14,15 +14,15 @@ glyph-block Letter-Cyrillic-Fita : begin
 			AdviceStroke2 3 4 (t - b) (((r - l) + 2 * SB) / Width)
 		return : lift-@ : dispiro
 			widths.center sw
-			g4.right.mid [mix @xL @xM (-1.0)]               @yM
-			g4.right.mid [mix @xL @xM (-0.5)]              (@yM - a)
-			g4           (@xL = l + [HSwToV : 0.5 * swRef]) @yM
-			g4.right.mid [mix @xL @xM (+0.5)]              (@yM + a)
-			g4           (@xM = [mix l r 0.5])             (@yM = [mix b t 0.5])
-			g4.right.mid [mix @xR @xM (+0.5)]              (@yM - a)
-			g4           (@xR = r - [HSwToV : 0.5 * swRef]) @yM
-			g4.right.mid [mix @xR @xM (-0.5)]              (@yM + a)
-			g4.right.mid [mix @xR @xM (-1.0)]               @yM
+			g4.right.mid [mix @xL @xM (-1.0)] @yM
+			g4.right.mid [mix @xL @xM (-0.5)] (@yM - a)
+			g4 (@xL = l + [HSwToV : 0.5 * swRef]) @yM
+			g4.right.mid [mix @xL @xM (+0.5)] (@yM + a)
+			g4 (@xM = [mix l r 0.5]) (@yM = [mix b t 0.5])
+			g4.right.mid [mix @xR @xM (+0.5)] (@yM - a)
+			g4 (@xR = r - [HSwToV : 0.5 * swRef]) @yM
+			g4.right.mid [mix @xR @xM (-0.5)] (@yM + a)
+			g4.right.mid [mix @xR @xM (-1.0)] @yM
 
 	create-glyph 'cyrl/Fita' 0x472 : glyph-proc
 		include : MarkSet.capital
@@ -31,7 +31,7 @@ glyph-block Letter-Cyrillic-Fita : begin
 			OShape CAP 0 SB RightSB sw ArchDepthA ArchDepthB
 			intersection
 				OShapeOutline.NoOvershoot CAP 0 SB RightSB sw ArchDepthA ArchDepthB
-				FitaCrossbar              CAP 0 SB RightSB sw
+				FitaCrossbar CAP 0 SB RightSB sw
 
 	create-glyph 'cyrl/fita' 0x473 : glyph-proc
 		include : MarkSet.e
@@ -40,6 +40,6 @@ glyph-block Letter-Cyrillic-Fita : begin
 			OShape XH 0 SB RightSB sw SmallArchDepthA SmallArchDepthA
 			intersection
 				OShapeOutline.NoOvershoot XH 0 SB RightSB sw SmallArchDepthA SmallArchDepthA
-				FitaCrossbar              XH 0 SB RightSB sw
+				FitaCrossbar XH 0 SB RightSB sw
 
 	alias 'oBar.UPPH' null 'cyrl/fita'

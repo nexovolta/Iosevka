@@ -20,14 +20,14 @@ glyph-block LetterLike-Fraktur-Upper-MNP : begin
 		local {body deco} : deriveBoxes box
 
 		local [knots] : lift-@ : list
-			g2.ru.start @xLD                          ([deco.yp 0.625] - 2 * F.thick) [change-pen F]
+			g2.ru.start @xLD ([deco.yp 0.625] - 2 * F.thick) [change-pen F]
 			~~~ [Wave.vc Wave.LTDecoSize]
-			g2.ru.mid  (@xLD = deco.left)             (@yT - DecoSizeY) [change-pen profile]
+			g2.ru.mid (@xLD = deco.left) (@yT - DecoSizeY) [change-pen profile]
 			Arch.rhs (sw -- profile.thick) (blendPre -- null) (@yT = deco.top) 0.4
-			flat       (@xLB = body.left)             (@yT - ArchDepthA)
-			curl        @xLB                          (@yB + ArchDepthB)
-			corner     (@xB = @xLD + 0.5 * DecoSizeX) (@yB = deco.bot)
-			corner     (@xB - DecoSizeX)              (@yB + DecoSizeY)
+			flat (@xLB = body.left) (@yT - ArchDepthA)
+			curl @xLB (@yB + ArchDepthB)
+			corner (@xB = @xLD + 0.5 * DecoSizeX) (@yB = deco.bot)
+			corner (@xB - DecoSizeX) (@yB + DecoSizeY)
 
 		local s : include : fraktur-stroke profile [knots]
 
@@ -44,23 +44,23 @@ glyph-block LetterLike-Fraktur-Upper-MNP : begin
 		local leftStroke : include : LeftStroke box M
 
 		local rightStroke : include : lift-@ : fraktur-stroke M
-			corner (@xR + DecoSizeX)                       (@yR + DecoSizeY)
-			corner (@xR = body.right + 0.25 * DecoSizeX)   (@yR = body.bottom)
-			~~~ [straight.up.mid (@xR - Wave.DepthX)       [mix @yR @yRT 0.5]]
-			corner (@xRT = @xR + 0.25 * DecoSizeX)         (@yRT = [body.yp 0.75] + S.thick)
-			~~~ [curl (@xRT - TINY)                        (@yRT - TINY * SlopeB)]
-			g2     (@xRT - 0.75 * Wave.DepthX)             [mix @yRT @yT 0.5]
-			Arch.rhs (sw -- M.thick) (blendPre -- {})      (@yT = body.top)
-			corner (body.xMid - 0.25 * Wave.DepthX)        (@yMT = @yT - 0.5 * Wave.DepthY)
+			corner (@xR + DecoSizeX) (@yR + DecoSizeY)
+			corner (@xR = body.right + 0.25 * DecoSizeX) (@yR = body.bottom)
+			~~~ [straight.up.mid (@xR - Wave.DepthX) [mix @yR @yRT 0.5]]
+			corner (@xRT = @xR + 0.25 * DecoSizeX) (@yRT = [body.yp 0.75] + S.thick)
+			~~~ [curl (@xRT - TINY) (@yRT - TINY * SlopeB)]
+			g2 (@xRT - 0.75 * Wave.DepthX) [mix @yRT @yT 0.5]
+			Arch.rhs (sw -- M.thick) (blendPre -- {}) (@yT = body.top)
+			corner (body.xMid - 0.25 * Wave.DepthX) (@yMT = @yT - 0.5 * Wave.DepthY)
 			~~~ [Arch.rhs (sw -- M.thick) (blendPre -- {}) (blendPost -- {}) @yT]
-			corner  body.left                               @yMT
+			corner body.left @yMT
 
 		local middleStroke : include : lift-@ : fraktur-stroke M
-			corner (@xMB - DecoSizeX)                      (@yB + DecoSizeY)
-			corner (@xMB = deco.xMid)                      (@yB = deco.bot)
-			flat    @xMT                                   [mix @yB @yMTS 0.5]
-			flat    @xMT                                   (@yMTS = [body.yp 0.75] + S.thick)
-			curl   (@xMT = body.xMid - 0.25 * Wave.DepthX) (body.top - 0.5 * Wave.DepthY)
+			corner (@xMB - DecoSizeX) (@yB + DecoSizeY)
+			corner (@xMB = deco.xMid) (@yB = deco.bot)
+			flat @xMT [mix @yB @yMTS 0.5]
+			flat @xMT (@yMTS = [body.yp 0.75] + S.thick)
+			curl (@xMT = body.xMid - 0.25 * Wave.DepthX) (body.top - 0.5 * Wave.DepthY)
 
 	create-glyph 'frak/N' 0x1D511 : glyph-proc
 		local df : include : UpperDf 1
@@ -73,12 +73,12 @@ glyph-block LetterLike-Fraktur-Upper-MNP : begin
 
 		local rightStroke : include : lift-@ : difference
 			fraktur-stroke S
-				corner (@xR + DecoSizeX)                     (@yR + DecoSizeY)
+				corner (@xR + DecoSizeX) (@yR + DecoSizeY)
 				corner (@xR = body.right + 0.25 * DecoSizeX) (@yR = body.bottom)
-				~~~ [straight.up.mid (@xR - Wave.DepthX)     [mix @yR @yRT 0.5]]
-				corner  @xR                                  (@yRT = [body.yp 0.75] + S.thick)
-				~~~ [curl (@xR - TINY)                       (@yRT - TINY * SlopeB)]
-				g2     (@xR - Wave.DepthX)                   [mix @yRT @yT 0.5]
-				Arch.rhs (sw -- S.thick) (blendPre -- {})    (@yT = body.top)
-				corner (body.left - S.thick)                 (@yT - ArchDepthA)
+				~~~ [straight.up.mid (@xR - Wave.DepthX) [mix @yR @yRT 0.5]]
+				corner @xR (@yRT = [body.yp 0.75] + S.thick)
+				~~~ [curl (@xR - TINY) (@yRT - TINY * SlopeB)]
+				g2 (@xR - Wave.DepthX) [mix @yRT @yT 0.5]
+				Arch.rhs (sw -- S.thick) (blendPre -- {}) (@yT = body.top)
+				corner (body.left - S.thick) (@yT - ArchDepthA)
 			leftStroke.maskLeft

@@ -47,17 +47,17 @@ glyph-block Digits-Three : begin
 	glyph-block-import Letter-Arc-Hook : MakeFlatHook MakeCornerHook Rounded Flat CutArcTerminal DeltaCutStart DeltaCutEnd VerticalCutExtension
 	glyph-block-import Letter-Shared-Shapes : SerifedArcStart SerifedArcEnd InwardSlabArcStart InwardSlabArcEnd ArcStartSerif ArcEndSerif
 
-	define SLAB-NONE        0
-	define SLAB-CLASSICAL   1
-	define FLAT-CONNECTION  3
-	define SLAB-FLAT-HOOK   4
+	define SLAB-NONE 0
+	define SLAB-CLASSICAL 1
+	define FLAT-CONNECTION 3
+	define SLAB-FLAT-HOOK 4
 	define SLAB-CORNER-HOOK 5
 
-	define HOOK-ROUND  0
-	define HOOK-FLAT   1
+	define HOOK-ROUND 0
+	define HOOK-FLAT 1
 	define HOOK-CORNER 2
 	define HOOK-INWARD 3
-	define HOOK-SLAB   4
+	define HOOK-SLAB 4
 	define HOOK-VERTICAL 5
 	define HOOK-DIAGONAL 6
 
@@ -70,10 +70,10 @@ glyph-block Digits-Three : begin
 		local upper : sink
 			widths.rhs sw
 			match hookStyle
-				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
+				[Just HOOK-FLAT] : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookStartL
 				[Just HOOK-INWARD] : InwardSlabArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
-				[Just HOOK-SLAB]   : SerifedArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
+				[Just HOOK-SLAB] : SerifedArcStart.LtrRhs (SB + offset) (top - offset) sw Hook
 				[Just HOOK-DIAGONAL] : DeltaCutStart xMid (SB + offset) (top - offset - O) (top - offset - 0.2 * Hook) sw
 				[Just HOOK-VERTICAL] : list
 					g4 (SB + offset - [VerticalCutExtension Hook sw]) (top - Hook)
@@ -90,10 +90,10 @@ glyph-block Digits-Three : begin
 			curl (xMid + TINY) (barcenter + (fine - sw / 2)) [heading Rightward]
 			g4 (RightSB - offset - O * 2) [YSmoothMidR (barcenter + sw / 2) (offset + O) ArchDepthA ArchDepthB] [widths.rhs sw]
 			match bottomHookStyle
-				[Just HOOK-FLAT]   : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
+				[Just HOOK-FLAT] : [MakeFlatHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-CORNER] : [MakeCornerHook SB RightSB top 0 (sw -- sw)].hookEndL
 				[Just HOOK-INWARD] : InwardSlabArcEnd.RtlRhs (SB + offset) offset sw Hook
-				[Just HOOK-SLAB]   : SerifedArcEnd.RtlRhs (SB + offset) offset sw Hook
+				[Just HOOK-SLAB] : SerifedArcEnd.RtlRhs (SB + offset) offset sw Hook
 				[Just HOOK-DIAGONAL] : DeltaCutEnd xMid (SB + offset) (offset + O) (offset + 0.2 * Hook) sw
 				[Just HOOK-VERTICAL] : list
 					HookEnd offset (sw -- sw)
@@ -114,16 +114,16 @@ glyph-block Digits-Three : begin
 	define [ThreeFlatTopShape top serif hookStyle _sw lowerEnd lowerEndY] : glyph-proc
 		local sw : fallback _sw Stroke
 		define ezh : Ezh [DivFrame 1] top 0
-			pxMidLeft    -- 0.25
-			pxTopRight   -- 0.975
-			fSerifed     -- serif
-			fFlatHook    -- (hookStyle === HOOK-FLAT)
-			fCornerHook  -- (hookStyle === HOOK-CORNER)
-			hookStyle     -- [if (hookStyle === HOOK-VERTICAL) 'verticalCut' : if (hookStyle === HOOK-DIAGONAL) 'diagonalCut' 'serifless']
-			terminal     -- [if lowerEnd 0 [if (hookStyle === HOOK-SLAB) 2 1]]
-			stroke       -- sw
-			lowerEnd     -- lowerEnd
-			lowerEndY    -- lowerEndY
+			pxMidLeft -- 0.25
+			pxTopRight -- 0.975
+			fSerifed -- serif
+			fFlatHook -- (hookStyle === HOOK-FLAT)
+			fCornerHook -- (hookStyle === HOOK-CORNER)
+			hookStyle -- [if (hookStyle === HOOK-VERTICAL) 'verticalCut' : if (hookStyle === HOOK-DIAGONAL) 'diagonalCut' 'serifless']
+			terminal -- [if lowerEnd 0 [if (hookStyle === HOOK-SLAB) 2 1]]
+			stroke -- sw
+			lowerEnd -- lowerEnd
+			lowerEndY -- lowerEndY
 		include : ezh.Shape
 		if (hookStyle === HOOK-SLAB) : include : ArcEndSerif.L SB 0 Stroke Hook
 
@@ -133,19 +133,19 @@ glyph-block Digits-Three : begin
 		local yBowl : mix 0 top 0.72
 		local joinOverlap : if _angle [Math.max 2 : 0.08 * sw] 0
 		local styBot : match hookStyle
-			[Just HOOK-FLAT]   SLAB-FLAT-HOOK
+			[Just HOOK-FLAT] SLAB-FLAT-HOOK
 			[Just HOOK-CORNER] SLAB-CORNER-HOOK
-			[Just HOOK-SLAB]   SLAB-CLASSICAL
+			[Just HOOK-SLAB] SLAB-CLASSICAL
 			[Just HOOK-VERTICAL] 6
 			[Just HOOK-DIAGONAL] 7
-			__                 SLAB-NONE
+			__ SLAB-NONE
 
 		define [etTop] : ThreeFlatTopEtTop top nothing nothing sw _angle
 
 		local lf : CLetterForm [DivFrame 1] FLAT-CONNECTION styBot yBowl 0
 			ada -- [ArchDepthAClamped yBowl 0 ArchDepthA ArchDepthB]
 			adb -- [ArchDepthBClamped yBowl 0 ArchDepthA ArchDepthB]
-			sw  -- sw
+			sw -- sw
 			lowerEnd -- lowerEnd
 			lowerEndY -- lowerEndY
 
@@ -168,13 +168,13 @@ glyph-block Digits-Three : begin
 	define [ThreeFlatHookBrokenTop top serif sw lowerEnd lowerEndY angle] : ThreeFlatTopBrokenShape top serif HOOK-FLAT sw lowerEnd lowerEndY angle
 
 	define ThreeBodyConfig : object
-		rounded       {HOOK-ROUND   HOOK-ROUND }
-		flatHooked    {HOOK-FLAT    HOOK-FLAT  }
-		cornerHooked  {HOOK-CORNER  HOOK-CORNER}
-		inwardSerifed {HOOK-INWARD  HOOK-INWARD}
-		serifedHooked {HOOK-SLAB    HOOK-SLAB  }
-		verticalCut   {HOOK-VERTICAL HOOK-VERTICAL}
-		diagonalCut   {HOOK-DIAGONAL HOOK-DIAGONAL}
+		rounded {HOOK-ROUND HOOK-ROUND }
+		flatHooked {HOOK-FLAT HOOK-FLAT }
+		cornerHooked {HOOK-CORNER HOOK-CORNER}
+		inwardSerifed {HOOK-INWARD HOOK-INWARD}
+		serifedHooked {HOOK-SLAB HOOK-SLAB }
+		verticalCut {HOOK-VERTICAL HOOK-VERTICAL}
+		diagonalCut {HOOK-DIAGONAL HOOK-DIAGONAL}
 
 	define ThreeArcTypes : object
 		Rounded HOOK-ROUND
@@ -199,16 +199,16 @@ glyph-block Digits-Three : begin
 
 	define ThreeFlatTopConfig : SuffixCfg.weave
 		object
-			flatTop       {ThreeFlatTopShape      }
+			flatTop {ThreeFlatTopShape }
 			flatTopBroken {ThreeFlatTopBrokenShape}
 		object
-			''      {false}
+			'' {false}
 			serifed {true }
 		object
-			''          {HOOK-ROUND }
-			flatHook    {HOOK-FLAT  }
-			cornerHook  {HOOK-CORNER}
-			serifedHook {HOOK-SLAB  }
+			'' {HOOK-ROUND }
+			flatHook {HOOK-FLAT }
+			cornerHook {HOOK-CORNER}
+			serifedHook {HOOK-SLAB }
 			verticalCut {HOOK-VERTICAL}
 			diagonalCut {HOOK-DIAGONAL}
 
@@ -237,5 +237,5 @@ glyph-block Digits-Three : begin
 			intersection
 				ThreeShapeT spiro-outline 1 BBS CAP
 				union
-					VBar.r (RightSB - BBD)    [mix 0 CAP HBarPos] CAP          BBS
-					VBar.r (RightSB - BBD - O * 2) 0       [mix 0 CAP HBarPos] BBS
+					VBar.r (RightSB - BBD) [mix 0 CAP HBarPos] CAP BBS
+					VBar.r (RightSB - BBD - O * 2) 0 [mix 0 CAP HBarPos] BBS

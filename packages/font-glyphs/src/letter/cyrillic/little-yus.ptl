@@ -12,8 +12,8 @@ glyph-block Letter-Cyrillic-Little-Yus : begin
 	glyph-block-import Letter-Latin-Upper-A : AShape AConfig ASerifs
 	glyph-block-import Letter-Cyrillic-Iotated : Iotation IotationSerifFromSelector
 
-	define SLAB-LEFT          2
-	define SLAB-RIGHT         4
+	define SLAB-LEFT 2
+	define SLAB-RIGHT 4
 	define BODY-SQUARE-BOTTOM 3
 
 	define [CyrLittleYusShape df top bodyShape slabKind _fine diag] : glyph-proc
@@ -59,16 +59,16 @@ glyph-block Letter-Cyrillic-Little-Yus : begin
 		include : difference
 			with-transform [ApparentTranslate shift 0] : if fClosed
 				CyrClosedLittleYusShape subDf top bodyShape slabKind fine diag
-				CyrLittleYusShape       subDf top bodyShape slabKind fine diag
+				CyrLittleYusShape subDf top bodyShape slabKind fine diag
 			intersection
 				MaskBelow fine
 				MaskLeft [mix xIotaRight [Math.min (subDf.leftSB + shift) (xIotaRight + botGap)] 0.5]
 
 		include : Iotation.A df top
 			hBarRight -- [if diag df.leftSB : mix df.leftSB df.rightSB (2 / 3)]
-			hBarY     -- (yBar - fine / 2)
-			fCapital  -- fCapital
-			swRef     -- fine
+			hBarY -- (yBar - fine / 2)
+			fCapital -- fCapital
+			swRef -- fine
 			serifType -- serifType
 		if diag : begin
 			local xRight : mix df.leftSB df.rightSB (2 / 3)

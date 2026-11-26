@@ -13,9 +13,9 @@ glyph-block Letter-Latin-Lower-Q : begin
 	glyph-block-import Letter-Shared-Shapes : OBarRight TopHook RetroflexHook PalatalHook LetterBarOverlay
 	glyph-block-import Letter-Shared-Shapes : StemCutY ApplyDiagCut
 
-	define TERMINAL-NORMAL  0
-	define TERMINAL-TAILED  1
-	define TERMINAL-DIAG    2
+	define TERMINAL-NORMAL 0
+	define TERMINAL-TAILED 1
+	define TERMINAL-DIAG 2
 
 	define [QStem terminal df barTop barBot opticalTop opticalBot cut] : glyph-proc
 		local y : StemCutY barBot barTop cut
@@ -27,7 +27,7 @@ glyph-block Letter-Latin-Lower-Q : begin
 				define path : include : RightwardDiagTailedBar df.rightSB y.bot y.top df.mvs
 				define lastKnot path.rhsKnots.[path.rhsKnots.length - 1]
 				set-base-anchor 'palatalHookAttach' lastKnot.x lastKnot.y
-				set-base-anchor 'trailing'          lastKnot.x lastKnot.y
+				set-base-anchor 'trailing' lastKnot.x lastKnot.y
 			__ : begin
 				include : VBar.r df.rightSB y.bot y.top df.mvs
 				set-base-anchor 'trailing' df.rightSB Descender
@@ -37,18 +37,18 @@ glyph-block Letter-Latin-Lower-Q : begin
 		local ada : fallback _ada df.smallArchDepthA
 		local adb : fallback _adb df.smallArchDepthB
 		set-base-anchor 'overlay' df.middle (top / 2)
-		set-base-anchor 'strike'  df.middle (top / 2)
+		set-base-anchor 'strike' df.middle (top / 2)
 		include : if fFlat
 			then : OBarRight.toothlessCorner top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 				rise -- 0
 			else : OBarRight.shape top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 		include : QStem terminal df top bottom top bottom cut
 
@@ -56,17 +56,17 @@ glyph-block Letter-Latin-Lower-Q : begin
 		local ada : fallback _ada df.smallArchDepthA
 		local adb : fallback _adb df.smallArchDepthB
 		set-base-anchor 'overlay' df.middle (top / 2)
-		set-base-anchor 'strike'  df.middle (top / 2)
+		set-base-anchor 'strike' df.middle (top / 2)
 		include : if fFlat
 			then : OBarRight.flatTopAndBottom top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 			else : OBarRight.earlessCorner top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 				rise -- 0
 		include : QStem terminal df top bottom top bottom cut
@@ -75,17 +75,17 @@ glyph-block Letter-Latin-Lower-Q : begin
 		local ada : fallback _ada df.smallArchDepthA
 		local adb : fallback _adb df.smallArchDepthB
 		set-base-anchor 'overlay' df.middle (top / 2)
-		set-base-anchor 'strike'  df.middle (top / 2)
+		set-base-anchor 'strike' df.middle (top / 2)
 		include : if fFlat
 			then : OBarRight.earlessCornerFlat top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 			else : OBarRight.earlessCorner top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 		include : QStem terminal df (top - DToothlessRise) bottom (top - DToothlessRise) bottom cut
 
@@ -93,18 +93,18 @@ glyph-block Letter-Latin-Lower-Q : begin
 		local ada : fallback _ada df.smallArchDepthA
 		local adb : fallback _adb df.smallArchDepthB
 		set-base-anchor 'overlay' df.middle (top / 2)
-		set-base-anchor 'strike'  df.middle (top / 2)
+		set-base-anchor 'strike' df.middle (top / 2)
 		include : if fFlat
 			then : OBarRight.earlessRoundedFlat top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 				yTerminal -- ada
 			else : OBarRight.earlessRounded top 0 df.leftSB df.rightSB
-				ada  -- ada
-				adb  -- adb
-				sw   -- df.mvs
+				ada -- ada
+				adb -- adb
+				sw -- df.mvs
 				fine -- df.shoulderFine
 				yTerminal -- ada
 		include : QStem terminal df (top - adb) bottom (top - adb) bottom cut
@@ -112,7 +112,7 @@ glyph-block Letter-Latin-Lower-Q : begin
 	define [RtSerif df y] : tagged 'serifRT' : HSerif.rt df.rightSB y SideJut df.mvs
 	define [RbSerif df y] : tagged 'serifRB' : union
 		HSerif.lb (df.rightSB - [HSwToV : 0.5 * df.mvs]) y (MidJutSide - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
-		HSerif.rb (df.rightSB - [HSwToV : 0.5 * df.mvs]) y (Jut        - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
+		HSerif.rb (df.rightSB - [HSwToV : 0.5 * df.mvs]) y (Jut - [HSwToV : 0.5 * (Stroke - df.mvs)]) df.mvs
 	define [RbSerifOuter df y] : tagged 'serifRB' : HSerif.rb df.rightSB y SideJut df.mvs
 	define [RtSerifAuto df y] : NeedSlab SLAB : RtSerif df y
 	define [RbSerifAuto df y] : NeedSlab SLAB : RbSerif df y
@@ -121,29 +121,29 @@ glyph-block Letter-Latin-Lower-Q : begin
 
 	define QConfig : SuffixCfg.weave
 		object # ear
-			''                    EaredBody
-			flatTop               FlatTopBody
-			earlessCorner         EarlessCornerBody
-			earlessRounded        EarlessRoundedBody
+			'' EaredBody
+			flatTop FlatTopBody
+			earlessCorner EarlessCornerBody
+			earlessRounded EarlessRoundedBody
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded') : return : object
-				''         ''
+				'' ''
 			return : object
-				''         ''
-				topCut     'topCut'
+				'' ''
+				topCut 'topCut'
 		function [ear cut] : object # bowl
-			''        false
-			flatBowl  true
+			'' false
+			flatBowl true
 		function [ear cut bowl] : object
-			''                 TERMINAL-NORMAL
-			tailed             TERMINAL-TAILED
-			diagonalTailed     TERMINAL-DIAG
+			'' TERMINAL-NORMAL
+			tailed TERMINAL-TAILED
+			diagonalTailed TERMINAL-DIAG
 		object # serifs
-			serifless           {null     null        }
-			motionSerifed       {RtSerif  null        }
-			bottomSerifed       {null     RbSerif     }
-			motionBottomSerifed {null     RbSerifOuter}
-			serifed             {RtSerif  RbSerif     }
+			serifless {null null }
+			motionSerifed {RtSerif null }
+			bottomSerifed {null RbSerif }
+			motionBottomSerifed {null RbSerifOuter}
+			serifed {RtSerif RbSerif }
 
 	glyph-block-export QConfig
 
@@ -158,7 +158,7 @@ glyph-block Letter-Latin-Lower-Q : begin
 		create-glyph "qStroke.\(suffix)" : glyph-proc
 			include [refer-glyph "q.\(suffix)"] AS_BASE ALSO_METRICS
 			include : LetterBarOverlay.r.in
-				x   -- RightSB
+				x -- RightSB
 				bot -- (Descender + [if sRB Stroke 0])
 				top -- 0
 
@@ -177,10 +177,10 @@ glyph-block Letter-Latin-Lower-Q : begin
 				local tinyGap : Math.max (Width / 32) : AdviceStroke 24
 				local sideJut : if (sRB || terminal !== TERMINAL-NORMAL) SideJut 0
 				include : PalatalHook.r
-					x       -- (df.rightSB + sideJut + tinyGap)
-					y       -- 0
-					xLink   -- subDf.rightSB
-					refSw   -- subDf.mvs
+					x -- (df.rightSB + sideJut + tinyGap)
+					y -- 0
+					xLink -- subDf.rightSB
+					refSw -- subDf.mvs
 					maskOut -- [intersection [MaskBelow 0] [MaskLeft : subDf.rightSB + sideJut + tinyGap]]
 
 		if (terminal === TERMINAL-NORMAL && !sRB) : begin
@@ -222,6 +222,6 @@ glyph-block Letter-Latin-Lower-Q : begin
 			OShapeOutline.NoOvershoot XH 0 SB (RightSB - BBD - [HSwToV BBS])
 			VBar.l ((SB + OX) + BBD) 0 XH BBS
 		include : OBarRight.shape
-			left  -- SB
+			left -- SB
 			right -- (RightSB - BBD)
-			sw    -- BBS
+			sw -- BBS

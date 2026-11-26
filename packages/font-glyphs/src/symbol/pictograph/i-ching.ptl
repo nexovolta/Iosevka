@@ -33,7 +33,7 @@ glyph-block Symbol-Pictograph-I-Ching : begin
 			local startY : SymbolMid - offsetY * (n - 1) / 2
 			foreach [bit : range 0 n] : begin
 				include : with-transform [ApparentTranslate 0 (startY + offsetY * bit)]
-					refer-glyph : if [not : maskBit offset bit] 'iChing/barYang' 'iChing/barYin'
+					refer-glyph : if (![maskBit offset bit]) 'iChing/barYang' 'iChing/barYin'
 
 	define [hexagramPatterns su order] : foreach [offset : range 0 64] : begin
 		create-glyph ('iChing/Pattern/6/' + offset) (su + offset) : glyph-proc
@@ -41,7 +41,7 @@ glyph-block Symbol-Pictograph-I-Ching : begin
 			local startY : SymbolMid - offsetY * (6 - 1) / 2
 			foreach [bit : range 0 6] : begin
 				include : with-transform [ApparentTranslate 0 (startY + offsetY * bit)]
-					refer-glyph : if [not : maskBit order.(offset) bit] 'iChing/barYang' 'iChing/barYin'
+					refer-glyph : if (![maskBit order.(offset) bit]) 'iChing/barYang' 'iChing/barYin'
 
 	define [stringPattern pat] : glyph-proc
 		local n pat.length
@@ -52,7 +52,7 @@ glyph-block Symbol-Pictograph-I-Ching : begin
 				refer-glyph : match pat.(bit)
 					[Just '0'] 'iChing/barYang'
 					[Just '1'] 'iChing/barYin'
-					__         'iChing/barRen'
+					__ 'iChing/barRen'
 
 	define [stringPatterns su pats] : foreach [offset : range 0 pats.length] : begin
 		local pat pats.(offset)

@@ -26,30 +26,30 @@ glyph-block Letter-Greek-Psi : begin
 			HSerif.mt (df.rightSB - [HSwToV : 0.5 * df.mvs]) y3 (Jut - [HSwToV : 0.5 * (Stroke - df.mvs)])
 			HSerif.rt df.rightSB y3 SideJut
 		if doSerifMT : include : tagged 'serifMT' : piecewise
-			(y4 > y3)    : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) y4 SideJut
+			(y4 > y3) : HSerif.lt (df.middle - [HSwToV : 0.5 * df.mvs]) y4 SideJut
 			doFullSerifs : HSerif.mt df.middle y4 (Jut - [HSwToV : 0.5 * (Stroke - df.mvs)])
-			true         : no-shape
+			true : no-shape
 		if doSerifMB : include : tagged 'serifMB' : HSerif.mb df.middle y1 MidJutCenter
 
 	define PsiCapSerifConfig : object
-		serifless   {false  false  false  false}
-		serifed     {true   true   true   true }
-		baseSerifed {false  false  false  true }
+		serifless {false false false false}
+		serifed {true true true true }
+		baseSerifed {false false false true }
 
 	define [CyrPsiShape fBarStraight fSquareTop] : function [] : with-params [df y1 y2 y3 y4 ada adb doSerifLT doSerifRT doSerifMT doSerifMB [fLower false]] : glyph-proc
-		local fine    : df.adviceThinnerStroke 3.5
-		local coarse  : VSwToH : 2 * VCornerHalfWidth * (fine / Stroke)
+		local fine : df.adviceThinnerStroke 3.5
+		local coarse : VSwToH : 2 * VCornerHalfWidth * (fine / Stroke)
 		local swSerif : clamp fine Stroke coarse
 		local fSerifStraight : if fSquareTop 0 fBarStraight
 
 		local doFullSerifs : !fLower && (df.width > para.refJut * 7) && (doSerifLT || doSerifRT) && doSerifMT && doSerifMB
 		include : with-transform [ApparentTranslate 0 (y2 - 0)] : union
 			VHookRightShape
-				df             -- df
-				fBarStraight   -- fBarStraight
-				top            -- (y3 - y2)
-				sw             -- fine
-				fSquareTop     -- fSquareTop
+				df -- df
+				fBarStraight -- fBarStraight
+				top -- (y3 - y2)
+				sw -- fine
+				fSquareTop -- fSquareTop
 				hookWidthOuter -- (TailX / 3)
 				hookWidthInner -- (TailX / 3 - [HSwToV : 0.25 * fine])
 			if doSerifLT
@@ -61,15 +61,15 @@ glyph-block Letter-Greek-Psi : begin
 		include : VBar.m df.middle y2 y4 fine
 		include : VBar.m df.middle y1 (y2 + HalfStroke) coarse
 		if doSerifMT : include : tagged 'serifMT' : piecewise
-			(y4 > y3)    : HSerif.lt (df.middle - [HSwToV : 0.5 * fine]) y4 SideJut [Math.min swSerif : y4 - y3] fine
+			(y4 > y3) : HSerif.lt (df.middle - [HSwToV : 0.5 * fine]) y4 SideJut [Math.min swSerif : y4 - y3] fine
 			doFullSerifs : HSerif.mt df.middle y4 (Jut - [HSwToV : 0.5 * (Stroke - fine)]) swSerif
-			true         : no-shape
+			true : no-shape
 		if doSerifMB : include : tagged 'serifMB' : HSerif.mb df.middle y1 (MidJutCenter - [HSwToV : 0.5 * (Stroke - coarse)]) swSerif
 
 	define VConfig : object
-		straight  {true   0}
-		curly     {false  0}
-		squareTop {true   1}
+		straight {true 0}
+		curly {false 0}
+		squareTop {true 1}
 
 	foreach {suffix {doLT doRT doMT doMB}} [Object.entries PsiCapSerifConfig] : do
 		create-glyph "grek/Psi.\(suffix)" : glyph-proc
@@ -112,19 +112,19 @@ glyph-block Letter-Greek-Psi : begin
 
 	define GrekLowerPsiConfig : SuffixCfg.weave
 		object # top
-			''          {Ascender      'bp'}
-			shortNeck   {yShortNeck1   'bp'}
-			shorterNeck {yShorterNeck  'bp'}
-			flatTop     {XH            'p' }
+			'' {Ascender 'bp'}
+			shortNeck {yShortNeck1 'bp'}
+			shorterNeck {yShorterNeck 'bp'}
+			flatTop {XH 'p' }
 		object # serifs
-			serifless          {false false false}
-			leftSerifed        {true  false false}
-			baseSerifed        {false false true }
-			leftBaseSerifed    {true  false true }
-			topSerifed         {false true  false}
-			topLeftSerifed     {true  true  false}
-			topBaseSerifed     {false true  true }
-			topLeftBaseSerifed {true  true  true }
+			serifless {false false false}
+			leftSerifed {true false false}
+			baseSerifed {false false true }
+			leftBaseSerifed {true false true }
+			topSerifed {false true false}
+			topLeftSerifed {true true false}
+			topBaseSerifed {false true true }
+			topLeftBaseSerifed {true true true }
 
 	foreach {suffix {{top mk} {doLT doMT doMB}}} [Object.entries GrekLowerPsiConfig] : do
 		define df : DivFrame para.advanceScaleM 3
@@ -137,7 +137,7 @@ glyph-block Letter-Greek-Psi : begin
 				doSerifRT -- false
 				doSerifMT -- doMT
 				doSerifMB -- doMB
-				fLower    -- true
+				fLower -- true
 
 		DefineSelectorGlyph 'cyrl/psi' suffix df mk
 
@@ -150,7 +150,7 @@ glyph-block Letter-Greek-Psi : begin
 					doSerifRT -- false
 					doSerifMT -- doMT
 					doSerifMB -- doMB
-					fLower    -- true
+					fLower -- true
 
 		select-variant "cyrl/psi.\(suffix)" (follow -- 'cyrl/Psi/Izhitsa')
 

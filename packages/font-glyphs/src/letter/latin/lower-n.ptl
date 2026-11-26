@@ -64,64 +64,64 @@ glyph-block Letter-Latin-Lower-N : begin
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.shape
-			left   -- (left + [HSwToV sw])
-			right  -- right
-			top    -- top
+			left -- (left + [HSwToV sw])
+			right -- right
+			top -- top
 			bottom -- yBR
-			ada    -- ada
-			adb    -- adb
-			fine   -- (ShoulderFine * (sw / Stroke))
+			ada -- ada
+			adb -- adb
+			fine -- (ShoulderFine * (sw / Stroke))
 			stroke -- sw
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+		set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 
 	define [FlatTopBody top left right yBR sw cut _ada _adb] : glyph-proc
 		include : NLeftBar left 0 top sw cut
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.earlessCorner
-			left   -- left
-			right  -- right
-			top    -- top
+			left -- left
+			right -- right
+			top -- top
 			bottom -- yBR
-			ada    -- ada
-			adb    -- adb
+			ada -- ada
+			adb -- adb
 			stroke -- sw
-			rise   -- 0
+			rise -- 0
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+		set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 
 	define [EarlessCornerBody top left right yBR sw cut _ada _adb] : glyph-proc
 		include : NLeftBar left 0 (top - DToothlessRise) sw cut
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		include : nShoulder.earlessCorner
-			left   -- left
-			right  -- right
-			top    -- top
+			left -- left
+			right -- right
+			top -- top
 			bottom -- yBR
-			ada    -- ada
-			adb    -- adb
+			ada -- ada
+			adb -- adb
 			stroke -- sw
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+		set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 
 	define [EarlessRoundedBody top left right yBR sw cut _ada _adb] : glyph-proc
 		local ada : fallback _ada SmallArchDepthA
 		local adb : fallback _adb SmallArchDepthB
 		local y0 : if (cut === 'bottomCut') HalfStroke 0
 		include : nShoulder.earlessRounded
-			left   -- left
-			right  -- right
-			top    -- top
+			left -- left
+			right -- right
+			top -- top
 			bottom -- yBR
-			ada    -- ada
-			adb    -- adb
+			ada -- ada
+			adb -- adb
 			stroke -- sw
 			leftY0 -- y0
 		include : ApplyDiagCut (cut -- cut) (side -- 'l') (x -- left) (bot -- 0) (top -- top) (sw -- sw)
 		set-base-anchor 'overlay' [mix left right 0.5] (top / 2)
-		set-base-anchor 'strike'  [mix left right 0.5] (top / 2)
+		set-base-anchor 'strike' [mix left right 0.5] (top / 2)
 
 	define [EndingTail right yBot yBR sw] : glyph-proc
 		include : RightwardTailedBar right yBot yBR sw
@@ -129,56 +129,56 @@ glyph-block Letter-Latin-Lower-N : begin
 
 	define NConfig : SuffixCfg.weave
 		object # ear
-			''                  EaredBody
-			flatTop             FlatTopBody
-			earlessCorner       EarlessCornerBody
-			earlessRounded      EarlessRoundedBody
-			earlessCornerHTB    EarlessCornerBody
-			earlessRoundedHTB   EarlessRoundedBody
+			'' EaredBody
+			flatTop FlatTopBody
+			earlessCorner EarlessCornerBody
+			earlessRounded EarlessRoundedBody
+			earlessCornerHTB EarlessCornerBody
+			earlessRoundedHTB EarlessRoundedBody
 		function [ear] : begin
 			if (ear === 'earlessCorner' || ear === 'earlessRounded' || ear === 'earlessCornerHTB' || ear === 'earlessRoundedHTB') : return : object
-				''         ''
+				'' ''
 			return : object
-				''         ''
-				topCut     'topCut'
+				'' ''
+				topCut 'topCut'
 		object # terminal
-			straight            0
-			tailed              1
+			straight 0
+			tailed 1
 		function [ear cut tail] : object # serifs
-			serifless           {nothing  nothing  nothing}
+			serifless {nothing nothing nothing}
 			topLeftSerifed : list
 				match ear
-					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCorner'] || [Just 'earlessRounded']) nothing
 					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
-					__                                                        NTopLeftSerif
+					__ NTopLeftSerif
 				begin nothing
 				begin nothing
 			motionSerifed : list
 				match ear
-					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCorner'] || [Just 'earlessRounded']) nothing
 					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
-					__                                                        NTopLeftSerif
+					__ NTopLeftSerif
 				begin nothing
 				if (tail != 'tailed') NBottomRightSerifItalic
 			serifed : list
 				match ear
-					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCorner'] || [Just 'earlessRounded']) nothing
 					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
-					__                                                        NTopLeftSerif
+					__ NTopLeftSerif
 				begin NBottomLeftSerif
 				if (tail != 'tailed') NBottomRightSerifUpright
 			serifedItalicYatCorner : list
 				match ear
-					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCorner'] || [Just 'earlessRounded']) nothing
 					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
-					__                                                        NTopLeftSerif
+					__ NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin NBottomRightYatSerif
 			serifedItalicYatCursive : list
 				match ear
-					([Just 'earlessCorner']    || [Just 'earlessRounded'])    nothing
+					([Just 'earlessCorner'] || [Just 'earlessRounded']) nothing
 					([Just 'earlessCornerHTB'] || [Just 'earlessRoundedHTB']) NHTB
-					__                                                        NTopLeftSerif
+					__ NTopLeftSerif
 				begin NBottomLeftYatSerif
 				begin nothing
 
@@ -290,7 +290,7 @@ glyph-block Letter-Latin-Lower-N : begin
 						y2 -- 0
 						swBefore -- sw
 				if sLT : include : sLT [DivFrame 1] XH sw
-				if sLB : include : sLB [DivFrame 1] 0  sw
+				if sLB : include : sLB [DivFrame 1] 0 sw
 
 			create-glyph "nCrossedTail.\(suffix)" : glyph-proc
 				include : MarkSet.e
@@ -305,7 +305,7 @@ glyph-block Letter-Latin-Lower-N : begin
 					straight.down.start RightSB y2 [widths.rhs.heading sw Downward]
 					CurlyTail.f fine 0 m2 x2 (swBefore -- sw)
 				if sLT : include : sLT [DivFrame 1] XH sw
-				if sLB : include : sLB [DivFrame 1] 0  sw
+				if sLB : include : sLB [DivFrame 1] 0 sw
 
 			create-glyph "engCap.\(suffix)" : glyph-proc
 				include : MarkSet.capital
@@ -315,8 +315,8 @@ glyph-block Letter-Latin-Lower-N : begin
 					begin Jut
 					clamp 0 [boole sLB] : StrokeWidthBlend 0 1
 				include : VerticalHook.r
-					x      -- RightSB
-					y      -- (O + Hook + HalfStroke)
+					x -- RightSB
+					y -- (O + Hook + HalfStroke)
 					xDepth -- (-xHookDepth)
 					yDepth -- Hook
 				if sLT : include : sLT [DivFrame 1] CAP
@@ -407,11 +407,11 @@ glyph-block Letter-Latin-Lower-N : begin
 	select-variant 'Eng' 0x14A (follow -- 'eng') (shapeFrom -- 'engCap')
 	select-variant 'eng' 0x14B
 	link-reduced-variant 'eng/phoneticRight' 'eng'
-	select-variant 'nCurlyTail'     0x235   (follow -- 'eng')
-	select-variant 'nHookLeft'      0x272
-	select-variant 'nRTail'         0x273   (follow -- 'eng')
-	select-variant 'nCrossedTail'   0xAB3B  (follow -- 'eng')
-	select-variant 'engCrossedTail' 0xAB3C  (follow -- 'eng')
+	select-variant 'nCurlyTail' 0x235 (follow -- 'eng')
+	select-variant 'nHookLeft' 0x272
+	select-variant 'nRTail' 0x273 (follow -- 'eng')
+	select-variant 'nCrossedTail' 0xAB3B (follow -- 'eng')
+	select-variant 'engCrossedTail' 0xAB3C (follow -- 'eng')
 	select-variant 'engPalatalHook' 0x1DF14 (follow -- 'eng')
 
 	select-variant 'RInsular' 0xA782 (follow -- 'engHookLeft')
@@ -448,14 +448,14 @@ glyph-block Letter-Latin-Lower-N : begin
 		include : HBar.b (df.rightSB - bbd) df.rightSB 0 bbs
 		include : nShoulder.shape
 			stroke -- bbs
-			left   -- (df.leftSB + bbd + [HSwToV bbs])
-			right  -- df.rightSB
-			fine   -- ShoulderFine
+			left -- (df.leftSB + bbd + [HSwToV bbs])
+			right -- df.rightSB
+			fine -- ShoulderFine
 		include : intersection
 			VBar.r (df.rightSB - bbd) 0 XH bbs
 			nShoulder.mask
 				stroke -- bbs
-				left   -- (df.leftSB  + 1 + bbd + [HSwToV bbs])
-				right  -- (df.rightSB - 1)
-				top    -- (XH - 1)
-				fine   -- ShoulderFine
+				left -- (df.leftSB + 1 + bbd + [HSwToV bbs])
+				right -- (df.rightSB - 1)
+				top -- (XH - 1)
+				fine -- ShoulderFine

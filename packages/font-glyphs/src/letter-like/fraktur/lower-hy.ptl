@@ -13,15 +13,15 @@ glyph-block LetterLike-Fraktur-Lower-HY : begin
 
 	define [LeftHalfShape mode box] : lift-@ : fraktur-stroke S
 		LTDecoration box.left box.top
-		corner (@xL = box.left)        [slY @xB @yB @xL SlopeB]
+		corner (@xL = box.left) [slY @xB @yB @xL SlopeB]
 		corner (@xB = @xM - DecoSizeX) (@yB = box.bottom)
-		corner (@xM = box.xMid)        (@yB + DecoSizeY)
+		corner (@xM = box.xMid) (@yB + DecoSizeY)
 
 	define [RightHalfShape mode box] : lift-@ : fraktur-stroke S
-		corner                (@xL = box.left)         [slY @xT @yT @xL SlopeA]
+		corner (@xL = box.left) [slY @xT @yT @xL SlopeA]
 		[cg2.sr SlopeB].start (@xT = [box.xp PHexTop]) (@yT = box.top)
-		straight.down.mid     (@xR = box.right)         box.yMid
-		corner                [box.xp PHexTop]          box.bottom
+		straight.down.mid (@xR = box.right) box.yMid
+		corner [box.xp PHexTop] box.bottom
 
 	create-glyph 'frak/h' 0x1D525 : glyph-proc
 		local df : include : LowerDf 1
