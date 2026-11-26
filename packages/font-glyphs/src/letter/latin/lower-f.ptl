@@ -336,42 +336,10 @@ glyph-block Letter-Latin-Lower-F : begin
 	select-variant 'f/compLigLeft3' (shapeFrom -- 'f')
 	select-variant 'f/compLigLeft4' (shapeFrom -- 'f')
 
-	define [FengTrillCopy xL xR yBot yTop sw fine ada adb] : nShoulder.shape
-		left    -- xL
-		right   -- xR
-		top     -- yTop
-		bottom  -- yBot
-		stroke  -- sw
-		fine    -- fine
-		ada     -- ada
-		adb     -- adb
-		leftY0  -- yBot
-
-	define [FengTrillStdHook dfF pBar ch sym] : begin
+	define [FengTrillBarLeft dfF ch sym] : begin
 		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK) || (ch === CH-VERTICAL-CUT) || (ch === CH-DIAGONAL-CUT)
-		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
 		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
-		local barLeft : FBarLeftPos dfF sym balancedBarLeft
-		local {xCrossLeft xCrossRight} : FCrossBarPos dfF sym dfF.leftSB [mix dfF.leftSB dfF.rightSB pBar]
-		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight
-		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) (dfF.rightSB + RBalance2 - (OX - O) + hookExtra)
-		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
-
-	define [FengTrillNarrowHook dfF pBar ch sym] : begin
-		local barAtCenter : (ch === CH-HOOK) || (ch === CH-DIAGONAL-HOOK) || (ch === CH-VERTICAL-CUT) || (ch === CH-DIAGONAL-CUT)
-		local barLeft0 : [mix dfF.leftSB dfF.rightSB 0.35] - [HSwToV QuarterStroke]
-		local balancedBarLeft : [mix dfF.leftSB dfF.rightSB : if barAtCenter 0.45 0.35] - [HSwToV : Stroke * [if barAtCenter 0.45 0.25]]
-		local barLeft : FBarLeftPos dfF sym balancedBarLeft
-		local pAdaptive : if (para.advanceScaleF < 1) ((1 - dfF.adws) / (1 - para.advanceScaleF)) 0
-		local hookScale : mix 0.9 1.0 pAdaptive
-		local stdCrossRight : mix dfF.leftSB dfF.rightSB pBar
-		local narrowCrossRight : mix barLeft stdCrossRight [mix 0.85 1.4 pAdaptive]
-		local narrowCrossLeft : mix dfF.leftSB barLeft [mix 0.5 0.375 pAdaptive]
-		local {xCrossLeft xCrossRight} : FCrossBarPos dfF sym narrowCrossLeft narrowCrossRight
-		local hookExtra : FAsymTopHookExtra dfF sym barLeft barLeft0 xCrossRight hookScale
-		local hookRight : mix barLeft0 (dfF.rightSB + RBalance2 - (OX - O) + hookExtra) hookScale
-		local tip0 : Math.max (barLeft0 + [HSwToV : 2.125 * Stroke]) hookRight
-		return : list barLeft barLeft0 hookExtra (tip0 + (barLeft - barLeft0))
+		return : FBarLeftPos dfF sym balancedBarLeft
 
 	define [FengTrillShape Body fNarrow pBar ch yBar sym] : glyph-proc
 		local df : include : DivFrame para.advanceScaleMM 2
@@ -382,41 +350,37 @@ glyph-block Letter-Latin-Lower-F : begin
 		local kern : (dfLeft.width - dfLeft.rightSB) + dfEng.leftSB
 		local xEngPart : dfLeft.width - kern
 
-		local {barLeft0 barLeft00 hookExtra tipX0} : if fNarrow
-			FengTrillNarrowHook dfLeft pBar ch sym
-			FengTrillStdHook dfLeft pBar ch sym
-		local barLeft barLeft0
-		local tipX tipX0
+		local barLeft : FengTrillBarLeft dfLeft ch sym
 		local sw Stroke
 		local xN : xEngPart + dfEng.leftSB
 		local xEng : xEngPart + dfEng.rightSB
 
 		local vsw : HSwToV sw
-		local wArch : (xEng - barLeft + 0.5 * vsw) / 3
-		local xc : barLeft + vsw
-		local kx : (barLeft + wArch - xc) / (tipX - xc)
-		local x1 : barLeft + wArch - 0.5 * vsw
-		local x2 : x1 + wArch
-		local x3 : x2 + wArch
+		local hookDepth : FlatHookDepth dfLeft
+		local yJoin : Math.min (Ascender - ArchDepthA * 0.8) [Math.max XH (Ascender - hookDepth.y)]
+		local pitch : (xEng - barLeft - vsw) / 3
+		local toothSw : Math.min sw [VSwToH : 0.62 * pitch]
+		local toothDepth : CornerHookDepth Hook sw
 		local compress : df.width / (xEngPart + dfEng.width)
-		local yBot : Ascender - Hook * 0.75
 		local bodyG : new-glyph : glyph-proc
 			include : Body dfLeft pBar yBar ch sym
-		define [HookZone] : spiro-outline
-			corner xc (Ascender + 200)
-			corner (2 * Width) (Ascender + 200)
-			corner (2 * Width) (yBot - 4)
-			corner xc (yBot - 4)
 
 		include : with-transform [Scale compress 1] : glyph-proc
-			include : difference bodyG [HookZone]
-			include : with-transform [ScaleAround xc 0 kx 1] : intersection bodyG [HookZone]
+			include : intersection bodyG [MaskBelow yJoin]
+			include : dispiro
+				widths.lhs sw
+				flat xEng Ascender [heading Leftward]
+				curl [Math.min (barLeft + hookDepth.x) (xEng - TINY)] Ascender
+				archv.superness DesignParameters.tightHookSuperness
+				flat barLeft yJoin [heading Downward]
+				curl barLeft (yJoin - sw) [heading Downward]
+			foreach [k : list 1 2 3] : include : VBar.r (barLeft + vsw + k * pitch) (Ascender - toothDepth) Ascender toothSw
 			include : HCrossBar.top barLeft (xN + [HSwToV Stroke]) yBar
 		include : with-transform [ApparentTranslate (xEngPart * compress) 0]
 			with-transform [Scale compress 1] : glyph-proc
 				include : VBar.l dfEng.leftSB 0 XH Stroke
 				include : nShoulder.shape
-					left   -- (dfEng.leftSB + [HSwToV Stroke])
+					left   -- (dfEng.leftSB + [HSwToV : 0.9 * Stroke])
 					right  -- dfEng.rightSB
 					top    -- XH
 					bottom -- 0
@@ -425,18 +389,7 @@ glyph-block Letter-Latin-Lower-F : begin
 					adb    -- dfEng.smallArchDepthB
 				include : EngHook dfEng.rightSB 0 Descender
 
-		local yTop Ascender
-		local hArc : yTop - yBot
-		local ada : Math.min dfEng.smallArchDepthA (0.9 * hArc)
-		local adb : Math.min dfEng.smallArchDepthB (0.9 * hArc)
-		local fine ShoulderFine
-		local join : HSwToV fine
-
-		include : with-transform [Scale compress 1] : glyph-proc
-			include : FengTrillCopy x1 x2 yBot yTop sw fine ada adb
-			include : FengTrillCopy (x2 - join) x3 yBot yTop sw fine ada adb
-
-		include : LeaningAnchor.Above.Hook (barLeft * compress) (x3 * compress)
+		include : LeaningAnchor.Above.Hook (barLeft * compress) (xEng * compress)
 		include : LeaningAnchor.Below.VBar.r (xEng * compress) (sw * compress)
 		set-base-anchor 'overlay' [mix (barLeft * compress) (xEng * compress) 0.5] [mix 0 XH 0.5]
 
@@ -457,9 +410,9 @@ glyph-block Letter-Latin-Lower-F : begin
 			''                                SYM-BALANCED
 			asymmetric                        SYM-LEFT
 		object # crossbar
-			''                                ySmallFBarPos
+			''                                XH
 			crossbarAtXHeight                 XH
-			crossbarAtHalfAscenderHeight      ([mix 0 Ascender 0.5] + HalfStroke)
+			crossbarAtHalfAscenderHeight      XH
 
 	foreach {suffix {{Body fNarrow} {pBar ch} sym yBar}} [Object.entries FengTrillConfig] : do
 		create-glyph "fengTrillDesign.\(suffix)" : glyph-proc

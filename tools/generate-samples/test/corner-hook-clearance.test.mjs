@@ -18,6 +18,41 @@ const metricOverride = {
 	smallArchDepth: 256,
 };
 
+function assertFlatTopEtCentered(glyphStore, para) {
+	const metrics = calculateMetrics(para);
+	const stroke = metrics.AdviceStroke2(2.5, 3, metrics.CAP);
+	const stemRight = (metrics.SB + 0.75 * (metrics.RightSB - metrics.SB) + metrics.Stroke / 2 + metrics.RightSB) / 2;
+	const archRatio = metrics.ArchDepthB / (metrics.ArchDepthA + metrics.ArchDepthB);
+	const bowlJoin = metrics.CAP - ((metrics.CAP * metrics.OverlayPos + stroke / 2) * (1 - archRatio)
+		+ (metrics.CAP - metrics.O - stroke) * archRatio) - metrics.HSwToV(metrics.TanSlope) * stroke;
+	const stemTop = 0.625 * (metrics.CAP * metrics.OverlayPos + stroke / 2)
+		+ 0.375 * (metrics.CAP - metrics.SHook) + 0.125 * stroke;
+	for (const form of ["", "Toothed", "ToothlessCorner", "ToothlessRounded", "BottomCut", "ToothedTailed", "FlatBottomSerifed"]) {
+		for (const serif of ["Serifless", "Serifed"]) {
+			const name = `ampersand.flatTopEt${form}${serif}`;
+			const g = glyphStore.queryByNameEnsured(name);
+			const segments = BooleanGeom.removeOverlap(g.geometry.toBezArcs(), "nonZero", 16384)
+				.flatMap(contour => contour.map(arc =>
+					[arc.a, arc.b, arc.c, arc.d].map(p => g.gizmo.unapply(p))));
+			for (const y of [(metrics.CAP + stroke) / 2, (metrics.CAP - stroke) / 2]) {
+				assert.ok(segments.some(points => points.every(p => Math.abs(p.y - y) < 0.1) &&
+					Math.max(...points.map(p => p.x)) > stemRight + 0.1 * (metrics.Width - stemRight)),
+				`${name}: crossbar is not centered or does not protrude to the right`);
+			}
+			assert.ok(segments.some(points => points.every(p => Math.abs(p.y - stemTop) < 0.1) &&
+				Math.max(...points.map(p => p.x)) > stemRight - 0.1 * stroke),
+			`${name}: vertical protrusion has the wrong height`);
+			if (["Toothed", "BottomCut", "ToothedTailed"].includes(form)) {
+				assert.ok(!segments.some(points =>
+					points.every(p => Math.abs(p.y - bowlJoin) < 0.1) &&
+					Math.abs(points[3].x - points[0].x) > 0.1 &&
+					points.some(p => p.x > stemRight - 1.5 * metrics.HSwToV(stroke) && p.x < stemRight)),
+				`${name}: bowl and tooth do not join smoothly`);
+			}
+		}
+	}
+}
+
 for (const [weight, width, spacing] of [
 	[260, 586, "term"],
 	[530, 586, "term"],
@@ -117,6 +152,7 @@ for (const [weight, width, spacing] of [
 			"cursive lambda corner terminal is too long");
 		}
 		if (width === 586) {
+			assertFlatTopEtCentered(glyphStore, para);
 			const metrics = calculateMetrics(para);
 			for (const family of ["et", "upperOpenEt", "closedEt"]) {
 				const hooks = family === "closedEt" ? [""] : ["", "FlatHook", "CornerHook", "VerticalCut", "DiagonalCut", "Serifed", "InwardSerifed"];
@@ -148,6 +184,7 @@ test("heavy upright e and schwa corner hooks retain crossbar clearance", async (
 		featureControl: { noCvSs: true },
 		metricOverride,
 	});
+	assertFlatTopEtCentered(glyphStore, para);
 	const metrics = calculateMetrics(para);
 	const sw = metrics.AdviceStroke2(2, 3, metrics.XH);
 	const barBottom = metrics.XH * metrics.DesignParameters.eBarPos - sw / 2;
@@ -166,3 +203,16 @@ test("heavy upright e and schwa corner hooks retain crossbar clearance", async (
 		}), `${name}: missing fitted corner terminal`);
 	}
 });
+
+for (const weight of [260, 530]) {
+	test(`upright flat-top Et crossbar: ${weight}`, async () => {
+		const { para, glyphStore } = await buildGlyphData({
+			paramsDir,
+			shape: { serifs: "sans", spacing: "term", weight, width: 586, slope: "upright", slopeAngle: 0 },
+			menu: { family: "Iosevka", version: "34.9.0", width: 5, slope: "upright", weight },
+			featureControl: { noCvSs: true },
+			metricOverride,
+		});
+		assertFlatTopEtCentered(glyphStore, para);
+	});
+}

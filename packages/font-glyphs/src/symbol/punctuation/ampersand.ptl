@@ -659,6 +659,12 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 		'flatTopEtFlatBottomSerifedSerifless' {FORM-FLAT-BOTTOM-SERIFED false }
 		'flatTopEtFlatBottomSerifedSerifed'   {FORM-FLAT-BOTTOM-SERIFED true  }
 
+	define yFlatTopEtRightBarTop : yEtRightBarTop + 0.125 * SwAmpersand
+
+	define [FlatTopEtBowlEnd form center] : if ([BaseToothForm form] === FORM-TOOTHED)
+		SerifedArcEnd.LtrLhs xEtRight 0 SwAmpersand adaEt SwAmpersand
+		EtBowlEnd form xEtRight center adaEt yFlatTopEtRightBarTop SwAmpersand
+
 	foreach {suffix {form fSerifed}} [pairs-of FlatTopEtConfig] : do
 		create-glyph "ampersand.\(suffix)" : glyph-proc
 			define et : RevEzh CAP 0
@@ -667,14 +673,15 @@ glyph-block Symbol-Punctuation-Ampersand : begin
 				stroke     -- SwAmpersand
 				ada        -- adaEt
 				adb        -- adbEt
-				pyMidRight -- pyEtFlatTopBarPos
-				lowerEnd   -- [lambda [xArcMid] : EtBowlEnd form xEtRight [mix xArcMid xEtRight 0.5] adaEt yEtRightBarTop SwAmpersand]
+				pyMidRight -- 0.5
+				lowerEnd   -- [lambda [xArcMid] : FlatTopEtBowlEnd form [mix xArcMid xEtRight 0.5]]
 			include : et.Shape
-			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yEtRightBarTop SwAmpersand
-			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yEtRightBarTop SwAmpersand
+			include : HBar.m (xEtRight - SwAmpersand) xEtCenterBarRight (CAP / 2) SwAmpersand
+			if (form === FORM-FLAT-BOTTOM) : include : VBar.r xEtRight 0 yFlatTopEtRightBarTop SwAmpersand
+			if (form === FORM-TOOTHED) : include : VBar.r xEtRight (adaEt + O) yFlatTopEtRightBarTop SwAmpersand
 			if (form === FORM-TOOTHED) : include : VBar.r xEtRight adaEt 0 [Math.max [AdviceStroke 5] (SwAmpersand - ShoulderFine / 2)]
-			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yEtRightBarTop SwAmpersand
-			include : ExtraToothStem form xEtRight adaEt yEtRightBarTop SwAmpersand
+			if (form === FORM-TOOTHLESS-CORNER) : include : VBar.r xEtRight DToothlessRise yFlatTopEtRightBarTop SwAmpersand
+			include : ExtraToothStem form xEtRight adaEt yFlatTopEtRightBarTop SwAmpersand
 
 	define [UpperOpenRoundRest] : UpperOpenRest HOOK-ROUND TOP-SERIFLESS
 	define [UpperOpenFlatRest] : UpperOpenRest HOOK-FLAT TOP-SERIFLESS
