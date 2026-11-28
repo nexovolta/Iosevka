@@ -1,7 +1,7 @@
 $$include '../../meta/macros.ptl'
 
 import [mix linreg clamp fallback] from '@iosevka/util'
-import [MathSansSerif] from '@iosevka/glyph/relation'
+import [MathSansSerif CvDecompose] from '@iosevka/glyph/relation'
 
 glyph-module
 
@@ -12,6 +12,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 	glyph-block-import Letter-Latin-X : HalfXStrand
 	glyph-block-import Letter-Latin-V : VExtendedRtInner VExtendedRtFull VExtendedLtFull
 	glyph-block-import Letter-Shared : SetGrekUpperTonos
+	glyph-block-import Letter-Accent-Builder : TransformGlyphCompositionSequence
 	glyph-block-import Letter-Shared-Shapes : SerifFrame WithSerifOverflowMask
 
 	define BODY-CURLY 0
@@ -33,6 +34,7 @@ glyph-block Letter-Latin-Upper-Y : begin
 	define [YHasBaseSerif slabType] : slabType == SLAB-ALL || slabType == SLAB-BASE || slabType == SLAB-BASE-MOTION || slabType == SLAB-BASE-TOP-RIGHT-MOTION || slabType == SLAB-BASE-BILATERAL-MOTION
 
 	define [YCrossPos top bot] : mix bot top 0.4
+	define [YBarredRoundedCross top cross] : Math.min (top - Stroke - TINY) (cross + CAP / 4 - Stroke - O)
 
 	define [YOverlayAnchors slabType bot cross] : glyph-proc
 		set-base-anchor 'overlay' Middle cross
@@ -192,6 +194,24 @@ glyph-block Letter-Latin-Upper-Y : begin
 			include : YShape bodyType slabType XH Descender (cross -- [if (bodyType === BODY-ROUNDED) 0 [YCrossPos XH Descender]])
 			include : YSlabs slabType XH Descender bodyType
 
+		create-glyph "cyrl/Uo/base.\(suffix)" : glyph-proc
+			if (bodyType === BODY-ROUNDED)
+			: then : begin
+				include : MarkSet.capital
+				include : YShape bodyType slabType CAP 0 (cross -- [YBarredRoundedCross CAP [YCrossPos CAP 0]])
+				include : YSlabs slabType CAP 0 bodyType
+				include : YOverlayAnchors slabType 0 [YCrossPos CAP 0]
+			: else : include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
+
+		create-glyph "cyrl/uo/base.\(suffix)" : glyph-proc
+			if (bodyType === BODY-ROUNDED)
+			: then : begin
+				include : MarkSet.p
+				include : YShape bodyType slabType XH Descender (cross -- [YBarredRoundedCross XH 0])
+				include : YSlabs slabType XH Descender bodyType
+				include : YOverlayAnchors slabType Descender 0
+			: else : include [refer-glyph "cyrl/ue.\(suffix)"] AS_BASE ALSO_METRICS
+
 		if ((slabType === SLAB-NONE || slabType === SLAB-BASE) && bodyType === BODY-STRAIGHT) : begin
 			create-glyph "grek/UpsilonHookSymbol.\(suffix)" : glyph-proc
 				include : MarkSet.capital
@@ -202,7 +222,12 @@ glyph-block Letter-Latin-Upper-Y : begin
 				include : SetGrekUpperTonos (OX - TailX / 3)
 
 		create-glyph "currency/yenSign.\(suffix)" : glyph-proc
-			include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
+			if (bodyType === BODY-ROUNDED)
+			: then : begin
+				include : MarkSet.capital
+				include : YShape bodyType slabType CAP 0 (cross -- [YBarredRoundedCross CAP [YCrossPos CAP 0]])
+				include : YSlabs slabType CAP 0 bodyType
+			: else : include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
 			include : YenOverlayShape slabType
 
 	select-variant 'Y' 'Y'
@@ -217,8 +242,18 @@ glyph-block Letter-Latin-Upper-Y : begin
 
 	select-variant 'cyrl/Ue' 0x4AE (shapeFrom -- 'Y')
 	select-variant 'cyrl/ue' 0x4AF
-	CreateAccentedComposition 'cyrl/Uo' 0x4B0 'cyrl/Ue' 'barOver'
-	CreateAccentedComposition 'cyrl/uo' 0x4B1 'cyrl/ue' 'barOver'
+	select-variant 'cyrl/Uo/base' (follow -- 'cyrl/Ue')
+	select-variant 'cyrl/uo/base' (follow -- 'cyrl/ue')
+	define [CreateBarredUe dst code original base] : begin
+		derive-multi-part-glyphs dst code {original base 'barOver'} : function [gns gr] : glyph-proc
+			local parts : gns.slice 1
+			set parts : parts.map : function [gn] : query-glyph gn
+			TransformGlyphCompositionSequence parts
+			include parts.0 AS_BASE ALSO_METRICS
+			include parts.1
+			if (!gr) : CvDecompose.set currentGlyph {gns.0 gns.2}
+	CreateBarredUe 'cyrl/Uo' 0x4B0 'cyrl/Ue' 'cyrl/Uo/base'
+	CreateBarredUe 'cyrl/uo' 0x4B1 'cyrl/ue' 'cyrl/uo/base'
 
 	create-glyph 'YStroke/overlay' : HOverlayBar [mix 0 SB 0.5] [mix Width RightSB 0.5] [mix 0 CAP 0.75]
 	derive-composites 'YStroke' 0x24E 'Y' 'YStroke/overlay'
