@@ -316,10 +316,10 @@ glyph-block Letter-Latin-Lower-M : begin
 			'' {0}
 			'tailed' {1}
 		object
-			'serifless' {no-shape }
+			'serifless' {no-shape}
 			'serifed' {FullSerifs}
-			'topLeftSerifed' {LtSerifs }
-			'bottomRightSerifed' {RbSerifs }
+			'topLeftSerifed' {LtSerifs}
+			'bottomRightSerifed' {RbSerifs}
 			'topLeftAndBottomRightSerifed' {LtRbSerifs}
 
 	foreach {suffix {{Body earless} cut {shortLeg} {tailed} {Serifs}}} [pairs-of SmallMConfig] : do
@@ -489,12 +489,12 @@ glyph-block Letter-Latin-Lower-M : begin
 			'' {0}
 			shortStem {1}
 		function [body cut stem] : object # serifs
-			serifless {no-shape no-shape }
-			serifed {FullSerifs SmallTurnedMSerifs }
-			bottomRightSerifed {LtSerifs LtSerifs } # The name-shaping mapping is swapped by design
-			bilateralMotionSerifed {CapitalTurnedMBilateralMotionSerifs CapitalTurnedMBilateralMotionSerifs }
+			serifless {no-shape no-shape}
+			serifed {FullSerifs SmallTurnedMSerifs}
+			bottomRightSerifed {LtSerifs LtSerifs} # The name-shaping mapping is swapped by design
+			bilateralMotionSerifed {CapitalTurnedMBilateralMotionSerifs CapitalTurnedMBilateralMotionSerifs}
 			trilateralMotionSerifed {CapitalTurnedMTrilateralMotionSerifs CapitalTurnedMTrilateralMotionSerifs}
-			topRightMotionSerifed {LbSerifs LbSerifs }
+			topRightMotionSerifed {LbSerifs LbSerifs}
 			motionSerifed : match body
 				([Just 'toothed'] || [Just 'flatBottom'] || [Just 'tailed']) [if (cut === 'bottomCut') {RbSerifs RbSerifs} {LtRbSerifs LtRbSerifs}]
 				__ {LtSerifs LtSerifs} # The name-shaping mapping is swapped by design

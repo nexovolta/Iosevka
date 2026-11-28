@@ -63,8 +63,8 @@ glyph-block Symbol-Ligation : begin
 				m {(0 - RodBarHOffset) false} # |-
 				j {(-join) false} # >-
 				j1 {(-join - kern) false} # >>-
-				c {cleft true } # Connected rod
-				z {zleft true } # Connected rod
+				c {cleft true} # Connected rod
+				z {zleft true} # Connected rod
 
 			define rk : object
 				f {RightSB false} # Free end
@@ -74,8 +74,8 @@ glyph-block Symbol-Ligation : begin
 				m {(Width + RodBarHOffset) false} # -|
 				j {(Width + join) false} # -<
 				j1 {(Width + join + kern) false} # -<<
-				c {cright true } # Connected rods
-				z {zright true } # Connected rods
+				c {cright true} # Connected rods
+				z {zright true} # Connected rods
 
 			define result {}
 			foreach [l : items-of : Object.keys lk] : foreach [r : items-of : Object.keys rk]
@@ -93,7 +93,7 @@ glyph-block Symbol-Ligation : begin
 
 		define NotchConfig : object
 			'withoutNotch' {false}
-			'withNotch' {true }
+			'withNotch' {true}
 
 		foreach {prefix {Shape Notch {extend kern join fDB}}} [Object.entries Shapes] : do
 			foreach {lS rS {left capLeft} {right capRight}} [items-of : ArrowBarConfig extend kern join fDB] : do
@@ -133,9 +133,9 @@ glyph-block Symbol-Ligation : begin
 			f {F nothing false}
 			z {Z nothing false}
 			c {C nothing false}
-			m {J (0 - RodBarHOffset) true }
-			j {J (-arrowJ) true }
-			j1 {J (-arrowJ - arrowheadsKern) true }
+			m {J (0 - RodBarHOffset) true}
+			j {J (-arrowJ) true}
+			j1 {J (-arrowJ - arrowheadsKern) true}
 
 		define rk : object
 			r {LR (Width + arrowExtend) false}
@@ -143,9 +143,9 @@ glyph-block Symbol-Ligation : begin
 			f {F nothing false}
 			z {Z nothing false}
 			c {C nothing false}
-			m {J (Width + RodBarHOffset) true }
-			j {J (Width + arrowJ) true }
-			j1 {J (Width + arrowJ + arrowheadsKern) true }
+			m {J (Width + RodBarHOffset) true}
+			j {J (Width + arrowJ) true}
+			j1 {J (Width + arrowJ + arrowheadsKern) true}
 
 		foreach [lS : items-of : Object.keys lk] : foreach [rS : items-of : Object.keys rk] : create-glyph"wave.lig.\(lS)\(rS)" : glyph-proc
 			include : SetJoiningKind lS rS
@@ -300,18 +300,18 @@ glyph-block Symbol-Ligation : begin
 				'2l' {1 Joining.Classes.Right}
 				'3l' {2 Joining.Classes.Right}
 				'4l' {3 Joining.Classes.Right}
-				'1m' {0 Joining.Classes.Mid }
-				'2m' {1 Joining.Classes.Mid }
-				'3m' {2 Joining.Classes.Mid }
-				'4m' {3 Joining.Classes.Mid }
+				'1m' {0 Joining.Classes.Mid}
+				'2m' {1 Joining.Classes.Mid}
+				'3m' {2 Joining.Classes.Mid}
+				'4m' {3 Joining.Classes.Mid}
 
 			export : define BarShapeSuffixes : object
 				vertical {0 false}
 				slightlySlanted {0.375 false}
 				moreSlanted {0.75 false}
-				verticalDotted {0 true }
-				slightlySlantedDotted {0.375 true }
-				moreSlantedDotted {0.75 true }
+				verticalDotted {0 true}
+				slightlySlantedDotted {0.375 true}
+				moreSlantedDotted {0.75 true}
 
 			export : define [DependentGlyphBuilder src] : glyph-proc
 				local {bar dot} src
@@ -442,7 +442,7 @@ glyph-block Symbol-Ligation : begin
 	do 'Chaining Plus (shifted middle bars)'
 		define NotchConfig : object
 			'withoutNotch' {false}
-			'withNotch' {true }
+			'withNotch' {true}
 
 		foreach {suffix {fNotch}} [pairs-of NotchConfig] : do
 			create-glyph "plus.lig.fc.s.\(suffix)" : glyph-proc

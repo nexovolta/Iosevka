@@ -218,11 +218,11 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export CapitalUConfigT
 	define [CapitalUConfigT shapeGroup] : SuffixCfg.weave
 		object # body
-			toothed {shapeGroup.Toothed RightSB 0 }
-			tailed {shapeGroup.Tailed (RightSB + SideJut) 0 }
-			flatBottom {shapeGroup.FlatBottom RightSB 0 }
+			toothed {shapeGroup.Toothed RightSB 0}
+			tailed {shapeGroup.Tailed (RightSB + SideJut) 0}
+			flatBottom {shapeGroup.FlatBottom RightSB 0}
 			toothlessCorner {shapeGroup.ToothlessCorner RightSB DToothlessRise}
-			toothlessRounded {shapeGroup.ToothlessRounded null null }
+			toothlessRounded {shapeGroup.ToothlessRounded null null}
 		function [body] : begin
 			if (body === 'tailed' || body === 'toothlessCorner' || body === 'toothlessRounded') : return : object
 				'' ''
@@ -232,7 +232,7 @@ glyph-block Letter-Latin-U : begin
 		function [body cut] : object # serifs
 			serifless {no-shape false}
 			bottomRightSerifed {USerifs.BottomRight false}
-			bilateralMotionSerifed {USerifs.BilateralMotion true }
+			bilateralMotionSerifed {USerifs.BilateralMotion true}
 			motionSerifed : match body
 				([Just 'toothed'] || [Just 'flatBottom']) [if (cut === 'bottomCut') {USerifs.MotionToothless true} {USerifs.MotionToothed true}]
 				__ {USerifs.MotionToothless true}
@@ -311,12 +311,12 @@ glyph-block Letter-Latin-U : begin
 	glyph-block-export SmallUConfigT
 	define [SmallUConfigT shapeGroup] : SuffixCfg.weave
 		object # tooth
-			toothed {shapeGroup.Toothed RightSB 0 }
-			tailed {shapeGroup.Tailed (RightSB + SideJut) 0 }
-			flatBottom {shapeGroup.FlatBottom RightSB 0 }
+			toothed {shapeGroup.Toothed RightSB 0}
+			tailed {shapeGroup.Tailed (RightSB + SideJut) 0}
+			flatBottom {shapeGroup.FlatBottom RightSB 0}
 			toothlessCorner {shapeGroup.ToothlessCorner RightSB DToothlessRise}
-			toothlessRounded {shapeGroup.ToothlessRounded null null }
-			descBase {shapeGroup.Toothed RightSB 0 }
+			toothlessRounded {shapeGroup.ToothlessRounded null null}
+			descBase {shapeGroup.Toothed RightSB 0}
 		function [tooth] : begin
 			if (tooth === 'tailed' || tooth === 'toothlessCorner' || tooth === 'toothlessRounded') : return : object
 				'' ''

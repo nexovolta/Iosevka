@@ -37,6 +37,21 @@ glyph-block Orthography : begin
 		include : FitInkAdvance [if para.isQuasiProportional 0 Width]
 		include : [DivFrame (currentGlyph.advanceWidth / Width)].markSet.e
 
+	foreach {name scale} : items-of : list
+		list 'dMidHeightLeftHook' para.advanceScaleM
+		list 'lMidHeightLeftHook' para.advanceScaleF
+		list 'nMidHeightLeftHook' para.advanceScaleM
+		list 'rMidHeightLeftHook' 1
+		list 'sMidHeightLeftHook' para.advanceScaleM
+		list 'tMidHeightLeftHook' 1
+	: do
+		derive-glyphs "\(name).phonotypic" null name : lambda [src gr] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			local targetWidth : Width * scale
+			currentGlyph.applyTransform [ApparentTranslate ((targetWidth - currentGlyph.advanceWidth) / 2) 0] true
+			set-width targetWidth
+		link-gr LocalizedForm.PTMN name "\(name).phonotypic"
+
 	# Link localization forms
 	link-gr LocalizedForm.NSM 'Eng' 'Eng.NSM'
 

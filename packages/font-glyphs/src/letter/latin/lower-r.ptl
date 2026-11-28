@@ -55,8 +55,8 @@ glyph-block Letter-Latin-Lower-R : begin
 			[Just RMode.CornerHookSerifed] {(4 / 3) 0 0 (2 / 3)}
 			[Just RMode.Earless] {1 1 (1 / 2) (1 / 3)}
 			[Just RMode.EarlessSerifed] {(4 / 3) 1 (1 / 2) (2 / 3)}
-			[Just RMode.Half] {1 0 0 0 }
-			[Just RMode.HalfStretch] {1 1 (1 / 2) 0 }
+			[Just RMode.Half] {1 0 0 0}
+			[Just RMode.HalfStretch] {1 1 (1 / 2) 0}
 
 		export : local rBarLeftX : match shapeMode
 			[Just RMode.Half] : mix df.leftSB (df.middle - [HSwToV : 0.5 * strokeBar] - [IBalance2 df]) rBalanceMultiplier
@@ -476,17 +476,17 @@ glyph-block Letter-Latin-Lower-R : begin
 			tailed 'maskedTailed'
 		function [ear] : begin
 			if (!ear || ear === 'diagonalTailed' || ear === 'flatTailed' || ear === 'semiTailed' || ear === 'tailed') : return : object
-				'' {SmallRShape.Standard dfN RMode.Standard RMode.StandardSerifed }
-				hookless {SmallRShape.Hookless dfN RMode.Hookless RMode.HooklessSerifed }
+				'' {SmallRShape.Standard dfN RMode.Standard RMode.StandardSerifed}
+				hookless {SmallRShape.Hookless dfN RMode.Hookless RMode.HooklessSerifed}
 				cornerHooked {SmallRShape.CornerHook dfN RMode.CornerHook RMode.CornerHookSerifed}
-				verticalCut {SmallRShape.VerticalCut dfN RMode.Standard RMode.StandardSerifed }
-				diagonalCut {SmallRShape.DiagonalCut dfN RMode.Standard RMode.StandardSerifed }
-				compact {SmallRShape.Hookless dfF RMode.Hookless RMode.HooklessSerifed }
+				verticalCut {SmallRShape.VerticalCut dfN RMode.Standard RMode.StandardSerifed}
+				diagonalCut {SmallRShape.DiagonalCut dfN RMode.Standard RMode.StandardSerifed}
+				compact {SmallRShape.Hookless dfF RMode.Hookless RMode.HooklessSerifed}
 				narrowHook {SmallRShape.Standard dfF RMode.NarrowHook RMode.NarrowHookSerifed}
 				# `rFlap` variants
-				earlessRoundedHookless {SmallRShape.HooklessFlap dfN RMode.Hookless RMode.HooklessSerifed }
+				earlessRoundedHookless {SmallRShape.HooklessFlap dfN RMode.Hookless RMode.HooklessSerifed}
 				earlessRoundedCornerHooked {SmallRShape.CornerHookFlap dfN RMode.CornerHook RMode.CornerHookSerifed}
-				earlessRoundedCompact {SmallRShape.HooklessFlap dfF RMode.Hookless RMode.HooklessSerifed }
+				earlessRoundedCompact {SmallRShape.HooklessFlap dfF RMode.Hookless RMode.HooklessSerifed}
 				earlessRoundedNarrowHook {SmallRShape.EarlessRounded dfF RMode.NarrowHook RMode.NarrowHookSerifed}
 			if (ear === 'flatTop') : return : object
 				'' {SmallRShape.FlatTop dfN RMode.Earless RMode.EarlessSerifed}
@@ -513,8 +513,8 @@ glyph-block Letter-Latin-Lower-R : begin
 		object # Serifs
 			serifless {false false}
 			topSerifed {true false}
-			baseSerifed {false true }
-			serifed {true true }
+			baseSerifed {false true}
+			serifed {true true}
 
 	foreach {suffix {ear {BaseBody df modeSans modeSerifed} cut {doTS doBS}}} [pairs-of SmallRConfig] : do
 		define mode : if (doTS || doBS) modeSerifed modeSans
@@ -815,8 +815,8 @@ glyph-block Letter-Latin-Lower-R : begin
 		object # Serifs
 			serifless {false false}
 			topSerifed {true false}
-			baseSerifed {false true }
-			serifed {true true }
+			baseSerifed {false true}
+			serifed {true true}
 
 	define [HalfRHookOnly Body df _mode] : glyph-proc
 		local md : fallback _mode RMode.Half
@@ -968,11 +968,11 @@ glyph-block Letter-Latin-Lower-R : begin
 		narrowHookWidth true
 
 	define PigtailRBodies : object
-		standard {SmallRShape.Standard SmallRevRShape.Standard [PigtailNarrowHookMode RMode.Standard] }
-		hookless {SmallRShape.Hookless SmallRevRShape.Hookless [PigtailNarrowHookMode RMode.Hookless] }
+		standard {SmallRShape.Standard SmallRevRShape.Standard [PigtailNarrowHookMode RMode.Standard]}
+		hookless {SmallRShape.Hookless SmallRevRShape.Hookless [PigtailNarrowHookMode RMode.Hookless]}
 		cornerHooked {SmallRShape.CornerHook SmallRevRShape.CornerHook [PigtailNarrowHookMode RMode.CornerHook]}
-		narrowHook {SmallRShape.Standard SmallRevRShape.Standard [PigtailNarrowHookMode RMode.Standard] }
-		half {HalfRShape.Standard SmallRevRShape.Half [PigtailNarrowHookMode RMode.Half] }
+		narrowHook {SmallRShape.Standard SmallRevRShape.Standard [PigtailNarrowHookMode RMode.Standard]}
+		half {HalfRShape.Standard SmallRevRShape.Half [PigtailNarrowHookMode RMode.Half]}
 
 	define [PigtailAttachHook Body md fRev xStem _doTS] : glyph-proc
 		local doTS : fallback _doTS false
@@ -991,7 +991,7 @@ glyph-block Letter-Latin-Lower-R : begin
 			include : FlipAround df.middle (XH / 2)
 			include : ApparentTranslate (xStem - (df.width - xR)) 0
 
-	# { doTS doBS kJut fRight } keyed by selector.dotlessi.
+	# { doTS doBS kJut fRight} keyed by selector.dotlessi.
 	# Bottom serifs ride the flipped r stem; bottom tails yield to the pigtail hook.
 	define DotlessIPigtailConfig : object
 		serifless {false false 0.0 false}
@@ -1004,13 +1004,13 @@ glyph-block Letter-Latin-Lower-R : begin
 		serifedAsymmetric {true true 0.5 false}
 		centerSerifed {true true 1.0 false}
 		centerShortSerifed {true true 0.5 false}
-		reverseHooky {false true 1.0 true }
-		sshaped {true true 1.0 true }
-		sshapedAsymmetric {true true 0.5 true }
+		reverseHooky {false true 1.0 true}
+		sshaped {true true 1.0 true}
+		sshapedAsymmetric {true true 0.5 true}
 		hookyBottomLeft {true false 0.0 false}
-		topRightSerifed {true true 1.0 true }
-		topRightBaseSerifed {true true 1.0 true }
-		topRightBaseSerifedAsymmetric {true true 0.5 true }
+		topRightSerifed {true true 1.0 true}
+		topRightBaseSerifed {true true 1.0 true}
+		topRightBaseSerifedAsymmetric {true true 0.5 true}
 		tailed {false false 0.0 false}
 		tailedSerifed {false true 1.0 false}
 		diagonalTailed {false false 0.0 false}
