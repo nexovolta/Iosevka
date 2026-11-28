@@ -37,6 +37,15 @@ for (const [slope, cut, suffix] of [["upright", "vertical-cut", "verticalCut"], 
 			assert.ok(contours.length, name);
 			assert.ok(contours.flat().every(p => Number.isFinite(p.x) && Number.isFinite(p.y)), name);
 		};
+		for (const [key, variant] of primes.get("five").variants)
+			assert.equal(variant.selector.zhuangToneFive, variant.selector.five, key);
+		for (const family of ["zhuangToneFive", "zhuangtonefive"]) {
+			const upright = path(`${family}.uprightArchedSerifless`);
+			for (const suffix of ["uprightFlatSerifless", "obliqueArchedSerifless", "uprightArchedBrokenSerifless"]) {
+				checkOutline(`${family}.${suffix}`);
+				assert.notEqual(path(`${family}.${suffix}`), upright, `${family}.${suffix}`);
+			}
+		}
 		for (const [bottom, prefix] of [["serifless", "serifless"], ["serifed", "serifed"]]) {
 			for (const [style, ending] of [["vertical-cut", "VerticalCut"], ["diagonal-cut", "DiagonalCut"]]) {
 				const name = `${prefix}${ending}`;
@@ -81,7 +90,7 @@ for (const [slope, cut, suffix] of [["upright", "vertical-cut", "verticalCut"], 
 							const full = `${barSuffix}${arcSuffix}${broken ? "Broken" : ""}${serifSuffix}`;
 							assert.equal(variant.selector.five, full, key);
 							assert.equal(variant.selector["five/sansSerif"], `${barSuffix}${arcSuffix}${broken ? "Broken" : ""}Serifless`, key);
-							const zhuangSuffix = `upright${arcSuffix}${serifSuffix}`;
+							const zhuangSuffix = `${barSuffix}${arcSuffix}${broken ? "Broken" : ""}${serifSuffix}`;
 							assert.equal(variant.selector.zhuangToneFive, zhuangSuffix, key);
 							for (const size of ["lnum", "onum"]) {
 								const name = `five.${size}.${full}`;

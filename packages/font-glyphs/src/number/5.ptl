@@ -42,7 +42,6 @@ glyph-block Digits-Five : begin
 		export : define [hookEndL] : InwardSlabArcEnd.RtlRhs box.l box.b sw hook
 		export : define [serifEndL] : ArcEndSerif.InwardL box.l box.b sw hook
 
-
 	define flex-params [FiveVerticalCut] : namespace
 		local-parameter : box
 		local-parameter : sw -- Stroke
@@ -111,7 +110,7 @@ glyph-block Digits-Five : begin
 				local oblCor : Math.hypot 1 obl
 				local xVBar : firstKnot.x - oblCor * [HSwToV sw] + [if (topArc === Flat) [HSwToV : 0.5 * sw] 0]
 				local xVBarOffset : (top - firstKnot.y) * obl
-				include : HBar.t [if zt SB (xVBar + xVBarOffset)] xRight top sw
+				include : HBar.t [if zt (SB + xVBarOffset) (xVBar + xVBarOffset)] xRight top sw
 				include : union
 					intersection
 						Rect (firstKnot.y + sw) firstKnot.y 0 Width
@@ -212,8 +211,10 @@ glyph-block Digits-Five : begin
 				bowlTopArcC -- bowlTopArcC
 				bowlBotArcC -- bowlBotArcC
 				zt -- ((RightSB - SB) * 0.05)
+				obl -- obl
 				pXLeft -- pXLeft
 				slab -- slab
+				broken -- broken
 
 		create-glyph "zhuangtonefive.\(suffix)" : glyph-proc
 			include : MarkSet.e
@@ -221,8 +222,10 @@ glyph-block Digits-Five : begin
 				bowlTopArcC -- bowlTopArcC
 				bowlBotArcC -- bowlBotArcC
 				zt -- ((RightSB - SB) * 0.05)
+				obl -- obl
 				pXLeft -- pXLeft
 				slab -- slab
+				broken -- broken
 
 	select-variant 'five.lnum' [CodeLnum '5'] (follow -- 'five')
 	select-variant 'five.onum' [CodeOnum '5'] (follow -- 'five')
