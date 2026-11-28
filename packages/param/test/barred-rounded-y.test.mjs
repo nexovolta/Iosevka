@@ -23,29 +23,6 @@ test("rounded barred Y forms raise their bowls without moving their bars", async
 				variants: { design: { "capital-y": body, "cyrl-capital-ue": body, "cyrl-ue": body } },
 			});
 
-			test("barred Cyrillic Ue follows the corresponding character variants", async () => {
-				await Geometry.Init();
-				const makePara = await getParametersT({ paramsDir });
-				const para = makePara({
-					shape: { serifs: "sans", spacing: "normal", weight: 400, width: 500, slope: "upright", slopeAngle: 0 },
-					menu: { family: "Barred Y CV test", version: "34.9.0", width: 5, slope: "upright", weight: 400 },
-					featureControl: { noCvSs: false, noLigation: true },
-					variants: { design: { "cyrl-capital-ue": "straight-serifless", "cyrl-ue": "straight-serifless" } },
-				});
-				const { glyphStore } = buildGlyphs(para, {
-					blockIsNeeded: id => id === "Letter-Latin-Upper-Y" || id === "Mark-Overlay",
-					glyphIsNeeded: () => true,
-				});
-				for (const [name, group] of [["cyrl/Uo", "cyrl-capital-ue"], ["cyrl/uo", "cyrl-ue"]]) {
-					const glyph = glyphStore.queryByNameEnsured(name);
-					const variant = para.variants.primes.get(group).variants.get("rounded-serifless");
-					const relation = AnyCv.query(glyph).find(cv => cv.tag === variant.tag && cv.rank === variant.rank);
-					assert.ok(relation, name);
-					const target = relation.get(glyph);
-					assert.ok(target.includes(`${name}/base.roundedSerifless`), target);
-					assert.ok(glyphStore.queryByNameEnsured(target).geometry.toBezArcs().length, target);
-				}
-			});
 			const { glyphStore } = buildGlyphs(para, {
 				blockIsNeeded: id => id === "Letter-Latin-Upper-Y" || id === "Mark-Overlay",
 				glyphIsNeeded: id => /^(?:Y|cyrl\/(?:Ue|ue|Uo|uo)(?:\/base)?|currency\/yenSign|barOver)(?:\.|$)/.test(id),
@@ -86,5 +63,29 @@ test("rounded barred Y forms raise their bowls without moving their bars", async
 				}
 			}
 		}
+	}
+});
+
+test("barred Cyrillic Ue follows the corresponding character variants", async () => {
+	await Geometry.Init();
+	const makePara = await getParametersT({ paramsDir });
+	const para = makePara({
+		shape: { serifs: "sans", spacing: "normal", weight: 400, width: 500, slope: "upright", slopeAngle: 0 },
+		menu: { family: "Barred Y CV test", version: "34.9.0", width: 5, slope: "upright", weight: 400 },
+		featureControl: { noCvSs: false, noLigation: true },
+		variants: { design: { "cyrl-capital-ue": "straight-serifless", "cyrl-ue": "straight-serifless" } },
+	});
+	const { glyphStore } = buildGlyphs(para, {
+		blockIsNeeded: id => id === "Letter-Latin-Upper-Y" || id === "Mark-Overlay",
+		glyphIsNeeded: () => true,
+	});
+	for (const [name, group] of [["cyrl/Uo", "cyrl-capital-ue"], ["cyrl/uo", "cyrl-ue"]]) {
+		const glyph = glyphStore.queryByNameEnsured(name);
+		const variant = para.variants.primes.get(group).variants.get("rounded-serifless");
+		const relation = AnyCv.query(glyph).find(cv => cv.tag === variant.tag && cv.rank === variant.rank);
+		assert.ok(relation, name);
+		const target = relation.get(glyph);
+		assert.ok(target.includes(`${name}/base.roundedSerifless`), target);
+		assert.ok(glyphStore.queryByNameEnsured(target).geometry.toBezArcs().length, target);
 	}
 });
