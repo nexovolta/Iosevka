@@ -371,6 +371,13 @@ glyph-block Letter-Latin-Lower-T : begin
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
 			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
 
+		create-glyph "t/packLeftHook.\(suffix)" : glyph-proc
+			local dfPack : include : ThreeQuarterDf 1 Stroke 1 df.adws
+			include : dfPack.markSet.b
+			include : Style.Body dfPack sym top 0
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningAbove' 'above'
+			currentGlyph.copyBaseAnchorIfAbsent 'leaningBelow' 'below'
+
 		create-glyph "t/pack80.\(suffix)" : glyph-proc
 			local dfPack : include : ThreeQuarterDf para.advanceScaleM Stroke 1 df.adws (4 / 5)
 			include : dfPack.markSet.b
@@ -508,10 +515,11 @@ glyph-block Letter-Latin-Lower-T : begin
 	select-variant 'tHStretched' 0x1DF63 (follow -- 't')
 	select-variant 'tHReversed' 0x1DF64 (follow -- 't')
 	select-variant 't' 't'
-	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook 't' (XH - Stroke)
 	select-variant 't/pack75' (follow -- 't')
+	select-variant 't/packLeftHook' (follow -- 't')
 	select-variant 't/phonotypic' (follow -- 't')
 	select-variant 't/pack80' (follow -- 't')
+	derive-glyphs 'tMidHeightLeftHook' 0x1DF2A 't' : MakeMidHeightLeftHook 't' (XH - Stroke)
 	select-variant 't/compLigRight'
 
 	select-variant 't/phoneticLeft1' (shapeFrom -- 't')

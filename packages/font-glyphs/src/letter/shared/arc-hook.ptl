@@ -29,22 +29,24 @@ glyph-block Letter-Arc-Hook : begin
 			straight.down.end (xStem + [HSwToV : 0.5 * Stroke]) [Math.max (yTop * 0.35) (yTop - Hook)] [widths.rhs.heading ShoulderFine Downward]
 
 	define [MakeMidHeightLeftHook prefix yTop] : lambda [src gr] : glyph-proc
-		local packed : PackSrc prefix src 'pack80'
+		local packed : PackSrc prefix src : if (prefix === 'l') 'pack80' : if (prefix === 't') 'packLeftHook' 'pack75'
+		if (prefix !== 'l' && packed === src) : throw : new Error "Cannot find packed left-hook source for \(src)"
 		include [refer-glyph packed] AS_BASE ALSO_METRICS
 		local letterW : mix currentGlyph.advanceWidth currentGlyph.advanceWidth 0
 		currentGlyph.clearGeometry
-		local df : include : DivFrame 1
+		local df : include : DivFrame [if (prefix === 'l' || prefix === 't') 1 para.advanceScaleM]
 		local shift : Math.max 0 (df.width - letterW)
+		if (prefix !== 'l') : currentGlyph.applyTransform [ApparentTranslate shift 0] true
 		include : with-transform [ApparentTranslate shift 0] : refer-glyph packed
-		local yHook : 0 + yTop
-		local yAtt : Math.max (yTop * 0.35) (yTop - Hook)
+		local yHook : if (prefix === 'n') (yTop - [Math.max (1.2 * Stroke) (0.24 * XH)]) yTop
+		local yAtt : Math.max (yHook * 0.35) (yHook - Hook)
 		local b : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
 		local xStem : shift + SB
 		if b : set xStem : mix b.xMin b.xMin 0
 		local bTop : include : MeasureGlyphBoundsInY (XH - Stroke - O) (XH + O)
-		if bTop : begin
+		if (bTop && prefix !== 'n') : begin
 			if (bTop.xMin < xStem - Stroke / 5) : set yHook : XH - Stroke
-		if (yHook < yTop) : begin
+		if (yHook < yTop && prefix !== 'n') : begin
 			set yAtt : Math.max (yHook * 0.35) (yHook - Hook)
 			local bLow : include : MeasureGlyphBoundsInY (yAtt - Stroke) (yAtt + 0.5 * Stroke)
 			if bLow : set xStem : mix bLow.xMin bLow.xMin 0
