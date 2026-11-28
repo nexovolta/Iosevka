@@ -15,7 +15,7 @@ glyph-block Letter-Latin-K : begin
 	glyph-block-import Letter-Shared : CreateTurnedLetter
 	glyph-block-import Letter-Shared-Shapes : DiagTail CyrDescender
 	glyph-block-import Letter-Shared-Shapes : LetterBarOverlay PalatalHook TopHook
-	glyph-block-import Letter-Cyrillic-Zhe : Zhe
+	glyph-block-import Letter-Cyrillic-Zhe-Shared : ZheCursiveLegs
 
 	glyph-block-export KLegs KInnerRtSerif
 
@@ -602,7 +602,7 @@ glyph-block Letter-Latin-K : begin
 				rightSB right
 				adws 1
 				adviceStroke : function [_] stroke
-			include : Zhe.CursiveLegs false true df 0 top fHookRight
+			include : ZheCursiveLegs false true df 0 top fHookRight
 			if attachment : include : attachment.rSideJut
 				x -- right
 				y -- 0
@@ -613,7 +613,7 @@ glyph-block Letter-Latin-K : begin
 			set-base-anchor 'legOverlay' [mix left right 0.7] (top * 0.25)
 			if (!fHookRight) : set-base-anchor 'armOverlay' [mix left right 0.7] (top * 0.75)
 
-		define [CursiveDimen left right top stroke slabLT slabLegs] : begin
+		export : define [CursiveDimen left right top stroke slabLT slabLegs] : begin
 			define kshLeft : left + [KBalance slabLegs true]
 			define kshRight : right + [KBalanceRight slabLegs true]
 			define ox : KOvershootX slabLegs true top stroke

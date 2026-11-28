@@ -4000,32 +4000,54 @@ single-storey `a` design, and `crossing`. They are independent of Greek
     <tr><td>Cyrillic Lower Ve (<code>в</code>) with rounded top, interrupted middle bar, and serifs at bottom</td></tr>
     </table></details>
   - Styles for `Ж` (Cyrillic Capital Zhe)
-    <details><summary>5 variants</summary>
+    <details><summary>10 variants</summary>
     <table>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-straight.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-capital-zhe-straight.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-capital-zhe = 'straight'</code>, <code>cv89 = 1</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-straight.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-straight.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'straight'</code>, <code>VXCY = 1</code></td></tr>
     <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with straight legs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-curly.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-capital-zhe-curly.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-capital-zhe = 'curly'</code>, <code>cv89 = 2</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-curly.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-curly.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'curly'</code>, <code>VXCY = 2</code></td></tr>
     <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with curly legs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-capital-zhe = 'symmetric-touching'</code>, <code>cv89 = 3</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'symmetric-touching'</code>, <code>VXCY = 3</code></td></tr>
     <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with symmetric legs touching the vertical bar</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-capital-zhe = 'symmetric-connected'</code>, <code>cv89 = 4</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'symmetric-connected'</code>, <code>VXCY = 4</code></td></tr>
     <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with symmetric legs connected to the vertical bar (default)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-cursive.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-capital-zhe-cursive.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-capital-zhe = 'cursive'</code>, <code>cv89 = 5</code></td></tr>
-    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with cursive legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-straight-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-straight-inverse.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'straight-inverse'</code>, <code>VXCY = 5</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with straight inverse legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-rounded-top.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded-top.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'rounded-top'</code>, <code>VXCY = 6</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with rounded top arms</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-cursive-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-cursive-connected.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'cursive-connected'</code>, <code>VXCY = 7</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with cursive connected legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-curly-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-curly-inverse.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'curly-inverse'</code>, <code>VXCY = 8</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with curly inverse legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-rounded-bottom.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded-bottom.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'rounded-bottom'</code>, <code>VXCY = 9</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with rounded bottom legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-capital-zhe-rounded.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-capital-zhe = 'rounded'</code>, <code>VXCY = 10</code></td></tr>
+    <tr><td>Cyrillic Capital Zhe (<code>Ж</code>) with rounded arms</td></tr>
     </table></details>
   - Styles for `ж` (Cyrillic Lower Zhe)
-    <details><summary>5 variants</summary>
+    <details><summary>11 variants</summary>
     <table>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-straight.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-zhe-straight.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-zhe = 'straight'</code>, <code>cv90 = 1</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-straight.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-straight.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'straight'</code>, <code>VXCZ = 1</code></td></tr>
     <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with straight legs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-curly.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-zhe-curly.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-zhe = 'curly'</code>, <code>cv90 = 2</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-curly.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-curly.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'curly'</code>, <code>VXCZ = 2</code></td></tr>
     <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with curly legs</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-symmetric-touching.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-zhe = 'symmetric-touching'</code>, <code>cv90 = 3</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-symmetric-touching.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'symmetric-touching'</code>, <code>VXCZ = 3</code></td></tr>
     <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with symmetric legs touching the vertical bar</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-symmetric-connected.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-zhe = 'symmetric-connected'</code>, <code>cv90 = 4</code></td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-symmetric-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'symmetric-connected'</code>, <code>VXCZ = 4</code></td></tr>
     <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with symmetric legs connected to the vertical bar (default)</td></tr>
-    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-cursive.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-cyrl-zhe-cursive.dark.svg#gh-dark-mode-only" width=32/></td><td><code>cyrl-zhe = 'cursive'</code>, <code>cv90 = 5</code></td></tr>
-    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with cursive legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-straight-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-straight-inverse.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'straight-inverse'</code>, <code>VXCZ = 5</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with straight inverse legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-rounded-top.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded-top.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'rounded-top'</code>, <code>VXCZ = 6</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with rounded top arms</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-cursive-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-cursive-connected.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'cursive-connected'</code>, <code>VXCZ = 7</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with cursive connected legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-curly-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-curly-inverse.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'curly-inverse'</code>, <code>VXCZ = 8</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with curly inverse legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-rounded-bottom.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded-bottom.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'rounded-bottom'</code>, <code>VXCZ = 9</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with rounded bottom legs</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-rounded.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'rounded'</code>, <code>VXCZ = 10</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with rounded arms</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-cyrl-zhe-cursive.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-cursive.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>cyrl-zhe = 'cursive'</code>, <code>VXCZ = 11</code></td></tr>
+    <tr><td>Cyrillic Lower Zhe (<code>ж</code>) with cursive loops</td></tr>
     </table></details>
   - Styles for `З` (Cyrillic Capital Ze)
     <details><summary>7 variants</summary>

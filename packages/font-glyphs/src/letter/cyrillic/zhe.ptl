@@ -4,10 +4,35 @@ import [mix linreg clamp fallback] from '@iosevka/util'
 
 glyph-module
 
+glyph-block Letter-Cyrillic-Zhe-Shared : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-export ZheCursiveLegs
+
+	define [ZheCursiveLegs fSlab fHalf df bot top fHookRight] : begin
+		define fine : df.adviceStroke 3.3
+		define fine2 : df.adviceStroke 4.2
+		define midX : mix df.leftSB (df.middle - [HSwToV : 0.5 * fine]) 0.4
+		define midY : mix bot top 0.5
+		define overshoot : if fSlab 0 : O * 3 * df.adws
+
+		local rightHalf : dispiro
+			straight.left.start (df.rightSB - overshoot + [if fHookRight HookX 0]) (top - fine) [widths.rhs.heading fine Leftward]
+			archv
+			g4.down.mid (df.width - midX + OX) midY [widths.rhs.heading fine2 Downward]
+			arcvh
+			straight.right.end (df.rightSB - overshoot) (bot + fine) [widths.rhs.heading fine Rightward]
+
+		local leftHalf : with-transform [FlipAround df.middle (0.5 * top)] rightHalf
+		local fullShape : if fHalf rightHalf : union rightHalf leftHalf
+		return : union fullShape : HBar.m [if fHalf df.middle (midX + 0.5 * fine)] (df.width - (midX + 0.5 * fine)) midY fine
+
 glyph-block Letter-Cyrillic-Zhe : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Shared-Shapes : CyrDescender
+	glyph-block-import Letter-Cyrillic-Zhe-Shared : ZheCursiveLegs
+	glyph-block-import Letter-Latin-K : KLegs
 
 	glyph-block-export Zhe
 	define Zhe : namespace
@@ -130,50 +155,39 @@ glyph-block Letter-Cyrillic-Zhe : begin
 		export : define [InverseStraightLegs fSlab fHalf df bot top] : remove-holes : new-glyph : glyph-proc
 			include : StraightLegs fSlab fHalf df bot top
 			include : FlipAround df.middle [mix bot top 0.5] 1 (-1)
-		export : define [RoundedLegs fSlab fHalf df bot top] : begin
+		define [RoundedArcs fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define overshoot : Overshoot fSlab df
 			define yJoin : mix bot top 0.5
 			define swH : HSwToV fine
-			define attach1X : df.middle - [HSwToV : 0.5 * fine]
-			define xRightOuter : df.rightSB - overshoot
-			define xLeftOuter : df.leftSB + overshoot
-			define xRight : xRightOuter - swH
-			define xLeft : xLeftOuter + swH
-			define minStraight : Math.max (0.125 * fine) TINY
-			define prefArc : Math.min [if ((top - bot) > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xRight - attach1X) * 0.45)
-			define arcDepth : Math.max fine : Math.min prefArc (top - yJoin - minStraight)
-			define xRightBottom : xRightOuter - 2 * OX
-			define xLeftBottom : xLeftOuter + 2 * OX
-
-			local rightUpper : intersection [MaskRight df.middle] [MaskLeft xRightOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
+			define attachX : df.middle - [HSwToV : 0.5 * fine]
+			define rightOuter : df.rightSB - overshoot
+			define leftOuter : df.leftSB + overshoot
+			define xRight : rightOuter - swH
+			define xLeft : leftOuter + swH
+			define prefArc : Math.min [if ((top - bot) > [mix XH CAP 0.5]) ArchDepthA SmallArchDepthA] ((xRight - attachX) * 0.7)
+			define arcDepth : Math.max fine : Math.min prefArc (top - yJoin - [Math.max (0.125 * fine) TINY])
+			local rightHalf : intersection [MaskRight df.middle] [MaskLeft rightOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
 				dispiro
 					widths.rhs fine
-					flat attach1X yJoin [heading Rightward]
+					flat attachX yJoin [heading Rightward]
 					curl (xRight - arcDepth) yJoin [heading Rightward]
 					archv
 					flat xRight (yJoin + arcDepth) [heading Upward]
 					curl xRight top [heading Upward]
-
-			local leftUpper : intersection [MaskLeft df.middle] [MaskRight xLeftOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
+			local leftHalf : intersection [MaskLeft df.middle] [MaskRight leftOuter] [MaskBelow top] [MaskAbove (yJoin - fine)]
 				dispiro
 					widths.lhs fine
-					flat attach1X yJoin [heading Leftward]
+					flat attachX yJoin [heading Leftward]
 					curl (xLeft + arcDepth) yJoin [heading Leftward]
 					archv
 					flat xLeft (yJoin + arcDepth) [heading Upward]
 					curl xLeft top [heading Upward]
+			return : if fHalf rightHalf : union rightHalf leftHalf
 
-			local rightLower : intersection [MaskRight df.middle] [MaskLeft xRightOuter] [MaskBelow yJoin]
-				ExtLineLhsToRhs attach1X yJoin xRightBottom bot fine
-			local leftLower : intersection [MaskLeft df.middle] [MaskRight xLeftOuter] [MaskBelow yJoin]
-				ExtLineRhsToLhs attach1X yJoin xLeftBottom bot fine
-
-			local rightHalf : union rightUpper rightLower
-			local leftHalf : union leftUpper leftLower
-			local fullShape : if fHalf rightHalf : union rightHalf leftHalf
-
-			return : remove-holes : intersection [MaskBelow top] [MaskAbove bot] fullShape
+		export : define [RoundedLegs fSlab fHalf df bot top] : union
+			RoundedArcs fSlab fHalf df bot top
+			intersection [MaskBelow : mix bot top 0.5] : StraightLegs fSlab fHalf df bot top
 		define [ConnectedLegsImpl k fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define cor : DiagCor (top - bot) (df.rightSB - df.leftSB)
@@ -197,55 +211,84 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 			return : union fullShape : HBar.m [if fHalf df.middle midX] (df.width - midX) midY fine
 
-		export : define [CursiveLegs fSlab fHalf df bot top fHookRight] : begin
+		export : define CursiveLegs ZheCursiveLegs
+
+		export : define [InverseCurlyLegs fSlab fHalf df bot top] : new-glyph : glyph-proc
+			include : CurlyLegs fSlab fHalf df bot top
+			include : FlipAround df.middle [mix bot top 0.5] 1 (-1)
+
+		export : define [RoundedBottomLegs fSlab fHalf df bot top] : new-glyph : glyph-proc
+			include : RoundedLegs fSlab fHalf df bot top
+			include : FlipAround df.middle [mix bot top 0.5] 1 (-1)
+
+		export : define [FullyRoundedLegs fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
-			define fine2 : df.adviceStroke 4.2
-			define midX : mix df.leftSB (df.middle - [HSwToV : 0.5 * fine]) 0.4
-			define midY : mix bot top 0.5
-			define overshoot : Overshoot fSlab df
+			local rightHalf : new-glyph : glyph-proc
+				include : KLegs.Rounded false (df.middle - [HSwToV : 0.5 * fine]) df.rightSB fine top 0 0 null
+			local leftHalf : with-transform [FlipAround df.middle 0 (-1) 1] rightHalf
+			return : if fHalf rightHalf : union rightHalf leftHalf
 
-			local rightHalf : dispiro
-				straight.left.start (df.rightSB - overshoot + [if fHookRight HookX 0]) (top - fine) [widths.rhs.heading fine Leftward]
-				archv
-				g4.down.mid (df.width - midX + OX) midY [widths.rhs.heading fine2 Downward]
-				arcvh
-				straight.right.end (df.rightSB - overshoot) (bot + fine) [widths.rhs.heading fine Rightward]
-
-			local leftHalf : with-transform [FlipAround df.middle (0.5 * top)] rightHalf
-
-			local fullShape : if fHalf rightHalf : union rightHalf leftHalf
-
-			return : union fullShape : HBar.m [if fHalf df.middle (midX + 0.5 * fine)] (df.width - (midX + 0.5 * fine)) midY fine
+		export : define [CursiveLoopLegs fSlab fHalf df bot top] : begin
+			define fine : ZheSw df
+			define left : df.middle - [HSwToV : 0.75 * fine] - Width / 32
+			define legSlab : if fSlab 8 0
+			define dim : KLegs.CursiveDimen left df.rightSB top fine 0 legSlab
+			define split dim.arcTerminalY
+			local rightHalf : new-glyph : glyph-proc
+				include : KLegs.Cursive false left df.rightSB fine top 0 legSlab null
+			local leftHalf : with-transform [FlipAround df.middle [mix bot top 0.5] (-1) 1] rightHalf
+			local fullShape : union
+				if fHalf rightHalf : union rightHalf leftHalf
+				VBar.m df.middle bot top fine
+			return : union
+				intersection [MaskAbove split] fullShape
+				remove-holes : new-glyph : glyph-proc
+					include : intersection [MaskBelow split] fullShape
 
 		export : define [Shape Legs fSlab fMidSlab df bot top midTop] : glyph-proc
-			include : CenterBar fMidSlab df bot top midTop
-			include : Legs fSlab false df bot top
-			include : LegSerifs fSlab false df bot top
+			local assembled : union
+				CenterBar fMidSlab df bot top midTop
+				Legs fSlab false df bot top
+				LegSerifs fSlab false df bot top
+			if (Legs === RoundedLegs || Legs === RoundedBottomLegs || Legs === FullyRoundedLegs)
+			: then : include : remove-holes : new-glyph : glyph-proc
+				include assembled
+			: else : include assembled
 
 		export : define [HalfShape Legs fSlab fMidSlab df bot top midTop] : glyph-proc
-			include : CenterBar fMidSlab df bot top midTop
-			include : Legs fSlab true df bot top
-			include : LegSerifs fSlab true df bot top
+			local assembled : union
+				CenterBar fMidSlab df bot top midTop
+				Legs fSlab true df bot top
+				LegSerifs fSlab true df bot top
+			if (Legs === RoundedLegs || Legs === RoundedBottomLegs || Legs === FullyRoundedLegs)
+			: then : include : remove-holes : new-glyph : glyph-proc
+				include assembled
+			: else : include assembled
 
 	define ZheConfig : object
 		straight {Zhe.StraightLegs SLAB SLAB}
 		curly {Zhe.CurlyLegs SLAB SLAB}
 		symmetricTouching {Zhe.TouchingLegs SLAB SLAB}
 		symmetricConnected {Zhe.ConnectingLegs SLAB SLAB}
-		inverseConnected {Zhe.InverseStraightLegs SLAB SLAB}
-		roundedConnected {Zhe.RoundedLegs SLAB SLAB}
-		cursive {Zhe.CursiveLegs false SLAB}
+		straightInverse {Zhe.InverseStraightLegs SLAB SLAB}
+		curlyInverse {Zhe.InverseCurlyLegs SLAB SLAB}
+		roundedTop {Zhe.RoundedLegs SLAB SLAB}
+		roundedBottom {Zhe.RoundedBottomLegs SLAB SLAB}
+		rounded {Zhe.FullyRoundedLegs SLAB SLAB}
+		cursiveConnected {Zhe.CursiveLegs false SLAB}
+		cursive {Zhe.CursiveLoopLegs false SLAB}
 
 	foreach {suffix {legShape fSlab fMidSlab}} [Object.entries ZheConfig] : do
-		create-glyph "cyrl/Zhe.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.advanceScaleMM 3
-			include : df.markSet.capital
-			include : Zhe.Shape legShape fSlab fMidSlab df 0 CAP CAP
+		if (suffix !== 'cursive') : begin
+			create-glyph "cyrl/Zhe.\(suffix)" : glyph-proc
+				local df : include : DivFrame para.advanceScaleMM 3
+				include : df.markSet.capital
+				include : Zhe.Shape legShape fSlab fMidSlab df 0 CAP CAP
 
-		create-glyph "cyrl/ZheDescender.\(suffix)" : glyph-proc
-			local df : DivFrame para.advanceScaleMM 3
-			include [refer-glyph "cyrl/Zhe.\(suffix)"] AS_BASE ALSO_METRICS
-			include : Zhe.Descender fSlab df
+			create-glyph "cyrl/ZheDescender.\(suffix)" : glyph-proc
+				local df : DivFrame para.advanceScaleMM 3
+				include [refer-glyph "cyrl/Zhe.\(suffix)"] AS_BASE ALSO_METRICS
+				include : Zhe.Descender fSlab df
 
 		create-glyph "cyrl/zhe.\(suffix)" : glyph-proc
 			local df : include : DivFrame para.advanceScaleM 3

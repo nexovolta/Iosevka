@@ -11076,10 +11076,13 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-cyrl-capital-zhe-curly.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-curly.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-cyrl-capital-zhe-inverse-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-inverse-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-cyrl-capital-zhe-rounded-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-cyrl-capital-zhe-cursive.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-cursive.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="5"> </td>
+<td><img src="../images/cv-cyrl-capital-zhe-straight-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-straight-inverse.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-capital-zhe-rounded-top.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded-top.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-capital-zhe-cursive-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-cursive-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-capital-zhe-curly-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-curly-inverse.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-capital-zhe-rounded-bottom.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded-bottom.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-capital-zhe-rounded.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-capital-zhe-rounded.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td>1</td>
@@ -11089,7 +11092,10 @@ Regenerate these regular-weight SVG previews and this list with
 <td>5</td>
 <td>6</td>
 <td>7</td>
-<td colspan="5"> </td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td colspan="2"> </td>
 </tr>
 <tr>
 <td rowspan="2"><code>VXCZ</code></td>
@@ -11097,10 +11103,14 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-cyrl-zhe-curly.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-curly.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-zhe-symmetric-touching.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-symmetric-touching.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-zhe-symmetric-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-symmetric-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-cyrl-zhe-inverse-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-inverse-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-cyrl-zhe-rounded-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-straight-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-straight-inverse.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-rounded-top.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded-top.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-cursive-connected.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-cursive-connected.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-curly-inverse.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-curly-inverse.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-rounded-bottom.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded-bottom.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-zhe-rounded.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-rounded.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-zhe-cursive.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-zhe-cursive.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="5"> </td>
+<td colspan="1"> </td>
 </tr>
 <tr>
 <td>1</td>
@@ -11110,7 +11120,11 @@ Regenerate these regular-weight SVG previews and this list with
 <td>5</td>
 <td>6</td>
 <td>7</td>
-<td colspan="5"> </td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+<td colspan="1"> </td>
 </tr>
 <tr>
 <td rowspan="8"><code>VXCW</code></td>
