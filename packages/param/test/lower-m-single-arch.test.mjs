@@ -12,7 +12,7 @@ import { parse } from "../src/variant.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params", import.meta.url));
 
-test("single-arch m exposes the renamed and toothed variants", async () => {
+test("single-arch m exposes the renamed selectors and variants", async () => {
 	const data = Toml.parse(readFileSync(new URL("../../../params/variants.toml", import.meta.url), "utf8"));
 	const variants = parse(data).primes.get("m").variants;
 	for (const suffix of [
@@ -35,9 +35,10 @@ test("single-arch m exposes the renamed and toothed variants", async () => {
 		"short-leg-tailed-serifed",
 		"top-cut-short-leg-tailed-serifless",
 	]) {
-		assert.ok(variants.has(`toothed-single-arch-${suffix}`));
+		assert.ok(variants.has(`single-arch-${suffix}`));
+		assert.ok(!variants.has(`toothed-single-arch-${suffix}`));
 	}
-	assert.ok(!variants.has("toothed-single-arch-top-cut-top-left-serifed"));
+	assert.ok(!variants.has("single-arch-top-cut-top-left-serifed"));
 
 	await Geometry.Init();
 	const makePara = await getParametersT({ paramsDir });
@@ -56,7 +57,7 @@ test("single-arch m exposes the renamed and toothed variants", async () => {
 	const contours = key =>
 		glyphStore.queryByNameEnsured(`m.${variants.get(key).selector.m}`).geometry.toBezArcs();
 	const earless = contours("earless-corner-single-arch-serifless");
-	const toothed = contours("toothed-single-arch-serifless");
+	const toothed = contours("single-arch-serifless");
 	const maxY = contour =>
 		Math.max(...contour.flatMap(arc => Array.from({ length: 25 }, (_, i) => arc.eval(i / 24).y)));
 	const xValues = contour =>
@@ -64,12 +65,12 @@ test("single-arch m exposes the renamed and toothed variants", async () => {
 	assert.ok(maxY(toothed[0]) > maxY(earless[0]) + 1);
 	assert.ok(Math.min(...xValues(toothed[2])) > Math.min(...xValues(earless[2])) + 1);
 	assert.ok(Math.min(...xValues(toothed[2])) < Math.max(...xValues(toothed[0])));
-	assert.ok(contours("toothed-single-arch-top-left-serifed").length > toothed.length);
+	assert.ok(contours("single-arch-top-left-serifed").length > toothed.length);
 	assert.notDeepEqual(
-		contours("toothed-single-arch-top-cut-serifless")[0],
+		contours("single-arch-top-cut-serifless")[0],
 		toothed[0],
 	);
-	for (const shape of ["", "flat-top-", "toothed-single-arch-"]) {
+	for (const shape of ["", "flat-top-", "single-arch-"]) {
 		assert.equal(
 			contours(`${shape}short-leg-serifed`).length,
 			contours(`${shape}short-leg-top-left-and-bottom-right-serifed`).length + 2,

@@ -5694,14 +5694,14 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-m-earless-rounded-single-arch-short-leg-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-earless-rounded-single-arch-short-leg-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-m-earless-rounded-single-arch-short-leg-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-earless-rounded-single-arch-short-leg-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-m-earless-rounded-single-arch-short-leg-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-earless-rounded-single-arch-short-leg-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-left-and-bottom-right-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-left-and-bottom-right-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-tailed-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-tailed-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-left-and-bottom-right-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-left-and-bottom-right-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-tailed-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-tailed-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
 </tr>
 <tr>
 <td>73</td>
@@ -5718,16 +5718,16 @@ Regenerate these regular-weight SVG previews and this list with
 <td>84</td>
 </tr>
 <tr>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-top-left-and-bottom-right-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-top-left-and-bottom-right-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-short-leg-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-cut-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-cut-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-cut-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-cut-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-cut-short-leg-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-cut-short-leg-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td><img src="../images/cv-m-toothed-single-arch-top-cut-short-leg-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-toothed-single-arch-top-cut-short-leg-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-top-left-and-bottom-right-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-top-left-and-bottom-right-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-tailed-top-left-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-tailed-top-left-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-short-leg-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-short-leg-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-cut-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-cut-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-cut-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-cut-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-cut-short-leg-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-cut-short-leg-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-m-single-arch-top-cut-short-leg-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-m-single-arch-top-cut-short-leg-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td colspan="2"> </td>
 </tr>
 <tr>
