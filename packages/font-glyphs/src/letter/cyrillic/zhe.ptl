@@ -185,9 +185,18 @@ glyph-block Letter-Cyrillic-Zhe : begin
 					curl xLeft top [heading Upward]
 			return : if fHalf rightHalf : union rightHalf leftHalf
 
-		export : define [RoundedLegs fSlab fHalf df bot top] : union
-			RoundedArcs fSlab fHalf df bot top
-			intersection [MaskBelow : mix bot top 0.5] : StraightLegs fSlab fHalf df bot top
+		export : define [RoundedLegs fSlab fHalf df bot top] : begin
+			define fine : ZheSw df
+			define overshoot : Overshoot fSlab df
+			define yJoin : mix bot top 0.5
+			define attachX : df.middle - [HSwToV : 0.5 * fine]
+			local rightLeg : intersection [MaskRight df.middle] [MaskBelow yJoin] [MaskAbove bot]
+				ExtLineLhsToRhs attachX yJoin (df.rightSB - overshoot - 2 * OX) bot fine 0.2
+			local leftLeg : intersection [MaskLeft df.middle] [MaskBelow yJoin] [MaskAbove bot]
+				ExtLineRhsToLhs (df.width - attachX) yJoin (df.leftSB + overshoot + 2 * OX) bot fine 0.2
+			return : union
+				RoundedArcs fSlab fHalf df bot top
+				if fHalf rightLeg : union rightLeg leftLeg
 		define [ConnectedLegsImpl k fSlab fHalf df bot top] : begin
 			define fine : ZheSw df
 			define cor : DiagCor (top - bot) (df.rightSB - df.leftSB)
