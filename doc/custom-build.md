@@ -316,6 +316,8 @@ also offer `rounded-top`, `rounded-bottom`, and `curly-inverse` bodies with
 serif choices, plus a serifless `rounded-connected` body based on cursive Zhe.
 Latin `k` also offers `rounded-bottom` and `curly-inverse` with serif choices.
 The Cyrillic selectors are independent of `capital-k` and of each other.
+Greek Tsan follows `cyrl-capital-i` and `cyrl-i`; the latter also offers
+`standard-tailed` and `asymmetric-tailed` bodies.
 The `capital-y`, `cyrl-capital-ue`, and
 `cyrl-ue` selectors also support rounded bodies, for example
 `cyrl-ue = 'rounded-serifless'`. Cyrillic capital Ү/Ұ and lowercase ү/ұ are

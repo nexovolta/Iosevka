@@ -10,7 +10,7 @@ glyph-block Letter-Latin-Upper-N : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Shared-Metrics : markHalfStroke
 	glyph-block-import Letter-Shared : CreateAccentedComposition
-	glyph-block-import Letter-Shared-Shapes : CyrDescender SerifFrame PalatalHook EngHook CyrTailDescender
+	glyph-block-import Letter-Shared-Shapes : CyrDescender SerifFrame PalatalHook EngHook CyrTailDescender RightwardTailedBar
 
 	define BODY-SYMMETRIC 1
 	define BODY-ASYMMETRIC 2
@@ -27,6 +27,7 @@ glyph-block Letter-Latin-Upper-N : begin
 	define SLAB-CYR-I-MOTION 7
 	define SLAB-TOP-RIGHT 8
 	define SLAB-BILATERAL-MOTION 9
+	define SLAB-BOTTOM-RIGHT 10
 
 	define pInkTrap 0.4
 
@@ -91,6 +92,7 @@ glyph-block Letter-Latin-Upper-N : begin
 		local-parameter : swDiag -- [AdviceStroke 4]
 		local-parameter : rightBottom -- 0
 		local-parameter : verticalAsymmetric -- false
+		local-parameter : fTailed -- false
 
 		local left : mix 0 df.leftSB kSB
 		local right : mix df.width df.rightSB kSB
@@ -112,13 +114,15 @@ glyph-block Letter-Latin-Upper-N : begin
 			__ : top - yEnd
 
 		include : union
-			match bodyType
-				[Just BODY-SYMMETRIC] : dispiro
-					widths.lhs stroke
-					flat right rightBottom [heading Upward]
-					curl right [mix rightBottom top pInkTrap] [heading Upward]
-					straight.up.end right top [widths.lhs.heading fine Upward]
-				__ : VBar.r right rightBottom top fine
+			if fTailed
+				RightwardTailedBar right rightBottom top (sw -- stroke)
+				match bodyType
+					[Just BODY-SYMMETRIC] : dispiro
+						widths.lhs stroke
+						flat right rightBottom [heading Upward]
+						curl right [mix rightBottom top pInkTrap] [heading Upward]
+						straight.up.end right top [widths.lhs.heading fine Upward]
+					__ : VBar.r right rightBottom top fine
 			match bodyType
 				[Just BODY-SYMMETRIC] : dispiro
 					widths.lhs stroke
@@ -138,12 +142,14 @@ glyph-block Letter-Latin-Upper-N : begin
 			[Just SLAB-CYR-I-MOTION] : composite-proc sf.lt.outer sf.rb.outer
 			[Just SLAB-TOP-RIGHT] : composite-proc sf.rt.inner
 			[Just SLAB-BILATERAL-MOTION] : composite-proc sf.lt.outer sf.rt.inner
+			[Just SLAB-BOTTOM-RIGHT] : composite-proc sf.rb.outer
 			[Just SLAB-CYR-I] : NeedSlab SLAB : match bodyType
 				[Just BODY-CYR-I-SLAB] : composite-proc sf.lt.full sf.lb.full sf.rt.full sf.rb.full
 				__ : composite-proc sf.lt.full sf.lb.outer sf.rt.outer sf.rb.full
 			[Just SLAB-UPPER-TSAN] : NeedSlab SLAB : composite-proc sf.lt.full sf.rb.full
 			[Just SLAB-LOWER-TSAN] : NeedSlab SLAB : composite-proc sf.lt.outer
 			__ : no-shape
+		if fTailed : eject-contour 'serifRB'
 
 	define NConfig : SuffixCfg.weave
 		object # body
@@ -159,14 +165,17 @@ glyph-block Letter-Latin-Upper-N : begin
 
 	define CyrIConfig : SuffixCfg.weave
 		object # body
-			standard {BODY-SYMMETRIC 4}
-			asymmetric {BODY-ASYMMETRIC 3}
+			standard {BODY-SYMMETRIC 4 false}
+			asymmetric {BODY-ASYMMETRIC 3 false}
+			standardTailed {BODY-SYMMETRIC 4 true}
+			asymmetricTailed {BODY-ASYMMETRIC 3 true}
 		object # slab
 			serifless SLAB-NONE
 			motionSerifed SLAB-CYR-I-MOTION
 			serifed SLAB-ALL
 			topRightMotionSerifed SLAB-TOP-RIGHT
 			bilateralMotionSerifed SLAB-BILATERAL-MOTION
+			bottomRightSerifed SLAB-BOTTOM-RIGHT
 
 	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries NConfig] : do
 		create-glyph "N.\(suffix)" : glyph-proc
@@ -250,12 +259,13 @@ glyph-block Letter-Latin-Upper-N : begin
 	CreateAccentedComposition 'NAcute' 0x143 'N' 'acuteAbove'
 	CreateAccentedComposition 'NAcute.PLK' null 'N' 'kreskaAbove'
 
-	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries CyrIConfig] : do
+	foreach {suffix {{bodyType crDiag fTailed} slabType}} [Object.entries CyrIConfig] : do
 		create-glyph "cyrl/I.\(suffix)" : glyph-proc
 			include : MarkSet.capital
 			include : RevNShape [DivFrame 1] CAP bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
 				verticalAsymmetric -- true
+				fTailed -- fTailed
 
 		create-glyph "Eng.phonotypic.\(suffix)" : glyph-proc
 			include : MarkSet.capital
@@ -271,6 +281,23 @@ glyph-block Letter-Latin-Upper-N : begin
 			include : RevNShape [DivFrame 1] XH bodyType slabType
 				swDiag -- [AdviceStroke crDiag]
 				verticalAsymmetric -- true
+				fTailed -- fTailed
+
+		create-glyph "grek/Tsan.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : RevNShape [DivFrame 1] CAP bodyType slabType
+				swDiag -- [AdviceStroke crDiag]
+				fTailed -- fTailed
+
+		create-glyph "grek/tsan.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			define Shape : glyph-proc
+				include : RevNShape [DivFrame 1] XH bodyType slabType
+					swDiag -- [AdviceStroke crDiag]
+					fTailed -- fTailed
+			if (bodyType === BODY-ASYMMETRIC && slabType === SLAB-ALL)
+			: then : include [remove-holes : new-glyph Shape] AS_BASE
+			: else : include Shape
 
 	foreach {suffix {{bodyType crDiag} slabType}} [Object.entries NConfig] : do
 		create-glyph "NLongLeg.phonotypic.\(suffix)" : glyph-proc
@@ -294,13 +321,8 @@ glyph-block Letter-Latin-Upper-N : begin
 	CreateAccentedComposition 'cyrl/IBreve.BGR' null 'cyrl/I.BGR' 'breveAbove'
 	CreateAccentedComposition 'cyrl/IGrave.BGR' null 'cyrl/I.BGR' 'graveAbove'
 
-	create-glyph 'grek/Tsan' 0x376 : glyph-proc
-		include : MarkSet.capital
-		include : RevNShape [DivFrame 1] CAP BODY-SYMMETRIC SLAB-UPPER-TSAN
-
-	create-glyph 'grek/tsan' 0x377 : glyph-proc
-		include : MarkSet.e
-		include : RevNShape [DivFrame 1] XH BODY-SYMMETRIC SLAB-LOWER-TSAN
+	select-variant 'grek/Tsan' 0x376
+	select-variant 'grek/tsan' 0x377
 
 	glyph-block-import Letter-Blackboard : BBS BBD
 	create-glyph 'mathbb/N' 0x2115 : glyph-proc

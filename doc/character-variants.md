@@ -28,6 +28,9 @@ serif choices. Their `rounded-connected` body uses cursive Zhe-style arms and
 has no serif placements. Latin `k` also offers `rounded-bottom` and
 `curly-inverse` with serif choices.
 
+Greek Tsan follows the Cyrillic I selectors. `cyrl-i` also offers noncursive
+`standard-tailed` and `asymmetric-tailed` bodies.
+
 `lower-lambda`, `cyrl-capital-u`, and `cyrl-u` offer independent counterparts
 to the `y` designs, including cursive vertical- and diagonal-cut hooks.
 Lambda's y-based designs are vertically mirrored; its existing options remain available.
@@ -13208,7 +13211,7 @@ Regenerate these regular-weight SVG previews and this list with
 <td colspan="2"> </td>
 </tr>
 <tr>
-<td rowspan="8"><code>VXCE</code></td>
+<td rowspan="10"><code>VXCE</code></td>
 <td><img src="../images/cv-cyrl-i-standard-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-i-standard-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-i-standard-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
@@ -13302,7 +13305,9 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-cyrl-i-cursive-toothless-rounded-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-cursive-toothless-rounded-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-i-cursive-toothless-rounded-top-right-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-cursive-toothless-rounded-top-right-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-cyrl-i-cursive-toothless-rounded-bilateral-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-cursive-toothless-rounded-bilateral-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="3"> </td>
+<td><img src="../images/cv-cyrl-i-standard-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-standard-tailed-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-tailed-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-standard-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 </tr>
 <tr>
 <td>37</td>
@@ -13314,7 +13319,29 @@ Regenerate these regular-weight SVG previews and this list with
 <td>43</td>
 <td>44</td>
 <td>45</td>
-<td colspan="3"> </td>
+<td>46</td>
+<td>47</td>
+<td>48</td>
+</tr>
+<tr>
+<td><img src="../images/cv-cyrl-i-standard-tailed-top-right-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-tailed-top-right-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-standard-tailed-bilateral-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-standard-tailed-bilateral-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-asymmetric-tailed-serifless.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-asymmetric-tailed-serifless.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-asymmetric-tailed-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-asymmetric-tailed-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-asymmetric-tailed-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-asymmetric-tailed-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-asymmetric-tailed-top-right-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-asymmetric-tailed-top-right-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-cyrl-i-asymmetric-tailed-bilateral-motion-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-cyrl-i-asymmetric-tailed-bilateral-motion-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td colspan="5"> </td>
+</tr>
+<tr>
+<td>49</td>
+<td>50</td>
+<td>51</td>
+<td>52</td>
+<td>53</td>
+<td>54</td>
+<td>55</td>
+<td colspan="5"> </td>
 </tr>
 <tr>
 <td rowspan="2"><code>VXCI</code></td>
