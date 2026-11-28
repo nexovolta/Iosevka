@@ -325,12 +325,17 @@ glyph-block Letter-Latin-Glottal-Stop : begin
 		smoothDiagonalCut RevSmoothLetterDiagonalCutShape
 		cornerDiagonalCut QuestionRevCornerDiagonalCutShape
 
+	define [CreateGlottalShape marks Impl top hook fBaseSerifed] : glyph-proc
+		include : marks
+		include : Impl top 0 SB RightSB hook
+		if (SLAB || fBaseSerifed) : include : HSerif.mb Middle 0 MidJutCenter
+
 	define [CreateGlottalFamily gn marks top hook Bodies] : begin
 		foreach {suffix Impl} [Object.entries Bodies] : do
 			create-glyph "\(gn).\(suffix)" : glyph-proc
-				include : marks
-				include : Impl top 0 SB RightSB hook
-				if SLAB : include : HSerif.mb Middle 0 MidJutCenter
+				include : CreateGlottalShape marks Impl top hook false
+			create-glyph "\(gn).\(suffix)BaseSerifed" : glyph-proc
+				include : CreateGlottalShape marks Impl top hook true
 
 	CreateGlottalFamily 'glottalStop' MarkSet.b Ascender Hook ForwardBodies
 	CreateGlottalFamily 'revGlottalStop' MarkSet.b Ascender Hook ReverseBodies

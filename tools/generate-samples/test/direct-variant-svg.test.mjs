@@ -54,6 +54,7 @@ test("direct variant samples build conditional and slope-dependent glyphs", asyn
 			["bar", "natural-slope"],
 			["lig-neq", "vertical"],
 			["lig-neq", "vertical-dotted"],
+			["glottal-stop", "smooth-base-serifed"],
 		]) {
 			const prime = variants.primes.find(item => item.key === key);
 			assert.ok(prime, key);

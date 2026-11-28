@@ -5439,6 +5439,66 @@ single-storey `a` design, and `crossing`. They are independent of Greek
     <tr><td rowspan="2" width="60"><img src="../images/cv-question-corner-flat-hooked.light.svg#gh-light-mode-only" width=32/><img src="../images/cv-question-corner-flat-hooked.dark.svg#gh-dark-mode-only" width=32/></td><td><code>question = 'corner-flat-hooked'</code>, <code>VSAQ = 3</code></td></tr>
     <tr><td>Question mark (<code>?</code>) with a corner at middle and flat hook</td></tr>
     </table></details>
+  - Styles for `ʔ` (Glottal stop)
+    <details><summary>28 variants</summary>
+    <table>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth'</code>, <code>cv29 = 1</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape (default)</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner'</code>, <code>cv29 = 2</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-flat-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-flat-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-flat-hooked'</code>, <code>cv29 = 3</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and flat hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-flat-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-flat-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-flat-hooked'</code>, <code>cv29 = 4</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and flat hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-corner-hooked'</code>, <code>cv29 = 5</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and corner hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-corner-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-corner-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-corner-hooked'</code>, <code>cv29 = 6</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and corner hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-serifed-hooked'</code>, <code>cv29 = 7</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and serifed hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-serifed-hooked'</code>, <code>cv29 = 8</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and serifed hook</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-inward-serifed'</code>, <code>cv29 = 9</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and inward serif</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-inward-serifed'</code>, <code>cv29 = 10</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and inward serif</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-vertical-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-vertical-cut.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-vertical-cut'</code>, <code>cv29 = 11</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and vertical-cut terminal</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-vertical-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-vertical-cut.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-vertical-cut'</code>, <code>cv29 = 12</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and vertical-cut terminal</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-diagonal-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-diagonal-cut.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-diagonal-cut'</code>, <code>cv29 = 13</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and diagonal-cut terminal</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-diagonal-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-diagonal-cut.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-diagonal-cut'</code>, <code>cv29 = 14</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and diagonal-cut terminal</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-base-serifed'</code>, <code>cv29 = 15</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-base-serifed'</code>, <code>cv29 = 16</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-flat-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-flat-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-flat-hooked-base-serifed'</code>, <code>cv29 = 17</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, flat hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-corner-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-corner-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-corner-hooked-base-serifed'</code>, <code>cv29 = 18</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, corner hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-flat-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-flat-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-flat-hooked-base-serifed'</code>, <code>cv29 = 19</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, flat hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-corner-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-corner-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-corner-hooked-base-serifed'</code>, <code>cv29 = 20</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, corner hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-serifed-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-serifed-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-serifed-hooked-base-serifed'</code>, <code>cv29 = 21</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, serifed hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-serifed-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-serifed-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-serifed-hooked-base-serifed'</code>, <code>cv29 = 22</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, serifed hook, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-inward-serifed-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-inward-serifed-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-inward-serifed-base-serifed'</code>, <code>cv29 = 23</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, inward serif, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-inward-serifed-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-inward-serifed-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-inward-serifed-base-serifed'</code>, <code>cv29 = 24</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, inward serif, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-vertical-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-vertical-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-vertical-cut-base-serifed'</code>, <code>cv29 = 25</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, vertical-cut terminal, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-vertical-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-vertical-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-vertical-cut-base-serifed'</code>, <code>cv29 = 26</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, vertical-cut terminal, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-smooth-diagonal-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-diagonal-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'smooth-diagonal-cut-base-serifed'</code>, <code>cv29 = 27</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with smooth body shape, diagonal-cut terminal, and serif at base</td></tr>
+    <tr><td rowspan="2" width="60"><img src="../images/cv-glottal-stop-corner-diagonal-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-diagonal-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td><td><code>glottal-stop = 'corner-diagonal-cut-base-serifed'</code>, <code>cv29 = 28</code></td></tr>
+    <tr><td>Glottal stop (<code>ʔ</code>) with corner at middle, diagonal-cut terminal, and serif at base</td></tr>
+    </table></details>
   - Styles for `¶`
     <details><summary>3 variants</summary>
     <table>

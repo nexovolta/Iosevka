@@ -8021,7 +8021,7 @@ Regenerate these regular-weight SVG previews and this list with
 <td colspan="10"> </td>
 </tr>
 <tr>
-<td rowspan="2"><code>cv29</code></td>
+<td rowspan="6"><code>cv29</code></td>
 <td><img src="../images/cv-glottal-stop-smooth.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-corner.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-corner-flat-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-flat-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
@@ -8032,7 +8032,8 @@ Regenerate these regular-weight SVG previews and this list with
 <td><img src="../images/cv-glottal-stop-smooth-serifed-hooked.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-serifed-hooked.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-corner-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
 <td><img src="../images/cv-glottal-stop-smooth-inward-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-inward-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
-<td colspan="2"> </td>
+<td><img src="../images/cv-glottal-stop-smooth-vertical-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-vertical-cut.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-vertical-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-vertical-cut.dark.svg#gh-dark-mode-only" width="32"/></td>
 </tr>
 <tr>
 <td>1</td>
@@ -8045,9 +8046,51 @@ Regenerate these regular-weight SVG previews and this list with
 <td>8</td>
 <td>9</td>
 <td>10</td>
-<td colspan="2"> </td>
+<td>11</td>
+<td>12</td>
 </tr>
 <tr>
+<td><img src="../images/cv-glottal-stop-smooth-diagonal-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-diagonal-cut.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-diagonal-cut.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-diagonal-cut.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-flat-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-flat-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-corner-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-corner-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-flat-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-flat-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-corner-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-corner-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-serifed-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-serifed-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-serifed-hooked-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-serifed-hooked-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-inward-serifed-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-inward-serifed-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-inward-serifed-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-inward-serifed-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+</tr>
+<tr>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+<td>16</td>
+<td>17</td>
+<td>18</td>
+<td>19</td>
+<td>20</td>
+<td>21</td>
+<td>22</td>
+<td>23</td>
+<td>24</td>
+</tr>
+<tr>
+<td><img src="../images/cv-glottal-stop-smooth-vertical-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-vertical-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-vertical-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-vertical-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-smooth-diagonal-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-smooth-diagonal-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td><img src="../images/cv-glottal-stop-corner-diagonal-cut-base-serifed.light.svg#gh-light-mode-only" width="32"/><img src="../images/cv-glottal-stop-corner-diagonal-cut-base-serifed.dark.svg#gh-dark-mode-only" width="32"/></td>
+<td colspan="8"> </td>
+</tr>
+<tr>
+<td>25</td>
+<td>26</td>
+<td>27</td>
+<td>28</td>
+<td colspan="8"> </td>
+</tr><tr>
 <td rowspan="10"><code>VXFP</code></td>
 <td colspan="3"><img src="../images/cv-capital-ezh-straight-serifless-serifless.light.svg#gh-light-mode-only" width="96"/><img src="../images/cv-capital-ezh-straight-serifless-serifless.dark.svg#gh-dark-mode-only" width="96"/></td>
 <td colspan="3"><img src="../images/cv-capital-ezh-straight-serifless-top-serifed.light.svg#gh-light-mode-only" width="96"/><img src="../images/cv-capital-ezh-straight-serifless-top-serifed.dark.svg#gh-dark-mode-only" width="96"/></td>
