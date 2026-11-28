@@ -197,7 +197,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 
 			return : union fullShape : HBar.m [if fHalf df.middle midX] (df.width - midX) midY fine
 
-		export : define [CursiveLegs fSlab fHalf df bot top] : begin
+		export : define [CursiveLegs fSlab fHalf df bot top fHookRight] : begin
 			define fine : ZheSw df
 			define fine2 : df.adviceStroke 4.2
 			define midX : mix df.leftSB (df.middle - [HSwToV : 0.5 * fine]) 0.4
@@ -205,7 +205,7 @@ glyph-block Letter-Cyrillic-Zhe : begin
 			define overshoot : Overshoot fSlab df
 
 			local rightHalf : dispiro
-				straight.left.start (df.rightSB - overshoot) (top - fine) [widths.rhs.heading fine Leftward]
+				straight.left.start (df.rightSB - overshoot + [if fHookRight HookX 0]) (top - fine) [widths.rhs.heading fine Leftward]
 				archv
 				g4.down.mid (df.width - midX + OX) midY [widths.rhs.heading fine2 Downward]
 				arcvh
