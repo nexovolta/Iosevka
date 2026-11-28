@@ -11891,7 +11891,7 @@ selectorAffix."cyrl/tje.italic/base/corner" =  ""
 selectorAffix."cyrl/tje.italic/base/cursive" =  ""
 selectorAffix.meng = "earlessRoundedDoubleArch"
 
-[prime.m.variants-buildup.stages.ear.earless-single-arch]
+[prime.m.variants-buildup.stages.ear.earless-corner-single-arch]
 rank = 5
 groupRank = 50
 descriptionAffix = "earless (corner top-left) single-arch body shape"
@@ -11917,6 +11917,19 @@ selectorAffix."cyrl/tje.italic/base/corner" =  ""
 selectorAffix."cyrl/tje.italic/base/cursive" =  ""
 selectorAffix.meng = "earlessRoundedSingleArch"
 
+[prime.m.variants-buildup.stages.ear.toothed-single-arch]
+rank = 7
+groupRank = 70
+descriptionAffix = "toothed single-arch body shape"
+selectorAffix.m = "toothedSingleArch"
+selectorAffix."m/sansSerif" = "toothedSingleArch"
+selectorAffix."m/descBase" = "toothedSingleArch"
+selectorAffix."cyrl/este/te.italic" = ""
+selectorAffix."cyrl/tjeKomi.italic" = ""
+selectorAffix."cyrl/tje.italic/base/corner" = ""
+selectorAffix."cyrl/tje.italic/base/cursive" = ""
+selectorAffix.meng = "toothedSingleArch"
+
 [prime.m.variants-buildup.stages.cut."*"]
 next = "leg"
 
@@ -11934,7 +11947,7 @@ selectorAffix.meng = ""
 
 [prime.m.variants-buildup.stages.cut.top-cut]
 rank = 2
-disableIf = [{ ear = "earless-corner-double-arch" }, { ear = "earless-rounded-double-arch" }, { ear = "earless-single-arch" }, { ear = "earless-rounded-single-arch" }]
+disableIf = [{ ear = "earless-corner-double-arch" }, { ear = "earless-rounded-double-arch" }, { ear = "earless-corner-single-arch" }, { ear = "earless-rounded-single-arch" }]
 descriptionAffix = "a diagonal cut at top"
 selectorAffix.m = "topCut"
 selectorAffix."m/sansSerif" = "topCut"
@@ -11964,7 +11977,7 @@ selectorAffix.meng = ""
 
 [prime.m.variants-buildup.stages.leg.short-leg]
 rank = 2
-groupRank = { if = [{ ear = "eared" }, { ear = "flat-top" }], then = 2, else = 1 }
+groupRank = { if = [{ ear = "eared" }, { ear = "flat-top" }, { ear = "toothed-single-arch" }], then = 2, else = 1 }
 descriptionAffix = "shorter middle leg (like Ubuntu Mono)"
 selectorAffix.m = "shortLeg"
 selectorAffix."m/sansSerif" = "shortLeg"
@@ -12018,7 +12031,7 @@ selectorAffix.meng = "serifless"
 [prime.m.variants-buildup.stages.serifs.top-left-serifed]
 rank = 2
 descriptionAffix = "serif at top left"
-enableIf = [{ ear = "eared", cut = "NOT top-cut" }, { ear = "flat-top", cut = "NOT top-cut" }]
+enableIf = [{ ear = "eared", cut = "NOT top-cut" }, { ear = "flat-top", cut = "NOT top-cut" }, { ear = "toothed-single-arch", cut = "NOT top-cut" }]
 selectorAffix.m = "topLeftSerifed"
 selectorAffix."m/sansSerif" = "serifless"
 selectorAffix."m/descBase" = "topLeftSerifed"
@@ -12031,7 +12044,7 @@ selectorAffix.meng = "topLeftSerifed"
 [prime.m.variants-buildup.stages.serifs.top-left-and-bottom-right-serifed]
 rank = 3
 descriptionAffix = "serifs at top left and bottom right"
-enableIf = [{ ear = "eared", tail = "NOT tailed", cut = "NOT top-cut" }, { ear = "flat-top", tail = "NOT tailed", cut = "NOT top-cut" }]
+enableIf = [{ ear = "eared", tail = "NOT tailed", cut = "NOT top-cut" }, { ear = "flat-top", tail = "NOT tailed", cut = "NOT top-cut" }, { ear = "toothed-single-arch", tail = "NOT tailed", cut = "NOT top-cut" }]
 selectorAffix.m = "topLeftAndBottomRightSerifed"
 selectorAffix."m/sansSerif" = "serifless"
 selectorAffix."m/descBase" = "topLeftSerifed"
@@ -12044,7 +12057,7 @@ selectorAffix.meng = "topLeftSerifed"
 [prime.m.variants-buildup.stages.serifs.bottom-right-serifed]
 rank = 3
 descriptionAffix = "serifs at bottom right"
-disableIf = [{ ear = "eared" }, { ear = "flat-top"}, { tail = "tailed" }]
+disableIf = [{ ear = "eared" }, { ear = "flat-top" }, { ear = "toothed-single-arch" }, { tail = "tailed" }]
 selectorAffix.m = "bottomRightSerifed"
 selectorAffix."m/sansSerif" = "serifless"
 selectorAffix."m/descBase" = "serifless"

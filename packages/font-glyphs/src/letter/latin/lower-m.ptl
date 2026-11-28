@@ -102,7 +102,7 @@ glyph-block Letter-Latin-Lower-M : begin
 		local fFull : MEnoughSpaceForFullSerifs df _sw
 		if (!earless) : include : SmallMTopLeftSerif df top lbot fFull _sw
 		include : SmallMBottomLeftSerif df top lbot (fFull || shortLeg) _sw
-		include : SmallMBottomMiddleSerif df top mbot fFull _sw
+		include : SmallMBottomMiddleSerif df top mbot (fFull || shortLeg) _sw
 		if (!tailed) : include : SmallMBottomRightSerif df top rbot (fFull || shortLeg) _sw
 
 	define [SmallTurnedMSerifs df top lbot mbot rbot earless shortLeg tailed _sw] : glyph-proc
@@ -189,18 +189,34 @@ glyph-block Letter-Latin-Lower-M : begin
 			flat df.rightSB [Math.max (top - adb) (rbot + TINY)]
 			curl df.rightSB rbot [heading Downward]
 
-	define [EarlessSingleArchSmallMShape df top lbot mbot rbot _sw cut _ada _adb] : glyph-proc
+	define [SingleArchSmallMShape df top lbot mbot rbot _sw cut _ada _adb toothed] : glyph-proc
 		local sw : fallback _sw df.mvs
 		local ada : fallback _ada : SmallMSmoothA df nothing sw
 		local adb : fallback _adb : SmallMSmoothB df nothing sw
-		include : MLeftBar df lbot (top - DToothlessRise) sw cut
+		include : MLeftBar df lbot [if toothed top (top - DToothlessRise)] sw cut
 		include : tagged 'barM' : VBar.m df.middle mbot (top - 0.25 * sw) sw
-		include : dispiro
-			widths.rhs sw
-			g4 df.leftSB (top - DToothlessRise)
-			Arch.rhs top (sw -- sw) (blendPre -- {})
-			flat df.rightSB [Math.max (top - adb) (rbot + TINY)]
-			curl df.rightSB rbot [heading Downward]
+		if toothed
+			include : nShoulder.shape
+				left -- (df.leftSB + [HSwToV sw])
+				right -- df.rightSB
+				top -- top
+				bottom -- rbot
+				ada -- ada
+				adb -- adb
+				fine -- (ShoulderFine * (sw / Stroke))
+				stroke -- sw
+			include : dispiro
+				widths.rhs sw
+				g4 df.leftSB (top - DToothlessRise)
+				Arch.rhs top (sw -- sw) (blendPre -- {})
+				flat df.rightSB [Math.max (top - adb) (rbot + TINY)]
+				curl df.rightSB rbot [heading Downward]
+
+	define [EarlessSingleArchSmallMShape df top lbot mbot rbot sw cut ada adb]
+		SingleArchSmallMShape df top lbot mbot rbot sw cut ada adb false
+
+	define [ToothedSingleArchSmallMShape df top lbot mbot rbot sw cut ada adb]
+		SingleArchSmallMShape df top lbot mbot rbot sw cut ada adb true
 
 	glyph-block-export EarlessRoundedSingleArchSmallMShape
 	define [EarlessRoundedSingleArchSmallMShape df top lbot mbot rbot _sw cut _ada _adb] : glyph-proc
@@ -303,6 +319,7 @@ glyph-block Letter-Latin-Lower-M : begin
 			'earlessRoundedSingleArch' {EarlessRoundedSingleArchSmallMShape 1}
 			'earlessCornerDoubleArch' {EarlessCornerDoubleArchSmallMShape 1}
 			'earlessRoundedDoubleArch' {EarlessRoundedDoubleArchSmallMShape 1}
+			'toothedSingleArch' {ToothedSingleArchSmallMShape 0}
 		function [ear] : begin
 			if (ear === 'earlessSingleArch' || ear === 'earlessRoundedSingleArch' || ear === 'earlessCornerDoubleArch' || ear === 'earlessRoundedDoubleArch') : return : object
 				'' ''
