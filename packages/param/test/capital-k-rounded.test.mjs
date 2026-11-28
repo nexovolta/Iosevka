@@ -12,6 +12,19 @@ import { parse } from "../src/variant.mjs";
 
 const paramsDir = fileURLToPath(new URL("../../../params", import.meta.url));
 
+test("Latin K straight-inverse variants retain their glyph selectors and ranks", () => {
+	const data = Toml.parse(readFileSync(new URL("../../../params/variants.toml", import.meta.url), "utf8"));
+	const primes = parse(data).primes;
+	for (const [group, selector, rank] of [["capital-k", "K", 69], ["k", "k", 73]]) {
+		const variants = primes.get(group).variants;
+		const variant = variants.get("straight-inverse-serifless");
+		assert.ok(variant, group);
+		assert.equal(variant.selector[selector], "inverseConnectedSerifless");
+		assert.equal(variant.rank, rank);
+		assert.equal(variants.has("inverse-connected-serifless"), false);
+	}
+});
+
 test("capital K and Cyrillic ka expose independent rounded and inverse forms", async () => {
 	const data = Toml.parse(readFileSync(new URL("../../../params/variants.toml", import.meta.url), "utf8"));
 	const parsed = parse(data);
